@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --header-h: 64px;
+  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h));
 }
 
 @theme inline {
