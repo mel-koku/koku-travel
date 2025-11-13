@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { MOCK_LOCATIONS } from "@/data/mockLocations";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
 import type { Location } from "@/types/location";
+import { isValidLocationId } from "@/lib/api/validation";
+import { badRequest, notFound, internalError, serviceUnavailable } from "@/lib/api/errors";
 
 const locationsById = new Map<string, Location>(MOCK_LOCATIONS.map((location) => [location.id, location]));
 
@@ -15,14 +17,13 @@ type RouteContext = {
 export async function GET(_request: Request, context: RouteContext) {
   const { id } = await context.params;
 
+  if (!isValidLocationId(id)) {
+    return badRequest("Invalid location ID format");
+  }
+
   const location = locationsById.get(id);
   if (!location) {
-    return NextResponse.json(
-      {
-        error: "Location not found",
-      },
-      { status: 404 },
-    );
+    return notFound("Location not found");
   }
 
   try {
@@ -41,15 +42,14 @@ export async function GET(_request: Request, context: RouteContext) {
       },
     );
   } catch (error) {
-    console.error(`Failed to fetch Google Places details for ${location.name}`, error);
     const message = error instanceof Error ? error.message : "Failed to load location details.";
+    const errorMessage = error instanceof Error ? error.message : "";
 
-    return NextResponse.json(
-      {
-        error: message,
-      },
-      { status: 500 },
-    );
+    if (errorMessage.includes("Missing Google Places API key")) {
+      return serviceUnavailable("Google Places API is not configured.");
+    }
+
+    return internalError(message, { locationId: id });
   }
 }
 

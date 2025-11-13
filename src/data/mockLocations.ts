@@ -63,7 +63,7 @@ export const MOCK_LOCATIONS: Location[] = [
     city: "Kyoto",
     category: "culture",
     image:
-      "https://images.unsplash.com/photo-1636986573565-e8847f2bd9a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NTV8fFRlbnJ5dS1qaSUyMFRlbXBsZXxlbnwwfHx8fDE3NjI3NjAyNTZ8MA&ixlib=rb-4.1.0&q=80&w=1600",
+      "https://images.unsplash.com/photo-1578632767115-351597cf2477?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1600",
     minBudget: "¥500",
     estimatedDuration: "1 hour",
     operatingHours: {

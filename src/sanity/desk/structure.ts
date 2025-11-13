@@ -1,10 +1,15 @@
 import type { StructureResolver } from "sanity/desk";
-import { BookIcon, EarthGlobeIcon, RouteIcon, UserIcon } from "@sanity/icons";
+import { BookIcon, EarthGlobeIcon, ListIcon, UserIcon, UsersIcon } from "@sanity/icons";
 
 export const deskStructure: StructureResolver = (S) =>
   S.list()
     .title("Content")
     .items([
+      S.listItem()
+        .title("Authors")
+        .icon(UsersIcon)
+        .schemaType("author")
+        .child(S.documentTypeList("author").title("Authors")),
       S.listItem()
         .title("Guides")
         .icon(UserIcon)
@@ -12,7 +17,7 @@ export const deskStructure: StructureResolver = (S) =>
         .child(S.documentTypeList("guide").title("Guides")),
       S.listItem()
         .title("Itineraries")
-        .icon(RouteIcon)
+        .icon(ListIcon)
         .schemaType("itinerary")
         .child(S.documentTypeList("itinerary").title("Itineraries")),
       S.listItem()
@@ -28,7 +33,7 @@ export const deskStructure: StructureResolver = (S) =>
       S.divider(),
       ...S.documentTypeListItems().filter(
         (item) =>
-          !["guide", "itinerary", "destination", "blogPost"].includes(
+          !["author", "guide", "itinerary", "destination", "blogPost"].includes(
             item.getId() || "",
           ),
       ),
