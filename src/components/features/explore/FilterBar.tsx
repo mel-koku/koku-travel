@@ -1,11 +1,11 @@
+import { cn } from "@/lib/cn";
+
 import { SearchInput } from "./SearchInput";
+import { CategoryCheckboxDropdown } from "./CategoryCheckboxDropdown";
 
 type FilterBarProps = {
   query: string;
   onQueryChange: (value: string) => void;
-  categories: readonly string[];
-  selectedCategory: string | null;
-  onCategoryToggle: (category: string) => void;
   cityOptions: readonly { value: string; label: string }[];
   selectedCity: string | null;
   onCityChange: (city: string | null) => void;
@@ -15,17 +15,18 @@ type FilterBarProps = {
   durationOptions: readonly { value: string; label: string }[];
   selectedDuration: string | null;
   onDurationChange: (duration: string | null) => void;
+  categoryOptions: readonly { value: string; label: string }[];
+  selectedCategories: string[];
+  onCategoriesChange: (categories: string[]) => void;
   tagOptions: readonly { value: string; label: string }[];
   selectedTag: string | null;
   onTagChange: (tag: string | null) => void;
+  layout?: "horizontal" | "vertical";
 };
 
 export function FilterBar({
   query,
   onQueryChange,
-  categories,
-  selectedCategory,
-  onCategoryToggle,
   cityOptions,
   selectedCity,
   onCityChange,
@@ -35,14 +36,32 @@ export function FilterBar({
   durationOptions,
   selectedDuration,
   onDurationChange,
+  categoryOptions,
+  selectedCategories,
+  onCategoriesChange,
   tagOptions,
   selectedTag,
   onTagChange,
+  layout = "horizontal",
 }: FilterBarProps) {
+  const isVertical = layout === "vertical";
+
   return (
-    <aside className="sticky [top:var(--sticky-offset)] z-40 px-4 mt-2">
-      <div className="mx-auto w-full max-w-5xl rounded-2xl border border-gray-200 bg-white/90 backdrop-blur px-6 py-4 shadow-md hover:shadow-lg transition space-y-4">
-        <div className="flex flex-col md:flex-row gap-4 md:items-center">
+    <aside
+      className={cn(
+        "sticky z-40 px-4 transition-all duration-300 ease-out [top:var(--sticky-offset)]",
+        isVertical && "lg:h-fit lg:self-start"
+      )}
+    >
+      <div
+        className={cn(
+          "w-full rounded-2xl border border-gray-200 bg-white/90 backdrop-blur shadow-md transition-all duration-300 ease-out hover:shadow-lg",
+          isVertical
+            ? "space-y-8 px-6 py-8 lg:max-h-[calc(100vh-var(--sticky-offset)-1rem)] lg:max-w-xs lg:overflow-y-auto lg:pr-4"
+            : "mx-auto max-w-5xl space-y-4 px-6 py-4"
+        )}
+      >
+        <div className="flex flex-col gap-4 md:flex-row md:items-center">
           <div className="flex-1">
             <SearchInput
               value={query}
@@ -50,29 +69,21 @@ export function FilterBar({
               placeholder="Search locations..."
             />
           </div>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => {
-              const isSelected = selectedCategory === category;
-
-              return (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => onCategoryToggle(category)}
-                  aria-pressed={isSelected}
-                  className={`px-4 py-2 rounded-2xl text-sm font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-                    isSelected
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  {category}
-                </button>
-              );
-            })}
-          </div>
         </div>
-        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <div
+          className={cn(
+            isVertical
+              ? "flex flex-col gap-4"
+              : "grid gap-3 md:grid-cols-2 lg:grid-cols-5"
+          )}
+        >
+          <CategoryCheckboxDropdown
+            label="Category"
+            options={categoryOptions}
+            selectedValues={selectedCategories}
+            onChange={onCategoriesChange}
+            placeholder="All categories"
+          />
           <FilterSelect
             label="City"
             value={selectedCity ?? ""}
@@ -123,20 +134,33 @@ function FilterSelect({
   placeholder,
 }: FilterSelectProps) {
   return (
-    <label className="flex flex-col gap-1 text-sm text-gray-700">
-      <span className="font-medium">{label}</span>
-      <select
-        className="rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+    <label className="flex flex-col gap-1 text-sm text-gray-700 lg:gap-2">
+      <span className="font-medium lg:text-base">{label}</span>
+      <div className="relative">
+        <select
+          className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2 pl-4 pr-11 text-sm text-gray-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 lg:py-3 lg:text-base"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+        >
+          <option value="">{placeholder}</option>
+          {options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+          <svg
+            className="h-4 w-4"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
+            <path d="M5 7l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </span>
+      </div>
     </label>
   );
 }

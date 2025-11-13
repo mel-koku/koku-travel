@@ -18,9 +18,15 @@ export default function IdentityBadge({ className = "" }: { className?: string }
 
   useEffect(() => {
     let alive = true;
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (alive) setEmail(user?.email ?? null);
-    });
+    supabase
+      .auth
+      .getUser()
+      .then(({ data: { user } }) => {
+        if (alive) setEmail(user?.email ?? null);
+      })
+      .catch((error) => {
+        console.warn("[IdentityBadge] Failed to read Supabase user.", error);
+      });
     return () => {
       alive = false;
     };

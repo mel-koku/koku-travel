@@ -1,9 +1,16 @@
 import { Itinerary } from "../types/itinerary";
 
 export const MOCK_ITINERARY: Itinerary = {
+  timezone: "Asia/Tokyo",
   days: [
     {
       dateLabel: "Day 1 (Kyoto)",
+      timezone: "Asia/Tokyo",
+      weekday: "tuesday",
+      bounds: {
+        startTime: "08:00",
+        endTime: "21:30",
+      },
       activities: [
         {
           kind: "place",
@@ -13,6 +20,28 @@ export const MOCK_ITINERARY: Itinerary = {
           durationMin: 120,
           neighborhood: "Fushimi",
           tags: ["culture", "photography"],
+          locationId: "kyoto-fushimi-inari-taisha",
+          schedule: {
+            arrivalTime: "08:30",
+            departureTime: "10:45",
+            status: "scheduled",
+            operatingWindow: {
+              opensAt: "00:00",
+              closesAt: "23:59",
+              status: "within",
+            },
+          },
+          travelToNext: {
+            mode: "train",
+            durationMinutes: 25,
+            departureTime: "10:50",
+            arrivalTime: "11:15",
+            instructions: [
+              "Walk to Fushimi-Inari Station",
+              "Take JR Nara Line to Kyoto Station",
+              "Transfer to Karasuma Line toward Shijo",
+            ],
+          },
         },
         {
           kind: "place",
@@ -22,6 +51,35 @@ export const MOCK_ITINERARY: Itinerary = {
           durationMin: 90,
           neighborhood: "Downtown",
           tags: ["food", "shopping"],
+          locationId: "kyoto-nishiki-market",
+          travelFromPrevious: {
+            mode: "train",
+            durationMinutes: 25,
+            departureTime: "10:50",
+            arrivalTime: "11:15",
+            instructions: [
+              "Walk to Fushimi-Inari Station",
+              "Take JR Nara Line to Kyoto Station",
+              "Transfer to Karasuma Line toward Shijo",
+            ],
+          },
+          schedule: {
+            arrivalTime: "11:15",
+            departureTime: "13:00",
+            status: "scheduled",
+            operatingWindow: {
+              opensAt: "09:00",
+              closesAt: "18:00",
+              status: "within",
+            },
+          },
+          travelToNext: {
+            mode: "walk",
+            durationMinutes: 15,
+            departureTime: "13:05",
+            arrivalTime: "13:20",
+            instructions: ["Stroll east along Shijo-dori toward Gion."],
+          },
         },
         {
           kind: "place",
@@ -31,11 +89,36 @@ export const MOCK_ITINERARY: Itinerary = {
           durationMin: 120,
           neighborhood: "Gion",
           tags: ["culture"],
+          locationId: "kyoto-gion-district",
+          travelFromPrevious: {
+            mode: "walk",
+            durationMinutes: 15,
+            departureTime: "13:05",
+            arrivalTime: "13:20",
+            instructions: ["Stroll east along Shijo-dori toward Gion."],
+          },
+          schedule: {
+            arrivalTime: "17:30",
+            departureTime: "19:30",
+            status: "tentative",
+            operatingWindow: {
+              opensAt: "00:00",
+              closesAt: "23:59",
+              status: "within",
+              note: "Shops vary; aim for late afternoon/early evening.",
+            },
+          },
         },
       ],
     },
     {
       dateLabel: "Day 2 (Arashiyama)",
+      timezone: "Asia/Tokyo",
+      weekday: "wednesday",
+      bounds: {
+        startTime: "08:00",
+        endTime: "20:00",
+      },
       activities: [
         {
           kind: "place",
@@ -45,6 +128,34 @@ export const MOCK_ITINERARY: Itinerary = {
           durationMin: 90,
           neighborhood: "Arashiyama",
           tags: ["nature", "photography"],
+          locationId: "kyoto-arashiyama-bamboo-grove",
+          travelFromPrevious: {
+            mode: "train",
+            durationMinutes: 35,
+            departureTime: "07:45",
+            arrivalTime: "08:20",
+            instructions: [
+              "Depart Kyoto Station on JR Sagano Line to Saga-Arashiyama",
+              "Walk 10 minutes to the grove entrance",
+            ],
+          },
+          schedule: {
+            arrivalTime: "08:20",
+            departureTime: "10:00",
+            status: "scheduled",
+            operatingWindow: {
+              opensAt: "06:00",
+              closesAt: "18:00",
+              status: "within",
+            },
+          },
+          travelToNext: {
+            mode: "walk",
+            durationMinutes: 5,
+            departureTime: "10:05",
+            arrivalTime: "10:10",
+            instructions: ["Walk south to Tenryu-ji's north gate."],
+          },
         },
         {
           kind: "place",
@@ -54,6 +165,31 @@ export const MOCK_ITINERARY: Itinerary = {
           durationMin: 60,
           neighborhood: "Arashiyama",
           tags: ["culture"],
+          locationId: "kyoto-tenryu-ji",
+          travelFromPrevious: {
+            mode: "walk",
+            durationMinutes: 5,
+            departureTime: "10:05",
+            arrivalTime: "10:10",
+            instructions: ["Walk south to Tenryu-ji's north gate."],
+          },
+          schedule: {
+            arrivalTime: "10:10",
+            departureTime: "11:30",
+            status: "scheduled",
+            operatingWindow: {
+              opensAt: "08:30",
+              closesAt: "17:30",
+              status: "within",
+            },
+          },
+          travelToNext: {
+            mode: "walk",
+            durationMinutes: 12,
+            departureTime: "11:35",
+            arrivalTime: "11:47",
+            instructions: ["Exit via south gate and follow river path east."],
+          },
         },
         {
           kind: "place",
@@ -63,6 +199,24 @@ export const MOCK_ITINERARY: Itinerary = {
           durationMin: 90,
           neighborhood: "Katsura",
           tags: ["food"],
+          locationId: "kyoto-katsura-riverside-cafe",
+          travelFromPrevious: {
+            mode: "walk",
+            durationMinutes: 12,
+            departureTime: "11:35",
+            arrivalTime: "11:47",
+            instructions: ["Exit via south gate and follow river path east."],
+          },
+          schedule: {
+            arrivalTime: "17:00",
+            departureTime: "18:30",
+            status: "scheduled",
+            operatingWindow: {
+              opensAt: "10:00",
+              closesAt: "20:00",
+              status: "within",
+            },
+          },
         },
       ],
     },

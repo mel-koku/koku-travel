@@ -3,7 +3,7 @@ import { ComponentPropsWithoutRef, ElementRef, ReactNode, forwardRef } from "rea
 import { cn } from "@/lib/cn";
 
 export type BadgeVariant = "solid" | "soft" | "outline";
-export type BadgeTone = "indigo" | "rose" | "emerald" | "amber" | "slate";
+export type BadgeTone = "brand" | "secondary" | "success" | "warning" | "error" | "neutral";
 
 type BadgeProps = {
   /**
@@ -24,30 +24,35 @@ const toneStyles: Record<
     outline: string;
   }
 > = {
-  indigo: {
-    solid: "bg-indigo-600 text-white",
-    soft: "bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-100",
-    outline: "text-indigo-600 ring-1 ring-inset ring-indigo-200",
+  brand: {
+    solid: "bg-brand-primary text-white",
+    soft: "bg-brand-primary/10 text-brand-primary ring-1 ring-inset ring-brand-primary/20",
+    outline: "text-brand-primary ring-1 ring-inset ring-brand-primary/30",
   },
-  rose: {
-    solid: "bg-rose-600 text-white",
-    soft: "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-100",
-    outline: "text-rose-600 ring-1 ring-inset ring-rose-200",
+  secondary: {
+    solid: "bg-brand-secondary text-white",
+    soft: "bg-brand-secondary/10 text-brand-secondary ring-1 ring-inset ring-brand-secondary/20",
+    outline: "text-brand-secondary ring-1 ring-inset ring-brand-secondary/30",
   },
-  emerald: {
-    solid: "bg-emerald-600 text-white",
-    soft: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-100",
-    outline: "text-emerald-600 ring-1 ring-inset ring-emerald-200",
+  success: {
+    solid: "bg-semantic-success text-white",
+    soft: "bg-semantic-success/10 text-semantic-success ring-1 ring-inset ring-semantic-success/20",
+    outline: "text-semantic-success ring-1 ring-inset ring-semantic-success/30",
   },
-  amber: {
-    solid: "bg-amber-500 text-white",
-    soft: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-100",
-    outline: "text-amber-600 ring-1 ring-inset ring-amber-200",
+  warning: {
+    solid: "bg-semantic-warning text-white",
+    soft: "bg-semantic-warning/10 text-semantic-warning ring-1 ring-inset ring-semantic-warning/20",
+    outline: "text-semantic-warning ring-1 ring-inset ring-semantic-warning/30",
   },
-  slate: {
-    solid: "bg-gray-800 text-white",
-    soft: "bg-gray-100 text-gray-700 ring-1 ring-inset ring-gray-200",
-    outline: "text-gray-700 ring-1 ring-inset ring-gray-300",
+  error: {
+    solid: "bg-semantic-error text-white",
+    soft: "bg-semantic-error/10 text-semantic-error ring-1 ring-inset ring-semantic-error/20",
+    outline: "text-semantic-error ring-1 ring-inset ring-semantic-error/30",
+  },
+  neutral: {
+    solid: "bg-neutral-border text-neutral-textPrimary",
+    soft: "bg-neutral-surface text-neutral-textPrimary ring-1 ring-inset ring-neutral-border",
+    outline: "text-neutral-textSecondary ring-1 ring-inset ring-neutral-border",
   },
 };
 
@@ -60,7 +65,7 @@ export const Badge = forwardRef<ElementRef<"span">, BadgeProps>((props, ref) => 
       className={cn(
         "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide",
         toneStyles[tone][variant],
-        variant === "outline" && "bg-white",
+        variant === "outline" && "bg-neutral-surface",
         className,
       )}
       {...rest}
@@ -76,11 +81,17 @@ type TagProps = {
 } & ComponentPropsWithoutRef<"span">;
 
 const tagToneClasses: Record<BadgeTone, string> = {
-  indigo: "bg-indigo-50 text-indigo-700 border-transparent ring-1 ring-inset ring-indigo-100",
-  rose: "bg-rose-50 text-rose-700 border-transparent ring-1 ring-inset ring-rose-100",
-  emerald: "bg-emerald-50 text-emerald-700 border-transparent ring-1 ring-inset ring-emerald-100",
-  amber: "bg-amber-50 text-amber-700 border-transparent ring-1 ring-inset ring-amber-100",
-  slate: "bg-gray-50 text-gray-700 border-gray-200",
+  brand:
+    "bg-brand-primary/10 text-brand-primary border-transparent ring-1 ring-inset ring-brand-primary/20",
+  secondary:
+    "bg-brand-secondary/10 text-brand-secondary border-transparent ring-1 ring-inset ring-brand-secondary/20",
+  success:
+    "bg-semantic-success/10 text-semantic-success border-transparent ring-1 ring-inset ring-semantic-success/20",
+  warning:
+    "bg-semantic-warning/10 text-semantic-warning border-transparent ring-1 ring-inset ring-semantic-warning/20",
+  error:
+    "bg-semantic-error/10 text-semantic-error border-transparent ring-1 ring-inset ring-semantic-error/20",
+  neutral: "bg-neutral-surface text-neutral-textSecondary border-neutral-border",
 };
 
 export const Tag = forwardRef<ElementRef<"span">, TagProps>(

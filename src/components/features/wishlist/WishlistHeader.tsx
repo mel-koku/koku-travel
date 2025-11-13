@@ -6,8 +6,8 @@ export default function WishlistHeader({ count }: { count: number }) {
   return (
     <aside className="flex flex-col items-center px-4 mt-2">
       <CapsuleHeader
-        title="Saved Locations"
-        subtitle={`${count} ${count === 1 ? "place" : "places"}`}
+        title="Favorites"
+        subtitle={`${count} ${count === 1 ? "favorite" : "favorites"}`}
         rightButton={
           <Link
             href="/explore"

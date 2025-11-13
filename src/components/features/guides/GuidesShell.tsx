@@ -1,22 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-import { MOCK_GUIDES } from "@/data/mockGuides";
+import type { Guide } from "@/types/guide";
 
 import GuideCard from "./GuideCard";
 import GuidesFilterBar from "./GuidesFilterBar";
 
-export default function GuidesShell() {
+export default function GuidesShell({ guides }: { guides: Guide[] }) {
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
 
-  const filtered = MOCK_GUIDES.filter(
-    (g) =>
-      (!query ||
-        g.title.toLowerCase().includes(query.toLowerCase()) ||
-        g.summary.toLowerCase().includes(query.toLowerCase())) &&
-      (!category || g.category === category),
+  const filtered = useMemo(
+    () =>
+      guides.filter(
+        (g) =>
+          (!query ||
+            g.title.toLowerCase().includes(query.toLowerCase()) ||
+            g.summary.toLowerCase().includes(query.toLowerCase())) &&
+          (!category || g.categories.includes(category)),
+      ),
+    [guides, query, category],
   );
 
   return (

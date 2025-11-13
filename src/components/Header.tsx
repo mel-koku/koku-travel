@@ -7,7 +7,6 @@ import { useAppState } from "@/state/AppState";
 
 const navItems = [
   { label: "Explore", href: "/explore" },
-  { label: "Itinerary", href: "/itinerary" },
   { label: "Guides", href: "/guides" },
   { label: "Community", href: "/community" },
   { label: "Trip Builder", href: "/trip-builder" },
@@ -22,7 +21,7 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-black/80">
+    <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-black/80">
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-10">
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-full border border-dashed border-red-500 text-sm uppercase tracking-wider text-red-500">

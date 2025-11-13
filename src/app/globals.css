@@ -2,14 +2,30 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --header-h: 64px;
-  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h));
+  --foreground: #1f2937;
+  --foreground-secondary: #6b7280;
+  --surface: #f9fafb;
+  --border: #e5e7eb;
+  --brand-primary: #1e40af;
+  --brand-secondary: #f97316;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --header-h: 80px;
+  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h) + 10px);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -18,6 +34,14 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --foreground-secondary: #a1a1aa;
+    --surface: #111827;
+    --border: #1f2937;
+    --brand-primary: #1e3a8a;
+    --brand-secondary: #fb923c;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
   }
 }
 

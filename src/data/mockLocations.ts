@@ -1,4 +1,37 @@
-import { Location } from "@/types/location";
+import { type Location, type LocationOperatingHours } from "@/types/location";
+
+const cloneOperatingHours = (hours: LocationOperatingHours): LocationOperatingHours => ({
+  ...hours,
+  periods: hours.periods.map((period) => ({ ...period })),
+});
+
+const KYOTO_TEMPLE_STANDARD_HOURS: LocationOperatingHours = {
+  timezone: "Asia/Tokyo",
+  periods: [
+    { day: "monday", open: "06:00", close: "18:00" },
+    { day: "tuesday", open: "06:00", close: "18:00" },
+    { day: "wednesday", open: "06:00", close: "18:00" },
+    { day: "thursday", open: "06:00", close: "18:00" },
+    { day: "friday", open: "06:00", close: "18:00" },
+    { day: "saturday", open: "06:00", close: "18:00" },
+    { day: "sunday", open: "06:00", close: "18:00" },
+  ],
+  notes: "Last admission is typically 30 minutes before closing; hours may shift seasonally.",
+};
+
+const KYOTO_SHRINE_ALL_DAY_HOURS: LocationOperatingHours = {
+  timezone: "Asia/Tokyo",
+  periods: [
+    { day: "monday", open: "00:00", close: "23:59", isOvernight: true },
+    { day: "tuesday", open: "00:00", close: "23:59", isOvernight: true },
+    { day: "wednesday", open: "00:00", close: "23:59", isOvernight: true },
+    { day: "thursday", open: "00:00", close: "23:59", isOvernight: true },
+    { day: "friday", open: "00:00", close: "23:59", isOvernight: true },
+    { day: "saturday", open: "00:00", close: "23:59", isOvernight: true },
+    { day: "sunday", open: "00:00", close: "23:59", isOvernight: true },
+  ],
+  notes: "Shrine grounds are open 24/7; some sub-shrines and shops have limited hours.",
+};
 
 export const MOCK_LOCATIONS: Location[] = [
   {
@@ -10,6 +43,88 @@ export const MOCK_LOCATIONS: Location[] = [
     image: "https://images.unsplash.com/photo-1669777615171-b64d23ea3037?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8OHx8S2l5b21penUtZGVyYSUyMEt5b3RvfGVufDB8fHx8MTc2Mjc1MDcxN3ww&ixlib=rb-4.1.0&q=80&w=1600",
     minBudget: "¥400",
     estimatedDuration: "1.5 hours",
+    operatingHours: cloneOperatingHours(KYOTO_TEMPLE_STANDARD_HOURS),
+    recommendedVisit: {
+      typicalMinutes: 120,
+      minMinutes: 90,
+      summary: "Allocate two hours to experience the wooden terrace, temple halls, and neighboring streets.",
+    },
+    preferredTransitModes: ["bus", "walk"],
+    coordinates: {
+      lat: 34.9949,
+      lng: 135.785,
+    },
+    timezone: "Asia/Tokyo",
+  },
+  {
+    id: "kyoto-tenryu-ji",
+    name: "Tenryu-ji Temple",
+    region: "Kansai",
+    city: "Kyoto",
+    category: "culture",
+    image:
+      "https://images.unsplash.com/photo-1636986573565-e8847f2bd9a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8NTV8fFRlbnJ5dS1qaSUyMFRlbXBsZXxlbnwwfHx8fDE3NjI3NjAyNTZ8MA&ixlib=rb-4.1.0&q=80&w=1600",
+    minBudget: "¥500",
+    estimatedDuration: "1 hour",
+    operatingHours: {
+      timezone: "Asia/Tokyo",
+      periods: [
+        { day: "monday", open: "08:30", close: "17:30" },
+        { day: "tuesday", open: "08:30", close: "17:30" },
+        { day: "wednesday", open: "08:30", close: "17:30" },
+        { day: "thursday", open: "08:30", close: "17:30" },
+        { day: "friday", open: "08:30", close: "17:30" },
+        { day: "saturday", open: "08:30", close: "17:30" },
+        { day: "sunday", open: "08:30", close: "17:30" },
+      ],
+      notes: "Garden hours may vary; last entry typically 30 minutes before closing.",
+    },
+    recommendedVisit: {
+      typicalMinutes: 75,
+      minMinutes: 45,
+      summary: "Mix the main hall, garden stroll, and Sogenchi Teien viewing platform.",
+    },
+    preferredTransitModes: ["train", "walk"],
+    coordinates: {
+      lat: 35.0168,
+      lng: 135.6765,
+    },
+    timezone: "Asia/Tokyo",
+  },
+  {
+    id: "kyoto-katsura-riverside-cafe",
+    name: "Katsura Riverside Cafe",
+    region: "Kansai",
+    city: "Kyoto",
+    category: "food",
+    image:
+      "https://images.unsplash.com/photo-1527169402691-feff5539e52c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MTB8fEt5b3RvJTIwY2FmZXxlbnwwfHx8fDE3NjI3NjAyNjN8MA&ixlib=rb-4.1.0&q=80&w=1600",
+    minBudget: "¥1,200",
+    estimatedDuration: "1.5 hours",
+    operatingHours: {
+      timezone: "Asia/Tokyo",
+      periods: [
+        { day: "monday", open: "10:00", close: "20:00" },
+        { day: "tuesday", open: "10:00", close: "20:00" },
+        { day: "wednesday", open: "10:00", close: "20:00" },
+        { day: "thursday", open: "10:00", close: "20:00" },
+        { day: "friday", open: "10:00", close: "22:00" },
+        { day: "saturday", open: "09:00", close: "22:00" },
+        { day: "sunday", open: "09:00", close: "21:00" },
+      ],
+      notes: "Kitchen closes 30 minutes before listed hours. Reservations recommended for sunset.",
+    },
+    recommendedVisit: {
+      typicalMinutes: 90,
+      minMinutes: 60,
+      summary: "Allow time for riverside seating and dessert tasting flight.",
+    },
+    preferredTransitModes: ["walk", "taxi"],
+    coordinates: {
+      lat: 35.0153,
+      lng: 135.677,
+    },
+    timezone: "Asia/Tokyo",
   },
   {
     id: "kyoto-fushimi-inari-taisha",
@@ -20,6 +135,19 @@ export const MOCK_LOCATIONS: Location[] = [
     image: "https://images.unsplash.com/photo-1592963871802-3de984041fd6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8N3x8RnVzaGltaSUyMEluYXJpJTIwVGFpc2hhJTIwS3lvdG98ZW58MHx8fHwxNzYyNzUwNzE4fDA&ixlib=rb-4.1.0&q=80&w=1600",
     minBudget: "Free",
     estimatedDuration: "2 hours",
+    operatingHours: cloneOperatingHours(KYOTO_SHRINE_ALL_DAY_HOURS),
+    recommendedVisit: {
+      typicalMinutes: 150,
+      minMinutes: 90,
+      maxMinutes: 240,
+      summary: "Plan for a two to three hour hike through the torii gates up Mount Inari.",
+    },
+    preferredTransitModes: ["train", "walk"],
+    coordinates: {
+      lat: 34.9671,
+      lng: 135.7727,
+    },
+    timezone: "Asia/Tokyo",
   },
   {
     id: "kyoto-kinkaku-ji-golden-pavilion",
@@ -30,6 +158,42 @@ export const MOCK_LOCATIONS: Location[] = [
     image: "https://images.unsplash.com/photo-1594485770492-f1b67aca488d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8S2lua2FrdS1qaSUyMCUyOEdvbGRlbiUyMFBhdmlsaW9uJTI5JTIwS3lvdG98ZW58MHx8fHwxNzYyNzUwNzE5fDA&ixlib=rb-4.1.0&q=80&w=1600",
     minBudget: "¥400",
     estimatedDuration: "1 hour",
+    operatingHours: cloneOperatingHours(KYOTO_TEMPLE_STANDARD_HOURS),
+    recommendedVisit: {
+      typicalMinutes: 75,
+      minMinutes: 45,
+      summary: "A compact visit covering the pavilion route and tea garden.",
+    },
+    preferredTransitModes: ["bus", "walk"],
+    coordinates: {
+      lat: 35.0394,
+      lng: 135.7292,
+    },
+    timezone: "Asia/Tokyo",
+  },
+  {
+    id: "kyoto-gion-district",
+    name: "Gion District",
+    region: "Kansai",
+    city: "Kyoto",
+    category: "culture",
+    image:
+      "https://images.unsplash.com/photo-1554797589-7241bb691973?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MjB8fEdpb24lMjBLeW90b3xlbnwwfHx8fDE3NjI3NjAyNDF8MA&ixlib=rb-4.1.0&q=80&w=1600",
+    minBudget: "Free",
+    estimatedDuration: "2 hours",
+    operatingHours: cloneOperatingHours(KYOTO_SHRINE_ALL_DAY_HOURS),
+    recommendedVisit: {
+      typicalMinutes: 120,
+      minMinutes: 60,
+      maxMinutes: 180,
+      summary: "Evening streets and teahouses; add extra time for dinner reservations.",
+    },
+    preferredTransitModes: ["walk", "bus"],
+    coordinates: {
+      lat: 35.0034,
+      lng: 135.7739,
+    },
+    timezone: "Asia/Tokyo",
   },
   {
     id: "kyoto-ginkaku-ji-silver-pavilion",

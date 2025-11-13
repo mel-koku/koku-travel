@@ -52,7 +52,7 @@ export const ActivityCard = ({
     {...rest}
   >
     <div className="flex flex-col gap-4 md:w-40">
-      <Badge tone="indigo" variant="soft" className="w-fit">
+      <Badge tone="brand" variant="soft" className="w-fit">
         {timeRange}
       </Badge>
 
@@ -73,17 +73,20 @@ export const ActivityCard = ({
     >
       <div className="space-y-2">
         <div className="flex flex-wrap items-baseline gap-2">
-          <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
-          {location && <span className="text-sm font-medium text-indigo-600">{location}</span>}
+          <h3 className="text-xl font-semibold text-neutral-textPrimary">{title}</h3>
+          {location && <span className="text-sm font-medium text-brand-primary">{location}</span>}
         </div>
-        {description && <p className="text-sm text-gray-600">{description}</p>}
+        {description && <p className="text-sm text-neutral-textSecondary">{description}</p>}
       </div>
 
       {highlights.length > 0 && (
-        <ul className="grid gap-2 text-sm text-gray-600 sm:grid-cols-2">
+        <ul className="grid gap-2 text-sm text-neutral-textSecondary sm:grid-cols-2">
           {highlights.map((item) => (
             <li key={item} className="flex items-center gap-2">
-              <span className="inline-flex h-1.5 w-1.5 rounded-full bg-indigo-500" aria-hidden="true" />
+              <span
+                className="inline-flex h-1.5 w-1.5 rounded-full bg-brand-primary"
+                aria-hidden="true"
+              />
               <span>{item}</span>
             </li>
           ))}

@@ -1,8 +1,55 @@
+import type { LocationTransitMode } from "./location";
+
 export type ActivityKind = "place" | "note";
 
 export type ItineraryTime = {
   startTime?: string;
   endTime?: string;
+  timezone?: string;
+};
+
+export type ItineraryOperatingWindow = {
+  opensAt: string;
+  closesAt: string;
+  note?: string;
+  status?: "within" | "outside" | "unknown";
+};
+
+export type ItineraryScheduledVisit = {
+  /**
+   * Planned arrival time in local day timezone (HH:MM).
+   */
+  arrivalTime: string;
+  /**
+   * Planned departure time in local day timezone (HH:MM).
+   */
+  departureTime: string;
+  /**
+   * Optional buffer (minutes) added before opening or after closing.
+   */
+  arrivalBufferMinutes?: number;
+  departureBufferMinutes?: number;
+  /**
+   * Operating window this visit was aligned against.
+   */
+  operatingWindow?: ItineraryOperatingWindow;
+  /**
+   * Execution confidence for the scheduled time.
+   */
+  status?: "scheduled" | "tentative" | "out-of-hours";
+};
+
+export type ItineraryTravelMode = LocationTransitMode | "transit" | "rideshare";
+
+export type ItineraryTravelSegment = {
+  mode: ItineraryTravelMode;
+  durationMinutes: number;
+  distanceMeters?: number;
+  departureTime?: string;
+  arrivalTime?: string;
+  instructions?: string[];
+  notes?: string;
+  path?: Array<{ lat: number; lng: number }>;
 };
 
 export type ItineraryActivity =
@@ -15,6 +62,26 @@ export type ItineraryActivity =
       neighborhood?: string;
       tags?: string[];
       notes?: string;
+      /**
+       * Optional reference to a canonical location entry.
+       */
+      locationId?: string;
+      /**
+       * Finalized schedule for this visit.
+       */
+      schedule?: ItineraryScheduledVisit;
+      /**
+       * Travel segment connecting from the previous activity to this one.
+       */
+      travelFromPrevious?: ItineraryTravelSegment;
+      /**
+       * Travel segment leading from this activity to the next one.
+       */
+      travelToNext?: ItineraryTravelSegment;
+      /**
+       * Annotated opening hours relevant to this visit.
+       */
+      operatingWindow?: ItineraryOperatingWindow;
     }
   | {
       kind: "note";
@@ -28,11 +95,27 @@ export type ItineraryActivity =
 
 export type ItineraryDay = {
   dateLabel?: string;
+  /**
+   * Local timezone for the day's schedule (defaults to itinerary timezone).
+   */
+  timezone?: string;
+  /**
+   * Optional day-wide timing window.
+   */
+  bounds?: ItineraryTime;
+  /**
+   * Optional weekday reference used for operating hour lookups.
+   */
+  weekday?: import("./location").Weekday;
   activities: ItineraryActivity[];
 };
 
 export type Itinerary = {
   days: ItineraryDay[];
+  /**
+   * Default timezone for the entire itinerary.
+   */
+  timezone?: string;
 };
 
 

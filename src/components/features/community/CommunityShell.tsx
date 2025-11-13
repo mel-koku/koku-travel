@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { MOCK_TOPICS, type CommunityTopic } from "@/data/mockCommunity";
 import CommunityTopicCard from "./CommunityTopicCard";
@@ -9,18 +9,14 @@ import { addTopic, loadTopics } from "@/lib/communityStorage";
 
 export default function CommunityShell() {
   const [open, setOpen] = useState(false);
-  const [topics, setTopics] = useState<CommunityTopic[]>(MOCK_TOPICS);
-
-  useEffect(() => {
-    setTopics(loadTopics(MOCK_TOPICS));
-  }, []);
+  const [topics, setTopics] = useState<CommunityTopic[]>(() => loadTopics(MOCK_TOPICS));
 
   const handleCreated = (t: CommunityTopic) => {
     setTopics((prev) => addTopic(prev, t));
   };
 
   return (
-    <section className="max-w-screen-xl mx-auto px-8">
+    <section className="max-w-7xl mx-auto px-8">
       <aside className="flex flex-col items-center mt-6 mb-8">
         <div className="w-full max-w-4xl bg-white rounded-2xl border border-gray-200 shadow-md px-8 py-4">
           <div className="flex items-center justify-between">

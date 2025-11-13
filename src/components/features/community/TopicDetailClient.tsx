@@ -31,18 +31,60 @@ export type Reply = {
 const replyKey = (id: string) => `koku_community_replies_v1_${id}`;
 
 
+type StoredReply = {
+  id: string;
+  author: string;
+  body: string;
+  createdAt: string;
+  editedAt?: string;
+  history?: ReplyVersion[];
+};
+
+function isStoredReply(value: unknown): value is StoredReply {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.id === "string" &&
+    typeof record.author === "string" &&
+    typeof record.body === "string" &&
+    typeof record.createdAt === "string"
+  );
+}
+
+function isStoredReplyList(value: unknown): value is StoredReply[] {
+  return Array.isArray(value) && value.every((item) => isStoredReply(item));
+}
+
+function isReplyVersionList(value: unknown): ReplyVersion[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.filter((entry): entry is ReplyVersion => {
+    if (!entry || typeof entry !== "object") {
+      return false;
+    }
+    const record = entry as Record<string, unknown>;
+    return typeof record.body === "string" && typeof record.editedAt === "string";
+  });
+}
+
 function loadReplies(id: string): Reply[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(replyKey(id));
-    const list: any[] = raw ? JSON.parse(raw) : [];
-    return list.map((r) => ({
-      id: r.id,
-      author: r.author,
-      body: r.body,
-      createdAt: r.createdAt,
-      editedAt: r.editedAt,
-      history: Array.isArray(r.history) ? r.history : [],
+    const parsed = raw ? JSON.parse(raw) : [];
+    if (!isStoredReplyList(parsed)) {
+      return [];
+    }
+    return parsed.map((entry) => ({
+      id: entry.id,
+      author: entry.author,
+      body: entry.body,
+      createdAt: entry.createdAt,
+      editedAt: typeof entry.editedAt === "string" ? entry.editedAt : undefined,
+      history: isReplyVersionList(entry.history),
     }));
   } catch {
     return [];
@@ -86,7 +128,13 @@ export default function TopicDetailClient({
 }) {
   const [topics, setTopics] = useState<CommunityTopic[]>(seed);
   const [replies, setReplies] = useState<Reply[]>([]);
-  const [author, setAuthor] = useState("Guest"); // current poster name (also used for auth)
+  const [author, setAuthor] = useState<string>(() => {
+    if (typeof window === "undefined") {
+      return "Guest";
+    }
+    const saved = localStorage.getItem(NAME_KEY);
+    return saved ?? "Guest";
+  }); // current poster name (also used for auth)
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -99,18 +147,29 @@ export default function TopicDetailClient({
 
   // load topics and replies
   useEffect(() => {
-    setTopics(loadTopics(seed));
+    let cancelled = false;
+    Promise.resolve().then(() => {
+      if (!cancelled) {
+        setTopics(loadTopics(seed));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [seed]);
   useEffect(() => {
-    setReplies(loadReplies(id));
+    let cancelled = false;
+    Promise.resolve().then(() => {
+      if (!cancelled) {
+        setReplies(loadReplies(id));
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   // persist current name for author-only checks
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const saved = localStorage.getItem(NAME_KEY);
-    if (saved) setAuthor(saved);
-  }, []);
   useEffect(() => {
     if (typeof window === "undefined") return;
     localStorage.setItem(NAME_KEY, author);

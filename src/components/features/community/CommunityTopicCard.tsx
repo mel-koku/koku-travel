@@ -34,14 +34,12 @@ type CommunityTopicCardProps = {
 };
 
 export default function CommunityTopicCard({ topic }: CommunityTopicCardProps) {
-  const [replyCount, setReplyCount] = useState<number>(topic.replies ?? 0);
-  const [lastISO, setLastISO] = useState<string>(
-    topic.createdAt ?? new Date().toISOString(),
+  const [replyCount, setReplyCount] = useState<number>(() => getReplyCount(topic.id));
+  const [lastISO, setLastISO] = useState<string>(() =>
+    getLastActivity(topic.id, topic.createdAt ?? new Date().toISOString()),
   );
 
   useEffect(() => {
-    setReplyCount(getReplyCount(topic.id));
-    setLastISO(getLastActivity(topic.id, topic.createdAt));
     const handleStorage = (e: StorageEvent) => {
       if (!e.key) return;
       if (e.key.includes(`koku_community_replies_v1_${topic.id}`)) {
