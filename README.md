@@ -25,7 +25,7 @@ Required keys:
 - `SANITY_API_VERSION` – Optional override for the Sanity API version (defaults to `2024-10-21`).
 - `SANITY_REVALIDATE_SECRET` – Secret shared with Sanity webhooks for ISR revalidation.
 - `ROUTING_PROVIDER` / `ROUTING_MAPBOX_ACCESS_TOKEN` – Optional routing backend (set to `mapbox` with a valid token for precise travel times). Leave unset to fall back to heuristic estimates.
-npm run test     # run Vitest suite (includes itinerary planner coverage)
+
 ## Itinerary Planner & Map Highlights
 
 - `src/lib/itineraryPlanner.ts` assembles day schedules by combining recommended visit durations, opening hours, and travel times. It defaults to heuristic estimates but will call the configured routing provider when credentials are present.
@@ -41,7 +41,7 @@ npm run dev      # start Next.js in development mode
 npm run build    # create a production build
 npm run start    # serve the production build
 npm run lint     # run ESLint
-npm run test     # run Vitest suite
+npm run test     # run Vitest suite (includes itinerary planner coverage)
 npm run sanity:dev # (after setup) run Sanity Studio local server
 ```
 
