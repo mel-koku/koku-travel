@@ -24,7 +24,7 @@ export default function FeaturedGuideHero({ guide }: { guide: Guide }) {
   };
 
   return (
-    <article className="group block relative overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-xl transition hover:shadow-2xl">
+    <article className="group block relative overflow-hidden rounded-3xl border border-stone-200/50 bg-white/40 backdrop-blur-lg shadow-lg shadow-stone-900/5 transition-all hover:border-stone-300/60 hover:bg-white/60 hover:shadow-xl">
       <GuideBookmarkButton
         guideId={guide.id}
         variant="icon"

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
@@ -137,8 +136,8 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
   if (!trips.length) {
     return (
       <div className="flex flex-col gap-2">
-        <Button variant="outline" size="sm" asChild>
-          <Link href="/trip-builder">Start an itinerary</Link>
+        <Button variant="outline" size="sm" asChild href="/trip-builder">
+          Start an itinerary
         </Button>
         <p className="text-xs text-gray-500">Create a trip to begin adding your favorite places.</p>
       </div>

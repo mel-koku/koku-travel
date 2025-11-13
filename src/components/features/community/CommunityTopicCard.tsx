@@ -55,8 +55,8 @@ export default function CommunityTopicCard({ topic }: CommunityTopicCardProps) {
     <Link href={`/community/${topic.id}`} className="group">
       <article
         className="
-        rounded-2xl border border-gray-200 bg-white shadow-md
-        hover:shadow-lg transition p-5 flex flex-col justify-between
+        rounded-2xl border border-stone-200/50 bg-white/40 backdrop-blur-md shadow-sm shadow-stone-900/5
+        hover:border-stone-300/60 hover:bg-white/60 hover:shadow-lg transition-all p-5 flex flex-col justify-between
       "
       >
         <div className="space-y-2">

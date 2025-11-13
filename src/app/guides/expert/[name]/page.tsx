@@ -195,14 +195,23 @@ export default async function ExpertProfilePage(props: ExpertProfileProps) {
         </section>
       )}
 
-      {/* Back Link */}
+      {/* Back Links */}
       <div className="max-w-screen-xl mx-auto px-8 pb-12">
-        <Link
-          href="/guides"
-          className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
-        >
-          ← Back to Guides
-        </Link>
+        <div className="flex flex-wrap gap-4">
+          <Link
+            href="/guides/experts"
+            className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+          >
+            ← Browse All Experts
+          </Link>
+          <span className="text-gray-300">|</span>
+          <Link
+            href="/guides"
+            className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+          >
+            Back to Guides
+          </Link>
+        </div>
       </div>
     </main>
   );
