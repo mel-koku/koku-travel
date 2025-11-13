@@ -8,7 +8,7 @@ import { useAppState } from "@/state/AppState";
 const navItems = [
   { label: "Explore", href: "/explore" },
   { label: "Guides", href: "/guides" },
-  { label: "Community", href: "/community" },
+  // { label: "Community", href: "/community" }, // Hidden for future development
   { label: "Trip Builder", href: "/trip-builder" },
 ];
 

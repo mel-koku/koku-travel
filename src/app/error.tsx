@@ -1,0 +1,51 @@
+"use client";
+
+import { useEffect } from "react";
+import { Button } from "@/components/ui/Button";
+
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    // Log error to console in development
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Application error:", error);
+    }
+    // TODO: In production, send to error tracking service (e.g., Sentry)
+  }, [error]);
+
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4">
+      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-md">
+        <div className="text-center">
+          <h1 className="mb-4 text-3xl font-bold text-gray-900">Something went wrong</h1>
+          <p className="mb-6 text-gray-600">
+            We encountered an unexpected error. Please try again or return to the home page.
+          </p>
+          {process.env.NODE_ENV !== "production" && error.message && (
+            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-left">
+              <p className="text-sm font-semibold text-red-900">Error details:</p>
+              <p className="mt-1 text-sm text-red-700">{error.message}</p>
+              {error.digest && (
+                <p className="mt-2 text-xs text-red-600">Error ID: {error.digest}</p>
+              )}
+            </div>
+          )}
+          <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
+            <Button onClick={reset} variant="primary">
+              Try again
+            </Button>
+            <Button asChild href="/" variant="secondary">
+              Go home
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+

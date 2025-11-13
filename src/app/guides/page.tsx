@@ -2,6 +2,9 @@ import { draftMode } from "next/headers";
 import GuidesShell from "@/components/features/guides/GuidesShell";
 import { fetchGuides } from "@/lib/sanity/guides";
 
+// Revalidate this page every hour, or on-demand via webhook
+export const revalidate = 3600;
+
 export default async function GuidesPage() {
   const { isEnabled } = await draftMode();
   const guides = await fetchGuides({ preview: isEnabled });

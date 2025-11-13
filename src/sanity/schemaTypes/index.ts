@@ -1,16 +1,20 @@
-import { blockContent } from "./blockContent";
-import { blogPost } from "./blogPost";
-import { destination } from "./destination";
-import { guide } from "./guide";
-import { itinerary, itineraryActivity, itineraryDay } from "./itinerary";
+import { type SchemaTypeDefinition } from 'sanity'
+import { author } from './author'
+import { guide } from './guide'
+import { blogPost } from './blogPost'
+import { destination } from './destination'
+import { itinerary, itineraryActivity, itineraryDay } from './itinerary'
+import { blockContent } from './blockContent'
 
-export const schemaTypes = [
-  guide,
-  destination,
-  itinerary,
-  itineraryDay,
-  itineraryActivity,
-  blogPost,
-  blockContent,
-];
-
+export const schema: { types: SchemaTypeDefinition[] } = {
+  types: [
+    author,
+    guide,
+    blogPost,
+    destination,
+    itinerary,
+    itineraryActivity,
+    itineraryDay,
+    blockContent,
+  ],
+}

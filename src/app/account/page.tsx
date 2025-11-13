@@ -12,9 +12,12 @@ export default function AccountPage() {
   const { user, setUser, clearAllLocalData, refreshFromSupabase } = useAppState();
   const [sessionUserId, setSessionUserId] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
+      setIsLoadingAuth(false);
       return;
     }
     let isActive = true;
@@ -23,9 +26,13 @@ export default function AccountPage() {
         const { data } = await supabase.auth.getUser();
         if (isActive) {
           setSessionUserId(data.user?.id ?? null);
+          setIsLoadingAuth(false);
         }
       } catch (error) {
         console.warn("Failed to read Supabase session.", error);
+        if (isActive) {
+          setIsLoadingAuth(false);
+        }
       }
     })();
 
@@ -46,6 +53,7 @@ export default function AccountPage() {
   // load profile from Supabase when signed in
   useEffect(() => {
     if (!sessionUserId || !supabase) return;
+    setIsLoadingProfile(true);
     (async () => {
       try {
         const {
@@ -87,6 +95,8 @@ export default function AccountPage() {
       } catch (error) {
         console.error("Account sync failed:", error);
         setStatus("Sync failed. Please try again.");
+      } finally {
+        setIsLoadingProfile(false);
       }
     })();
   }, [sessionUserId, supabase, setUser, refreshFromSupabase]);
@@ -123,6 +133,17 @@ export default function AccountPage() {
 
   const signedIn = Boolean(sessionUserId);
   const supabaseUnavailable = !supabase;
+
+  if (isLoadingAuth) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
+          <p className="text-sm text-gray-600">Loading account...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 pb-24">
@@ -176,10 +197,20 @@ export default function AccountPage() {
               </label>
 
               <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-500">{status}</div>
+                <div className="text-xs text-gray-500">
+                  {isLoadingProfile ? (
+                    <span className="flex items-center gap-2">
+                      <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-indigo-600 border-r-transparent"></span>
+                      {status || "Loading..."}
+                    </span>
+                  ) : (
+                    status
+                  )}
+                </div>
                 <button
                   onClick={clearAllLocalData}
-                  className="h-10 rounded-lg border border-red-200 bg-red-50 px-4 text-sm text-red-700 hover:bg-red-100"
+                  disabled={isLoadingProfile}
+                  className="h-10 rounded-lg border border-red-200 bg-red-50 px-4 text-sm text-red-700 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Clear local data
                 </button>

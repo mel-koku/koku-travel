@@ -17,6 +17,10 @@ export type Guide = {
    * Full list of guide categories used for filtering and related content.
    */
   categories: string[];
+  /**
+   * Primary location/city for this guide (e.g., "tokyo", "kyoto").
+   */
+  location: string;
   summary: string;
   image: string;
   languages: string[];
