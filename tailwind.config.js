@@ -15,9 +15,20 @@ module.exports = {
       },
       colors: {
         brand: {
-          primary: "#4F46E5", // indigo-600
-          hover: "#4338CA", // indigo-700
-          surface: "#F9FAFB", // neutral background
+          primary: "#1E40AF",
+          secondary: "#F97316",
+        },
+        semantic: {
+          success: "#10B981",
+          warning: "#F59E0B",
+          error: "#EF4444",
+        },
+        neutral: {
+          textPrimary: "#1F2937",
+          textSecondary: "#6B7280",
+          background: "#FFFFFF",
+          surface: "#F9FAFB",
+          border: "#E5E7EB",
         },
       },
     },

@@ -35,9 +35,9 @@ export const Card = forwardRef<ElementRef<"div">, CardProps>((props, ref) => {
     <div
       ref={ref}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white/95 shadow-sm backdrop-blur transition-all duration-300 ease-out",
+        "group relative flex flex-col overflow-hidden rounded-3xl border border-neutral-border bg-neutral-surface shadow-sm backdrop-blur transition-all duration-300 ease-out",
         interactive &&
-          "hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100 focus-within:-translate-y-1 focus-within:shadow-xl focus-within:shadow-indigo-100",
+          "hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-primary/10 focus-within:-translate-y-1 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brand-primary/20",
         paddingClasses[padding],
         className,
       )}
@@ -80,7 +80,7 @@ export const CardHeader = forwardRef<ElementRef<"div">, CardSectionProps>(
   ({ className, ...rest }, ref) => (
     <CardSection
       ref={ref}
-      className={cn("border-b border-gray-100", className)}
+      className={cn("border-b border-neutral-border", className)}
       {...rest}
     />
   ),
@@ -100,7 +100,7 @@ export const CardFooter = forwardRef<ElementRef<"div">, CardSectionProps>(
   ({ className, ...rest }, ref) => (
     <CardSection
       ref={ref}
-      className={cn("border-t border-gray-100", className)}
+      className={cn("border-t border-neutral-border", className)}
       {...rest}
     />
   ),

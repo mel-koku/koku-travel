@@ -1,9 +1,10 @@
 "use client";
 
-import { loadWishlist, WISHLIST_KEY } from "@/lib/wishlistStorage";
-import { createClient } from "@/lib/supabase/client";
 import { type Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
+import { createClient } from "@/lib/supabase/client";
+import { loadWishlist, WISHLIST_KEY } from "@/lib/wishlistStorage";
+import type { Session, User } from "@supabase/supabase-js";
 import React, {
   createContext,
   useCallback,
@@ -134,6 +135,36 @@ const sanitizeTrips = (raw: unknown): StoredTrip[] => {
     .filter((entry): entry is StoredTrip => Boolean(entry));
 };
 
+const SUPPORTED_LOCALES = new Set<UserProfile["locale"]>(["en", "jp"]);
+
+const sanitizeLocale = (value: unknown): UserProfile["locale"] => {
+  if (typeof value === "string" && SUPPORTED_LOCALES.has(value as UserProfile["locale"])) {
+    return value as UserProfile["locale"];
+  }
+  return "en";
+};
+
+const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): UserProfile => {
+  if (!user) {
+    return { id: newId(), displayName: "Guest", locale: "en" };
+  }
+
+  const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const metadataName = typeof metadata.full_name === "string" ? metadata.full_name.trim() : "";
+  const metadataLocale = typeof metadata.locale === "string" ? metadata.locale : undefined;
+
+  const fallbackName =
+    previous?.displayName ??
+    (user.email ? user.email.split("@")[0] ?? "Guest" : "Guest");
+
+  return {
+    id: user.id,
+    displayName: metadataName.length > 0 ? metadataName : fallbackName,
+    email: user.email ?? previous?.email,
+    locale: sanitizeLocale(metadataLocale ?? previous?.locale),
+  };
+};
+
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const supabase = useMemo(() => createClient(), []);
   const [state, setState] = useState<InternalState>({
@@ -185,43 +216,75 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const refreshFromSupabase = useCallback(async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      setState((current) => ({
-        ...current,
-        user: { id: newId(), displayName: "Guest", locale: "en" },
-        favorites: [],
-        guideBookmarks: [],
-      }));
+    if (!supabase) {
       return;
     }
 
-    const [{ data: favorites }, { data: guideBookmarks }] = await Promise.all([
-      supabase.from("favorites").select("place_id").eq("user_id", user.id),
-      supabase.from("guide_bookmarks").select("guide_id").eq("user_id", user.id),
-    ]);
+    try {
+      const {
+        data: { user },
+        error: authError,
+      } = await supabase.auth.getUser();
 
-    setState((s) => ({
-      ...s,
-      favorites: (favorites ?? []).map((row: any) => row.place_id),
-      guideBookmarks: (guideBookmarks ?? []).map((row: any) => row.guide_id),
-    }));
+      if (authError) {
+        console.warn("[AppState] Failed to read auth session.", authError);
+      }
+
+      if (!user) {
+        setState((current) => ({
+          ...current,
+          user: {
+            id: current.user.id || newId(),
+            displayName: current.user.displayName || "Guest",
+            locale: sanitizeLocale(current.user.locale),
+          },
+        }));
+        return;
+      }
+
+      const [favoritesResponse, bookmarksResponse] = await Promise.all([
+        supabase.from("favorites").select("place_id").eq("user_id", user.id),
+        supabase.from("guide_bookmarks").select("guide_id").eq("user_id", user.id),
+      ]);
+
+      if (favoritesResponse.error) {
+        console.warn("[AppState] Failed to load favorites.", favoritesResponse.error);
+      }
+      if (bookmarksResponse.error) {
+        console.warn("[AppState] Failed to load guide bookmarks.", bookmarksResponse.error);
+      }
+
+      const favoriteRows = (favoritesResponse.data ?? []) as Array<{ place_id: string }>;
+      const bookmarkRows = (bookmarksResponse.data ?? []) as Array<{ guide_id: string }>;
+
+      setState((s) => ({
+        ...s,
+        user: buildProfileFromSupabase(user, s.user),
+        favorites: favoriteRows.map((row) => row.place_id),
+        guideBookmarks: bookmarkRows.map((row) => row.guide_id),
+      }));
+    } catch (error) {
+      console.error("[AppState] refreshFromSupabase failed.", error);
+    }
   }, [supabase]);
 
   useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+
     refreshFromSupabase();
     const {
       data: authListener,
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event: string | null, session: Session | null) => {
       if (!session?.user) {
         setState((current) => ({
           ...current,
-          user: { id: newId(), displayName: "Guest", locale: "en" },
-          favorites: [],
-          guideBookmarks: [],
+          user: {
+            id: current.user.id || newId(),
+            displayName: current.user.displayName || "Guest",
+            locale: sanitizeLocale(current.user.locale),
+          },
         }));
         return;
       }
@@ -361,49 +424,152 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const toggleFavorite = useCallback((id: string) => {
-    setState((s) => {
-      const set = new Set(s.favorites);
-      const exists = set.has(id);
-      exists ? set.delete(id) : set.add(id);
-
-      const supabase = createClient();
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        if (!user) return;
-        if (exists) {
-          supabase.from("favorites").delete().eq("user_id", user.id).eq("place_id", id);
+  const toggleFavorite = useCallback(
+    (id: string) => {
+      let existed = false;
+      setState((s) => {
+        const set = new Set(s.favorites);
+        existed = set.has(id);
+        if (existed) {
+          set.delete(id);
         } else {
-          supabase.from("favorites").upsert({ user_id: user.id, place_id: id });
+          set.add(id);
         }
+        return { ...s, favorites: Array.from(set) };
       });
 
-      return { ...s, favorites: Array.from(set) };
-    });
-  }, []);
+      if (!supabase) {
+        return;
+      }
 
-  const toggleGuideBookmark = useCallback((id: string) => {
-    setState((s) => {
-      const set = new Set(s.guideBookmarks);
-      const exists = set.has(id);
-      exists ? set.delete(id) : set.add(id);
+      void (async (favoriteId: string, existedBeforeToggle: boolean) => {
+        try {
+          const {
+            data: { user },
+            error: authError,
+          } = await supabase.auth.getUser();
 
-      const supabase = createClient();
-      supabase.auth.getUser().then(({ data: { user } }) => {
-        if (!user) return;
-        if (exists) {
-          supabase
-            .from("guide_bookmarks")
-            .delete()
-            .eq("user_id", user.id)
-            .eq("guide_id", id);
-        } else {
-          supabase.from("guide_bookmarks").upsert({ user_id: user.id, guide_id: id });
+          if (authError) {
+            console.error("[AppState] Failed to read auth session when syncing favorite.", authError);
+            return;
+          }
+
+          if (!user) {
+            // No authenticated user – keep local state but skip remote sync.
+            return;
+          }
+
+          if (existedBeforeToggle) {
+            const { error } = await supabase
+              .from("favorites")
+              .delete()
+              .eq("user_id", user.id)
+              .eq("place_id", favoriteId);
+
+            if (error) {
+              throw error;
+            }
+          } else {
+            const { error } = await supabase
+              .from("favorites")
+              .upsert({ user_id: user.id, place_id: favoriteId }, { onConflict: "user_id,place_id" });
+
+            if (error) {
+              throw error;
+            }
+          }
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : JSON.stringify(error ?? {});
+          console.error("Failed to sync favorite.", message);
+          // Keep optimistic local state so the UI stays responsive even if remote sync fails.
         }
+      })(id, existed);
+    },
+    [supabase],
+  );
+
+  const toggleGuideBookmark = useCallback(
+    (id: string) => {
+      let existed = false;
+      setState((s) => {
+        const set = new Set(s.guideBookmarks);
+        existed = set.has(id);
+        if (existed) {
+          set.delete(id);
+        } else {
+          set.add(id);
+        }
+        return { ...s, guideBookmarks: Array.from(set) };
       });
 
-      return { ...s, guideBookmarks: Array.from(set) };
-    });
-  }, []);
+      if (!supabase) {
+        return;
+      }
+
+      void (async (guideId: string, existedBeforeToggle: boolean) => {
+        try {
+          const {
+            data: { user },
+            error: authError,
+          } = await supabase.auth.getUser();
+
+          if (authError) {
+            console.error("[AppState] Failed to read auth session when syncing guide bookmark.", authError);
+            return;
+          }
+
+          if (!user) {
+            return;
+          }
+
+          if (existedBeforeToggle) {
+            const { error } = await supabase
+              .from("guide_bookmarks")
+              .delete()
+              .eq("user_id", user.id)
+              .eq("guide_id", guideId);
+
+            if (error) {
+              throw error;
+            }
+          } else {
+            const { error } = await supabase
+              .from("guide_bookmarks")
+              .upsert({ user_id: user.id, guide_id: guideId }, { onConflict: "user_id,guide_id" });
+
+            if (error) {
+              throw error;
+            }
+          }
+        } catch (error) {
+          const message =
+            error instanceof Error
+              ? error.message
+              : typeof error === "object" && error && "message" in error
+                ? String((error as { message?: unknown }).message)
+                : "";
+
+          if (typeof message === "string" && message.includes("Auth session missing")) {
+            // No authenticated Supabase session – keep optimistic local state without logging noise.
+            return;
+          }
+
+          console.error("Failed to sync guide bookmark.", message || error);
+          setState((s) => {
+            const set = new Set(s.guideBookmarks);
+            if (existedBeforeToggle) {
+              set.add(guideId);
+            } else {
+              set.delete(guideId);
+            }
+            return { ...s, guideBookmarks: Array.from(set) };
+          });
+        }
+      })(id, existed);
+    },
+    [supabase],
+  );
 
   const clearAllLocalData = useCallback(() => {
     if (typeof window !== "undefined" && !window.confirm("Clear all local Koku data on this device?")) {

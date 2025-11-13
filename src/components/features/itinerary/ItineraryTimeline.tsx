@@ -36,6 +36,8 @@ type ItineraryTimelineProps = {
   dayIndex: number;
   model: Itinerary;
   setModel: Dispatch<SetStateAction<Itinerary>>;
+  selectedActivityId?: string | null;
+  onSelectActivity?: (activityId: string) => void;
 };
 
 const SECTION_LABELS: Record<
@@ -76,10 +78,14 @@ const SortableActivity = ({
   activity,
   onDelete,
   onUpdate,
+  isSelected,
+  onSelect,
 }: {
   activity: ItineraryActivity;
   onDelete: () => void;
   onUpdate: (patch: Partial<ItineraryActivity>) => void;
+  isSelected?: boolean;
+  onSelect?: (activityId: string) => void;
 }) => {
   const {
     attributes,
@@ -101,6 +107,9 @@ const SortableActivity = ({
       isDragging={isDragging}
       transform={transform}
       transition={transition}
+      isSelected={isSelected}
+      onSelect={onSelect}
+      onHover={onSelect}
     />
   );
 };
@@ -134,6 +143,8 @@ export const ItineraryTimeline = ({
   dayIndex,
   model: _model,
   setModel,
+  selectedActivityId,
+  onSelectActivity,
 }: ItineraryTimelineProps) => {
   void _model;
   const sensors = useSensors(
@@ -159,23 +170,6 @@ export const ItineraryTimeline = ({
       notes: "",
       startTime: undefined,
       endTime: undefined,
-    }),
-    [],
-  );
-
-  const createTimeBlockActivity = useCallback(
-    (timeOfDay: TimeOfDay): ItineraryActivity => ({
-      kind: "place",
-      id:
-        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-          ? crypto.randomUUID()
-          : `block-${Date.now()}-${Math.random()}`,
-      title: "New time block",
-      timeOfDay,
-      durationMin: undefined,
-      neighborhood: undefined,
-      tags: [],
-      notes: undefined,
     }),
     [],
   );
@@ -363,26 +357,6 @@ export const ItineraryTimeline = ({
     [createNoteActivity, dayIndex, setModel],
   );
 
-  const handleAddTimeBlock = useCallback(
-    (timeOfDay: TimeOfDay) => {
-      setModel((current) => {
-        const nextDays = current.days.map((entry, index) => {
-          if (index !== dayIndex) return entry;
-
-          const nextActivities = [
-            ...(entry.activities ?? []),
-            createTimeBlockActivity(timeOfDay),
-          ];
-
-          return { ...entry, activities: nextActivities };
-        });
-
-        return { ...current, days: nextDays };
-      });
-    },
-    [createTimeBlockActivity, dayIndex, setModel],
-  );
-
   return (
     <DndContext
       sensors={sensors}
@@ -397,8 +371,6 @@ export const ItineraryTimeline = ({
           const headingId = `${sectionKey}-activities`;
           const hasActivities = activities.length > 0;
           const addNoteLabel = `Add note to ${meta.title}`;
-          const addTimeBlockLabel = `Add time block to ${meta.title}`;
-
           return (
             <section
               key={sectionKey}
@@ -425,14 +397,6 @@ export const ItineraryTimeline = ({
                     >
                       + Add note
                     </button>
-                    <button
-                      type="button"
-                      aria-label={addTimeBlockLabel}
-                      onClick={() => handleAddTimeBlock(sectionKey)}
-                      className="text-indigo-600 hover:text-indigo-700 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-                    >
-                      + Add time block
-                    </button>
                   </div>
                 ) : null}
               </header>
@@ -447,6 +411,8 @@ export const ItineraryTimeline = ({
                       activity={activity}
                       onDelete={() => handleDelete(activity.id)}
                       onUpdate={(patch) => handleUpdate(activity.id, patch)}
+                      isSelected={activity.id === selectedActivityId}
+                      onSelect={onSelectActivity}
                     />
                   ))}
                 </DroppableSection>
@@ -468,14 +434,6 @@ export const ItineraryTimeline = ({
                           className="text-indigo-600 hover:text-indigo-700 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
                         >
                           + Add note
-                        </button>
-                        <button
-                          type="button"
-                          aria-label={addTimeBlockLabel}
-                          onClick={() => handleAddTimeBlock(sectionKey)}
-                          className="text-indigo-600 hover:text-indigo-700 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-                        >
-                          + Add time block
                         </button>
                       </div>
                     </div>

@@ -9,11 +9,20 @@ type CookieStoreLike = {
 };
 
 export async function createClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !anonKey) {
+    throw new Error(
+      "[supabase] Server client requested without NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY configured.",
+    );
+  }
+
   const cookieStore = (await cookies()) as unknown as CookieStoreLike;
 
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    anonKey,
     {
       cookies: {
         get(name: string) {

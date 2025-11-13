@@ -149,61 +149,64 @@ export function Modal(props: ModalProps) {
   };
 
   return createPortal(
-    <div
-      ref={backdropRef}
-      className={cn(
-        "fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm",
-        className,
-      )}
-      role="presentation"
-      onMouseDown={handleBackdropClick}
-    >
+    <div className="fixed inset-0 z-1200 overflow-y-auto">
       <div
-        ref={panelRef}
+        ref={backdropRef}
         className={cn(
-          "relative w-full max-w-lg rounded-2xl bg-white p-8 shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
-          "transform transition-transform duration-200 ease-out",
-          panelClassName,
+          "flex min-h-full items-start justify-center bg-black/50 backdrop-blur-sm px-4 py-8 sm:py-12",
+          className,
         )}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? titleId : undefined}
-        aria-describedby={description ? descriptionId : undefined}
-        tabIndex={-1}
+        role="presentation"
+        onMouseDown={handleBackdropClick}
       >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-full p-2 text-gray-500 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-          aria-label="Close dialog"
+        <div
+          ref={panelRef}
+          className={cn(
+            "relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+            "max-h-[calc(100vh-6rem)] overflow-y-auto sm:p-8",
+            "transform transition-transform duration-200 ease-out",
+            panelClassName,
+          )}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={title ? titleId : undefined}
+          aria-describedby={description ? descriptionId : undefined}
+          tabIndex={-1}
         >
-          <svg
-            className="h-5 w-5"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            aria-hidden="true"
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-4 top-4 rounded-full p-2 text-gray-500 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+            aria-label="Close dialog"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18 18 6" />
-          </svg>
-        </button>
+            <svg
+              className="h-5 w-5"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18 18 6" />
+            </svg>
+          </button>
 
-        {title ? (
-          <div className="flex flex-col gap-2">
-            <h2 id={titleId} className="text-2xl font-semibold text-gray-900">
-              {title}
-            </h2>
-            {description ? (
-              <p id={descriptionId} className="text-sm text-gray-600">
-                {description}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
+          {title ? (
+            <div className="flex flex-col gap-2">
+              <h2 id={titleId} className="text-2xl font-semibold text-gray-900">
+                {title}
+              </h2>
+              {description ? (
+                <p id={descriptionId} className="text-sm text-gray-600">
+                  {description}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
 
-        <div className="mt-6">{children}</div>
+          <div className="mt-6">{children}</div>
+        </div>
       </div>
     </div>,
     document.body,

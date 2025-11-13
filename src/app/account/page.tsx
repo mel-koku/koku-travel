@@ -1,9 +1,11 @@
 "use client";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
+import type { FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
 import IdentityBadge from "@/components/ui/IdentityBadge";
 import { syncLocalToCloudOnce } from "@/lib/accountSync";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export default function AccountPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -11,18 +13,39 @@ export default function AccountPage() {
   const [sessionUserId, setSessionUserId] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
 
-  // watch auth state
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setSessionUserId(user?.id ?? null));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, sess) => {
-      setSessionUserId(sess?.user?.id ?? null);
-    });
-    return () => sub.subscription.unsubscribe();
+    if (!supabase) {
+      return;
+    }
+    let isActive = true;
+    (async () => {
+      try {
+        const { data } = await supabase.auth.getUser();
+        if (isActive) {
+          setSessionUserId(data.user?.id ?? null);
+        }
+      } catch (error) {
+        console.warn("Failed to read Supabase session.", error);
+      }
+    })();
+
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_event: AuthChangeEvent, session: Session | null) => {
+        if (isActive) {
+          setSessionUserId(session?.user?.id ?? null);
+        }
+      },
+    );
+
+    return () => {
+      isActive = false;
+      sub.subscription.unsubscribe();
+    };
   }, [supabase]);
 
   // load profile from Supabase when signed in
   useEffect(() => {
-    if (!sessionUserId) return;
+    if (!sessionUserId || !supabase) return;
     (async () => {
       try {
         const {
@@ -72,6 +95,9 @@ export default function AccountPage() {
   const saveProfile = useMemo(
     () =>
       debounce(async (name: string, loc: "en" | "jp") => {
+        if (!supabase) {
+          return;
+        }
         const {
           data: { user: authUser },
         } = await supabase.auth.getUser();
@@ -96,14 +122,26 @@ export default function AccountPage() {
   }
 
   const signedIn = Boolean(sessionUserId);
+  const supabaseUnavailable = !supabase;
 
   return (
     <main className="min-h-screen bg-gray-50 pb-24">
       <section className="max-w-3xl mx-auto px-8 pt-8">
         <div className="rounded-2xl border border-gray-200 bg-white shadow-md p-6 space-y-6">
+          {supabaseUnavailable && (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              Cloud sync is disabled because Supabase credentials are not configured. Set
+              <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
+              and
+              <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">
+                NEXT_PUBLIC_SUPABASE_ANON_KEY
+              </code>
+              to enable account features.
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-semibold text-gray-900">Account</h1>
-            {signedIn && (
+            {signedIn && supabase && (
               <button
                 onClick={() => supabase.auth.signOut()}
                 className="h-10 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-700 hover:bg-gray-50"
@@ -160,9 +198,14 @@ function EmailForm() {
   const supabase = useMemo(() => createClient(), []);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
+  const supabaseUnavailable = !supabase;
 
-  async function sendMagicLink(e: React.FormEvent) {
+  async function sendMagicLink(e: FormEvent) {
     e.preventDefault();
+     if (!supabase) {
+       setStatus("Supabase is not configured. Unable to send sign-in links.");
+       return;
+     }
     setStatus("Sending magic link…");
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -178,6 +221,7 @@ function EmailForm() {
       <input
         type="email"
         required
+        disabled={supabaseUnavailable}
         className="mt-1 w-full h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
         placeholder="name@example.com"
         value={email}
@@ -186,6 +230,7 @@ function EmailForm() {
     </label>
     <button
       type="submit"
+      disabled={supabaseUnavailable}
       className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-700"
     >
       Send sign-in link
@@ -195,10 +240,18 @@ function EmailForm() {
   );
 }
 
-function debounce<T extends (...args: any[]) => void>(fn: T, ms = 300) {
-  let t: any;
-  return (...args: Parameters<T>) => {
-    clearTimeout(t);
-    t = setTimeout(() => fn(...args), ms);
+function debounce<TArgs extends unknown[]>(
+  fn: (...args: TArgs) => void,
+  ms = 300,
+): (...args: TArgs) => void {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  return (...args: TArgs) => {
+    if (timeoutId !== null) {
+      clearTimeout(timeoutId);
+    }
+    timeoutId = setTimeout(() => {
+      timeoutId = null;
+      fn(...args);
+    }, ms);
   };
 }

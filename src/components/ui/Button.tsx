@@ -52,12 +52,13 @@ export type ButtonProps = NativeButtonProps | AnchorButtonProps;
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 focus-visible:ring-indigo-500",
+    "bg-brand-primary text-white shadow-sm hover:bg-brand-primary/90 focus-visible:ring-brand-primary",
   secondary:
-    "bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-200 focus-visible:ring-indigo-500",
+    "bg-brand-secondary text-white shadow-sm hover:bg-brand-secondary/90 focus-visible:ring-brand-secondary",
   outline:
-    "border border-gray-300 bg-white text-gray-900 hover:bg-gray-50 focus-visible:ring-indigo-500",
-  ghost: "bg-transparent text-gray-900 hover:bg-gray-50 focus-visible:ring-indigo-500",
+    "border border-neutral-border bg-neutral-surface text-neutral-textPrimary hover:bg-neutral-surface/80 focus-visible:ring-brand-primary",
+  ghost:
+    "bg-transparent text-neutral-textPrimary hover:bg-neutral-surface/70 focus-visible:ring-brand-primary",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

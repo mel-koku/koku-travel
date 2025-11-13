@@ -23,21 +23,22 @@ export default function DashboardPage() {
         return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
       });
   }, [trips]);
-  const [selectedTripId, setSelectedTripId] = useState<string | null>(
-    () => tripsWithItinerary[0]?.id ?? null,
-  );
+  const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);
   const [pendingUndo, setPendingUndo] = useState<null | { trip: StoredTrip }>(null);
-  const timeoutRef = useRef<number>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  useEffect(() => {
+  const selectedTripId = useMemo(() => {
     if (!tripsWithItinerary.length) {
-      setSelectedTripId(null);
-      return;
+      return null;
     }
-    if (!selectedTripId || !tripsWithItinerary.some((trip) => trip.id === selectedTripId)) {
-      setSelectedTripId(tripsWithItinerary[0]?.id ?? null);
+    if (
+      userSelectedTripId &&
+      tripsWithItinerary.some((trip) => trip.id === userSelectedTripId)
+    ) {
+      return userSelectedTripId;
     }
-  }, [selectedTripId, tripsWithItinerary]);
+    return tripsWithItinerary[0]?.id ?? null;
+  }, [tripsWithItinerary, userSelectedTripId]);
 
   const activeTrip =
     selectedTripId && tripsWithItinerary.length
@@ -46,8 +47,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
       }
     };
   }, []);
@@ -58,14 +59,14 @@ export default function DashboardPage() {
       if (!trip) {
         return;
       }
-      if (timeoutRef.current) {
-        window.clearTimeout(timeoutRef.current);
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
       }
       deleteTrip(tripId);
       setPendingUndo({ trip });
-      timeoutRef.current = window.setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setPendingUndo(null);
-        timeoutRef.current = undefined;
+        timeoutRef.current = null;
       }, TOAST_DURATION_MS);
     },
     [deleteTrip, trips],
@@ -77,9 +78,9 @@ export default function DashboardPage() {
     }
     restoreTrip(pendingUndo.trip);
     setPendingUndo(null);
-    if (timeoutRef.current) {
-      window.clearTimeout(timeoutRef.current);
-      timeoutRef.current = undefined;
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
   }, [pendingUndo, restoreTrip]);
 
@@ -94,8 +95,11 @@ export default function DashboardPage() {
             <div className="rounded-xl border border-gray-200 p-4">
               <p className="text-xs uppercase text-gray-500">Favorites</p>
               <p className="text-2xl font-semibold">{favorites.length}</p>
-              <Link href="/wishlist" className="mt-2 inline-block text-sm text-indigo-600">
-                View wishlist →
+              <Link
+                href={favorites.length > 0 ? "/favorites" : "/explore"}
+                className="mt-2 inline-block text-sm text-indigo-600"
+              >
+                {favorites.length > 0 ? "View favorites →" : "Explore places →"}
               </Link>
             </div>
             <div className="rounded-xl border border-gray-200 p-4">
@@ -113,14 +117,15 @@ export default function DashboardPage() {
             trip={activeTrip}
             availableTrips={tripsWithItinerary}
             selectedTripId={activeTrip.id}
-            onSelectTrip={setSelectedTripId}
+            onSelectTrip={setUserSelectedTripId}
             onDeleteTrip={handleDeleteTrip}
           />
         ) : (
           <div className="mt-6 rounded-2xl border border-dashed border-gray-300 bg-white p-8 text-center shadow-sm">
             <h2 className="text-lg font-semibold text-gray-900">No itineraries saved yet</h2>
             <p className="mt-2 text-sm text-gray-500">
-              Build a trip to see a personalized itinerary preview right on your dashboard.
+              Build a trip to generate your first itinerary. Once it’s saved, you’ll see a preview
+              here with quick access to view the full plan.
             </p>
             <Link
               href="/trip-builder"

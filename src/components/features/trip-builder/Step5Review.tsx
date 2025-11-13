@@ -218,27 +218,6 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
     [createTrip, data, isSaving, reset, router, tripName],
   );
 
-  const handleExport = useCallback(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    try {
-      const payload = JSON.stringify(data, null, 2);
-      const blob = new Blob([payload], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = "koku_trip_data.json";
-      anchor.rel = "noopener";
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      URL.revokeObjectURL(url);
-    } catch {
-      // Silently ignore export failures — no user action required.
-    }
-  }, [data]);
-
   const renderRow = useCallback((label: string, value: string) => {
     return (
       <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
@@ -254,6 +233,10 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
         <header className="space-y-3">
           <h2 className="text-3xl font-semibold text-gray-900">Review Your Trip</h2>
           <p className="text-lg text-gray-600">Make sure everything looks right before continuing.</p>
+          <p className="text-sm text-gray-500">
+            After you confirm, your dashboard will show a preview with a “View full plan” button so
+            you can jump back into the itinerary anytime.
+          </p>
         </header>
 
         <div className="flex flex-col divide-y divide-gray-100">
@@ -369,36 +352,13 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
           </section>
         </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-4 sm:flex-row">
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Button
-                type="button"
-                onClick={handleConfirmClick}
-                className="rounded-lg bg-indigo-600 px-5 py-2 text-white shadow-sm transition hover:bg-indigo-700 focus-visible:ring-indigo-500"
-              >
-                Confirm Trip
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleStartOver}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-50 focus-visible:ring-indigo-500"
-              >
-                Start Over
-              </Button>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleExport}
-              className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 transition hover:bg-gray-50 focus-visible:ring-indigo-500"
-            >
-              Export JSON
-            </Button>
-          </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <Button type="button" variant="outline" size="lg" onClick={handleStartOver}>
+            Start Over
+          </Button>
+          <Button type="button" size="lg" onClick={handleConfirmClick}>
+            Confirm Trip
+          </Button>
         </div>
       </div>
       <Modal

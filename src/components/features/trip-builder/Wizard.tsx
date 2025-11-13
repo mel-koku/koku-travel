@@ -200,7 +200,7 @@ export function Wizard({
     <Container className="py-16">
       <div className="flex flex-col gap-12 lg:flex-row">
         <aside className="lg:w-72">
-          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-24">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-[90px]">
             <div className="mb-6">
               <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
                 Trip Builder

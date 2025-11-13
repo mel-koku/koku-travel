@@ -41,7 +41,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           id={id}
           defaultValue={finalDefaultValue}
           className={cn(
-            "block w-full appearance-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+            "block w-full appearance-none rounded-xl border border-gray-300 bg-white pl-4 pr-11 py-3 text-base text-gray-900 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
             disabled && "cursor-not-allowed bg-gray-100 text-gray-500 opacity-80",
             error && "border-red-500 focus-visible:ring-red-500",
             className,
@@ -62,7 +62,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             </option>
           ))}
         </select>
-        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
           <svg
             className="h-4 w-4"
             xmlns="http://www.w3.org/2000/svg"

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { genId } from "@/lib/communityStorage";
 import type { CommunityTopic } from "@/data/mockCommunity";
@@ -30,14 +30,28 @@ export default function CreateDiscussionModal({
   const [error, setError] = useState<string | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
 
+  const resetForm = useCallback(() => {
+    setTitle("");
+    setCategory("General");
+    setAuthor(defaultAuthor);
+    setBody("");
+    setError(null);
+  }, [defaultAuthor]);
+
   useEffect(() => {
-    if (open) {
-      setTimeout(() => titleRef.current?.focus(), 50);
-      setError(null);
-    } else {
-      setTitle(""); setCategory("General"); setAuthor(defaultAuthor); setBody("");
+    if (!open) {
+      return;
     }
-  }, [open, defaultAuthor]);
+    const frame = window.requestAnimationFrame(() => {
+      titleRef.current?.focus();
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [open]);
+
+  const handleClose = useCallback(() => {
+    resetForm();
+    onClose();
+  }, [onClose, resetForm]);
 
   if (!open) return null;
 
@@ -66,19 +80,19 @@ export default function CreateDiscussionModal({
       createdAt: new Date().toISOString(),
     };
     onCreated(topic);
-    onClose();
+    handleClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/40" onClick={handleClose} aria-hidden="true" />
       <div className="relative z-10 w-full max-w-xl rounded-2xl border border-gray-200 bg-white shadow-xl">
         <form className="p-6 space-y-4" onSubmit={handleSubmit}>
           <header className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">Start a Discussion</h2>
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="text-gray-500 hover:text-gray-700"
               aria-label="Close"
             >
@@ -108,7 +122,7 @@ export default function CreateDiscussionModal({
               Category
               <select
                 value={category}
-                onChange={(e) => setCategory(e.target.value as any)}
+                onChange={(e) => setCategory(e.target.value as CommunityTopic["category"])}
                 className="mt-1 w-full h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
                 {CATEGORIES.map((c) => (
@@ -142,7 +156,7 @@ export default function CreateDiscussionModal({
           <div className="flex items-center justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="h-10 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-700 hover:bg-gray-50"
             >
               Cancel

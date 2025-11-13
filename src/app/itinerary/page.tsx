@@ -28,45 +28,40 @@ export default function ItineraryPage() {
   const searchParamsString = searchParams.toString();
   const requestedTripId = searchParams.get("trip");
   const { trips, updateTripItinerary } = useAppState();
-  const [selectedTripId, setSelectedTripId] = useState<string | null>(null);
-  const [isReady, setIsReady] = useState(false);
-  const [isUsingMock, setIsUsingMock] = useState(false);
+  const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    if (trips.length > 0) {
-      const hasRequested = requestedTripId && trips.some((trip) => trip.id === requestedTripId);
-      const nextId = hasRequested ? (requestedTripId as string) : trips[0].id;
-      if (selectedTripId !== nextId) {
-        setSelectedTripId(nextId);
-      }
-      setIsUsingMock(false);
-      return;
-    }
-
-    setSelectedTripId(null);
-    const shouldUseMock = process.env.NEXT_PUBLIC_USE_MOCK_ITINERARY === "true";
-    setIsUsingMock(shouldUseMock);
-  }, [isReady, requestedTripId, selectedTripId, trips]);
-
-  useEffect(() => {
-    if (isReady && headingRef.current) {
+    if (headingRef.current) {
       headingRef.current.focus();
     }
-  }, [isReady]);
+  }, []);
+
+  const selectedTripId = useMemo(() => {
+    if (!trips.length) {
+      return null;
+    }
+    if (
+      userSelectedTripId &&
+      trips.some((trip) => trip.id === userSelectedTripId)
+    ) {
+      return userSelectedTripId;
+    }
+    if (
+      requestedTripId &&
+      trips.some((trip) => trip.id === requestedTripId)
+    ) {
+      return requestedTripId;
+    }
+    return trips[0]?.id ?? null;
+  }, [requestedTripId, trips, userSelectedTripId]);
+
+  const isUsingMock =
+    trips.length === 0 && process.env.NEXT_PUBLIC_USE_MOCK_ITINERARY === "true";
 
   const handleTripChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {
       const nextId = event.target.value || null;
-      setSelectedTripId(nextId);
-      setIsUsingMock(false);
+      setUserSelectedTripId(nextId);
 
       const params = new URLSearchParams(searchParamsString);
       if (nextId) {
@@ -117,10 +112,6 @@ export default function ItineraryPage() {
     selectedTrip?.updatedAt && selectedTrip.updatedAt !== selectedTrip?.createdAt
       ? formatDateLabel(selectedTrip.updatedAt)
       : null;
-
-  if (!isReady) {
-    return null;
-  }
 
   if (!activeItinerary) {
     return (
