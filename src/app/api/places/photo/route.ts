@@ -1,25 +1,30 @@
 import { NextResponse } from "next/server";
 
 import { fetchPhotoStream } from "@/lib/googlePlaces";
+import { isValidPhotoName, parsePositiveInt } from "@/lib/api/validation";
+import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
+
+const MAX_DIMENSION = 4000; // Reasonable maximum for image dimensions
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const photoNameParam = searchParams.get("photoName");
 
   if (!photoNameParam) {
-    return NextResponse.json(
-      { error: "Missing required query parameter 'photoName'." },
-      { status: 400 },
-    );
+    return badRequest("Missing required query parameter 'photoName'.");
   }
 
-  const maxWidthPx = searchParams.get("maxWidthPx");
-  const maxHeightPx = searchParams.get("maxHeightPx");
+  if (!isValidPhotoName(photoNameParam)) {
+    return badRequest("Invalid photoName parameter format.");
+  }
+
+  const maxWidthPx = parsePositiveInt(searchParams.get("maxWidthPx"), MAX_DIMENSION);
+  const maxHeightPx = parsePositiveInt(searchParams.get("maxHeightPx"), MAX_DIMENSION);
 
   try {
     const response = await fetchPhotoStream(photoNameParam, {
-      maxWidthPx: maxWidthPx ? Number.parseInt(maxWidthPx, 10) : undefined,
-      maxHeightPx: maxHeightPx ? Number.parseInt(maxHeightPx, 10) : undefined,
+      maxWidthPx: maxWidthPx ?? undefined,
+      maxHeightPx: maxHeightPx ?? undefined,
     });
 
     const headers = new Headers(response.headers);
@@ -31,14 +36,13 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to load place photo.";
-    console.error(`Unable to proxy Google Places photo "${photoNameParam}"`, error);
+    const errorMessage = error instanceof Error ? error.message : "";
 
-    return NextResponse.json(
-      {
-        error: message,
-      },
-      { status: 500 },
-    );
+    if (errorMessage.includes("Missing Google Places API key")) {
+      return serviceUnavailable("Google Places API is not configured.");
+    }
+
+    return internalError(message, { photoName: photoNameParam });
   }
 }
 

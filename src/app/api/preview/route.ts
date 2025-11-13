@@ -1,5 +1,6 @@
 import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { internalError, unauthorized, badRequest } from "@/lib/api/errors";
 
 const PREVIEW_SECRET = process.env.SANITY_PREVIEW_SECRET;
 
@@ -10,10 +11,7 @@ function resolveRedirectUrl(request: NextRequest, slug: string) {
 
 export async function GET(request: NextRequest) {
   if (!PREVIEW_SECRET) {
-    return NextResponse.json(
-      { message: "Preview secret is not configured on the server." },
-      { status: 500 },
-    );
+    return internalError("Preview secret is not configured on the server.");
   }
 
   const { searchParams } = new URL(request.url);
@@ -21,11 +19,11 @@ export async function GET(request: NextRequest) {
   const slug = searchParams.get("slug");
 
   if (!secret || secret !== PREVIEW_SECRET) {
-    return NextResponse.json({ message: "Invalid preview secret." }, { status: 401 });
+    return unauthorized("Invalid preview secret.");
   }
 
   if (!slug) {
-    return NextResponse.json({ message: "Missing slug parameter." }, { status: 400 });
+    return badRequest("Missing slug parameter.");
   }
 
   draftMode().enable();

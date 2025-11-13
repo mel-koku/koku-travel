@@ -2,6 +2,7 @@ import { isValidSignature } from "@sanity/webhook";
 import { revalidatePath, revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import { serviceUnavailable, unauthorized, badRequest } from "@/lib/api/errors";
 
 const SIGNATURE_HEADER = "x-sanity-signature";
 const SECRET = process.env.SANITY_REVALIDATE_SECRET || process.env.SANITY_PREVIEW_SECRET;
@@ -43,27 +44,23 @@ function normalizePaths(payload: SanityWebhookPayload): string[] {
 
 export async function POST(request: NextRequest) {
   if (!SECRET) {
-    return NextResponse.json(
-      { message: "Revalidation secret is not configured on the server." },
-      { status: 501 },
-    );
+    return serviceUnavailable("Revalidation secret is not configured on the server.");
   }
 
   const signature = request.headers.get(SIGNATURE_HEADER) ?? "";
   const rawBody = await request.text();
 
   if (!signature || !isValidSignature(rawBody, signature, SECRET)) {
-    return NextResponse.json({ message: "Invalid signature." }, { status: 401 });
+    return unauthorized("Invalid signature.");
   }
 
   let payload: SanityWebhookPayload;
   try {
     payload = JSON.parse(rawBody);
   } catch (error) {
-    return NextResponse.json(
-      { message: "Failed to parse webhook payload.", error: (error as Error).message },
-      { status: 400 },
-    );
+    return badRequest("Failed to parse webhook payload.", {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 
   const paths = normalizePaths(payload);

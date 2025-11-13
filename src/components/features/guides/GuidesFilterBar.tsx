@@ -1,18 +1,54 @@
 "use client";
 
+import { useMemo } from "react";
+import { Dropdown } from "@/components/ui/Dropdown";
+import { REGIONS } from "@/data/regions";
+
 const CATS = ["culture", "food", "nature", "nightlife"] as const;
+
+const LOCATIONS = REGIONS.flatMap((region) =>
+  region.cities.map((city) => ({
+    id: city.id,
+    label: city.name,
+  })),
+);
 
 export default function GuidesFilterBar({
   query,
   setQuery,
   category,
   setCategory,
+  location,
+  setLocation,
 }: {
   query: string;
   setQuery: (v: string) => void;
   category: string;
   setCategory: (v: string) => void;
+  location: string;
+  setLocation: (v: string) => void;
 }) {
+  const locationLabel = useMemo(() => {
+    if (!location) return "All Locations";
+    const loc = LOCATIONS.find((l) => l.id === location);
+    return loc?.label || "All Locations";
+  }, [location]);
+
+  const locationItems = useMemo(
+    () => [
+      {
+        id: "",
+        label: "All Locations",
+        onSelect: () => setLocation(""),
+      },
+      ...LOCATIONS.map((loc) => ({
+        id: loc.id,
+        label: loc.label,
+        onSelect: () => setLocation(loc.id),
+      })),
+    ],
+    [setLocation],
+  );
   return (
     <aside className="sticky [top:var(--sticky-offset)] z-40 px-4 mt-2">
       <div
@@ -38,6 +74,16 @@ export default function GuidesFilterBar({
               bg-gray-50 text-gray-900 placeholder-gray-400
               pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500
             "
+          />
+        </div>
+
+        {/* location dropdown */}
+        <div className="hidden md:block">
+          <Dropdown
+            label={locationLabel}
+            items={locationItems}
+            align="end"
+            className="flex-shrink-0"
           />
         </div>
 
@@ -84,15 +130,22 @@ export default function GuidesFilterBar({
         </button>
       </div>
 
-      {/* chips (mobile) */}
+      {/* filters (mobile) */}
       <div className="mt-2 flex md:hidden gap-2 overflow-x-auto px-2">
+        <div className="flex-shrink-0">
+          <Dropdown
+            label={locationLabel}
+            items={locationItems}
+            align="start"
+          />
+        </div>
         {CATS.map((cat) => (
           <button
             key={cat}
             onClick={() => setCategory(category === cat ? "" : cat)}
             aria-pressed={category === cat}
             className={`
-              px-4 py-2 rounded-full text-sm font-medium transition
+              flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition
               ${
                 category === cat
                   ? "bg-indigo-600 text-white"

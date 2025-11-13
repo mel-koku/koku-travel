@@ -4,60 +4,27 @@ import { sanityClient, getPreviewClient } from "./client";
 import { ALL_GUIDES_QUERY, GUIDE_BY_SLUG_QUERY } from "./queries";
 import type { Guide } from "@/types/guide";
 
-const FALLBACK_GUIDES: Guide[] = [
-  {
-    id: "kyoto-culture",
-    slug: "kyoto-culture",
-    name: "Mika Tanaka",
-    title: "A Day in Kyoto’s Temples",
-    category: "culture",
-    categories: ["culture"],
-    summary: "Discover Kyoto’s timeless shrines, tranquil gardens, and street eats.",
-    image: "https://images.pexels.com/photos/2342479/pexels-photo-2342479.jpeg",
-    languages: ["English", "Japanese"],
-    featured: true,
-    experience: "Tea ceremony host and licensed Kyoto guide with a focus on temples and heritage craft.",
-    lastUpdated: null,
-  },
-  {
-    id: "tokyo-nightlife",
-    slug: "tokyo-nightlife",
-    name: "Kenji Sato",
-    title: "Tokyo After Dark",
-    category: "nightlife",
-    categories: ["nightlife"],
-    summary: "Explore bars, izakayas, and skyline views in Japan’s sleepless city.",
-    image: "https://cdn.pixabay.com/photo/2021/12/17/10/09/night-6876155_1280.jpg",
-    languages: ["English", "Japanese"],
-    featured: false,
-    experience: "Former bartender curating small-group nightlife crawls across Shibuya and Shinjuku.",
-    lastUpdated: null,
-  },
-  {
-    id: "hokkaido-food",
-    slug: "hokkaido-food",
-    name: "Aya Nakamura",
-    title: "Hokkaido for Food Lovers",
-    category: "food",
-    categories: ["food"],
-    summary: "From soup curry to fresh uni — a culinary trail through the north.",
-    image: "https://cdn.pixabay.com/photo/2020/04/12/13/03/ramen-5034166_1280.jpg",
-    languages: ["English", "Japanese", "Mandarin"],
-    featured: false,
-    experience: "Food writer and ramen tour host covering Sapporo’s seasonal specialties.",
-    lastUpdated: null,
-  },
-];
+type SanityAuthor = {
+  _id: string;
+  name?: string;
+  slug?: string;
+  bio?: string;
+  expertise?: string[];
+  languages?: string[];
+  avatar?: string;
+  coverImage?: string;
+  location?: string;
+  yearsExperience?: number;
+};
 
 type SanityGuide = {
   _id: string;
-  name?: string;
+  title?: string;
   headline?: string;
   summary?: string;
   categories?: string[];
-  languages?: string[];
+  location?: string;
   featured?: boolean;
-  experience?: string;
   slug?: string;
   image?: string;
   imageMeta?: {
@@ -68,15 +35,17 @@ type SanityGuide = {
   };
   publishedAt?: string;
   _updatedAt?: string;
+  author?: SanityAuthor | null;
 };
 
 function mapGuide(doc: SanityGuide): Guide | null {
   const slug = doc.slug?.trim();
-  const title = doc.headline?.trim() || doc.name?.trim();
+  const title = doc.title?.trim() || doc.headline?.trim();
   const summary = doc.summary?.trim() ?? "";
   const image = doc.image ?? "";
+  const authorName = doc.author?.name?.trim();
 
-  if (!slug || !title || !image) {
+  if (!slug || !title || !image || !authorName) {
     return null;
   }
 
@@ -88,14 +57,15 @@ function mapGuide(doc: SanityGuide): Guide | null {
     id: slug,
     slug,
     title,
-    name: doc.name?.trim() ?? title,
+    name: authorName,
     summary,
     image,
     category: categories[0] ?? "general",
     categories,
-    languages: Array.isArray(doc.languages) ? doc.languages : [],
+    location: doc.location?.trim() ?? "tokyo",
+    languages: Array.isArray(doc.author?.languages) ? doc.author.languages : [],
     featured: Boolean(doc.featured),
-    experience: doc.experience?.trim(),
+    experience: doc.author?.bio?.trim(),
     lastUpdated: doc.publishedAt ?? doc._updatedAt ?? null,
   };
 }
@@ -126,32 +96,60 @@ const fetchPublishedGuides = unstable_cache(
 );
 
 export async function fetchGuides(options?: FetchGuidesOptions): Promise<Guide[]> {
+  let sanityGuides: Guide[] = [];
+
   if (options?.preview) {
     const client = selectClient(options);
-    const results = await client.fetch<SanityGuide[]>(ALL_GUIDES_QUERY);
-    return mapGuides(results);
-  }
-
-  try {
-    const cached = await fetchPublishedGuides();
-    if (cached.length > 0) {
-      return cached;
+    try {
+      const results = await client.fetch<SanityGuide[]>(ALL_GUIDES_QUERY);
+      sanityGuides = mapGuides(results);
+      console.log(`[guides] Fetched ${sanityGuides.length} preview guide(s) from Sanity`);
+    } catch (error) {
+      console.error("[guides] Failed to fetch preview guides:", error);
     }
-  } catch (error) {
-    console.error("[guides] Failed to read cached guides:", error);
-  }
+  } else {
+    // In development, always fetch fresh data to avoid stale cache issues
+    if (process.env.NODE_ENV === "development") {
+      try {
+        const fresh = await sanityClient.fetch<SanityGuide[]>(ALL_GUIDES_QUERY);
+        const mapped = mapGuides(fresh);
+        console.log(`[guides] [DEV] Fetched ${fresh.length} raw guide(s), ${mapped.length} valid guide(s) from Sanity`);
+        sanityGuides = mapped;
+      } catch (error) {
+        console.error("[guides] Failed to fetch guides from Sanity:", error);
+      }
+    } else {
+      // In production, try cache first, then fallback to fresh fetch
+      try {
+        const cached = await fetchPublishedGuides();
+        if (cached.length > 0) {
+          sanityGuides = cached;
+          console.log(`[guides] Using ${sanityGuides.length} cached guide(s)`);
+        } else {
+          console.log("[guides] Cache is empty, fetching fresh data...");
+        }
+      } catch (error) {
+        console.error("[guides] Failed to read cached guides:", error);
+      }
 
-  try {
-    const fresh = await sanityClient.fetch<SanityGuide[]>(ALL_GUIDES_QUERY);
-    const mapped = mapGuides(fresh);
-    if (mapped.length > 0) {
-      return mapped;
+      // Fetch fresh data if cache is empty
+      if (sanityGuides.length === 0) {
+        try {
+          const fresh = await sanityClient.fetch<SanityGuide[]>(ALL_GUIDES_QUERY);
+          const mapped = mapGuides(fresh);
+          console.log(`[guides] Fetched ${fresh.length} raw guide(s), ${mapped.length} valid guide(s) from Sanity`);
+          if (mapped.length > 0) {
+            sanityGuides = mapped;
+          }
+        } catch (error) {
+          console.error("[guides] Failed to fetch guides from Sanity:", error);
+        }
+      }
     }
-  } catch (error) {
-    console.error("[guides] Failed to fetch guides from Sanity:", error);
   }
 
-  return FALLBACK_GUIDES;
+  console.log(`[guides] Returning ${sanityGuides.length} guide(s) total`);
+  return sanityGuides;
 }
 
 export async function fetchGuideBySlug(
@@ -192,19 +190,13 @@ export async function fetchGuideBySlug(
       slug: normalizedSlug,
     });
     if (!doc) {
-      return (
-        FALLBACK_GUIDES.find((fallbackGuide) => fallbackGuide.slug === normalizedSlug) ?? null
-      );
+      return null;
     }
 
-    const mapped = mapGuide(doc);
-    if (mapped) {
-      return mapped;
-    }
+    return mapGuide(doc);
   } catch (error) {
     console.error("[guides] Failed to fetch guide from Sanity:", error);
+    return null;
   }
-
-  return FALLBACK_GUIDES.find((fallbackGuide) => fallbackGuide.slug === normalizedSlug) ?? null;
 }
 
