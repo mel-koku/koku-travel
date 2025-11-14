@@ -16,9 +16,23 @@ type RouteContext = {
   }>;
 };
 
+/**
+ * GET /api/locations/[id]/primary-photo
+ * Fetches the primary photo reference for a location from Google Places API.
+ *
+ * @param request - Next.js request object
+ * @param context - Route context containing the location ID parameter
+ * @param context.params.id - Location ID (must be a valid identifier)
+ * @returns Photo reference object with placeId and photo data, or error response
+ * @throws Returns 400 if location ID format is invalid
+ * @throws Returns 404 if location is not found
+ * @throws Returns 429 if rate limit exceeded (100 requests/minute)
+ * @throws Returns 503 if Google Places API is not configured
+ * @throws Returns 500 for other errors
+ */
 export async function GET(request: NextRequest, context: RouteContext) {
   // Rate limiting: 100 requests per minute per IP
-  const rateLimitResponse = checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
