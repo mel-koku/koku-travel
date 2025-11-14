@@ -77,20 +77,24 @@ describe("planItinerary", () => {
     const [firstActivity, secondActivity] = plannedDay.activities;
 
     expect(firstActivity.kind).toBe("place");
-    expect(firstActivity.schedule?.arrivalTime).toBe("08:00");
-    expect(firstActivity.schedule?.departureTime).toBe("10:00");
-    expect(firstActivity.schedule?.operatingWindow?.status).toBe("within");
+    if (firstActivity.kind === "place") {
+      expect(firstActivity.schedule?.arrivalTime).toBe("08:00");
+      expect(firstActivity.schedule?.departureTime).toBe("10:00");
+      expect(firstActivity.schedule?.operatingWindow?.status).toBe("within");
+    }
 
     expect(secondActivity.kind).toBe("place");
-    expect(secondActivity.travelFromPrevious?.mode).toBe("train");
-    expect(secondActivity.travelFromPrevious?.departureTime).toBe("10:10");
-    expect(secondActivity.travelFromPrevious?.arrivalTime).toBe("10:30");
-    expect(secondActivity.travelFromPrevious?.instructions).toEqual([
-      "Take JR Nara Line toward Kyoto Station",
-    ]);
-    expect(secondActivity.schedule?.arrivalTime).toBe("10:30");
-    expect(secondActivity.schedule?.departureTime).toBe("12:00");
-    expect(secondActivity.schedule?.status).toBe("scheduled");
+    if (secondActivity.kind === "place") {
+      expect(secondActivity.travelFromPrevious?.mode).toBe("train");
+      expect(secondActivity.travelFromPrevious?.departureTime).toBe("10:10");
+      expect(secondActivity.travelFromPrevious?.arrivalTime).toBe("10:30");
+      expect(secondActivity.travelFromPrevious?.instructions).toEqual([
+        "Take JR Nara Line toward Kyoto Station",
+      ]);
+      expect(secondActivity.schedule?.arrivalTime).toBe("10:30");
+      expect(secondActivity.schedule?.departureTime).toBe("12:00");
+      expect(secondActivity.schedule?.status).toBe("scheduled");
+    }
   });
 });
 
