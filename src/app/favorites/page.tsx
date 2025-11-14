@@ -13,7 +13,8 @@ export default function FavoritesPage() {
   // Check authentication on mount
   useEffect(() => {
     if (!supabase) {
-      setIsCheckingAuth(false);
+      // Use setTimeout to avoid synchronous setState in effect
+      setTimeout(() => setIsCheckingAuth(false), 0);
       return;
     }
 

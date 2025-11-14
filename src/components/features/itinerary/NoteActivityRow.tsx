@@ -1,0 +1,179 @@
+import { forwardRef, useState, type ChangeEvent } from "react";
+import { CSS } from "@dnd-kit/utilities";
+import type { Transform } from "@dnd-kit/utilities";
+import type { ItineraryActivity } from "@/types/itinerary";
+import { DragHandle } from "./DragHandle";
+
+const TIME_OF_DAY_LABEL: Record<ItineraryActivity["timeOfDay"], string> = {
+  morning: "Morning",
+  afternoon: "Afternoon",
+  evening: "Evening",
+};
+
+type NoteActivityRowProps = {
+  activity: Extract<ItineraryActivity, { kind: "note" }>;
+  onDelete: () => void;
+  onUpdate: (patch: Partial<ItineraryActivity>) => void;
+  attributes?: Record<string, unknown>;
+  listeners?: Record<string, unknown>;
+  isDragging?: boolean;
+  transform?: Transform | null;
+  transition?: string | null;
+};
+
+export const NoteActivityRow = forwardRef<HTMLLIElement, NoteActivityRowProps>(
+  (
+    {
+      activity,
+      onDelete,
+      onUpdate,
+      attributes,
+      listeners,
+      isDragging,
+      transform,
+      transition,
+    },
+    ref,
+  ) => {
+    const [notesOpen] = useState(() => Boolean(activity.notes));
+    const noteStartTime = activity.startTime ?? "";
+    const noteEndTime = activity.endTime ?? "";
+    const timeInvalid =
+      noteStartTime !== "" && noteEndTime !== "" && noteEndTime < noteStartTime;
+
+    const dragStyles =
+      transform || transition
+        ? {
+            transform: transform ? CSS.Transform.toString(transform) : undefined,
+            transition: transition ?? undefined,
+          }
+        : undefined;
+
+    const notesId = `notes-${activity.id}`;
+    const noteStartId = `note-start-${activity.id}`;
+    const noteEndId = `note-end-${activity.id}`;
+    const timeErrorId = `note-time-error-${activity.id}`;
+    const notesValue = activity.notes ?? "";
+    const noteLabel = `Note for ${TIME_OF_DAY_LABEL[activity.timeOfDay]}`;
+
+    const handleNotesChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+      const nextNotes = event.target.value;
+      onUpdate({ notes: nextNotes });
+    };
+
+    const dragHandleLabel = `Drag to reorder note for ${TIME_OF_DAY_LABEL[activity.timeOfDay]}`;
+
+    return (
+      <li
+        ref={ref}
+        style={dragStyles}
+        className={`rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/80 p-4 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
+          isDragging ? "ring-2 ring-indigo-300 shadow-md" : ""
+        }`}
+        data-kind="note"
+        data-activity-id={activity.id}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <DragHandle
+              variant="note"
+              label={dragHandleLabel}
+              isDragging={isDragging}
+              attributes={attributes}
+              listeners={listeners}
+            />
+            <span className="text-sm font-semibold text-indigo-700">
+              {activity.title ?? "Note"}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onDelete();
+            }}
+            className="text-sm font-semibold text-red-600 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+            aria-label={`Delete note for ${TIME_OF_DAY_LABEL[activity.timeOfDay]}`}
+          >
+            Delete
+          </button>
+        </div>
+
+        <div className="mt-4 flex flex-col gap-3">
+          <div className="flex flex-col gap-2 rounded-xl bg-white/60 p-3 shadow-sm">
+            <span className="text-sm font-medium text-gray-700">Time (optional)</span>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex flex-col gap-1">
+                <label htmlFor={noteStartId} className="text-xs font-medium text-gray-600">
+                  Start time
+                </label>
+                <input
+                  id={noteStartId}
+                  type="time"
+                  className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={noteStartTime}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    onUpdate({
+                      startTime: value ? value : undefined,
+                    } as Partial<ItineraryActivity>);
+                  }}
+                  aria-invalid={timeInvalid || undefined}
+                  aria-describedby={timeInvalid ? timeErrorId : undefined}
+                />
+              </div>
+              <span className="text-sm text-gray-500">to</span>
+              <div className="flex flex-col gap-1">
+                <label htmlFor={noteEndId} className="text-xs font-medium text-gray-600">
+                  End time
+                </label>
+                <input
+                  id={noteEndId}
+                  type="time"
+                  className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={noteEndTime}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    onUpdate({
+                      endTime: value ? value : undefined,
+                    } as Partial<ItineraryActivity>);
+                  }}
+                  aria-invalid={timeInvalid || undefined}
+                  aria-describedby={timeInvalid ? timeErrorId : undefined}
+                />
+              </div>
+            </div>
+            {timeInvalid ? (
+              <p id={timeErrorId} className="text-sm text-red-600">
+                End time must be after start time.
+              </p>
+            ) : null}
+            {noteStartTime && noteEndTime ? (
+              <p className="text-sm font-medium text-gray-600">
+                {`${noteStartTime} – ${noteEndTime}`}
+              </p>
+            ) : null}
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor={notesId} className="text-sm font-semibold text-gray-700">
+              {noteLabel}
+            </label>
+            <textarea
+              id={notesId}
+              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+              rows={3}
+              value={notesValue}
+              onChange={handleNotesChange}
+              placeholder="Add reminders, tips, or context for this part of the day."
+            />
+          </div>
+        </div>
+      </li>
+    );
+  },
+);
+
+NoteActivityRow.displayName = "NoteActivityRow";
+

@@ -1,27 +1,20 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useCallback } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryTravelMode } from "@/types/itinerary";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
-
-const LEAFLET_JS_URL = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-const LEAFLET_CSS_URL = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+import { ensureLeafletResources, type LeafletMap, type LeafletMarker, type LeafletPolyline, type LeafletLayerGroup } from "./leafletUtils";
+import { RouteOverview } from "./RouteOverview";
 
 const DEFAULT_CENTER = { lat: 35.0116, lng: 135.7681 }; // Kyoto station area
 const DEFAULT_ZOOM = 12;
 const SELECTED_MARKER_CLASS = "koku-map-marker-selected";
 const ROUTE_POLYLINE_COLOR = "#6366F1";
 const ROUTE_POLYLINE_HIGHLIGHT_COLOR = "#4338CA";
-
-const TIME_OF_DAY_LABEL: Record<ItineraryActivity["timeOfDay"], string> = {
-  morning: "Morning",
-  afternoon: "Afternoon",
-  evening: "Evening",
-};
 
 type MapPoint = {
   id: string;
@@ -44,126 +37,6 @@ function isPlaceActivity(
   activity: ItineraryActivity
 ): activity is Extract<ItineraryActivity, { kind: "place" }> {
   return activity.kind === "place";
-}
-
-type LeafletLatLng = {
-  lat: number;
-  lng: number;
-};
-
-type LeafletLatLngBounds = {
-  extend(latlng: LeafletLatLng): void;
-  pad(factor: number): LeafletLatLngBounds;
-};
-
-type LeafletMarker = {
-  bindPopup(html: string): LeafletMarker;
-  on(event: string, handler: () => void): void;
-  getLatLng(): LeafletLatLng;
-  getElement(): HTMLElement | null;
-  openPopup(): void;
-  closePopup(): void;
-};
-
-type LeafletPolyline = {
-  addTo(map: LeafletMap): LeafletPolyline;
-  setStyle(options: {
-    color?: string;
-    weight?: number;
-    opacity?: number;
-    dashArray?: string;
-  }): void;
-  bringToFront?: () => void;
-  getElement?: () => HTMLElement | null;
-};
-
-type LeafletLayer = LeafletMarker | LeafletPolyline;
-
-type LeafletLayerGroup = {
-  addTo(map: LeafletMap): LeafletLayerGroup;
-  addLayer(layer: LeafletLayer): void;
-  clearLayers(): void;
-};
-
-type LeafletTileLayer = {
-  addTo(map: LeafletMap): LeafletTileLayer;
-};
-
-type LeafletMap = {
-  on(event: string, handler: () => void): void;
-  setView(center: [number, number], zoom: number): void;
-  fitBounds(bounds: LeafletLatLngBounds, options?: { maxZoom?: number }): void;
-  panTo(latlng: LeafletLatLng, options?: { animate?: boolean; duration?: number }): void;
-  remove(): void;
-};
-
-type LeafletModule = {
-  map(container: HTMLElement, options: {
-    zoomControl: boolean;
-    attributionControl: boolean;
-    center: [number, number];
-    zoom: number;
-  }): LeafletMap;
-  layerGroup(): LeafletLayerGroup;
-  tileLayer(url: string, options: {
-    attribution: string;
-    subdomains: string;
-    maxZoom: number;
-  }): LeafletTileLayer;
-  marker(position: [number, number]): LeafletMarker;
-  polyline(latlngs: [number, number][], options: {
-    color?: string;
-    weight?: number;
-    opacity?: number;
-    dashArray?: string;
-    className?: string;
-  }): LeafletPolyline;
-  latLngBounds(initial: unknown[]): LeafletLatLngBounds;
-};
-
-declare global {
-  interface Window {
-    L?: LeafletModule;
-    __leafletLoadingPromise?: Promise<LeafletModule | null>;
-  }
-}
-
-function ensureLeafletResources(): Promise<LeafletModule | null> {
-  if (typeof window === "undefined") {
-    return Promise.resolve(null);
-  }
-
-  if (window.L) {
-    return Promise.resolve(window.L);
-  }
-
-  if (window.__leafletLoadingPromise) {
-    return window.__leafletLoadingPromise;
-  }
-
-  if (!document.querySelector(`link[data-origin="leaflet"]`)) {
-    const link = document.createElement("link");
-    link.setAttribute("rel", "stylesheet");
-    link.setAttribute("href", LEAFLET_CSS_URL);
-    link.setAttribute("data-origin", "leaflet");
-    document.head.appendChild(link);
-  }
-
-  window.__leafletLoadingPromise = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = LEAFLET_JS_URL;
-    script.async = true;
-    script.addEventListener("load", () => {
-      resolve(window.L ?? null);
-    });
-    script.addEventListener("error", (event) => {
-      console.error("Failed to load Leaflet script", event);
-      reject(new Error("Failed to load Leaflet script."));
-    });
-    document.body.appendChild(script);
-  });
-
-  return window.__leafletLoadingPromise;
 }
 
 export const ItineraryMapPanel = ({
@@ -310,34 +183,6 @@ export const ItineraryMapPanel = ({
     return segments;
   }, [activities, pointLookup]);
 
-  const formatDuration = useCallback((minutes?: number) => {
-    if (!minutes || minutes <= 0) {
-      return null;
-    }
-    if (minutes >= 120) {
-      const hours = Math.floor(minutes / 60);
-      const remainder = minutes % 60;
-      return remainder > 0 ? `${hours}h ${remainder}m` : `${hours}h`;
-    }
-    if (minutes >= 60) {
-      const hours = Math.floor(minutes / 60);
-      const remainder = minutes % 60;
-      return `${hours}h ${remainder}m`;
-    }
-    return `${minutes} min`;
-  }, []);
-
-  const formatDistance = useCallback((meters?: number) => {
-    if (!meters || meters <= 0) {
-      return null;
-    }
-    if (meters >= 1000) {
-      const kilometers = meters / 1000;
-      return kilometers >= 10 ? `${Math.round(kilometers)} km` : `${(Math.round(kilometers * 10) / 10).toFixed(1)} km`;
-    }
-    return `${Math.round(meters)} m`;
-  }, []);
-
   const travelSegmentLookup = useMemo(() => {
     const map = new Map<string, (typeof travelSegments)[number]>();
     travelSegments.forEach((segment) => {
@@ -345,35 +190,6 @@ export const ItineraryMapPanel = ({
     });
     return map;
   }, [travelSegments]);
-
-  const formatModeLabel = useCallback((mode: ItineraryTravelMode) => {
-    switch (mode) {
-      case "walk":
-        return "Walk";
-      case "transit":
-        return "Public transit";
-      case "train":
-        return "Train";
-      case "subway":
-        return "Subway";
-      case "bus":
-        return "Bus";
-      case "tram":
-        return "Tram";
-      case "ferry":
-        return "Ferry";
-      case "bicycle":
-        return "Bike";
-      case "car":
-        return "Car";
-      case "taxi":
-        return "Taxi";
-      case "rideshare":
-        return "Rideshare";
-      default:
-        return mode;
-    }
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -571,114 +387,12 @@ export const ItineraryMapPanel = ({
           <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
             Route overview
           </h3>
-          {placeActivities.length > 0 ? (
-            <ol className="mt-2 space-y-3">
-              {placeActivities.map((activity, index) => {
-                const placeNumber = placeIndexLookup.get(activity.id) ?? index + 1;
-                const point = pointLookup.get(activity.id);
-                const travelSegment = travelSegmentLookup.get(activity.id);
-                const previousActivity = placeActivities[index - 1];
-                const travelDurationLabel = formatDuration(travelSegment?.durationMinutes);
-                const travelDistanceLabel = formatDistance(travelSegment?.distanceMeters);
-                const previousNumber =
-                  previousActivity ? placeIndexLookup.get(previousActivity.id) ?? index : null;
-                return (
-                  <li
-                    key={activity.id}
-                    className="rounded-lg border border-indigo-100 bg-indigo-50/60 p-3 text-sm text-indigo-900"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
-                        {placeNumber}
-                      </div>
-                      <div className="flex-1 space-y-1 text-indigo-900">
-                        <p className="font-semibold">{activity.title}</p>
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-indigo-700">
-                          <span>{TIME_OF_DAY_LABEL[activity.timeOfDay]}</span>
-                          {activity.schedule?.arrivalTime ? (
-                            <span>
-                              Arrive {activity.schedule.arrivalTime}
-                              {activity.schedule?.departureTime
-                                ? ` · Depart ${activity.schedule.departureTime}`
-                                : ""}
-                            </span>
-                          ) : null}
-                          {activity.durationMin ? <span>{activity.durationMin} min planned</span> : null}
-                        </div>
-                        {activity.notes ? (
-                          <p className="text-xs text-indigo-600 line-clamp-2">{activity.notes}</p>
-                        ) : null}
-                        {activity.tags && activity.tags.length > 0 ? (
-                          <div className="mt-1 flex flex-wrap gap-1 text-[11px]">
-                            {activity.tags.slice(0, 3).map((tag) => (
-                              <span
-                                key={tag}
-                                className="rounded-full bg-white/60 px-2 py-0.5 font-semibold text-indigo-700"
-                              >
-                                {tag}
-                              </span>
-                            ))}
-                            {activity.tags.length > 3 ? (
-                              <span className="rounded-full bg-white/60 px-2 py-0.5 font-medium text-indigo-700">
-                                +{activity.tags.length - 3} more
-                              </span>
-                            ) : null}
-                          </div>
-                        ) : null}
-                        {index === 0 ? (
-                          <p className="text-xs font-medium text-indigo-700">Day kickoff</p>
-                        ) : null}
-                      </div>
-                      <div className="mt-0.5 shrink-0">
-                        {point ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
-                            On map
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600">
-                            Location unknown
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    {index > 0 ? (
-                      <div className="mt-3 rounded-lg border border-indigo-100 bg-white/70 p-3 text-xs text-indigo-800">
-                        <p className="font-semibold">
-                          Travel from Stop {previousNumber} · {previousActivity?.title ?? "Previous stop"}
-                        </p>
-                        {travelSegment ? (
-                          <>
-                            <p className="mt-0.5">
-                              {[travelDurationLabel, travelDistanceLabel].filter(Boolean).join(" · ") ||
-                                "Travel details unavailable"}
-                            </p>
-                            <div className="mt-2 flex flex-wrap items-center gap-2">
-                              <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
-                                {formatModeLabel(travelSegment.mode)}
-                              </span>
-                              {travelSegment.isFallback ? (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700">
-                                  Estimated
-                                </span>
-                              ) : null}
-                            </div>
-                          </>
-                        ) : (
-                          <p className="mt-0.5 text-indigo-700">
-                            Travel estimate unavailable for this leg. We&apos;ll keep your place on the map once we can locate it.
-                          </p>
-                        )}
-                      </div>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ol>
-          ) : (
-            <p className="mt-2 text-sm text-gray-500">
-              Add another stop to see door-to-door travel time estimates.
-            </p>
-          )}
+          <RouteOverview
+            placeActivities={placeActivities}
+            pointLookup={pointLookup}
+            travelSegmentLookup={travelSegmentLookup}
+            placeIndexLookup={placeIndexLookup}
+          />
         </div>
       </aside>
       <style jsx global>{`
