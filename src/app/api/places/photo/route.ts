@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { fetchPhotoStream } from "@/lib/googlePlaces";
 import { isValidPhotoName, parsePositiveInt } from "@/lib/api/validation";
+import { photoNameSchema } from "@/lib/api/schemas";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 
@@ -21,15 +22,26 @@ export async function GET(request: NextRequest) {
     return badRequest("Missing required query parameter 'photoName'.");
   }
 
-  if (!isValidPhotoName(photoNameParam)) {
-    return badRequest("Invalid photoName parameter format.");
+  // Validate using both existing function and Zod schema for defense in depth
+  const photoNameValidation = photoNameSchema.safeParse(photoNameParam);
+  if (!photoNameValidation.success || !isValidPhotoName(photoNameParam)) {
+    return badRequest("Invalid photoName parameter format.", {
+      errors: photoNameValidation.success ? undefined : photoNameValidation.error.issues,
+    });
   }
 
-  const maxWidthPx = parsePositiveInt(searchParams.get("maxWidthPx"), MAX_DIMENSION);
-  const maxHeightPx = parsePositiveInt(searchParams.get("maxHeightPx"), MAX_DIMENSION);
+  const validatedPhotoName = photoNameValidation.data;
+
+  // Validate dimension parameters
+  const maxWidthParam = searchParams.get("maxWidthPx");
+  const maxHeightParam = searchParams.get("maxHeightPx");
+
+  // Use existing validation function which is already robust
+  const maxWidthPx = maxWidthParam ? parsePositiveInt(maxWidthParam, MAX_DIMENSION) ?? undefined : undefined;
+  const maxHeightPx = maxHeightParam ? parsePositiveInt(maxHeightParam, MAX_DIMENSION) ?? undefined : undefined;
 
   try {
-    const response = await fetchPhotoStream(photoNameParam, {
+    const response = await fetchPhotoStream(validatedPhotoName, {
       maxWidthPx: maxWidthPx ?? undefined,
       maxHeightPx: maxHeightPx ?? undefined,
     });
@@ -49,7 +61,7 @@ export async function GET(request: NextRequest) {
       return serviceUnavailable("Google Places API is not configured.");
     }
 
-    return internalError(message, { photoName: photoNameParam });
+    return internalError(message, { photoName: validatedPhotoName });
   }
 }
 
