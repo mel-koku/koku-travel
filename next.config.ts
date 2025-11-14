@@ -117,6 +117,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Turbopack configuration (empty - using defaults)
+  turbopack: {},
 };
 
 // Conditionally wrap with Sentry if DSN is configured and package is installed
