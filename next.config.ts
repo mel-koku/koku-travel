@@ -8,7 +8,12 @@ const localPatterns = [
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
 
-const remotePatterns = [
+const remotePatterns: Array<{
+  protocol: "http" | "https";
+  hostname: string;
+  pathname?: string;
+  port?: string;
+}> = [
   {
     protocol: "https",
     hostname: "images.unsplash.com",
@@ -30,12 +35,21 @@ const remotePatterns = [
 if (siteUrl) {
   try {
     const { protocol, hostname, port } = new URL(siteUrl);
-    remotePatterns.push({
-      protocol: protocol.replace(":", ""),
+    const protocolValue = protocol.replace(":", "") as "http" | "https";
+    const pattern: {
+      protocol: "http" | "https";
+      hostname: string;
+      pathname?: string;
+      port?: string;
+    } = {
+      protocol: protocolValue,
       hostname,
-      port: port || undefined,
       pathname: "/api/places/photo",
-    });
+    };
+    if (port) {
+      pattern.port = port;
+    }
+    remotePatterns.push(pattern);
   } catch {
     // ignore invalid NEXT_PUBLIC_SITE_URL
   }
