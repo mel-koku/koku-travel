@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import IdentityBadge from "@/components/ui/IdentityBadge";
 import { useAppState } from "@/state/AppState";
 import { cn } from "@/lib/cn";
 
@@ -101,14 +100,6 @@ export default function Header() {
           >
             Dashboard
           </Link>
-          <Link href="/account" className="flex items-center">
-            <IdentityBadge className="hidden md:inline-flex" />
-            <span className="inline-flex md:hidden">
-              <span className="rounded-full border border-red-500 px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold uppercase tracking-wide text-red-500">
-                Account
-              </span>
-            </span>
-          </Link>
 
           {/* Mobile menu button */}
           <button
@@ -203,13 +194,6 @@ export default function Header() {
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dashboard
-                  </Link>
-                  <Link
-                    href="/account"
-                    className="mt-2 block rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Account
                   </Link>
                 </div>
 
