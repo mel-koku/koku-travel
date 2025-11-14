@@ -16,12 +16,17 @@ vi.mock("@/lib/api/rateLimit", () => ({
 describe("GET /api/preview", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubEnv("SANITY_PREVIEW_SECRET", "test-secret-123");
+    // Set env var before tests run
+    process.env.SANITY_PREVIEW_SECRET = "test-secret-123";
     vi.mocked(draftMode).mockReturnValue({
       enable: vi.fn(),
       disable: vi.fn(),
       isEnabled: false,
     } as any);
+  });
+
+  afterEach(() => {
+    delete process.env.SANITY_PREVIEW_SECRET;
   });
 
   describe("Rate limiting", () => {
@@ -46,13 +51,19 @@ describe("GET /api/preview", () => {
 
   describe("Secret validation", () => {
     it("should return 500 if preview secret is not configured", async () => {
-      vi.unstubAllEnvs();
-      vi.stubEnv("SANITY_PREVIEW_SECRET", "");
+      const originalSecret = process.env.SANITY_PREVIEW_SECRET;
+      delete process.env.SANITY_PREVIEW_SECRET;
+      // Re-import to pick up the change
+      vi.resetModules();
+      const { GET: GETHandler } = await import("@/app/api/preview/route");
 
       const request = createMockRequest(
         "https://example.com/api/preview?secret=test-secret-123&slug=test-guide",
       );
-      const response = await GET(request);
+      const response = await GETHandler(request);
+      
+      // Restore for other tests
+      process.env.SANITY_PREVIEW_SECRET = originalSecret;
 
       expect(response.status).toBe(500);
       const data = await response.json();

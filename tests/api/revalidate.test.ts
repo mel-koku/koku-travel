@@ -22,8 +22,15 @@ vi.mock("@/lib/api/rateLimit", () => ({
 describe("POST /api/revalidate", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubEnv("SANITY_REVALIDATE_SECRET", "test-secret-123");
+    // Set both secrets since the route checks SANITY_REVALIDATE_SECRET || SANITY_PREVIEW_SECRET
+    process.env.SANITY_REVALIDATE_SECRET = "test-secret-123";
+    process.env.SANITY_PREVIEW_SECRET = "";
     vi.mocked(isValidSignature).mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    delete process.env.SANITY_REVALIDATE_SECRET;
+    delete process.env.SANITY_PREVIEW_SECRET;
   });
 
   describe("Rate limiting", () => {
@@ -55,9 +62,13 @@ describe("POST /api/revalidate", () => {
 
   describe("Secret configuration", () => {
     it("should return 503 if revalidation secret is not configured", async () => {
-      vi.unstubAllEnvs();
-      vi.stubEnv("SANITY_REVALIDATE_SECRET", "");
-      vi.stubEnv("SANITY_PREVIEW_SECRET", "");
+      const originalRevalidate = process.env.SANITY_REVALIDATE_SECRET;
+      const originalPreview = process.env.SANITY_PREVIEW_SECRET;
+      delete process.env.SANITY_REVALIDATE_SECRET;
+      delete process.env.SANITY_PREVIEW_SECRET;
+      // Re-import to pick up the change
+      vi.resetModules();
+      const { POST: POSTHandler } = await import("@/app/api/revalidate/route");
 
       const payload = JSON.stringify({ _type: "guide" });
       const signature = "test-signature";
@@ -69,7 +80,11 @@ describe("POST /api/revalidate", () => {
         },
         body: payload,
       });
-      const response = await POST(request);
+      const response = await POSTHandler(request);
+      
+      // Restore for other tests
+      process.env.SANITY_REVALIDATE_SECRET = originalRevalidate;
+      process.env.SANITY_PREVIEW_SECRET = originalPreview;
 
       expect(response.status).toBe(503);
       const data = await response.json();

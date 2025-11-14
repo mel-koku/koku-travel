@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 
 /**
  * Common mocks for testing API routes and components
