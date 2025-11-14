@@ -21,7 +21,6 @@
     "@sanity/image-url": "^1.2.0",
     "@sanity/webhook": "^3.0.0",
     "@sentry/nextjs": "^10.25.0",
-    "@supabase/auth-helpers-nextjs": "^0.10.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.80.0",
     "dotenv": "^17.2.3",

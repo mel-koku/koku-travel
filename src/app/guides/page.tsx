@@ -12,7 +12,7 @@ export default async function GuidesPage() {
   const guides = await fetchGuides({ preview: isEnabled });
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-4 pb-16">
+    <main className="min-h-screen bg-gray-50 pt-2 pb-12 sm:pt-4 sm:pb-16">
       <GuidesShell guides={guides} />
     </main>
   );

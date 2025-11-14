@@ -78,12 +78,12 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
     <form
       id={formId}
       onSubmit={onSubmit}
-      className="flex flex-col gap-8"
+      className="flex flex-col gap-6 sm:gap-8"
       noValidate
     >
-      <div className="flex flex-col gap-3">
-        <h2 className="text-2xl font-semibold text-gray-900">Basic info</h2>
-        <p className="text-gray-600">
+      <div className="flex flex-col gap-2 sm:gap-3">
+        <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl">Basic info</h2>
+        <p className="text-sm text-gray-600 sm:text-base">
           Tell us the essentials so we can start shaping your perfect adventure.
         </p>
       </div>
@@ -102,6 +102,7 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
           max={MAX_DURATION}
           inputMode="numeric"
           placeholder="How many days?"
+          className="min-h-[44px]"
           {...register("duration", {
             valueAsNumber: true,
             required: "Duration is required",
@@ -126,7 +127,7 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
         />
       </FormField>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2">
         <Controller
           control={control}
           name="start"

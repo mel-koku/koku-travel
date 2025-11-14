@@ -50,13 +50,13 @@ export default function GuidesFilterBar({
     [setLocation],
   );
   return (
-    <aside className="sticky [top:var(--sticky-offset)] z-40 px-4 mt-2">
+    <aside className="sticky [top:var(--sticky-offset)] z-40 px-2 mt-2 sm:px-4">
       <div
         className="
           mx-auto w-full max-w-4xl
-          flex items-center gap-3
-          rounded-2xl border border-gray-200 bg-white/90 backdrop-blur
-          px-6 py-3 shadow-md hover:shadow-lg transition
+          flex items-center gap-2
+          rounded-xl border border-gray-200 bg-white/90 backdrop-blur
+          px-3 py-2.5 shadow-md hover:shadow-lg transition sm:rounded-2xl sm:gap-3 sm:px-4 sm:py-3 md:px-6
         "
       >
         {/* search */}
@@ -70,7 +70,7 @@ export default function GuidesFilterBar({
             placeholder="Search guides..."
             aria-label="Search guides"
             className="
-              w-full h-10 rounded-full border border-gray-200
+              w-full min-h-[44px] rounded-full border border-gray-200
               bg-gray-50 text-gray-900 placeholder-gray-400
               pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500
             "
@@ -95,7 +95,7 @@ export default function GuidesFilterBar({
               onClick={() => setCategory(category === cat ? "" : cat)}
               aria-pressed={category === cat}
               className={`
-                px-4 py-2 rounded-full text-sm font-medium transition
+                min-h-[44px] px-4 py-2 rounded-full text-sm font-medium transition
                 ${
                   category === cat
                     ? "bg-indigo-600 text-white"
@@ -111,7 +111,7 @@ export default function GuidesFilterBar({
         {/* icon button (visual parity with Explore) */}
         <button
           aria-label="Search"
-          className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition"
+          className="flex-shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white min-w-[44px] min-h-[44px] w-10 h-10 rounded-full flex items-center justify-center transition"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +131,7 @@ export default function GuidesFilterBar({
       </div>
 
       {/* filters (mobile) */}
-      <div className="mt-2 flex md:hidden gap-2 overflow-x-auto px-2">
+      <div className="mt-2 flex md:hidden gap-2 overflow-x-auto px-2 pb-2">
         <div className="flex-shrink-0">
           <Dropdown
             label={locationLabel}
@@ -145,7 +145,7 @@ export default function GuidesFilterBar({
             onClick={() => setCategory(category === cat ? "" : cat)}
             aria-pressed={category === cat}
             className={`
-              flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition
+              flex-shrink-0 min-h-[44px] px-4 py-2 rounded-full text-sm font-medium transition
               ${
                 category === cat
                   ? "bg-indigo-600 text-white"
