@@ -137,7 +137,7 @@ export default function DashboardPage() {
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-gray-200 p-4">
               <p className="text-xs uppercase text-gray-500">Favorites</p>
-              <p className="text-2xl font-semibold">{favorites.length}</p>
+              <p className="text-2xl font-semibold text-gray-900">{favorites.length}</p>
               <Link
                 href={favorites.length > 0 ? "/favorites" : "/explore"}
                 className="mt-2 inline-block text-sm text-indigo-600"
@@ -146,8 +146,8 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="rounded-xl border border-gray-200 p-4">
-              <p className="text-xs uppercase text-gray-500">Guide bookmarks</p>
-              <p className="text-2xl font-semibold">{guideBookmarks.length}</p>
+              <p className="text-xs uppercase text-gray-500">Bookmarked Guides</p>
+              <p className="text-2xl font-semibold text-gray-900">{guideBookmarks.length}</p>
               <Link href="/guides/bookmarks" className="mt-2 inline-block text-sm text-indigo-600">
                 View bookmarks →
               </Link>
