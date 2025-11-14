@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -69,12 +70,13 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3 sm:gap-6">
-          <div className="hidden items-center rounded-full border border-zinc-200 bg-white p-1 text-xs font-semibold uppercase tracking-wide shadow-sm dark:border-zinc-700 dark:bg-zinc-900 md:flex">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
+          {/* EN/JP Toggle - visible on all screen sizes */}
+          <div className="flex items-center rounded-full border border-zinc-200 bg-white p-1 text-xs font-semibold uppercase tracking-wide shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
             <button
               type="button"
               onClick={() => handleLocaleChange("en")}
-              className={`rounded-full px-4 py-2 transition-colors ${
+              className={`rounded-full px-3 py-1.5 sm:px-4 sm:py-2 transition-colors ${
                 user.locale === "en"
                   ? "bg-red-500 text-white shadow-sm"
                   : "hover:text-red-500"
@@ -85,7 +87,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => handleLocaleChange("jp")}
-              className={`rounded-full px-4 py-2 transition-colors ${
+              className={`rounded-full px-3 py-1.5 sm:px-4 sm:py-2 transition-colors ${
                 user.locale === "jp"
                   ? "bg-red-500 text-white shadow-sm"
                   : "hover:text-red-500"
@@ -94,6 +96,8 @@ export default function Header() {
               JP
             </button>
           </div>
+          
+          {/* Dashboard button - desktop only */}
           <Link
             href="/dashboard"
             className="hidden rounded-full border border-red-500 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-red-500 transition-colors hover:bg-red-500 hover:text-white md:inline-flex"
@@ -135,104 +139,82 @@ export default function Header() {
       </div>
 
       {/* Mobile menu overlay */}
-      {isMobileMenuOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-40 bg-black/50 md:hidden"
-            onClick={() => setIsMobileMenuOpen(false)}
-            aria-hidden="true"
-          />
-          <nav
-            className={cn(
-              "fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-white shadow-xl transition-transform duration-300 ease-out md:hidden",
-              isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
-            )}
-            aria-label="Mobile navigation"
-          >
-            <div className="flex h-full flex-col">
-              <div className="flex items-center justify-between border-b border-zinc-200 p-4">
-                <span className="text-lg font-semibold text-gray-900">Menu</span>
-                <button
-                  type="button"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 transition-colors hover:bg-zinc-100"
-                  aria-label="Close menu"
-                >
-                  <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
+      {typeof window !== "undefined" &&
+        isMobileMenuOpen &&
+        createPortal(
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-[100] bg-black/50 md:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-hidden="true"
+            />
+            {/* Menu panel */}
+            <nav
+              className={cn(
+                "fixed inset-y-0 right-0 z-[101] w-full max-w-sm bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden",
+                isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+              )}
+              aria-label="Mobile navigation"
+            >
+              <div className="flex h-full w-full flex-col bg-white">
+                {/* Header */}
+                <div className="flex items-center justify-between border-b border-zinc-200 bg-white px-4 sm:px-6 py-4">
+                  <span className="text-lg font-semibold text-gray-900">Menu</span>
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 transition-colors hover:bg-zinc-100"
+                    aria-label="Close menu"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+                    <svg
+                      className="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
 
-              <div className="flex-1 overflow-y-auto p-4">
-                <div className="flex flex-col gap-2">
-                  {navItems.map((item) => (
+                {/* Content */}
+                <div className="flex-1 overflow-y-auto bg-white px-4 sm:px-6 py-4">
+                  <div className="flex flex-col gap-2">
+                    {navItems.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className={cn(
+                          "rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100 text-left",
+                          pathname === item.href && "bg-red-50 text-red-600"
+                        )}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 border-t border-zinc-200 pt-6">
                     <Link
-                      key={item.label}
-                      href={item.href}
+                      href="/dashboard"
                       className={cn(
-                        "rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100",
-                        pathname === item.href && "bg-red-50 text-red-600"
+                        "inline-flex items-center justify-center rounded-full border border-red-500 px-5 py-2.5 text-xs font-semibold uppercase tracking-wide text-red-500 transition-colors hover:bg-red-500 hover:text-white",
+                        pathname === "/dashboard" && "bg-red-500 text-white"
                       )}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      {item.label}
+                      Dashboard
                     </Link>
-                  ))}
-                </div>
-
-                <div className="mt-6 border-t border-zinc-200 pt-6">
-                  <Link
-                    href="/dashboard"
-                    className="block rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                </div>
-
-                <div className="mt-6 border-t border-zinc-200 pt-6">
-                  <div className="flex items-center justify-between px-4">
-                    <span className="text-sm font-medium text-gray-700">Language</span>
-                    <div className="flex items-center rounded-full border border-zinc-200 bg-white p-1 text-xs font-semibold uppercase tracking-wide shadow-sm">
-                      <button
-                        type="button"
-                        onClick={() => handleLocaleChange("en")}
-                        className={cn(
-                          "rounded-full px-4 py-2 transition-colors",
-                          user.locale === "en"
-                            ? "bg-red-500 text-white shadow-sm"
-                            : "text-gray-700 hover:text-red-500"
-                        )}
-                      >
-                        EN
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleLocaleChange("jp")}
-                        className={cn(
-                          "rounded-full px-4 py-2 transition-colors",
-                          user.locale === "jp"
-                            ? "bg-red-500 text-white shadow-sm"
-                            : "text-gray-700 hover:text-red-500"
-                        )}
-                      >
-                        JP
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </nav>
-        </>
-      )}
+            </nav>
+          </>,
+          document.body
+        )}
     </header>
   );
 }
