@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
 
@@ -21,10 +22,10 @@ export default function IdentityBadge({ className = "" }: { className?: string }
     supabase
       .auth
       .getUser()
-      .then(({ data: { user } }) => {
+      .then(({ data: { user } }: { data: { user: User | null } }) => {
         if (alive) setEmail(user?.email ?? null);
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         console.warn("[IdentityBadge] Failed to read Supabase user.", error);
       });
     return () => {

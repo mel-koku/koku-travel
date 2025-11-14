@@ -22,8 +22,8 @@ type TooltipProps = {
 
 export function Tooltip({ content, children, delay = 150, side = "top", className }: TooltipProps) {
   const [open, setOpen] = useState(false);
-  const showTimeoutRef = useRef<number>();
-  const hideTimeoutRef = useRef<number>();
+  const showTimeoutRef = useRef<number | undefined>(undefined);
+  const hideTimeoutRef = useRef<number | undefined>(undefined);
   const id = useId();
 
   const clearTimers = () => {
@@ -61,9 +61,9 @@ export function Tooltip({ content, children, delay = 150, side = "top", classNam
 
   const trigger = cloneElement(children, {
     "aria-describedby": open ? id : undefined,
-  });
+  } as any);
 
-  const sideClasses: Record<typeof side, string> = {
+  const sideClasses: Record<"top" | "bottom" | "left" | "right", string> = {
     top: "bottom-full left-1/2 -translate-x-1/2 -translate-y-2",
     bottom: "top-full left-1/2 -translate-x-1/2 translate-y-2",
     left: "right-full top-1/2 -translate-y-1/2 -translate-x-2",

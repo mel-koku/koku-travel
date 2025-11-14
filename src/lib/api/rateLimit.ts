@@ -53,7 +53,8 @@ function getClientIp(request: NextRequest): string {
   }
 
   // Fallback (useful for development)
-  return request.ip || "unknown";
+  // Note: request.ip is not available in Next.js App Router
+  return "unknown";
 }
 
 /**

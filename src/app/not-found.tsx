@@ -13,10 +13,10 @@ export default function NotFound() {
           The page you're looking for doesn't exist or has been moved. Let's get you back on track.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button asChild variant="primary">
+          <Button asChild variant="primary" href="/">
             <Link href="/">Go home</Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild variant="outline" href="/explore">
             <Link href="/explore">Explore places</Link>
           </Button>
         </div>

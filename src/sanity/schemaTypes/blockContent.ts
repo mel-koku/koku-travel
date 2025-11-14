@@ -1,5 +1,8 @@
 import { defineArrayMember, defineType } from "sanity";
 
+// Type assertion helper for Sanity schema compatibility
+const asAnnotation = (obj: any) => obj;
+
 export const blockContent = defineType({
   name: "blockContent",
   title: "Rich Text",
@@ -14,7 +17,7 @@ export const blockContent = defineType({
           { title: "Code", value: "code" },
         ],
         annotations: [
-          defineType({
+          asAnnotation({
             type: "object",
             name: "link",
             title: "External Link",
@@ -23,7 +26,7 @@ export const blockContent = defineType({
                 name: "href",
                 type: "url",
                 title: "URL",
-                validation: (rule) => rule.uri({ allowRelative: true }),
+                validation: (rule: any) => rule.uri({ allowRelative: true }),
               },
               {
                 name: "openInNewTab",
