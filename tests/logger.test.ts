@@ -7,11 +7,15 @@ describe("Logger", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Set to development for tests that need it
-    process.env.NODE_ENV = "development";
+    vi.stubEnv("NODE_ENV", "development");
   });
 
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv;
+    vi.unstubAllEnvs();
+    if (originalEnv) {
+      // Use type assertion to allow assignment for test cleanup
+      (process.env as { NODE_ENV?: string }).NODE_ENV = originalEnv;
+    }
   });
 
   describe("debug", () => {
