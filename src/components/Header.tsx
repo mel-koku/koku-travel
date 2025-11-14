@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, startTransition } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -31,8 +31,8 @@ export default function Header() {
   useEffect(() => {
     if (prevPathnameRef.current !== pathname && isMobileMenuOpen) {
       prevPathnameRef.current = pathname;
-      // Schedule state update outside of effect execution
-      queueMicrotask(() => {
+      // Use startTransition to mark this as a non-urgent update
+      startTransition(() => {
         setIsMobileMenuOpen(false);
       });
     } else {
