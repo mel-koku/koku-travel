@@ -329,7 +329,9 @@ async function uploadImage(client, imageUrl, filename) {
 
 /**
  * Get or create image asset reference
+ * @deprecated This function is not currently used but kept for potential future use
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getOrUploadImage(client, imageUrl, filename, existingAssetRef) {
   if (existingAssetRef) {
     return existingAssetRef;
@@ -367,7 +369,7 @@ async function ensureAuthor(client, authorData) {
         authorData.avatar,
         `author-${slug}-avatar.jpg`
       );
-    } catch (error) {
+    } catch {
       console.error(`  ⚠ Failed to upload avatar, continuing without it`);
     }
   }
@@ -380,7 +382,7 @@ async function ensureAuthor(client, authorData) {
         authorData.coverImage,
         `author-${slug}-cover.jpg`
       );
-    } catch (error) {
+    } catch {
       console.error(`  ⚠ Failed to upload cover image, continuing without it`);
     }
   }
@@ -450,7 +452,7 @@ async function ensureGuide(client, guideData, authorId) {
         guideData.image,
         `guide-${slug}-cover.jpg`
       );
-    } catch (error) {
+    } catch {
       console.error(`  ⚠ Failed to upload cover image, continuing without it`);
     }
   }

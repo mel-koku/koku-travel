@@ -34,7 +34,9 @@ describe("generateItineraryFromTrip", () => {
     const [day] = itinerary.days;
     expect(day.activities).toHaveLength(3);
 
-    const interestRotation = day.activities.map((activity) => activity.tags?.[0]);
+    const interestRotation = day.activities.map((activity) => 
+      activity.kind === "place" ? activity.tags?.[0] : undefined
+    );
     expect(interestRotation).toEqual(["food", "culture", "food"]);
   });
 });

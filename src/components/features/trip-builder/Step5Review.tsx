@@ -47,7 +47,7 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
           <h2 className="text-3xl font-semibold text-gray-900">Review Your Trip</h2>
           <p className="text-lg text-gray-600">Make sure everything looks right before continuing.</p>
           <p className="text-sm text-gray-500">
-            After you confirm, your dashboard will show a preview with a "View full plan" button so
+            After you confirm, your dashboard will show a preview with a &quot;View full plan&quot; button so
             you can jump back into the itinerary anytime.
           </p>
         </header>

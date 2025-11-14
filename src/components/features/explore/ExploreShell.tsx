@@ -52,16 +52,7 @@ const DURATION_FILTERS = [
 ] as const;
 
 const PAGE_SIZE = 24;
-const SORT_OPTIONS = [
-  {
-    id: "relevance",
-    label: "Recommended",
-  },
-  {
-    id: "popular",
-    label: "Most popular",
-  },
-] as const;
+type SortOptionId = "relevance" | "popular";
 
 type EnhancedLocation = Location & {
   budgetValue: number | null;
@@ -169,8 +160,8 @@ export function ExploreShell() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [page, setPage] = useState(1);
-  const [selectedSort, setSelectedSort] =
-    useState<(typeof SORT_OPTIONS)[number]["id"]>("relevance");
+  const [selectedSort] =
+    useState<SortOptionId>("relevance");
 
   useEffect(() => {
     setPage(1);

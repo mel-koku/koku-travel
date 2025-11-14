@@ -7,19 +7,23 @@
 import { checkRateLimit } from "../src/lib/api/rateLimit";
 import { logger } from "../src/lib/logger";
 import { env } from "../src/lib/env";
+import type { NextRequest } from "next/server";
 
 // Mock NextRequest for testing
-class MockRequest {
-  headers: Headers;
-  ip?: string;
-
-  constructor(ip?: string, forwardedFor?: string) {
-    this.headers = new Headers();
-    if (forwardedFor) {
-      this.headers.set("x-forwarded-for", forwardedFor);
-    }
-    this.ip = ip;
+// Only implements the parts of NextRequest that checkRateLimit actually uses
+function createMockRequest(ip?: string, forwardedFor?: string): NextRequest {
+  const headers = new Headers();
+  if (forwardedFor) {
+    headers.set("x-forwarded-for", forwardedFor);
   }
+  
+  // Create a minimal mock that satisfies NextRequest type
+  // We only need headers.get() method which is what checkRateLimit uses
+  return {
+    headers,
+    // Add minimal required properties to satisfy NextRequest type
+    // These won't be used by checkRateLimit, but TypeScript needs them
+  } as NextRequest;
 }
 
 console.log("🧪 Phase 1 Testing Suite\n");
@@ -40,8 +44,8 @@ try {
 // Test 2: Rate Limiting
 console.log("\n2️⃣  Testing Rate Limiting...");
 try {
-  const mockRequest1 = new MockRequest("192.168.1.1") as any;
-  const mockRequest2 = new MockRequest("192.168.1.2") as any;
+  const mockRequest1 = createMockRequest("192.168.1.1");
+  const mockRequest2 = createMockRequest("192.168.1.2");
 
   // Test first request (should pass)
   const result1 = checkRateLimit(mockRequest1, { maxRequests: 2, windowMs: 60000 });

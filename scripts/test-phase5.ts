@@ -199,14 +199,10 @@ const configFiles = [
 ];
 
 let totalSecurityHeaders = 0;
-let hasSecurityConfig = false;
 
 for (const file of configFiles) {
   const result = checkSecurityHeaders(join(process.cwd(), file));
   totalSecurityHeaders += result.cspCount + result.hstsCount + result.xFrameOptionsCount;
-  if (result.hasSecurityHeaders) {
-    hasSecurityConfig = true;
-  }
 }
 
 test("Security headers configured", () => {
