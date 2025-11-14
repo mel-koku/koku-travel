@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 /**
  * Environment variable validation and type-safe access
  * Validates all required environment variables at module load time
@@ -114,7 +116,7 @@ try {
   envConfig = validateEnv();
 } catch (error) {
   // Log error details but rethrow to prevent app from starting with invalid config
-  console.error("[env] Environment validation failed:", error);
+  logger.error("Environment validation failed", error instanceof Error ? error : new Error(String(error)));
   throw error;
 }
 

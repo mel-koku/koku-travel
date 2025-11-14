@@ -125,10 +125,10 @@ export function checkRateLimit(
  * ```
  */
 export function withRateLimit(
-  handler: (request: NextRequest, ...args: any[]) => Promise<NextResponse>,
+  handler: (request: NextRequest, ...args: unknown[]) => Promise<NextResponse>,
   config?: RateLimitConfig,
 ) {
-  return async (request: NextRequest, ...args: any[]) => {
+  return async (request: NextRequest, ...args: unknown[]) => {
     const rateLimitResponse = checkRateLimit(request, config);
     if (rateLimitResponse) {
       return rateLimitResponse;

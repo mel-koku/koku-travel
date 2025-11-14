@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { AppStateShape } from "@/state/AppState";
+import { logger } from "@/lib/logger";
 
 type FavoriteRow = { place_id: string };
 type BookmarkRow = { guide_id: string };
@@ -24,7 +25,7 @@ export function getLocalAppState(): Pick<AppStateShape, "favorites" | "guideBook
 export async function syncLocalToCloudOnce() {
   const supabase = createClient();
   if (!supabase) {
-    console.warn("[accountSync] Supabase client unavailable; skipping sync.");
+    logger.warn("Supabase client unavailable; skipping sync");
     return { ok: false as const, reason: "supabase-disabled" as const };
   }
   const {
@@ -83,7 +84,7 @@ export async function syncLocalToCloudOnce() {
 export async function pullCloudToLocal() {
   const supabase = createClient();
   if (!supabase) {
-    console.warn("[accountSync] Supabase client unavailable; skipping pull.");
+    logger.warn("Supabase client unavailable; skipping pull");
     return { favorites: [], guideBookmarks: [], ok: false as const, reason: "supabase-disabled" as const };
   }
   const {

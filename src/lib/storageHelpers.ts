@@ -1,3 +1,5 @@
+import { logger } from "./logger";
+
 /**
  * Safely reads JSON data from localStorage and returns the parsed value.
  */
@@ -14,7 +16,7 @@ export function getLocal<T>(key: string, fallback?: T): T | undefined {
 
     return JSON.parse(item) as T;
   } catch (error) {
-    console.warn(`[storageHelpers] Failed to parse localStorage key "${key}".`, error);
+    logger.warn(`Failed to parse localStorage key "${key}"`, { key, error });
     return fallback;
   }
 }
@@ -31,7 +33,7 @@ export function setLocal<T>(key: string, value: T): void {
     const serialized = JSON.stringify(value);
     window.localStorage.setItem(key, serialized);
   } catch (error) {
-    console.warn(`[storageHelpers] Failed to set localStorage key "${key}".`, error);
+    logger.warn(`Failed to set localStorage key "${key}"`, { key, error });
   }
 }
 
