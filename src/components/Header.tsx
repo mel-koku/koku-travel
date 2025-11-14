@@ -27,8 +27,15 @@ export default function Header() {
 
   // Close mobile menu when route changes
   useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+    // Use a cleanup function to close menu on pathname change
+    // This avoids synchronous setState in effect body
+    if (isMobileMenuOpen) {
+      const timeoutId = setTimeout(() => {
+        setIsMobileMenuOpen(false);
+      }, 0);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [pathname, isMobileMenuOpen]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
