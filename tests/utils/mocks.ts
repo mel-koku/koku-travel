@@ -26,7 +26,7 @@ export function createMockRequest(
   return new NextRequest(url, {
     method,
     headers: requestHeaders,
-    body: body ? JSON.stringify(body) : undefined,
+    body: body || undefined,
   });
 }
 

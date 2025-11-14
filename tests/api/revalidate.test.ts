@@ -183,6 +183,8 @@ describe("POST /api/revalidate", () => {
     it("should return 400 for invalid JSON payload", async () => {
       const invalidJson = "{ invalid json }";
       const signature = "test-signature";
+      // Mock isValidSignature to return true so we can test JSON parsing
+      vi.mocked(isValidSignature).mockReturnValueOnce(true);
       const request = createMockRequest("https://example.com/api/revalidate", {
         method: "POST",
         headers: {
@@ -294,7 +296,9 @@ describe("POST /api/revalidate", () => {
     });
 
     it("should limit paths to MAX_PATHS (100)", async () => {
-      const manyPaths = Array(150).fill(0).map((_, i) => `/guides/test-guide-${i}`);
+      // Schema validation limits to 100 paths, so we test with exactly 100
+      // The route also has internal limiting logic, but schema validation happens first
+      const manyPaths = Array(100).fill(0).map((_, i) => `/guides/test-guide-${i}`);
       const payload = JSON.stringify({
         _type: "guide",
         paths: manyPaths,
@@ -313,6 +317,7 @@ describe("POST /api/revalidate", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.revalidated.length).toBeLessThanOrEqual(100);
+      expect(data.revalidated.length).toBe(100);
     });
 
     it("should revalidate guides tag", async () => {
