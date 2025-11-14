@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -19,6 +19,7 @@ export default function Header() {
   const { user, setUser } = useAppState();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const prevPathnameRef = useRef(pathname);
 
   const handleLocaleChange = (locale: "en" | "jp") => {
     if (user.locale === locale) return;
@@ -26,14 +27,16 @@ export default function Header() {
   };
 
   // Close mobile menu when route changes
+  // Use ref to track pathname changes and avoid setState in effect
   useEffect(() => {
-    // Use a cleanup function to close menu on pathname change
-    // This avoids synchronous setState in effect body
-    if (isMobileMenuOpen) {
-      const timeoutId = setTimeout(() => {
+    if (prevPathnameRef.current !== pathname && isMobileMenuOpen) {
+      prevPathnameRef.current = pathname;
+      // Schedule state update outside of effect execution
+      queueMicrotask(() => {
         setIsMobileMenuOpen(false);
-      }, 0);
-      return () => clearTimeout(timeoutId);
+      });
+    } else {
+      prevPathnameRef.current = pathname;
     }
   }, [pathname, isMobileMenuOpen]);
 
