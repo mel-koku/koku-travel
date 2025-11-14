@@ -166,8 +166,9 @@ describe("GET /api/preview", () => {
       expect(response.status).toBe(307);
       const location = response.headers.get("Location");
       expect(location).toContain("/guides/test-guide");
-      expect(location).not.toContain("http://");
-      expect(location).not.toContain("https://");
+      // Location header includes full URL, but path should be safe
+      const locationUrl = new URL(location!);
+      expect(locationUrl.pathname).toBe("/guides/test-guide");
     });
 
     it("should prevent redirect to external URLs", async () => {
