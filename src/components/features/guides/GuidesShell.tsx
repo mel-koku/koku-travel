@@ -41,7 +41,7 @@ export default function GuidesShell({ guides }: { guides: Guide[] }) {
   );
 
   return (
-    <section className="max-w-screen-xl mx-auto px-8">
+    <section className="max-w-screen-xl mx-auto px-4 sm:px-6 md:px-8">
       <GuidesFilterBar
         query={query}
         setQuery={setQuery}
@@ -53,16 +53,16 @@ export default function GuidesShell({ guides }: { guides: Guide[] }) {
 
       {/* Featured Guide Hero Section */}
       {featuredGuide && (
-        <div className="mt-8">
+        <div className="mt-4 sm:mt-6 md:mt-8">
           <FeaturedGuideHero guide={featuredGuide} />
         </div>
       )}
 
       {/* Regular Guides Grid */}
       {filtered.length === 0 ? (
-        <p className="text-center text-gray-500 mt-16">No guides found.</p>
+        <p className="text-center text-gray-500 mt-8 sm:mt-12 md:mt-16">No guides found.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 mt-6 sm:mt-8">
           {filtered.map((guide) => (
             <GuideCard key={guide.id} guide={guide} />
           ))}

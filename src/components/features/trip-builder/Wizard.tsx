@@ -197,9 +197,43 @@ export function Wizard({
   );
 
   return (
-    <Container className="py-16">
-      <div className="flex flex-col gap-12 lg:flex-row">
-        <aside className="lg:w-72">
+    <Container className="py-8 sm:py-12 md:py-16">
+      {/* Mobile step indicator */}
+      <div className="mb-6 lg:hidden">
+        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+            Trip Builder
+          </p>
+          <p className="mt-1 text-base font-semibold text-gray-900">
+            Step {step} of {totalSteps}
+          </p>
+          <div className="mt-4 flex items-center gap-2">
+            {stepsToRender.map((_, index) => {
+              const stepNumber = index + 1;
+              const isActive = stepNumber === step;
+              const isCompleted = stepNumber < step;
+              return (
+                <div
+                  key={stepNumber}
+                  className={cn(
+                    "h-2 flex-1 rounded-full transition-colors",
+                    isActive
+                      ? "bg-indigo-600"
+                      : isCompleted
+                        ? "bg-indigo-300"
+                        : "bg-gray-200"
+                  )}
+                  aria-label={`Step ${stepNumber}: ${stepsToRender[index]}`}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-8 lg:gap-12 lg:flex-row">
+        {/* Desktop sidebar */}
+        <aside className="hidden lg:block lg:w-72">
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm lg:sticky lg:top-[90px]">
             <div className="mb-6">
               <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">
@@ -219,9 +253,9 @@ export function Wizard({
         </aside>
         <div className="flex-1">
           <div className="flex h-full flex-col rounded-2xl border border-gray-200 bg-white shadow-sm">
-            <div className="flex-1 p-8">{children}</div>
+            <div className="flex-1 p-4 sm:p-6 md:p-8">{children}</div>
             {!hideFooter ? (
-              <div className="flex flex-col gap-4 border-t border-gray-200 p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col gap-3 border-t border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:p-6">
                 {footerContent ?? (
                   <>
                     <Button
@@ -229,6 +263,7 @@ export function Wizard({
                       variant="secondary"
                       onClick={onBack}
                       disabled={backDisabled}
+                      className="min-h-[44px] w-full sm:w-auto"
                     >
                       Back
                     </Button>
@@ -238,6 +273,7 @@ export function Wizard({
                       onClick={handleNext}
                       disabled={isNextDisabled}
                       aria-disabled={isNextDisabled}
+                      className="min-h-[44px] w-full sm:w-auto"
                     >
                       Next
                     </Button>

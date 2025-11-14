@@ -62,9 +62,9 @@ const variantClasses: Record<ButtonVariant, string> = {
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-sm",
-  md: "h-10 px-4 text-base",
-  lg: "h-12 px-5 text-base",
+  sm: "min-h-[44px] h-9 px-3 text-sm",
+  md: "min-h-[44px] h-10 px-4 text-base",
+  lg: "min-h-[44px] h-12 px-5 text-base",
 };
 
 const Spinner = () => (

@@ -305,25 +305,31 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
   }, []);
 
   return (
-    <section className="mx-auto h-[calc(100vh-120px)] max-w-screen-2xl p-6 md:h-[calc(100vh-140px)]">
-      <div className="grid h-full grid-cols-1 gap-6 xl:grid-cols-[minmax(380px,40%)_1fr]">
-        <ItineraryMapPanel
-          day={safeSelectedDay}
-          activities={currentDay?.activities ?? []}
-          selectedActivityId={selectedActivityId}
-          onSelectActivity={handleSelectActivity}
-          isPlanning={isPlanning}
-        />
-        <div className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-          <div className="border-b border-gray-200 p-4">
+    <section className="mx-auto min-h-[calc(100vh-120px)] max-w-screen-2xl p-3 sm:p-4 md:p-6 md:min-h-[calc(100vh-140px)]">
+      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(380px,40%)_1fr] xl:gap-6">
+        {/* Map panel - full width on mobile, sidebar on desktop */}
+        <div className="order-2 xl:order-1">
+          <div className="h-[400px] rounded-2xl border border-gray-200 bg-white shadow-sm sm:h-[500px] xl:h-full xl:min-h-[600px]">
+            <ItineraryMapPanel
+              day={safeSelectedDay}
+              activities={currentDay?.activities ?? []}
+              selectedActivityId={selectedActivityId}
+              onSelectActivity={handleSelectActivity}
+              isPlanning={isPlanning}
+            />
+          </div>
+        </div>
+        {/* Timeline panel */}
+        <div className="order-1 flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm xl:order-2">
+          <div className="border-b border-gray-200 p-3 sm:p-4">
             <DaySelector
               totalDays={days.length}
               selected={safeSelectedDay}
-                onChange={handleSelectDayChange}
+              onChange={handleSelectDayChange}
               labels={days.map((day) => day.dateLabel ?? "")}
             />
           </div>
-          <div className="flex-1 overflow-y-auto p-4 pr-2">
+          <div className="flex-1 overflow-y-auto p-3 pr-2 sm:p-4">
             {currentDay ? (
               <ItineraryTimeline
                 day={currentDay}
@@ -339,12 +345,12 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
               </p>
             )}
             {isPlanning ? (
-              <div className="mt-4 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/40 p-4 text-sm text-indigo-700">
+              <div className="mt-4 rounded-xl border border-dashed border-indigo-200 bg-indigo-50/40 p-3 text-sm text-indigo-700 sm:p-4">
                 Updating travel times and schedule…
               </div>
             ) : null}
             {planningError ? (
-              <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50/70 p-4 text-sm text-rose-700">
+              <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50/70 p-3 text-sm text-rose-700 sm:p-4">
                 Planner fell back to a basic ordering: {planningError}
               </div>
             ) : null}
