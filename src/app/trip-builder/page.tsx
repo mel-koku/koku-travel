@@ -130,10 +130,10 @@ export default function TripBuilderPage() {
   return (
     <TripBuilderProvider>
       <div className="bg-gray-50">
-        <Container className="pb-10 pt-16">
+        <Container className="pb-6 pt-8 sm:pb-8 sm:pt-12 md:pb-10 md:pt-16">
           <div className="max-w-3xl">
-            <h1 className="text-4xl font-bold text-gray-900">Create Your Trip</h1>
-            <p className="mt-4 text-lg text-gray-600">
+            <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">Create Your Trip</h1>
+            <p className="mt-3 text-base text-gray-600 sm:mt-4 sm:text-lg">
               Begin crafting your Japan adventure with a few key details. We&apos;ll save your
               progress automatically as you go.
             </p>

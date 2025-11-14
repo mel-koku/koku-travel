@@ -320,9 +320,9 @@ export function ExploreShell() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto flex w-full max-w-full flex-col gap-8 px-8 py-16">
+      <div className="mx-auto flex w-full max-w-full flex-col gap-6 px-4 py-8 sm:gap-8 sm:px-6 sm:py-12 md:px-8 md:py-16">
         <div className="h-10 w-full max-w-md animate-pulse rounded-lg bg-gray-200" />
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <div key={index} className="h-64 animate-pulse rounded-2xl bg-gray-200" />
           ))}
@@ -333,16 +333,16 @@ export function ExploreShell() {
 
   if (loadError) {
     return (
-      <div className="mx-auto max-w-screen-md px-8 py-24 text-center">
+      <div className="mx-auto max-w-screen-md px-4 py-12 text-center sm:px-6 sm:py-16 md:px-8 md:py-24">
         <p className="text-sm text-red-600">{loadError}</p>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-6 pb-8 pt-10 lg:px-12">
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pb-6 pt-6 sm:gap-8 sm:px-6 sm:pb-8 sm:pt-8 md:gap-10 md:pb-8 md:pt-10 lg:px-12">
       <FeaturedLocationsHero locations={featuredLocations} />
-      <div className="flex flex-col gap-12 lg:grid lg:grid-cols-[minmax(260px,_320px)_1fr]">
+      <div className="flex flex-col gap-6 sm:gap-8 lg:grid lg:grid-cols-[minmax(260px,_320px)_1fr] lg:gap-12">
         <FilterBar
           query={query}
           onQueryChange={setQuery}

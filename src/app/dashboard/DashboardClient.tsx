@@ -94,27 +94,27 @@ export function DashboardClient({ initialUser }: DashboardClientProps) {
   }, [pendingUndo, restoreTrip]);
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-24">
-      <section className="mx-auto max-w-7xl px-8 pt-8">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md">
-          <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500">Welcome back, {user.displayName || "Guest"}.</p>
+    <main className="min-h-screen bg-gray-50 pb-16 sm:pb-20 md:pb-24">
+      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 md:px-8">
+        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-md sm:p-6">
+          <h1 className="text-lg font-semibold text-gray-900 sm:text-xl">Dashboard</h1>
+          <p className="mt-1 text-sm text-gray-500">Welcome back, {user.displayName || "Guest"}.</p>
 
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-6 sm:gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-gray-200 p-4">
               <p className="text-xs uppercase text-gray-500">Favorites</p>
-              <p className="text-2xl font-semibold text-gray-900">{favorites.length}</p>
+              <p className="mt-1 text-xl font-semibold text-gray-900 sm:text-2xl">{favorites.length}</p>
               <Link
                 href={favorites.length > 0 ? "/favorites" : "/explore"}
-                className="mt-2 inline-block text-sm text-indigo-600"
+                className="mt-2 inline-block min-h-[44px] text-sm text-indigo-600 hover:text-indigo-700"
               >
                 {favorites.length > 0 ? "View favorites →" : "Explore places →"}
               </Link>
             </div>
             <div className="rounded-xl border border-gray-200 p-4">
               <p className="text-xs uppercase text-gray-500">Bookmarked Guides</p>
-              <p className="text-2xl font-semibold text-gray-900">{guideBookmarks.length}</p>
-              <Link href="/guides/bookmarks" className="mt-2 inline-block text-sm text-indigo-600">
+              <p className="mt-1 text-xl font-semibold text-gray-900 sm:text-2xl">{guideBookmarks.length}</p>
+              <Link href="/guides/bookmarks" className="mt-2 inline-block min-h-[44px] text-sm text-indigo-600 hover:text-indigo-700">
                 View bookmarks →
               </Link>
             </div>
