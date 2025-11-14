@@ -8,6 +8,20 @@ import { checkRateLimit } from "@/lib/api/rateLimit";
 
 const MAX_DIMENSION = 4000; // Reasonable maximum for image dimensions
 
+/**
+ * GET /api/places/photo
+ * Fetches a photo from Google Places API by photo name.
+ *
+ * @param request - Next.js request object
+ * @param request.url - Must contain query parameter 'photoName' (format: places/{place_id}/photos/{photo_reference})
+ * @param request.url.maxWidthPx - Optional maximum width in pixels (1-4000)
+ * @param request.url.maxHeightPx - Optional maximum height in pixels (1-4000)
+ * @returns Photo stream with appropriate cache headers, or error response
+ * @throws Returns 400 if photoName is missing or invalid
+ * @throws Returns 429 if rate limit exceeded (200 requests/minute)
+ * @throws Returns 503 if Google Places API is not configured
+ * @throws Returns 500 for other errors
+ */
 export async function GET(request: NextRequest) {
   // Rate limiting: 200 requests per minute per IP (images are cached)
   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 200, windowMs: 60 * 1000 });
