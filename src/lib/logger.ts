@@ -55,27 +55,71 @@ class Logger {
 
   /**
    * Sends error to external error tracking service
-   * TODO: Integrate with Sentry, LogRocket, or similar service
+   * Integrates with Sentry if configured
    */
   private sendToErrorTracking(
     message: string,
     error?: Error | unknown,
     context?: LogContext,
   ): void {
-    // Placeholder for error tracking integration
-    // Example with Sentry:
-    // import * as Sentry from "@sentry/nextjs";
-    // Sentry.captureException(error || new Error(message), {
-    //   extra: context,
-    //   tags: { source: "logger" },
-    // });
-
-    // For now, just log to console in production
-    // In a real implementation, this would send to your error tracking service
-    if (process.env.NEXT_PUBLIC_ENABLE_ERROR_TRACKING === "true") {
-      // This would be where you'd send to your error tracking service
-      // For now, we'll just ensure it's logged
+    // Try to use Sentry if available and configured
+    if (process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN) {
+      try {
+        // Dynamic import to avoid breaking if Sentry is not installed
+        if (typeof window !== "undefined") {
+          // Client-side: use dynamic import
+          import("@sentry/nextjs").then((Sentry) => {
+            Sentry.captureException(error || new Error(message), {
+              extra: this.sanitizeContext(context || {}),
+              tags: { source: "logger" },
+            });
+          }).catch(() => {
+            // Sentry not available, continue silently
+          });
+        } else {
+          // Server-side: use require (only works in Node.js)
+          try {
+            const Sentry = require("@sentry/nextjs");
+            Sentry.captureException(error || new Error(message), {
+              extra: this.sanitizeContext(context || {}),
+              tags: { source: "logger" },
+            });
+          } catch {
+            // Sentry not available, continue silently
+          }
+        }
+        return;
+      } catch {
+        // Sentry not available, fall through to default logging
+      }
     }
+
+    // Default: log to console in production if error tracking is enabled
+    if (process.env.NEXT_PUBLIC_ENABLE_ERROR_TRACKING === "true") {
+      // Log structured error for potential log aggregation
+      console.error("[ERROR_TRACKING]", {
+        message,
+        error: error instanceof Error ? error.message : String(error),
+        context: this.sanitizeContext(context || {}),
+      });
+    }
+  }
+
+  /**
+   * Sanitize context to remove sensitive data
+   */
+  private sanitizeContext(context: LogContext): LogContext {
+    const sanitized: LogContext = { ...context };
+    const sensitiveKeys = ["password", "token", "secret", "key", "authorization", "cookie"];
+
+    for (const key in sanitized) {
+      const lowerKey = key.toLowerCase();
+      if (sensitiveKeys.some((sensitive) => lowerKey.includes(sensitive))) {
+        sanitized[key] = "[REDACTED]";
+      }
+    }
+
+    return sanitized;
   }
 }
 
