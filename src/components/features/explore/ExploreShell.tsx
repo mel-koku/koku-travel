@@ -6,6 +6,7 @@ import { Location } from "@/types/location";
 import { FilterBar } from "./FilterBar";
 import { LocationGrid } from "./LocationGrid";
 import { FeaturedLocationsHero } from "./FeaturedLocationsHero";
+import { logger } from "@/lib/logger";
 
 const BUDGET_FILTERS = [
   {
@@ -185,7 +186,7 @@ export function ExploreShell() {
         setLoadError(null);
       })
       .catch((error) => {
-        console.error("[ExploreShell] Failed to load mock locations.", error);
+        logger.error("Failed to load mock locations", error);
         if (!isActive) return;
         setLoadError("Unable to load locations. Please try again later.");
         setLocations([]);

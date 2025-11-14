@@ -10,7 +10,7 @@ const MAX_DIMENSION = 4000; // Reasonable maximum for image dimensions
 
 export async function GET(request: NextRequest) {
   // Rate limiting: 200 requests per minute per IP (images are cached)
-  const rateLimitResponse = checkRateLimit(request, { maxRequests: 200, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 200, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }

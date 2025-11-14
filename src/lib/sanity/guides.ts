@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import { sanityClient, getPreviewClient } from "./client";
 import { ALL_GUIDES_QUERY, GUIDE_BY_SLUG_QUERY } from "./queries";
 import type { Guide } from "@/types/guide";
+import { logger } from "@/lib/logger";
 
 type SanityAuthor = {
   _id: string;
@@ -103,9 +104,9 @@ export async function fetchGuides(options?: FetchGuidesOptions): Promise<Guide[]
     try {
       const results = await client.fetch<SanityGuide[]>(ALL_GUIDES_QUERY);
       sanityGuides = mapGuides(results);
-      console.log(`[guides] Fetched ${sanityGuides.length} preview guide(s) from Sanity`);
+      logger.debug(`Fetched ${sanityGuides.length} preview guide(s) from Sanity`);
     } catch (error) {
-      console.error("[guides] Failed to fetch preview guides:", error);
+      logger.error("Failed to fetch preview guides", error);
     }
   } else {
     // In development, always fetch fresh data to avoid stale cache issues
@@ -113,10 +114,10 @@ export async function fetchGuides(options?: FetchGuidesOptions): Promise<Guide[]
       try {
         const fresh = await sanityClient.fetch<SanityGuide[]>(ALL_GUIDES_QUERY);
         const mapped = mapGuides(fresh);
-        console.log(`[guides] [DEV] Fetched ${fresh.length} raw guide(s), ${mapped.length} valid guide(s) from Sanity`);
+        logger.debug(`Fetched ${fresh.length} raw guide(s), ${mapped.length} valid guide(s) from Sanity`);
         sanityGuides = mapped;
       } catch (error) {
-        console.error("[guides] Failed to fetch guides from Sanity:", error);
+        logger.error("Failed to fetch guides from Sanity", error);
       }
     } else {
       // In production, try cache first, then fallback to fresh fetch
@@ -124,12 +125,12 @@ export async function fetchGuides(options?: FetchGuidesOptions): Promise<Guide[]
         const cached = await fetchPublishedGuides();
         if (cached.length > 0) {
           sanityGuides = cached;
-          console.log(`[guides] Using ${sanityGuides.length} cached guide(s)`);
+          logger.debug(`Using ${sanityGuides.length} cached guide(s)`);
         } else {
-          console.log("[guides] Cache is empty, fetching fresh data...");
+          logger.debug("Cache is empty, fetching fresh data...");
         }
       } catch (error) {
-        console.error("[guides] Failed to read cached guides:", error);
+        logger.error("Failed to read cached guides", error);
       }
 
       // Fetch fresh data if cache is empty
@@ -137,18 +138,18 @@ export async function fetchGuides(options?: FetchGuidesOptions): Promise<Guide[]
         try {
           const fresh = await sanityClient.fetch<SanityGuide[]>(ALL_GUIDES_QUERY);
           const mapped = mapGuides(fresh);
-          console.log(`[guides] Fetched ${fresh.length} raw guide(s), ${mapped.length} valid guide(s) from Sanity`);
+          logger.debug(`Fetched ${fresh.length} raw guide(s), ${mapped.length} valid guide(s) from Sanity`);
           if (mapped.length > 0) {
             sanityGuides = mapped;
           }
         } catch (error) {
-          console.error("[guides] Failed to fetch guides from Sanity:", error);
+          logger.error("Failed to fetch guides from Sanity", error);
         }
       }
     }
   }
 
-  console.log(`[guides] Returning ${sanityGuides.length} guide(s) total`);
+  logger.debug(`Returning ${sanityGuides.length} guide(s) total`);
   return sanityGuides;
 }
 
@@ -170,7 +171,7 @@ export async function fetchGuideBySlug(
       if (!doc) return null;
       return mapGuide(doc);
     } catch (error) {
-      console.error("[guides] Failed to fetch preview guide:", error);
+      logger.error("Failed to fetch preview guide", error);
       return null;
     }
   }
@@ -182,7 +183,7 @@ export async function fetchGuideBySlug(
       return guide;
     }
   } catch (error) {
-    console.error("[guides] Failed to read cached guide:", error);
+    logger.error("Failed to read cached guide", error);
   }
 
   try {
@@ -195,7 +196,7 @@ export async function fetchGuideBySlug(
 
     return mapGuide(doc);
   } catch (error) {
-    console.error("[guides] Failed to fetch guide from Sanity:", error);
+    logger.error("Failed to fetch guide from Sanity", error);
     return null;
   }
 }

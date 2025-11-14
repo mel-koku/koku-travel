@@ -54,7 +54,7 @@ function normalizePaths(payload: z.infer<typeof sanityWebhookPayloadSchema>): st
 
 export async function POST(request: NextRequest) {
   // Rate limiting: 20 requests per minute per IP (webhook endpoint - lower limit)
-  const rateLimitResponse = checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }

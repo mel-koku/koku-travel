@@ -14,6 +14,7 @@ import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { planItinerary } from "@/lib/itineraryPlanner";
+import { logger } from "@/lib/logger";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -120,7 +121,7 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
           if (!isMountedRef.current || planningRequestRef.current !== runId) {
             return;
           }
-          console.warn("[ItineraryShell] Travel planning watchdog fired, falling back to previous schedule.");
+          logger.warn("Travel planning watchdog fired, falling back to previous schedule");
           pendingPlanRef.current = null;
           setPlanningError((prev) => prev ?? "We couldn't refresh travel times right now. Showing previous estimates.");
           setIsPlanning(false);
@@ -141,7 +142,7 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
             if (planningRequestRef.current !== runId || !isMountedRef.current) {
               return;
             }
-            console.error("[ItineraryShell] Failed to plan itinerary after user change", error);
+            logger.error("Failed to plan itinerary after user change", error);
             setPlanningError(error instanceof Error ? error.message : "Unknown error");
           })
           .finally(() => {
@@ -212,7 +213,7 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
       if (!isMountedRef.current || planningRequestRef.current !== runId) {
         return;
       }
-      console.warn("[ItineraryShell] Initial travel planning watchdog fired, using existing itinerary data.");
+      logger.warn("Initial travel planning watchdog fired, using existing itinerary data");
       setPlanningError((prev) => prev ?? "We couldn't refresh travel times right now. Showing previous estimates.");
       setIsPlanning(false);
     }, 15000);
@@ -246,7 +247,7 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
         ) {
           return;
         }
-        console.error("[ItineraryShell] Failed to plan itinerary", error);
+        logger.error("Failed to plan itinerary", error);
         skipSyncRef.current = true;
         skipNextPlanRef.current = true;
         setModelState(nextNormalized);

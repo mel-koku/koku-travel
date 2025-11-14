@@ -4,6 +4,7 @@
  */
 
 import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from "web-vitals";
+import { logger } from "./logger";
 
 type WebVitalsCallback = (metric: Metric) => void;
 
@@ -12,15 +13,13 @@ type WebVitalsCallback = (metric: Metric) => void;
  * In production, this can be extended to send to analytics platforms
  */
 function reportWebVital(metric: Metric): void {
-  // Log to console in development
-  if (process.env.NODE_ENV === "development") {
-    console.log(`[Web Vital] ${metric.name}:`, {
+  // Log using logger (only logs in development)
+  logger.debug(`Web Vital ${metric.name}`, {
       value: metric.value,
       rating: metric.rating,
       delta: metric.delta,
       id: metric.id,
     });
-  }
 
   // In production, send to analytics service
   // Example: Google Analytics 4
