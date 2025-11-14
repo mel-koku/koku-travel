@@ -26,7 +26,8 @@ export async function GET(request: NextRequest) {
     return badRequest("Missing slug parameter.");
   }
 
-  draftMode().enable();
+  const draft = await draftMode();
+  draft.enable();
   return NextResponse.redirect(resolveRedirectUrl(request, slug));
 }
 

@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     revalidatePath(path);
   }
 
-  revalidateTag("guides");
+  revalidateTag("guides", "page");
 
   return NextResponse.json({ revalidated: paths, tags: ["guides"] });
 }
