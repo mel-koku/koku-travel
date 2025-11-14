@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { GET, POST } from "@/app/api/preview/exit/route";
 import { draftMode } from "next/headers";
 import { createMockRequest } from "../utils/mocks";
@@ -28,7 +28,7 @@ describe("GET /api/preview/exit", () => {
     it("should enforce rate limit of 30 requests per minute", async () => {
       const { checkRateLimit } = await import("@/lib/api/rateLimit");
       vi.mocked(checkRateLimit).mockResolvedValueOnce(
-        new Response(JSON.stringify({ error: "Too many requests", code: "RATE_LIMIT_EXCEEDED" }), {
+        NextResponse.json({ error: "Too many requests", code: "RATE_LIMIT_EXCEEDED" }, {
           status: 429,
         }),
       );
@@ -126,7 +126,7 @@ describe("POST /api/preview/exit", () => {
     it("should enforce rate limit of 30 requests per minute", async () => {
       const { checkRateLimit } = await import("@/lib/api/rateLimit");
       vi.mocked(checkRateLimit).mockResolvedValueOnce(
-        new Response(JSON.stringify({ error: "Too many requests", code: "RATE_LIMIT_EXCEEDED" }), {
+        NextResponse.json({ error: "Too many requests", code: "RATE_LIMIT_EXCEEDED" }, {
           status: 429,
         }),
       );
