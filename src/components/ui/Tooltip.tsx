@@ -61,7 +61,7 @@ export function Tooltip({ content, children, delay = 150, side = "top", classNam
 
   const trigger = cloneElement(children, {
     "aria-describedby": open ? id : undefined,
-  } as any);
+  } as Record<string, unknown>);
 
   const sideClasses: Record<"top" | "bottom" | "left" | "right", string> = {
     top: "bottom-full left-1/2 -translate-x-1/2 -translate-y-2",
