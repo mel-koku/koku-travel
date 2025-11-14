@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+// Unmock the logger to test actual implementation
+vi.unmock("@/lib/logger");
 import { logger, sanitizeContext } from "../src/lib/logger";
 
 describe("Logger", () => {
