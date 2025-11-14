@@ -2,6 +2,8 @@ import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { internalError, unauthorized, badRequest } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { previewSlugSchema, secretSchema } from "@/lib/api/schemas";
+import { sanitizePath } from "@/lib/api/sanitization";
 
 const PREVIEW_SECRET = process.env.SANITY_PREVIEW_SECRET;
 
@@ -22,19 +24,39 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const secret = searchParams.get("secret");
-  const slug = searchParams.get("slug");
+  const secretParam = searchParams.get("secret");
+  const slugParam = searchParams.get("slug");
 
-  if (!secret || secret !== PREVIEW_SECRET) {
+  // Validate secret parameter
+  const secretValidation = secretSchema.safeParse(secretParam);
+  if (!secretValidation.success) {
+    return badRequest("Invalid secret parameter format.");
+  }
+
+  if (secretValidation.data !== PREVIEW_SECRET) {
     return unauthorized("Invalid preview secret.");
   }
 
-  if (!slug) {
+  // Validate slug parameter
+  if (!slugParam) {
     return badRequest("Missing slug parameter.");
+  }
+
+  const slugValidation = previewSlugSchema.safeParse(slugParam);
+  if (!slugValidation.success) {
+    return badRequest("Invalid slug parameter format.", {
+      errors: slugValidation.error.issues,
+    });
+  }
+
+  // Additional sanitization for path safety
+  const sanitizedSlug = sanitizePath(slugValidation.data);
+  if (!sanitizedSlug) {
+    return badRequest("Slug contains unsafe characters.");
   }
 
   const draft = await draftMode();
   draft.enable();
-  return NextResponse.redirect(resolveRedirectUrl(request, slug));
+  return NextResponse.redirect(resolveRedirectUrl(request, sanitizedSlug));
 }
 
