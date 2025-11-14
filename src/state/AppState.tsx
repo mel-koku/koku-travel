@@ -44,6 +44,10 @@ export type AppStateShape = {
   guideBookmarks: string[]; // guide IDs (future)
   trips: StoredTrip[];
 
+  // loading states
+  isLoadingRefresh: boolean;
+  loadingBookmarks: Set<string>; // Set of guide IDs currently being bookmarked/unbookmarked
+
   // actions
   setUser: (patch: Partial<UserProfile>) => void;
   toggleFavorite: (id: string) => void;
@@ -71,6 +75,8 @@ const defaultState: AppStateShape = {
   favorites: [],
   guideBookmarks: [],
   trips: [],
+  isLoadingRefresh: false,
+  loadingBookmarks: new Set(),
 
   setUser: () => {},
   toggleFavorite: () => {},
@@ -90,7 +96,10 @@ const defaultState: AppStateShape = {
 
 const Ctx = createContext<AppStateShape>(defaultState);
 
-type InternalState = Pick<AppStateShape, "user" | "favorites" | "guideBookmarks" | "trips">;
+type InternalState = Pick<
+  AppStateShape,
+  "user" | "favorites" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks"
+>;
 
 const sanitizeTrips = (raw: unknown): StoredTrip[] => {
   if (!Array.isArray(raw)) {
@@ -172,6 +181,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     favorites: [],
     guideBookmarks: [],
     trips: [],
+    isLoadingRefresh: false,
+    loadingBookmarks: new Set(),
   });
 
   // load
@@ -189,6 +200,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           favorites: parsed.favorites ?? [],
           guideBookmarks: parsed.guideBookmarks ?? [],
           trips: sanitizeTrips(parsed.trips),
+          isLoadingRefresh: false,
+          loadingBookmarks: new Set(),
         };
       } else {
         nextState = {
@@ -196,6 +209,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           favorites: [],
           guideBookmarks: [],
           trips: [],
+          isLoadingRefresh: false,
+          loadingBookmarks: new Set(),
         };
       }
 
@@ -220,6 +235,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    setState((s) => ({ ...s, isLoadingRefresh: true }));
+
     try {
       const {
         data: { user },
@@ -238,6 +255,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
             displayName: current.user.displayName || "Guest",
             locale: sanitizeLocale(current.user.locale),
           },
+          isLoadingRefresh: false,
         }));
         return;
       }
@@ -262,9 +280,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         user: buildProfileFromSupabase(user, s.user),
         favorites: favoriteRows.map((row) => row.place_id),
         guideBookmarks: bookmarkRows.map((row) => row.guide_id),
+        isLoadingRefresh: false,
       }));
     } catch (error) {
       console.error("[AppState] refreshFromSupabase failed.", error);
+      setState((s) => ({ ...s, isLoadingRefresh: false }));
     }
   }, [supabase]);
 
@@ -296,11 +316,26 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     };
   }, [refreshFromSupabase, supabase]);
 
-  // save
+  // save - debounced and only persist essential fields (exclude loading states)
   useEffect(() => {
     if (typeof window === "undefined") return;
-    localStorage.setItem(KEY, JSON.stringify(state));
-  }, [state]);
+    
+    const timeoutId = setTimeout(() => {
+      // Only persist essential fields, not the entire state object
+      // Exclude loading states as they are runtime-only
+      const persistedState = {
+        user: state.user,
+        favorites: state.favorites,
+        guideBookmarks: state.guideBookmarks,
+        trips: state.trips,
+      };
+      localStorage.setItem(KEY, JSON.stringify(persistedState));
+    }, 500); // Debounce writes by 500ms
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [state.user, state.favorites, state.guideBookmarks, state.trips]);
 
   const setUser = useCallback(
     (patch: Partial<UserProfile>) =>
@@ -500,10 +535,17 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         } else {
           set.add(id);
         }
-        return { ...s, guideBookmarks: Array.from(set) };
+        const loadingSet = new Set(s.loadingBookmarks);
+        loadingSet.add(id);
+        return { ...s, guideBookmarks: Array.from(set), loadingBookmarks: loadingSet };
       });
 
       if (!supabase) {
+        setState((s) => {
+          const loadingSet = new Set(s.loadingBookmarks);
+          loadingSet.delete(id);
+          return { ...s, loadingBookmarks: loadingSet };
+        });
         return;
       }
 
@@ -516,10 +558,20 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
           if (authError) {
             console.error("[AppState] Failed to read auth session when syncing guide bookmark.", authError);
+            setState((s) => {
+              const loadingSet = new Set(s.loadingBookmarks);
+              loadingSet.delete(guideId);
+              return { ...s, loadingBookmarks: loadingSet };
+            });
             return;
           }
 
           if (!user) {
+            setState((s) => {
+              const loadingSet = new Set(s.loadingBookmarks);
+              loadingSet.delete(guideId);
+              return { ...s, loadingBookmarks: loadingSet };
+            });
             return;
           }
 
@@ -542,6 +594,12 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
               throw error;
             }
           }
+
+          setState((s) => {
+            const loadingSet = new Set(s.loadingBookmarks);
+            loadingSet.delete(guideId);
+            return { ...s, loadingBookmarks: loadingSet };
+          });
         } catch (error) {
           const message =
             error instanceof Error
@@ -552,6 +610,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
           if (typeof message === "string" && message.includes("Auth session missing")) {
             // No authenticated Supabase session – keep optimistic local state without logging noise.
+            setState((s) => {
+              const loadingSet = new Set(s.loadingBookmarks);
+              loadingSet.delete(guideId);
+              return { ...s, loadingBookmarks: loadingSet };
+            });
             return;
           }
 
@@ -563,7 +626,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
             } else {
               set.delete(guideId);
             }
-            return { ...s, guideBookmarks: Array.from(set) };
+            const loadingSet = new Set(s.loadingBookmarks);
+            loadingSet.delete(guideId);
+            return { ...s, guideBookmarks: Array.from(set), loadingBookmarks: loadingSet };
           });
         }
       })(id, existed);

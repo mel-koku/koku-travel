@@ -9,7 +9,7 @@ import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 export default function AccountPage() {
   const supabase = useMemo(() => createClient(), []);
-  const { user, setUser, clearAllLocalData, refreshFromSupabase } = useAppState();
+  const { user, setUser, clearAllLocalData, refreshFromSupabase, isLoadingRefresh } = useAppState();
   const [sessionUserId, setSessionUserId] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
@@ -198,7 +198,7 @@ export default function AccountPage() {
 
               <div className="flex items-center justify-between">
                 <div className="text-xs text-gray-500">
-                  {isLoadingProfile ? (
+                  {isLoadingProfile || isLoadingRefresh ? (
                     <span className="flex items-center gap-2">
                       <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-indigo-600 border-r-transparent"></span>
                       {status || "Loading..."}
@@ -209,7 +209,7 @@ export default function AccountPage() {
                 </div>
                 <button
                   onClick={clearAllLocalData}
-                  disabled={isLoadingProfile}
+                  disabled={isLoadingProfile || isLoadingRefresh}
                   className="h-10 rounded-lg border border-red-200 bg-red-50 px-4 text-sm text-red-700 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Clear local data
