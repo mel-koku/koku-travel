@@ -24,8 +24,12 @@ const upstashRedisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 const useUpstash = !!(upstashRedisUrl && upstashRedisToken);
 
 // Initialize Upstash Redis client if configured
+// Note: Upstash Ratelimit requires limit/window to be set at instance creation.
+// We use a default of 100 requests per minute. For custom configs, we fall back to in-memory.
 let redisClient: Redis | null = null;
 let upstashRatelimit: Ratelimit | null = null;
+const DEFAULT_MAX_REQUESTS = 100;
+const DEFAULT_WINDOW_MS = 60 * 1000; // 1 minute
 
 if (useUpstash) {
   try {
@@ -35,7 +39,7 @@ if (useUpstash) {
     });
     upstashRatelimit = new Ratelimit({
       redis: redisClient,
-      limiter: Ratelimit.slidingWindow,
+      limiter: Ratelimit.slidingWindow(DEFAULT_MAX_REQUESTS, `${DEFAULT_WINDOW_MS}ms`),
       analytics: true,
     });
     logger.info("Upstash Redis rate limiting enabled");
@@ -98,15 +102,19 @@ export async function checkRateLimit(
 ): Promise<NextResponse | null> {
   const ip = getClientIp(request);
 
-  // Use Upstash Redis if configured
-  if (useUpstash && upstashRatelimit) {
+  // Use Upstash Redis if configured and config matches default
+  // Note: Upstash Ratelimit requires limit/window at instance creation, so we only use it
+  // for the default config. Custom configs fall back to in-memory rate limiting.
+  if (
+    useUpstash &&
+    upstashRatelimit &&
+    config.maxRequests === DEFAULT_MAX_REQUESTS &&
+    config.windowMs === DEFAULT_WINDOW_MS
+  ) {
     try {
-      const result = await upstashRatelimit.limit(ip, {
-        limit: config.maxRequests,
-        window: `${config.windowMs}ms`,
-      });
+      const result = await upstashRatelimit.limit(ip);
 
-      if (!result.allowed) {
+      if (!result.success) {
         // Rate limited
         const retryAfter = Math.ceil(result.reset / 1000);
         return NextResponse.json(
