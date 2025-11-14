@@ -645,6 +645,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       favorites: [],
       guideBookmarks: [],
       trips: [],
+      isLoadingRefresh: false,
+      loadingBookmarks: new Set(),
     };
     setState(next);
     if (typeof window !== "undefined") {

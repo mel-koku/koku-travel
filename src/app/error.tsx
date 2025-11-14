@@ -21,6 +21,7 @@ export default function Error({
 
     // Also try to capture directly to Sentry if available
     if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+      // Dynamic import with error handling - Sentry is optional
       import("@sentry/nextjs")
         .then((Sentry) => {
           Sentry.captureException(error, {
