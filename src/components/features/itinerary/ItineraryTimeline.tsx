@@ -4,32 +4,25 @@ import {
   DndContext,
   PointerSensor,
   closestCenter,
-  useDroppable,
   useSensor,
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   useMemo,
   useCallback,
   type Dispatch,
-  type ReactNode,
   type SetStateAction,
 } from "react";
-import { ActivityRow } from "./ActivityRow";
 import {
   type Itinerary,
   type ItineraryActivity,
   type ItineraryDay,
 } from "@/types/itinerary";
-
-type TimeOfDay = ItineraryActivity["timeOfDay"];
+import { buildSections, createNoteActivity, type TimeOfDay, SECTION_LABELS } from "./timelineUtils";
+import { TimelineSection } from "./TimelineSection";
+import { SortableActivity } from "./SortableActivity";
 
 type ItineraryTimelineProps = {
   day: ItineraryDay;
@@ -38,104 +31,6 @@ type ItineraryTimelineProps = {
   setModel: Dispatch<SetStateAction<Itinerary>>;
   selectedActivityId?: string | null;
   onSelectActivity?: (activityId: string) => void;
-};
-
-const SECTION_LABELS: Record<
-  TimeOfDay,
-  { title: string; description: string }
-> = {
-  morning: {
-    title: "Morning",
-    description: "Start the day with energizing plans.",
-  },
-  afternoon: {
-    title: "Afternoon",
-    description: "Keep exploring with midday highlights.",
-  },
-  evening: {
-    title: "Evening",
-    description: "Wind down with memorable nights.",
-  },
-};
-
-const buildSections = (
-  activities: ItineraryActivity[],
-): Record<TimeOfDay, ItineraryActivity[]> => {
-  const activitiesByTime: Record<TimeOfDay, ItineraryActivity[]> = {
-    morning: [],
-    afternoon: [],
-    evening: [],
-  };
-
-  activities.forEach((activity) => {
-    activitiesByTime[activity.timeOfDay]?.push(activity);
-  });
-
-  return activitiesByTime;
-};
-
-const SortableActivity = ({
-  activity,
-  onDelete,
-  onUpdate,
-  isSelected,
-  onSelect,
-}: {
-  activity: ItineraryActivity;
-  onDelete: () => void;
-  onUpdate: (patch: Partial<ItineraryActivity>) => void;
-  isSelected?: boolean;
-  onSelect?: (activityId: string) => void;
-}) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: activity.id });
-
-  return (
-    <ActivityRow
-      ref={setNodeRef}
-      activity={activity}
-      onDelete={onDelete}
-      onUpdate={onUpdate}
-      attributes={attributes as unknown as Record<string, unknown>}
-      listeners={listeners as unknown as Record<string, unknown>}
-      isDragging={isDragging}
-      transform={transform}
-      transition={transition}
-      isSelected={isSelected}
-      onSelect={onSelect}
-      onHover={onSelect}
-    />
-  );
-};
-
-const DroppableSection = ({
-  sectionKey,
-  activities,
-  children,
-}: {
-  sectionKey: TimeOfDay;
-  activities: ItineraryActivity[];
-  children: ReactNode;
-}) => {
-  const { setNodeRef } = useDroppable({ id: sectionKey });
-
-  return (
-    <SortableContext
-      id={sectionKey}
-      items={activities.map((activity) => activity.id)}
-      strategy={verticalListSortingStrategy}
-    >
-      <ul ref={setNodeRef} className="space-y-3">
-        {children}
-      </ul>
-    </SortableContext>
-  );
 };
 
 export const ItineraryTimeline = ({
@@ -156,22 +51,6 @@ export const ItineraryTimeline = ({
   const sections = useMemo(
     () => buildSections(day.activities ?? []),
     [day.activities],
-  );
-
-  const createNoteActivity = useCallback(
-    (timeOfDay: TimeOfDay): ItineraryActivity => ({
-      kind: "note",
-      id:
-        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-          ? crypto.randomUUID()
-          : `note-${Date.now()}-${Math.random()}`,
-      title: "Note",
-      timeOfDay,
-      notes: "",
-      startTime: undefined,
-      endTime: undefined,
-    }),
-    [],
   );
 
   const handleDelete = useCallback(
@@ -354,7 +233,7 @@ export const ItineraryTimeline = ({
         return { ...current, days: nextDays };
       });
     },
-    [createNoteActivity, dayIndex, setModel],
+    [dayIndex, setModel],
   );
 
   return (
@@ -366,81 +245,29 @@ export const ItineraryTimeline = ({
     >
       <div className="space-y-10">
         {(Object.keys(SECTION_LABELS) as TimeOfDay[]).map((sectionKey) => {
-          const meta = SECTION_LABELS[sectionKey];
           const activities = sections[sectionKey] ?? [];
-          const headingId = `${sectionKey}-activities`;
-          const hasActivities = activities.length > 0;
-          const addNoteLabel = `Add note to ${meta.title}`;
           return (
-            <section
+            <TimelineSection
               key={sectionKey}
-              aria-labelledby={headingId}
-              className="space-y-4"
+              sectionKey={sectionKey}
+              activities={activities}
+              selectedActivityId={selectedActivityId}
+              onSelectActivity={onSelectActivity}
+              onDelete={handleDelete}
+              onUpdate={handleUpdate}
+              onAddNote={handleAddNote}
             >
-              <header className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
-                <div>
-                  <h2
-                    id={headingId}
-                    className="text-lg font-semibold text-gray-900"
-                  >
-                    {meta.title}
-                  </h2>
-                  <p className="text-sm text-gray-500">{meta.description}</p>
-                </div>
-                {hasActivities ? (
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button
-                      type="button"
-                      aria-label={addNoteLabel}
-                      onClick={() => handleAddNote(sectionKey)}
-                      className="text-indigo-600 hover:text-indigo-700 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-                    >
-                      + Add note
-                    </button>
-                  </div>
-                ) : null}
-              </header>
-              {activities.length > 0 ? (
-                <DroppableSection
-                  sectionKey={sectionKey}
-                  activities={activities}
-                >
-                  {activities.map((activity) => (
-                    <SortableActivity
-                      key={activity.id}
-                      activity={activity}
-                      onDelete={() => handleDelete(activity.id)}
-                      onUpdate={(patch) => handleUpdate(activity.id, patch)}
-                      isSelected={activity.id === selectedActivityId}
-                      onSelect={onSelectActivity}
-                    />
-                  ))}
-                </DroppableSection>
-              ) : (
-                <DroppableSection
-                  sectionKey={sectionKey}
-                  activities={[]}
-                >
-                  <li className="rounded-xl border-2 border-dashed border-gray-300 p-6 text-gray-500">
-                    <div className="flex flex-col items-start gap-3">
-                      <p className="text-sm">
-                        No activities yet for this part of the day.
-                      </p>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <button
-                          type="button"
-                          aria-label={addNoteLabel}
-                          onClick={() => handleAddNote(sectionKey)}
-                          className="text-indigo-600 hover:text-indigo-700 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-                        >
-                          + Add note
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                </DroppableSection>
-              )}
-            </section>
+              {activities.map((activity) => (
+                <SortableActivity
+                  key={activity.id}
+                  activity={activity}
+                  onDelete={() => handleDelete(activity.id)}
+                  onUpdate={(patch) => handleUpdate(activity.id, patch)}
+                  isSelected={activity.id === selectedActivityId}
+                  onSelect={onSelectActivity}
+                />
+              ))}
+            </TimelineSection>
           );
         })}
       </div>
