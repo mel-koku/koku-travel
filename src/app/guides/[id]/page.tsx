@@ -7,6 +7,9 @@ import GuideBookmarkButton from "@/components/features/guides/GuideBookmarkButto
 import RelatedGuides from "@/components/features/guides/RelatedGuides";
 import { fetchGuideBySlug, fetchGuides } from "@/lib/sanity/guides";
 
+// Force dynamic rendering because we use draftMode() which is a dynamic function
+export const dynamic = "force-dynamic";
+
 const FALLBACK_IMAGE_SRC =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 

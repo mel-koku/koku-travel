@@ -1,6 +1,9 @@
 import { requireAuth } from "@/lib/auth/middleware";
 import { DashboardClient } from "./DashboardClient";
 
+// Force dynamic rendering because we use server-side authentication
+export const dynamic = "force-dynamic";
+
 /**
  * Dashboard page - Server component wrapper that ensures authentication
  * before rendering the client component. This prevents the auth race condition

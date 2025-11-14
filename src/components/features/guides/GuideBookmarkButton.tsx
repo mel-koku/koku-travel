@@ -15,12 +15,14 @@ export default function GuideBookmarkButton({
   variant = "pill",
   className,
 }: GuideBookmarkButtonProps) {
-  const { isGuideBookmarked, toggleGuideBookmark } = useAppState();
+  const { isGuideBookmarked, toggleGuideBookmark, loadingBookmarks } = useAppState();
   const active = isGuideBookmarked(guideId);
+  const isLoading = loadingBookmarks.has(guideId);
 
   function onClick(event: MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     event.stopPropagation();
+    if (isLoading) return;
     toggleGuideBookmark(guideId);
   }
 
@@ -29,15 +31,42 @@ export default function GuideBookmarkButton({
       <button
         type="button"
         onClick={onClick}
+        disabled={isLoading}
         aria-pressed={active}
+        aria-busy={isLoading}
         aria-label={active ? "Remove guide bookmark" : "Save guide"}
         className={cx(
           "inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-400 transition hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
           active && "text-indigo-600",
+          isLoading && "opacity-50 cursor-not-allowed",
           className,
         )}
       >
-        <BookmarkIcon active={active} />
+        {isLoading ? (
+          <svg
+            className="h-4 w-4 animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+        ) : (
+          <BookmarkIcon active={active} />
+        )}
       </button>
     );
   }
@@ -46,17 +75,49 @@ export default function GuideBookmarkButton({
     <button
       type="button"
       onClick={onClick}
+      disabled={isLoading}
       aria-pressed={active}
+      aria-busy={isLoading}
       className={cx(
         "inline-flex items-center gap-2 rounded-full border border-indigo-200 px-4 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
         active
           ? "bg-indigo-600 text-white hover:bg-indigo-700"
           : "bg-white text-indigo-600 hover:bg-indigo-50",
+        isLoading && "opacity-50 cursor-not-allowed",
         className,
       )}
     >
-      <BookmarkIcon active={active} />
-      {active ? "Saved to bookmarks" : "Save guide"}
+      {isLoading ? (
+        <>
+          <svg
+            className="h-4 w-4 animate-spin"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            />
+          </svg>
+          <span>Saving...</span>
+        </>
+      ) : (
+        <>
+          <BookmarkIcon active={active} />
+          {active ? "Saved to bookmarks" : "Save guide"}
+        </>
+      )}
     </button>
   );
 }
