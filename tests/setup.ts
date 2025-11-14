@@ -13,10 +13,11 @@ vi.mock("next/headers", () => ({
     set: vi.fn(),
     delete: vi.fn(),
   })),
-  draftMode: vi.fn(() => ({
+  draftMode: vi.fn().mockResolvedValue({
     enable: vi.fn(),
     disable: vi.fn(),
-  })),
+    isEnabled: false,
+  }),
 }));
 
 // Mock Next.js cache functions
