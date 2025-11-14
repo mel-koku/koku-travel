@@ -2,9 +2,14 @@ import { ComponentPropsWithoutRef, forwardRef } from "react";
 
 import { cn } from "@/lib/cn";
 
+/**
+ * Textarea component props.
+ * Extends native HTML textarea element props with error state handling.
+ */
 export type TextareaProps = ComponentPropsWithoutRef<"textarea"> & {
   /**
-   * Marks the textarea as invalid and swaps the focus ring color.
+   * When provided, the textarea is marked invalid and the outline color changes to red.
+   * An error message will be displayed below the textarea if an id is provided.
    */
   error?: string;
 };

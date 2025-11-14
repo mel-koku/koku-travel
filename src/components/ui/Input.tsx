@@ -2,17 +2,24 @@ import { ComponentPropsWithoutRef, ReactNode, forwardRef } from "react";
 
 import { cn } from "@/lib/cn";
 
+/**
+ * Input component props.
+ * Extends native HTML input element props with additional features like icons and error states.
+ */
 export type InputProps = ComponentPropsWithoutRef<"input"> & {
   /**
    * Renders an icon inside the input on the left side.
+   * The input padding is automatically adjusted to accommodate the icon.
    */
   leadingIcon?: ReactNode;
   /**
    * Renders an icon inside the input on the right side.
+   * The input padding is automatically adjusted to accommodate the icon.
    */
   trailingIcon?: ReactNode;
   /**
-   * When provided, the input is marked invalid and the outline color changes.
+   * When provided, the input is marked invalid and the outline color changes to red.
+   * An error message will be displayed below the input if an id is provided.
    */
   error?: string;
 };
