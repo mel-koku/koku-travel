@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, startTransition } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -27,14 +27,17 @@ export default function Header() {
   };
 
   // Close mobile menu when route changes
-  // Use ref to track pathname changes and avoid setState in effect
+  // Use ref to track pathname changes and schedule update outside effect
   useEffect(() => {
     if (prevPathnameRef.current !== pathname && isMobileMenuOpen) {
       prevPathnameRef.current = pathname;
-      // Use startTransition to mark this as a non-urgent update
-      startTransition(() => {
+      // Schedule state update outside of effect execution using requestAnimationFrame
+      const frameId = requestAnimationFrame(() => {
         setIsMobileMenuOpen(false);
       });
+      return () => {
+        cancelAnimationFrame(frameId);
+      };
     } else {
       prevPathnameRef.current = pathname;
     }
