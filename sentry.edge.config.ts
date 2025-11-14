@@ -23,4 +23,3 @@ if (SENTRY_DSN) {
     release: process.env.SENTRY_RELEASE,
   });
 }
-
