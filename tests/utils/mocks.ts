@@ -1,9 +1,22 @@
 import { vi } from "vitest";
 import { NextRequest } from "next/server";
+import type { Mock } from "vitest";
 
 /**
  * Common mocks for testing API routes and components
  */
+
+/**
+ * Type for mock Supabase client
+ */
+export type MockSupabaseClient = {
+  auth: {
+    exchangeCodeForSession: Mock;
+    getSession: Mock;
+    getUser: Mock;
+  };
+  from: Mock;
+};
 
 /**
  * Creates a mock NextRequest for testing
@@ -33,7 +46,7 @@ export function createMockRequest(
 /**
  * Mock Supabase client
  */
-export function createMockSupabaseClient() {
+export function createMockSupabaseClient(): MockSupabaseClient {
   return {
     auth: {
       exchangeCodeForSession: vi.fn().mockResolvedValue({

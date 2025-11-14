@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { GET } from "@/app/api/preview/route";
 import { draftMode } from "next/headers";
 import { createMockRequest } from "../utils/mocks";
@@ -22,7 +22,7 @@ describe("GET /api/preview", () => {
       enable: vi.fn(),
       disable: vi.fn(),
       isEnabled: false,
-    } as any);
+    } as unknown as Awaited<ReturnType<typeof draftMode>>);
   });
 
   afterEach(() => {
@@ -145,7 +145,7 @@ describe("GET /api/preview", () => {
         disable: vi.fn(),
         isEnabled: false,
       };
-      vi.mocked(draftMode).mockReturnValue(mockDraft as any);
+      vi.mocked(draftMode).mockReturnValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
 
       const request = createMockRequest(
         "https://example.com/api/preview?secret=test-secret-123&slug=test-guide",

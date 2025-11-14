@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { GET } from "@/app/api/locations/[id]/route";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
 import { createMockRequest, createMockLocationDetails } from "../utils/mocks";
