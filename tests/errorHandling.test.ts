@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   createErrorResponse,
   badRequest,
@@ -8,6 +8,20 @@ import {
   internalError,
   serviceUnavailable,
 } from "../src/lib/api/errors";
+
+// Mock logger to prevent stderr output in tests
+vi.mock("../src/lib/logger", () => ({
+  logger: {
+    error: vi.fn(),
+    warn: vi.fn(),
+    info: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
 describe("Error Handling", () => {
   describe("createErrorResponse", () => {
