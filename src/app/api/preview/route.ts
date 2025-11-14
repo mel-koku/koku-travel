@@ -14,7 +14,7 @@ function resolveRedirectUrl(request: NextRequest, slug: string) {
 
 export async function GET(request: NextRequest) {
   // Rate limiting: 20 requests per minute per IP (prevent brute force on secret)
-  const rateLimitResponse = checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }

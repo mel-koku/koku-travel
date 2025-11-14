@@ -18,7 +18,7 @@ type RouteContext = {
 
 export async function GET(request: NextRequest, context: RouteContext) {
   // Rate limiting: 100 requests per minute per IP
-  const rateLimitResponse = checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }

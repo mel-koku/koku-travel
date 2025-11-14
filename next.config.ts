@@ -56,6 +56,13 @@ if (siteUrl) {
 }
 
 // Security headers configuration
+const isProduction = process.env.NODE_ENV === "production";
+
+// CSP directives - stricter in production
+const scriptSrc = isProduction
+  ? ["'self'"] // Production: no unsafe-eval or unsafe-inline
+  : ["'self'", "'unsafe-eval'", "'unsafe-inline'"]; // Development: allow for Next.js hot reload
+
 const securityHeaders = [
   {
     key: "X-DNS-Prefetch-Control",
@@ -89,8 +96,8 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // 'unsafe-eval' needed for Next.js in dev, 'unsafe-inline' for inline scripts
-      "style-src 'self' 'unsafe-inline'", // 'unsafe-inline' needed for Tailwind CSS
+      `script-src ${scriptSrc.join(" ")}`, // Conditionally set based on environment
+      "style-src 'self' 'unsafe-inline'", // 'unsafe-inline' needed for Tailwind CSS (consider nonces in future)
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
       "connect-src 'self' https://*.supabase.co https://*.sanity.io https://*.googleapis.com https://api.mapbox.com https://*.sentry.io",

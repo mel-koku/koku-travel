@@ -10,6 +10,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { useAppState } from "@/state/AppState";
 import { generateItineraryFromTrip } from "@/lib/itineraryGenerator";
 import type { TripBuilderData } from "@/types/trip";
+import { logger } from "@/lib/logger";
 
 type TripNameDialogProps = {
   isOpen: boolean;
@@ -77,7 +78,7 @@ export function TripNameDialog({
         setNameError(null);
         router.push(`/itinerary?trip=${tripId}`);
       } catch (error) {
-        console.error("Failed to save trip", error);
+        logger.error("Failed to save trip", error);
         setNameError("We couldn't save your itinerary. Please try again.");
       } finally {
         setIsSaving(false);
