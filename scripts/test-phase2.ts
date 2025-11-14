@@ -67,7 +67,7 @@ test("Empty photo name fails", () => {
 });
 
 test("Null/undefined photo name fails", () => {
-  return !isValidPhotoName(null as any) && !isValidPhotoName(undefined as any);
+  return !isValidPhotoName(null as unknown as string) && !isValidPhotoName(undefined as unknown as string);
 });
 
 // Test 2: Input Validation - Location ID
@@ -149,7 +149,7 @@ test("Array exceeding max size fails", () => {
 });
 
 test("Non-array fails", () => {
-  return !isValidArraySize("not an array" as any, 10);
+  return !isValidArraySize("not an array" as unknown as unknown[], 10);
 });
 
 test("Empty array passes", () => {
@@ -163,21 +163,21 @@ test("Shallow object passes", () => {
 });
 
 test("Deeply nested object fails", () => {
-  let obj: any = {};
-  let current = obj;
+  const obj: Record<string, unknown> = {};
+  let current: Record<string, unknown> = obj;
   for (let i = 0; i < 15; i++) {
     current.nested = {};
-    current = current.nested;
+    current = current.nested as Record<string, unknown>;
   }
   return !isValidObjectDepth(obj, 10);
 });
 
 test("Valid depth object passes", () => {
-  let obj: any = {};
-  let current = obj;
+  const obj: Record<string, unknown> = {};
+  let current: Record<string, unknown> = obj;
   for (let i = 0; i < 5; i++) {
     current.nested = {};
-    current = current.nested;
+    current = current.nested as Record<string, unknown>;
   }
   return isValidObjectDepth(obj, 10);
 });

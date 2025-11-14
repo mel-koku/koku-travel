@@ -1,7 +1,8 @@
 import { defineArrayMember, defineType } from "sanity";
+import type { Rule } from "sanity";
 
 // Type assertion helper for Sanity schema compatibility
-const asAnnotation = (obj: any) => obj;
+const asAnnotation = (obj: Record<string, unknown>) => obj;
 
 export const blockContent = defineType({
   name: "blockContent",
@@ -26,7 +27,7 @@ export const blockContent = defineType({
                 name: "href",
                 type: "url",
                 title: "URL",
-                validation: (rule: any) => rule.uri({ allowRelative: true }),
+                validation: (rule: Rule) => rule.uri({ allowRelative: true }),
               },
               {
                 name: "openInNewTab",

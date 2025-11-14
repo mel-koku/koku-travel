@@ -89,7 +89,7 @@ async function run() {
       perspective: "published",
     });
     authors = published;
-  } catch (error) {
+  } catch {
     console.log("Note: Could not fetch published authors");
   }
   
@@ -102,7 +102,7 @@ async function run() {
       console.log(`Found ${allAuthors.length - authors.length} draft author(s)`);
       authors = allAuthors;
     }
-  } catch (error) {
+  } catch {
     console.log("Note: Could not fetch all authors");
   }
   

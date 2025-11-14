@@ -40,8 +40,8 @@ try {
 // Test 2: Rate Limiting
 console.log("\n2️⃣  Testing Rate Limiting...");
 try {
-  const mockRequest1 = new MockRequest("192.168.1.1") as any;
-  const mockRequest2 = new MockRequest("192.168.1.2") as any;
+  const mockRequest1 = new MockRequest("192.168.1.1") as unknown as { headers: Headers; ip?: string };
+  const mockRequest2 = new MockRequest("192.168.1.2") as unknown as { headers: Headers; ip?: string };
 
   // Test first request (should pass)
   const result1 = checkRateLimit(mockRequest1, { maxRequests: 2, windowMs: 60000 });
