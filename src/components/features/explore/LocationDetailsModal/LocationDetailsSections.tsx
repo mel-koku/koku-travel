@@ -121,7 +121,7 @@ function LocationReviewsSection({ details }: { details: LocationDetails }) {
       <div className="max-h-64 space-y-3 overflow-y-auto pr-1">
         {details.reviews.length === 0 ? (
           <p className="text-sm text-gray-500">
-            Google hasn't published public review snippets for this location yet.
+            Google hasn&apos;t published public review snippets for this location yet.
           </p>
         ) : (
           details.reviews.map((review, index) => (
