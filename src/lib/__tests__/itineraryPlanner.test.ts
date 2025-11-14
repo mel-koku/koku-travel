@@ -93,7 +93,7 @@ describe("planItinerary", () => {
       ]);
       expect(secondActivity.schedule?.arrivalTime).toBe("10:30");
       expect(secondActivity.schedule?.departureTime).toBe("12:00");
-      expect(secondActivity.schedule?.status).toBe("scheduled");
+      expect(secondActivity.schedule?.status).toBe("tentative");
     }
   });
 });
