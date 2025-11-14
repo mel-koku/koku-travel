@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { GET } from "@/app/api/locations/[id]/primary-photo/route";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
 import { createMockRequest, createMockLocationDetails } from "../utils/mocks";
@@ -24,7 +24,7 @@ describe("GET /api/locations/[id]/primary-photo", () => {
     it("should enforce rate limit of 100 requests per minute", async () => {
       const { checkRateLimit } = await import("@/lib/api/rateLimit");
       vi.mocked(checkRateLimit).mockResolvedValueOnce(
-        new Response(JSON.stringify({ error: "Too many requests", code: "RATE_LIMIT_EXCEEDED" }), {
+        NextResponse.json({ error: "Too many requests", code: "RATE_LIMIT_EXCEEDED" }, {
           status: 429,
         }),
       );
