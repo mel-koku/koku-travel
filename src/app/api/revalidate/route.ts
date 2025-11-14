@@ -52,6 +52,23 @@ function normalizePaths(payload: z.infer<typeof sanityWebhookPayloadSchema>): st
   return Array.from(paths);
 }
 
+/**
+ * POST /api/revalidate
+ * Webhook endpoint for Sanity CMS to trigger Next.js cache revalidation.
+ * Validates webhook signature and sanitizes paths before revalidating.
+ *
+ * @param request - Next.js request object
+ * @param request.headers.x-sanity-signature - Webhook signature (must be valid)
+ * @param request.body - JSON payload containing paths and slug to revalidate (max 64KB)
+ * @param request.body.paths - Array of paths to revalidate (optional)
+ * @param request.body.slug - Slug object with current value (optional)
+ * @param request.body._type - Content type (e.g., "guide")
+ * @returns JSON response with revalidated paths, or error response
+ * @throws Returns 400 if payload is invalid, too large, or parsing fails
+ * @throws Returns 401 if signature is invalid
+ * @throws Returns 429 if rate limit exceeded (20 requests/minute)
+ * @throws Returns 503 if revalidation secret is not configured
+ */
 export async function POST(request: NextRequest) {
   // Rate limiting: 20 requests per minute per IP (webhook endpoint - lower limit)
   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
