@@ -1,15 +1,33 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { Container } from "@/components/layouts/Container";
 import { Wizard } from "@/components/features/trip-builder/Wizard";
-import { Step1BasicInfo } from "@/components/features/trip-builder/Step1BasicInfo";
-import { Step2Regions } from "@/components/features/trip-builder/Step2Regions";
-import { Step3Interests } from "@/components/features/trip-builder/Step3Interests";
-import { Step4Preferences } from "@/components/features/trip-builder/Step4Preferences";
-import { Step5Review } from "@/components/features/trip-builder/Step5Review";
 import { TripBuilderProvider } from "@/context/TripBuilderContext";
+
+// Dynamically import step components for code splitting
+// These components are only loaded when their respective step is active
+const Step1BasicInfo = dynamic(() => import("@/components/features/trip-builder/Step1BasicInfo").then((mod) => ({ default: mod.Step1BasicInfo })), {
+  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+});
+
+const Step2Regions = dynamic(() => import("@/components/features/trip-builder/Step2Regions").then((mod) => ({ default: mod.Step2Regions })), {
+  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+});
+
+const Step3Interests = dynamic(() => import("@/components/features/trip-builder/Step3Interests").then((mod) => ({ default: mod.Step3Interests })), {
+  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+});
+
+const Step4Preferences = dynamic(() => import("@/components/features/trip-builder/Step4Preferences").then((mod) => ({ default: mod.Step4Preferences })), {
+  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+});
+
+const Step5Review = dynamic(() => import("@/components/features/trip-builder/Step5Review").then((mod) => ({ default: mod.Step5Review })), {
+  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+});
 
 const TOTAL_STEPS = 5;
 const STEP1_FORM_ID = "trip-builder-step1-form";

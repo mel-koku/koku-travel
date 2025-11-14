@@ -2,12 +2,22 @@ import { ComponentPropsWithoutRef, forwardRef } from "react";
 
 import { cn } from "@/lib/cn";
 
+/**
+ * Represents a single option in a Select dropdown.
+ */
 export type SelectOption = {
+  /** Display text for the option */
   label: string;
+  /** Value submitted when this option is selected */
   value: string;
+  /** Whether this option is disabled and cannot be selected */
   disabled?: boolean;
 };
 
+/**
+ * Select component props.
+ * Extends native HTML select element props with additional features.
+ */
 export type SelectProps = Omit<ComponentPropsWithoutRef<"select">, "children"> & {
   /**
    * Placeholder text shown while no option is selected.
@@ -19,6 +29,7 @@ export type SelectProps = Omit<ComponentPropsWithoutRef<"select">, "children"> &
   options: SelectOption[];
   /**
    * When provided, the select is marked invalid and the outline color changes.
+   * An error message will be displayed below the select if an id is provided.
    */
   error?: string;
 };
