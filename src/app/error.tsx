@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
+import { logger } from "@/lib/logger";
 
 export default function Error({
   error,
@@ -11,11 +12,12 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error to console in development
-    if (process.env.NODE_ENV !== "production") {
-      console.error("Application error:", error);
-    }
-    // TODO: In production, send to error tracking service (e.g., Sentry)
+    // Log error using centralized logger (handles production tracking)
+    logger.error("Application error boundary triggered", error, {
+      digest: error.digest,
+      message: error.message,
+      stack: error.stack,
+    });
   }, [error]);
 
   return (

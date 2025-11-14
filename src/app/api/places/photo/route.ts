@@ -1,12 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { fetchPhotoStream } from "@/lib/googlePlaces";
 import { isValidPhotoName, parsePositiveInt } from "@/lib/api/validation";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
+import { checkRateLimit } from "@/lib/api/rateLimit";
 
 const MAX_DIMENSION = 4000; // Reasonable maximum for image dimensions
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  // Rate limiting: 200 requests per minute per IP (images are cached)
+  const rateLimitResponse = checkRateLimit(request, { maxRequests: 200, windowMs: 60 * 1000 });
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   const { searchParams } = new URL(request.url);
   const photoNameParam = searchParams.get("photoName");
 

@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { MOCK_LOCATIONS } from "@/data/mockLocations";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
 import type { Location } from "@/types/location";
 import { isValidLocationId } from "@/lib/api/validation";
 import { badRequest, notFound, internalError, serviceUnavailable } from "@/lib/api/errors";
+import { checkRateLimit } from "@/lib/api/rateLimit";
 
 const locationsById = new Map<string, Location>(MOCK_LOCATIONS.map((location) => [location.id, location]));
 
@@ -14,7 +15,13 @@ type RouteContext = {
   }>;
 };
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: NextRequest, context: RouteContext) {
+  // Rate limiting: 100 requests per minute per IP
+  const rateLimitResponse = checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   const { id } = await context.params;
 
   if (!isValidLocationId(id)) {
