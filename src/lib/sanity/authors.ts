@@ -8,7 +8,6 @@ import {
 } from "./queries";
 import type { ExpertProfile } from "@/types/expert";
 import type { Guide } from "@/types/guide";
-import { mapGuide, mapGuides } from "./guides";
 
 type SanityAuthor = {
   _id: string;

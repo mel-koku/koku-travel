@@ -207,7 +207,7 @@ function resolveInterestSequence(data: TripBuilderData): InterestId[] {
     });
     return ordered;
   }
-  return DEFAULT_INTEREST_ROTATION;
+  return [...DEFAULT_INTEREST_ROTATION];
 }
 
 function pickLocation(cityInfo: CityInfo, interest: InterestId, usedLocations: Set<string>): Location | undefined {

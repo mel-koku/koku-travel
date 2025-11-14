@@ -142,7 +142,9 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
       const anchorDisabled =
         typeof ariaDisabledRaw === "boolean"
           ? ariaDisabledRaw
-          : ariaDisabledRaw === "true" || ariaDisabledRaw === "1" || ariaDisabledRaw === "";
+          : ariaDisabledRaw === "false"
+            ? false
+            : Boolean(ariaDisabledRaw);
 
       return (
         <Link
