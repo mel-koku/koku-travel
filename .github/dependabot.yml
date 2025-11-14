@@ -1,0 +1,74 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "meljunpicardal"
+    labels:
+      - "dependencies"
+      - "automated"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    # Group updates for related packages
+    groups:
+      # Group Next.js and React updates together
+      nextjs-react:
+        patterns:
+          - "next"
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      # Group Sanity packages
+      sanity:
+        patterns:
+          - "@sanity/*"
+          - "sanity"
+      # Group Supabase packages
+      supabase:
+        patterns:
+          - "@supabase/*"
+      # Group testing packages
+      testing:
+        patterns:
+          - "vitest"
+          - "@types/*"
+      # Group development tools
+      dev-tools:
+        patterns:
+          - "eslint*"
+          - "typescript"
+          - "tsx"
+    # Ignore major version updates for critical packages (review manually)
+    ignore:
+      # Ignore major version updates - review manually
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@supabase/supabase-js"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@sanity/client"
+        update-types: ["version-update:semver-major"]
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "github-actions"
+      - "automated"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
