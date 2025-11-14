@@ -1,6 +1,4 @@
-import type { Transform } from "@dnd-kit/utilities";
 import type {
-  ChangeEvent,
   KeyboardEvent,
   MouseEvent,
   PointerEvent,

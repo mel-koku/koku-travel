@@ -1,6 +1,5 @@
 import type { ExpertProfile } from "@/types/expert";
 import type { Guide } from "@/types/guide";
-import type { Itinerary } from "@/types/itinerary";
 
 const mikaTanakaGuides: Guide[] = [
   {

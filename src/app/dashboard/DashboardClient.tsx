@@ -18,6 +18,7 @@ type DashboardClientProps = {
   };
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function DashboardClient({ initialUser }: DashboardClientProps) {
   const { user, favorites, guideBookmarks, trips, deleteTrip, restoreTrip } = useAppState();
   const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);

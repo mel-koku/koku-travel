@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 import { fetchPhotoStream } from "@/lib/googlePlaces";
 import { isValidPhotoName, parsePositiveInt } from "@/lib/api/validation";

@@ -3,8 +3,6 @@
  * In production, this can be extended to send logs to external services (Sentry, LogRocket, etc.)
  */
 
-type LogLevel = "debug" | "info" | "warn" | "error";
-
 type LogContext = {
   [key: string]: unknown;
 };
@@ -77,16 +75,17 @@ class Logger {
             // Sentry not available, continue silently
           });
         } else {
-          // Server-side: use require (only works in Node.js)
-          try {
-            const Sentry = require("@sentry/nextjs");
-            Sentry.captureException(error || new Error(message), {
-              extra: this.sanitizeContext(context || {}),
-              tags: { source: "logger" },
+          // Server-side: use dynamic import (works in Node.js)
+          import("@sentry/nextjs")
+            .then((Sentry) => {
+              Sentry.captureException(error || new Error(message), {
+                extra: this.sanitizeContext(context || {}),
+                tags: { source: "logger" },
+              });
+            })
+            .catch(() => {
+              // Sentry not available, continue silently
             });
-          } catch {
-            // Sentry not available, continue silently
-          }
         }
         return;
       } catch {
