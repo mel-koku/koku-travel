@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Centralized logging utility
  * In production, this can be extended to send logs to external services (Sentry, LogRocket, etc.)

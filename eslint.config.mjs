@@ -9,7 +9,7 @@ const eslintConfig = defineConfig([
     rules: {
       // Prevent console statements in production code
       // Scripts in scripts/ directory are allowed to use console
-      "no-console": ["error", { allow: [] }],
+      "no-console": "error",
     },
   },
   // Override default ignores of eslint-config-next.
