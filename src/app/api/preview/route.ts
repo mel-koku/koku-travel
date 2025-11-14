@@ -1,6 +1,7 @@
 import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { internalError, unauthorized, badRequest } from "@/lib/api/errors";
+import { checkRateLimit } from "@/lib/api/rateLimit";
 
 const PREVIEW_SECRET = process.env.SANITY_PREVIEW_SECRET;
 
@@ -10,6 +11,12 @@ function resolveRedirectUrl(request: NextRequest, slug: string) {
 }
 
 export async function GET(request: NextRequest) {
+  // Rate limiting: 20 requests per minute per IP (prevent brute force on secret)
+  const rateLimitResponse = checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   if (!PREVIEW_SECRET) {
     return internalError("Preview secret is not configured on the server.");
   }
