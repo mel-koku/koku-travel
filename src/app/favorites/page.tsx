@@ -24,11 +24,11 @@ export default function FavoritesPage() {
           data: { user: authUser },
         } = await supabase.auth.getUser();
         if (!authUser) {
-          router.push("/account");
+          router.push("/dashboard");
           return;
         }
       } catch {
-        router.push("/account");
+        router.push("/dashboard");
         return;
       }
       setIsCheckingAuth(false);
