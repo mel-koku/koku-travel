@@ -2,6 +2,7 @@ import { createClient as createSupabaseServerClient } from "@/lib/supabase/serve
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { Location, LocationDetails, LocationPhoto, LocationReview } from "@/types/location";
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
+import { logger } from "@/lib/logger";
 
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 const SEARCH_FIELD_MASK = ["places.id", "places.displayName", "places.formattedAddress"].join(",");
@@ -73,9 +74,9 @@ async function getSupabaseClientSafe(): Promise<SupabaseClientState> {
   } catch (serviceError) {
     if (!supabaseServiceWarningLogged && process.env.NODE_ENV !== "production") {
       supabaseServiceWarningLogged = true;
-      console.warn(
-        "[supabase] Service-role client unavailable for Google Places cache. Falling back to anon client.",
-        serviceError,
+      logger.warn(
+        "Service-role client unavailable for Google Places cache. Falling back to anon client.",
+        { error: serviceError },
       );
     }
   }
@@ -86,9 +87,9 @@ async function getSupabaseClientSafe(): Promise<SupabaseClientState> {
   } catch (error) {
     if (!supabaseWarningLogged && process.env.NODE_ENV !== "production") {
       supabaseWarningLogged = true;
-      console.warn(
-        "[supabase] Unable to initialize server client for Google Places cache. Falling back to in-memory cache only.",
-        error,
+      logger.warn(
+        "Unable to initialize server client for Google Places cache. Falling back to in-memory cache only.",
+        { error },
       );
     }
     return { client: null, canPersist: false };
@@ -330,10 +331,10 @@ export async function fetchLocationDetails(location: Location): Promise<Location
       .maybeSingle<PlaceDetailsRow>();
 
     if (error && process.env.NODE_ENV !== "production") {
-      console.warn(
-        `[supabase] Failed to read cached Google Place details for location ${location.id}.`,
+      logger.warn("Failed to read cached Google Place details", {
+        locationId: location.id,
         error,
-      );
+      });
     }
 
     if (data) {
@@ -411,10 +412,10 @@ export async function fetchLocationDetails(location: Location): Promise<Location
     });
 
     if (error && process.env.NODE_ENV !== "production") {
-      console.warn(
-        `[supabase] Failed to persist Google Place details for location ${location.id}.`,
+      logger.warn("Failed to persist Google Place details", {
+        locationId: location.id,
         error,
-      );
+      });
     }
   }
 

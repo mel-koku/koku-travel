@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { logger } from "../logger";
 
 export type ApiError = {
   error: string;
@@ -29,10 +30,8 @@ export function createErrorResponse(
     error.details = details;
   }
 
-  // Log error in development
-  if (process.env.NODE_ENV !== "production") {
-    console.error(`[API Error ${status}]:`, message, details ? { details } : "");
-  }
+  // Log error
+  logger.error(`API Error ${status}: ${message}`, undefined, details ? { details } : undefined);
 
   return NextResponse.json(error, { status });
 }

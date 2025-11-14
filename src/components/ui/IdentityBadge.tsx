@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
+import { logger } from "@/lib/logger";
 
 function circle(initial: string) {
   return (
@@ -26,7 +27,7 @@ export default function IdentityBadge({ className = "" }: { className?: string }
         if (alive) setEmail(user?.email ?? null);
       })
       .catch((error: unknown) => {
-        console.warn("[IdentityBadge] Failed to read Supabase user.", error);
+        logger.warn("Failed to read Supabase user", { error });
       });
     return () => {
       alive = false;

@@ -1,4 +1,5 @@
 import { createBrowserClient } from "@supabase/ssr";
+import { logger } from "../logger";
 
 type BrowserClient = ReturnType<typeof createBrowserClient>;
 
@@ -11,9 +12,8 @@ export function createClient(): BrowserClient | null {
   if (!url || !anonKey) {
     if (!hasWarned) {
       hasWarned = true;
-      console.warn(
-        "[supabase] NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is missing. " +
-          "Remote features are disabled until the environment is configured.",
+      logger.warn(
+        "NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_ANON_KEY is missing. Remote features are disabled until the environment is configured.",
       );
     }
     return null;
