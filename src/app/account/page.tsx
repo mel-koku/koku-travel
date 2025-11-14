@@ -6,6 +6,7 @@ import { useAppState } from "@/state/AppState";
 import IdentityBadge from "@/components/ui/IdentityBadge";
 import { syncLocalToCloudOnce } from "@/lib/accountSync";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { logger } from "@/lib/logger";
 
 export default function AccountPage() {
   const supabase = useMemo(() => createClient(), []);
@@ -29,7 +30,7 @@ export default function AccountPage() {
           setIsLoadingAuth(false);
         }
       } catch (error) {
-        console.warn("Failed to read Supabase session.", error);
+        logger.warn("Failed to read Supabase session", { error });
         if (isActive) {
           setIsLoadingAuth(false);
         }
@@ -93,7 +94,7 @@ export default function AccountPage() {
         await refreshFromSupabase();
         setStatus("Sync complete.");
       } catch (error) {
-        console.error("Account sync failed:", error);
+        logger.error("Account sync failed", error);
         setStatus("Sync failed. Please try again.");
       } finally {
         setIsLoadingProfile(false);

@@ -1,3 +1,5 @@
+import { logger } from "@/lib/logger";
+
 const LEAFLET_JS_URL = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
 const LEAFLET_CSS_URL = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
 
@@ -121,7 +123,7 @@ export function ensureLeafletResources(): Promise<LeafletModule | null> {
       resolve(window.L ?? null);
     });
     script.addEventListener("error", (event) => {
-      console.error("Failed to load Leaflet script", event);
+      logger.error("Failed to load Leaflet script", event);
       reject(new Error("Failed to load Leaflet script."));
     });
     document.body.appendChild(script);

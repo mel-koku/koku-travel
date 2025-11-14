@@ -9,6 +9,7 @@ export type ApiError = {
 
 /**
  * Creates a standardized error response for API routes.
+ * In production, error details are sanitized to prevent information disclosure.
  *
  * @param message - Human-readable error message
  * @param status - HTTP status code (default: 500)
@@ -22,16 +23,19 @@ export function createErrorResponse(
   code?: string,
   details?: unknown,
 ): NextResponse<ApiError> {
+  const isProduction = process.env.NODE_ENV === "production";
+
+  // Log full error details server-side (always)
+  logger.error(`API Error ${status}: ${message}`, undefined, details ? { details } : undefined);
+
   const error: ApiError = { error: message };
   if (code) {
     error.code = code;
   }
-  if (details) {
+  // Only include details in development to prevent information disclosure in production
+  if (!isProduction && details) {
     error.details = details;
   }
-
-  // Log error
-  logger.error(`API Error ${status}: ${message}`, undefined, details ? { details } : undefined);
 
   return NextResponse.json(error, { status });
 }

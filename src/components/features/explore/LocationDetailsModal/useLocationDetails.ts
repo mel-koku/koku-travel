@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { cacheLocationDetails } from "@/state/locationDetailsStore";
 import type { LocationDetails } from "@/types/location";
+import { logger } from "@/lib/logger";
 
 type FetchStatus = "idle" | "loading" | "success" | "error";
 
@@ -49,9 +50,7 @@ export function useLocationDetails(locationId: string | null) {
               message = payload.error as string;
             }
           } catch (jsonError) {
-            if (process.env.NODE_ENV !== "production") {
-              console.debug("Unable to parse error response", jsonError);
-            }
+            logger.debug("Unable to parse error response", { error: jsonError });
           }
           throw new Error(message);
         }

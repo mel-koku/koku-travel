@@ -13,6 +13,7 @@ import React, {
   useMemo,
   useState,
 } from "react";
+import { logger } from "@/lib/logger";
 
 const KEY = "koku_app_state_v1";
 
@@ -244,7 +245,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       } = await supabase.auth.getUser();
 
       if (authError) {
-        console.warn("[AppState] Failed to read auth session.", authError);
+        logger.warn("Failed to read auth session", { error: authError });
       }
 
       if (!user) {
@@ -266,10 +267,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       ]);
 
       if (favoritesResponse.error) {
-        console.warn("[AppState] Failed to load favorites.", favoritesResponse.error);
+        logger.warn("Failed to load favorites", { error: favoritesResponse.error });
       }
       if (bookmarksResponse.error) {
-        console.warn("[AppState] Failed to load guide bookmarks.", bookmarksResponse.error);
+        logger.warn("Failed to load guide bookmarks", { error: bookmarksResponse.error });
       }
 
       const favoriteRows = (favoritesResponse.data ?? []) as Array<{ place_id: string }>;
@@ -283,7 +284,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         isLoadingRefresh: false,
       }));
     } catch (error) {
-      console.error("[AppState] refreshFromSupabase failed.", error);
+      logger.error("refreshFromSupabase failed", error);
       setState((s) => ({ ...s, isLoadingRefresh: false }));
     }
   }, [supabase]);
@@ -485,7 +486,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           } = await supabase.auth.getUser();
 
           if (authError) {
-            console.error("[AppState] Failed to read auth session when syncing favorite.", authError);
+            logger.error("Failed to read auth session when syncing favorite", authError);
             return;
           }
 
@@ -516,7 +517,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         } catch (error) {
           const message =
             error instanceof Error ? error.message : JSON.stringify(error ?? {});
-          console.error("Failed to sync favorite.", message);
+          logger.error("Failed to sync favorite", new Error(message));
           // Keep optimistic local state so the UI stays responsive even if remote sync fails.
         }
       })(id, existed);
@@ -557,7 +558,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           } = await supabase.auth.getUser();
 
           if (authError) {
-            console.error("[AppState] Failed to read auth session when syncing guide bookmark.", authError);
+            logger.error("Failed to read auth session when syncing guide bookmark", authError);
             setState((s) => {
               const loadingSet = new Set(s.loadingBookmarks);
               loadingSet.delete(guideId);
@@ -618,7 +619,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
             return;
           }
 
-          console.error("Failed to sync guide bookmark.", message || error);
+          logger.error("Failed to sync guide bookmark", message || error);
           setState((s) => {
             const set = new Set(s.guideBookmarks);
             if (existedBeforeToggle) {
