@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest",
+    "test": "vitest run",
     "sanity:dev": "sanity dev --host 127.0.0.1 --port 3333",
     "sanity:seed:guides": "node scripts/sanity/import-guides.mjs",
     "sanity:migrate:authors": "node scripts/sanity/migrate-authors.mjs",

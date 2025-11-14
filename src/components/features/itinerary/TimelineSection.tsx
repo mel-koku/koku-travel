@@ -22,10 +22,14 @@ type TimelineSectionProps = {
 export function TimelineSection({
   sectionKey,
   activities,
-  selectedActivityId,
-  onSelectActivity,
-  onDelete,
-  onUpdate,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  selectedActivityId: _selectedActivityId,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onSelectActivity: _onSelectActivity,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onDelete: _onDelete,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onUpdate: _onUpdate,
   onAddNote,
   children,
 }: TimelineSectionProps) {

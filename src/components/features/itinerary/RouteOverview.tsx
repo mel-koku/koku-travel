@@ -1,4 +1,4 @@
-import type { ItineraryActivity } from "@/types/itinerary";
+import type { ItineraryActivity, ItineraryTravelMode } from "@/types/itinerary";
 import { formatDuration, formatDistance, formatModeLabel } from "./mapUtils";
 
 const TIME_OF_DAY_LABEL: Record<ItineraryActivity["timeOfDay"], string> = {
@@ -133,7 +133,7 @@ export function RouteOverview({
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
-                        {formatModeLabel(travelSegment.mode as any)}
+                        {formatModeLabel(travelSegment.mode as ItineraryTravelMode)}
                       </span>
                       {travelSegment.isFallback ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700">

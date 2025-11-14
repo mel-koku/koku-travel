@@ -108,8 +108,7 @@ export function checkRateLimit(
   // Update store
   rateLimitStore.set(ip, entry);
 
-  // Return remaining count in headers (for debugging/monitoring)
-  const remaining = Math.max(0, config.maxRequests - entry.count);
+  // Return null to indicate request is allowed
   return null; // Allowed, but we'll add headers via middleware pattern
 }
 

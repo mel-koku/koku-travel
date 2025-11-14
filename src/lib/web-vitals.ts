@@ -24,8 +24,9 @@ function reportWebVital(metric: Metric): void {
 
   // In production, send to analytics service
   // Example: Google Analytics 4
-  if (typeof window !== "undefined" && (window as any).gtag) {
-    (window as any).gtag("event", metric.name, {
+  if (typeof window !== "undefined" && "gtag" in window && typeof (window as { gtag?: unknown }).gtag === "function") {
+    const gtag = (window as { gtag: (event: string, name: string, options: Record<string, unknown>) => void }).gtag;
+    gtag("event", metric.name, {
       event_category: "Web Vitals",
       value: Math.round(metric.name === "CLS" ? metric.value * 1000 : metric.value),
       event_label: metric.id,

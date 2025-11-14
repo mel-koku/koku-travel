@@ -196,8 +196,11 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
     pendingPlanRef.current = null;
     skipNextPlanRef.current = true;
     skipSyncRef.current = true;
-    setModelState(nextNormalized);
-    setSelectedActivityId(null);
+    // Use setTimeout to avoid calling setState synchronously within effect
+    setTimeout(() => {
+      setModelState(nextNormalized);
+      setSelectedActivityId(null);
+    }, 0);
 
     let cancelled = false;
     const runId = ++planningRequestRef.current;
@@ -214,8 +217,11 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
       setIsPlanning(false);
     }, 15000);
 
-    setIsPlanning(true);
-    setPlanningError(null);
+    // Use setTimeout to avoid calling setState synchronously within effect
+    setTimeout(() => {
+      setIsPlanning(true);
+      setPlanningError(null);
+    }, 0);
 
     planItinerary(nextNormalized)
       .then((planned) => {

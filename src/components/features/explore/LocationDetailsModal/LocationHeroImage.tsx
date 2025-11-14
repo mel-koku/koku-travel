@@ -1,6 +1,5 @@
 import Image from "next/image";
 import type { Location, LocationDetails } from "@/types/location";
-import { HeartIcon } from "../LocationCard";
 
 const FALLBACK_IMAGE_SRC =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
