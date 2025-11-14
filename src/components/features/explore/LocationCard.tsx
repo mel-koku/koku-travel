@@ -8,6 +8,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
 import { useLocationEditorialSummary } from "@/state/locationDetailsStore";
 import type { Location } from "@/types/location";
+import { logger } from "@/lib/logger";
 
 type LocationCardProps = {
   location: Location;
@@ -292,10 +293,7 @@ function ensurePrimaryPhoto(locationId: string) {
       photoStore.set(locationId, { status: "loaded", url: null });
       notifyPhotoListeners(locationId);
       if (process.env.NODE_ENV !== "production" && !hasLoggedPrimaryPhotoError) {
-        console.debug(
-          `[LocationCard] Unable to load Google Places primary photo for ${locationId}`,
-          error,
-        );
+        logger.debug(`Unable to load Google Places primary photo for ${locationId}`, { error });
         hasLoggedPrimaryPhotoError = true;
       }
     })

@@ -7,7 +7,7 @@ import { badRequest } from "@/lib/api/errors";
 
 export async function GET(request: NextRequest) {
   // Rate limiting: 30 requests per minute per IP
-  const rateLimitResponse = checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   // Rate limiting: 30 requests per minute per IP
-  const rateLimitResponse = checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }

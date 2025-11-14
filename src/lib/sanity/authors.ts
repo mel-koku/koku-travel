@@ -8,6 +8,7 @@ import {
 } from "./queries";
 import type { ExpertProfile } from "@/types/expert";
 import type { Guide } from "@/types/guide";
+import { logger } from "@/lib/logger";
 
 type SanityAuthor = {
   _id: string;
@@ -137,7 +138,7 @@ export async function fetchAuthors(
       const results = await client.fetch<SanityAuthor[]>(ALL_AUTHORS_QUERY);
       return mapAuthors(results);
     } catch (error) {
-      console.error("[authors] Failed to fetch preview authors:", error);
+      logger.error("Failed to fetch preview authors", error);
       return [];
     }
   }
@@ -148,7 +149,7 @@ export async function fetchAuthors(
       return cached;
     }
   } catch (error) {
-    console.error("[authors] Failed to read cached authors:", error);
+    logger.error("Failed to read cached authors", error);
   }
 
   try {
@@ -158,7 +159,7 @@ export async function fetchAuthors(
       return mapped;
     }
   } catch (error) {
-    console.error("[authors] Failed to fetch authors from Sanity:", error);
+    logger.error("Failed to fetch authors from Sanity", error);
   }
 
   return [];
@@ -198,13 +199,13 @@ export async function fetchAuthorBySlug(
         );
         mappedAuthor.guides = mapGuidesFromAuthor(guides || []);
       } catch (error) {
-        console.error("[authors] Failed to fetch guides for author:", error);
+        logger.error("Failed to fetch guides for author", error);
       }
     }
 
     return mappedAuthor;
   } catch (error) {
-    console.error("[authors] Failed to fetch author:", error);
+    logger.error("Failed to fetch author", error);
     return null;
   }
 }
