@@ -6,24 +6,43 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAppState } from "@/state/AppState";
 import { DashboardItineraryPreview } from "@/components/features/itinerary/DashboardItineraryPreview";
+import IdentityBadge from "@/components/ui/IdentityBadge";
+import { createClient } from "@/lib/supabase/client";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 type StoredTrip = ReturnType<typeof useAppState>["trips"][number];
 
 const TOAST_DURATION_MS = 8000;
 
 type DashboardClientProps = {
-  initialUser: {
+  initialAuthUser: {
     id: string;
     email?: string | null;
-  };
+  } | null;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function DashboardClient({ initialUser }: DashboardClientProps) {
+export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
   const { user, favorites, guideBookmarks, trips, deleteTrip, restoreTrip } = useAppState();
+  const [sessionUserId, setSessionUserId] = useState<string | null>(initialAuthUser?.id ?? null);
   const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);
   const [pendingUndo, setPendingUndo] = useState<null | { trip: StoredTrip }>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const supabase = useMemo(() => createClient(), []);
+
+  // Monitor auth state changes
+  useEffect(() => {
+    if (!supabase) return;
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+      setSessionUserId(session?.user?.id ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
+  const isAuthenticated = Boolean(sessionUserId);
 
   const tripsWithItinerary = useMemo(() => {
     if (!trips.length) {
@@ -97,8 +116,35 @@ export function DashboardClient({ initialUser }: DashboardClientProps) {
     <main className="min-h-screen bg-gray-50 pb-16 sm:pb-20 md:pb-24">
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 md:px-8">
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-md sm:p-6">
-          <h1 className="text-lg font-semibold text-gray-900 sm:text-xl">Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-500">Welcome back, {user.displayName || "Guest"}.</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900 sm:text-xl">Dashboard</h1>
+              <p className="mt-1 text-sm text-gray-500">
+                {isAuthenticated
+                  ? `Welcome back, ${user.displayName || "Guest"}.`
+                  : `Welcome, ${user.displayName || "Guest"}. Sign in to sync your data across devices.`}
+              </p>
+            </div>
+            {isAuthenticated && (
+              <Link href="/account" className="hidden sm:inline-flex">
+                <IdentityBadge />
+              </Link>
+            )}
+          </div>
+
+          {!isAuthenticated && (
+            <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50 p-4">
+              <p className="text-sm text-indigo-900">
+                Sign in to sync your favorites, bookmarks, and itineraries across all your devices.
+              </p>
+              <Link
+                href="/account"
+                className="mt-3 inline-block rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+              >
+                Sign in →
+              </Link>
+            </div>
+          )}
 
           <div className="mt-4 grid grid-cols-1 gap-3 sm:mt-6 sm:gap-4 md:grid-cols-2">
             <div className="rounded-xl border border-gray-200 p-4">
