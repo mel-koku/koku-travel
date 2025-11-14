@@ -8,6 +8,7 @@ import { useAppState } from "@/state/AppState";
 import { DashboardItineraryPreview } from "@/components/features/itinerary/DashboardItineraryPreview";
 import IdentityBadge from "@/components/ui/IdentityBadge";
 import { createClient } from "@/lib/supabase/client";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 type StoredTrip = ReturnType<typeof useAppState>["trips"][number];
 
@@ -34,7 +35,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       setSessionUserId(session?.user?.id ?? null);
     });
 
