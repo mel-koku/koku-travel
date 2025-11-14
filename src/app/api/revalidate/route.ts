@@ -3,6 +3,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { serviceUnavailable, unauthorized, badRequest } from "@/lib/api/errors";
+import { checkRateLimit } from "@/lib/api/rateLimit";
 
 const SIGNATURE_HEADER = "x-sanity-signature";
 const SECRET = process.env.SANITY_REVALIDATE_SECRET || process.env.SANITY_PREVIEW_SECRET;
@@ -43,6 +44,12 @@ function normalizePaths(payload: SanityWebhookPayload): string[] {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limiting: 20 requests per minute per IP (webhook endpoint - lower limit)
+  const rateLimitResponse = checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
+  if (rateLimitResponse) {
+    return rateLimitResponse;
+  }
+
   if (!SECRET) {
     return serviceUnavailable("Revalidation secret is not configured on the server.");
   }
