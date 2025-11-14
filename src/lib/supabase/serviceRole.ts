@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { logger } from "../logger";
 
 let cachedClient: SupabaseClient | null = null;
 let hasWarned = false;
@@ -14,9 +15,8 @@ export function getServiceRoleClient(): SupabaseClient {
   if (!url || !serviceRoleKey) {
     if (!hasWarned && process.env.NODE_ENV !== "production") {
       hasWarned = true;
-      console.warn(
-        "[supabase] SUPABASE_SERVICE_ROLE_KEY is missing; falling back to anon client. " +
-          "Place details will not be persisted without a service role key.",
+      logger.warn(
+        "SUPABASE_SERVICE_ROLE_KEY is missing; falling back to anon client. Place details will not be persisted without a service role key.",
       );
     }
     throw new Error(
