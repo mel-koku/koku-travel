@@ -4,32 +4,41 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { serviceUnavailable, unauthorized, badRequest } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { sanityWebhookPayloadSchema } from "@/lib/api/schemas";
+import { sanitizePath } from "@/lib/api/sanitization";
+import type { z } from "zod";
 
 const SIGNATURE_HEADER = "x-sanity-signature";
 const SECRET = process.env.SANITY_REVALIDATE_SECRET || process.env.SANITY_PREVIEW_SECRET;
+const MAX_PAYLOAD_SIZE = 64 * 1024; // 64KB max payload size
 
-type SanityWebhookPayload = {
-  _type?: string;
-  slug?: {
-    current?: string;
-  };
-  paths?: string[];
-};
-
-function normalizePaths(payload: SanityWebhookPayload): string[] {
+function normalizePaths(payload: z.infer<typeof sanityWebhookPayloadSchema>): string[] {
   const paths = new Set<string>();
+  
+  // Validate and sanitize paths array
   if (payload.paths && Array.isArray(payload.paths)) {
     for (const path of payload.paths) {
       if (typeof path === "string" && path.trim().length > 0) {
-        paths.add(path.startsWith("/") ? path : `/${path}`);
+        // Sanitize each path to prevent path traversal
+        const sanitized = sanitizePath(path.trim());
+        if (sanitized) {
+          paths.add(sanitized.startsWith("/") ? sanitized : `/${sanitized}`);
+        }
       }
     }
   }
 
+  // Validate and sanitize slug
   const slug = payload.slug?.current;
-  if (slug) {
-    paths.add("/guides");
-    paths.add(slug.startsWith("/") ? slug : `/guides/${slug.replace(/^\//, "")}`);
+  if (slug && typeof slug === "string") {
+    const sanitizedSlug = sanitizePath(slug.trim());
+    if (sanitizedSlug) {
+      paths.add("/guides");
+      const slugPath = sanitizedSlug.startsWith("/") 
+        ? sanitizedSlug.replace(/^\//, "") 
+        : sanitizedSlug;
+      paths.add(`/guides/${slugPath}`);
+    }
   }
 
   if (payload._type === "guide") {
@@ -55,29 +64,59 @@ export async function POST(request: NextRequest) {
   }
 
   const signature = request.headers.get(SIGNATURE_HEADER) ?? "";
+  
+  // Validate signature header format
+  if (!signature || typeof signature !== "string" || signature.length > 500) {
+    return unauthorized("Invalid signature header format.");
+  }
+
+  // Get raw body for signature validation (must be done before parsing)
   const rawBody = await request.text();
 
-  if (!signature || !isValidSignature(rawBody, signature, SECRET)) {
+  // Validate payload size before processing
+  if (rawBody.length > MAX_PAYLOAD_SIZE) {
+    return badRequest(`Payload too large (max ${MAX_PAYLOAD_SIZE} bytes).`);
+  }
+
+  if (!isValidSignature(rawBody, signature, SECRET)) {
     return unauthorized("Invalid signature.");
   }
 
-  let payload: SanityWebhookPayload;
+  // Parse and validate JSON structure using Zod schema
+  let jsonPayload: unknown;
   try {
-    payload = JSON.parse(rawBody);
+    jsonPayload = JSON.parse(rawBody);
   } catch (error) {
     return badRequest("Failed to parse webhook payload.", {
       error: error instanceof Error ? error.message : String(error),
     });
   }
 
+  const validation = sanityWebhookPayloadSchema.safeParse(jsonPayload);
+  
+  if (!validation.success) {
+    return badRequest("Invalid webhook payload structure.", {
+      errors: validation.error.issues,
+    });
+  }
+
+  const payload = validation.data;
   const paths = normalizePaths(payload);
 
-  for (const path of paths) {
-    revalidatePath(path);
+  // Additional safety: limit number of paths to revalidate
+  const MAX_PATHS = 100;
+  const pathsToRevalidate = paths.slice(0, MAX_PATHS);
+
+  for (const path of pathsToRevalidate) {
+    // Double-check path is safe before revalidating
+    const sanitized = sanitizePath(path);
+    if (sanitized) {
+      revalidatePath(sanitized);
+    }
   }
 
   revalidateTag("guides", "page");
 
-  return NextResponse.json({ revalidated: paths, tags: ["guides"] });
+  return NextResponse.json({ revalidated: pathsToRevalidate, tags: ["guides"] });
 }
 

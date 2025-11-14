@@ -4,6 +4,7 @@ import { MOCK_LOCATIONS } from "@/data/mockLocations";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
 import type { Location } from "@/types/location";
 import { isValidLocationId } from "@/lib/api/validation";
+import { locationIdSchema } from "@/lib/api/schemas";
 import { badRequest, notFound, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 
@@ -24,11 +25,17 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   const { id } = await context.params;
 
-  if (!isValidLocationId(id)) {
-    return badRequest("Invalid location ID format");
+  // Validate using both existing function and Zod schema for defense in depth
+  const idValidation = locationIdSchema.safeParse(id);
+  if (!idValidation.success || !isValidLocationId(id)) {
+    return badRequest("Invalid location ID format", {
+      errors: idValidation.success ? undefined : idValidation.error.issues,
+    });
   }
 
-  const location = locationsById.get(id);
+  const validatedId = idValidation.data;
+
+  const location = locationsById.get(validatedId);
   if (!location) {
     return notFound("Location not found");
   }
@@ -58,7 +65,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return serviceUnavailable("Google Places API is not configured.");
     }
 
-    return internalError(message, { locationId: id });
+    return internalError(message, { locationId: validatedId });
   }
 }
 
