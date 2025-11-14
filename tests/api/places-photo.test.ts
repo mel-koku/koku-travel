@@ -101,22 +101,31 @@ describe("GET /api/places/photo", () => {
     });
 
     it("should reject maxWidthPx exceeding 4000", async () => {
+      const mockResponse = createMockPhotoStreamResponse();
+      vi.mocked(fetchPhotoStream).mockResolvedValueOnce(mockResponse);
+      
       const request = createMockRequest(
         "https://example.com/api/places/photo?photoName=places/test/photos/ref&maxWidthPx=5000",
       );
       const response = await GET(request);
 
       expect(response.status).toBe(200); // parsePositiveInt returns undefined for invalid values
-      // The function will call fetchPhotoStream with undefined maxWidthPx
+      // The function will call fetchPhotoStream with undefined maxWidthPx (invalid values are ignored)
+      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", {});
     });
 
     it("should reject maxWidthPx less than 1", async () => {
+      const mockResponse = createMockPhotoStreamResponse();
+      vi.mocked(fetchPhotoStream).mockResolvedValueOnce(mockResponse);
+      
       const request = createMockRequest(
         "https://example.com/api/places/photo?photoName=places/test/photos/ref&maxWidthPx=0",
       );
       const response = await GET(request);
 
       expect(response.status).toBe(200); // parsePositiveInt returns null for invalid values
+      // Invalid values are ignored, so fetchPhotoStream is called without maxWidthPx
+      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", {});
     });
 
     it("should validate maxHeightPx is within 1-4000 range", async () => {
