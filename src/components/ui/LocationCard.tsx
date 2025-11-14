@@ -51,7 +51,7 @@ export const LocationCard = ({
           <p className="text-sm text-white/80">{prefecture}</p>
         </div>
         {season && (
-          <Badge tone="amber" variant="soft" className="backdrop-blur-md">
+          <Badge tone="warning" variant="soft" className="backdrop-blur-md">
             {season}
           </Badge>
         )}

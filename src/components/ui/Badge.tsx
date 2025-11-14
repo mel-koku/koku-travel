@@ -57,7 +57,7 @@ const toneStyles: Record<
 };
 
 export const Badge = forwardRef<ElementRef<"span">, BadgeProps>((props, ref) => {
-  const { variant = "soft", tone = "indigo", className, ...rest } = props;
+  const { variant = "soft", tone = "brand", className, ...rest } = props;
 
   return (
     <span
@@ -95,7 +95,7 @@ const tagToneClasses: Record<BadgeTone, string> = {
 };
 
 export const Tag = forwardRef<ElementRef<"span">, TagProps>(
-  ({ tone = "slate", icon, className, children, ...rest }, ref) => (
+  ({ tone = "neutral", icon, className, children, ...rest }, ref) => (
     <span
       ref={ref}
       className={cn(

@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { ReactElement, ReactNode, useMemo, useState } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -14,7 +14,7 @@ type AlertProps = {
   className?: string;
 };
 
-const toneStyles: Record<AlertTone, { border: string; icon: JSX.Element }> = {
+const toneStyles: Record<AlertTone, { border: string; icon: ReactElement }> = {
   info: {
     border: "border-indigo-500/70",
     icon: (

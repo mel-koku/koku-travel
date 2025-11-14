@@ -47,21 +47,34 @@ export const FormField = ({
   className,
   children,
 }: FormFieldProps) => {
-  const controlId =
-    isValidElement(children) && children.props.id ? (children.props.id as string) : id;
+  const controlId = (() => {
+    if (isValidElement(children)) {
+      const props = children.props as { id?: string | number };
+      if (props && "id" in props && props.id) {
+        return String(props.id);
+      }
+    }
+    return id;
+  })();
   const helpId = help ? `${controlId}-help` : undefined;
   const errorId = error ? `${controlId}-error` : undefined;
   const ariaDescribedBy = [helpId, errorId].filter(Boolean).join(" ") || undefined;
 
   let control = children;
   if (isValidElement(control)) {
-    const existingId = control.props.id as string | undefined;
-    const existingDescribedBy = control.props["aria-describedby"] as string | undefined;
+    const props = control.props as {
+      id?: string | number;
+      "aria-describedby"?: string;
+      "aria-invalid"?: boolean | string;
+    };
+    const existingId = props?.id ? String(props.id) : undefined;
+    const existingDescribedBy = props?.["aria-describedby"];
     control = cloneElement(control, {
+      ...props,
       id: existingId ?? controlId,
       "aria-describedby": [existingDescribedBy, ariaDescribedBy].filter(Boolean).join(" ") || undefined,
-      "aria-invalid": error ? true : control.props["aria-invalid"],
-    });
+      "aria-invalid": error ? true : (props?.["aria-invalid"] as boolean | undefined),
+    } as any);
   }
 
   return (
