@@ -41,11 +41,11 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
   }, []);
 
   return (
-    <div className="py-16">
-      <div className="mx-auto flex max-w-5xl flex-col gap-12">
-        <header className="space-y-3">
-          <h2 className="text-3xl font-semibold text-gray-900">Review Your Trip</h2>
-          <p className="text-lg text-gray-600">Make sure everything looks right before continuing.</p>
+    <div className="py-8 sm:py-12 md:py-16">
+      <div className="mx-auto flex max-w-5xl flex-col gap-8 sm:gap-10 md:gap-12">
+        <header className="space-y-2 sm:space-y-3">
+          <h2 className="text-2xl font-semibold text-gray-900 sm:text-3xl">Review Your Trip</h2>
+          <p className="text-base text-gray-600 sm:text-lg">Make sure everything looks right before continuing.</p>
           <p className="text-sm text-gray-500">
             After you confirm, your dashboard will show a preview with a &quot;View full plan&quot; button so
             you can jump back into the itinerary anytime.
@@ -59,7 +59,7 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
             editStep={1}
             onEditStep={onEditStep}
           >
-            <dl className="space-y-3">
+            <dl className="space-y-2 sm:space-y-3">
               <ReviewRow
                 label="Duration"
                 value={
@@ -76,7 +76,7 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
             editStep={2}
             onEditStep={onEditStep}
           >
-            <dl className="space-y-3">
+            <dl className="space-y-2 sm:space-y-3">
               <ReviewRow label="Regions" value={formattedRegions} />
               <ReviewRow label="Cities" value={formattedCities} />
             </dl>
@@ -88,7 +88,7 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
             editStep={3}
             onEditStep={onEditStep}
           >
-            <dl className="space-y-3">
+            <dl className="space-y-2 sm:space-y-3">
               <ReviewRow label="Interests" value={formattedInterests} />
               <ReviewRow label="Travel pace" value={formattedTripStyle} />
             </dl>
@@ -100,7 +100,7 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
             editStep={4}
             onEditStep={onEditStep}
           >
-            <dl className="space-y-3">
+            <dl className="space-y-2 sm:space-y-3">
               <ReviewRow
                 label="Mobility assistance"
                 value={
@@ -119,10 +119,10 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-          <Button type="button" variant="outline" size="lg" onClick={handleStartOver}>
+          <Button type="button" variant="outline" size="lg" onClick={handleStartOver} className="w-full sm:w-auto">
             Start Over
           </Button>
-          <Button type="button" size="lg" onClick={handleConfirmClick}>
+          <Button type="button" size="lg" onClick={handleConfirmClick} className="w-full sm:w-auto">
             Confirm Trip
           </Button>
         </div>
