@@ -6,11 +6,11 @@ import { logger } from "@/lib/logger";
 /**
  * GET /api/auth/callback
  * OAuth callback handler for Supabase authentication.
- * Exchanges authorization code for session and redirects to account page.
+ * Exchanges authorization code for session and redirects to dashboard page.
  *
  * @param request - Next.js request object
  * @param request.url.code - Authorization code from OAuth provider
- * @returns Redirects to /account page, or error response
+ * @returns Redirects to /dashboard page, or error response
  * @throws Returns 429 if rate limit exceeded (30 requests/minute)
  */
 export async function GET(request: NextRequest) {
@@ -33,5 +33,5 @@ export async function GET(request: NextRequest) {
       logger.error("Supabase callback client unavailable", error);
     }
   }
-  return NextResponse.redirect(`${origin}/account`);
+  return NextResponse.redirect(`${origin}/dashboard`);
 }
