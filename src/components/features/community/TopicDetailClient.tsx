@@ -1,122 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-
-import type { CommunityTopic } from "@/data/mockCommunity";
-
-import { loadTopics } from "@/lib/communityStorage";
-
 import Link from "next/link";
 
-import Avatar from "@/components/ui/Avatar";
-
-import { timeAgo } from "@/lib/time";
-
+import type { CommunityTopic } from "@/data/mockCommunity";
+import { loadTopics } from "@/lib/communityStorage";
+import {
+  type Reply,
+  loadReplies,
+  saveReplies,
+  newId,
+  canEditDelete,
+} from "./replyUtils";
+import { TopicHeader } from "./TopicHeader";
+import { ReplyForm } from "./ReplyForm";
+import { ReplyList } from "./ReplyList";
+import { EditReplyModal } from "./EditReplyModal";
+import { HistoryModal } from "./HistoryModal";
 
 const NAME_KEY = "koku_community_current_name";
-const GRACE_MS = 5 * 60 * 1000; // 5 minutes
-
-
-type ReplyVersion = { body: string; editedAt: string };
-export type Reply = {
-  id: string;
-  author: string;
-  body: string;
-  createdAt: string;
-  editedAt?: string;
-  history?: ReplyVersion[];
-};
-
-
-const replyKey = (id: string) => `koku_community_replies_v1_${id}`;
-
-
-type StoredReply = {
-  id: string;
-  author: string;
-  body: string;
-  createdAt: string;
-  editedAt?: string;
-  history?: ReplyVersion[];
-};
-
-function isStoredReply(value: unknown): value is StoredReply {
-  if (!value || typeof value !== "object") {
-    return false;
-  }
-  const record = value as Record<string, unknown>;
-  return (
-    typeof record.id === "string" &&
-    typeof record.author === "string" &&
-    typeof record.body === "string" &&
-    typeof record.createdAt === "string"
-  );
-}
-
-function isStoredReplyList(value: unknown): value is StoredReply[] {
-  return Array.isArray(value) && value.every((item) => isStoredReply(item));
-}
-
-function isReplyVersionList(value: unknown): ReplyVersion[] {
-  if (!Array.isArray(value)) {
-    return [];
-  }
-  return value.filter((entry): entry is ReplyVersion => {
-    if (!entry || typeof entry !== "object") {
-      return false;
-    }
-    const record = entry as Record<string, unknown>;
-    return typeof record.body === "string" && typeof record.editedAt === "string";
-  });
-}
-
-function loadReplies(id: string): Reply[] {
-  if (typeof window === "undefined") return [];
-  try {
-    const raw = localStorage.getItem(replyKey(id));
-    const parsed = raw ? JSON.parse(raw) : [];
-    if (!isStoredReplyList(parsed)) {
-      return [];
-    }
-    return parsed.map((entry) => ({
-      id: entry.id,
-      author: entry.author,
-      body: entry.body,
-      createdAt: entry.createdAt,
-      editedAt: typeof entry.editedAt === "string" ? entry.editedAt : undefined,
-      history: isReplyVersionList(entry.history),
-    }));
-  } catch {
-    return [];
-  }
-}
-function saveReplies(id: string, list: Reply[]) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(replyKey(id), JSON.stringify(list));
-  // notify /community cards to update
-  window.dispatchEvent(new StorageEvent("storage", { key: replyKey(id) }));
-}
-function newId() {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
-  return "r_" + Math.random().toString(36).slice(2, 10);
-}
-function canEditDelete(r: Reply, currentName: string) {
-  if (!currentName) return false;
-  if (r.author.trim() !== currentName.trim()) return false;
-  const age = Date.now() - new Date(r.createdAt).getTime();
-  return age <= GRACE_MS;
-}
-function remainingMs(r: Reply) {
-  const used = Date.now() - new Date(r.createdAt).getTime();
-  const remain = GRACE_MS - used;
-  return Math.max(0, remain);
-}
-function fmtRemain(ms: number) {
-  const s = Math.ceil(ms / 1000);
-  const m = Math.floor(s / 60);
-  const rs = s % 60;
-  return m > 0 ? `${m}m ${rs}s` : `${rs}s`;
-}
 
 
 export default function TopicDetailClient({
@@ -270,25 +172,7 @@ export default function TopicDetailClient({
 
   return (
     <>
-      {/* Header capsule */}
-      <section className="max-w-screen-xl mx-auto px-8 pt-6">
-        <div className="w-full max-w-4xl bg-white rounded-2xl border border-gray-200 shadow-md px-8 py-5 mx-auto">
-          <p className="text-xs font-semibold text-indigo-600 tracking-wide uppercase">{topic.category}</p>
-          <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mt-1">{topic.title}</h1>
-          <div className="mt-2 text-xs text-gray-500 flex items-center gap-3">
-            <span className="inline-flex items-center gap-2">
-              <Avatar name={topic.author} />
-              <span className="text-gray-700">{topic.author}</span>
-            </span>
-            <span>•</span>
-            <time dateTime={topic.createdAt} title={new Date(topic.createdAt).toLocaleString()}>
-              {timeAgo(topic.createdAt)}
-            </time>
-            <span>•</span>
-            <span>{replies.length} {replies.length === 1 ? "reply" : "replies"}</span>
-          </div>
-        </div>
-      </section>
+      <TopicHeader topic={topic} replyCount={replies.length} />
 
       {/* Body */}
       <article className="max-w-3xl mx-auto px-6 md:px-0 mt-8 text-gray-800 leading-relaxed">
@@ -297,225 +181,49 @@ export default function TopicDetailClient({
         </div>
       </article>
 
-      {/* Reply form */}
-      <section className="max-w-3xl mx-auto px-6 md:px-0 mt-8">
-        <form onSubmit={handlePostReply} className="rounded-2xl border border-gray-200 bg-white shadow-md p-6 space-y-3">
-          <h2 className="text-base font-semibold text-gray-900">Post a reply</h2>
-
-          {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 text-red-700 px-3 py-2 text-sm">
-              {error}
-            </div>
-          )}
-
-          <label className="text-sm text-gray-700 block">
-            Name
-            <input
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              className="mt-1 w-full h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Your name"
-            />
-          </label>
-
-          <label className="text-sm text-gray-700 block">
-            Message
-            <textarea
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              rows={4}
-              className="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Share tips, feedback, or resources…"
-            />
-          </label>
-
-          <p className="text-xs text-gray-500">
-            You can edit or delete your reply for 5 minutes after posting (matched to your Name).
-          </p>
-
-          <div className="flex items-center justify-end gap-3 pt-1">
-            <Link href="/community" className="text-sm text-gray-600 hover:text-gray-800">Cancel</Link>
-            <button
-              type="submit"
-              className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-700"
-            >
-              Reply
-            </button>
-          </div>
-        </form>
-      </section>
+      <ReplyForm
+        author={author}
+        body={body}
+        error={error}
+        onAuthorChange={setAuthor}
+        onBodyChange={setBody}
+        onSubmit={handlePostReply}
+      />
 
       {/* Replies list */}
       <section className="max-w-3xl mx-auto px-6 md:px-0 mt-6">
-        {replies.length === 0 ? (
-          <p className="text-center text-gray-500">No replies yet.</p>
-        ) : (
-          <ul className="space-y-3">
-            {replies.map((r) => {
-              const mine = r.author.trim() === author.trim();
-              const remain = remainingMs(r);
-              const allowed = canEditDelete(r, author);
-
-              return (
-                <li key={r.id} className="relative rounded-2xl border border-gray-200 bg-white shadow-md p-5">
-                  {/* Meta */}
-                  <div className="text-xs text-gray-500 mb-2 flex items-center justify-between">
-                    <span className="inline-flex items-center gap-2">
-                      <Avatar name={r.author} />
-                      <span className="font-medium text-gray-700">{r.author}</span>
-                      <span>•</span>
-                      <time dateTime={r.createdAt} title={new Date(r.createdAt).toLocaleString()}>
-                        {timeAgo(r.editedAt ?? r.createdAt)}
-                      </time>
-                      {r.editedAt && <span className="italic text-gray-400">(edited)</span>}
-                      {mine && remain > 0 && (
-                        <span className="ml-2 text-[11px] text-indigo-600 bg-indigo-50 rounded px-1.5 py-0.5">
-                          {fmtRemain(remain)} left to edit/delete
-                        </span>
-                      )}
-                    </span>
-
-                    {/* Reply actions menu */}
-                    <div className="relative">
-                      <button
-                        className="h-8 w-8 rounded-full hover:bg-gray-100 text-gray-600"
-                        onClick={() => setMenuOpenFor(menuOpenFor === r.id ? null : r.id)}
-                        aria-label="Reply actions"
-                      >
-                        ⋯
-                      </button>
-                      {menuOpenFor === r.id && (
-                        <div className="absolute right-0 mt-2 w-40 rounded-lg border border-gray-200 bg-white shadow-lg text-sm z-10">
-                          <button
-                            className={`block w-full text-left px-3 py-2 hover:bg-gray-50 ${!allowed ? "opacity-50 cursor-not-allowed" : ""}`}
-                            onClick={() => (allowed ? beginEdit(r) : null)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="block w-full text-left px-3 py-2 hover:bg-gray-50"
-                            onClick={() => setShowHistory(r)}
-                          >
-                            View history
-                          </button>
-                          <button
-                            className={`block w-full text-left px-3 py-2 text-red-600 hover:bg-red-50 ${!allowed ? "opacity-50 cursor-not-allowed" : ""}`}
-                            onClick={() => (allowed ? deleteReply(r.id) : null)}
-                          >
-                            Delete
-                          </button>
-                          {!allowed && (
-                            <div className="px-3 py-2 text-[11px] text-gray-500 border-t">
-                              Only the author can edit/delete within 5 minutes.
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Body */}
-                  <p className="whitespace-pre-wrap text-gray-800 text-sm">{r.body}</p>
-                </li>
-              );
-            })}
-          </ul>
-        )}
+        <ReplyList
+          replies={replies}
+          currentAuthor={author}
+          menuOpenFor={menuOpenFor}
+          onMenuToggle={(replyId) =>
+            setMenuOpenFor(menuOpenFor === replyId ? null : replyId)
+          }
+          onEdit={beginEdit}
+          onDelete={deleteReply}
+          onShowHistory={setShowHistory}
+        />
       </section>
 
       {/* Back link */}
       <div className="max-w-3xl mx-auto mt-10 px-6 md:px-0">
-        <Link href="/community" className="text-indigo-600 hover:text-indigo-700 text-sm font-medium">
+        <Link
+          href="/community"
+          className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+        >
           ← Back to Community
         </Link>
       </div>
 
-      {/* Edit Modal */}
-      {editing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setEditing(null)} />
-          <div className="relative z-10 w-full max-w-xl rounded-2xl border border-gray-200 bg-white shadow-xl">
-            <div className="p-6 space-y-4">
-              <header className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Edit reply</h3>
-                <button className="text-gray-500 hover:text-gray-700" onClick={() => setEditing(null)} aria-label="Close">✕</button>
-              </header>
-              <textarea
-                value={editBody}
-                onChange={(e) => setEditBody(e.target.value)}
-                rows={6}
-                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <div className="flex items-center justify-between text-xs text-gray-500">
-                <span>Edits are visible to everyone (full history kept).</span>
-                {editing && (
-                  <span>{fmtRemain(remainingMs(editing))} left</span>
-                )}
-              </div>
-              <div className="flex items-center justify-end gap-3">
-                <button className="h-10 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-700 hover:bg-gray-50" onClick={() => setEditing(null)}>
-                  Cancel
-                </button>
-                <button className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-700" onClick={confirmEdit}>
-                  Save changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <EditReplyModal
+        editing={editing}
+        editBody={editBody}
+        onEditBodyChange={setEditBody}
+        onClose={() => setEditing(null)}
+        onConfirm={confirmEdit}
+      />
 
-      {/* History Modal */}
-      {showHistory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowHistory(null)} />
-          <div className="relative z-10 w-full max-w-xl rounded-2xl border border-gray-200 bg-white shadow-xl">
-            <div className="p-6 space-y-4">
-              <header className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Edit history</h3>
-                <button className="text-gray-500 hover:text-gray-700" onClick={() => setShowHistory(null)} aria-label="Close">✕</button>
-              </header>
-
-              <ul className="space-y-3 text-sm text-gray-800 max-h-[60vh] overflow-auto">
-                <li className="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                  <div className="text-xs text-gray-500 mb-1">
-                    Original • <time dateTime={showHistory.createdAt}>{new Date(showHistory.createdAt).toLocaleString()}</time>
-                  </div>
-                  <pre className="whitespace-pre-wrap">
-                    {(showHistory.history && showHistory.history.length)
-                      ? showHistory.history[0]?.body
-                      : showHistory.body}
-                  </pre>
-                </li>
-
-                {showHistory.history && showHistory.history.length > 0 && showHistory.history.map((v, idx) => (
-                  <li key={idx} className="rounded-lg border border-gray-200 p-3">
-                    <div className="text-xs text-gray-500 mb-1">
-                      Edited • <time dateTime={v.editedAt}>{new Date(v.editedAt).toLocaleString()}</time>
-                    </div>
-                    <pre className="whitespace-pre-wrap">{v.body}</pre>
-                  </li>
-                ))}
-
-                {showHistory.editedAt && (
-                  <li className="rounded-lg border border-gray-200 p-3">
-                    <div className="text-xs text-gray-500 mb-1">
-                      Current (last edited) • <time dateTime={showHistory.editedAt}>{new Date(showHistory.editedAt).toLocaleString()}</time>
-                    </div>
-                    <pre className="whitespace-pre-wrap">{showHistory.body}</pre>
-                  </li>
-                )}
-              </ul>
-
-              <div className="flex items-center justify-end">
-                <button className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-700" onClick={() => setShowHistory(null)}>
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <HistoryModal reply={showHistory} onClose={() => setShowHistory(null)} />
     </>
   );
 }
