@@ -179,19 +179,50 @@ export function ExploreShell() {
   useEffect(() => {
     let isActive = true;
     setIsLoading(true);
+    setLoadError(null);
+    
+    // Add a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (isActive) {
+        logger.error("Timeout loading mock locations");
+        setLoadError("Loading locations is taking longer than expected. Please refresh the page.");
+        setIsLoading(false);
+      }
+    }, 10000); // 10 second timeout
+
     void import("@/data/mockLocations")
       .then((module) => {
+        clearTimeout(timeoutId);
         if (!isActive) return;
-        setLocations(module.MOCK_LOCATIONS);
+        
+        if (!module || !module.MOCK_LOCATIONS) {
+          throw new Error("MOCK_LOCATIONS not found in module");
+        }
+        
+        const locationsArray = Array.isArray(module.MOCK_LOCATIONS) 
+          ? module.MOCK_LOCATIONS 
+          : [];
+        
+        if (locationsArray.length === 0) {
+          logger.warn("MOCK_LOCATIONS array is empty");
+        }
+        
+        setLocations(locationsArray);
         setLoadError(null);
       })
       .catch((error) => {
+        clearTimeout(timeoutId);
         logger.error("Failed to load mock locations", error);
         if (!isActive) return;
-        setLoadError("Unable to load locations. Please try again later.");
+        setLoadError(
+          error instanceof Error && error.message.includes("MOCK_LOCATIONS")
+            ? "Locations data is not available. Please check the deployment configuration."
+            : "Unable to load locations. Please refresh the page to try again."
+        );
         setLocations([]);
       })
       .finally(() => {
+        clearTimeout(timeoutId);
         if (isActive) {
           setIsLoading(false);
         }
@@ -199,6 +230,7 @@ export function ExploreShell() {
 
     return () => {
       isActive = false;
+      clearTimeout(timeoutId);
     };
   }, []);
 
@@ -335,7 +367,16 @@ export function ExploreShell() {
   if (loadError) {
     return (
       <div className="mx-auto max-w-screen-md px-4 py-12 text-center sm:px-6 sm:py-16 md:px-8 md:py-24">
-        <p className="text-sm text-red-600">{loadError}</p>
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+          <p className="text-sm font-medium text-red-800 mb-2">Error loading locations</p>
+          <p className="text-sm text-red-600">{loadError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            Refresh Page
+          </button>
+        </div>
       </div>
     );
   }
