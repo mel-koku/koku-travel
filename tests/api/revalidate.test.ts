@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { POST } from "@/app/api/revalidate/route";
 import { isValidSignature } from "@sanity/webhook";
 import { revalidatePath, revalidateTag } from "next/cache";
