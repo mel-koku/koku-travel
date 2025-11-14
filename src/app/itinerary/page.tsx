@@ -4,9 +4,6 @@ import Link from "next/link";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-// Force dynamic rendering since this page uses client-side state
-export const dynamic = "force-dynamic";
-
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
 import { Select } from "@/components/ui/Select";
 import { useAppState } from "@/state/AppState";

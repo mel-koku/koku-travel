@@ -1,6 +1,7 @@
 import { createClient as createSupabaseServerClient } from "@/lib/supabase/server";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { Location, LocationDetails, LocationPhoto, LocationReview } from "@/types/location";
+import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 const SEARCH_FIELD_MASK = ["places.id", "places.displayName", "places.formattedAddress"].join(",");
@@ -144,20 +145,24 @@ async function searchPlaceId(options: SearchPlaceOptions): Promise<PlaceIdCacheE
   const apiKey = getApiKey();
   const { query, languageCode = "en", regionCode = "JP" } = options;
 
-  const response = await fetch(`${PLACES_API_BASE_URL}/places:searchText`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Goog-Api-Key": apiKey,
-      "X-Goog-FieldMask": SEARCH_FIELD_MASK,
+  const response = await fetchWithTimeout(
+    `${PLACES_API_BASE_URL}/places:searchText`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": SEARCH_FIELD_MASK,
+      },
+      body: JSON.stringify({
+        textQuery: query,
+        languageCode,
+        regionCode,
+        pageSize: 1,
+      }),
     },
-    body: JSON.stringify({
-      textQuery: query,
-      languageCode,
-      regionCode,
-      pageSize: 1,
-    }),
-  });
+    10000, // 10 second timeout
+  );
 
   if (!response.ok) {
     const errorBody = await response.text();
@@ -371,13 +376,17 @@ export async function fetchLocationDetails(location: Location): Promise<Location
 
   const apiKey = getApiKey();
 
-  const response = await fetch(`${PLACES_API_BASE_URL}/places/${resolvedPlaceId}?languageCode=en`, {
-    headers: {
-      "X-Goog-Api-Key": apiKey,
-      "X-Goog-FieldMask": DETAILS_FIELD_MASK,
+  const response = await fetchWithTimeout(
+    `${PLACES_API_BASE_URL}/places/${resolvedPlaceId}?languageCode=en`,
+    {
+      headers: {
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": DETAILS_FIELD_MASK,
+      },
+      cache: "no-store",
     },
-    cache: "no-store",
-  });
+    10000, // 10 second timeout
+  );
 
   if (!response.ok) {
     const errorBody = await response.text();
@@ -430,11 +439,15 @@ export async function fetchPhotoStream(
     ? `${PLACES_API_BASE_URL}/${photoName}/media?${query}`
     : `${PLACES_API_BASE_URL}/${photoName}/media`;
 
-  const response = await fetch(url, {
-    headers: {
-      "X-Goog-Api-Key": apiKey,
+  const response = await fetchWithTimeout(
+    url,
+    {
+      headers: {
+        "X-Goog-Api-Key": apiKey,
+      },
     },
-  });
+    10000, // 10 second timeout
+  );
 
   if (!response.ok) {
     const errorBody = await response.text();

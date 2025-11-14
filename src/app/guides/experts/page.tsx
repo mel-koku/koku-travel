@@ -3,6 +3,8 @@ import ExpertsShell from "@/components/features/guides/ExpertsShell";
 import { fetchAuthors } from "@/lib/sanity/authors";
 import { getAllExperts } from "@/data/mockExperts";
 
+// Force dynamic rendering because we use draftMode() which is a dynamic function
+export const dynamic = "force-dynamic";
 // Revalidate this page every hour, or on-demand via webhook
 export const revalidate = 3600;
 

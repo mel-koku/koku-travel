@@ -20,6 +20,9 @@ export const metadata: Metadata = {
     "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
 };
 
+// Force dynamic rendering because we use draftMode() which is a dynamic function
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
