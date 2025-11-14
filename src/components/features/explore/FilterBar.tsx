@@ -49,19 +49,19 @@ export function FilterBar({
   return (
     <aside
       className={cn(
-        "sticky z-40 px-4 transition-all duration-300 ease-out [top:var(--sticky-offset)]",
+        "sticky z-40 px-2 transition-all duration-300 ease-out [top:var(--sticky-offset)] sm:px-4",
         isVertical && "lg:h-fit lg:self-start"
       )}
     >
       <div
         className={cn(
-          "w-full rounded-2xl border border-gray-200 bg-white/90 backdrop-blur shadow-md transition-all duration-300 ease-out hover:shadow-lg",
+          "w-full rounded-xl border border-gray-200 bg-white/90 backdrop-blur shadow-md transition-all duration-300 ease-out hover:shadow-lg sm:rounded-2xl",
           isVertical
-            ? "space-y-8 px-6 py-8 lg:max-h-[calc(100vh-var(--sticky-offset)-1rem)] lg:max-w-xs lg:overflow-y-auto lg:pr-4"
-            : "mx-auto max-w-5xl space-y-4 px-6 py-4"
+            ? "space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-8 lg:max-h-[calc(100vh-var(--sticky-offset)-1rem)] lg:max-w-xs lg:overflow-y-auto lg:pr-4"
+            : "mx-auto max-w-5xl space-y-3 px-4 py-3 sm:space-y-4 sm:px-6 sm:py-4"
         )}
       >
-        <div className="flex flex-col gap-4 md:flex-row md:items-center">
+        <div className="flex flex-col gap-3 sm:gap-4 md:flex-row md:items-center">
           <div className="flex-1">
             <SearchInput
               value={query}
@@ -73,7 +73,7 @@ export function FilterBar({
         <div
           className={cn(
             isVertical
-              ? "flex flex-col gap-4"
+              ? "flex flex-col gap-3 sm:gap-4"
               : "grid gap-3 md:grid-cols-2 lg:grid-cols-5"
           )}
         >
@@ -134,11 +134,11 @@ function FilterSelect({
   placeholder,
 }: FilterSelectProps) {
   return (
-    <label className="flex flex-col gap-1 text-sm text-gray-700 lg:gap-2">
-      <span className="font-medium lg:text-base">{label}</span>
+    <label className="flex flex-col gap-1 text-sm text-gray-700 sm:gap-2">
+      <span className="font-medium sm:text-base">{label}</span>
       <div className="relative">
         <select
-          className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2 pl-4 pr-11 text-sm text-gray-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 lg:py-3 lg:text-base"
+          className="min-h-[44px] w-full appearance-none rounded-xl border border-gray-200 bg-white py-2.5 pl-4 pr-11 text-sm text-gray-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 sm:py-3 sm:text-base"
           value={value}
           onChange={(event) => onChange(event.target.value)}
         >

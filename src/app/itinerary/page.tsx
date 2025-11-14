@@ -125,22 +125,22 @@ export default function ItineraryPage() {
   }
 
   return (
-    <main className="bg-slate-50 py-10">
-      <div className="mx-auto max-w-screen-2xl px-6">
+    <main className="bg-slate-50 py-6 sm:py-8 md:py-10">
+      <div className="mx-auto max-w-screen-2xl px-4 sm:px-6">
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="text-3xl font-semibold text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="text-2xl font-semibold text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 sm:text-3xl"
         >
           {trips.length > 1 ? "Your Itineraries" : "Your Itinerary"}
         </h1>
         {isUsingMock ? (
-          <p className="mt-3 text-sm text-gray-500">
+          <p className="mt-2 text-sm text-gray-500 sm:mt-3">
             Showing mock itinerary for development. Build a trip to see your personalized plan.
           </p>
         ) : null}
         {trips.length > 0 ? (
-          <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="mt-4 flex flex-col gap-4 sm:mt-6 md:flex-row md:items-end md:justify-between">
             <div className="space-y-1">
               <p className="text-sm text-gray-600">
                 Choose a saved trip to review or continue planning.
@@ -152,7 +152,7 @@ export default function ItineraryPage() {
                 </p>
               ) : null}
             </div>
-            <div className="w-full max-w-xs">
+            <div className="w-full md:max-w-xs">
               <Select
                 value={selectedTripId ?? ""}
                 onChange={handleTripChange}
