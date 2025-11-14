@@ -49,9 +49,7 @@ The embedded Sanity Studio is available at `http://localhost:3000/studio` when `
 
 ### Preview & Revalidation
 
-- Enable preview mode with `https://localhost:3000/api/preview?secret=...&slug=/guides`.
-- Exit preview via `https://localhost:3000/api/preview/exit`.
-- Configure a Sanity webhook to `POST https://localhost:3000/api/revalidate` with the same secret to refresh ISR cache after content changes.
+Preview mode and ISR revalidation are available for content editors. Refer to the Sanity setup documentation for configuration details.
 
 ### Seeding Sample Content
 
