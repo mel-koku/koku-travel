@@ -21,7 +21,7 @@ describe("GET /api/preview/exit", () => {
       disable: vi.fn(),
       isEnabled: false,
     };
-    vi.mocked(draftMode).mockReturnValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
+    vi.mocked(draftMode).mockResolvedValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
   });
 
   describe("Rate limiting", () => {
@@ -49,7 +49,7 @@ describe("GET /api/preview/exit", () => {
         disable: vi.fn(),
         isEnabled: false,
       };
-      vi.mocked(draftMode).mockReturnValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
+      vi.mocked(draftMode).mockResolvedValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
 
       const request = createMockRequest("https://example.com/api/preview/exit");
       await GET(request);
@@ -119,7 +119,7 @@ describe("POST /api/preview/exit", () => {
       disable: vi.fn(),
       isEnabled: false,
     };
-    vi.mocked(draftMode).mockReturnValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
+    vi.mocked(draftMode).mockResolvedValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
   });
 
   describe("Rate limiting", () => {
@@ -221,7 +221,7 @@ describe("POST /api/preview/exit", () => {
         disable: vi.fn(),
         isEnabled: false,
       };
-      vi.mocked(draftMode).mockReturnValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
+      vi.mocked(draftMode).mockResolvedValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
 
       const request = createMockRequest("https://example.com/api/preview/exit", {
         method: "POST",

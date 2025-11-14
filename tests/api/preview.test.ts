@@ -18,7 +18,7 @@ describe("GET /api/preview", () => {
     vi.clearAllMocks();
     // Set env var before tests run
     process.env.SANITY_PREVIEW_SECRET = "test-secret-123";
-    vi.mocked(draftMode).mockReturnValue({
+    vi.mocked(draftMode).mockResolvedValue({
       enable: vi.fn(),
       disable: vi.fn(),
       isEnabled: false,
@@ -145,7 +145,7 @@ describe("GET /api/preview", () => {
         disable: vi.fn(),
         isEnabled: false,
       };
-      vi.mocked(draftMode).mockReturnValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
+      vi.mocked(draftMode).mockResolvedValue(mockDraft as unknown as Awaited<ReturnType<typeof draftMode>>);
 
       const request = createMockRequest(
         "https://example.com/api/preview?secret=test-secret-123&slug=test-guide",
