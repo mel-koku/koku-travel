@@ -3,10 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 
 /**
  * Checks if the current user is authenticated.
- * Returns the user if authenticated, otherwise redirects to account page.
+ * Returns the user if authenticated, otherwise redirects to dashboard page.
  *
  * @returns The authenticated user
- * @throws Redirects to /account if not authenticated
+ * @throws Redirects to /dashboard if not authenticated
  */
 export async function requireAuth() {
   const supabase = await createClient();
@@ -16,7 +16,7 @@ export async function requireAuth() {
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    redirect("/account");
+    redirect("/dashboard");
   }
 
   return user;
