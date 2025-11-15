@@ -54,6 +54,15 @@ export type LeafletMap = {
   remove(): void;
 };
 
+export type LeafletDivIcon = {
+  options: {
+    html: string;
+    className?: string;
+    iconSize?: [number, number];
+    iconAnchor?: [number, number];
+  };
+};
+
 export type LeafletModule = {
   map(
     container: HTMLElement,
@@ -73,7 +82,13 @@ export type LeafletModule = {
       maxZoom: number;
     }
   ): LeafletTileLayer;
-  marker(position: [number, number]): LeafletMarker;
+  marker(position: [number, number], options?: { icon?: LeafletDivIcon }): LeafletMarker;
+  divIcon(options: {
+    html: string;
+    className?: string;
+    iconSize?: [number, number];
+    iconAnchor?: [number, number];
+  }): LeafletDivIcon;
   polyline(
     latlngs: [number, number][],
     options: {

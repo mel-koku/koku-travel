@@ -264,6 +264,10 @@ export const MOCK_LOCATIONS: Location[] = [
     image: "https://images.unsplash.com/photo-1741496172387-fc0773e848f8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8U2hpbW9nYW1vJTIwU2hyaW5lJTIwS3lvdG98ZW58MHx8fHwxNzYyNzUwNzI5fDA&ixlib=rb-4.1.0&q=80&w=1600",
     minBudget: "Free",
     estimatedDuration: "1 hour",
+    coordinates: {
+      lat: 35.0394,
+      lng: 135.7731,
+    },
   },
   {
     id: "kyoto-arabica-kyoto-higashiyama",
