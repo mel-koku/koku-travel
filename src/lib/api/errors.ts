@@ -15,6 +15,7 @@ export type ApiError = {
  * @param status - HTTP status code (default: 500)
  * @param code - Optional error code for programmatic handling
  * @param details - Optional additional error details
+ * @param context - Optional additional context (route, requestId, etc.)
  * @returns NextResponse with error JSON
  */
 export function createErrorResponse(
@@ -22,11 +23,20 @@ export function createErrorResponse(
   status: number = 500,
   code?: string,
   details?: unknown,
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
 ): NextResponse<ApiError> {
   const isProduction = process.env.NODE_ENV === "production";
 
-  // Log full error details server-side (always)
-  logger.error(`API Error ${status}: ${message}`, undefined, details ? { details } : undefined);
+  // Log full error details server-side with structured context
+  const logContext: Record<string, unknown> = {
+    status,
+    code: code || "UNKNOWN",
+    ...(context || {}),
+  };
+  if (details) {
+    logContext.details = details;
+  }
+  logger.error(`API Error ${status}: ${message}`, undefined, logContext);
 
   const error: ApiError = { error: message };
   if (code) {
@@ -43,29 +53,42 @@ export function createErrorResponse(
 /**
  * Creates a 400 Bad Request error response.
  */
-export function badRequest(message: string, details?: unknown): NextResponse<ApiError> {
-  return createErrorResponse(message, 400, "BAD_REQUEST", details);
+export function badRequest(
+  message: string,
+  details?: unknown,
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
+): NextResponse<ApiError> {
+  return createErrorResponse(message, 400, "BAD_REQUEST", details, context);
 }
 
 /**
  * Creates a 401 Unauthorized error response.
  */
-export function unauthorized(message: string = "Authentication required"): NextResponse<ApiError> {
-  return createErrorResponse(message, 401, "UNAUTHORIZED");
+export function unauthorized(
+  message: string = "Authentication required",
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
+): NextResponse<ApiError> {
+  return createErrorResponse(message, 401, "UNAUTHORIZED", undefined, context);
 }
 
 /**
  * Creates a 403 Forbidden error response.
  */
-export function forbidden(message: string = "Access forbidden"): NextResponse<ApiError> {
-  return createErrorResponse(message, 403, "FORBIDDEN");
+export function forbidden(
+  message: string = "Access forbidden",
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
+): NextResponse<ApiError> {
+  return createErrorResponse(message, 403, "FORBIDDEN", undefined, context);
 }
 
 /**
  * Creates a 404 Not Found error response.
  */
-export function notFound(message: string = "Resource not found"): NextResponse<ApiError> {
-  return createErrorResponse(message, 404, "NOT_FOUND");
+export function notFound(
+  message: string = "Resource not found",
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
+): NextResponse<ApiError> {
+  return createErrorResponse(message, 404, "NOT_FOUND", undefined, context);
 }
 
 /**
@@ -74,8 +97,9 @@ export function notFound(message: string = "Resource not found"): NextResponse<A
 export function internalError(
   message: string = "An internal error occurred",
   details?: unknown,
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
 ): NextResponse<ApiError> {
-  return createErrorResponse(message, 500, "INTERNAL_ERROR", details);
+  return createErrorResponse(message, 500, "INTERNAL_ERROR", details, context);
 }
 
 /**
@@ -83,7 +107,8 @@ export function internalError(
  */
 export function serviceUnavailable(
   message: string = "Service temporarily unavailable",
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
 ): NextResponse<ApiError> {
-  return createErrorResponse(message, 503, "SERVICE_UNAVAILABLE");
+  return createErrorResponse(message, 503, "SERVICE_UNAVAILABLE", undefined, context);
 }
 
