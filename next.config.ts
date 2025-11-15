@@ -126,6 +126,10 @@ const nextConfig: NextConfig = {
   },
   // Turbopack configuration (empty - using defaults)
   turbopack: {},
+  // Note: Request body size limits are enforced in API route handlers
+  // Next.js 16 App Router doesn't support the old api.bodyParser.sizeLimit config
+  // Use checkBodySizeLimit() or readBodyWithSizeLimit() from @/lib/api/bodySizeLimit
+  // Default limit is 1MB, but individual routes can set stricter limits
 };
 
 // Conditionally wrap with Sentry if DSN is configured and package is installed
