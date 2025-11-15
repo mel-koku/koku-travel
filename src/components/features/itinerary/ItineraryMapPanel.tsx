@@ -23,6 +23,7 @@ type MapPoint = {
   lng: number;
   timeOfDay: ItineraryActivity["timeOfDay"];
   tags?: string[];
+  placeNumber: number;
 };
 
 type ItineraryMapPanelProps = {
@@ -57,16 +58,27 @@ export const ItineraryMapPanel = ({
 
   const points = useMemo<MapPoint[]>(() => {
     const results: MapPoint[] = [];
+    let placeCounter = 1;
+    
     activities.forEach((activity) => {
       if (!isPlaceActivity(activity)) {
         return;
       }
       const resolvedLocation = findLocationForActivity(activity);
+      
+      // Check coordinates in priority order:
+      // 1. Direct coordinates on the Location object (most reliable)
+      // 2. Coordinates from locationCoordinates lookup by ID
+      // 3. Coordinates from locationCoordinates lookup by name
+      // 4. Fallback to activity title lookup
+      const coordinatesFromLocation = resolvedLocation?.coordinates ?? null;
       const coordinatesFromId =
         resolvedLocation?.id != null ? getCoordinatesForLocationId(resolvedLocation.id) : null;
       const lookupName = resolvedLocation?.name ?? activity.title;
       const coordinatesFromName = lookupName ? getCoordinatesForName(lookupName) : null;
-      const coordinates = coordinatesFromId ?? coordinatesFromName ?? getCoordinatesForName(activity.title);
+      const coordinatesFromTitle = getCoordinatesForName(activity.title);
+      
+      const coordinates = coordinatesFromLocation ?? coordinatesFromId ?? coordinatesFromName ?? coordinatesFromTitle;
       if (!coordinates) {
         return;
       }
@@ -78,6 +90,7 @@ export const ItineraryMapPanel = ({
         lng: coordinates.lng,
         tags: activity.tags,
         timeOfDay: activity.timeOfDay,
+        placeNumber: placeCounter++,
       });
     });
 
@@ -241,7 +254,33 @@ export const ItineraryMapPanel = ({
         let hasBounds = false;
 
         points.forEach((point) => {
-          const marker = Leaflet.marker([point.lat, point.lng]);
+          // Create custom numbered marker icon
+          const iconHtml = `
+            <div style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 28px;
+              height: 28px;
+              background-color: #4F46E5;
+              border: 2px solid white;
+              border-radius: 50%;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+              color: white;
+              font-weight: 600;
+              font-size: 12px;
+              line-height: 1;
+            ">${point.placeNumber}</div>
+          `;
+          
+          const customIcon = Leaflet.divIcon({
+            html: iconHtml,
+            className: "koku-numbered-marker",
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+          });
+          
+          const marker = Leaflet.marker([point.lat, point.lng], { icon: customIcon });
           marker.bindPopup(`<strong>${point.title}</strong>`);
           marker.on("click", () => {
             onSelectActivity?.(point.id);
