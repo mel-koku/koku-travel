@@ -142,12 +142,14 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
     const timeSlotUsage = new Map<typeof TIME_OF_DAY_SEQUENCE[number], number>();
     TIME_OF_DAY_SEQUENCE.forEach((slot) => timeSlotUsage.set(slot, 0));
 
+    // Track interest cycling across the entire day (not per time slot)
+    let interestIndex = 0;
+
     // Fill each time slot intelligently
     for (const timeSlot of TIME_OF_DAY_SEQUENCE) {
       const availableMinutes = getAvailableTimeForSlot(timeSlot, pace);
       let remainingTime = availableMinutes;
       let activityIndex = 0;
-      let interestIndex = 0;
 
       // Ensure at least one activity per time slot
       while (remainingTime > 0 && activityIndex < 10) {

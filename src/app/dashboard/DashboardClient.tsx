@@ -359,20 +359,6 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
               </div>
             </div>
           </div>
-
-          {!isAuthenticated && !showAccountSection && (
-            <div className="mt-4 rounded-xl border border-indigo-200 bg-indigo-50 p-4">
-              <p className="text-sm text-indigo-900">
-                Sign in to sync your favorites, bookmarks, and itineraries across all your devices.
-              </p>
-              <button
-                onClick={() => setShowAccountSection(true)}
-                className="mt-3 inline-block rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-              >
-                Sign in →
-              </button>
-            </div>
-          )}
         </div>
 
         {activeTrip ? (
