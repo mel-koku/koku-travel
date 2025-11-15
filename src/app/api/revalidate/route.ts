@@ -4,7 +4,6 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { serviceUnavailable, unauthorized, badRequest } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
-import { readBodyWithSizeLimit, DEFAULT_MAX_BODY_SIZE } from "@/lib/api/bodySizeLimit";
 import { sanityWebhookPayloadSchema } from "@/lib/api/schemas";
 import { sanitizePath } from "@/lib/api/sanitization";
 import type { z } from "zod";
@@ -13,7 +12,7 @@ import { env } from "@/lib/env";
 
 const SIGNATURE_HEADER = "x-sanity-signature";
 const SECRET = env.sanityRevalidateSecret || env.sanityPreviewSecret;
-const MAX_PAYLOAD_SIZE = 64 * 1024; // 64KB max payload size (stricter than default 1MB for webhooks)
+const MAX_PAYLOAD_SIZE = 64 * 1024; // 64KB max payload size
 
 function normalizePaths(payload: z.infer<typeof sanityWebhookPayloadSchema>): string[] {
   const paths = new Set<string>();
@@ -91,12 +90,12 @@ export async function POST(request: NextRequest) {
   }
 
   // Get raw body for signature validation (must be done before parsing)
-  // Use stricter limit for webhook payloads
-  const bodyResult = await readBodyWithSizeLimit(request, MAX_PAYLOAD_SIZE);
-  if (bodyResult.response) {
-    return bodyResult.response;
+  const rawBody = await request.text();
+
+  // Validate payload size before processing
+  if (rawBody.length > MAX_PAYLOAD_SIZE) {
+    return badRequest(`Payload too large (max ${MAX_PAYLOAD_SIZE} bytes).`);
   }
-  const rawBody = bodyResult.body!;
 
   if (!isValidSignature(rawBody, signature, SECRET)) {
     return unauthorized("Invalid signature.");
@@ -139,4 +138,3 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ revalidated: pathsToRevalidate, tags: ["guides"] });
 }
-

@@ -3,7 +3,6 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { logger } from "../logger";
 import { env } from "../env";
-import { LRUCache } from "../utils/lruCache";
 
 /**
  * Distributed rate limiter using Upstash Redis
@@ -75,11 +74,7 @@ if (useUpstash) {
 }
 
 // Fallback: In-memory store for local development
-// Use LRU cache with 10,000 entry limit to prevent unbounded memory growth
-const RATE_LIMIT_CACHE_MAX_SIZE = 10000;
-const rateLimitStore = new LRUCache<string, RateLimitEntry>({
-  maxSize: RATE_LIMIT_CACHE_MAX_SIZE,
-});
+const rateLimitStore = new Map<string, RateLimitEntry>();
 
 // Module-level cleanup interval reference
 let cleanupInterval: NodeJS.Timeout | null = null;
@@ -281,4 +276,3 @@ export function withRateLimit(
     return handler(request, ...args);
   };
 }
-

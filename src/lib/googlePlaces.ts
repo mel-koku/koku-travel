@@ -4,6 +4,7 @@ import { Location, LocationDetails, LocationPhoto, LocationReview } from "@/type
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
+import { CACHE_TTL_30_DAYS, CACHE_TTL_6_HOURS, TIMEOUT_10_SECONDS } from "@/lib/constants";
 
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 const SEARCH_FIELD_MASK = ["places.id", "places.displayName", "places.formattedAddress"].join(",");
@@ -33,8 +34,8 @@ const DETAILS_FIELD_MASK = [
 
 const MAX_REVIEWS = 5;
 const MAX_PHOTOS = 8;
-const PLACE_ID_CACHE_TTL = 1000 * 60 * 60 * 24 * 30; // 30 days
-const PLACE_DETAILS_CACHE_TTL = 1000 * 60 * 60 * 6; // 6 hours
+const PLACE_ID_CACHE_TTL = CACHE_TTL_30_DAYS;
+const PLACE_DETAILS_CACHE_TTL = CACHE_TTL_6_HOURS;
 const PLACE_DETAILS_TABLE = "place_details";
 const SUPABASE_DETAILS_COLUMN_SET = "place_id, payload, fetched_at";
 
@@ -120,7 +121,6 @@ function getPlaceIdCache(): Map<string, PlaceIdCacheEntry> {
 function getPlaceDetailsCache(): Map<string, PlaceDetailsCacheEntry> {
   return placeDetailsCache;
 }
-}
 
 function getApiKey(): string {
   const key = env.googlePlacesApiKey;
@@ -158,7 +158,7 @@ async function searchPlaceId(options: SearchPlaceOptions): Promise<PlaceIdCacheE
         pageSize: 1,
       }),
     },
-    10000, // 10 second timeout
+    TIMEOUT_10_SECONDS,
   );
 
   if (!response.ok) {
@@ -382,7 +382,7 @@ export async function fetchLocationDetails(location: Location): Promise<Location
       },
       cache: "no-store",
     },
-    10000, // 10 second timeout
+    TIMEOUT_10_SECONDS,
   );
 
   if (!response.ok) {
@@ -443,7 +443,7 @@ export async function fetchPhotoStream(
         "X-Goog-Api-Key": apiKey,
       },
     },
-    10000, // 10 second timeout
+    TIMEOUT_10_SECONDS,
   );
 
   if (!response.ok) {

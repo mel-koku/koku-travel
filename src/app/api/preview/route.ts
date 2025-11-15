@@ -5,6 +5,10 @@ import { checkRateLimit } from "@/lib/api/rateLimit";
 import { previewSlugSchema, secretSchema } from "@/lib/api/schemas";
 import { sanitizePath } from "@/lib/api/sanitization";
 import { env } from "@/lib/env";
+import {
+  RATE_LIMIT_PREVIEW_MAX_REQUESTS,
+  DEFAULT_RATE_LIMIT_WINDOW_MS,
+} from "@/lib/constants";
 
 const PREVIEW_SECRET = env.sanityPreviewSecret;
 
@@ -29,7 +33,10 @@ function resolveRedirectUrl(request: NextRequest, slug: string) {
  */
 export async function GET(request: NextRequest) {
   // Rate limiting: 20 requests per minute per IP (prevent brute force on secret)
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, {
+    maxRequests: RATE_LIMIT_PREVIEW_MAX_REQUESTS,
+    windowMs: DEFAULT_RATE_LIMIT_WINDOW_MS,
+  });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
