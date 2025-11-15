@@ -1,0 +1,1586 @@
+[
+  {
+    "locationId": "kyoto-ginkaku-ji-silver-pavilion",
+    "name": "Ginkaku-ji (Silver Pavilion)",
+    "coordinates": {
+      "lat": 35.0270213,
+      "lng": 135.7982058
+    },
+    "placeId": "ChIJ4W9CCwUJAWARyauI6BzKiiU"
+  },
+  {
+    "locationId": "kyoto-ryoan-ji",
+    "name": "Ryoan-ji",
+    "coordinates": {
+      "lat": 35.0344943,
+      "lng": 135.71826339999998
+    },
+    "placeId": "ChIJp7ocMCqoAWARQoXXRj4Xq-E"
+  },
+  {
+    "locationId": "kyoto-yasaka-shrine",
+    "name": "Yasaka Shrine",
+    "coordinates": {
+      "lat": 35.0036559,
+      "lng": 135.7785534
+    },
+    "placeId": "ChIJqewQoHkIAWAR6RokWp3Iesc"
+  },
+  {
+    "locationId": "kyoto-heian-shrine",
+    "name": "Heian Shrine",
+    "coordinates": {
+      "lat": 35.0159823,
+      "lng": 135.7824263
+    },
+    "placeId": "ChIJjch8GOUIAWART0WX2JLZvnU"
+  },
+  {
+    "locationId": "kyoto-nanzen-ji",
+    "name": "Nanzen-ji",
+    "coordinates": {
+      "lat": 35.0114138,
+      "lng": 135.7944841
+    },
+    "placeId": "ChIJ_fuXcyEJAWARTQDnx6Q5szg"
+  },
+  {
+    "locationId": "kyoto-tofuku-ji",
+    "name": "Tofuku-ji",
+    "coordinates": {
+      "lat": 34.976025,
+      "lng": 135.7737627
+    },
+    "placeId": "ChIJrZ8NkJJIAWARwRVgbKoRx2I"
+  },
+  {
+    "locationId": "kyoto-arabica-kyoto-higashiyama",
+    "name": "% Arabica Kyoto Higashiyama",
+    "coordinates": {
+      "lat": 34.9986354,
+      "lng": 135.778294
+    },
+    "placeId": "ChIJnW0DdsUIAWAROy9GuxW9QVI"
+  },
+  {
+    "locationId": "kyoto-inoda-coffee",
+    "name": "Inoda Coffee",
+    "coordinates": {
+      "lat": 35.0081041,
+      "lng": 135.76319279999998
+    },
+    "placeId": "ChIJHYWgPJAIAWAR1EwyilguU10"
+  },
+  {
+    "locationId": "kyoto-ippudo-nishiki-koji",
+    "name": "Ippudo Nishiki-Koji",
+    "coordinates": {
+      "lat": 35.0034894,
+      "lng": 135.7608678
+    },
+    "placeId": "ChIJNTeaOuAJAWARDg6NZGKvGIc"
+  },
+  {
+    "locationId": "kyoto-kyoto-gogyo",
+    "name": "Kyoto Gogyo",
+    "coordinates": {
+      "lat": 35.0053298,
+      "lng": 135.76388799999998
+    },
+    "placeId": "ChIJ9zIW2JAIAWARozBJ2cctBmQ"
+  },
+  {
+    "locationId": "kyoto-nishiki-warai",
+    "name": "Nishiki Warai",
+    "coordinates": {
+      "lat": 35.0051287,
+      "lng": 135.7623807
+    },
+    "placeId": "ChIJQS-Ni5AIAWARCfWXRfef6ok"
+  },
+  {
+    "locationId": "kyoto-kikunoi-honten",
+    "name": "Kikunoi Honten",
+    "coordinates": {
+      "lat": 35.0014754,
+      "lng": 135.7820562
+    },
+    "placeId": "ChIJVVXF5doIAWARUetIixOU-sw"
+  },
+  {
+    "locationId": "kyoto-okutan-kiyomizu",
+    "name": "Okutan Kiyomizu",
+    "coordinates": {
+      "lat": 34.9979753,
+      "lng": 135.7807786
+    },
+    "placeId": "ChIJU7jlIdAIAWAR6rlZS3_YitI"
+  },
+  {
+    "locationId": "kyoto-omen",
+    "name": "Omen",
+    "coordinates": {
+      "lat": 35.0262562,
+      "lng": 135.7950089
+    },
+    "placeId": "ChIJY7s4dwQJAWARzmwCifyYeVo"
+  },
+  {
+    "locationId": "kyoto-gion-kappa-restaurant",
+    "name": "Gion Kappa Restaurant",
+    "coordinates": {
+      "lat": 35.00503260000001,
+      "lng": 135.7730631
+    },
+    "placeId": "ChIJ8Wdgj-oIAWARh-4a7qaHh9A"
+  },
+  {
+    "locationId": "kyoto-katsukura-shijo-higashinotoin",
+    "name": "Katsukura Shijo Higashinotoin",
+    "coordinates": {
+      "lat": 35.004074599999996,
+      "lng": 135.7609493
+    },
+    "placeId": "ChIJAQAUEJoIAWARWg9aM16Q7xo"
+  },
+  {
+    "locationId": "kyoto-nishiki-market",
+    "name": "Nishiki Market",
+    "coordinates": {
+      "lat": 35.0050258,
+      "lng": 135.764723
+    },
+    "placeId": "ChIJT8uMzZwIAWARnGzsARCjnrY"
+  },
+  {
+    "locationId": "kyoto-teramachi-street",
+    "name": "Teramachi Street",
+    "coordinates": {
+      "lat": 35.019943,
+      "lng": 135.7673863
+    },
+    "placeId": "ChIJnVQQDGIIAWARdS3dYBiDhvE"
+  },
+  {
+    "locationId": "kyoto-shinkyogoku-shopping-street",
+    "name": "Shinkyogoku Shopping Street",
+    "coordinates": {
+      "lat": 35.0061821,
+      "lng": 135.7672056
+    },
+    "placeId": "ChIJq5ZudJQIAWAR2GtLSaqsKYY"
+  },
+  {
+    "locationId": "kyoto-kyoto-station-building",
+    "name": "Kyoto Station Building",
+    "coordinates": {
+      "lat": 34.9858556,
+      "lng": 135.7587624
+    },
+    "placeId": "ChIJbyn47q4IAWARsgghxipUOm8"
+  },
+  {
+    "locationId": "kyoto-kyoto-handicraft-center",
+    "name": "Kyoto Handicraft Center",
+    "coordinates": {
+      "lat": 35.0177234,
+      "lng": 135.7802494
+    },
+    "placeId": "ChIJh1SRn_oIAWARDDjLIHhOp6M"
+  },
+  {
+    "locationId": "kyoto-daimaru-kyoto",
+    "name": "Daimaru Kyoto",
+    "coordinates": {
+      "lat": 35.0043095,
+      "lng": 135.7621114
+    },
+    "placeId": "ChIJISb-rpAIAWARX9Z2o_x8G8c"
+  },
+  {
+    "locationId": "kyoto-takashimaya-kyoto",
+    "name": "Takashimaya Kyoto",
+    "coordinates": {
+      "lat": 35.0031004,
+      "lng": 135.7684962
+    },
+    "placeId": "ChIJwzqJepUIAWARvlUYqigZpJI"
+  },
+  {
+    "locationId": "kyoto-aeon-mall-kyoto",
+    "name": "Aeon Mall Kyoto",
+    "coordinates": {
+      "lat": 34.9827278,
+      "lng": 135.75445539999998
+    },
+    "placeId": "ChIJ8Uuuf6kIAWARFFrpsu-HJHQ"
+  },
+  {
+    "locationId": "kyoto-kyoto-tower-sando",
+    "name": "Kyoto Tower Sando",
+    "coordinates": {
+      "lat": 34.9875514,
+      "lng": 135.7592807
+    },
+    "placeId": "ChIJf1Crqa8IAWARfqdBNSI_lGA"
+  },
+  {
+    "locationId": "kyoto-sannenzaka-ninenzaka",
+    "name": "Sannenzaka Ninenzaka",
+    "coordinates": {
+      "lat": 34.998174399999996,
+      "lng": 135.7808578
+    },
+    "placeId": "ChIJlwyrGNAIAWARNb5hUHdZruY"
+  },
+  {
+    "locationId": "kyoto-arashiyama-bamboo-grove",
+    "name": "Arashiyama Bamboo Grove",
+    "coordinates": {
+      "lat": 35.0168187,
+      "lng": 135.67130129999998
+    },
+    "placeId": "ChIJrYtcv-urAWAR3XzWvXv8n_s"
+  },
+  {
+    "locationId": "kyoto-philosopher-s-path",
+    "name": "Philosopher's Path",
+    "coordinates": {
+      "lat": 35.0214532,
+      "lng": 135.7942948
+    },
+    "placeId": "ChIJC1iQcQQJAWARJ1jqp_e7tLU"
+  },
+  {
+    "locationId": "kyoto-kamo-river",
+    "name": "Kamo River",
+    "coordinates": {
+      "lat": 34.9804985,
+      "lng": 135.7671783
+    },
+    "placeId": "ChIJKZsHV-QIAWARAwyExuxohlc"
+  },
+  {
+    "locationId": "kyoto-kyoto-botanical-gardens",
+    "name": "Kyoto Botanical Gardens",
+    "coordinates": {
+      "lat": 35.048617199999995,
+      "lng": 135.7630378
+    },
+    "placeId": "ChIJ1e95GRsIAWARxYokwoFuups"
+  },
+  {
+    "locationId": "kyoto-maruyama-park",
+    "name": "Maruyama Park",
+    "coordinates": {
+      "lat": 35.0035587,
+      "lng": 135.78052689999998
+    },
+    "placeId": "ChIJm6JortwIAWARS811J4oNJus"
+  },
+  {
+    "locationId": "kyoto-mount-hiei",
+    "name": "Mount Hiei",
+    "coordinates": {
+      "lat": 35.0622477,
+      "lng": 135.8315317
+    },
+    "placeId": "ChIJEYMovyYKAWAR7-9MXpymVeI"
+  },
+  {
+    "locationId": "kyoto-ohara",
+    "name": "Ohara",
+    "coordinates": {
+      "lat": 35.0505995,
+      "lng": 135.7897629
+    },
+    "placeId": "ChIJMRk2zDQIAWARTS9IXFULhPM"
+  },
+  {
+    "locationId": "kyoto-tadasu-no-mori",
+    "name": "Tadasu no Mori",
+    "coordinates": {
+      "lat": 35.036467,
+      "lng": 135.77241279999998
+    },
+    "placeId": "ChIJ_7zQmkEIAWARyjP6gAwXB60"
+  },
+  {
+    "locationId": "kyoto-okochi-sanso-garden",
+    "name": "Okochi Sanso Garden",
+    "coordinates": {
+      "lat": 35.0167147,
+      "lng": 135.6699227
+    },
+    "placeId": "ChIJGTfQ9gSqAWARvzp3lzOgjk8"
+  },
+  {
+    "locationId": "kyoto-sagano-scenic-railway",
+    "name": "Sagano Scenic Railway",
+    "coordinates": {
+      "lat": 35.021943,
+      "lng": 135.6561758
+    },
+    "placeId": "EiNTYWdhbm8gU2NlbmljIFJhaWx3YXksIEt5b3RvLCBKYXBhbiIuKiwKFAoSCcs4NZz-qQFgEaPrEl0ay0WLEhQKEgnxwzzN1qgBYBE9HbtrNh2WwA"
+  },
+  {
+    "locationId": "kyoto-julia-beauty-salon",
+    "name": "Julia Beauty Salon",
+    "coordinates": {
+      "lat": 34.9864822,
+      "lng": 135.81511210000002
+    },
+    "placeId": "ChIJh9TfQpYOAWARTIlpEG8BZpQ"
+  },
+  {
+    "locationId": "kyoto-lem-hair-salon",
+    "name": "Lem Hair Salon",
+    "coordinates": {
+      "lat": 35.0232726,
+      "lng": 135.75671649999998
+    },
+    "placeId": "ChIJXdlYr3cJAWARL7RgZ2d2t4U"
+  },
+  {
+    "locationId": "kyoto-kyoto-kimono-rental-wargo",
+    "name": "Kyoto Kimono Rental Wargo",
+    "coordinates": {
+      "lat": 35.0036956,
+      "lng": 135.77290159999998
+    },
+    "placeId": "ChIJEZxMOMAIAWARheIXz_Tw0HQ"
+  },
+  {
+    "locationId": "kyoto-yume-kyoto",
+    "name": "Yume Kyoto",
+    "coordinates": {
+      "lat": 34.999161799999996,
+      "lng": 135.7801485
+    },
+    "placeId": "ChIJ_UkqUcUIAWAR1iDGoOPtRsQ"
+  },
+  {
+    "locationId": "kyoto-okamoto-kimono-rental",
+    "name": "Okamoto Kimono Rental",
+    "coordinates": {
+      "lat": 34.9951067,
+      "lng": 135.77967239999998
+    },
+    "placeId": "ChIJwfrV_9EIAWARzvET7z7x3Pk"
+  },
+  {
+    "locationId": "kyoto-gion-aya-kimono-rental",
+    "name": "Gion AYA Kimono Rental",
+    "coordinates": {
+      "lat": 35.001706999999996,
+      "lng": 135.7806607
+    },
+    "placeId": "ChIJs-BVzcQIAWARecr0-HpQs38"
+  },
+  {
+    "locationId": "kyoto-kyoto-yamashiroya",
+    "name": "Kyoto Yamashiroya",
+    "coordinates": {
+      "lat": 35.0407624,
+      "lng": 135.73920669999998
+    },
+    "placeId": "ChIJl1blQvYHAWARohEGCrS_Mnw"
+  },
+  {
+    "locationId": "kyoto-salon-de-tanoya",
+    "name": "Salon de Tanoya",
+    "coordinates": {
+      "lat": 35.025994499999996,
+      "lng": 135.74811219999998
+    },
+    "placeId": "ChIJ8RYrid4HAWARtU6jje3N8Uk"
+  },
+  {
+    "locationId": "kyoto-kyoto-kimono-rental-rei",
+    "name": "Kyoto Kimono Rental Rei",
+    "coordinates": {
+      "lat": 35.0058694,
+      "lng": 135.7775849
+    },
+    "placeId": "ChIJzxXkRMIIAWARlrKLK4_ikNI"
+  },
+  {
+    "locationId": "kyoto-sakura-beauty-salon",
+    "name": "SAKURA Beauty Salon",
+    "coordinates": {
+      "lat": 35.0088095,
+      "lng": 135.7683063
+    },
+    "placeId": "ChIJqzvinHMJAWARJaRrRZNJjdc"
+  },
+  {
+    "locationId": "kyoto-gion-corner",
+    "name": "Gion Corner",
+    "coordinates": {
+      "lat": 35.001396799999995,
+      "lng": 135.7755067
+    },
+    "placeId": "ChIJfwHp8MAIAWARSg0O3EYOO7o"
+  },
+  {
+    "locationId": "kyoto-pontocho-kaburenjo-theatre",
+    "name": "Pontocho Kaburenjo Theatre",
+    "coordinates": {
+      "lat": 35.0080847,
+      "lng": 135.7711783
+    },
+    "placeId": "ChIJVVWVVesIAWARP8rKy--Z2HI"
+  },
+  {
+    "locationId": "kyoto-minami-za-theatre",
+    "name": "Minami-za Theatre",
+    "coordinates": {
+      "lat": 35.0034444,
+      "lng": 135.7724632
+    },
+    "placeId": "ChIJjScPPcAIAWARPmFzw9UN-AM"
+  },
+  {
+    "locationId": "kyoto-samurai-kembu-theater",
+    "name": "Samurai Kembu Theater",
+    "coordinates": {
+      "lat": 35.009537099999996,
+      "lng": 135.7755388
+    },
+    "placeId": "ChIJXQxzcPgMAWAR2MVdzqV2kkY"
+  },
+  {
+    "locationId": "kyoto-ran-theatre-kyoto",
+    "name": "Ran Theatre Kyoto",
+    "coordinates": {
+      "lat": 35.0044754,
+      "lng": 135.76774950000004
+    },
+    "placeId": "ChIJtwaTS5QIAWAR_R6NuocWYmA"
+  },
+  {
+    "locationId": "kyoto-kyoto-international-manga-museum",
+    "name": "Kyoto International Manga Museum",
+    "coordinates": {
+      "lat": 35.0118576,
+      "lng": 135.7594192
+    },
+    "placeId": "ChIJh1qJf4YIAWARTAOFMHrSHvI"
+  },
+  {
+    "locationId": "kyoto-toei-kyoto-studio-park",
+    "name": "Toei Kyoto Studio Park",
+    "coordinates": {
+      "lat": 35.0164521,
+      "lng": 135.7080227
+    },
+    "placeId": "ChIJufvfOHEHAWARZ5Yd1oEIuis"
+  },
+  {
+    "locationId": "kyoto-kyoto-art-center",
+    "name": "Kyoto Art Center",
+    "coordinates": {
+      "lat": 35.005435999999996,
+      "lng": 135.758345
+    },
+    "placeId": "ChIJzyRZFpsIAWARbqyUlsq7PYk"
+  },
+  {
+    "locationId": "kyoto-kyoto-concert-hall",
+    "name": "Kyoto Concert Hall",
+    "coordinates": {
+      "lat": 35.05,
+      "lng": 135.76666699999998
+    },
+    "placeId": "ChIJDTSjUBkIAWARupGawUfZPWY"
+  },
+  {
+    "locationId": "kyoto-kyoto-tower-observatory",
+    "name": "Kyoto Tower Observatory",
+    "coordinates": {
+      "lat": 34.987520499999995,
+      "lng": 135.75925180000002
+    },
+    "placeId": "ChIJd9pWqK8IAWAR1L-X_-4WKew"
+  },
+  {
+    "locationId": "tokyo-senso-ji",
+    "name": "Senso-ji",
+    "coordinates": {
+      "lat": 35.7147651,
+      "lng": 139.7966553
+    },
+    "placeId": "ChIJ8T1GpMGOGGARDYGSgpooDWw"
+  },
+  {
+    "locationId": "tokyo-meiji-shrine",
+    "name": "Meiji Shrine",
+    "coordinates": {
+      "lat": 35.6763976,
+      "lng": 139.6993259
+    },
+    "placeId": "ChIJ5SZMmreMGGARcz8QSTiJyo8"
+  },
+  {
+    "locationId": "tokyo-zojo-ji-temple",
+    "name": "Zojo-ji Temple",
+    "coordinates": {
+      "lat": 35.657478999999995,
+      "lng": 139.7482928
+    },
+    "placeId": "ChIJC2xnkb6LGGARJL0d222opIg"
+  },
+  {
+    "locationId": "tokyo-yasukuni-shrine",
+    "name": "Yasukuni Shrine",
+    "coordinates": {
+      "lat": 35.694136,
+      "lng": 139.74384899999998
+    },
+    "placeId": "ChIJ1UOuDWiMGGARkM6Iv-ZU57U"
+  },
+  {
+    "locationId": "tokyo-nezu-shrine",
+    "name": "Nezu Shrine",
+    "coordinates": {
+      "lat": 35.7201366,
+      "lng": 139.76076949999998
+    },
+    "placeId": "ChIJ-X4hzjKMGGARDSsGeHOACgw"
+  },
+  {
+    "locationId": "tokyo-gotoku-ji-temple",
+    "name": "Gotoku-ji Temple",
+    "coordinates": {
+      "lat": 35.6488124,
+      "lng": 139.647481
+    },
+    "placeId": "ChIJVVUBmZ_zGGARrEy-Ua3psAY"
+  },
+  {
+    "locationId": "tokyo-hie-shrine",
+    "name": "Hie Shrine",
+    "coordinates": {
+      "lat": 35.6746656,
+      "lng": 139.7399379
+    },
+    "placeId": "ChIJF0MR5MSmH2ARj3x0ov0aQ-8"
+  },
+  {
+    "locationId": "tokyo-kanda-myojin",
+    "name": "Kanda Myojin",
+    "coordinates": {
+      "lat": 35.702018599999995,
+      "lng": 139.7678943
+    },
+    "placeId": "ChIJ7RsWzB6MGGARi3xBv7bkl_M"
+  },
+  {
+    "locationId": "tokyo-sengaku-ji-temple",
+    "name": "Sengaku-ji Temple",
+    "coordinates": {
+      "lat": 35.6377397,
+      "lng": 139.7364006
+    },
+    "placeId": "ChIJh64KT6uLGGARKx4cxgOaL54"
+  },
+  {
+    "locationId": "tokyo-asakusa-shrine",
+    "name": "Asakusa Shrine",
+    "coordinates": {
+      "lat": 35.715166499999995,
+      "lng": 139.7974389
+    },
+    "placeId": "ChIJx62FmcGOGGARDxQTl8Zx6U4"
+  },
+  {
+    "locationId": "tokyo-koffee-mameya",
+    "name": "Koffee Mameya",
+    "coordinates": {
+      "lat": 35.668368,
+      "lng": 139.71088799999998
+    },
+    "placeId": "ChIJB1oleKOMGGAR_10GNeoySkY"
+  },
+  {
+    "locationId": "tokyo-onigiri-caf-risaku",
+    "name": "Onigiri Café Risaku",
+    "coordinates": {
+      "lat": 35.7243717,
+      "lng": 139.7627799
+    },
+    "placeId": "ChIJie20d9KNGGARBGQCNcjxnU0"
+  },
+  {
+    "locationId": "tokyo-coffee-valley",
+    "name": "Coffee Valley",
+    "coordinates": {
+      "lat": 35.727685199999996,
+      "lng": 139.7130719
+    },
+    "placeId": "ChIJOSGiQWiNGGARrnh2tSR6HW0"
+  },
+  {
+    "locationId": "tokyo-gyukatsu-motomura",
+    "name": "Gyukatsu Motomura",
+    "coordinates": {
+      "lat": 35.656977000000005,
+      "lng": 139.7039981
+    },
+    "placeId": "ChIJn2FoeFmLGGARnIog2ijRZXw"
+  },
+  {
+    "locationId": "tokyo-sangoku-ichi",
+    "name": "Sangoku Ichi",
+    "coordinates": {
+      "lat": 35.6899708,
+      "lng": 139.6966017
+    },
+    "placeId": "ChIJdQKdWtGMGGARWkwkNI6Xf7o"
+  },
+  {
+    "locationId": "tokyo-kyobashi-basara",
+    "name": "Kyobashi Basara",
+    "coordinates": {
+      "lat": 35.6759522,
+      "lng": 139.7688023
+    },
+    "placeId": "ChIJ79v5ceOLGGARbwr16_NjP48"
+  },
+  {
+    "locationId": "tokyo-momijiya",
+    "name": "Momijiya",
+    "coordinates": {
+      "lat": 35.6999366,
+      "lng": 139.7474174
+    },
+    "placeId": "ChIJXXE5YkGMGGARkjQd_KkZSWA"
+  },
+  {
+    "locationId": "tokyo-koffee-mameya-kakeru",
+    "name": "Koffee Mameya Kakeru",
+    "coordinates": {
+      "lat": 35.6764735,
+      "lng": 139.804184
+    },
+    "placeId": "ChIJ9f0aP7iJGGAR3BB7LqfZdhE"
+  },
+  {
+    "locationId": "tokyo-tea-nakamura",
+    "name": "Tea Nakamura",
+    "coordinates": {
+      "lat": 35.704323099999996,
+      "lng": 139.7897346
+    },
+    "placeId": "ChIJW7q9ZreOGGARZ7zh2XxUOOo"
+  },
+  {
+    "locationId": "tokyo-kakimori",
+    "name": "Kakimori",
+    "coordinates": {
+      "lat": 35.703171399999995,
+      "lng": 139.7857206
+    },
+    "placeId": "ChIJYzGkb7eOGGARNSIHlHC_mbY"
+  },
+  {
+    "locationId": "tokyo-ginza-district",
+    "name": "Ginza District",
+    "coordinates": {
+      "lat": 35.671222799999995,
+      "lng": 139.7664859
+    },
+    "placeId": "ChIJu2-DAeeLGGARUZipC7OFRmA"
+  },
+  {
+    "locationId": "tokyo-akihabara",
+    "name": "Akihabara",
+    "coordinates": {
+      "lat": 35.699647299999995,
+      "lng": 139.7713703
+    },
+    "placeId": "ChIJzdWdgh2MGGARh4kg2pVZL3c"
+  },
+  {
+    "locationId": "tokyo-shibuya-crossing",
+    "name": "Shibuya Crossing",
+    "coordinates": {
+      "lat": 35.659482,
+      "lng": 139.7005596
+    },
+    "placeId": "ChIJK9EM68qLGGARacmu4KJj5SA"
+  },
+  {
+    "locationId": "tokyo-takeshita-street",
+    "name": "Takeshita Street",
+    "coordinates": {
+      "lat": 35.6710335,
+      "lng": 139.7051821
+    },
+    "placeId": "ChIJlVne8bqMGGARtX5O6ojMvsI"
+  },
+  {
+    "locationId": "tokyo-omotesando",
+    "name": "Omotesando",
+    "coordinates": {
+      "lat": 35.667355,
+      "lng": 139.707743
+    },
+    "placeId": "ChIJSTdtYqGMGGAR3XD4H-GfStY"
+  },
+  {
+    "locationId": "tokyo-daikanyama-t-site",
+    "name": "Daikanyama T-Site",
+    "coordinates": {
+      "lat": 35.649059,
+      "lng": 139.69962239999998
+    },
+    "placeId": "ChIJla_VyE-LGGARrCE9vCxYtus"
+  },
+  {
+    "locationId": "tokyo-shimokitazawa",
+    "name": "Shimokitazawa",
+    "coordinates": {
+      "lat": 35.665786,
+      "lng": 139.66986269999998
+    },
+    "placeId": "ChIJw_teZ_8hGGARgsSeLR2OLjM"
+  },
+  {
+    "locationId": "tokyo-nihombashi",
+    "name": "Nihombashi",
+    "coordinates": {
+      "lat": 35.6811836,
+      "lng": 139.7741538
+    },
+    "placeId": "ChIJU_JmlleJGGARa7vrQMGllR4"
+  },
+  {
+    "locationId": "tokyo-kappabashi-street",
+    "name": "Kappabashi Street",
+    "coordinates": {
+      "lat": 35.7105797,
+      "lng": 139.7879645
+    },
+    "placeId": "ChIJXYV-6JWOGGAR85vIZbM1RCE"
+  },
+  {
+    "locationId": "tokyo-ameya-yokocho",
+    "name": "Ameya-Yokocho",
+    "coordinates": {
+      "lat": 35.7100581,
+      "lng": 139.7745474
+    },
+    "placeId": "ChIJh7eDrwCPGGARCs9fpCkKS2U"
+  },
+  {
+    "locationId": "tokyo-shinjuku-gyoen",
+    "name": "Shinjuku Gyoen",
+    "coordinates": {
+      "lat": 35.685176299999995,
+      "lng": 139.7100517
+    },
+    "placeId": "ChIJPyOTG8KMGGARh_IXobWxHmo"
+  },
+  {
+    "locationId": "tokyo-rikugien-garden",
+    "name": "Rikugien Garden",
+    "coordinates": {
+      "lat": 35.7331005,
+      "lng": 139.7457335
+    },
+    "placeId": "ChIJYUQ-972NGGAR5W_2E0N3SHY"
+  },
+  {
+    "locationId": "tokyo-mount-mitake",
+    "name": "Mount Mitake",
+    "coordinates": {
+      "lat": 35.7829416,
+      "lng": 139.1495027
+    },
+    "placeId": "ChIJ42r5YUI6GWARmR4BNXTjZA8"
+  },
+  {
+    "locationId": "tokyo-tama-river",
+    "name": "Tama River",
+    "coordinates": {
+      "lat": 35.6722004,
+      "lng": 139.4275003
+    },
+    "placeId": "ChIJGwDyETg3GWARrXiQU1ZkOgc"
+  },
+  {
+    "locationId": "tokyo-ueno-park",
+    "name": "Ueno Park",
+    "coordinates": {
+      "lat": 35.7147557,
+      "lng": 139.7734312
+    },
+    "placeId": "ChIJw2qQRZuOGGARWmROEiM2y7E"
+  },
+  {
+    "locationId": "tokyo-yoyogi-park",
+    "name": "Yoyogi Park",
+    "coordinates": {
+      "lat": 35.6700649,
+      "lng": 139.6949656
+    },
+    "placeId": "ChIJMwpiebSMGGARPr_454zHvDQ"
+  },
+  {
+    "locationId": "tokyo-hama-rikyu-gardens",
+    "name": "Hama-rikyu Gardens",
+    "coordinates": {
+      "lat": 35.6596559,
+      "lng": 139.7634091
+    },
+    "placeId": "ChIJwfegutyLGGARGjiY-L2eSps"
+  },
+  {
+    "locationId": "tokyo-koishikawa-korakuen",
+    "name": "Koishikawa Korakuen",
+    "coordinates": {
+      "lat": 35.7056913,
+      "lng": 139.7492718
+    },
+    "placeId": "ChIJBVDeRkaMGGARXsIjrhYCIhs"
+  },
+  {
+    "locationId": "tokyo-inokashira-park",
+    "name": "Inokashira Park",
+    "coordinates": {
+      "lat": 35.699747599999995,
+      "lng": 139.57370179999998
+    },
+    "placeId": "ChIJLWaVdDXuGGART_Pg1R3CZ4A"
+  },
+  {
+    "locationId": "tokyo-todoroki-valley",
+    "name": "Todoroki Valley",
+    "coordinates": {
+      "lat": 35.603897599999996,
+      "lng": 139.6462372
+    },
+    "placeId": "ChIJaVBJBVT0GGARubLtRc1Fq3E"
+  },
+  {
+    "locationId": "tokyo-ginza-motoji",
+    "name": "Ginza Motoji",
+    "coordinates": {
+      "lat": 35.670919999999995,
+      "lng": 139.766739
+    },
+    "placeId": "ChIJt4hDTeCLGGARfiODYkoLfA0"
+  },
+  {
+    "locationId": "tokyo-focus-kuramae",
+    "name": "Focus Kuramae",
+    "coordinates": {
+      "lat": 35.7046938,
+      "lng": 139.7899586
+    },
+    "placeId": "ChIJ00Bkj-mPGGARdDjU8QbwcbA"
+  },
+  {
+    "locationId": "tokyo-tea-ceremony-koto",
+    "name": "Tea Ceremony Koto",
+    "coordinates": {
+      "lat": 35.711912000000005,
+      "lng": 139.792789
+    },
+    "placeId": "ChIJXSg6T06NGGARsLq_Vmf8tnI"
+  },
+  {
+    "locationId": "tokyo-kimono-kawaii-company",
+    "name": "Kimono Kawaii Company",
+    "coordinates": {
+      "lat": 35.0077085,
+      "lng": 135.7661271
+    },
+    "placeId": "ChIJPyoshATnAGAR8Yn2rIivzSo"
+  },
+  {
+    "locationId": "tokyo-sakura-beauty-salon",
+    "name": "SAKURA Beauty Salon",
+    "coordinates": {
+      "lat": 35.666828699999996,
+      "lng": 139.71701769999999
+    },
+    "placeId": "ChIJlan2gGaNGGARcinA6m-AaO4"
+  },
+  {
+    "locationId": "tokyo-watanabe-hair-dressing",
+    "name": "Watanabe Hair Dressing",
+    "coordinates": {
+      "lat": 35.6703991,
+      "lng": 139.7206878
+    },
+    "placeId": "ChIJ2_C2N22LGGARPSbU6LmEfhY"
+  },
+  {
+    "locationId": "tokyo-shiseido-salon-spa",
+    "name": "Shiseido Salon & Spa",
+    "coordinates": {
+      "lat": 35.6732481,
+      "lng": 139.7645781
+    },
+    "placeId": "ChIJh6p9sOWLGGARLPHEt4Hor7E"
+  },
+  {
+    "locationId": "tokyo-aoyama-flower-market-tea-house",
+    "name": "Aoyama Flower Market Tea House",
+    "coordinates": {
+      "lat": 35.6622458,
+      "lng": 139.7134816
+    },
+    "placeId": "ChIJw6lj4J-MGGARm2ympPdsDME"
+  },
+  {
+    "locationId": "tokyo-arona-spa",
+    "name": "Arona Spa",
+    "coordinates": {
+      "lat": 35.6607413,
+      "lng": 139.69809949999998
+    },
+    "placeId": "ChIJAQB0pqmMGGARloFenCCraeI"
+  },
+  {
+    "locationId": "tokyo-taya-aoyama",
+    "name": "Taya Aoyama",
+    "coordinates": {
+      "lat": 35.6838031,
+      "lng": 139.73451509999998
+    },
+    "placeId": "ChIJSxbpImOMGGARJzqvWHJiVso"
+  },
+  {
+    "locationId": "tokyo-teamlab-planets",
+    "name": "teamLab Planets",
+    "coordinates": {
+      "lat": 35.6491207,
+      "lng": 139.7897739
+    },
+    "placeId": "ChIJSeco5wiJGGARItbTS8lQ5G0"
+  },
+  {
+    "locationId": "tokyo-ryogoku-kokugikan",
+    "name": "Ryogoku Kokugikan",
+    "coordinates": {
+      "lat": 35.696973199999995,
+      "lng": 139.7932746
+    },
+    "placeId": "ChIJGeu4VDWJGGARdPoda8d8I3A"
+  },
+  {
+    "locationId": "tokyo-tokyo-skytree",
+    "name": "Tokyo Skytree",
+    "coordinates": {
+      "lat": 35.7100627,
+      "lng": 139.81070040000003
+    },
+    "placeId": "ChIJ35ov0dCOGGARKvdDH7NPHX0"
+  },
+  {
+    "locationId": "tokyo-odaiba",
+    "name": "Odaiba",
+    "coordinates": {
+      "lat": 35.62058340000001,
+      "lng": 139.7805445
+    },
+    "placeId": "ChIJy9RVLPiJGGARuRAgHSGL_nk"
+  },
+  {
+    "locationId": "tokyo-tokyo-disneyland",
+    "name": "Tokyo Disneyland",
+    "coordinates": {
+      "lat": 35.6328964,
+      "lng": 139.8803943
+    },
+    "placeId": "ChIJszdHEQN9GGARy9MJ1TY22eQ"
+  },
+  {
+    "locationId": "tokyo-tokyo-disneysea",
+    "name": "Tokyo DisneySea",
+    "coordinates": {
+      "lat": 35.6267108,
+      "lng": 139.8850779
+    },
+    "placeId": "ChIJszdHEQN9GGARJS23SnAdR0E"
+  },
+  {
+    "locationId": "tokyo-ghibli-museum",
+    "name": "Ghibli Museum",
+    "coordinates": {
+      "lat": 35.696238,
+      "lng": 139.5704317
+    },
+    "placeId": "ChIJLYwD5TTuGGARBZKEP5BV4U0"
+  },
+  {
+    "locationId": "tokyo-kabuki-za-theatre",
+    "name": "Kabuki-za Theatre",
+    "coordinates": {
+      "lat": 35.6693303,
+      "lng": 139.7677875
+    },
+    "placeId": "ChIJbUAZSOeLGGARGMEf4WW16AE"
+  },
+  {
+    "locationId": "tokyo-new-national-theatre",
+    "name": "New National Theatre",
+    "coordinates": {
+      "lat": 35.6824434,
+      "lng": 139.68588019999999
+    },
+    "placeId": "ChIJz_p9CS7zGGARw8Q1qlo4MNQ"
+  },
+  {
+    "locationId": "tokyo-akasaka-palace",
+    "name": "Akasaka Palace",
+    "coordinates": {
+      "lat": 35.6803545,
+      "lng": 139.72877739999998
+    },
+    "placeId": "ChIJE7t5RL-LGGARcK_0zdY8yyU"
+  },
+  {
+    "locationId": "osaka-shitenn-ji",
+    "name": "Shitennō-ji",
+    "coordinates": {
+      "lat": 34.6544581,
+      "lng": 135.51652389999998
+    },
+    "placeId": "ChIJIVA6O_jdAGARLWCtv8iBqrY"
+  },
+  {
+    "locationId": "osaka-sumiyoshi-taisha",
+    "name": "Sumiyoshi Taisha",
+    "coordinates": {
+      "lat": 34.6123945,
+      "lng": 135.4937612
+    },
+    "placeId": "ChIJAQB8xrvnAGARgh8ATf4d9ac"
+  },
+  {
+    "locationId": "osaka-namba-yasaka-shrine",
+    "name": "Namba Yasaka Shrine",
+    "coordinates": {
+      "lat": 34.661559200000006,
+      "lng": 135.4967039
+    },
+    "placeId": "ChIJQVW9eXLnAGARn-pUdRl0w4A"
+  },
+  {
+    "locationId": "osaka-hozenji-temple",
+    "name": "Hozenji Temple",
+    "coordinates": {
+      "lat": 34.6679398,
+      "lng": 135.5024676
+    },
+    "placeId": "ChIJI7QyuRTnAGARU28-XLGEOfU"
+  },
+  {
+    "locationId": "osaka-isshin-ji",
+    "name": "Isshin-ji",
+    "coordinates": {
+      "lat": 34.652873299999996,
+      "lng": 135.5109152
+    },
+    "placeId": "ChIJ5xV9__XdAGARrTr8hh5ayeg"
+  },
+  {
+    "locationId": "osaka-osaka-tenmangu-shrine",
+    "name": "Osaka Tenmangu Shrine",
+    "coordinates": {
+      "lat": 34.696057599999996,
+      "lng": 135.5126556
+    },
+    "placeId": "ChIJ7xwqpNvmAGARsm6fpyLvNaE"
+  },
+  {
+    "locationId": "osaka-tsuyunoten-shrine",
+    "name": "Tsuyunoten Shrine",
+    "coordinates": {
+      "lat": 34.6992683,
+      "lng": 135.50076289999998
+    },
+    "placeId": "ChIJffnrY-zmAGARVLGXbRijxws"
+  },
+  {
+    "locationId": "osaka-ikukunitama-shrine",
+    "name": "Ikukunitama Shrine",
+    "coordinates": {
+      "lat": 34.665092099999995,
+      "lng": 135.51281219999998
+    },
+    "placeId": "ChIJ30LCfiTnAGARbrJTWBJBxFQ"
+  },
+  {
+    "locationId": "osaka-tamatsukuri-inari-shrine",
+    "name": "Tamatsukuri Inari Shrine",
+    "coordinates": {
+      "lat": 34.677965,
+      "lng": 135.529966
+    },
+    "placeId": "ChIJo5Txd7bgAGARuym58IhH4Kg"
+  },
+  {
+    "locationId": "osaka-hokoku-shrine",
+    "name": "Hokoku Shrine",
+    "coordinates": {
+      "lat": 34.6842749,
+      "lng": 135.5268492
+    },
+    "placeId": "ChIJ8zDk78zgAGARZSdGd9lVP2Y"
+  },
+  {
+    "locationId": "osaka-kuromon-ichiba-market",
+    "name": "Kuromon Ichiba Market",
+    "coordinates": {
+      "lat": 34.6653529,
+      "lng": 135.5062406
+    },
+    "placeId": "ChIJXSJB5UHnAGARQcEjvngsHaw"
+  },
+  {
+    "locationId": "osaka-kogaryu-takoyaki",
+    "name": "Kogaryu Takoyaki",
+    "coordinates": {
+      "lat": 34.672245,
+      "lng": 135.4977556
+    },
+    "placeId": "ChIJ2d_2OxDnAGARaVThur9-Cp0"
+  },
+  {
+    "locationId": "osaka-ichiran-dotonbori",
+    "name": "Ichiran Dotonbori",
+    "coordinates": {
+      "lat": 34.6684219,
+      "lng": 135.5032242
+    },
+    "placeId": "ChIJK7TL6RTnAGARYiifaSOuOFM"
+  },
+  {
+    "locationId": "osaka-mizuno-okonomiyaki",
+    "name": "Mizuno (Okonomiyaki)",
+    "coordinates": {
+      "lat": 34.668354799999996,
+      "lng": 135.5032226
+    },
+    "placeId": "ChIJp6r1whTnAGARQi9RHXsUEtA"
+  },
+  {
+    "locationId": "osaka-harukoma-sushi",
+    "name": "Harukoma Sushi",
+    "coordinates": {
+      "lat": 34.707733999999995,
+      "lng": 135.5116005
+    },
+    "placeId": "ChIJW7SUt7jmAGARQ_B9JgrRYVw"
+  },
+  {
+    "locationId": "osaka-endo-sushi",
+    "name": "Endo Sushi",
+    "coordinates": {
+      "lat": 34.6842148,
+      "lng": 135.4795332
+    },
+    "placeId": "ChIJ0RFQL0XmAGARzPLLx2sNlm4"
+  },
+  {
+    "locationId": "osaka-rikuro-ojisan-no-mise",
+    "name": "Rikuro Ojisan no Mise",
+    "coordinates": {
+      "lat": 34.666126999999996,
+      "lng": 135.501566
+    },
+    "placeId": "ChIJK2A0qGznAGARxPHcddHFYYA"
+  },
+  {
+    "locationId": "osaka-cafe-absinthe",
+    "name": "Cafe Absinthe",
+    "coordinates": {
+      "lat": 34.673311,
+      "lng": 135.497112
+    },
+    "placeId": "ChIJbyPrABDnAGARkN5hHXjfKVs"
+  },
+  {
+    "locationId": "osaka-ganko-sushi",
+    "name": "Ganko Sushi",
+    "coordinates": {
+      "lat": 34.6654853,
+      "lng": 135.5026638
+    },
+    "placeId": "ChIJmXMHbWvnAGAR7TnQbBMopNg"
+  },
+  {
+    "locationId": "osaka-chibo-okonomiyaki",
+    "name": "Chibo (Okonomiyaki)",
+    "coordinates": {
+      "lat": 34.6688073,
+      "lng": 135.5039074
+    },
+    "placeId": "ChIJk9v34BTnAGAR8SL3pWF-3Js"
+  },
+  {
+    "locationId": "osaka-shinsaibashi-suji",
+    "name": "Shinsaibashi-suji",
+    "coordinates": {
+      "lat": 34.6724248,
+      "lng": 135.5010362
+    },
+    "placeId": "ChIJcxIbNhHnAGARl8cKu_vPFMA"
+  },
+  {
+    "locationId": "osaka-dotonbori",
+    "name": "Dotonbori",
+    "coordinates": {
+      "lat": 34.6686471,
+      "lng": 135.5030983
+    },
+    "placeId": "ChIJg2DcJhXnAGARCbeAHoZrPeQ"
+  },
+  {
+    "locationId": "osaka-tenjinbashisuji",
+    "name": "Tenjinbashisuji",
+    "coordinates": {
+      "lat": 34.7071104,
+      "lng": 135.5108095
+    },
+    "placeId": "ChIJQ2blwL7mAGARBir_zoRYHQs"
+  },
+  {
+    "locationId": "osaka-namba-parks",
+    "name": "Namba Parks",
+    "coordinates": {
+      "lat": 34.6616083,
+      "lng": 135.50193489999998
+    },
+    "placeId": "ChIJ9RFkRWnnAGARZh-hyWjBhtg"
+  },
+  {
+    "locationId": "osaka-grand-front-osaka",
+    "name": "Grand Front Osaka",
+    "coordinates": {
+      "lat": 34.703866399999995,
+      "lng": 135.4949205
+    },
+    "placeId": "ChIJAQAAB4_mAGAR1alcFGtOaAo"
+  },
+  {
+    "locationId": "osaka-abeno-harukas-kintetsu",
+    "name": "Abeno Harukas Kintetsu",
+    "coordinates": {
+      "lat": 34.646090199999996,
+      "lng": 135.5134794
+    },
+    "placeId": "ChIJ-dCc3xndAGAR3GSqJ_WvtPI"
+  },
+  {
+    "locationId": "osaka-shopping-kuromon-ichiba-market",
+    "name": "Kuromon Ichiba Market",
+    "coordinates": {
+      "lat": 34.6653529,
+      "lng": 135.5062406
+    },
+    "placeId": "ChIJXSJB5UHnAGARQcEjvngsHaw"
+  },
+  {
+    "locationId": "osaka-umeda-sky-building",
+    "name": "Umeda Sky Building",
+    "coordinates": {
+      "lat": 34.7052872,
+      "lng": 135.4896527
+    },
+    "placeId": "ChIJbyd0kIjmAGAR_crecCbjwlc"
+  },
+  {
+    "locationId": "osaka-amerikamura",
+    "name": "Amerikamura",
+    "coordinates": {
+      "lat": 34.671931799999996,
+      "lng": 135.4988498
+    },
+    "placeId": "ChIJby5T_xbnAGARF39mR8GVhdc"
+  },
+  {
+    "locationId": "osaka-nipponbashi-denden-town",
+    "name": "Nipponbashi Denden Town",
+    "coordinates": {
+      "lat": 34.6604299,
+      "lng": 135.5058817
+    },
+    "placeId": "ChIJv6w_-2fnAGARH2p9wbwos3c"
+  },
+  {
+    "locationId": "osaka-osaka-castle-park",
+    "name": "Osaka Castle Park",
+    "coordinates": {
+      "lat": 34.6864797,
+      "lng": 135.5262114
+    },
+    "placeId": "ChIJVVVld8ngAGARi9mE-a6e9mc"
+  },
+  {
+    "locationId": "osaka-nakanoshima-park",
+    "name": "Nakanoshima Park",
+    "coordinates": {
+      "lat": 34.6924709,
+      "lng": 135.50732299999999
+    },
+    "placeId": "ChIJPXiMg97mAGARsiccqVj_Os8"
+  },
+  {
+    "locationId": "osaka-minoo-park",
+    "name": "Minoo Park",
+    "coordinates": {
+      "lat": 34.847070599999995,
+      "lng": 135.4723464
+    },
+    "placeId": "ChIJWycYzY35AGAR6rz9QCA7shE"
+  },
+  {
+    "locationId": "osaka-sumiyoshi-park",
+    "name": "Sumiyoshi Park",
+    "coordinates": {
+      "lat": 34.612553,
+      "lng": 135.48831950000002
+    },
+    "placeId": "ChIJo73G7KndAGARi7RzwN5_ItA"
+  },
+  {
+    "locationId": "osaka-nagai-park",
+    "name": "Nagai Park",
+    "coordinates": {
+      "lat": 34.6125758,
+      "lng": 135.5199903
+    },
+    "placeId": "ChIJ1e4F1zHcAGARgh2f5xXM3Og"
+  },
+  {
+    "locationId": "osaka-tennoji-park",
+    "name": "Tennoji Park",
+    "coordinates": {
+      "lat": 34.6507248,
+      "lng": 135.51041510000002
+    },
+    "placeId": "ChIJ5_QnR_HdAGARMEh6Uhj3FJA"
+  },
+  {
+    "locationId": "osaka-utsubo-park",
+    "name": "Utsubo Park",
+    "coordinates": {
+      "lat": 34.684982,
+      "lng": 135.4935063
+    },
+    "placeId": "ChIJqWEt-fvmAGARjB6FHsOgvtI"
+  },
+  {
+    "locationId": "osaka-sakuranomiya-park",
+    "name": "Sakuranomiya Park",
+    "coordinates": {
+      "lat": 34.7051508,
+      "lng": 135.51884379999998
+    },
+    "placeId": "ChIJR_ocoLbmAGARzHcPdouaMH4"
+  },
+  {
+    "locationId": "osaka-tsurumi-ryokuchi-park",
+    "name": "Tsurumi Ryokuchi Park",
+    "coordinates": {
+      "lat": 34.7114354,
+      "lng": 135.57172359999998
+    },
+    "placeId": "ChIJTTjhh0jgAGAR60vRWQxpUj8"
+  },
+  {
+    "locationId": "osaka-mount-ikoma",
+    "name": "Mount Ikoma",
+    "coordinates": {
+      "lat": 34.6785187,
+      "lng": 135.6789619
+    },
+    "placeId": "ChIJKaSGUN4jAWARQ9qCOIyip_w"
+  },
+  {
+    "locationId": "osaka-dhc-shinsaibashi-salon",
+    "name": "DHC Shinsaibashi Salon",
+    "coordinates": {
+      "lat": 34.676868899999995,
+      "lng": 135.4991207
+    },
+    "placeId": "ChIJK5BzKIznAGARDQB8ohu-UUM"
+  },
+  {
+    "locationId": "osaka-bliss-facial-salon",
+    "name": "Bliss Facial Salon",
+    "coordinates": {
+      "lat": 34.673769799999995,
+      "lng": 135.50503989999999
+    },
+    "placeId": "ChIJUajtphvnAGARoQ-h9_lKWfk"
+  },
+  {
+    "locationId": "osaka-osaka-nail-salon",
+    "name": "Osaka Nail Salon",
+    "coordinates": {
+      "lat": 34.6774426,
+      "lng": 135.50176960000002
+    },
+    "placeId": "ChIJ8YM4HFfnAGARDg1BKrJzKec"
+  },
+  {
+    "locationId": "osaka-ash-hair-salon",
+    "name": "Ash Hair Salon",
+    "coordinates": {
+      "lat": 34.609924299999996,
+      "lng": 135.5665251
+    },
+    "placeId": "ChIJ644NmCvfAGAR-agm-dM8NZs"
+  },
+  {
+    "locationId": "osaka-miel-hair-salon",
+    "name": "Miel Hair Salon",
+    "coordinates": {
+      "lat": 34.7082283,
+      "lng": 135.5036442
+    },
+    "placeId": "ChIJZz-vW1jnAGARJx6a1ulTO1w"
+  },
+  {
+    "locationId": "osaka-belle-vie-beauty-clinic",
+    "name": "Belle Vie Beauty Clinic",
+    "coordinates": {
+      "lat": 34.66762380000001,
+      "lng": 135.4997655
+    },
+    "placeId": "ChIJ-fUuFhTnAGARgvuJ88MRrII"
+  },
+  {
+    "locationId": "osaka-salon-de-aimer",
+    "name": "Salon de Aimer",
+    "coordinates": {
+      "lat": 34.7101031,
+      "lng": 135.49771410000002
+    },
+    "placeId": "ChIJu0L8u5rmAGARjfKGX9yKJOs"
+  },
+  {
+    "locationId": "osaka-osaka-kimono-rental-yae",
+    "name": "Osaka Kimono Rental Yae",
+    "coordinates": {
+      "lat": 34.676074,
+      "lng": 135.523842
+    },
+    "placeId": "ChIJCUD36X7nAGAR1Mu_PFckcdI"
+  },
+  {
+    "locationId": "osaka-wasabi-kimono-rental",
+    "name": "Wasabi Kimono Rental",
+    "coordinates": {
+      "lat": 34.9970566,
+      "lng": 135.7770248
+    },
+    "placeId": "ChIJcWtidQAJAWAR3SnSdTolfnM"
+  },
+  {
+    "locationId": "osaka-kimono-tea-ceremony-maikoya",
+    "name": "Kimono Tea Ceremony Maikoya",
+    "coordinates": {
+      "lat": 35.0076598,
+      "lng": 135.76637119999998
+    },
+    "placeId": "ChIJc-ER9pIIAWARSYOriOksyWE"
+  },
+  {
+    "locationId": "osaka-universal-studios-japan",
+    "name": "Universal Studios Japan",
+    "coordinates": {
+      "lat": 34.6656768,
+      "lng": 135.4323185
+    },
+    "placeId": "ChIJXeLVg9DgAGARqlIyMCX-BTY"
+  },
+  {
+    "locationId": "osaka-osaka-aquarium-kaiyukan",
+    "name": "Osaka Aquarium Kaiyukan",
+    "coordinates": {
+      "lat": 34.6545182,
+      "lng": 135.4289645
+    },
+    "placeId": "ChIJzakNjPToAGARzCwIriDFg28"
+  },
+  {
+    "locationId": "osaka-entertainment-umeda-sky-building",
+    "name": "Umeda Sky Building",
+    "coordinates": {
+      "lat": 34.7052872,
+      "lng": 135.4896527
+    },
+    "placeId": "ChIJbyd0kIjmAGAR_crecCbjwlc"
+  },
+  {
+    "locationId": "osaka-namba-grand-kagetsu",
+    "name": "Namba Grand Kagetsu",
+    "coordinates": {
+      "lat": 34.664986899999995,
+      "lng": 135.5036556
+    },
+    "placeId": "ChIJ5wIvqWvnAGAR5SLNzOrilQE"
+  },
+  {
+    "locationId": "osaka-national-bunraku-theatre",
+    "name": "National Bunraku Theatre",
+    "coordinates": {
+      "lat": 34.6673089,
+      "lng": 135.5086957
+    },
+    "placeId": "ChIJ44OBAEHnAGAR_AseKczP6l4"
+  },
+  {
+    "locationId": "osaka-tsutenkaku-tower",
+    "name": "Tsutenkaku Tower",
+    "coordinates": {
+      "lat": 34.6524992,
+      "lng": 135.50630580000004
+    },
+    "placeId": "ChIJ_0Lgd2DnAGARV0X03lbPy-U"
+  },
+  {
+    "locationId": "osaka-spa-world",
+    "name": "Spa World",
+    "coordinates": {
+      "lat": 34.6499029,
+      "lng": 135.5056078
+    },
+    "placeId": "ChIJsR9Zt4rdAGARqlF3kRuWnMI"
+  },
+  {
+    "locationId": "osaka-osaka-museum-of-history",
+    "name": "Osaka Museum of History",
+    "coordinates": {
+      "lat": 34.682614099999995,
+      "lng": 135.5207975
+    },
+    "placeId": "ChIJR5zaJTLnAGARyuJ_yX2DhOk"
+  },
+  {
+    "locationId": "osaka-osaka-science-museum",
+    "name": "Osaka Science Museum",
+    "coordinates": {
+      "lat": 34.691227999999995,
+      "lng": 135.4915442
+    },
+    "placeId": "ChIJrVid0PbmAGARVvoeAwYmgg4"
+  },
+  {
+    "locationId": "osaka-kids-plaza-osaka",
+    "name": "Kids Plaza Osaka",
+    "coordinates": {
+      "lat": 34.7045728,
+      "lng": 135.5104418
+    },
+    "placeId": "ChIJEZamxsDmAGARdScVXFQanLU"
+  }
+]
