@@ -75,9 +75,20 @@ if (useUpstash) {
 // Fallback: In-memory store for local development
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
+// Cleanup interval reference (stored globally for proper cleanup)
+let cleanupInterval: NodeJS.Timeout | null = null;
+
+// Cleanup function to ensure interval is cleared
+function cleanupRateLimitStore(): void {
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+    cleanupInterval = null;
+  }
+}
+
 // Cleanup old entries every 5 minutes (only for in-memory fallback)
 if (!useUpstash && typeof globalThis !== "undefined") {
-  const cleanupInterval = setInterval(() => {
+  cleanupInterval = setInterval(() => {
     const now = Date.now();
     for (const [ip, entry] of rateLimitStore.entries()) {
       if (entry.resetAt < now) {
@@ -86,10 +97,20 @@ if (!useUpstash && typeof globalThis !== "undefined") {
     }
   }, 5 * 60 * 1000); // 5 minutes
 
-  // Cleanup on process exit (for development)
-  if (process.env.NODE_ENV !== "production") {
-    process.on("SIGTERM", () => clearInterval(cleanupInterval));
-    process.on("SIGINT", () => clearInterval(cleanupInterval));
+  // Cleanup on process exit (all environments)
+  const cleanupOnExit = () => {
+    cleanupRateLimitStore();
+  };
+  
+  process.on("SIGTERM", cleanupOnExit);
+  process.on("SIGINT", cleanupOnExit);
+  // Also cleanup on uncaught exceptions to prevent memory leaks
+  process.on("uncaughtException", cleanupOnExit);
+  process.on("unhandledRejection", cleanupOnExit);
+  
+  // Store cleanup function for potential manual cleanup if needed
+  if (typeof globalThis !== "undefined") {
+    (globalThis as { __cleanupRateLimitStore?: () => void }).__cleanupRateLimitStore = cleanupRateLimitStore;
   }
 }
 
