@@ -4,7 +4,6 @@ import { Location, LocationDetails, LocationPhoto, LocationReview } from "@/type
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
-import { LRUCache } from "@/lib/utils/lruCache";
 
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 const SEARCH_FIELD_MASK = ["places.id", "places.displayName", "places.formattedAddress"].join(",");
@@ -109,6 +108,7 @@ function normalizeDetailsRow(row: PlaceDetailsRow): LocationDetails {
   };
 }
 
+<<<<<<< HEAD
 // LRU cache size limits for place caches
 const PLACE_ID_CACHE_MAX_SIZE = 1000;
 const PLACE_DETAILS_CACHE_MAX_SIZE = 1000;
@@ -134,6 +134,19 @@ function getPlaceDetailsCache(): LRUCache<string, PlaceDetailsCacheEntry> {
     });
   }
   return globalThis.__kokuPlaceDetailsCache;
+=======
+// Module-level cache instances (initialized once per module load)
+// In Next.js, these persist across requests in the same process but reset on hot reload
+const placeIdCache = new Map<string, PlaceIdCacheEntry>();
+const placeDetailsCache = new Map<string, PlaceDetailsCacheEntry>();
+
+function getPlaceIdCache(): Map<string, PlaceIdCacheEntry> {
+  return placeIdCache;
+}
+
+function getPlaceDetailsCache(): Map<string, PlaceDetailsCacheEntry> {
+  return placeDetailsCache;
+>>>>>>> task/3.2-replace-global-variables
 }
 
 function getApiKey(): string {
