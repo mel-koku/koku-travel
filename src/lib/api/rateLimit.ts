@@ -7,6 +7,18 @@ import { env } from "../env";
 /**
  * Distributed rate limiter using Upstash Redis
  * Falls back to in-memory rate limiting for local development if Upstash is not configured
+ * 
+ * IMPORTANT PRODUCTION REQUIREMENT:
+ * - Upstash Redis is REQUIRED for production deployments
+ * - In-memory rate limiting does NOT work across multiple server instances
+ * - Without Upstash, rate limits will not be enforced correctly in distributed environments
+ * - Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables for production
+ * 
+ * LIMITATIONS:
+ * - Upstash Ratelimit requires limit/window to be set at instance creation
+ * - Only the default config (100 req/min) uses Upstash Redis
+ * - Custom configs fall back to in-memory rate limiting (not suitable for production)
+ * - For custom limits in production, consider using multiple Upstash instances or a different approach
  */
 
 type RateLimitConfig = {
@@ -48,6 +60,15 @@ if (useUpstash) {
     logger.warn("Failed to initialize Upstash Redis, falling back to in-memory rate limiting", {
       error: error instanceof Error ? error.message : String(error),
     });
+  }
+} else {
+  // Warn in production if Upstash is not configured
+  if (process.env.NODE_ENV === "production") {
+    logger.warn(
+      "WARNING: Upstash Redis is not configured. Rate limiting is using in-memory storage, " +
+        "which will NOT work correctly across multiple server instances. " +
+        "Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN for production deployments.",
+    );
   }
 }
 
@@ -95,7 +116,15 @@ function getClientIp(request: NextRequest): string {
 /**
  * Checks if a request should be rate limited
  * Uses Upstash Redis if configured, otherwise falls back to in-memory rate limiting
+ * 
+ * @param request - Next.js request object
+ * @param config - Rate limit configuration (default: 100 requests per minute)
  * @returns null if allowed, or a NextResponse with 429 status if rate limited
+ * 
+ * @remarks
+ * - Custom configs (non-default) fall back to in-memory rate limiting
+ * - In-memory rate limiting does NOT work across multiple server instances
+ * - For production with custom limits, Upstash Redis is required
  */
 export async function checkRateLimit(
   request: NextRequest,
@@ -106,6 +135,7 @@ export async function checkRateLimit(
   // Use Upstash Redis if configured and config matches default
   // Note: Upstash Ratelimit requires limit/window at instance creation, so we only use it
   // for the default config. Custom configs fall back to in-memory rate limiting.
+  // WARNING: Custom configs will not work correctly in production with multiple instances.
   if (
     useUpstash &&
     upstashRatelimit &&
@@ -147,7 +177,18 @@ export async function checkRateLimit(
     }
   }
 
-  // Fallback: In-memory rate limiting (for local development)
+  // Fallback: In-memory rate limiting (for local development only)
+  // WARNING: This does NOT work correctly in production with multiple server instances
+  // Each instance maintains its own in-memory store, so rate limits are not shared
+  if (process.env.NODE_ENV === "production" && !useUpstash) {
+    logger.warn(
+      `Rate limiting with custom config (${config.maxRequests} req/${config.windowMs}ms) ` +
+        "is using in-memory storage. This will NOT work correctly across multiple instances. " +
+        "Consider using the default config (100 req/min) which uses Upstash Redis, " +
+        "or configure Upstash for distributed rate limiting.",
+    );
+  }
+  
   const now = Date.now();
 
   // Get or create entry for this IP
