@@ -186,51 +186,6 @@ Vercel provides seamless Next.js deployment:
    ```
 3. Add environment variables in Amplify console
 
-#### Using Docker
-
-Create `Dockerfile`:
-
-```dockerfile
-FROM node:18-alpine AS base
-
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci
-
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npm run build
-
-# Production image
-FROM base AS runner
-WORKDIR /app
-ENV NODE_ENV production
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
-EXPOSE 3000
-ENV PORT 3000
-CMD ["node", "server.js"]
-```
-
-Build and run:
-
-```bash
-docker build -t koku-travel .
-docker run -p 3000:3000 --env-file .env.local koku-travel
-```
-
 ### Other Platforms
 
 The application can be deployed to any platform that supports Node.js:
@@ -365,9 +320,9 @@ npx tsc --noEmit
 2. Find previous successful deployment
 3. Click "..." menu → "Promote to Production"
 
-### AWS / Docker
+### AWS
 
-1. Tag previous working image/version
+1. Tag previous working version
 2. Update deployment to use previous version
 3. Monitor for stability
 
@@ -429,7 +384,6 @@ Before going to production:
 
 ### Build Optimizations
 
-- Enable Next.js standalone output (if using Docker)
 - Optimize bundle size (review imports)
 - Enable tree-shaking
 - Use dynamic imports for heavy components

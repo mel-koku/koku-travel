@@ -79,12 +79,14 @@ npm run supabase:db:reset
 
 ### Local Development
 
+> **Note:** Local Supabase development requires Docker Desktop to be installed and running. If you don't have Docker, you can work directly with your remote Supabase instance using the commands above.
+
 **Start local Supabase instance:**
 ```bash
 npm run supabase:start
 ```
 
-This starts:
+This starts (requires Docker):
 - PostgreSQL database (port 54322)
 - Supabase API (port 54321)
 - Supabase Studio (port 54323)
@@ -190,9 +192,11 @@ This error occurs when:
 
 ## Local Development with Supabase
 
+> **Note:** Local Supabase development requires Docker Desktop. If you don't have Docker installed, work directly with your remote Supabase instance instead.
+
 When developing locally, you can use a local Supabase instance:
 
-1. **Start local Supabase:**
+1. **Start local Supabase** (requires Docker):
    ```bash
    npm run supabase:start
    ```
