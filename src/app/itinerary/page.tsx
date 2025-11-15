@@ -30,6 +30,13 @@ export default function ItineraryPage() {
   const requestedTripId = searchParams.get("trip");
   const { trips, updateTripItinerary } = useAppState();
   const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Track mount state to prevent hydration mismatch
+  // AppState loads from localStorage in useEffect, so trips may be empty on server
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (headingRef.current) {
@@ -112,6 +119,16 @@ export default function ItineraryPage() {
     selectedTrip?.updatedAt && selectedTrip.updatedAt !== selectedTrip?.createdAt
       ? formatDateLabel(selectedTrip.updatedAt)
       : null;
+
+  // Wait for mount to prevent hydration mismatch
+  // AppState loads from localStorage which is only available on client
+  if (!isMounted) {
+    return (
+      <div className="p-16 text-center text-gray-600">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   if (!activeItinerary) {
     return (
