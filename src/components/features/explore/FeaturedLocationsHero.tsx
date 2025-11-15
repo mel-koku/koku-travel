@@ -82,12 +82,14 @@ function getHeroSummary(location: EnhancedLocation): string {
     location.recommendedVisit?.summary?.trim(),
   ].filter((value): value is string => Boolean(value && value.length > 0));
 
+  const fallback = `Plan a visit to ${location.name} in ${location.city}.`;
+
   if (candidates.length > 0) {
     const text = candidates[0];
+    if (!text) return fallback;
     return text.length > 140 ? `${text.slice(0, 137)}…` : text;
   }
 
-  const fallback = `Plan a visit to ${location.name} in ${location.city}.`;
   return fallback;
 }
 

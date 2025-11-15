@@ -243,7 +243,8 @@ function addLocationToItinerary({
   }
 
   const activity: ItineraryActivity = createActivityFromLocation(location, timeOfDay);
-  const targetDay = days[dayIndex];
+  // After the while loop above, days[dayIndex] is guaranteed to exist
+  const targetDay = days[dayIndex]!;
   const existingActivities = Array.isArray(targetDay.activities) ? [...targetDay.activities] : [];
 
   existingActivities.push(activity);
@@ -300,10 +301,10 @@ function parseDurationLabelToMinutes(label?: string): number | null {
   const minuteMatch = trimmed.match(/(\d+)\s*m/);
 
   let minutes = 0;
-  if (hourMatch) {
+  if (hourMatch && hourMatch[1]) {
     minutes += Number.parseFloat(hourMatch[1]) * 60;
   }
-  if (minuteMatch) {
+  if (minuteMatch && minuteMatch[1]) {
     minutes += Number.parseInt(minuteMatch[1], 10);
   }
 
