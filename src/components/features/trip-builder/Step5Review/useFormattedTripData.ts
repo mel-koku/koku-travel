@@ -61,12 +61,14 @@ export function useFormattedTripData(data: TripBuilderData) {
 
     if (data.cities && data.cities.length > 0) {
       const city = data.cities[0];
+      if (!city) return "Custom adventure";
       const cityLabel = CITY_LABEL_BY_ID[city] ?? city;
       return `${cityLabel} adventure`;
     }
 
     if (data.regions && data.regions.length > 0) {
       const region = data.regions[0];
+      if (!region) return "Custom journey";
       const regionLabel = REGION_LABEL_BY_ID[region] ?? region;
       return `${regionLabel} journey`;
     }
