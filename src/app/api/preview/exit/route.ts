@@ -4,6 +4,11 @@ import { checkRateLimit } from "@/lib/api/rateLimit";
 import { redirectUrlSchema } from "@/lib/api/schemas";
 import { sanitizeRedirectUrl } from "@/lib/api/sanitization";
 import { badRequest } from "@/lib/api/errors";
+import {
+  RATE_LIMIT_AUTH_MAX_REQUESTS,
+  DEFAULT_RATE_LIMIT_WINDOW_MS,
+  MAX_URL_LENGTH_1KB,
+} from "@/lib/constants";
 
 /**
  * GET /api/preview/exit
@@ -17,7 +22,10 @@ import { badRequest } from "@/lib/api/errors";
  */
 export async function GET(request: NextRequest) {
   // Rate limiting: 30 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, {
+    maxRequests: RATE_LIMIT_AUTH_MAX_REQUESTS,
+    windowMs: DEFAULT_RATE_LIMIT_WINDOW_MS,
+  });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
@@ -64,16 +72,18 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   // Rate limiting: 30 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, {
+    maxRequests: RATE_LIMIT_AUTH_MAX_REQUESTS,
+    windowMs: DEFAULT_RATE_LIMIT_WINDOW_MS,
+  });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
 
   // Request size limit: 1KB for query parameters (this endpoint only uses query params, not body)
   const urlLength = request.url.length;
-  const MAX_URL_LENGTH = 1024; // 1KB
-  if (urlLength > MAX_URL_LENGTH) {
-    return badRequest(`Request URL too long (max ${MAX_URL_LENGTH} bytes).`);
+  if (urlLength > MAX_URL_LENGTH_1KB) {
+    return badRequest(`Request URL too long (max ${MAX_URL_LENGTH_1KB} bytes).`);
   }
 
   const draft = await draftMode();
