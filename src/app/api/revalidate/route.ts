@@ -7,12 +7,18 @@ import { checkRateLimit } from "@/lib/api/rateLimit";
 import { sanityWebhookPayloadSchema } from "@/lib/api/schemas";
 import { sanitizePath } from "@/lib/api/sanitization";
 import type { z } from "zod";
+import {
+  RATE_LIMIT_WEBHOOK_MAX_REQUESTS,
+  DEFAULT_RATE_LIMIT_WINDOW_MS,
+  MAX_PAYLOAD_SIZE_64KB,
+  MAX_SIGNATURE_LENGTH,
+  MAX_REVALIDATION_PATHS,
+} from "@/lib/constants";
 
 import { env } from "@/lib/env";
 
 const SIGNATURE_HEADER = "x-sanity-signature";
 const SECRET = env.sanityRevalidateSecret || env.sanityPreviewSecret;
-const MAX_PAYLOAD_SIZE = 64 * 1024; // 64KB max payload size
 
 function normalizePaths(payload: z.infer<typeof sanityWebhookPayloadSchema>): string[] {
   const paths = new Set<string>();
@@ -73,7 +79,10 @@ function normalizePaths(payload: z.infer<typeof sanityWebhookPayloadSchema>): st
  */
 export async function POST(request: NextRequest) {
   // Rate limiting: 20 requests per minute per IP (webhook endpoint - lower limit)
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, {
+    maxRequests: RATE_LIMIT_WEBHOOK_MAX_REQUESTS,
+    windowMs: DEFAULT_RATE_LIMIT_WINDOW_MS,
+  });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }
@@ -85,7 +94,7 @@ export async function POST(request: NextRequest) {
   const signature = request.headers.get(SIGNATURE_HEADER) ?? "";
   
   // Validate signature header format
-  if (!signature || typeof signature !== "string" || signature.length > 500) {
+  if (!signature || typeof signature !== "string" || signature.length > MAX_SIGNATURE_LENGTH) {
     return unauthorized("Invalid signature header format.");
   }
 
@@ -93,8 +102,8 @@ export async function POST(request: NextRequest) {
   const rawBody = await request.text();
 
   // Validate payload size before processing
-  if (rawBody.length > MAX_PAYLOAD_SIZE) {
-    return badRequest(`Payload too large (max ${MAX_PAYLOAD_SIZE} bytes).`);
+  if (rawBody.length > MAX_PAYLOAD_SIZE_64KB) {
+    return badRequest(`Payload too large (max ${MAX_PAYLOAD_SIZE_64KB} bytes).`);
   }
 
   if (!isValidSignature(rawBody, signature, SECRET)) {
@@ -123,8 +132,7 @@ export async function POST(request: NextRequest) {
   const paths = normalizePaths(payload);
 
   // Additional safety: limit number of paths to revalidate
-  const MAX_PATHS = 100;
-  const pathsToRevalidate = paths.slice(0, MAX_PATHS);
+  const pathsToRevalidate = paths.slice(0, MAX_REVALIDATION_PATHS);
 
   for (const path of pathsToRevalidate) {
     // Double-check path is safe before revalidating
