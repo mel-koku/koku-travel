@@ -115,8 +115,10 @@ export function Dropdown({
         enabledItems[
           (currentEnabledIndex - 1 + enabledItems.length) % enabledItems.length
         ];
-      setActiveIndex(previous.index);
-      itemsRef.current[previous.index]?.focus({ preventScroll: true });
+      if (previous) {
+        setActiveIndex(previous.index);
+        itemsRef.current[previous.index]?.focus({ preventScroll: true });
+      }
     } else if (event.key === "Home") {
       event.preventDefault();
       const first = enabledItems[0];
