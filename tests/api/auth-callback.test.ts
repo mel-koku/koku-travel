@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextResponse } from "next/server";
-import { GET } from "@/app/auth/callback/route";
+import { GET } from "@/app/api/auth/callback/route";
 import { createClient } from "@/lib/supabase/server";
 import { createMockRequest, createMockSupabaseClient } from "../utils/mocks";
 
@@ -29,7 +29,7 @@ describe("GET /api/auth/callback", () => {
         }),
       );
 
-      const request = createMockRequest("https://example.com/auth/callback?code=test-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=test-code");
       const response = await GET(request);
 
       expect(response.status).toBe(429);
@@ -43,7 +43,7 @@ describe("GET /api/auth/callback", () => {
       const mockSupabase = createMockSupabaseClient();
       vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
 
-      const request = createMockRequest("https://example.com/auth/callback");
+      const request = createMockRequest("https://example.com/api/auth/callback");
       const response = await GET(request);
 
       expect(response.status).toBe(307);
@@ -55,7 +55,7 @@ describe("GET /api/auth/callback", () => {
       const mockSupabase = createMockSupabaseClient();
       vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=invalid@code#format");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=invalid@code#format");
       const response = await GET(request);
 
       expect(response.status).toBe(307);
@@ -100,7 +100,7 @@ describe("GET /api/auth/callback", () => {
     it("should handle Supabase client creation errors gracefully", async () => {
       vi.mocked(createClient).mockRejectedValueOnce(new Error("Supabase client unavailable"));
 
-      const request = createMockRequest("https://example.com/auth/callback?code=test-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=test-code");
       const response = await GET(request);
 
       // Should redirect to error page
@@ -116,7 +116,7 @@ describe("GET /api/auth/callback", () => {
       );
       vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=test-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=test-code");
       const response = await GET(request);
 
       // Should redirect to error page
@@ -131,7 +131,7 @@ describe("GET /api/auth/callback", () => {
       const mockSupabase = createMockSupabaseClient();
       vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=test-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=test-code");
       const response = await GET(request);
 
       expect(response.status).toBe(307);
@@ -143,7 +143,7 @@ describe("GET /api/auth/callback", () => {
       const mockSupabase = createMockSupabaseClient();
       vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
 
-      const request = createMockRequest("https://custom-domain.com/auth/callback?code=test-code");
+      const request = createMockRequest("https://custom-domain.com/api/auth/callback?code=test-code");
       const response = await GET(request);
 
       expect(response.status).toBe(307);

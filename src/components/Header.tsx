@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import IdentityBadge from "@/components/ui/IdentityBadge";
+import UserMenu from "@/components/ui/UserMenu";
 import { useAppState } from "@/state/AppState";
 import { cn } from "@/lib/cn";
 
@@ -21,10 +21,6 @@ export default function Header() {
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
 
-  const handleLocaleChange = (locale: "en" | "jp") => {
-    if (user.locale === locale) return;
-    setUser({ locale });
-  };
 
   // Close mobile menu when route changes
   // Use ref to track pathname changes and schedule update outside effect
@@ -83,44 +79,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3 sm:gap-6">
-          <div className="hidden items-center rounded-full border border-zinc-200 bg-white p-1 text-xs font-semibold uppercase tracking-wide shadow-sm dark:border-zinc-700 dark:bg-zinc-900 md:flex">
-            <button
-              type="button"
-              onClick={() => handleLocaleChange("en")}
-              className={`rounded-full px-4 py-2 transition-colors ${
-                user.locale === "en"
-                  ? "bg-red-500 text-white shadow-sm"
-                  : "hover:text-red-500"
-              }`}
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLocaleChange("jp")}
-              className={`rounded-full px-4 py-2 transition-colors ${
-                user.locale === "jp"
-                  ? "bg-red-500 text-white shadow-sm"
-                  : "hover:text-red-500"
-              }`}
-            >
-              JP
-            </button>
-          </div>
-          <Link
-            href="/dashboard"
-            className="hidden rounded-full border border-red-500 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-red-500 transition-colors hover:bg-red-500 hover:text-white md:inline-flex"
-          >
-            Dashboard
-          </Link>
-          <Link href="/account" className="flex items-center">
-            <IdentityBadge className="hidden md:inline-flex" />
-            <span className="inline-flex md:hidden">
-              <span className="rounded-full border border-red-500 px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold uppercase tracking-wide text-red-500">
-                Account
-              </span>
-            </span>
-          </Link>
+          <UserMenu />
 
           {/* Mobile menu button */}
           <button
@@ -193,69 +152,35 @@ export default function Header() {
 
               <div className="flex-1 overflow-y-auto p-4">
                 <div className="flex flex-col gap-2">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      className={cn(
-                        "rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100",
-                        pathname === item.href && "bg-red-50 text-red-600"
-                      )}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
+                  {navItems.map((item) => {
+                    // next-intl's usePathname returns pathname without locale prefix
+                    const isActive = pathname === item.href || pathname === `${item.href}/`;
+                    return (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className={cn(
+                          "rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100",
+                          isActive && "bg-red-50 text-red-600"
+                        )}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  })}
                 </div>
 
                 <div className="mt-6 border-t border-zinc-200 pt-6">
                   <Link
-                    href="/dashboard"
-                    className="block rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                  <Link
                     href="/account"
-                    className="mt-2 block rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100"
+                    className="block rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Account
                   </Link>
                 </div>
 
-                <div className="mt-6 border-t border-zinc-200 pt-6">
-                  <div className="flex items-center justify-between px-4">
-                    <span className="text-sm font-medium text-gray-700">Language</span>
-                    <div className="flex items-center rounded-full border border-zinc-200 bg-white p-1 text-xs font-semibold uppercase tracking-wide shadow-sm">
-                      <button
-                        type="button"
-                        onClick={() => handleLocaleChange("en")}
-                        className={cn(
-                          "rounded-full px-4 py-2 transition-colors",
-                          user.locale === "en"
-                            ? "bg-red-500 text-white shadow-sm"
-                            : "text-gray-700 hover:text-red-500"
-                        )}
-                      >
-                        EN
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleLocaleChange("jp")}
-                        className={cn(
-                          "rounded-full px-4 py-2 transition-colors",
-                          user.locale === "jp"
-                            ? "bg-red-500 text-white shadow-sm"
-                            : "text-gray-700 hover:text-red-500"
-                        )}
-                      >
-                        JP
-                      </button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </nav>

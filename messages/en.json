@@ -1,0 +1,26 @@
+{
+  "navigation": {
+    "home": "Home",
+    "explore": "Explore",
+    "guides": "Guides",
+    "itinerary": "My Itinerary",
+    "favorites": "Favorites",
+    "account": "Account",
+    "signIn": "Sign In",
+    "signOut": "Sign Out"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort"
+  },
+  "language": {
+    "select": "Select Language"
+  }
+}
+

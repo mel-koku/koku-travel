@@ -1,0 +1,26 @@
+{
+  "navigation": {
+    "home": "ホーム",
+    "explore": "探索",
+    "guides": "ガイド",
+    "itinerary": "旅程",
+    "favorites": "お気に入り",
+    "account": "アカウント",
+    "signIn": "サインイン",
+    "signOut": "サインアウト"
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "search": "検索",
+    "filter": "フィルター",
+    "sort": "並び替え"
+  },
+  "language": {
+    "select": "言語を選択"
+  }
+}
+

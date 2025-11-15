@@ -1,0 +1,77 @@
+{
+  "_comment": "TODO: Professional Japanese translation required",
+  "title": "TODO: Translate 'Travel Guides'",
+  "subtitle": "TODO: Translate 'Expert-curated guides to help you plan your perfect trip'",
+  "featured": "TODO: Translate 'Featured Guides'",
+  "allGuides": "TODO: Translate 'All Guides'",
+  "categories": {
+    "all": "TODO: Translate 'All Categories'",
+    "itineraries": "TODO: Translate 'Itineraries'",
+    "city": "TODO: Translate 'City Guides'",
+    "culture": "TODO: Translate 'Culture & History'",
+    "food": "TODO: Translate 'Food & Dining'",
+    "nature": "TODO: Translate 'Nature & Outdoors'",
+    "shopping": "TODO: Translate 'Shopping'",
+    "nightlife": "TODO: Translate 'Nightlife'",
+    "family": "TODO: Translate 'Family Travel'",
+    "budget": "TODO: Translate 'Budget Travel'",
+    "luxury": "TODO: Translate 'Luxury Travel'",
+    "solo": "TODO: Translate 'Solo Travel'",
+    "couples": "TODO: Translate 'Couples Travel'"
+  },
+  "filters": {
+    "title": "TODO: Translate 'Filter Guides'",
+    "category": "TODO: Translate 'Category'",
+    "author": "TODO: Translate 'Author'",
+    "duration": "TODO: Translate 'Duration'",
+    "difficulty": "TODO: Translate 'Difficulty'",
+    "budget": "TODO: Translate 'Budget'",
+    "tags": "TODO: Translate 'Tags'",
+    "apply": "TODO: Translate 'Apply'",
+    "clear": "TODO: Translate 'Clear'"
+  },
+  "guide": {
+    "readMore": "TODO: Translate 'Read More'",
+    "readLess": "TODO: Translate 'Read Less'",
+    "bookmark": "TODO: Translate 'Bookmark'",
+    "removeBookmark": "TODO: Translate 'Remove Bookmark'",
+    "share": "TODO: Translate 'Share Guide'",
+    "author": "TODO: Translate 'Author'",
+    "published": "TODO: Translate 'Published'",
+    "updated": "TODO: Translate 'Updated'",
+    "readingTime": "TODO: Translate 'Reading Time'",
+    "views": "TODO: Translate 'Views'",
+    "likes": "TODO: Translate 'Likes'",
+    "tags": "TODO: Translate 'Tags'",
+    "related": "TODO: Translate 'Related Guides'",
+    "tableOfContents": "TODO: Translate 'Table of Contents'",
+    "sections": {
+      "overview": "TODO: Translate 'Overview'",
+      "highlights": "TODO: Translate 'Highlights'",
+      "itinerary": "TODO: Translate 'Itinerary'",
+      "tips": "TODO: Translate 'Tips'",
+      "budget": "TODO: Translate 'Budget'",
+      "transportation": "TODO: Translate 'Transportation'",
+      "accommodation": "TODO: Translate 'Accommodation'",
+      "food": "TODO: Translate 'Food & Dining'",
+      "attractions": "TODO: Translate 'Attractions'",
+      "shopping": "TODO: Translate 'Shopping'",
+      "nightlife": "TODO: Translate 'Nightlife'",
+      "practical": "TODO: Translate 'Practical Information'"
+    }
+  },
+  "list": {
+    "noGuides": "TODO: Translate 'No guides found'",
+    "loadMore": "TODO: Translate 'Load More Guides'",
+    "search": "TODO: Translate 'Search guides...'"
+  },
+  "create": {
+    "title": "TODO: Translate 'Create Guide'",
+    "newGuide": "TODO: Translate 'New Guide'",
+    "editGuide": "TODO: Translate 'Edit Guide'",
+    "draft": "TODO: Translate 'Draft'",
+    "publish": "TODO: Translate 'Publish'",
+    "saveDraft": "TODO: Translate 'Save Draft'"
+  }
+}
+

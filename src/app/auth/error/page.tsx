@@ -72,11 +72,11 @@ export default function AuthErrorPage() {
           <p className="mb-8 text-gray-600">{error.description}</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button asChild variant="primary" href="/">
-              <Link href="/">Go home</Link>
+              Go home
             </Button>
             {error.action && (
               <Button asChild variant="secondary" href="/dashboard">
-                <Link href="/dashboard">{error.action}</Link>
+                {error.action}
               </Button>
             )}
           </div>

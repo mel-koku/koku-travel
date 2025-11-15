@@ -1,0 +1,91 @@
+{
+  "title": "Explore Japan",
+  "subtitle": "Discover amazing places, experiences, and destinations",
+  "search": {
+    "placeholder": "Search places, cities, or experiences...",
+    "noResults": "No results found",
+    "tryDifferent": "Try different search terms",
+    "recentSearches": "Recent Searches",
+    "popularSearches": "Popular Searches",
+    "clearHistory": "Clear History"
+  },
+  "filters": {
+    "title": "Filters",
+    "apply": "Apply Filters",
+    "clear": "Clear All",
+    "category": "Category",
+    "location": "Location",
+    "priceRange": "Price Range",
+    "rating": "Minimum Rating",
+    "distance": "Distance",
+    "openNow": "Open Now",
+    "sortBy": "Sort By",
+    "sortOptions": {
+      "relevance": "Relevance",
+      "rating": "Rating",
+      "distance": "Distance",
+      "priceLow": "Price: Low to High",
+      "priceHigh": "Price: High to Low",
+      "newest": "Newest",
+      "popular": "Most Popular"
+    }
+  },
+  "categories": {
+    "all": "All Categories",
+    "culture": "Culture",
+    "food": "Food & Drink",
+    "nature": "Nature",
+    "shopping": "Shopping",
+    "photography": "Photography",
+    "nightlife": "Nightlife",
+    "wellness": "Wellness",
+    "history": "History",
+    "entertainment": "Entertainment",
+    "sports": "Sports & Recreation",
+    "accommodation": "Accommodation",
+    "transportation": "Transportation"
+  },
+  "places": {
+    "title": "Places",
+    "noPlaces": "No places found",
+    "loadMore": "Load More Places",
+    "viewOnMap": "View on Map",
+    "viewDetails": "View Details",
+    "addToTrip": "Add to Trip",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites",
+    "share": "Share Place",
+    "directions": "Get Directions",
+    "openHours": "Opening Hours",
+    "closed": "Closed",
+    "open24h": "Open 24 Hours",
+    "contact": "Contact",
+    "website": "Website",
+    "phone": "Phone",
+    "address": "Address",
+    "rating": "Rating",
+    "reviews": "Reviews",
+    "priceLevel": "Price Level",
+    "free": "Free",
+    "inexpensive": "Inexpensive",
+    "moderate": "Moderate",
+    "expensive": "Expensive",
+    "veryExpensive": "Very Expensive"
+  },
+  "map": {
+    "title": "Map View",
+    "listView": "List View",
+    "mapView": "Map View",
+    "zoomIn": "Zoom In",
+    "zoomOut": "Zoom Out",
+    "myLocation": "My Location",
+    "centerMap": "Center Map"
+  },
+  "results": {
+    "showing": "Showing {count} results",
+    "resultsFor": "Results for \"{query}\"",
+    "noResults": "No results found",
+    "adjustFilters": "Try adjusting your filters"
+  }
+}
+

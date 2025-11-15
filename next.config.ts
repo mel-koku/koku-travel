@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+// import withNextIntl from './next-intl-plugin.mjs'; // Localization disabled for now
 
 const localPatterns = [
   {
@@ -147,3 +148,4 @@ const nextConfig: NextConfig = {
 // });
 
 export default nextConfig;
+// export default withNextIntl(nextConfig); // Localization disabled for now

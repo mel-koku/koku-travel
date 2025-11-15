@@ -1,0 +1,26 @@
+{
+  "navigation": {
+    "home": "홈",
+    "explore": "탐색",
+    "guides": "가이드",
+    "itinerary": "여행 일정",
+    "favorites": "즐겨찾기",
+    "account": "계정",
+    "signIn": "로그인",
+    "signOut": "로그아웃"
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "편집",
+    "search": "검색",
+    "filter": "필터",
+    "sort": "정렬"
+  },
+  "language": {
+    "select": "언어 선택"
+  }
+}
+

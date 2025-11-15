@@ -427,7 +427,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
     setStatus("Sending magic link…");
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${location.origin}/auth/callback` },
+      options: { emailRedirectTo: `${location.origin}/api/auth/callback` },
     });
     setStatus(error ? `Error: ${error.message}` : "Check your email for the sign-in link.");
   }

@@ -1,0 +1,92 @@
+{
+  "_comment": "TODO: Professional Korean translation required",
+  "title": "TODO: Translate 'Explore Japan'",
+  "subtitle": "TODO: Translate 'Discover amazing places, experiences, and destinations'",
+  "search": {
+    "placeholder": "TODO: Translate 'Search places, cities, or experiences...'",
+    "noResults": "TODO: Translate 'No results found'",
+    "tryDifferent": "TODO: Translate 'Try different search terms'",
+    "recentSearches": "TODO: Translate 'Recent Searches'",
+    "popularSearches": "TODO: Translate 'Popular Searches'",
+    "clearHistory": "TODO: Translate 'Clear History'"
+  },
+  "filters": {
+    "title": "TODO: Translate 'Filters'",
+    "apply": "TODO: Translate 'Apply Filters'",
+    "clear": "TODO: Translate 'Clear All'",
+    "category": "TODO: Translate 'Category'",
+    "location": "TODO: Translate 'Location'",
+    "priceRange": "TODO: Translate 'Price Range'",
+    "rating": "TODO: Translate 'Minimum Rating'",
+    "distance": "TODO: Translate 'Distance'",
+    "openNow": "TODO: Translate 'Open Now'",
+    "sortBy": "TODO: Translate 'Sort By'",
+    "sortOptions": {
+      "relevance": "TODO: Translate 'Relevance'",
+      "rating": "TODO: Translate 'Rating'",
+      "distance": "TODO: Translate 'Distance'",
+      "priceLow": "TODO: Translate 'Price: Low to High'",
+      "priceHigh": "TODO: Translate 'Price: High to Low'",
+      "newest": "TODO: Translate 'Newest'",
+      "popular": "TODO: Translate 'Most Popular'"
+    }
+  },
+  "categories": {
+    "all": "TODO: Translate 'All Categories'",
+    "culture": "TODO: Translate 'Culture'",
+    "food": "TODO: Translate 'Food & Drink'",
+    "nature": "TODO: Translate 'Nature'",
+    "shopping": "TODO: Translate 'Shopping'",
+    "photography": "TODO: Translate 'Photography'",
+    "nightlife": "TODO: Translate 'Nightlife'",
+    "wellness": "TODO: Translate 'Wellness'",
+    "history": "TODO: Translate 'History'",
+    "entertainment": "TODO: Translate 'Entertainment'",
+    "sports": "TODO: Translate 'Sports & Recreation'",
+    "accommodation": "TODO: Translate 'Accommodation'",
+    "transportation": "TODO: Translate 'Transportation'"
+  },
+  "places": {
+    "title": "TODO: Translate 'Places'",
+    "noPlaces": "TODO: Translate 'No places found'",
+    "loadMore": "TODO: Translate 'Load More Places'",
+    "viewOnMap": "TODO: Translate 'View on Map'",
+    "viewDetails": "TODO: Translate 'View Details'",
+    "addToTrip": "TODO: Translate 'Add to Trip'",
+    "addToFavorites": "TODO: Translate 'Add to Favorites'",
+    "removeFromFavorites": "TODO: Translate 'Remove from Favorites'",
+    "share": "TODO: Translate 'Share Place'",
+    "directions": "TODO: Translate 'Get Directions'",
+    "openHours": "TODO: Translate 'Opening Hours'",
+    "closed": "TODO: Translate 'Closed'",
+    "open24h": "TODO: Translate 'Open 24 Hours'",
+    "contact": "TODO: Translate 'Contact'",
+    "website": "TODO: Translate 'Website'",
+    "phone": "TODO: Translate 'Phone'",
+    "address": "TODO: Translate 'Address'",
+    "rating": "TODO: Translate 'Rating'",
+    "reviews": "TODO: Translate 'Reviews'",
+    "priceLevel": "TODO: Translate 'Price Level'",
+    "free": "TODO: Translate 'Free'",
+    "inexpensive": "TODO: Translate 'Inexpensive'",
+    "moderate": "TODO: Translate 'Moderate'",
+    "expensive": "TODO: Translate 'Expensive'",
+    "veryExpensive": "TODO: Translate 'Very Expensive'"
+  },
+  "map": {
+    "title": "TODO: Translate 'Map View'",
+    "listView": "TODO: Translate 'List View'",
+    "mapView": "TODO: Translate 'Map View'",
+    "zoomIn": "TODO: Translate 'Zoom In'",
+    "zoomOut": "TODO: Translate 'Zoom Out'",
+    "myLocation": "TODO: Translate 'My Location'",
+    "centerMap": "TODO: Translate 'Center Map'"
+  },
+  "results": {
+    "showing": "TODO: Translate 'Showing {count} results'",
+    "resultsFor": "TODO: Translate 'Results for \"{query}\"'",
+    "noResults": "TODO: Translate 'No results found'",
+    "adjustFilters": "TODO: Translate 'Try adjusting your filters'"
+  }
+}
+

@@ -1,0 +1,51 @@
+{
+  "menu": {
+    "home": "Home",
+    "explore": "Explore",
+    "guides": "Guides",
+    "tripBuilder": "Trip Builder",
+    "community": "Community",
+    "dashboard": "Dashboard",
+    "account": "Account",
+    "settings": "Settings",
+    "help": "Help",
+    "about": "About",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "signUp": "Sign Up",
+    "profile": "Profile",
+    "myTrips": "My Trips",
+    "favorites": "Favorites",
+    "bookmarks": "Bookmarks",
+    "history": "History"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "backToHome": "Back to Home"
+  },
+  "footer": {
+    "company": "Company",
+    "about": "About Us",
+    "careers": "Careers",
+    "press": "Press",
+    "legal": "Legal",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "cookies": "Cookie Policy",
+    "resources": "Resources",
+    "help": "Help Center",
+    "faq": "FAQ",
+    "blog": "Blog",
+    "community": "Community",
+    "social": "Social",
+    "followUs": "Follow Us",
+    "copyright": "© {year} Koku Travel. All rights reserved.",
+    "allRightsReserved": "All rights reserved"
+  },
+  "language": {
+    "selectLanguage": "Select Language",
+    "currentLanguage": "Current Language"
+  }
+}
+

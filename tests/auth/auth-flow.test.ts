@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { GET } from "@/app/auth/callback/route";
+import { GET } from "@/app/api/auth/callback/route";
 import { createClient } from "@/lib/supabase/server";
 import { createMockRequest, createMockSupabaseClient } from "../utils/mocks";
 
@@ -38,7 +38,7 @@ describe("Authentication Flow", () => {
       } as any);
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=valid-auth-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=valid-auth-code");
       const response = await GET(request);
 
       expect(response.status).toBe(307);
@@ -58,7 +58,7 @@ describe("Authentication Flow", () => {
       } as any);
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=invalid-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=invalid-code");
       const response = await GET(request);
 
       // Should redirect to error page
@@ -78,7 +78,7 @@ describe("Authentication Flow", () => {
       } as any);
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=expired-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=expired-code");
       const response = await GET(request);
 
       expect(response.status).toBe(307);
@@ -105,7 +105,7 @@ describe("Authentication Flow", () => {
       } as any);
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=valid-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=valid-code");
       await GET(request);
 
       // Verify session exchange was called
@@ -119,7 +119,7 @@ describe("Authentication Flow", () => {
       );
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=valid-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=valid-code");
       const response = await GET(request);
 
       // Should redirect to error page
@@ -183,7 +183,7 @@ describe("Authentication Flow", () => {
       );
       vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
 
-      const request = createMockRequest("https://example.com/auth/callback?code=test-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=test-code");
       const response = await GET(request);
 
       // Should gracefully handle error and redirect
@@ -193,7 +193,7 @@ describe("Authentication Flow", () => {
     it("should handle Supabase service unavailable", async () => {
       vi.mocked(createClient).mockRejectedValueOnce(new Error("Supabase service unavailable"));
 
-      const request = createMockRequest("https://example.com/auth/callback?code=test-code");
+      const request = createMockRequest("https://example.com/api/auth/callback?code=test-code");
       const response = await GET(request);
 
       // Should gracefully handle error and redirect

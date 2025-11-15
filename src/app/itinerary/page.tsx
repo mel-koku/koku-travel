@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
 import { useAppState } from "@/state/AppState";
@@ -69,9 +70,7 @@ export default function ItineraryPage() {
         params.delete("trip");
       }
       const query = params.toString();
-      router.replace(query.length > 0 ? `/itinerary?${query}` : "/itinerary", {
-        scroll: false,
-      });
+      router.replace(query.length > 0 ? `/itinerary?${query}` : "/itinerary");
     },
     [router, searchParamsString],
   );

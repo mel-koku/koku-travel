@@ -1,5 +1,7 @@
-import Link from "next/link";
+"use client";
+
 import { ComponentPropsWithoutRef, ReactNode, forwardRef } from "react";
+import Link from "next/link";
 
 import { cn } from "@/lib/cn";
 
@@ -136,7 +138,7 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
     );
 
     if (asChild) {
-      const { href, prefetch, replace, scroll, shallow, locale, ...anchorProps } =
+      const { href, prefetch, replace, scroll, shallow, ...anchorProps } =
         rest as AnchorButtonProps;
       const ariaDisabledRaw = anchorProps["aria-disabled"];
       const anchorDisabled =
@@ -153,8 +155,6 @@ export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonPr
           prefetch={prefetch}
           replace={replace}
           scroll={scroll}
-          shallow={shallow}
-          locale={locale}
           className={cn(baseClasses, (anchorDisabled || isLoading) && "pointer-events-none")}
           aria-busy={isLoading}
           aria-disabled={anchorDisabled || isLoading}

@@ -1,0 +1,107 @@
+{
+  "_comment": "TODO: Professional Korean translation required",
+  "generic": {
+    "title": "TODO: Translate 'Something went wrong'",
+    "message": "TODO: Translate 'An unexpected error occurred. Please try again later.'",
+    "retry": "TODO: Translate 'Retry'",
+    "goHome": "TODO: Translate 'Go Home'",
+    "contactSupport": "TODO: Translate 'Contact Support'"
+  },
+  "network": {
+    "title": "TODO: Translate 'Connection Error'",
+    "message": "TODO: Translate 'Unable to connect to the server. Please check your internet connection.'",
+    "offline": "TODO: Translate 'You appear to be offline'",
+    "timeout": "TODO: Translate 'Request timed out. Please try again.'",
+    "retry": "TODO: Translate 'Retry Connection'"
+  },
+  "notFound": {
+    "title": "TODO: Translate 'Page Not Found'",
+    "message": "TODO: Translate 'The page you're looking for doesn't exist or has been moved.'",
+    "code": "404",
+    "goHome": "TODO: Translate 'Go Home'",
+    "goBack": "TODO: Translate 'Go Back'"
+  },
+  "unauthorized": {
+    "title": "TODO: Translate 'Unauthorized'",
+    "message": "TODO: Translate 'You don't have permission to access this resource.'",
+    "code": "401",
+    "signIn": "TODO: Translate 'Sign In'",
+    "goHome": "TODO: Translate 'Go Home'"
+  },
+  "forbidden": {
+    "title": "TODO: Translate 'Access Denied'",
+    "message": "TODO: Translate 'You don't have permission to perform this action.'",
+    "code": "403"
+  },
+  "serverError": {
+    "title": "TODO: Translate 'Server Error'",
+    "message": "TODO: Translate 'Something went wrong on our end. We're working to fix it.'",
+    "code": "500",
+    "report": "TODO: Translate 'Report Issue'"
+  },
+  "validation": {
+    "title": "TODO: Translate 'Validation Error'",
+    "required": "TODO: Translate '{field} is required'",
+    "invalid": "TODO: Translate '{field} is invalid'",
+    "minLength": "TODO: Translate '{field} must be at least {min} characters'",
+    "maxLength": "TODO: Translate '{field} must be no more than {max} characters'",
+    "min": "TODO: Translate '{field} must be at least {min}'",
+    "max": "TODO: Translate '{field} must be no more than {max}'",
+    "email": "TODO: Translate 'Please enter a valid email address'",
+    "url": "TODO: Translate 'Please enter a valid URL'",
+    "phone": "TODO: Translate 'Please enter a valid phone number'",
+    "date": "TODO: Translate 'Please enter a valid date'",
+    "time": "TODO: Translate 'Please enter a valid time'",
+    "number": "TODO: Translate 'Please enter a valid number'",
+    "pattern": "TODO: Translate '{field} format is invalid'"
+  },
+  "auth": {
+    "invalidCredentials": "TODO: Translate 'Invalid email or password'",
+    "emailNotVerified": "TODO: Translate 'Please verify your email address'",
+    "accountLocked": "TODO: Translate 'Your account has been locked. Please contact support.'",
+    "sessionExpired": "TODO: Translate 'Your session has expired. Please sign in again.'",
+    "tokenExpired": "TODO: Translate 'Your session has expired. Please sign in again.'",
+    "signInRequired": "TODO: Translate 'Please sign in to continue'",
+    "signUpFailed": "TODO: Translate 'Failed to create account. Please try again.'",
+    "passwordResetFailed": "TODO: Translate 'Failed to reset password. Please try again.'",
+    "emailAlreadyExists": "TODO: Translate 'An account with this email already exists'",
+    "weakPassword": "TODO: Translate 'Password is too weak. Please choose a stronger password.'"
+  },
+  "api": {
+    "rateLimit": "TODO: Translate 'Too many requests. Please try again later.'",
+    "serviceUnavailable": "TODO: Translate 'Service is temporarily unavailable. Please try again later.'",
+    "badRequest": "TODO: Translate 'Invalid request. Please check your input.'",
+    "conflict": "TODO: Translate 'This resource already exists.'",
+    "notFound": "TODO: Translate 'The requested resource was not found.'",
+    "internalError": "TODO: Translate 'An internal error occurred. Please try again later.'"
+  },
+  "form": {
+    "submitError": "TODO: Translate 'Failed to submit form. Please try again.'",
+    "saveError": "TODO: Translate 'Failed to save changes. Please try again.'",
+    "deleteError": "TODO: Translate 'Failed to delete. Please try again.'",
+    "uploadError": "TODO: Translate 'Failed to upload file. Please try again.'",
+    "fileTooLarge": "TODO: Translate 'File is too large. Maximum size is {maxSize}.'",
+    "invalidFileType": "TODO: Translate 'Invalid file type. Allowed types: {types}.'"
+  },
+  "location": {
+    "notFound": "TODO: Translate 'Location not found'",
+    "geolocationError": "TODO: Translate 'Unable to get your location'",
+    "geolocationDenied": "TODO: Translate 'Location access denied'",
+    "geolocationUnavailable": "TODO: Translate 'Location services unavailable'"
+  },
+  "trip": {
+    "notFound": "TODO: Translate 'Trip not found'",
+    "saveError": "TODO: Translate 'Failed to save trip'",
+    "deleteError": "TODO: Translate 'Failed to delete trip'",
+    "loadError": "TODO: Translate 'Failed to load trip'",
+    "invalidData": "TODO: Translate 'Invalid trip data'"
+  },
+  "guide": {
+    "notFound": "TODO: Translate 'Guide not found'",
+    "saveError": "TODO: Translate 'Failed to save guide'",
+    "deleteError": "TODO: Translate 'Failed to delete guide'",
+    "loadError": "TODO: Translate 'Failed to load guide'",
+    "publishError": "TODO: Translate 'Failed to publish guide'"
+  }
+}
+

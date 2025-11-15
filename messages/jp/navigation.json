@@ -1,0 +1,52 @@
+{
+  "_comment": "TODO: Professional Japanese translation required",
+  "menu": {
+    "home": "TODO: Translate 'Home'",
+    "explore": "TODO: Translate 'Explore'",
+    "guides": "TODO: Translate 'Guides'",
+    "tripBuilder": "TODO: Translate 'Trip Builder'",
+    "community": "TODO: Translate 'Community'",
+    "dashboard": "TODO: Translate 'Dashboard'",
+    "account": "TODO: Translate 'Account'",
+    "settings": "TODO: Translate 'Settings'",
+    "help": "TODO: Translate 'Help'",
+    "about": "TODO: Translate 'About'",
+    "contact": "TODO: Translate 'Contact'",
+    "signIn": "TODO: Translate 'Sign In'",
+    "signOut": "TODO: Translate 'Sign Out'",
+    "signUp": "TODO: Translate 'Sign Up'",
+    "profile": "TODO: Translate 'Profile'",
+    "myTrips": "TODO: Translate 'My Trips'",
+    "favorites": "TODO: Translate 'Favorites'",
+    "bookmarks": "TODO: Translate 'Bookmarks'",
+    "history": "TODO: Translate 'History'"
+  },
+  "breadcrumbs": {
+    "home": "TODO: Translate 'Home'",
+    "backToHome": "TODO: Translate 'Back to Home'"
+  },
+  "footer": {
+    "company": "TODO: Translate 'Company'",
+    "about": "TODO: Translate 'About Us'",
+    "careers": "TODO: Translate 'Careers'",
+    "press": "TODO: Translate 'Press'",
+    "legal": "TODO: Translate 'Legal'",
+    "privacy": "TODO: Translate 'Privacy Policy'",
+    "terms": "TODO: Translate 'Terms of Service'",
+    "cookies": "TODO: Translate 'Cookie Policy'",
+    "resources": "TODO: Translate 'Resources'",
+    "help": "TODO: Translate 'Help Center'",
+    "faq": "TODO: Translate 'FAQ'",
+    "blog": "TODO: Translate 'Blog'",
+    "community": "TODO: Translate 'Community'",
+    "social": "TODO: Translate 'Social'",
+    "followUs": "TODO: Translate 'Follow Us'",
+    "copyright": "TODO: Translate '© {year} Koku Travel. All rights reserved.'",
+    "allRightsReserved": "TODO: Translate 'All rights reserved'"
+  },
+  "language": {
+    "selectLanguage": "TODO: Translate 'Select Language'",
+    "currentLanguage": "TODO: Translate 'Current Language'"
+  }
+}
+

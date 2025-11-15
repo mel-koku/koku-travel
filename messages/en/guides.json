@@ -1,0 +1,76 @@
+{
+  "title": "Travel Guides",
+  "subtitle": "Expert-curated guides to help you plan your perfect trip",
+  "featured": "Featured Guides",
+  "allGuides": "All Guides",
+  "categories": {
+    "all": "All Categories",
+    "itineraries": "Itineraries",
+    "city": "City Guides",
+    "culture": "Culture & History",
+    "food": "Food & Dining",
+    "nature": "Nature & Outdoors",
+    "shopping": "Shopping",
+    "nightlife": "Nightlife",
+    "family": "Family Travel",
+    "budget": "Budget Travel",
+    "luxury": "Luxury Travel",
+    "solo": "Solo Travel",
+    "couples": "Couples Travel"
+  },
+  "filters": {
+    "title": "Filter Guides",
+    "category": "Category",
+    "author": "Author",
+    "duration": "Duration",
+    "difficulty": "Difficulty",
+    "budget": "Budget",
+    "tags": "Tags",
+    "apply": "Apply",
+    "clear": "Clear"
+  },
+  "guide": {
+    "readMore": "Read More",
+    "readLess": "Read Less",
+    "bookmark": "Bookmark",
+    "removeBookmark": "Remove Bookmark",
+    "share": "Share Guide",
+    "author": "Author",
+    "published": "Published",
+    "updated": "Updated",
+    "readingTime": "Reading Time",
+    "views": "Views",
+    "likes": "Likes",
+    "tags": "Tags",
+    "related": "Related Guides",
+    "tableOfContents": "Table of Contents",
+    "sections": {
+      "overview": "Overview",
+      "highlights": "Highlights",
+      "itinerary": "Itinerary",
+      "tips": "Tips",
+      "budget": "Budget",
+      "transportation": "Transportation",
+      "accommodation": "Accommodation",
+      "food": "Food & Dining",
+      "attractions": "Attractions",
+      "shopping": "Shopping",
+      "nightlife": "Nightlife",
+      "practical": "Practical Information"
+    }
+  },
+  "list": {
+    "noGuides": "No guides found",
+    "loadMore": "Load More Guides",
+    "search": "Search guides..."
+  },
+  "create": {
+    "title": "Create Guide",
+    "newGuide": "New Guide",
+    "editGuide": "Edit Guide",
+    "draft": "Draft",
+    "publish": "Publish",
+    "saveDraft": "Save Draft"
+  }
+}
+
