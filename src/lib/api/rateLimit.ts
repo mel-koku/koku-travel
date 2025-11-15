@@ -62,12 +62,13 @@ if (useUpstash) {
     });
   }
 } else {
-  // Warn in production if Upstash is not configured
+  // Throw error in production if Upstash is not configured
   if (process.env.NODE_ENV === "production") {
-    logger.warn(
-      "WARNING: Upstash Redis is not configured. Rate limiting is using in-memory storage, " +
-        "which will NOT work correctly across multiple server instances. " +
-        "Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN for production deployments.",
+    throw new Error(
+      "Upstash Redis is REQUIRED for production deployments. " +
+        "In-memory rate limiting does NOT work correctly across multiple server instances. " +
+        "Please set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables. " +
+        "See https://upstash.com/docs/redis/overall/getstarted for setup instructions.",
     );
   }
 }
@@ -199,14 +200,15 @@ export async function checkRateLimit(
   }
 
   // Fallback: In-memory rate limiting (for local development only)
-  // WARNING: This does NOT work correctly in production with multiple server instances
+  // ERROR: This does NOT work correctly in production with multiple server instances
   // Each instance maintains its own in-memory store, so rate limits are not shared
   if (process.env.NODE_ENV === "production" && !useUpstash) {
-    logger.warn(
+    throw new Error(
       `Rate limiting with custom config (${config.maxRequests} req/${config.windowMs}ms) ` +
-        "is using in-memory storage. This will NOT work correctly across multiple instances. " +
-        "Consider using the default config (100 req/min) which uses Upstash Redis, " +
-        "or configure Upstash for distributed rate limiting.",
+        "requires Upstash Redis in production. In-memory storage does NOT work correctly across multiple instances. " +
+        "Please set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables. " +
+        "Alternatively, use the default config (100 req/min) which uses Upstash Redis. " +
+        "See https://upstash.com/docs/redis/overall/getstarted for setup instructions.",
     );
   }
   
