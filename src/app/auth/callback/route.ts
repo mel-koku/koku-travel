@@ -3,6 +3,11 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { logger } from "@/lib/logger";
+import {
+  RATE_LIMIT_AUTH_MAX_REQUESTS,
+  DEFAULT_RATE_LIMIT_WINDOW_MS,
+  MAX_AUTHORIZATION_CODE_LENGTH,
+} from "@/lib/constants";
 
 /**
  * Schema for OAuth authorization code parameter
@@ -10,7 +15,7 @@ import { logger } from "@/lib/logger";
 const authCodeSchema = z
   .string()
   .min(1, "Authorization code cannot be empty")
-  .max(1000, "Authorization code too long")
+  .max(MAX_AUTHORIZATION_CODE_LENGTH, "Authorization code too long")
   .regex(/^[A-Za-z0-9._-]+$/, "Authorization code contains invalid characters");
 
 /**
@@ -25,7 +30,10 @@ const authCodeSchema = z
  */
 export async function GET(request: NextRequest) {
   // Rate limiting: 30 requests per minute per IP (auth callback)
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, {
+    maxRequests: RATE_LIMIT_AUTH_MAX_REQUESTS,
+    windowMs: DEFAULT_RATE_LIMIT_WINDOW_MS,
+  });
   if (rateLimitResponse) {
     return rateLimitResponse;
   }

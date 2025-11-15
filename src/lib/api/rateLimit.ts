@@ -3,6 +3,12 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { logger } from "../logger";
 import { env } from "../env";
+import {
+  DEFAULT_RATE_LIMIT_MAX_REQUESTS,
+  DEFAULT_RATE_LIMIT_WINDOW_MS,
+  CLEANUP_INTERVAL_5_MINUTES,
+  MILLISECONDS_TO_SECONDS,
+} from "../constants";
 
 /**
  * Distributed rate limiter using Upstash Redis
@@ -41,8 +47,6 @@ const useUpstash = !!(upstashRedisUrl && upstashRedisToken);
 // We use a default of 100 requests per minute. For custom configs, we fall back to in-memory.
 let redisClient: Redis | null = null;
 let upstashRatelimit: Ratelimit | null = null;
-const DEFAULT_MAX_REQUESTS = 100;
-const DEFAULT_WINDOW_MS = 60 * 1000; // 1 minute
 
 if (useUpstash) {
   try {
@@ -52,7 +56,10 @@ if (useUpstash) {
     });
     upstashRatelimit = new Ratelimit({
       redis: redisClient,
-      limiter: Ratelimit.slidingWindow(DEFAULT_MAX_REQUESTS, `${DEFAULT_WINDOW_MS}ms`),
+      limiter: Ratelimit.slidingWindow(
+        DEFAULT_RATE_LIMIT_MAX_REQUESTS,
+        `${DEFAULT_RATE_LIMIT_WINDOW_MS}ms`,
+      ),
       analytics: true,
     });
     logger.info("Upstash Redis rate limiting enabled");
@@ -95,7 +102,7 @@ if (!useUpstash && typeof globalThis !== "undefined") {
         rateLimitStore.delete(ip);
       }
     }
-  }, 5 * 60 * 1000); // 5 minutes
+  }, CLEANUP_INTERVAL_5_MINUTES);
 
   // Cleanup on process exit (all environments)
   const cleanupOnExit = () => {
@@ -149,7 +156,10 @@ function getClientIp(request: NextRequest): string {
  */
 export async function checkRateLimit(
   request: NextRequest,
-  config: RateLimitConfig = { maxRequests: 100, windowMs: 60 * 1000 }, // Default: 100 requests per minute
+  config: RateLimitConfig = {
+    maxRequests: DEFAULT_RATE_LIMIT_MAX_REQUESTS,
+    windowMs: DEFAULT_RATE_LIMIT_WINDOW_MS,
+  },
 ): Promise<NextResponse | null> {
   const ip = getClientIp(request);
 
@@ -160,15 +170,15 @@ export async function checkRateLimit(
   if (
     useUpstash &&
     upstashRatelimit &&
-    config.maxRequests === DEFAULT_MAX_REQUESTS &&
-    config.windowMs === DEFAULT_WINDOW_MS
+    config.maxRequests === DEFAULT_RATE_LIMIT_MAX_REQUESTS &&
+    config.windowMs === DEFAULT_RATE_LIMIT_WINDOW_MS
   ) {
     try {
       const result = await upstashRatelimit.limit(ip);
 
       if (!result.success) {
         // Rate limited
-        const retryAfter = Math.ceil(result.reset / 1000);
+        const retryAfter = Math.ceil(result.reset / MILLISECONDS_TO_SECONDS);
         return NextResponse.json(
           {
             error: "Too many requests",
@@ -205,7 +215,7 @@ export async function checkRateLimit(
     logger.warn(
       `Rate limiting with custom config (${config.maxRequests} req/${config.windowMs}ms) ` +
         "is using in-memory storage. This will NOT work correctly across multiple instances. " +
-        "Consider using the default config (100 req/min) which uses Upstash Redis, " +
+        `Consider using the default config (${DEFAULT_RATE_LIMIT_MAX_REQUESTS} req/min) which uses Upstash Redis, ` +
         "or configure Upstash for distributed rate limiting.",
     );
   }
@@ -230,7 +240,7 @@ export async function checkRateLimit(
 
   if (entry.count > config.maxRequests) {
     // Rate limited
-    const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+    const retryAfter = Math.ceil((entry.resetAt - now) / MILLISECONDS_TO_SECONDS);
     return NextResponse.json(
       {
         error: "Too many requests",
@@ -261,7 +271,10 @@ export async function checkRateLimit(
  * Usage:
  * ```typescript
  * export async function GET(request: NextRequest) {
- *   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 50, windowMs: 60000 });
+ *   const rateLimitResponse = await checkRateLimit(request, {
+ *     maxRequests: 50,
+ *     windowMs: DEFAULT_RATE_LIMIT_WINDOW_MS,
+ *   });
  *   if (rateLimitResponse) return rateLimitResponse;
  *   // ... rest of handler
  * }
