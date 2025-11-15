@@ -7,6 +7,7 @@ import { FilterBar } from "./FilterBar";
 import { LocationGrid } from "./LocationGrid";
 import { FeaturedLocationsHero } from "./FeaturedLocationsHero";
 import { logger } from "@/lib/logger";
+import { MOCK_LOCATIONS } from "@/data/mockLocations";
 
 const BUDGET_FILTERS = [
   {
@@ -177,61 +178,31 @@ export function ExploreShell() {
   ]);
 
   useEffect(() => {
-    let isActive = true;
     setIsLoading(true);
     setLoadError(null);
     
-    // Add a timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      if (isActive) {
-        logger.error("Timeout loading mock locations");
-        setLoadError("Loading locations is taking longer than expected. Please refresh the page.");
-        setIsLoading(false);
+    try {
+      const locationsArray = Array.isArray(MOCK_LOCATIONS) 
+        ? MOCK_LOCATIONS 
+        : [];
+      
+      if (locationsArray.length === 0) {
+        logger.warn("MOCK_LOCATIONS array is empty");
       }
-    }, 10000); // 10 second timeout
-
-    void import("@/data/mockLocations")
-      .then((module) => {
-        clearTimeout(timeoutId);
-        if (!isActive) return;
-        
-        if (!module || !module.MOCK_LOCATIONS) {
-          throw new Error("MOCK_LOCATIONS not found in module");
-        }
-        
-        const locationsArray = Array.isArray(module.MOCK_LOCATIONS) 
-          ? module.MOCK_LOCATIONS 
-          : [];
-        
-        if (locationsArray.length === 0) {
-          logger.warn("MOCK_LOCATIONS array is empty");
-        }
-        
-        setLocations(locationsArray);
-        setLoadError(null);
-      })
-      .catch((error) => {
-        clearTimeout(timeoutId);
-        logger.error("Failed to load mock locations", error);
-        if (!isActive) return;
-        setLoadError(
-          error instanceof Error && error.message.includes("MOCK_LOCATIONS")
-            ? "Locations data is not available. Please check the deployment configuration."
-            : "Unable to load locations. Please refresh the page to try again."
-        );
-        setLocations([]);
-      })
-      .finally(() => {
-        clearTimeout(timeoutId);
-        if (isActive) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isActive = false;
-      clearTimeout(timeoutId);
-    };
+      
+      setLocations(locationsArray);
+      setLoadError(null);
+    } catch (error) {
+      logger.error("Failed to load mock locations", error);
+      setLoadError(
+        error instanceof Error && error.message.includes("MOCK_LOCATIONS")
+          ? "Locations data is not available. Please check the deployment configuration."
+          : "Unable to load locations. Please refresh the page to try again."
+      );
+      setLocations([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {

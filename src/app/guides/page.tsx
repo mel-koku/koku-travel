@@ -2,6 +2,7 @@ import { draftMode } from "next/headers";
 import GuidesShell from "@/components/features/guides/GuidesShell";
 import { fetchGuides } from "@/lib/sanity/guides";
 import { logger } from "@/lib/logger";
+import type { Guide } from "@/types/guide";
 
 // Force dynamic rendering because we use draftMode() which is a dynamic function
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ export const revalidate = 3600;
 
 export default async function GuidesPage() {
   const { isEnabled } = await draftMode();
-  let guides = [];
+  let guides: Guide[] = [];
   
   try {
     guides = await fetchGuides({ preview: isEnabled });
