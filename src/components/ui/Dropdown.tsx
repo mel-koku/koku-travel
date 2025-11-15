@@ -122,13 +122,17 @@ export function Dropdown({
     } else if (event.key === "Home") {
       event.preventDefault();
       const first = enabledItems[0];
-      setActiveIndex(first.index);
-      itemsRef.current[first.index]?.focus({ preventScroll: true });
+      if (first) {
+        setActiveIndex(first.index);
+        itemsRef.current[first.index]?.focus({ preventScroll: true });
+      }
     } else if (event.key === "End") {
       event.preventDefault();
       const last = enabledItems[enabledItems.length - 1];
-      setActiveIndex(last.index);
-      itemsRef.current[last.index]?.focus({ preventScroll: true });
+      if (last) {
+        setActiveIndex(last.index);
+        itemsRef.current[last.index]?.focus({ preventScroll: true });
+      }
     } else if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
       selectItem(activeIndex);
