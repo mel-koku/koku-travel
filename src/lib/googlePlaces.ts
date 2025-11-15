@@ -108,23 +108,17 @@ function normalizeDetailsRow(row: PlaceDetailsRow): LocationDetails {
   };
 }
 
-declare global {
-  var __kokuPlaceIdCache: Map<string, PlaceIdCacheEntry> | undefined;
-  var __kokuPlaceDetailsCache: Map<string, PlaceDetailsCacheEntry> | undefined;
-}
+// Module-level cache instances (initialized once per module load)
+// In Next.js, these persist across requests in the same process but reset on hot reload
+const placeIdCache = new Map<string, PlaceIdCacheEntry>();
+const placeDetailsCache = new Map<string, PlaceDetailsCacheEntry>();
 
 function getPlaceIdCache(): Map<string, PlaceIdCacheEntry> {
-  if (!globalThis.__kokuPlaceIdCache) {
-    globalThis.__kokuPlaceIdCache = new Map();
-  }
-  return globalThis.__kokuPlaceIdCache;
+  return placeIdCache;
 }
 
 function getPlaceDetailsCache(): Map<string, PlaceDetailsCacheEntry> {
-  if (!globalThis.__kokuPlaceDetailsCache) {
-    globalThis.__kokuPlaceDetailsCache = new Map();
-  }
-  return globalThis.__kokuPlaceDetailsCache;
+  return placeDetailsCache;
 }
 
 function getApiKey(): string {
