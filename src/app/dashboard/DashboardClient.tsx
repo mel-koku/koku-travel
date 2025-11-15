@@ -228,17 +228,17 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
 
   if (isLoadingAuth) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
           <p className="text-sm text-gray-600">Loading dashboard...</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-16 sm:pb-20 md:pb-24">
+    <div className="min-h-screen bg-gray-50 pb-16 sm:pb-20 md:pb-24">
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 md:px-8">
         <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-md sm:p-6">
           <div className="flex items-center justify-between">
@@ -419,7 +419,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
           </div>
         </div>
       ) : null}
-    </main>
+    </div>
   );
 }
 

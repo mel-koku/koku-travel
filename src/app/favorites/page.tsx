@@ -39,19 +39,19 @@ export default function FavoritesPage() {
 
   if (isCheckingAuth) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
           <p className="text-sm text-gray-600">Loading...</p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-4 pb-16">
+    <div className="min-h-screen bg-gray-50 pt-4 pb-16">
       <WishlistShell />
-    </main>
+    </div>
   );
 }
 

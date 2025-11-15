@@ -43,7 +43,7 @@ export default async function GuideDetail(props: GuideDetailProps) {
     : [guide, ...guides];
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-gray-50 pb-24">
       {/* Hero */}
       <section className="relative w-full h-80 overflow-hidden">
         <Image
@@ -86,6 +86,6 @@ export default async function GuideDetail(props: GuideDetailProps) {
 
       {/* Related Guides */}
       <RelatedGuides currentId={guide.slug} category={guide.category} guides={relatedPool} />
-    </main>
+    </div>
   );
 }
