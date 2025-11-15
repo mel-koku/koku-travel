@@ -52,6 +52,17 @@ export type ItineraryTravelSegment = {
   path?: Array<{ lat: number; lng: number }>;
 };
 
+export type ItineraryCityTransition = {
+  fromCityId: string;
+  toCityId: string;
+  mode: ItineraryTravelMode;
+  durationMinutes: number;
+  distanceMeters?: number;
+  departureTime?: string;
+  arrivalTime?: string;
+  notes?: string;
+};
+
 export type ItineraryActivity =
   | {
       kind: "place";
@@ -107,6 +118,14 @@ export type ItineraryDay = {
    * Optional weekday reference used for operating hour lookups.
    */
   weekday?: import("./location").Weekday;
+  /**
+   * Primary city for this day.
+   */
+  cityId?: import("./trip").CityId;
+  /**
+   * Inter-city travel segment if transitioning from previous day's city.
+   */
+  cityTransition?: ItineraryCityTransition;
   activities: ItineraryActivity[];
 };
 

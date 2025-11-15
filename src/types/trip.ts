@@ -19,6 +19,19 @@ export type CityId = "kyoto" | "osaka" | "nara" | "tokyo" | "yokohama";
 
 export type RegionId = "kansai" | "kanto";
 
+export type EntryPointType = "airport" | "city" | "hotel";
+
+export type EntryPoint = {
+  type: EntryPointType;
+  id: string;
+  name: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  cityId?: CityId;
+};
+
 /**
  * Aggregates all mutable wizard fields. Future steps can extend this structure as needed.
  */
@@ -29,6 +42,7 @@ export type TripBuilderData = {
   cities?: CityId[];
   interests?: InterestId[]; // later steps
   style?: TripStyle; // later steps
+  entryPoint?: EntryPoint;
   accessibility?: {
     mobility?: boolean;
     dietary?: string[];

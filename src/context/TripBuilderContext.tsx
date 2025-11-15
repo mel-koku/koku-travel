@@ -11,8 +11,9 @@ import {
 } from "react";
 
 import { getLocal, setLocal } from "@/lib/storageHelpers";
-import type { InterestId, TripBuilderData, TripStyle } from "@/types/trip";
+import type { EntryPoint, InterestId, TripBuilderData, TripStyle } from "@/types/trip";
 import { INTEREST_CATEGORIES } from "@/data/interests";
+import { getEntryPointById } from "@/data/entryPoints";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
@@ -31,6 +32,7 @@ const createDefaultData = (): TripBuilderData => ({
   cities: [],
   interests: [],
   style: undefined,
+  entryPoint: undefined,
   accessibility: undefined,
 });
 
@@ -42,6 +44,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedInterests = sanitizeInterests(raw.interests);
   const normalizedStyle = sanitizeStyle(raw.style);
   const normalizedAccessibility = sanitizeAccessibility(raw.accessibility);
+  const normalizedEntryPoint = sanitizeEntryPoint(raw.entryPoint);
   return {
     ...base,
     ...raw,
@@ -53,6 +56,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     cities: raw.cities ?? base.cities,
     interests: normalizedInterests,
     style: normalizedStyle,
+    entryPoint: normalizedEntryPoint,
     accessibility: normalizedAccessibility,
   };
 };
@@ -92,6 +96,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
           cities: normalizedStored.cities,
           interests: normalizedStored.interests,
           style: normalizedStored.style,
+          entryPoint: normalizedStored.entryPoint,
           accessibility: normalizedStored.accessibility,
         };
       });
@@ -202,6 +207,48 @@ function sanitizeAccessibility(
   }
 
   return sanitized;
+}
+
+function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
+  if (!entryPoint) {
+    return undefined;
+  }
+
+  // Validate entry point structure
+  if (
+    typeof entryPoint !== "object" ||
+    !entryPoint.type ||
+    !entryPoint.id ||
+    !entryPoint.name ||
+    !entryPoint.coordinates ||
+    typeof entryPoint.coordinates.lat !== "number" ||
+    typeof entryPoint.coordinates.lng !== "number"
+  ) {
+    return undefined;
+  }
+
+  // Validate type
+  if (entryPoint.type !== "airport" && entryPoint.type !== "city" && entryPoint.type !== "hotel") {
+    return undefined;
+  }
+
+  // Try to get the entry point from our data to ensure it's valid
+  const validEntryPoint = getEntryPointById(entryPoint.id);
+  if (validEntryPoint) {
+    return validEntryPoint;
+  }
+
+  // If not found in our data but structure is valid, return as-is (for custom hotels, etc.)
+  return {
+    type: entryPoint.type,
+    id: String(entryPoint.id).trim(),
+    name: String(entryPoint.name).trim(),
+    coordinates: {
+      lat: Number(entryPoint.coordinates.lat),
+      lng: Number(entryPoint.coordinates.lng),
+    },
+    cityId: entryPoint.cityId,
+  };
 }
 
 

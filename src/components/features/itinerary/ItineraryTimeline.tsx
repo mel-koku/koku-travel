@@ -23,6 +23,18 @@ import {
 import { buildSections, createNoteActivity, type TimeOfDay, SECTION_LABELS } from "./timelineUtils";
 import { TimelineSection } from "./TimelineSection";
 import { SortableActivity } from "./SortableActivity";
+import { REGIONS } from "@/data/regions";
+
+function formatCityName(cityId: string): string {
+  for (const region of REGIONS) {
+    const city = region.cities.find((c) => c.id === cityId);
+    if (city) {
+      return city.name;
+    }
+  }
+  // Fallback: capitalize first letter
+  return cityId.charAt(0).toUpperCase() + cityId.slice(1);
+}
 
 type ItineraryTimelineProps = {
   day: ItineraryDay;
@@ -244,6 +256,60 @@ export const ItineraryTimeline = ({
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-10">
+        {/* City Transition Display */}
+        {day.cityTransition && (
+          <div className="rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/50 p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-indigo-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                  />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h4 className="text-sm font-semibold text-indigo-900">
+                  Traveling from {formatCityName(day.cityTransition.fromCityId)} to{" "}
+                  {formatCityName(day.cityTransition.toCityId)}
+                </h4>
+                <div className="mt-1 space-y-1 text-sm text-indigo-700">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Mode:</span>
+                    <span className="capitalize">{day.cityTransition.mode}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Duration:</span>
+                    <span>
+                      {day.cityTransition.durationMinutes} minute
+                      {day.cityTransition.durationMinutes !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  {day.cityTransition.departureTime && day.cityTransition.arrivalTime && (
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Time:</span>
+                      <span>
+                        {day.cityTransition.departureTime} → {day.cityTransition.arrivalTime}
+                      </span>
+                    </div>
+                  )}
+                  {day.cityTransition.notes && (
+                    <p className="text-xs text-indigo-600">{day.cityTransition.notes}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {(Object.keys(SECTION_LABELS) as TimeOfDay[]).map((sectionKey) => {
           const activities = sections[sectionKey] ?? [];
           return (
