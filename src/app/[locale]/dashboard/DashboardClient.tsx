@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "@/lib/i18n/navigation";
+import { Link } from "@/lib/i18n/navigation";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";

@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-// import withNextIntl from './next-intl-plugin.mjs'; // Localization disabled for now
+import withNextIntl from './next-intl-plugin.mjs';
 
 const localPatterns = [
   {
@@ -147,5 +147,4 @@ const nextConfig: NextConfig = {
 //   project: process.env.SENTRY_PROJECT,
 // });
 
-export default nextConfig;
-// export default withNextIntl(nextConfig); // Localization disabled for now
+export default withNextIntl(nextConfig);

@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "@/lib/i18n/navigation";
+import { Suspense } from "react";
+import { Link } from "@/lib/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
@@ -56,7 +57,7 @@ const DEFAULT_ERROR: ErrorMessage = {
   action: "Try signing in again",
 };
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const errorMessage = searchParams.get("message") || "unknown";
   const error = ERROR_MESSAGES[errorMessage] || DEFAULT_ERROR;
@@ -83,6 +84,25 @@ export default function AuthErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4">
+        <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-md">
+          <div className="text-center">
+            <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border-4 border-dashed border-gray-300 text-2xl font-bold text-gray-400">
+              ...
+            </div>
+            <p className="text-gray-600">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <AuthErrorContent />
+    </Suspense>
   );
 }
 

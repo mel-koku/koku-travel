@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -22,7 +23,7 @@ const formatDateLabel = (iso: string | undefined) => {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 };
 
-export default function ItineraryPage() {
+function ItineraryContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchParamsString = searchParams.toString();
@@ -142,5 +143,17 @@ export default function ItineraryPage() {
         tripStartDate={selectedTrip?.builderData?.dates?.start}
       />
     </div>
+  );
+}
+
+export default function ItineraryPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-16 text-center text-gray-600">
+        <p>Loading...</p>
+      </div>
+    }>
+      <ItineraryContent />
+    </Suspense>
   );
 }

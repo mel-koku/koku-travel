@@ -1,4 +1,5 @@
 import createMiddleware from 'next-intl/middleware';
+import { NextRequest } from 'next/server';
 
 import { locales, defaultLocale } from '../src/lib/i18n/config';
 
@@ -17,7 +18,7 @@ const testUrls = [
 ];
 
 testUrls.forEach(url => {
-  const request = new Request(url);
+  const request = new NextRequest(url);
   const response = middleware(request);
   
   console.log('Input:', url);

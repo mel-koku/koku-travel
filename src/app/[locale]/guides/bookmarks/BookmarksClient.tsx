@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "@/lib/i18n/navigation";
+import { Link } from "@/lib/i18n/navigation";
 import { useMemo } from "react";
 
 import GuideCard from "@/components/features/guides/GuideCard";

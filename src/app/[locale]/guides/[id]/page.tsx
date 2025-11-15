@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "@/lib/i18n/navigation";
+import { Link } from "@/lib/i18n/navigation";
 import { notFound } from "next/navigation";
 import { draftMode } from "next/headers";
 
