@@ -102,12 +102,18 @@ export function Modal(props: ModalProps) {
 
         if (event.shiftKey) {
           if (currentIndex <= 0) {
-            focusable[lastIndex].focus({ preventScroll: true });
+            const lastItem = focusable[lastIndex];
+            if (lastItem) {
+              lastItem.focus({ preventScroll: true });
+            }
             event.preventDefault();
           }
         } else {
           if (currentIndex === -1 || currentIndex >= lastIndex) {
-            focusable[0].focus({ preventScroll: true });
+            const firstItem = focusable[0];
+            if (firstItem) {
+              firstItem.focus({ preventScroll: true });
+            }
             event.preventDefault();
           }
         }
