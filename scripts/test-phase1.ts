@@ -26,24 +26,24 @@ function createMockRequest(ip?: string, forwardedFor?: string): NextRequest {
   } as NextRequest;
 }
 
+console.log("🧪 Phase 1 Testing Suite\n");
+
+// Test 1: Environment Variable Validation
+console.log("1️⃣  Testing Environment Variable Validation...");
+try {
+  const supabaseUrl = env.supabaseUrl;
+  const sanityProjectId = env.sanityProjectId;
+  console.log("   ✅ Environment variables accessible");
+  console.log(`   📝 Supabase URL: ${supabaseUrl ? "✓ Set" : "✗ Missing"}`);
+  console.log(`   📝 Sanity Project ID: ${sanityProjectId ? "✓ Set" : "✗ Missing"}`);
+} catch (error) {
+  console.error("   ❌ Environment validation failed:", error);
+  process.exit(1);
+}
+
+// Test 2: Rate Limiting
+console.log("\n2️⃣  Testing Rate Limiting...");
 (async () => {
-  console.log("🧪 Phase 1 Testing Suite\n");
-
-  // Test 1: Environment Variable Validation
-  console.log("1️⃣  Testing Environment Variable Validation...");
-  try {
-    const supabaseUrl = env.supabaseUrl;
-    const sanityProjectId = env.sanityProjectId;
-    console.log("   ✅ Environment variables accessible");
-    console.log(`   📝 Supabase URL: ${supabaseUrl ? "✓ Set" : "✗ Missing"}`);
-    console.log(`   📝 Sanity Project ID: ${sanityProjectId ? "✓ Set" : "✗ Missing"}`);
-  } catch (error) {
-    console.error("   ❌ Environment validation failed:", error);
-    process.exit(1);
-  }
-
-  // Test 2: Rate Limiting
-  console.log("\n2️⃣  Testing Rate Limiting...");
   try {
     const mockRequest1 = createMockRequest("192.168.1.1");
     const mockRequest2 = createMockRequest("192.168.1.2");
@@ -87,26 +87,26 @@ function createMockRequest(ip?: string, forwardedFor?: string): NextRequest {
     console.error("   ❌ Rate limiting test failed:", error);
     process.exit(1);
   }
-
-  // Test 3: Logger
-  console.log("\n3️⃣  Testing Logger...");
-  try {
-    logger.debug("Debug message", { test: true });
-    logger.info("Info message", { test: true });
-    logger.warn("Warning message", { test: true });
-    logger.error("Error message", new Error("Test error"), { test: true });
-    console.log("   ✅ Logger functions work correctly");
-  } catch (error) {
-    console.error("   ❌ Logger test failed:", error);
-    process.exit(1);
-  }
-
-  console.log("\n✅ All Phase 1 tests passed!");
-  console.log("\n📋 Summary:");
-  console.log("   ✓ Environment variable validation");
-  console.log("   ✓ Rate limiting (in-memory)");
-  console.log("   ✓ Centralized logging");
-  console.log("\n💡 Note: Authentication fix requires running the app to test");
-  console.log("   (Dashboard now uses server-side auth check)");
 })();
+
+// Test 3: Logger
+console.log("\n3️⃣  Testing Logger...");
+try {
+  logger.debug("Debug message", { test: true });
+  logger.info("Info message", { test: true });
+  logger.warn("Warning message", { test: true });
+  logger.error("Error message", new Error("Test error"), { test: true });
+  console.log("   ✅ Logger functions work correctly");
+} catch (error) {
+  console.error("   ❌ Logger test failed:", error);
+  process.exit(1);
+}
+
+console.log("\n✅ All Phase 1 tests passed!");
+console.log("\n📋 Summary:");
+console.log("   ✓ Environment variable validation");
+console.log("   ✓ Rate limiting (in-memory)");
+console.log("   ✓ Centralized logging");
+console.log("\n💡 Note: Authentication fix requires running the app to test");
+console.log("   (Dashboard now uses server-side auth check)");
 
