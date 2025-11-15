@@ -175,7 +175,7 @@ describe("POST /api/revalidate", () => {
       expect(response.status).toBe(400);
       const data = await response.json();
       expect(data.code).toBe("BAD_REQUEST");
-      expect(data.error).toContain("Payload too large");
+      expect(data.error).toContain("Request body too large");
     });
   });
 
