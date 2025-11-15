@@ -319,7 +319,10 @@ function findCityInRegionWithLocations(regionId?: RegionId): string | undefined 
   }
   const regionLocations = LOCATIONS_BY_REGION_ID.get(regionId);
   if (regionLocations && regionLocations.length > 0) {
-    return normalizeKey(regionLocations[0].city);
+    const firstLocation = regionLocations[0];
+    if (firstLocation) {
+      return normalizeKey(firstLocation.city);
+    }
   }
   return undefined;
 }
