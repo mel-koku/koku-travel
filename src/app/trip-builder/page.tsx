@@ -183,7 +183,7 @@ export default function TripBuilderPage() {
 
   return (
     <TripBuilderProvider>
-      <div className="bg-gray-50">
+      <div className="bg-gray-50 min-h-full">
         <Container className="pb-6 pt-8 sm:pb-8 sm:pt-12 md:pb-10 md:pt-16">
           <div className="max-w-3xl">
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">Create Your Trip</h1>

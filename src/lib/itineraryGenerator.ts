@@ -3,6 +3,7 @@ import { CITY_TO_REGION, REGIONS } from "@/data/regions";
 import type { Itinerary, ItineraryTravelMode } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
+import { getNearestCityToEntryPoint, travelMinutes } from "./travelTime";
 
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
@@ -140,8 +141,12 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
           })
         : undefined;
 
+    // Determine city ID for this day
+    const dayCityId = cityInfo.key as CityId | undefined;
+
     days.push({
       dateLabel: buildDayTitle(dayIndex, cityInfo.key),
+      cityId: dayCityId,
       activities: dayActivities,
     });
   }
@@ -168,17 +173,36 @@ function resolveCitySequence(data: TripBuilderData): CityInfo[] {
     seen.add(cityKey);
   }
 
+  // Collect user-selected cities
+  const userCities: CityId[] = [];
   if (data.cities && data.cities.length > 0) {
-    data.cities.forEach((cityId) => addCityByKey(cityId));
+    userCities.push(...data.cities);
   }
 
   if (data.regions && data.regions.length > 0) {
     data.regions.forEach((regionId) => {
       const region = REGIONS.find((r) => r.id === regionId);
-      region?.cities.forEach((city) => addCityByKey(city.id));
+      region?.cities.forEach((city) => {
+        if (!userCities.includes(city.id)) {
+          userCities.push(city.id);
+        }
+      });
     });
   }
 
+  // If no user selections, use defaults
+  const citiesToOptimize = userCities.length > 0 ? userCities : [...DEFAULT_CITY_ROTATION];
+
+  // Optimize city sequence based on entry point
+  if (data.entryPoint && citiesToOptimize.length > 0) {
+    const optimizedSequence = optimizeCitySequence(data.entryPoint, citiesToOptimize);
+    optimizedSequence.forEach((cityId) => addCityByKey(cityId));
+  } else {
+    // No entry point, use original logic
+    citiesToOptimize.forEach((cityId) => addCityByKey(cityId));
+  }
+
+  // Fallback if still empty
   if (sequence.length === 0) {
     DEFAULT_CITY_ROTATION.forEach((cityId) => addCityByKey(cityId));
   }
@@ -196,6 +220,68 @@ function resolveCitySequence(data: TripBuilderData): CityInfo[] {
   }
 
   return sequence;
+}
+
+/**
+ * Optimize city sequence based on entry point.
+ * Starts with the nearest city to the entry point, then optimizes the rest using travel time matrix.
+ */
+function optimizeCitySequence(
+  entryPoint: TripBuilderData["entryPoint"],
+  cities: CityId[],
+): CityId[] {
+  if (!entryPoint || cities.length === 0) {
+    return cities;
+  }
+
+  // Find nearest city to entry point
+  const nearestCity = getNearestCityToEntryPoint(entryPoint);
+  if (!nearestCity) {
+    return cities;
+  }
+
+  // If nearest city is in the list, start with it
+  const remainingCities = cities.filter((c) => c !== nearestCity);
+  const optimized: CityId[] = [];
+
+  if (cities.includes(nearestCity)) {
+    optimized.push(nearestCity);
+  } else {
+    // Nearest city not in user selection, but we'll still optimize order
+    remainingCities.push(...cities);
+  }
+
+  // Optimize remaining cities using travel time matrix (greedy nearest neighbor)
+  let currentCity = optimized.length > 0 ? optimized[optimized.length - 1] : nearestCity;
+  const unvisited = new Set(remainingCities);
+
+  while (unvisited.size > 0) {
+    let nearest: CityId | undefined;
+    let minTime = Infinity;
+
+    for (const city of unvisited) {
+      if (currentCity) {
+        const time = travelMinutes(currentCity, city);
+        if (time !== undefined && time < minTime) {
+          minTime = time;
+          nearest = city;
+        }
+      }
+    }
+
+    if (nearest) {
+      optimized.push(nearest);
+      unvisited.delete(nearest);
+      currentCity = nearest;
+    } else {
+      // No travel time data, just add remaining cities
+      const remaining = Array.from(unvisited);
+      optimized.push(...remaining);
+      break;
+    }
+  }
+
+  return optimized;
 }
 
 function resolveInterestSequence(data: TripBuilderData): InterestId[] {

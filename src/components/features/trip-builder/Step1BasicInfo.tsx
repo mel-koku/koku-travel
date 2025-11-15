@@ -6,12 +6,17 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { FormField } from "@/components/ui/FormField";
 import { Input } from "@/components/ui/Input";
 import { DatePicker } from "@/components/ui/DatePicker";
+import { Select } from "@/components/ui/Select";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { getAllEntryPoints, getEntryPointsByType } from "@/data/entryPoints";
+import type { EntryPointType } from "@/types/trip";
 
 type Step1FormValues = {
   duration?: number;
   start?: string;
   end?: string;
+  entryPointType?: EntryPointType | "";
+  entryPointId?: string;
 };
 
 export type Step1BasicInfoProps = {
@@ -31,6 +36,8 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
       duration: data.duration ?? undefined,
       start: data.dates.start ?? "",
       end: data.dates.end ?? "",
+      entryPointType: data.entryPoint?.type ?? "",
+      entryPointId: data.entryPoint?.id ?? "",
     }),
     [data],
   );
@@ -41,6 +48,7 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
     handleSubmit,
     reset,
     getValues,
+    setValue,
     formState: { errors, isValid },
   } = useForm<Step1FormValues>({
     defaultValues,
@@ -61,7 +69,43 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
     name: "start",
   });
 
+  const entryPointType = useWatch({
+    control,
+    name: "entryPointType",
+  });
+
+  const entryPointOptions = useMemo(() => {
+    if (!entryPointType || entryPointType === "") {
+      return [];
+    }
+    try {
+      const points = getEntryPointsByType(entryPointType);
+      return points.map((ep) => ({
+        label: ep.name,
+        value: ep.id,
+      }));
+    } catch {
+      // Fallback if entry points data isn't available yet
+      return [];
+    }
+  }, [entryPointType]);
+
+  const entryPointTypeOptions = useMemo(
+    () => [
+      { label: "Airport", value: "airport" },
+      { label: "City", value: "city" },
+      { label: "Hotel", value: "hotel" },
+    ],
+    [],
+  );
+
   const onSubmit = handleSubmit((values) => {
+    let entryPoint = undefined;
+    if (values.entryPointType && values.entryPointId) {
+      const allPoints = getAllEntryPoints();
+      entryPoint = allPoints.find((ep) => ep.id === values.entryPointId);
+    }
+
     setData((prev) => ({
       ...prev,
       duration: values.duration,
@@ -70,6 +114,7 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
         start: values.start,
         end: values.end,
       },
+      entryPoint,
     }));
     onNext();
   });
@@ -172,6 +217,61 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
               error={errors.end?.message}
               help="Pick when you plan to wrap up."
             />
+          )}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2 sm:gap-3">
+        <h3 className="text-lg font-medium text-gray-900">Entry Point (Optional)</h3>
+        <p className="text-sm text-gray-600">
+          Where will you start your trip? This helps us optimize your itinerary.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2">
+        <Controller
+          control={control}
+          name="entryPointType"
+          render={({ field }) => (
+            <FormField
+              id="entry-point-type"
+              label="Entry Point Type"
+              help="Select the type of entry point"
+            >
+              <Select
+                id="entry-point-type"
+                placeholder="Select type"
+                options={entryPointTypeOptions}
+                value={field.value ?? ""}
+                onChange={(e) => {
+                  const newValue = e.target.value || undefined;
+                  field.onChange(newValue);
+                  // Reset entry point ID when type changes
+                  setValue("entryPointId", undefined);
+                }}
+              />
+            </FormField>
+          )}
+        />
+
+        <Controller
+          control={control}
+          name="entryPointId"
+          render={({ field }) => (
+            <FormField
+              id="entry-point"
+              label="Entry Point"
+              help={entryPointType ? "Select your entry point" : "Select a type first"}
+            >
+              <Select
+                id="entry-point"
+                placeholder={entryPointType ? "Select entry point" : "Select type first"}
+                options={entryPointOptions}
+                value={field.value ?? ""}
+                onChange={(e) => field.onChange(e.target.value || undefined)}
+                disabled={!entryPointType || entryPointType === ""}
+              />
+            </FormField>
           )}
         />
       </div>

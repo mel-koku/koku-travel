@@ -3,11 +3,14 @@ import { findLocationForActivity } from "@/lib/itineraryLocations";
 import type {
   Itinerary,
   ItineraryActivity,
+  ItineraryCityTransition,
   ItineraryDay,
   ItineraryTravelMode,
   ItineraryTravelSegment,
 } from "@/types/itinerary";
 import type { Location, LocationOperatingHours, LocationOperatingPeriod, Weekday } from "@/types/location";
+import type { CityId } from "@/types/trip";
+import { travelMinutes } from "./travelTime";
 
 import { requestRoute } from "./routing";
 
@@ -236,6 +239,51 @@ function evaluateOperatingWindow(
   };
 }
 
+/**
+ * Create a city transition segment between two days
+ */
+function createCityTransition(
+  fromCityId: CityId,
+  toCityId: CityId,
+  previousDay: ItineraryDay,
+  currentDay: ItineraryDay,
+): ItineraryCityTransition | undefined {
+  // Get travel time between cities
+  const travelTime = travelMinutes(fromCityId, toCityId);
+  if (travelTime === undefined) {
+    return undefined;
+  }
+
+  // Determine travel mode based on distance/time
+  let mode: ItineraryTravelMode = "transit";
+  if (travelTime < 60) {
+    mode = "train"; // Short distance, likely train
+  } else if (travelTime > 120) {
+    mode = "train"; // Long distance, likely shinkansen
+  }
+
+  // Use end of previous day or start of current day for departure
+  const previousDayEnd = previousDay.bounds?.endTime ?? "21:00";
+  const currentDayStart = currentDay.bounds?.startTime ?? "09:00";
+
+  // For inter-city travel, prefer traveling at end of previous day or start of current day
+  // Use end of previous day as departure time
+  const departureTime = previousDayEnd;
+  const arrivalMinutes = parseTime(departureTime) ?? 0;
+  const arrivalTimeMinutes = arrivalMinutes + travelTime;
+  const arrivalTime = formatTime(arrivalTimeMinutes);
+
+  return {
+    fromCityId,
+    toCityId,
+    mode,
+    durationMinutes: travelTime,
+    departureTime,
+    arrivalTime,
+    notes: `Traveling from ${fromCityId} to ${toCityId}`,
+  };
+}
+
 function mergePathSegments(paths: Array<ItineraryTravelSegment["path"] | undefined>): ItineraryTravelSegment["path"] {
   const merged: NonNullable<ItineraryTravelSegment["path"]> = [];
 
@@ -288,8 +336,25 @@ export async function planItinerary(
 
   const plannedDays: ItineraryDay[] = [];
 
-  for (const day of itinerary.days) {
+  for (let dayIndex = 0; dayIndex < itinerary.days.length; dayIndex += 1) {
+    const day = itinerary.days[dayIndex];
+    const previousDay = dayIndex > 0 ? plannedDays[dayIndex - 1] : undefined;
+    
     const plannedDay = await planItineraryDay(day, itinerary, mergedOptions);
+    
+    // Detect city change and create transition
+    if (previousDay && previousDay.cityId && plannedDay.cityId && previousDay.cityId !== plannedDay.cityId) {
+      const transition = createCityTransition(
+        previousDay.cityId,
+        plannedDay.cityId,
+        previousDay,
+        plannedDay,
+      );
+      if (transition) {
+        plannedDay.cityTransition = transition;
+      }
+    }
+    
     plannedDays.push(plannedDay);
   }
 
