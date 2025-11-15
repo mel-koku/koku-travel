@@ -106,6 +106,9 @@ export function generateItineraryFromTrip(data: TripBuilderData): Itinerary {
 
     for (let activityIndex = 0; activityIndex < activitiesPerDay; activityIndex += 1) {
       const interest = interestSequence[activityIndex % interestSequence.length];
+      if (!interest) {
+        throw new Error(`Interest not found for activity ${activityIndex}`);
+      }
       const location = pickLocation(cityInfo, interest, usedLocations);
       const timeOfDay = TIME_OF_DAY_SEQUENCE[activityIndex % TIME_OF_DAY_SEQUENCE.length];
 
