@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "../logger";
+import { env } from "../env";
 
 let cachedClient: SupabaseClient | null = null;
 let hasWarned = false;
@@ -9,8 +10,8 @@ export function getServiceRoleClient(): SupabaseClient {
     return cachedClient;
   }
 
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = env.supabaseUrl;
+  const serviceRoleKey = env.supabaseServiceRoleKey;
 
   if (!url || !serviceRoleKey) {
     if (!hasWarned && process.env.NODE_ENV !== "production") {

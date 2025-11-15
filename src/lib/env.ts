@@ -20,9 +20,18 @@ type EnvConfig = {
   SANITY_API_VERSION?: string;
   SANITY_REVALIDATE_SECRET?: string;
 
+  // Google APIs
+  GOOGLE_PLACES_API_KEY?: string;
+  ROUTING_GOOGLE_MAPS_API_KEY?: string;
+  GOOGLE_DIRECTIONS_API_KEY?: string;
+
   // Routing (Optional)
   ROUTING_PROVIDER?: string;
   ROUTING_MAPBOX_ACCESS_TOKEN?: string;
+
+  // Rate Limiting (Optional - for production)
+  UPSTASH_REDIS_REST_URL?: string;
+  UPSTASH_REDIS_REST_TOKEN?: string;
 
   // Site
   NEXT_PUBLIC_SITE_URL?: string;
@@ -82,8 +91,13 @@ function validateEnv(): EnvConfig {
       SANITY_PREVIEW_SECRET: process.env.SANITY_PREVIEW_SECRET,
       SANITY_API_VERSION: process.env.SANITY_API_VERSION || "2024-10-21",
       SANITY_REVALIDATE_SECRET: process.env.SANITY_REVALIDATE_SECRET,
+      GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
+      ROUTING_GOOGLE_MAPS_API_KEY: process.env.ROUTING_GOOGLE_MAPS_API_KEY,
+      GOOGLE_DIRECTIONS_API_KEY: process.env.GOOGLE_DIRECTIONS_API_KEY,
       ROUTING_PROVIDER: process.env.ROUTING_PROVIDER,
       ROUTING_MAPBOX_ACCESS_TOKEN: process.env.ROUTING_MAPBOX_ACCESS_TOKEN,
+      UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+      UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
       NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
       NEXT_PUBLIC_USE_MOCK_ITINERARY: process.env.NEXT_PUBLIC_USE_MOCK_ITINERARY,
     };
@@ -101,8 +115,13 @@ function validateEnv(): EnvConfig {
     SANITY_PREVIEW_SECRET: getOptionalEnv("SANITY_PREVIEW_SECRET"),
     SANITY_API_VERSION: getOptionalEnv("SANITY_API_VERSION") || "2024-10-21",
     SANITY_REVALIDATE_SECRET: getOptionalEnv("SANITY_REVALIDATE_SECRET"),
+    GOOGLE_PLACES_API_KEY: getOptionalEnv("GOOGLE_PLACES_API_KEY"),
+    ROUTING_GOOGLE_MAPS_API_KEY: getOptionalEnv("ROUTING_GOOGLE_MAPS_API_KEY"),
+    GOOGLE_DIRECTIONS_API_KEY: getOptionalEnv("GOOGLE_DIRECTIONS_API_KEY"),
     ROUTING_PROVIDER: getOptionalEnv("ROUTING_PROVIDER"),
     ROUTING_MAPBOX_ACCESS_TOKEN: getOptionalEnv("ROUTING_MAPBOX_ACCESS_TOKEN"),
+    UPSTASH_REDIS_REST_URL: getOptionalEnv("UPSTASH_REDIS_REST_URL"),
+    UPSTASH_REDIS_REST_TOKEN: getOptionalEnv("UPSTASH_REDIS_REST_TOKEN"),
     NEXT_PUBLIC_SITE_URL: getOptionalEnv("NEXT_PUBLIC_SITE_URL"),
     NEXT_PUBLIC_USE_MOCK_ITINERARY: getOptionalEnv("NEXT_PUBLIC_USE_MOCK_ITINERARY"),
   };
@@ -157,6 +176,21 @@ export const env = {
   },
   get routingMapboxAccessToken() {
     return envConfig.ROUTING_MAPBOX_ACCESS_TOKEN;
+  },
+  get googlePlacesApiKey() {
+    return envConfig.GOOGLE_PLACES_API_KEY;
+  },
+  get routingGoogleMapsApiKey() {
+    return envConfig.ROUTING_GOOGLE_MAPS_API_KEY;
+  },
+  get googleDirectionsApiKey() {
+    return envConfig.GOOGLE_DIRECTIONS_API_KEY;
+  },
+  get upstashRedisRestUrl() {
+    return envConfig.UPSTASH_REDIS_REST_URL;
+  },
+  get upstashRedisRestToken() {
+    return envConfig.UPSTASH_REDIS_REST_TOKEN;
   },
   get siteUrl() {
     return envConfig.NEXT_PUBLIC_SITE_URL;

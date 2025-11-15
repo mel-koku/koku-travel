@@ -1,6 +1,7 @@
 // src/lib/supabase/server.ts
 import { cookies } from "next/headers";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { env } from "@/lib/env";
 
 type CookieStoreLike = {
   get(name: string): { value?: string } | undefined;
@@ -9,8 +10,8 @@ type CookieStoreLike = {
 };
 
 export async function createClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = env.supabaseUrl;
+  const anonKey = env.supabaseAnonKey;
 
   if (!url || !anonKey) {
     throw new Error(

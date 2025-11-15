@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { logger } from "@/lib/logger";
+
+/**
+ * Schema for OAuth authorization code parameter
+ */
+const authCodeSchema = z
+  .string()
+  .min(1, "Authorization code cannot be empty")
+  .max(1000, "Authorization code too long")
+  .regex(/^[A-Za-z0-9._-]+$/, "Authorization code contains invalid characters");
 
 /**
  * GET /api/auth/callback
@@ -10,7 +20,7 @@ import { logger } from "@/lib/logger";
  *
  * @param request - Next.js request object
  * @param request.url.code - Authorization code from OAuth provider
- * @returns Redirects to /dashboard page, or error response
+ * @returns Redirects to /dashboard on success, or /auth/error on failure
  * @throws Returns 429 if rate limit exceeded (30 requests/minute)
  */
 export async function GET(request: NextRequest) {
@@ -22,16 +32,50 @@ export async function GET(request: NextRequest) {
 
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  if (code) {
-    try {
-      const supabase = await createClient();
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (error) {
-        logger.error("Supabase exchange error", error);
-      }
-    } catch (error) {
-      logger.error("Supabase callback client unavailable", error);
-    }
+
+  // If no code provided, redirect to error page
+  if (!code) {
+    logger.warn("Auth callback called without authorization code");
+    return NextResponse.redirect(`${origin}/auth/error?message=missing_code`);
   }
-  return NextResponse.redirect(`${origin}/dashboard`);
+
+  // Validate code format
+  const codeValidation = authCodeSchema.safeParse(code);
+  if (!codeValidation.success) {
+    logger.warn("Invalid authorization code format", {
+      errors: codeValidation.error.issues,
+    });
+    return NextResponse.redirect(`${origin}/auth/error?message=invalid_code`);
+  }
+
+  const validatedCode = codeValidation.data;
+
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.exchangeCodeForSession(validatedCode);
+
+    if (error) {
+      logger.error("Supabase exchange error", error);
+      // Determine error type for user feedback
+      const errorMessage =
+        error.status === 400
+          ? "invalid_code"
+          : error.status === 401
+            ? "expired_code"
+            : "authentication_failed";
+      return NextResponse.redirect(`${origin}/auth/error?message=${errorMessage}`);
+    }
+
+    // Validate session exists before redirecting
+    if (!data.session) {
+      logger.warn("Session not created after code exchange");
+      return NextResponse.redirect(`${origin}/auth/error?message=session_creation_failed`);
+    }
+
+    // Success: redirect to dashboard
+    return NextResponse.redirect(`${origin}/dashboard`);
+  } catch (error) {
+    logger.error("Supabase callback client unavailable", error);
+    return NextResponse.redirect(`${origin}/auth/error?message=service_unavailable`);
+  }
 }

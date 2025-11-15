@@ -1,3 +1,14 @@
+/**
+ * Sanity Studio environment variables
+ * 
+ * NOTE: This file is separate from src/lib/env.ts because:
+ * - Sanity Studio runs in the browser and requires NEXT_PUBLIC_ prefixed variables
+ * - src/lib/env.ts focuses on server-side variables (without NEXT_PUBLIC_ prefix)
+ * - Studio needs these variables available at build time for client-side code
+ * 
+ * For server-side Sanity operations, use src/lib/sanity/config.ts which uses src/lib/env.ts
+ */
+
 export const apiVersion =
   process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-11-13'
 

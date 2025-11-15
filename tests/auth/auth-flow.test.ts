@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { NextRequest } from "next/server";
 import { GET } from "@/app/auth/callback/route";
 import { createClient } from "@/lib/supabase/server";
 import { createMockRequest, createMockSupabaseClient } from "../utils/mocks";
@@ -62,10 +61,10 @@ describe("Authentication Flow", () => {
       const request = createMockRequest("https://example.com/auth/callback?code=invalid-code");
       const response = await GET(request);
 
-      // Should still redirect to dashboard (graceful degradation)
+      // Should redirect to error page
       expect(response.status).toBe(307);
       const location = response.headers.get("Location");
-      expect(location).toBe("https://example.com/dashboard");
+      expect(location).toBe("https://example.com/auth/error?message=invalid_code");
     });
 
     it("should handle OAuth callback with expired code", async () => {
@@ -84,7 +83,7 @@ describe("Authentication Flow", () => {
 
       expect(response.status).toBe(307);
       const location = response.headers.get("Location");
-      expect(location).toBe("https://example.com/dashboard");
+      expect(location).toBe("https://example.com/auth/error?message=invalid_code");
     });
   });
 
@@ -123,10 +122,10 @@ describe("Authentication Flow", () => {
       const request = createMockRequest("https://example.com/auth/callback?code=valid-code");
       const response = await GET(request);
 
-      // Should still redirect to dashboard
+      // Should redirect to error page
       expect(response.status).toBe(307);
       const location = response.headers.get("Location");
-      expect(location).toBe("https://example.com/dashboard");
+      expect(location).toBe("https://example.com/auth/error?message=service_unavailable");
     });
   });
 
