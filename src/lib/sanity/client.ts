@@ -1,8 +1,9 @@
 import { createClient } from "next-sanity";
 
 import { sanityConfig, validateSanityConfig } from "./config";
+import { env } from "@/lib/env";
 
-const token = process.env.SANITY_API_READ_TOKEN;
+const token = env.sanityApiReadToken;
 
 // Validate config at runtime when client is created/used
 // This allows the build to succeed even if env vars are missing

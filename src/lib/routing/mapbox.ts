@@ -1,4 +1,5 @@
 import { type RoutingRequest, type RoutingResult, type RoutingLegStep } from "./types";
+import { env } from "@/lib/env";
 
 type MapboxProfile = "driving" | "driving-traffic" | "walking" | "cycling";
 
@@ -163,7 +164,7 @@ function mergeStepGeometries(steps?: RoutingLegStep[]): RoutingLegStep["geometry
 }
 
 export async function fetchMapboxRoute(request: RoutingRequest): Promise<RoutingResult> {
-  const accessToken = process.env.ROUTING_MAPBOX_ACCESS_TOKEN;
+  const accessToken = env.routingMapboxAccessToken;
   if (!accessToken) {
     throw new Error("ROUTING_MAPBOX_ACCESS_TOKEN is not configured.");
   }

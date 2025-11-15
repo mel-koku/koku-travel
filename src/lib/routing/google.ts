@@ -302,7 +302,9 @@ function buildLeg(
 }
 
 export async function fetchGoogleRoute(request: RoutingRequest): Promise<RoutingResult> {
-  const apiKey = process.env.ROUTING_GOOGLE_MAPS_API_KEY ?? process.env.GOOGLE_DIRECTIONS_API_KEY;
+  // Dynamic import to avoid circular dependencies
+  const { env } = await import("@/lib/env");
+  const apiKey = env.routingGoogleMapsApiKey ?? env.googleDirectionsApiKey;
 
   if (!apiKey) {
     throw new Error("ROUTING_GOOGLE_MAPS_API_KEY is not configured.");

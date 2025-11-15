@@ -8,8 +8,10 @@ import { sanityWebhookPayloadSchema } from "@/lib/api/schemas";
 import { sanitizePath } from "@/lib/api/sanitization";
 import type { z } from "zod";
 
+import { env } from "@/lib/env";
+
 const SIGNATURE_HEADER = "x-sanity-signature";
-const SECRET = process.env.SANITY_REVALIDATE_SECRET || process.env.SANITY_PREVIEW_SECRET;
+const SECRET = env.sanityRevalidateSecret || env.sanityPreviewSecret;
 const MAX_PAYLOAD_SIZE = 64 * 1024; // 64KB max payload size
 
 function normalizePaths(payload: z.infer<typeof sanityWebhookPayloadSchema>): string[] {

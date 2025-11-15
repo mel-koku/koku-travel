@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { logger } from "../logger";
+import { env } from "../env";
 
 /**
  * Distributed rate limiter using Upstash Redis
@@ -19,8 +20,8 @@ type RateLimitEntry = {
 };
 
 // Check if Upstash Redis is configured
-const upstashRedisUrl = process.env.UPSTASH_REDIS_REST_URL;
-const upstashRedisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+const upstashRedisUrl = env.upstashRedisRestUrl;
+const upstashRedisToken = env.upstashRedisRestToken;
 const useUpstash = !!(upstashRedisUrl && upstashRedisToken);
 
 // Initialize Upstash Redis client if configured

@@ -39,7 +39,7 @@ describe("GET /api/auth/callback", () => {
   });
 
   describe("Authorization code handling", () => {
-    it("should redirect to dashboard when code is missing", async () => {
+    it("should redirect to error page when code is missing", async () => {
       const mockSupabase = createMockSupabaseClient();
       vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
 
@@ -48,7 +48,21 @@ describe("GET /api/auth/callback", () => {
 
       expect(response.status).toBe(307);
       const location = response.headers.get("Location");
-      expect(location).toBe("https://example.com/dashboard");
+      expect(location).toBe("https://example.com/auth/error?message=missing_code");
+    });
+
+    it("should redirect to error page when code format is invalid", async () => {
+      const mockSupabase = createMockSupabaseClient();
+      vi.mocked(createClient).mockResolvedValue(mockSupabase as unknown as Awaited<ReturnType<typeof createClient>>);
+
+      const request = createMockRequest("https://example.com/auth/callback?code=invalid@code#format");
+      const response = await GET(request);
+
+      expect(response.status).toBe(307);
+      const location = response.headers.get("Location");
+      expect(location).toBe("https://example.com/auth/error?message=invalid_code");
+      // Should not attempt to exchange invalid code
+      expect(mockSupabase.auth.exchangeCodeForSession).not.toHaveBeenCalled();
     });
 
     it("should exchange code for session when code is present", async () => {
@@ -64,7 +78,7 @@ describe("GET /api/auth/callback", () => {
       expect(location).toBe("https://example.com/dashboard");
     });
 
-    it("should redirect to dashboard even if exchange fails", async () => {
+    it("should redirect to error page if exchange fails", async () => {
       const mockSupabase = createMockSupabaseClient();
       vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce({
         data: { session: null },
@@ -75,10 +89,10 @@ describe("GET /api/auth/callback", () => {
       const request = createMockRequest("https://example.com/auth/callback?code=invalid-code");
       const response = await GET(request);
 
-      // Should still redirect to dashboard even on error
+      // Should redirect to error page on failure
       expect(response.status).toBe(307);
       const location = response.headers.get("Location");
-      expect(location).toBe("https://example.com/dashboard");
+      expect(location).toBe("https://example.com/auth/error?message=invalid_code");
     });
   });
 
@@ -89,10 +103,10 @@ describe("GET /api/auth/callback", () => {
       const request = createMockRequest("https://example.com/auth/callback?code=test-code");
       const response = await GET(request);
 
-      // Should still redirect to dashboard
+      // Should redirect to error page
       expect(response.status).toBe(307);
       const location = response.headers.get("Location");
-      expect(location).toBe("https://example.com/dashboard");
+      expect(location).toBe("https://example.com/auth/error?message=service_unavailable");
     });
 
     it("should handle exchange errors gracefully", async () => {
@@ -105,10 +119,10 @@ describe("GET /api/auth/callback", () => {
       const request = createMockRequest("https://example.com/auth/callback?code=test-code");
       const response = await GET(request);
 
-      // Should still redirect to dashboard
+      // Should redirect to error page
       expect(response.status).toBe(307);
       const location = response.headers.get("Location");
-      expect(location).toBe("https://example.com/dashboard");
+      expect(location).toBe("https://example.com/auth/error?message=service_unavailable");
     });
   });
 

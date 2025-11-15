@@ -1,13 +1,14 @@
 import { createBrowserClient } from "@supabase/ssr";
 import { logger } from "../logger";
+import { env } from "../env";
 
 type BrowserClient = ReturnType<typeof createBrowserClient>;
 
 let hasWarned = false;
 
 export function createClient(): BrowserClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url = env.supabaseUrl;
+  const anonKey = env.supabaseAnonKey;
 
   if (!url || !anonKey) {
     if (!hasWarned) {

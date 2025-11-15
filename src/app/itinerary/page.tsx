@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/Select";
 import { useAppState } from "@/state/AppState";
 import { MOCK_ITINERARY } from "@/data/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
+import { env } from "@/lib/env";
 
 const formatDateLabel = (iso: string | undefined) => {
   if (!iso) {
@@ -55,8 +56,7 @@ export default function ItineraryPage() {
     return trips[0]?.id ?? null;
   }, [requestedTripId, trips, userSelectedTripId]);
 
-  const isUsingMock =
-    trips.length === 0 && process.env.NEXT_PUBLIC_USE_MOCK_ITINERARY === "true";
+  const isUsingMock = trips.length === 0 && env.useMockItinerary;
 
   const handleTripChange = useCallback(
     (event: ChangeEvent<HTMLSelectElement>) => {

@@ -1,6 +1,8 @@
-const projectId = process.env.SANITY_PROJECT_ID;
-const dataset = process.env.SANITY_DATASET || "production";
-const apiVersion = process.env.SANITY_API_VERSION || "2024-10-21";
+import { env } from "@/lib/env";
+
+const projectId = env.sanityProjectId;
+const dataset = env.sanityDataset;
+const apiVersion = env.sanityApiVersion;
 
 /**
  * Validates that required Sanity environment variables are set.
@@ -20,6 +22,6 @@ export const sanityConfig = {
   projectId: projectId || "", // Empty string as fallback for build time
   dataset,
   apiVersion,
-  useCdn: process.env.NODE_ENV === "production" && !process.env.SANITY_API_READ_TOKEN,
+  useCdn: process.env.NODE_ENV === "production" && !env.sanityApiReadToken,
 };
 
