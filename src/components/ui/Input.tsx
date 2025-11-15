@@ -26,11 +26,13 @@ export type InputProps = ComponentPropsWithoutRef<"input"> & {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ leadingIcon, trailingIcon, error, className, disabled, id, ...rest }, ref) => {
-    const describedByIds = [
-      rest["aria-describedby"] as string | undefined,
-      error && id ? `${id}-error` : undefined,
-    ].filter(Boolean) as string[];
+    const customDescribedBy = rest["aria-describedby"] as string | undefined;
+    const errorDescribedBy = error && id ? `${id}-error` : undefined;
+    const describedByIds = [customDescribedBy, errorDescribedBy].filter(Boolean) as string[];
     const describedBy = describedByIds.length ? describedByIds.join(" ") : undefined;
+
+    // Remove aria-describedby from rest to avoid overwriting our computed value
+    const { "aria-describedby": _, ...inputProps } = rest;
 
     return (
       <div className="relative w-full">
@@ -42,6 +44,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={id}
+          type={inputProps.type || "text"}
           className={cn(
             "block w-full rounded-xl border border-gray-300 bg-white text-base text-gray-900 placeholder:text-gray-500 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
             "h-12 px-4",
@@ -52,14 +55,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             className,
           )}
           disabled={disabled}
-          aria-invalid={error ? true : rest["aria-invalid"]}
+          aria-invalid={error ? true : inputProps["aria-invalid"]}
           aria-describedby={describedBy}
-          {...rest}
+          {...inputProps}
         />
         {trailingIcon && (
           <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
             {trailingIcon}
           </span>
+        )}
+        {error && id && (
+          <p id={`${id}-error`} className="mt-2 text-sm text-red-600" role="alert">
+            {error}
+          </p>
         )}
       </div>
     );

@@ -16,6 +16,22 @@ export default defineConfig({
     testTimeout: 10000,
     hookTimeout: 10000,
     setupFiles: ["./tests/setup.ts"],
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json", "html", "lcov"],
+      reportOnFailure: true,
+      exclude: [
+        "node_modules/",
+        "tests/",
+        "**/*.test.{ts,tsx}",
+        "**/*.config.{ts,js,mjs}",
+        "**/types/**",
+        ".next/",
+        "coverage/",
+        "scripts/",
+        "supabase/",
+      ],
+    },
   },
 });
 

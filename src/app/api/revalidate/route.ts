@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
 
   // Validate payload size before processing
   if (rawBody.length > MAX_PAYLOAD_SIZE) {
-    return badRequest(`Payload too large (max ${MAX_PAYLOAD_SIZE} bytes).`);
+    return badRequest(`Request body too large (max ${MAX_PAYLOAD_SIZE} bytes).`);
   }
 
   if (!isValidSignature(rawBody, signature, SECRET)) {
