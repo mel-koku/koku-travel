@@ -20,9 +20,9 @@ export default async function ExpertsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-4 pb-16">
+    <div className="min-h-screen bg-gray-50 pt-4 pb-16">
       <ExpertsShell experts={experts} />
-    </main>
+    </div>
   );
 }
 

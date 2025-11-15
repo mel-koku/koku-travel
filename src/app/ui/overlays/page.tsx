@@ -170,7 +170,7 @@ function AlertDemo() {
 
 export default function OverlaysDemoPage() {
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-10 py-16">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-10 py-16">
       <header className="flex flex-col gap-3">
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-600">
           Phase 1 · UI Kit
@@ -186,7 +186,7 @@ export default function OverlaysDemoPage() {
       <TooltipDemo />
       <DropdownDemo />
       <AlertDemo />
-    </main>
+    </div>
   );
 }
 

@@ -16,7 +16,7 @@ export function BookmarksClient({ guides }: { guides: Guide[] }) {
   );
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-4 pb-16">
+    <div className="min-h-screen bg-gray-50 pt-4 pb-16">
       <section className="mx-auto max-w-screen-xl px-8">
         <header className="mb-8 space-y-2">
           <h1 className="text-2xl font-semibold text-gray-900">Saved guides</h1>
@@ -42,7 +42,7 @@ export function BookmarksClient({ guides }: { guides: Guide[] }) {
           </div>
         )}
       </section>
-    </main>
+    </div>
   );
 }
 

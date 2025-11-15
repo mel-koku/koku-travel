@@ -21,9 +21,9 @@ export default async function GuidesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 pt-2 pb-12 sm:pt-4 sm:pb-16">
+    <div className="min-h-screen bg-gray-50 pt-2 pb-12 sm:pt-4 sm:pb-16">
       <GuidesShell guides={guides} />
-    </main>
+    </div>
   );
 }
 
