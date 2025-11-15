@@ -58,9 +58,10 @@ if (siteUrl) {
 // Security headers configuration
 const isProduction = process.env.NODE_ENV === "production";
 
-// CSP directives - stricter in production
+// CSP directives - Next.js requires 'unsafe-inline' for hydration scripts
+// In production, Next.js uses nonce-based CSP, but we need to allow inline scripts for hydration
 const scriptSrc = isProduction
-  ? ["'self'", "https://unpkg.com"] // Production: allow unpkg.com for Leaflet
+  ? ["'self'", "'unsafe-inline'", "https://unpkg.com"] // Production: allow inline for Next.js hydration + unpkg.com for Leaflet
   : ["'self'", "'unsafe-eval'", "'unsafe-inline'", "https://unpkg.com"]; // Development: allow for Next.js hot reload + unpkg.com
 
 const securityHeaders = [
@@ -96,10 +97,10 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      `script-src ${scriptSrc.join(" ")}`, // Conditionally set based on environment
-      "style-src 'self' 'unsafe-inline' https://unpkg.com", // 'unsafe-inline' needed for Tailwind CSS, unpkg.com for Leaflet CSS
+      `script-src ${scriptSrc.join(" ")}`, // Allow inline scripts for Next.js hydration
+      "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com", // Allow Google Fonts stylesheets + Tailwind CSS inline styles
       "img-src 'self' data: https: blob:",
-      "font-src 'self' data:",
+      "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
       "connect-src 'self' https://*.supabase.co https://*.sanity.io https://*.googleapis.com https://api.mapbox.com https://*.sentry.io",
       "frame-src 'self'",
       "object-src 'none'",
