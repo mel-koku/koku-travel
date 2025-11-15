@@ -30,7 +30,7 @@ export default async function ExpertProfilePage(props: ExpertProfileProps) {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       {/* Cover Image */}
       {expert.coverImage && (
         <section className="relative w-full h-64 md:h-80 overflow-hidden">
@@ -210,7 +210,7 @@ export default async function ExpertProfilePage(props: ExpertProfileProps) {
           </Link>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
 

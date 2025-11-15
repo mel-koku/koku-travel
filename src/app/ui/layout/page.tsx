@@ -10,7 +10,7 @@ const cardCopies = Array.from({ length: 6 }, (_, index) => (
 
 export default function LayoutShowcasePage() {
   return (
-    <main className="flex flex-col gap-16 pb-24">
+    <div className="flex flex-col gap-16 pb-24">
       <Section
         title="Content Modules"
         description="Sections keep a steady vertical rhythm, while the Grid balances multi-column layouts across screen sizes."
@@ -60,7 +60,7 @@ export default function LayoutShowcasePage() {
           ))}
         </div>
       </Section>
-    </main>
+    </div>
   );
 }
 
