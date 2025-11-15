@@ -168,7 +168,11 @@ describe("Authentication Flow", () => {
       vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "");
       vi.stubEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY", "");
 
-      await expect(createClient()).rejects.toThrow();
+      // Unmock createClient to test the real implementation
+      vi.doUnmock("@/lib/supabase/server");
+      const { createClient: realCreateClient } = await import("@/lib/supabase/server");
+      
+      await expect(realCreateClient()).rejects.toThrow();
     });
   });
 
