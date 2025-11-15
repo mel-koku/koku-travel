@@ -32,8 +32,8 @@ describe("TripBuilderContext", () => {
     it("should initialize with provided initialData", () => {
       const initialData = {
         dates: { start: "2024-01-01", end: "2024-01-07" },
-        regions: ["Kansai"],
-        cities: ["Kyoto"],
+        regions: ["kansai"],
+        cities: ["kyoto"],
         interests: ["culture"],
         style: "balanced" as const,
         accessibility: { mobility: true },
@@ -45,8 +45,8 @@ describe("TripBuilderContext", () => {
         ),
       });
 
-      expect(result.current.data.regions).toEqual(["Kansai"]);
-      expect(result.current.data.cities).toEqual(["Kyoto"]);
+      expect(result.current.data.regions).toEqual(["kansai"]);
+      expect(result.current.data.cities).toEqual(["kyoto"]);
       expect(result.current.data.interests).toEqual(["culture"]);
       expect(result.current.data.style).toBe("balanced");
     });
@@ -61,11 +61,11 @@ describe("TripBuilderContext", () => {
       act(() => {
         result.current.setData((prev) => ({
           ...prev,
-          regions: ["Kansai", "Kanto"],
+          regions: ["kansai", "kanto"],
         }));
       });
 
-      expect(result.current.data.regions).toEqual(["Kansai", "Kanto"]);
+      expect(result.current.data.regions).toEqual(["kansai", "kanto"]);
     });
 
     it("should persist data to localStorage", () => {
@@ -84,7 +84,7 @@ describe("TripBuilderContext", () => {
       expect(stored).toBeTruthy();
       if (stored) {
         const parsed = JSON.parse(stored);
-        expect(parsed.regions).toEqual(["Kansai"]);
+        expect(parsed.regions).toEqual(["kansai"]);
       }
     });
   });
@@ -104,7 +104,7 @@ describe("TripBuilderContext", () => {
         }));
       });
 
-      expect(result.current.data.regions).toEqual(["Kansai"]);
+      expect(result.current.data.regions).toEqual(["kansai"]);
 
       act(() => {
         result.current.reset();
@@ -151,12 +151,12 @@ describe("TripBuilderContext", () => {
       act(() => {
         result.current.setData((prev) => ({
           ...prev,
-          interests: ["culture", "food", "nature", "shopping", "nightlife", "adventure"],
+          interests: ["culture", "food", "nature", "shopping", "nightlife", "photography"],
         }));
       });
 
       // Should limit to 5 interests
-      expect(result.current.data.interests.length).toBeLessThanOrEqual(5);
+      expect(result.current.data.interests?.length).toBeLessThanOrEqual(5);
     });
 
     it("should sanitize style to valid values", () => {
