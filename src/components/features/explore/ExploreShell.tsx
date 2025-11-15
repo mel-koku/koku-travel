@@ -78,7 +78,7 @@ function parseDuration(value?: string): number | null {
   const match = normalized.match(
     /([0-9]+(?:\.[0-9]+)?)\s*(hour|hours|hr|hrs|minute|minutes|day|days)/
   );
-  if (!match) return null;
+  if (!match || !match[1] || !match[2]) return null;
   const amount = Number.parseFloat(match[1]);
   if (Number.isNaN(amount)) return null;
   const unit = match[2];

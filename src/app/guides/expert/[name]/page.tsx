@@ -6,10 +6,6 @@ import { Badge } from "@/components/ui/Badge";
 import GuideCard from "@/components/features/guides/GuideCard";
 import { getExpertById } from "@/data/mockExperts";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const FALLBACK_IMAGE_SRC =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-
 type ExpertProfileParams = {
   name: string | string[];
 };

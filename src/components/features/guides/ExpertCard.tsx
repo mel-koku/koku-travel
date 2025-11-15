@@ -6,10 +6,6 @@ import Avatar from "@/components/ui/Avatar";
 import { Badge } from "@/components/ui/Badge";
 import type { ExpertProfile } from "@/types/expert";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const FALLBACK_IMAGE_SRC =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-
 export default function ExpertCard({ expert }: { expert: ExpertProfile }) {
   const expertSlug = expert.id;
 
