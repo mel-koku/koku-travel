@@ -7,27 +7,80 @@ import { Container } from "@/components/layouts/Container";
 import { Wizard } from "@/components/features/trip-builder/Wizard";
 import { TripBuilderProvider } from "@/context/TripBuilderContext";
 
+// Error fallback component
+const ErrorFallback = ({ message }: { message: string }) => (
+  <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-red-200 bg-red-50 p-8 text-center">
+    <p className="text-sm font-medium text-red-800">{message}</p>
+    <p className="mt-2 text-xs text-red-600">Please refresh the page to try again.</p>
+  </div>
+);
+
 // Dynamically import step components for code splitting
 // These components are only loaded when their respective step is active
-const Step1BasicInfo = dynamic(() => import("@/components/features/trip-builder/Step1BasicInfo").then((mod) => ({ default: mod.Step1BasicInfo })), {
-  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
-});
+const Step1BasicInfo = dynamic(
+  () =>
+    import("@/components/features/trip-builder/Step1BasicInfo")
+      .then((mod) => ({ default: mod.Step1BasicInfo }))
+      .catch((error) => {
+        console.error("Failed to load Step1BasicInfo", error);
+        return { default: () => <ErrorFallback message="Failed to load form. Please refresh the page." /> };
+      }),
+  {
+    loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+  }
+);
 
-const Step2Regions = dynamic(() => import("@/components/features/trip-builder/Step2Regions").then((mod) => ({ default: mod.Step2Regions })), {
-  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
-});
+const Step2Regions = dynamic(
+  () =>
+    import("@/components/features/trip-builder/Step2Regions")
+      .then((mod) => ({ default: mod.Step2Regions }))
+      .catch((error) => {
+        console.error("Failed to load Step2Regions", error);
+        return { default: () => <ErrorFallback message="Failed to load regions step. Please refresh the page." /> };
+      }),
+  {
+    loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+  }
+);
 
-const Step3Interests = dynamic(() => import("@/components/features/trip-builder/Step3Interests").then((mod) => ({ default: mod.Step3Interests })), {
-  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
-});
+const Step3Interests = dynamic(
+  () =>
+    import("@/components/features/trip-builder/Step3Interests")
+      .then((mod) => ({ default: mod.Step3Interests }))
+      .catch((error) => {
+        console.error("Failed to load Step3Interests", error);
+        return { default: () => <ErrorFallback message="Failed to load interests step. Please refresh the page." /> };
+      }),
+  {
+    loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+  }
+);
 
-const Step4Preferences = dynamic(() => import("@/components/features/trip-builder/Step4Preferences").then((mod) => ({ default: mod.Step4Preferences })), {
-  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
-});
+const Step4Preferences = dynamic(
+  () =>
+    import("@/components/features/trip-builder/Step4Preferences")
+      .then((mod) => ({ default: mod.Step4Preferences }))
+      .catch((error) => {
+        console.error("Failed to load Step4Preferences", error);
+        return { default: () => <ErrorFallback message="Failed to load preferences step. Please refresh the page." /> };
+      }),
+  {
+    loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+  }
+);
 
-const Step5Review = dynamic(() => import("@/components/features/trip-builder/Step5Review").then((mod) => ({ default: mod.Step5Review })), {
-  loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
-});
+const Step5Review = dynamic(
+  () =>
+    import("@/components/features/trip-builder/Step5Review")
+      .then((mod) => ({ default: mod.Step5Review }))
+      .catch((error) => {
+        console.error("Failed to load Step5Review", error);
+        return { default: () => <ErrorFallback message="Failed to load review step. Please refresh the page." /> };
+      }),
+  {
+    loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+  }
+);
 
 const TOTAL_STEPS = 5;
 const STEP1_FORM_ID = "trip-builder-step1-form";

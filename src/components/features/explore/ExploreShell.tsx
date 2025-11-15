@@ -7,6 +7,7 @@ import { FilterBar } from "./FilterBar";
 import { LocationGrid } from "./LocationGrid";
 import { FeaturedLocationsHero } from "./FeaturedLocationsHero";
 import { logger } from "@/lib/logger";
+import { MOCK_LOCATIONS } from "@/data/mockLocations";
 
 const BUDGET_FILTERS = [
   {
@@ -177,29 +178,31 @@ export function ExploreShell() {
   ]);
 
   useEffect(() => {
-    let isActive = true;
     setIsLoading(true);
-    void import("@/data/mockLocations")
-      .then((module) => {
-        if (!isActive) return;
-        setLocations(module.MOCK_LOCATIONS);
-        setLoadError(null);
-      })
-      .catch((error) => {
-        logger.error("Failed to load mock locations", error);
-        if (!isActive) return;
-        setLoadError("Unable to load locations. Please try again later.");
-        setLocations([]);
-      })
-      .finally(() => {
-        if (isActive) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isActive = false;
-    };
+    setLoadError(null);
+    
+    try {
+      const locationsArray = Array.isArray(MOCK_LOCATIONS) 
+        ? MOCK_LOCATIONS 
+        : [];
+      
+      if (locationsArray.length === 0) {
+        logger.warn("MOCK_LOCATIONS array is empty");
+      }
+      
+      setLocations(locationsArray);
+      setLoadError(null);
+    } catch (error) {
+      logger.error("Failed to load mock locations", error);
+      setLoadError(
+        error instanceof Error && error.message.includes("MOCK_LOCATIONS")
+          ? "Locations data is not available. Please check the deployment configuration."
+          : "Unable to load locations. Please refresh the page to try again."
+      );
+      setLocations([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
@@ -335,7 +338,16 @@ export function ExploreShell() {
   if (loadError) {
     return (
       <div className="mx-auto max-w-screen-md px-4 py-12 text-center sm:px-6 sm:py-16 md:px-8 md:py-24">
-        <p className="text-sm text-red-600">{loadError}</p>
+        <div className="rounded-lg border border-red-200 bg-red-50 p-6">
+          <p className="text-sm font-medium text-red-800 mb-2">Error loading locations</p>
+          <p className="text-sm text-red-600">{loadError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            Refresh Page
+          </button>
+        </div>
       </div>
     );
   }
