@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { generateItineraryFromTrip } from "@/lib/itineraryGenerator";
+import { generateItinerary } from "@/lib/itineraryGenerator";
 import type { TripBuilderData } from "@/types/trip";
 
 const baseTrip: TripBuilderData = {
@@ -12,9 +12,9 @@ const baseTrip: TripBuilderData = {
   style: "balanced",
 };
 
-describe("generateItineraryFromTrip", () => {
+describe("generateItinerary", () => {
   it("creates one day per requested duration with morning/afternoon/evening slots", () => {
-    const itinerary = generateItineraryFromTrip({ ...baseTrip, duration: 4 });
+    const itinerary = generateItinerary({ ...baseTrip, duration: 4 });
 
     expect(itinerary.days).toHaveLength(4);
     itinerary.days.forEach((day) => {
@@ -30,7 +30,7 @@ describe("generateItineraryFromTrip", () => {
       interests: ["food", "culture"],
     };
 
-    const itinerary = generateItineraryFromTrip(interestsTrip);
+    const itinerary = generateItinerary(interestsTrip);
     const [day] = itinerary.days;
     expect(day.activities).toHaveLength(3);
 

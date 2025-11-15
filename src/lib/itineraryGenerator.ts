@@ -1,6 +1,6 @@
 import { MOCK_LOCATIONS } from "@/data/mockLocations";
 import { CITY_TO_REGION, REGIONS } from "@/data/regions";
-import type { Itinerary } from "@/types/itinerary";
+import type { Itinerary, ItineraryTravelMode } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
 
@@ -70,7 +70,7 @@ LOCATIONS_BY_REGION_ID.forEach((locations) => locations.sort((a, b) => a.name.lo
 function inferTravelMode(
   location: Location | undefined,
   previousLocation: Location | undefined,
-): Itinerary["days"][number]["activities"][number]["travelMode"] {
+): ItineraryTravelMode {
   if (previousLocation?.preferredTransitModes?.length) {
     const firstMode = previousLocation.preferredTransitModes[0];
     if (firstMode) {
@@ -95,7 +95,9 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
   const interestSequence = resolveInterestSequence(data);
   const usedLocations = new Set<string>();
 
-  const days: Itinerary["days"] = Array.from({ length: totalDays }).map((_, dayIndex) => {
+  const days: Itinerary["days"] = [];
+
+  for (let dayIndex = 0; dayIndex < totalDays; dayIndex += 1) {
     const cityInfo = citySequence[dayIndex % citySequence.length];
     if (!cityInfo) {
       throw new Error(`City info not found for day ${dayIndex}`);
@@ -118,6 +120,7 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
         const locationKey = normalizeKey(location.city);
         dayCityUsage.set(locationKey, (dayCityUsage.get(locationKey) ?? 0) + 1);
         dayActivities.push({
+          kind: "place",
           id: `${location.id}-${dayIndex + 1}-${activityIndex + 1}`,
           title: location.name,
           timeOfDay,
@@ -137,28 +140,11 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
           })
         : undefined;
 
-    const firstActivity = dayActivities[0];
-    const currentLocation = firstActivity
-      ? MOCK_LOCATIONS.find((loc) => loc.name === firstActivity.title)
-      : undefined;
-
-    return {
-      day: dayIndex + 1,
-      title: buildDayTitle(dayIndex, cityInfo.key),
-      activities: dayActivities.map((activity, index) => {
-        const activityLocation = MOCK_LOCATIONS.find((loc) => loc.name === activity.title);
-        const prevActivityLocation =
-          index > 0
-            ? MOCK_LOCATIONS.find((loc) => loc.name === dayActivities[index - 1]?.title)
-            : previousLocation;
-
-        return {
-          ...activity,
-          travelMode: inferTravelMode(activityLocation, prevActivityLocation),
-        };
-      }),
-    };
-  });
+    days.push({
+      dateLabel: buildDayTitle(dayIndex, cityInfo.key),
+      activities: dayActivities,
+    });
+  }
 
   return { days };
 }

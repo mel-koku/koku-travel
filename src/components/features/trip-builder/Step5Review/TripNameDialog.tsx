@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { useAppState } from "@/state/AppState";
-import { generateItineraryFromTrip } from "@/lib/itineraryGenerator";
+import { generateItinerary } from "@/lib/itineraryGenerator";
 import type { TripBuilderData } from "@/types/trip";
 import { logger } from "@/lib/logger";
 
@@ -66,7 +66,7 @@ export function TripNameDialog({
       setIsSaving(true);
       try {
         const builderSnapshot = JSON.parse(JSON.stringify(data)) as TripBuilderData;
-        const itinerary = generateItineraryFromTrip(builderSnapshot);
+        const itinerary = generateItinerary(builderSnapshot);
         const tripId = createTrip({
           name: finalName,
           itinerary,
@@ -119,7 +119,11 @@ export function TripNameDialog({
             disabled={isSaving}
             error={nameError ?? undefined}
           />
-          {nameError ? <p className="text-sm text-red-600">{nameError}</p> : null}
+          {nameError ? (
+            <p id="itinerary-name-error" className="text-sm text-red-600" role="alert">
+              {nameError}
+            </p>
+          ) : null}
         </div>
         <div className="flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={handleClose} disabled={isSaving}>

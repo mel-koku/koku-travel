@@ -60,8 +60,8 @@ const isProduction = process.env.NODE_ENV === "production";
 
 // CSP directives - stricter in production
 const scriptSrc = isProduction
-  ? ["'self'"] // Production: no unsafe-eval or unsafe-inline
-  : ["'self'", "'unsafe-eval'", "'unsafe-inline'"]; // Development: allow for Next.js hot reload
+  ? ["'self'", "https://unpkg.com"] // Production: allow unpkg.com for Leaflet
+  : ["'self'", "'unsafe-eval'", "'unsafe-inline'", "https://unpkg.com"]; // Development: allow for Next.js hot reload + unpkg.com
 
 const securityHeaders = [
   {
@@ -97,7 +97,7 @@ const securityHeaders = [
     value: [
       "default-src 'self'",
       `script-src ${scriptSrc.join(" ")}`, // Conditionally set based on environment
-      "style-src 'self' 'unsafe-inline'", // 'unsafe-inline' needed for Tailwind CSS (consider nonces in future)
+      "style-src 'self' 'unsafe-inline' https://unpkg.com", // 'unsafe-inline' needed for Tailwind CSS, unpkg.com for Leaflet CSS
       "img-src 'self' data: https: blob:",
       "font-src 'self' data:",
       "connect-src 'self' https://*.supabase.co https://*.sanity.io https://*.googleapis.com https://api.mapbox.com https://*.sentry.io",
