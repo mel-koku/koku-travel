@@ -98,6 +98,9 @@ export function generateItineraryFromTrip(data: TripBuilderData): Itinerary {
 
   const days: Itinerary["days"] = Array.from({ length: totalDays }).map((_, dayIndex) => {
     const cityInfo = citySequence[dayIndex % citySequence.length];
+    if (!cityInfo) {
+      throw new Error(`City info not found for day ${dayIndex}`);
+    }
     const dayActivities: Itinerary["days"][number]["activities"] = [];
     const dayCityUsage = new Map<string, number>();
 
