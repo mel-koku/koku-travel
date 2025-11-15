@@ -15,7 +15,16 @@
     "sanity:seed:guides": "node scripts/sanity/import-guides.mjs",
     "sanity:migrate:authors": "node scripts/sanity/migrate-authors.mjs",
     "warm:places": "tsx scripts/warm-place-cache.ts",
-    "geocode:locations": "tsx scripts/batch-geocode-locations.ts"
+    "geocode:locations": "tsx scripts/batch-geocode-locations.ts",
+    "seed:locations": "tsx scripts/seed-locations.ts",
+    "supabase:start": "supabase start",
+    "supabase:stop": "supabase stop",
+    "supabase:status": "supabase status",
+    "supabase:db:push": "supabase db push",
+    "supabase:db:reset": "supabase db reset",
+    "supabase:db:diff": "supabase db diff",
+    "supabase:migration:new": "supabase migration new",
+    "supabase:link": "supabase link"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
