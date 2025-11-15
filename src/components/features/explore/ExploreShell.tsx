@@ -7,7 +7,6 @@ import { FilterBar } from "./FilterBar";
 import { LocationGrid } from "./LocationGrid";
 import { FeaturedLocationsHero } from "./FeaturedLocationsHero";
 import { logger } from "@/lib/logger";
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
 
 const BUDGET_FILTERS = [
   {
@@ -178,31 +177,54 @@ export function ExploreShell() {
   ]);
 
   useEffect(() => {
-    setIsLoading(true);
-    setLoadError(null);
-    
-    try {
-      const locationsArray = Array.isArray(MOCK_LOCATIONS) 
-        ? MOCK_LOCATIONS 
-        : [];
-      
-      if (locationsArray.length === 0) {
-        logger.warn("MOCK_LOCATIONS array is empty");
-      }
-      
-      setLocations(locationsArray);
+    let cancelled = false;
+
+    async function fetchLocations() {
+      setIsLoading(true);
       setLoadError(null);
-    } catch (error) {
-      logger.error("Failed to load mock locations", error);
-      setLoadError(
-        error instanceof Error && error.message.includes("MOCK_LOCATIONS")
-          ? "Locations data is not available. Please check the deployment configuration."
-          : "Unable to load locations. Please refresh the page to try again."
-      );
-      setLocations([]);
-    } finally {
-      setIsLoading(false);
+
+      try {
+        const response = await fetch("/api/locations");
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch locations: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        
+        if (cancelled) return;
+
+        const locationsArray = Array.isArray(data.locations) ? data.locations : [];
+        
+        if (locationsArray.length === 0) {
+          logger.warn("No locations returned from API");
+          setLoadError("No locations found. Please check the database configuration.");
+        }
+        
+        setLocations(locationsArray);
+        setLoadError(null);
+      } catch (error) {
+        if (cancelled) return;
+        
+        logger.error("Failed to load locations from API", error);
+        setLoadError(
+          error instanceof Error && error.message.includes("fetch")
+            ? "Unable to connect to the server. Please check your internet connection and try again."
+            : "Unable to load locations. Please refresh the page to try again."
+        );
+        setLocations([]);
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
     }
+
+    fetchLocations();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
