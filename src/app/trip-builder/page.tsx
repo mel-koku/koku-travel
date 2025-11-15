@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { Container } from "@/components/layouts/Container";
 import { Wizard } from "@/components/features/trip-builder/Wizard";
 import { TripBuilderProvider } from "@/context/TripBuilderContext";
+import { logger } from "@/lib/logger";
 
 // Error fallback component
 const ErrorFallback = ({ message }: { message: string }) => (
@@ -22,7 +23,7 @@ const Step1BasicInfo = dynamic(
     import("@/components/features/trip-builder/Step1BasicInfo")
       .then((mod) => ({ default: mod.Step1BasicInfo }))
       .catch((error) => {
-        console.error("Failed to load Step1BasicInfo", error);
+        logger.error("Failed to load Step1BasicInfo", error);
         return { default: () => <ErrorFallback message="Failed to load form. Please refresh the page." /> };
       }),
   {
@@ -35,7 +36,7 @@ const Step2Regions = dynamic(
     import("@/components/features/trip-builder/Step2Regions")
       .then((mod) => ({ default: mod.Step2Regions }))
       .catch((error) => {
-        console.error("Failed to load Step2Regions", error);
+        logger.error("Failed to load Step2Regions", error);
         return { default: () => <ErrorFallback message="Failed to load regions step. Please refresh the page." /> };
       }),
   {
@@ -48,7 +49,7 @@ const Step3Interests = dynamic(
     import("@/components/features/trip-builder/Step3Interests")
       .then((mod) => ({ default: mod.Step3Interests }))
       .catch((error) => {
-        console.error("Failed to load Step3Interests", error);
+        logger.error("Failed to load Step3Interests", error);
         return { default: () => <ErrorFallback message="Failed to load interests step. Please refresh the page." /> };
       }),
   {
@@ -61,7 +62,7 @@ const Step4Preferences = dynamic(
     import("@/components/features/trip-builder/Step4Preferences")
       .then((mod) => ({ default: mod.Step4Preferences }))
       .catch((error) => {
-        console.error("Failed to load Step4Preferences", error);
+        logger.error("Failed to load Step4Preferences", error);
         return { default: () => <ErrorFallback message="Failed to load preferences step. Please refresh the page." /> };
       }),
   {
@@ -74,7 +75,7 @@ const Step5Review = dynamic(
     import("@/components/features/trip-builder/Step5Review")
       .then((mod) => ({ default: mod.Step5Review }))
       .catch((error) => {
-        console.error("Failed to load Step5Review", error);
+        logger.error("Failed to load Step5Review", error);
         return { default: () => <ErrorFallback message="Failed to load review step. Please refresh the page." /> };
       }),
   {
