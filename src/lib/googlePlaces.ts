@@ -3,6 +3,7 @@ import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { Location, LocationDetails, LocationPhoto, LocationReview } from "@/types/location";
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { logger } from "@/lib/logger";
+import { env } from "@/lib/env";
 
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 const SEARCH_FIELD_MASK = ["places.id", "places.displayName", "places.formattedAddress"].join(",");
@@ -127,7 +128,7 @@ function getPlaceDetailsCache(): Map<string, PlaceDetailsCacheEntry> {
 }
 
 function getApiKey(): string {
-  const key = process.env.GOOGLE_PLACES_API_KEY;
+  const key = env.googlePlacesApiKey;
   if (!key) {
     throw new Error(
       "Missing Google Places API key. Set GOOGLE_PLACES_API_KEY in your environment.",

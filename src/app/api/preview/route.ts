@@ -4,8 +4,9 @@ import { internalError, unauthorized, badRequest } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { previewSlugSchema, secretSchema } from "@/lib/api/schemas";
 import { sanitizePath } from "@/lib/api/sanitization";
+import { env } from "@/lib/env";
 
-const PREVIEW_SECRET = process.env.SANITY_PREVIEW_SECRET;
+const PREVIEW_SECRET = env.sanityPreviewSecret;
 
 function resolveRedirectUrl(request: NextRequest, slug: string) {
   const target = slug.startsWith("/") ? slug : `/${slug}`;
