@@ -107,15 +107,85 @@ class Logger {
 
   /**
    * Sanitize context to remove sensitive data
+   * Handles nested objects, arrays, and various sensitive key patterns
+   * 
+   * @param context - Context object to sanitize
+   * @param depth - Current recursion depth (default: 0)
+   * @param maxDepth - Maximum recursion depth (default: 10)
+   * @returns Sanitized context object
    */
-  private sanitizeContext(context: LogContext): LogContext {
-    const sanitized: LogContext = { ...context };
-    const sensitiveKeys = ["password", "token", "secret", "key", "authorization", "cookie"];
+  private sanitizeContext(
+    context: LogContext,
+    depth: number = 0,
+    maxDepth: number = 10,
+  ): LogContext {
+    // Prevent infinite recursion
+    if (depth > maxDepth) {
+      return { "[ERROR]": "Maximum sanitization depth exceeded" };
+    }
 
-    for (const key in sanitized) {
+    // Handle null/undefined
+    if (context === null || context === undefined) {
+      return context;
+    }
+
+    // Handle primitives (string, number, boolean)
+    if (typeof context !== "object") {
+      return context;
+    }
+
+    // Handle arrays
+    if (Array.isArray(context)) {
+      return context.map((item) =>
+        typeof item === "object" && item !== null
+          ? this.sanitizeContext(item as LogContext, depth + 1, maxDepth)
+          : item,
+      ) as unknown as LogContext;
+    }
+
+    // Handle objects
+    const sanitized: LogContext = {};
+    const sensitiveKeys = [
+      "password",
+      "token",
+      "secret",
+      "key",
+      "authorization",
+      "cookie",
+      "api_key",
+      "apikey",
+      "api-key",
+      "credential",
+      "credentials",
+      "access_token",
+      "access-token",
+      "refresh_token",
+      "refresh-token",
+      "session",
+      "sessionid",
+      "session_id",
+      "private_key",
+      "private-key",
+      "public_key",
+      "public-key",
+      "passphrase",
+      "passwd",
+    ];
+
+    for (const key in context) {
       const lowerKey = key.toLowerCase();
-      if (sensitiveKeys.some((sensitive) => lowerKey.includes(sensitive))) {
+      const isSensitive = sensitiveKeys.some((sensitive) => lowerKey.includes(sensitive));
+
+      if (isSensitive) {
         sanitized[key] = "[REDACTED]";
+      } else {
+        const value = context[key];
+        // Recursively sanitize nested objects and arrays
+        if (typeof value === "object" && value !== null) {
+          sanitized[key] = this.sanitizeContext(value as LogContext, depth + 1, maxDepth);
+        } else {
+          sanitized[key] = value;
+        }
       }
     }
 
@@ -128,15 +198,85 @@ export const logger = new Logger();
 
 /**
  * Helper function to sanitize sensitive data from context
+ * Handles nested objects, arrays, and various sensitive key patterns
+ * 
+ * @param context - Context object to sanitize
+ * @param depth - Current recursion depth (default: 0)
+ * @param maxDepth - Maximum recursion depth (default: 10)
+ * @returns Sanitized context object
  */
-export function sanitizeContext(context: LogContext): LogContext {
-  const sanitized: LogContext = { ...context };
-  const sensitiveKeys = ["password", "token", "secret", "key", "authorization", "cookie"];
+export function sanitizeContext(
+  context: LogContext,
+  depth: number = 0,
+  maxDepth: number = 10,
+): LogContext {
+  // Prevent infinite recursion
+  if (depth > maxDepth) {
+    return { "[ERROR]": "Maximum sanitization depth exceeded" };
+  }
 
-  for (const key in sanitized) {
+  // Handle null/undefined
+  if (context === null || context === undefined) {
+    return context;
+  }
+
+  // Handle primitives (string, number, boolean)
+  if (typeof context !== "object") {
+    return context;
+  }
+
+  // Handle arrays
+  if (Array.isArray(context)) {
+    return context.map((item) =>
+      typeof item === "object" && item !== null
+        ? sanitizeContext(item as LogContext, depth + 1, maxDepth)
+        : item,
+    ) as unknown as LogContext;
+  }
+
+  // Handle objects
+  const sanitized: LogContext = {};
+  const sensitiveKeys = [
+    "password",
+    "token",
+    "secret",
+    "key",
+    "authorization",
+    "cookie",
+    "api_key",
+    "apikey",
+    "api-key",
+    "credential",
+    "credentials",
+    "access_token",
+    "access-token",
+    "refresh_token",
+    "refresh-token",
+    "session",
+    "sessionid",
+    "session_id",
+    "private_key",
+    "private-key",
+    "public_key",
+    "public-key",
+    "passphrase",
+    "passwd",
+  ];
+
+  for (const key in context) {
     const lowerKey = key.toLowerCase();
-    if (sensitiveKeys.some((sensitive) => lowerKey.includes(sensitive))) {
+    const isSensitive = sensitiveKeys.some((sensitive) => lowerKey.includes(sensitive));
+
+    if (isSensitive) {
       sanitized[key] = "[REDACTED]";
+    } else {
+      const value = context[key];
+      // Recursively sanitize nested objects and arrays
+      if (typeof value === "object" && value !== null) {
+        sanitized[key] = sanitizeContext(value as LogContext, depth + 1, maxDepth);
+      } else {
+        sanitized[key] = value;
+      }
     }
   }
 
