@@ -42,14 +42,10 @@ MOCK_LOCATIONS.forEach((location) => {
   const info: CityInfo =
     existingInfo ??
     (() => {
-      const created: CityInfo = { key: cityKey, label: location.city, regionId: regionIdFromLabel };
-      CITY_INFO_BY_KEY.set(cityKey, created);
-      return created;
+      const fallback: CityInfo = { key: cityKey, label: location.city, regionId: regionIdFromLabel };
+      CITY_INFO_BY_KEY.set(cityKey, fallback);
+      return fallback;
     })();
-
-  if (!info.regionId && regionIdFromLabel) {
-    info.regionId = regionIdFromLabel;
-  }
 
   const cityList = LOCATIONS_BY_CITY_KEY.get(cityKey);
   if (cityList) {
@@ -70,27 +66,30 @@ MOCK_LOCATIONS.forEach((location) => {
 
 LOCATIONS_BY_CITY_KEY.forEach((locations) => locations.sort((a, b) => a.name.localeCompare(b.name)));
 LOCATIONS_BY_REGION_ID.forEach((locations) => locations.sort((a, b) => a.name.localeCompare(b.name)));
-ALL_LOCATIONS.sort((a, b) => a.name.localeCompare(b.name));
 
-const CATEGORY_FALLBACK_ORDER: LocationCategory[] = Array.from(
-  new Set<LocationCategory>(ALL_LOCATIONS.map((location) => location.category)),
-);
+function inferTravelMode(
+  location: Location | undefined,
+  previousLocation: Location | undefined,
+): Itinerary["days"][number]["activities"][number]["travelMode"] {
+  if (previousLocation?.preferredTransitModes?.length) {
+    const firstMode = previousLocation.preferredTransitModes[0];
+    if (firstMode) {
+      return firstMode;
+    }
+  }
+  if (location?.preferredTransitModes?.length) {
+    const firstMode = location.preferredTransitModes[0];
+    if (firstMode) {
+      return firstMode;
+    }
+  }
+  return "walk";
+}
 
-const INTEREST_CATEGORY_MAP: Record<InterestId, LocationCategory[]> = {
-  culture: ["culture", "view"],
-  food: ["food", "culture"],
-  nature: ["nature", "view", "culture"],
-  shopping: ["shopping", "culture"],
-  photography: ["view", "nature", "culture"],
-  nightlife: ["food", "view", "culture"],
-  wellness: ["culture", "nature", "view"],
-  history: ["culture", "view"],
-};
-
-export function generateItineraryFromTrip(data: TripBuilderData): Itinerary {
-  const totalDays = data.duration && data.duration > 0 ? data.duration : DEFAULT_TOTAL_DAYS;
-  const pace = data.style ?? "balanced";
-  const activitiesPerDay = pace === "relaxed" ? 2 : pace === "fast" ? 4 : 3;
+export function generateItinerary(data: TripBuilderData): Itinerary {
+  const totalDays =
+    typeof data.duration === "number" && data.duration > 0 ? data.duration : DEFAULT_TOTAL_DAYS;
+  const activitiesPerDay = Math.min(3, Math.max(1, Math.floor(10 / totalDays)));
 
   const citySequence = resolveCitySequence(data);
   const interestSequence = resolveInterestSequence(data);
@@ -119,7 +118,6 @@ export function generateItineraryFromTrip(data: TripBuilderData): Itinerary {
         const locationKey = normalizeKey(location.city);
         dayCityUsage.set(locationKey, (dayCityUsage.get(locationKey) ?? 0) + 1);
         dayActivities.push({
-          kind: "place",
           id: `${location.id}-${dayIndex + 1}-${activityIndex + 1}`,
           title: location.name,
           timeOfDay,
@@ -127,25 +125,38 @@ export function generateItineraryFromTrip(data: TripBuilderData): Itinerary {
           tags: buildTags(interest, location.category),
         });
         usedLocations.add(location.id);
-      } else {
-        dayActivities.push({
-          kind: "place",
-          id: `placeholder-${dayIndex + 1}-${activityIndex + 1}`,
-          title: "Time to explore",
-          timeOfDay,
-          neighborhood: cityInfo.label,
-          tags: [interest],
-          notes: "Add your own highlight for this part of the day.",
-        });
       }
     }
 
-    const dominantCityKey = selectDominantCity(dayCityUsage) ?? cityInfo.key;
-    const dateLabel = formatDayLabel(dayIndex, dominantCityKey);
+    const previousDay = dayIndex > 0 ? days[dayIndex - 1] : undefined;
+    const previousLocation =
+      previousDay && previousDay.activities.length > 0
+        ? MOCK_LOCATIONS.find((loc) => {
+            const lastActivity = previousDay.activities[previousDay.activities.length - 1];
+            return lastActivity && loc.name === lastActivity.title;
+          })
+        : undefined;
+
+    const firstActivity = dayActivities[0];
+    const currentLocation = firstActivity
+      ? MOCK_LOCATIONS.find((loc) => loc.name === firstActivity.title)
+      : undefined;
 
     return {
-      dateLabel,
-      activities: dayActivities,
+      day: dayIndex + 1,
+      title: buildDayTitle(dayIndex, cityInfo.key),
+      activities: dayActivities.map((activity, index) => {
+        const activityLocation = MOCK_LOCATIONS.find((loc) => loc.name === activity.title);
+        const prevActivityLocation =
+          index > 0
+            ? MOCK_LOCATIONS.find((loc) => loc.name === dayActivities[index - 1]?.title)
+            : previousLocation;
+
+        return {
+          ...activity,
+          travelMode: inferTravelMode(activityLocation, prevActivityLocation),
+        };
+      }),
     };
   });
 
@@ -156,36 +167,30 @@ function resolveCitySequence(data: TripBuilderData): CityInfo[] {
   const sequence: CityInfo[] = [];
   const seen = new Set<string>();
 
-  const addCityByKey = (cityKey?: string) => {
-    const normalized = normalizeKey(cityKey);
-    if (!normalized || seen.has(normalized)) {
+  function addCityByKey(cityKey: string | undefined): void {
+    if (!cityKey || seen.has(cityKey)) {
       return;
     }
-    if (!LOCATIONS_BY_CITY_KEY.has(normalized)) {
-      return;
-    }
-    const info = CITY_INFO_BY_KEY.get(normalized);
+    const info = CITY_INFO_BY_KEY.get(cityKey);
     if (!info) {
       return;
     }
+    if (!LOCATIONS_BY_CITY_KEY.has(cityKey)) {
+      return;
+    }
     sequence.push(info);
-    seen.add(normalized);
-  };
-
-  if (data.cities && data.cities.length > 0) {
-    data.cities.forEach((cityId) => {
-      const normalized = normalizeKey(cityId);
-      if (LOCATIONS_BY_CITY_KEY.has(normalized)) {
-        addCityByKey(normalized);
-      } else {
-        const regionId = CITY_TO_REGION[cityId];
-        addCityByKey(findCityInRegionWithLocations(regionId));
-      }
-    });
+    seen.add(cityKey);
   }
 
-  if (sequence.length === 0 && data.regions && data.regions.length > 0) {
-    data.regions.forEach((regionId) => addCityByKey(findCityInRegionWithLocations(regionId)));
+  if (data.cities && data.cities.length > 0) {
+    data.cities.forEach((cityId) => addCityByKey(cityId));
+  }
+
+  if (data.regions && data.regions.length > 0) {
+    data.regions.forEach((regionId) => {
+      const region = REGIONS.find((r) => r.id === regionId);
+      region?.cities.forEach((city) => addCityByKey(city.id));
+    });
   }
 
   if (sequence.length === 0) {
@@ -209,112 +214,135 @@ function resolveCitySequence(data: TripBuilderData): CityInfo[] {
 
 function resolveInterestSequence(data: TripBuilderData): InterestId[] {
   if (data.interests && data.interests.length > 0) {
-    const seen = new Set<InterestId>();
-    const ordered: InterestId[] = [];
-    data.interests.forEach((interest) => {
-      if (!seen.has(interest)) {
-        seen.add(interest);
-        ordered.push(interest);
-      }
-    });
-    return ordered;
+    return data.interests;
   }
   return [...DEFAULT_INTEREST_ROTATION];
 }
 
-function pickLocation(cityInfo: CityInfo, interest: InterestId, usedLocations: Set<string>): Location | undefined {
-  const categoryPriority = createCategoryPriority(interest);
-
-  for (const allowRepeat of [false, true]) {
-    for (const category of categoryPriority) {
-      const cityCandidate = findCandidate(LOCATIONS_BY_CITY_KEY.get(cityInfo.key), category, usedLocations, allowRepeat);
-      if (cityCandidate) {
-        return cityCandidate;
-      }
-
-      if (cityInfo.regionId) {
-        const regionCandidate = findCandidate(
-          LOCATIONS_BY_REGION_ID.get(cityInfo.regionId),
-          category,
-          usedLocations,
-          allowRepeat,
-        );
-        if (regionCandidate) {
-          return regionCandidate;
-        }
-      }
-
-      const anyCandidate = findCandidate(ALL_LOCATIONS, category, usedLocations, allowRepeat);
-      if (anyCandidate) {
-        return anyCandidate;
-      }
-    }
-  }
-
-  return undefined;
-}
-
-function createCategoryPriority(interest: InterestId): LocationCategory[] {
-  const categories = INTEREST_CATEGORY_MAP[interest] ?? CATEGORY_FALLBACK_ORDER;
-  return Array.from(new Set([...categories, ...CATEGORY_FALLBACK_ORDER]));
-}
-
-function findCandidate(
-  locations: Location[] | undefined,
-  category: LocationCategory,
+function pickLocation(
+  cityInfo: CityInfo,
+  interest: InterestId,
   usedLocations: Set<string>,
-  allowRepeat: boolean,
 ): Location | undefined {
-  if (!locations || locations.length === 0) {
-    return undefined;
+  const cityLocations = LOCATIONS_BY_CITY_KEY.get(cityInfo.key);
+  if (!cityLocations || cityLocations.length === 0) {
+    if (cityInfo.regionId) {
+      const regionLocations = LOCATIONS_BY_REGION_ID.get(cityInfo.regionId);
+      if (regionLocations && regionLocations.length > 0) {
+        return pickFromList(regionLocations, interest, usedLocations);
+      }
+    }
+    return pickFromList(ALL_LOCATIONS, interest, usedLocations);
   }
 
-  return locations.find((location) => {
-    if (location.category !== category) {
-      return false;
-    }
-    if (allowRepeat) {
-      return true;
-    }
-    return !usedLocations.has(location.id);
-  });
+  return pickFromList(cityLocations, interest, usedLocations);
+}
+
+function pickFromList(
+  list: Location[],
+  interest: InterestId,
+  usedLocations: Set<string>,
+): Location | undefined {
+  const categoryMap: Record<InterestId, LocationCategory[]> = {
+    culture: ["shrine", "temple", "landmark", "historic"],
+    food: ["restaurant", "market"],
+    nature: ["park", "garden"],
+    nightlife: ["bar", "entertainment"],
+    shopping: ["shopping", "market"],
+    photography: ["landmark", "viewpoint", "park"],
+    wellness: ["park", "garden"],
+    history: ["shrine", "temple", "historic", "museum"],
+  };
+
+  const preferredCategories = categoryMap[interest] ?? [];
+  const unused = list.filter((loc) => !usedLocations.has(loc.id));
+
+  if (unused.length === 0) {
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  const preferred = unused.filter((loc) => preferredCategories.includes(loc.category));
+  if (preferred.length > 0) {
+    return preferred[Math.floor(Math.random() * preferred.length)];
+  }
+
+  return unused[Math.floor(Math.random() * unused.length)];
 }
 
 function buildTags(interest: InterestId, category: LocationCategory): string[] {
-  const tags = new Set<string>([interest, category]);
-  return Array.from(tags);
+  const tags: string[] = [];
+  const interestMap: Record<InterestId, string> = {
+    culture: "cultural",
+    food: "dining",
+    nature: "nature",
+    nightlife: "nightlife",
+    shopping: "shopping",
+    photography: "photo spot",
+    wellness: "relaxation",
+    history: "historical",
+  };
+
+  const categoryMap: Record<LocationCategory, string> = {
+    shrine: "shrine",
+    temple: "temple",
+    landmark: "landmark",
+    historic: "historic site",
+    restaurant: "restaurant",
+    market: "market",
+    park: "park",
+    garden: "garden",
+    shopping: "shopping",
+    bar: "nightlife",
+    entertainment: "entertainment",
+    museum: "museum",
+    viewpoint: "viewpoint",
+  };
+
+  const interestTag = interestMap[interest];
+  if (interestTag) {
+    tags.push(interestTag);
+  }
+
+  const categoryTag = categoryMap[category];
+  if (categoryTag && categoryTag !== interestTag) {
+    tags.push(categoryTag);
+  }
+
+  return tags;
 }
 
-function selectDominantCity(counts: Map<string, number>): string | undefined {
-  let selected: string | undefined;
-  let highest = 0;
-  counts.forEach((count, key) => {
-    if (count > highest) {
-      selected = key;
-      highest = count;
+function buildDayTitle(dayIndex: number, cityKey: string): string {
+  const region = CITY_TO_REGION[cityKey as CityId];
+  if (region) {
+    const cityInfo = CITY_INFO_BY_KEY.get(cityKey);
+    const cityLabel = cityInfo?.label ?? capitalize(cityKey);
+    return `Day ${dayIndex + 1} (${cityLabel})`;
+  }
+  
+  for (const [regionId, cities] of Object.entries(CITY_TO_REGION)) {
+    if (cities.includes(cityKey as CityId)) {
+      const region = REGIONS.find((r) => r.id === regionId);
+      if (region) {
+        const city = region.cities.find((c) => c.id === cityKey);
+        if (city) {
+          return `Day ${dayIndex + 1} (${city.name})`;
+        }
+      }
     }
-  });
-  return selected;
-}
-
-function formatDayLabel(dayIndex: number, cityKey: string): string {
+  }
   const info = CITY_INFO_BY_KEY.get(cityKey);
   const label = info?.label ?? capitalize(cityKey);
   return `Day ${dayIndex + 1} (${label})`;
 }
 
-function findCityInRegionWithLocations(regionId?: RegionId): string | undefined {
-  if (!regionId) {
-    return undefined;
-  }
-  const region = REGIONS.find((entry) => entry.id === regionId);
-  if (!region) {
-    return undefined;
-  }
-  for (const city of region.cities) {
-    const cityKey = normalizeKey(city.id);
-    if (LOCATIONS_BY_CITY_KEY.has(cityKey)) {
-      return cityKey;
+function findAnyCityForRegion(regionId: RegionId): string | undefined {
+  const region = REGIONS.find((r) => r.id === regionId);
+  if (region && region.cities.length > 0) {
+    for (const city of region.cities) {
+      const cityKey = normalizeKey(city.id);
+      if (LOCATIONS_BY_CITY_KEY.has(cityKey)) {
+        return cityKey;
+      }
     }
   }
   const regionLocations = LOCATIONS_BY_REGION_ID.get(regionId);
@@ -331,10 +359,7 @@ function normalizeKey(value?: string): string {
   return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
-function capitalize(value: string): string {
-  if (!value) {
-    return "";
-  }
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function capitalize(str: string): string {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
-
