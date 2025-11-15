@@ -4,6 +4,7 @@ import { Location, LocationDetails, LocationPhoto, LocationReview } from "@/type
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
+import { LRUCache } from "@/lib/utils/lruCache";
 
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 const SEARCH_FIELD_MASK = ["places.id", "places.displayName", "places.formattedAddress"].join(",");
@@ -108,21 +109,29 @@ function normalizeDetailsRow(row: PlaceDetailsRow): LocationDetails {
   };
 }
 
+// LRU cache size limits for place caches
+const PLACE_ID_CACHE_MAX_SIZE = 1000;
+const PLACE_DETAILS_CACHE_MAX_SIZE = 1000;
+
 declare global {
-  var __kokuPlaceIdCache: Map<string, PlaceIdCacheEntry> | undefined;
-  var __kokuPlaceDetailsCache: Map<string, PlaceDetailsCacheEntry> | undefined;
+  var __kokuPlaceIdCache: LRUCache<string, PlaceIdCacheEntry> | undefined;
+  var __kokuPlaceDetailsCache: LRUCache<string, PlaceDetailsCacheEntry> | undefined;
 }
 
-function getPlaceIdCache(): Map<string, PlaceIdCacheEntry> {
+function getPlaceIdCache(): LRUCache<string, PlaceIdCacheEntry> {
   if (!globalThis.__kokuPlaceIdCache) {
-    globalThis.__kokuPlaceIdCache = new Map();
+    globalThis.__kokuPlaceIdCache = new LRUCache<string, PlaceIdCacheEntry>({
+      maxSize: PLACE_ID_CACHE_MAX_SIZE,
+    });
   }
   return globalThis.__kokuPlaceIdCache;
 }
 
-function getPlaceDetailsCache(): Map<string, PlaceDetailsCacheEntry> {
+function getPlaceDetailsCache(): LRUCache<string, PlaceDetailsCacheEntry> {
   if (!globalThis.__kokuPlaceDetailsCache) {
-    globalThis.__kokuPlaceDetailsCache = new Map();
+    globalThis.__kokuPlaceDetailsCache = new LRUCache<string, PlaceDetailsCacheEntry>({
+      maxSize: PLACE_DETAILS_CACHE_MAX_SIZE,
+    });
   }
   return globalThis.__kokuPlaceDetailsCache;
 }
