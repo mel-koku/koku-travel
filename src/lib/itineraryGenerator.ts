@@ -111,6 +111,9 @@ export function generateItineraryFromTrip(data: TripBuilderData): Itinerary {
       }
       const location = pickLocation(cityInfo, interest, usedLocations);
       const timeOfDay = TIME_OF_DAY_SEQUENCE[activityIndex % TIME_OF_DAY_SEQUENCE.length];
+      if (!timeOfDay) {
+        throw new Error(`Time of day not found for activity ${activityIndex}`);
+      }
 
       if (location) {
         const locationKey = normalizeKey(location.city);
