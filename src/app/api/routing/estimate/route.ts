@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requestRoute } from "@/lib/routing";
 import type { RoutingRequest } from "@/lib/routing/types";
+import { logger } from "@/lib/logger";
 
 /**
  * POST /api/routing/estimate
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
       distanceMeters: result.distanceMeters,
     });
   } catch (error) {
-    console.error("Routing estimate error:", error);
+    logger.error("Routing estimate error", error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to estimate route" },
       { status: 500 }
