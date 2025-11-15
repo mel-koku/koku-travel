@@ -327,8 +327,8 @@ function checkDependencies(filePath: string): {
   const depSection = content.match(/"dependencies"\s*:\s*\{([^}]+)\}/);
   const devDepSection = content.match(/"devDependencies"\s*:\s*\{([^}]+)\}/);
   
-  const depCount = depSection ? (depSection[1].match(/"[^"]+"/g)?.length || 0) : 0;
-  const devDepCount = devDepSection ? (devDepSection[1].match(/"[^"]+"/g)?.length || 0) : 0;
+  const depCount = depSection && depSection[1] ? (depSection[1].match(/"[^"]+"/g)?.length || 0) : 0;
+  const devDepCount = devDepSection && devDepSection[1] ? (devDepSection[1].match(/"[^"]+"/g)?.length || 0) : 0;
 
   return {
     hasDependencies: !!depMatches,
