@@ -35,8 +35,8 @@ export const NoteActivityRow = forwardRef<HTMLLIElement, NoteActivityRowProps>(
     },
     ref,
   ) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [notesOpen] = useState(() => Boolean(activity.notes));
+    // Reserved for future use - prefix with underscore to indicate intentionally unused
+    const [_notesOpen] = useState(() => Boolean(activity.notes));
     const noteStartTime = activity.startTime ?? "";
     const noteEndTime = activity.endTime ?? "";
     const timeInvalid =

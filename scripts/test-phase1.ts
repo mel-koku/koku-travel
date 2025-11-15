@@ -11,7 +11,7 @@ import type { NextRequest } from "next/server";
 
 // Mock NextRequest for testing
 // Only implements the parts of NextRequest that checkRateLimit actually uses
-function createMockRequest(ip?: string, forwardedFor?: string): NextRequest {
+function createMockRequest(_ip?: string, forwardedFor?: string): NextRequest {
   const headers = new Headers();
   if (forwardedFor) {
     headers.set("x-forwarded-for", forwardedFor);
