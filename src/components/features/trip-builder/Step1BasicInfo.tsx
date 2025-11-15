@@ -75,7 +75,14 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
   });
 
   const entryPointOptions = useMemo(() => {
-    if (!entryPointType || entryPointType === "") {
+    if (!entryPointType) {
+      return [];
+    }
+    // Type guard: check if entryPointType is a valid EntryPointType (not empty string)
+    const isValidType = (val: string | undefined): val is EntryPointType => {
+      return val === "airport" || val === "city" || val === "hotel";
+    };
+    if (!isValidType(entryPointType)) {
       return [];
     }
     try {
@@ -268,8 +275,11 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
                 placeholder={entryPointType ? "Select entry point" : "Select type first"}
                 options={entryPointOptions}
                 value={field.value ?? ""}
-                onChange={(e) => field.onChange(e.target.value || undefined)}
-                disabled={!entryPointType || entryPointType === ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  field.onChange(val === "" ? undefined : (val as EntryPointType));
+                }}
+                disabled={!entryPointType}
               />
             </FormField>
           )}

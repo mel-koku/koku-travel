@@ -46,6 +46,7 @@ export type TripBuilderData = {
   accessibility?: {
     mobility?: boolean;
     dietary?: string[];
+    dietaryOther?: string;
     notes?: string;
   };
 };

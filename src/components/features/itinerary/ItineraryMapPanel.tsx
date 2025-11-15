@@ -8,7 +8,6 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryTravelMode } from "@/types/itinerary";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { ensureLeafletResources, type LeafletMap, type LeafletMarker, type LeafletPolyline, type LeafletLayerGroup } from "./leafletUtils";
-import { RouteOverview } from "./RouteOverview";
 
 const DEFAULT_CENTER = { lat: 35.0116, lng: 135.7681 }; // Kyoto station area
 const DEFAULT_ZOOM = 12;
@@ -105,18 +104,6 @@ export const ItineraryMapPanel = ({
     return map;
   }, [points]);
 
-  const placeIndexLookup = useMemo(() => {
-    const map = new Map<string, number>();
-    let counter = 1;
-    activities.forEach((activity) => {
-      if (isPlaceActivity(activity)) {
-        map.set(activity.id, counter);
-        counter += 1;
-      }
-    });
-    return map;
-  }, [activities]);
-
   const placeActivities = useMemo(() => activities.filter(isPlaceActivity), [activities]);
 
   const travelSegments = useMemo(() => {
@@ -195,14 +182,6 @@ export const ItineraryMapPanel = ({
 
     return segments;
   }, [activities, pointLookup]);
-
-  const travelSegmentLookup = useMemo(() => {
-    const map = new Map<string, (typeof travelSegments)[number]>();
-    travelSegments.forEach((segment) => {
-      map.set(segment.to.id, segment);
-    });
-    return map;
-  }, [travelSegments]);
 
   useEffect(() => {
     let cancelled = false;
@@ -388,13 +367,10 @@ export const ItineraryMapPanel = ({
           Visualize the stops planned for this day and preview travel flow.
         </p>
       </header>
-      <div className="relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-gray-100">
+      <div className="relative flex-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100">
         <div
           ref={containerRef}
           className="absolute inset-0"
-          style={{
-            minHeight: "320px",
-          }}
           aria-label="Map showing planned activities"
         />
         {!mapReady && !mapError ? (
@@ -422,17 +398,6 @@ export const ItineraryMapPanel = ({
           </div>
         ) : null}
       </div>
-        <div className="mt-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
-            Route overview
-          </h3>
-          <RouteOverview
-            placeActivities={placeActivities}
-            pointLookup={pointLookup}
-            travelSegmentLookup={travelSegmentLookup}
-            placeIndexLookup={placeIndexLookup}
-          />
-        </div>
       </aside>
       <style jsx global>{`
         .leaflet-marker-icon.${SELECTED_MARKER_CLASS},

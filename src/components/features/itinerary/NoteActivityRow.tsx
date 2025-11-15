@@ -21,7 +21,7 @@ type NoteActivityRowProps = {
   transition?: string | null;
 };
 
-export const NoteActivityRow = forwardRef<HTMLLIElement, NoteActivityRowProps>(
+export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
   (
     {
       activity,
@@ -65,7 +65,7 @@ export const NoteActivityRow = forwardRef<HTMLLIElement, NoteActivityRowProps>(
     const dragHandleLabel = `Drag to reorder note for ${TIME_OF_DAY_LABEL[activity.timeOfDay]}`;
 
     return (
-      <li
+      <div
         ref={ref}
         style={dragStyles}
         className={`rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/80 p-4 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
@@ -171,7 +171,7 @@ export const NoteActivityRow = forwardRef<HTMLLIElement, NoteActivityRowProps>(
             />
           </div>
         </div>
-      </li>
+      </div>
     );
   },
 );

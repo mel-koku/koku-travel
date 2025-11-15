@@ -189,9 +189,10 @@ function sanitizeAccessibility(
         ),
       )
     : [];
+  const dietaryOther = typeof accessibility.dietaryOther === "string" ? accessibility.dietaryOther.trim() : "";
   const notes = typeof accessibility.notes === "string" ? accessibility.notes.trim() : "";
 
-  if (!hasMobility && dietary.length === 0 && notes.length === 0) {
+  if (!hasMobility && dietary.length === 0 && dietaryOther.length === 0 && notes.length === 0) {
     return undefined;
   }
 
@@ -201,6 +202,9 @@ function sanitizeAccessibility(
 
   if (hasMobility) {
     sanitized.mobility = true;
+  }
+  if (dietaryOther.length > 0) {
+    sanitized.dietaryOther = dietaryOther;
   }
   if (notes.length > 0) {
     sanitized.notes = notes;

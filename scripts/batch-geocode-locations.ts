@@ -232,7 +232,7 @@ function updateMockLocationsFile(
           indent += content[j];
         }
         // Use the same indentation
-        const coordsStr = formatCoordinates(result.coordinates);
+        const coordsStr = result.coordinates ? formatCoordinates(result.coordinates) : "null";
         const insertText = `,\n${indent}coordinates: ${coordsStr}`;
         content = content.slice(0, objectEnd) + insertText + content.slice(objectEnd);
         break;
@@ -330,6 +330,7 @@ async function main() {
 
   for (let i = 0; i < locationsToProcess.length; i++) {
     const location = locationsToProcess[i];
+    if (!location) continue;
     const result = await geocodeLocation(location);
     results.push(result);
 

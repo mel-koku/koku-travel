@@ -8,6 +8,8 @@ import { NoteActivityRow } from "./NoteActivityRow";
 
 type ActivityRowProps = {
   activity: ItineraryActivity;
+  allActivities?: ItineraryActivity[];
+  dayTimezone?: string;
   onDelete: () => void;
   onUpdate: (patch: Partial<ItineraryActivity>) => void;
   attributes?: Record<string, unknown>;
@@ -18,14 +20,24 @@ type ActivityRowProps = {
   isSelected?: boolean;
   onSelect?: (activityId: string) => void;
   onHover?: (activityId: string) => void;
+  placeNumber?: number;
 };
 
-export const ActivityRow = forwardRef<HTMLLIElement, ActivityRowProps>(
+export const ActivityRow = forwardRef<HTMLDivElement, ActivityRowProps>(
   (props, ref) => {
     if (props.activity.kind === "note") {
       return <NoteActivityRow ref={ref} {...props} activity={props.activity} />;
     }
-    return <PlaceActivityRow ref={ref} {...props} activity={props.activity} />;
+    return (
+      <PlaceActivityRow
+        ref={ref}
+        {...props}
+        activity={props.activity}
+        allActivities={props.allActivities}
+        dayTimezone={props.dayTimezone}
+        placeNumber={props.placeNumber}
+      />
+    );
   },
 );
 

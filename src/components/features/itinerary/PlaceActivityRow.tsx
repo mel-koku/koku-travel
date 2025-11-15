@@ -8,6 +8,7 @@ import { LocationDetailsModal } from "@/components/features/explore/LocationDeta
 import { useLocationEditorialSummary } from "@/state/locationDetailsStore";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
+import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { DragHandle } from "./DragHandle";
 import { StarIcon } from "./activityIcons";
 import {
@@ -49,6 +50,8 @@ function buildFallbackLocation(
 
 type PlaceActivityRowProps = {
   activity: Extract<ItineraryActivity, { kind: "place" }>;
+  allActivities?: ItineraryActivity[];
+  dayTimezone?: string;
   onDelete: () => void;
   onUpdate: (patch: Partial<ItineraryActivity>) => void;
   attributes?: Record<string, unknown>;
@@ -59,12 +62,15 @@ type PlaceActivityRowProps = {
   isSelected?: boolean;
   onSelect?: (activityId: string) => void;
   onHover?: (activityId: string) => void;
+  placeNumber?: number;
 };
 
-export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>(
+export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps>(
   (
     {
       activity,
+      allActivities = [],
+      dayTimezone,
       onDelete,
       onUpdate,
       attributes,
@@ -75,6 +81,7 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
       isSelected,
       onSelect,
       onHover,
+      placeNumber,
     },
     ref,
   ) => {
@@ -151,6 +158,32 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
         ? `Wait ${schedule.arrivalBufferMinutes} min`
         : null;
 
+    // Find previous activity to get origin coordinates
+    const currentActivityIndex = useMemo(() => {
+      return allActivities.findIndex((a) => a.id === activity.id);
+    }, [allActivities, activity.id]);
+
+    const previousActivity = useMemo(() => {
+      if (currentActivityIndex <= 0) return null;
+      // Find the most recent place activity before this one
+      for (let i = currentActivityIndex - 1; i >= 0; i--) {
+        const prev = allActivities[i];
+        if (prev && prev.kind === "place") {
+          return prev;
+        }
+      }
+      return null;
+    }, [allActivities, currentActivityIndex]);
+
+    const originCoordinates = useMemo(() => {
+      if (!previousActivity || previousActivity.kind !== "place") return null;
+      return getActivityCoordinates(previousActivity);
+    }, [previousActivity]);
+
+    const destinationCoordinates = useMemo(() => {
+      return getActivityCoordinates(activity);
+    }, [activity]);
+
     const handleSelect = () => {
       onSelect?.(activity.id);
     };
@@ -164,7 +197,7 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
     const notesValue = activity.notes ? activity.notes : "";
 
     return (
-      <li
+      <div
         ref={ref}
         style={dragStyles}
         className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
@@ -183,7 +216,7 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
         data-activity-id={activity.id}
       >
         <div
-          className={`group relative overflow-hidden rounded-3xl border bg-white transition duration-200 ${
+          className={`group relative overflow-hidden rounded-lg border bg-white transition duration-200 ${
             isDragging
               ? "border-indigo-300 ring-2 ring-indigo-300 shadow-lg"
               : isSelected
@@ -191,22 +224,10 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
                 : "border-gray-200 shadow-sm hover:border-indigo-200 hover:shadow-lg"
           }`}
         >
-          <div className="p-6 space-y-4">
-            {travelFromPrevious ? (
-              <div className="flex flex-wrap items-center gap-2 text-xs text-indigo-700">
-                <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-1 font-semibold">
-                  Travel · {travelFromPrevious.mode} · {travelFromPrevious.durationMinutes} min
-                </span>
-                {travelFromPrevious.departureTime && travelFromPrevious.arrivalTime ? (
-                  <span className="rounded-full bg-white px-2.5 py-1 font-medium text-indigo-600 ring-1 ring-indigo-100">
-                    {travelFromPrevious.departureTime} → {travelFromPrevious.arrivalTime}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
+          <div className="p-3 space-y-1.5">
 
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="flex items-start gap-3">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="flex items-start gap-2 flex-1 min-w-0">
                 <DragHandle
                   variant="place"
                   label={dragHandleLabel}
@@ -214,24 +235,29 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
                   attributes={attributes}
                   listeners={listeners}
                 />
-                <div>
-                  <p className="text-base font-semibold text-gray-900">
+                {placeNumber !== undefined ? (
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white shadow-sm ring-2 ring-white">
+                    {placeNumber}
+                  </div>
+                ) : null}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900">
                     {placeLocation.name}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs text-gray-600">
                     {placeLocation.city}
                     {placeLocation.city && placeLocation.region ? ", " : ""}
                     {placeLocation.region}
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center justify-end gap-3">
+              <div className="flex flex-wrap items-center justify-end gap-2">
                 {rating ? (
-                  <div className="flex shrink-0 items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-gray-800 shadow-sm ring-1 ring-gray-200">
+                  <div className="flex shrink-0 items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-gray-800 shadow-sm ring-1 ring-gray-200">
                     <StarIcon />
                     <span>{rating.toFixed(1)}</span>
                     {reviewCount ? (
-                      <span className="text-[11px] font-normal text-gray-500">
+                      <span className="text-[10px] font-normal text-gray-500">
                         ({numberFormatter.format(reviewCount)})
                       </span>
                     ) : null}
@@ -239,7 +265,7 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
                 ) : null}
                 <button
                   type="button"
-                  className="rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-red-600 shadow-sm ring-1 ring-red-200 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                  className="rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-semibold text-red-600 shadow-sm ring-1 ring-red-200 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
@@ -253,57 +279,55 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
             </div>
 
             {schedule ? (
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
                   Arrive {schedule.arrivalTime}
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-600">
+                <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-600">
                   Depart {schedule.departureTime}
                 </span>
                 {waitLabel ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600">
                     {waitLabel}
                   </span>
                 ) : null}
                 {schedule.operatingWindow?.status === "outside" || isOutOfHours ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-600">
                     Outside hours
                   </span>
                 ) : null}
               </div>
             ) : null}
             {schedule?.operatingWindow?.note ? (
-              <p className="text-xs text-gray-500">{schedule.operatingWindow.note}</p>
+              <p className="text-[11px] text-gray-500">{schedule.operatingWindow.note}</p>
             ) : null}
 
             {summary ? (
-              <p className="text-sm leading-relaxed text-gray-700">{summary}</p>
+              <p className="text-xs leading-relaxed text-gray-700 line-clamp-2">{summary}</p>
             ) : null}
-            <div className="flex flex-wrap gap-2 pt-1">
+            <div className="flex flex-wrap items-center gap-1.5">
               {placeLocation.category ? (
-                <span className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-700">
+                <span className="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-700">
                   {placeLocation.category}
                 </span>
               ) : null}
               {durationLabel ? (
-                <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-600">
+                <span className="inline-block rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-600">
                   Est. {durationLabel.replace("~", "")}
                 </span>
               ) : null}
-            </div>
-            <div className="pt-2">
               <button
                 type="button"
                 onClick={handleMoreInfo}
-                className="rounded-full border border-indigo-200 px-3 py-1.5 text-sm font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                className="inline-flex items-center rounded-full border border-indigo-200 px-2 py-0.5 text-[11px] font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
               >
                 More info
               </button>
             </div>
           </div>
-          <div className="border-t border-gray-100 bg-white p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <p className="text-sm font-semibold text-gray-900">Notes</p>
+          <div className="border-t border-gray-100 bg-white p-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-gray-900">Notes</p>
               <button
                 type="button"
                 onClick={(event) => {
@@ -311,20 +335,20 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
                   event.stopPropagation();
                   handleToggleNotes();
                 }}
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                className="text-xs font-medium text-indigo-600 hover:text-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
               >
                 {notesOpen ? "Hide note" : "Add note"}
               </button>
             </div>
             {notesOpen ? (
-              <div className="mt-3 space-y-2">
-                <label htmlFor={notesId} className="text-sm font-medium text-gray-700">
+              <div className="mt-2 space-y-1.5">
+                <label htmlFor={notesId} className="text-xs font-medium text-gray-700">
                   {noteLabel}
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
-                  rows={3}
+                  className="w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-xs text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                  rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}
                   placeholder="Add helpful details, reminders, or context for this activity."
@@ -337,7 +361,7 @@ export const PlaceActivityRow = forwardRef<HTMLLIElement, PlaceActivityRowProps>
           location={detailsOpen ? placeLocation : null}
           onClose={() => setDetailsOpen(false)}
         />
-      </li>
+      </div>
     );
   },
 );

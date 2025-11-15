@@ -6,20 +6,34 @@ import {
   useRef,
   useState,
   useCallback,
+  type ChangeEvent,
   type Dispatch,
+  type RefObject,
   type SetStateAction,
 } from "react";
 import { Itinerary, type ItineraryActivity } from "@/types/itinerary";
 import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
+import { Select } from "@/components/ui/Select";
 import { planItinerary } from "@/lib/itineraryPlanner";
 import { logger } from "@/lib/logger";
+import type { StoredTrip } from "@/state/AppState";
 
 type ItineraryShellProps = {
   tripId: string;
   itinerary: Itinerary;
   onItineraryChange?: (next: Itinerary) => void;
+  selectedTripId: string | null;
+  onTripChange: (event: ChangeEvent<HTMLSelectElement>) => void;
+  trips: StoredTrip[];
+  headingRef?: RefObject<HTMLHeadingElement>;
+  headingText: string;
+  descriptionText: string;
+  createdLabel: string | null;
+  updatedLabel: string | null;
+  isUsingMock: boolean;
+  tripStartDate?: string; // ISO date string (yyyy-mm-dd)
 };
 
 const normalizeItinerary = (incoming: Itinerary): Itinerary => {
@@ -64,12 +78,34 @@ const normalizeItinerary = (incoming: Itinerary): Itinerary => {
   };
 };
 
-export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: ItineraryShellProps) => {
+export const ItineraryShell = ({ 
+  itinerary, 
+  tripId, 
+  onItineraryChange,
+  selectedTripId,
+  onTripChange,
+  trips,
+  headingRef,
+  headingText,
+  descriptionText,
+  createdLabel,
+  updatedLabel,
+  isUsingMock,
+  tripStartDate,
+}: ItineraryShellProps) => {
   const [selectedDay, setSelectedDay] = useState(0);
   const [model, setModelState] = useState<Itinerary>(() => normalizeItinerary(itinerary));
   const [isPlanning, setIsPlanning] = useState(false);
   const [planningError, setPlanningError] = useState<string | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const internalHeadingRef = useRef<HTMLHeadingElement>(null);
+  const finalHeadingRef = headingRef ?? internalHeadingRef;
+
+  useEffect(() => {
+    if (finalHeadingRef.current) {
+      finalHeadingRef.current.focus();
+    }
+  }, []);
   const serializedItinerary = useMemo(() => JSON.stringify(itinerary), [itinerary]);
   const previousSerializedRef = useRef<string | null>(null);
   const skipSyncRef = useRef(true);
@@ -310,7 +346,7 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(380px,40%)_1fr] xl:gap-6">
         {/* Map panel - full width on mobile, sidebar on desktop */}
         <div className="order-2 xl:order-1">
-          <div className="h-[400px] rounded-2xl border border-gray-200 bg-white shadow-sm sm:h-[500px] xl:h-full xl:min-h-[600px]">
+          <div className="sticky h-[400px] rounded-2xl border border-gray-200 bg-white shadow-sm sm:h-[500px] xl:h-[calc(100vh-100px)] xl:min-h-[600px]" style={{ top: 'var(--sticky-offset, calc(80px + 10px))' }}>
             <ItineraryMapPanel
               day={safeSelectedDay}
               activities={currentDay?.activities ?? []}
@@ -323,6 +359,52 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
         {/* Timeline panel */}
         <div className="order-1 flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm xl:order-2">
           <div className="border-b border-gray-200 p-3 sm:p-4">
+            <div className="mb-4 space-y-1">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <h1
+                  ref={finalHeadingRef}
+                  tabIndex={-1}
+                  className="text-2xl font-semibold text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 sm:text-3xl"
+                >
+                  {headingText}
+                </h1>
+                {trips.length > 1 && (
+                  <div className="flex flex-col gap-1 sm:min-w-[200px] sm:max-w-xs">
+                    <label htmlFor="itinerary-select" className="text-xs font-medium text-gray-700">
+                      View itinerary
+                    </label>
+                    <Select
+                      id="itinerary-select"
+                      value={selectedTripId ?? ""}
+                      onChange={onTripChange}
+                      options={trips.map((trip) => ({
+                        label: trip.name,
+                        value: trip.id,
+                      }))}
+                      placeholder="Select a trip"
+                    />
+                  </div>
+                )}
+              </div>
+              {isUsingMock ? (
+                <p className="mt-2 text-sm text-gray-500 sm:mt-3">
+                  Showing mock itinerary for development. Build a trip to see your personalized plan.
+                </p>
+              ) : null}
+              {trips.length > 0 ? (
+                <>
+                  <p className="text-sm text-gray-600">
+                    {descriptionText}
+                  </p>
+                  {createdLabel ? (
+                    <p className="text-xs text-gray-400">
+                      Saved {createdLabel}
+                      {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
+                    </p>
+                  ) : null}
+                </>
+              ) : null}
+            </div>
             <DaySelector
               totalDays={days.length}
               selected={safeSelectedDay}
@@ -339,6 +421,7 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
                 setModel={applyModelUpdate}
                 selectedActivityId={selectedActivityId}
                 onSelectActivity={handleSelectActivity}
+                tripStartDate={tripStartDate}
               />
             ) : (
               <p className="text-sm text-gray-500">
@@ -352,7 +435,22 @@ export const ItineraryShell = ({ itinerary, tripId, onItineraryChange }: Itinera
             ) : null}
             {planningError ? (
               <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50/70 p-3 text-sm text-rose-700 sm:p-4">
-                Planner fell back to a basic ordering: {planningError}
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="font-semibold">Planning error</p>
+                    <p className="text-xs text-rose-600/80">{planningError}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPlanningError(null);
+                      scheduleUserPlanning(model);
+                    }}
+                    className="mt-2 shrink-0 rounded-lg bg-rose-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 sm:mt-0"
+                  >
+                    Retry
+                  </button>
+                </div>
               </div>
             ) : null}
           </div>

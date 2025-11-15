@@ -41,9 +41,7 @@
 **Sanity CMS - Client-side (3):**
 - `NEXT_PUBLIC_SANITY_PROJECT_ID` - Same as `SANITY_PROJECT_ID`
 - `NEXT_PUBLIC_SANITY_DATASET` - Same as `SANITY_DATASET`
-- `NEXT_PUBLIC_SANITY_API_VERSION` - API version (`2025-11-13` for client-side Studio)
-
-**Note:** Sanity uses different API versions for client-side (Studio) vs server-side. This is correct.
+- `NEXT_PUBLIC_SANITY_API_VERSION` - API version (`2024-10-21` - same as server-side for consistency)
 
 #### Optional Variables
 - `NEXT_PUBLIC_SITE_URL` - Set AFTER first deployment
@@ -123,7 +121,7 @@ Before deploying, gather all required environment variables:
    - Dataset → `SANITY_DATASET` and `NEXT_PUBLIC_SANITY_DATASET`
    - Read Token → `SANITY_API_READ_TOKEN`
    - API Version (server) → `SANITY_API_VERSION` = `2024-10-21`
-   - API Version (client) → `NEXT_PUBLIC_SANITY_API_VERSION` = `2025-11-13`
+   - API Version (client) → `NEXT_PUBLIC_SANITY_API_VERSION` = `2024-10-21`
 
 3. **Generate Secrets:**
    ```bash
@@ -206,7 +204,7 @@ For content revalidation when you update Sanity content:
 5. **Documentation:** Comprehensive deployment documentation
 
 ### ⚠️ Notes
-1. **API Version Difference:** Sanity uses different API versions for client (`2025-11-13`) vs server (`2024-10-21`). This is correct and intentional.
+1. **API Version:** Both client and server use the same Sanity API version (`2024-10-21`) for consistency.
 2. **Site URL:** Must be set after first deployment to get actual Vercel URL
 3. **Sensitive Variables:** Ensure `SUPABASE_SERVICE_ROLE_KEY` and `SANITY_REVALIDATE_SECRET` are marked as sensitive in Vercel
 

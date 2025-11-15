@@ -27,7 +27,7 @@ export const formatDistance = (meters?: number): string | null => {
       ? `${Math.round(kilometers)} km`
       : `${(Math.round(kilometers * 10) / 10).toFixed(1)} km`;
   }
-  return `${Math.round(meters)} m`;
+  return `${Math.ceil(meters)} meters`;
 };
 
 export const formatModeLabel = (mode: ItineraryTravelMode): string => {

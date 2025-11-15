@@ -11,6 +11,12 @@ import type {
 import type { Location, LocationOperatingHours, LocationOperatingPeriod, Weekday } from "@/types/location";
 import type { CityId } from "@/types/trip";
 import { travelMinutes } from "./travelTime";
+import { fetchLocationDetails } from "./googlePlaces";
+import {
+  extractDurationFromGooglePlaces,
+  getCategoryDefaultDuration,
+} from "./durationExtractor";
+import { logger } from "./logger";
 
 import { requestRoute } from "./routing";
 
@@ -142,24 +148,65 @@ function straightLineDistanceMeters(
   return earthRadiusMeters * c;
 }
 
-function determineVisitDuration(
+async function determineVisitDuration(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
   location: Location | null,
   options: Required<PlannerOptions>,
-): number {
+  useGooglePlaces: boolean = true,
+): Promise<number> {
+  // 1. Prefer explicit activity duration
   if (activity.durationMin) {
     return activity.durationMin;
   }
+
+  // 2. Prefer structured recommendation from location data
   if (location?.recommendedVisit?.typicalMinutes) {
     return location.recommendedVisit.typicalMinutes;
   }
   if (location?.recommendedVisit?.minMinutes) {
     return location.recommendedVisit.minMinutes;
   }
+
+  // 3. Parse estimatedDuration string or activity notes
   const parsed = parseEstimatedDuration(location?.estimatedDuration ?? activity.notes);
   if (parsed) {
     return parsed;
   }
+
+  // 4. Try to extract from Google Places API if enabled and location exists
+  if (useGooglePlaces && location) {
+    try {
+      const details = await fetchLocationDetails(location);
+      const extracted = extractDurationFromGooglePlaces(details);
+
+      if (extracted.typicalMinutes) {
+        logger.debug("Extracted duration from Google Places", {
+          locationId: location.id,
+          locationName: location.name,
+          duration: extracted.typicalMinutes,
+          source: extracted.source,
+        });
+        return extracted.typicalMinutes;
+      }
+    } catch (error) {
+      // Fall through to defaults if Google Places fails
+      logger.debug("Failed to extract duration from Google Places", {
+        locationId: location?.id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  // 5. Use category-based default if available
+  if (location?.category) {
+    const categoryDefault = getCategoryDefaultDuration(location.category);
+    if (categoryDefault !== 90) {
+      // Only use if it's different from the global default
+      return categoryDefault;
+    }
+  }
+
+  // 6. Fall back to options default
   return options.defaultVisitMinutes;
 }
 
@@ -340,6 +387,10 @@ export async function planItinerary(
     const day = itinerary.days[dayIndex];
     const previousDay = dayIndex > 0 ? plannedDays[dayIndex - 1] : undefined;
     
+    if (!day) {
+      continue; // Skip if day is undefined
+    }
+    
     const plannedDay = await planItineraryDay(day, itinerary, mergedOptions);
     
     // Detect city change and create transition
@@ -449,10 +500,13 @@ async function planItineraryDay(
       cursorMinutes += travelSegment.durationMinutes;
     }
 
-    const visitDuration = determineVisitDuration(activity, location, options);
+    const visitDuration = await determineVisitDuration(activity, location, options);
     const operatingPeriod = getOperatingPeriodForDay(location?.operatingHours, day.weekday);
 
     const evaluation = evaluateOperatingWindow(operatingPeriod, cursorMinutes, visitDuration);
+
+    // Set durationMin so it's available for duration calculations
+    plannerActivity.durationMin = visitDuration;
 
     plannerActivity.schedule = {
       arrivalTime: formatTime(evaluation.adjustedArrival),
