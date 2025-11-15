@@ -193,8 +193,11 @@ function resolveCitySequence(data: TripBuilderData): CityInfo[] {
   }
 
   if (sequence.length === 0) {
-    const firstCityKey = ALL_LOCATIONS.length > 0 ? normalizeKey(ALL_LOCATIONS[0].city) : undefined;
-    addCityByKey(firstCityKey);
+    const firstLocation = ALL_LOCATIONS[0];
+    if (firstLocation) {
+      const firstCityKey = normalizeKey(firstLocation.city);
+      addCityByKey(firstCityKey);
+    }
   }
 
   if (sequence.length === 0) {
