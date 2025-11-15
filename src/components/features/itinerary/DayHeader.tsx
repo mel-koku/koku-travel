@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import type { ItineraryDay } from "@/types/itinerary";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
+import { logger } from "@/lib/logger";
 
 type DayHeaderProps = {
   day: ItineraryDay;
@@ -142,22 +143,20 @@ export function DayHeader({ day, dayIndex, tripStartDate }: DayHeaderProps) {
       }
     }
 
-    // Debug logging (remove in production)
-    if (process.env.NODE_ENV === "development") {
-      console.log("[DayHeader] Duration calculation:", {
-        placeActivitiesCount: placeActivities.length,
-        visitDurations,
-        travelTimes,
-        cityTransition: day.cityTransition?.durationMinutes ?? 0,
-        totalMinutes,
-        activities: placeActivities.map((a) => ({
-          title: a.title,
-          durationMin: a.durationMin,
-          hasSchedule: Boolean(a.schedule?.arrivalTime && a.schedule?.departureTime),
-          travelTime: a.travelFromPrevious?.durationMinutes ?? 0,
-        })),
-      });
-    }
+    // Debug logging
+    logger.debug("[DayHeader] Duration calculation", {
+      placeActivitiesCount: placeActivities.length,
+      visitDurations,
+      travelTimes,
+      cityTransition: day.cityTransition?.durationMinutes ?? 0,
+      totalMinutes,
+      activities: placeActivities.map((a) => ({
+        title: a.title,
+        durationMin: a.durationMin,
+        hasSchedule: Boolean(a.schedule?.arrivalTime && a.schedule?.departureTime),
+        travelTime: a.travelFromPrevious?.durationMinutes ?? 0,
+      })),
+    });
 
     // Add city transition time if present
     if (day.cityTransition?.durationMinutes) {

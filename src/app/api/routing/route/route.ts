@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requestRoute } from "@/lib/routing";
 import type { RoutingRequest } from "@/lib/routing/types";
+import { logger } from "@/lib/logger";
 
 /**
  * POST /api/routing/route
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       departureTime: body.departureTime,
     });
   } catch (error) {
-    console.error("Routing route error:", error);
+    logger.error("Routing route error", error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Failed to get route" },
       { status: 500 }
