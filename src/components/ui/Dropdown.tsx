@@ -105,8 +105,10 @@ export function Dropdown({
     if (event.key === "ArrowDown") {
       event.preventDefault();
       const next = enabledItems[(currentEnabledIndex + 1) % enabledItems.length];
-      setActiveIndex(next.index);
-      itemsRef.current[next.index]?.focus({ preventScroll: true });
+      if (next) {
+        setActiveIndex(next.index);
+        itemsRef.current[next.index]?.focus({ preventScroll: true });
+      }
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
       const previous =
