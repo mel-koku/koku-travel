@@ -8,14 +8,33 @@
  *   tsx scripts/seed-locations.ts
  * 
  * Requires:
- *   - SUPABASE_SERVICE_ROLE_KEY environment variable
- *   - NEXT_PUBLIC_SUPABASE_URL environment variable
+ *   - SUPABASE_SERVICE_ROLE_KEY environment variable (in .env.local)
+ *   - NEXT_PUBLIC_SUPABASE_URL environment variable (in .env.local)
  */
 
-import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
+// Load environment variables from .env.local FIRST, before any other imports
+import { config } from "dotenv";
+const result = config({ path: ".env.local" });
+
+if (result.error) {
+  console.error("Failed to load .env.local:", result.error);
+  process.exit(1);
+}
+
+// Verify the key is loaded
+if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error("❌ SUPABASE_SERVICE_ROLE_KEY is still missing after loading .env.local");
+  console.log("Available SUPABASE vars:", Object.keys(process.env).filter(k => k.includes("SUPABASE")));
+  process.exit(1);
+}
+
+// Now import modules that depend on environment variables (after dotenv has loaded)
 import { MOCK_LOCATIONS } from "@/data/mockLocations";
 import { logger } from "@/lib/logger";
 import type { Location } from "@/types/location";
+
+// Import serviceRole dynamically to ensure env vars are loaded first
+let getServiceRoleClient: typeof import("@/lib/supabase/serviceRole").getServiceRoleClient;
 
 function transformLocationForDb(location: Location) {
   return {
@@ -42,6 +61,28 @@ function transformLocationForDb(location: Location) {
 async function seedLocations() {
   try {
     logger.info("Starting locations seed...");
+    
+    // Dynamically import getServiceRoleClient after env vars are loaded
+    const serviceRoleModule = await import("@/lib/supabase/serviceRole");
+    getServiceRoleClient = serviceRoleModule.getServiceRoleClient;
+    
+    // Check for required environment variables before proceeding
+    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      logger.error("❌ SUPABASE_SERVICE_ROLE_KEY is missing!");
+      logger.info("");
+      logger.info("To fix this:");
+      logger.info("1. Get your service role key from: Supabase Dashboard → Project Settings → API → service_role secret key");
+      logger.info("2. Add it to your .env.local file:");
+      logger.info("   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here");
+      logger.info("3. Run this script again");
+      process.exit(1);
+    }
+    
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+      logger.error("❌ NEXT_PUBLIC_SUPABASE_URL is missing!");
+      logger.info("Add it to your .env.local file");
+      process.exit(1);
+    }
     
     const supabase = getServiceRoleClient();
     
@@ -73,7 +114,13 @@ async function seedLocations() {
         .insert(batch);
       
       if (error) {
-        logger.error(`Failed to insert batch starting at index ${i}`, { error });
+        logger.error(`Failed to insert batch starting at index ${i}`);
+        logger.error("Error details:", {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint,
+        });
         throw error;
       }
       
@@ -83,7 +130,15 @@ async function seedLocations() {
     
     logger.info(`✅ Successfully seeded ${inserted} locations!`);
   } catch (error) {
-    logger.error("Failed to seed locations", { error });
+    logger.error("Failed to seed locations");
+    if (error instanceof Error) {
+      logger.error(`Error: ${error.message}`);
+      if (error.stack) {
+        logger.error(`Stack: ${error.stack}`);
+      }
+    } else {
+      logger.error("Unknown error:", error);
+    }
     process.exit(1);
   }
 }
