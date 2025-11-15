@@ -93,6 +93,52 @@ describe("Logger", () => {
       const sanitized = sanitizeContext({});
       expect(sanitized).toEqual({});
     });
+
+    it("should sanitize keys containing sensitive words", () => {
+      const context = {
+        userPassword: "secret123",
+        apiToken: "abc123",
+        secretKey: "key123",
+        authorizationHeader: "Bearer token",
+        cookieValue: "session123",
+        normalData: "safe",
+      };
+      const sanitized = sanitizeContext(context);
+      expect(sanitized.userPassword).toBe("[REDACTED]");
+      expect(sanitized.apiToken).toBe("[REDACTED]");
+      expect(sanitized.secretKey).toBe("[REDACTED]");
+      expect(sanitized.authorizationHeader).toBe("[REDACTED]");
+      expect(sanitized.cookieValue).toBe("[REDACTED]");
+      expect(sanitized.normalData).toBe("safe");
+    });
+
+    it("should handle null and undefined values", () => {
+      const context = {
+        password: null,
+        token: undefined,
+        normalData: "safe",
+      };
+      const sanitized = sanitizeContext(context);
+      expect(sanitized.password).toBe("[REDACTED]");
+      expect(sanitized.token).toBe("[REDACTED]");
+      expect(sanitized.normalData).toBe("safe");
+    });
+
+    it("should preserve non-sensitive data types", () => {
+      const context = {
+        number: 123,
+        boolean: true,
+        array: [1, 2, 3],
+        object: { nested: "value" },
+        password: "secret",
+      };
+      const sanitized = sanitizeContext(context);
+      expect(sanitized.number).toBe(123);
+      expect(sanitized.boolean).toBe(true);
+      expect(sanitized.array).toEqual([1, 2, 3]);
+      expect(sanitized.object).toEqual({ nested: "value" });
+      expect(sanitized.password).toBe("[REDACTED]");
+    });
   });
 });
 

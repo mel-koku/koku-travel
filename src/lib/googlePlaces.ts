@@ -108,33 +108,6 @@ function normalizeDetailsRow(row: PlaceDetailsRow): LocationDetails {
   };
 }
 
-<<<<<<< HEAD
-// LRU cache size limits for place caches
-const PLACE_ID_CACHE_MAX_SIZE = 1000;
-const PLACE_DETAILS_CACHE_MAX_SIZE = 1000;
-
-declare global {
-  var __kokuPlaceIdCache: LRUCache<string, PlaceIdCacheEntry> | undefined;
-  var __kokuPlaceDetailsCache: LRUCache<string, PlaceDetailsCacheEntry> | undefined;
-}
-
-function getPlaceIdCache(): LRUCache<string, PlaceIdCacheEntry> {
-  if (!globalThis.__kokuPlaceIdCache) {
-    globalThis.__kokuPlaceIdCache = new LRUCache<string, PlaceIdCacheEntry>({
-      maxSize: PLACE_ID_CACHE_MAX_SIZE,
-    });
-  }
-  return globalThis.__kokuPlaceIdCache;
-}
-
-function getPlaceDetailsCache(): LRUCache<string, PlaceDetailsCacheEntry> {
-  if (!globalThis.__kokuPlaceDetailsCache) {
-    globalThis.__kokuPlaceDetailsCache = new LRUCache<string, PlaceDetailsCacheEntry>({
-      maxSize: PLACE_DETAILS_CACHE_MAX_SIZE,
-    });
-  }
-  return globalThis.__kokuPlaceDetailsCache;
-=======
 // Module-level cache instances (initialized once per module load)
 // In Next.js, these persist across requests in the same process but reset on hot reload
 const placeIdCache = new Map<string, PlaceIdCacheEntry>();
@@ -146,7 +119,7 @@ function getPlaceIdCache(): Map<string, PlaceIdCacheEntry> {
 
 function getPlaceDetailsCache(): Map<string, PlaceDetailsCacheEntry> {
   return placeDetailsCache;
->>>>>>> task/3.2-replace-global-variables
+}
 }
 
 function getApiKey(): string {
