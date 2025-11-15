@@ -62,15 +62,8 @@ if (useUpstash) {
     });
   }
 } else {
-  // Throw error in production if Upstash is not configured
-  if (process.env.NODE_ENV === "production") {
-    throw new Error(
-      "Upstash Redis is REQUIRED for production deployments. " +
-        "In-memory rate limiting does NOT work correctly across multiple server instances. " +
-        "Please set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables. " +
-        "See https://upstash.com/docs/redis/overall/getstarted for setup instructions.",
-    );
-  }
+  // Note: We don't throw here during build time, but will check at runtime
+  // The check happens in checkRateLimit() function when actually handling requests
 }
 
 // Fallback: In-memory store for local development

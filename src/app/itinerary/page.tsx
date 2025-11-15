@@ -115,17 +115,17 @@ export default function ItineraryPage() {
 
   if (!activeItinerary) {
     return (
-      <main className="p-16 text-center text-gray-600">
+      <div className="p-16 text-center text-gray-600">
         <p>No saved itineraries yet. Confirm a trip in the builder to see it here.</p>
         <Link href="/trip-builder" className="text-indigo-600 underline">
           Go to Trip Builder
         </Link>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="bg-slate-50 py-6 sm:py-8 md:py-10">
+    <div className="bg-slate-50 py-6 sm:py-8 md:py-10">
       <div className="mx-auto max-w-screen-2xl px-4 sm:px-6">
         <h1
           ref={headingRef}
@@ -169,6 +169,6 @@ export default function ItineraryPage() {
         tripId={selectedTrip?.id ?? "mock"}
         onItineraryChange={selectedTrip ? handleItineraryChange : undefined}
       />
-    </main>
+    </div>
   );
 }

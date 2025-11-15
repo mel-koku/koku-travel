@@ -152,7 +152,7 @@ function mergeStepGeometries(steps?: RoutingLegStep[]): RoutingLegStep["geometry
       if (!point) return;
       if (coordinates.length > 0) {
         const last = coordinates[coordinates.length - 1];
-        if (last.lat === point.lat && last.lng === point.lng && index === 0) {
+        if (last && last.lat === point.lat && last.lng === point.lng && index === 0) {
           return;
         }
       }
@@ -185,6 +185,9 @@ export async function fetchMapboxRoute(request: RoutingRequest): Promise<Routing
   }
 
   const primaryRoute = payload.routes[0];
+  if (!primaryRoute) {
+    throw new Error("Mapbox Directions API returned no routes.");
+  }
   const legs =
     primaryRoute.legs?.map((leg) => {
       const mappedSteps = mapSteps(leg.steps);

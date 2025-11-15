@@ -64,10 +64,16 @@ function chooseTravelMode(
     return activity.travelFromPrevious.mode;
   }
   if (previousLocation?.preferredTransitModes?.length) {
-    return previousLocation.preferredTransitModes[0];
+    const firstMode = previousLocation.preferredTransitModes[0];
+    if (firstMode) {
+      return firstMode;
+    }
   }
   if (location?.preferredTransitModes?.length) {
-    return location.preferredTransitModes[0];
+    const firstMode = location.preferredTransitModes[0];
+    if (firstMode) {
+      return firstMode;
+    }
   }
   return "walk";
 }
@@ -99,10 +105,10 @@ function parseEstimatedDuration(text?: string | null): number | null {
   const hoursMatch = text.match(/([\d.]+)\s*(hour|hr)/i);
   const minutesMatch = text.match(/(\d+)\s*min/i);
   let totalMinutes = 0;
-  if (hoursMatch) {
+  if (hoursMatch && hoursMatch[1]) {
     totalMinutes += Number.parseFloat(hoursMatch[1]) * 60;
   }
-  if (minutesMatch) {
+  if (minutesMatch && minutesMatch[1]) {
     totalMinutes += Number.parseInt(minutesMatch[1], 10);
   }
   if (totalMinutes === 0) {
@@ -242,7 +248,7 @@ function mergePathSegments(paths: Array<ItineraryTravelSegment["path"] | undefin
       if (!point) return;
       if (merged.length > 0) {
         const last = merged[merged.length - 1];
-        if (last.lat === point.lat && last.lng === point.lng && index === 0) {
+        if (last && last.lat === point.lat && last.lng === point.lng && index === 0) {
           return;
         }
       }

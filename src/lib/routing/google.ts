@@ -240,7 +240,7 @@ function mergeStepGeometries(steps?: RoutingLegStep[]): RoutingLegStep["geometry
       }
       if (coordinates.length > 0) {
         const last = coordinates[coordinates.length - 1];
-        if (last.lat === point.lat && last.lng === point.lng && index === 0) {
+        if (last && last.lat === point.lat && last.lng === point.lng && index === 0) {
           return;
         }
       }
@@ -270,13 +270,17 @@ function resolveDepartureTime(value?: string, timezone?: string): string | null 
   }
 
   if (timezone && /^\d{1,2}:\d{2}$/.test(value)) {
-    const [hours, minutes] = value.split(":").map((v) => Number.parseInt(v, 10));
-    if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
-      const now = new Date();
-      const localizedString = now.toLocaleString("en-US", { timeZone: timezone });
-      const localizedDate = new Date(localizedString);
-      localizedDate.setHours(hours, minutes, 0, 0);
-      return Math.floor(localizedDate.getTime() / 1000).toString();
+    const parts = value.split(":");
+    if (parts.length === 2) {
+      const hours = Number.parseInt(parts[0]!, 10);
+      const minutes = Number.parseInt(parts[1]!, 10);
+      if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
+        const now = new Date();
+        const localizedString = now.toLocaleString("en-US", { timeZone: timezone });
+        const localizedDate = new Date(localizedString);
+        localizedDate.setHours(hours, minutes, 0, 0);
+        return Math.floor(localizedDate.getTime() / 1000).toString();
+      }
     }
   }
 
@@ -348,6 +352,9 @@ export async function fetchGoogleRoute(request: RoutingRequest): Promise<Routing
   }
 
   const primaryRoute = payload.routes[0];
+  if (!primaryRoute) {
+    throw new Error("Google Directions API returned no routes.");
+  }
   const primaryLeg = primaryRoute.legs?.[0];
 
   if (!primaryLeg) {
@@ -358,7 +365,11 @@ export async function fetchGoogleRoute(request: RoutingRequest): Promise<Routing
     buildLeg(primaryLeg, request.mode, primaryRoute.summary),
   ];
 
-  const overviewGeometry = decodePolyline(primaryRoute.overview_polyline?.points) ?? mergeStepGeometries(legs[0].steps);
+  const firstLeg = legs[0];
+  if (!firstLeg) {
+    throw new Error("Failed to build routing leg.");
+  }
+  const overviewGeometry = decodePolyline(primaryRoute.overview_polyline?.points) ?? mergeStepGeometries(firstLeg.steps);
 
   const durationSeconds = primaryLeg.duration?.value ?? 0;
   const distanceMeters = primaryLeg.distance?.value ?? 0;

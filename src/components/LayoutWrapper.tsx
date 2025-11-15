@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -15,10 +16,18 @@ export function LayoutWrapper({
   showPreviewBanner: boolean;
 }) {
   const pathname = usePathname();
-  const isStudioRoute = pathname?.startsWith("/studio") ?? false;
+  const [isStudioRoute, setIsStudioRoute] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Only check pathname on client after mount to avoid hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+    setIsStudioRoute(pathname?.startsWith("/studio") ?? false);
+  }, [pathname]);
 
   // Studio routes should render without the standard layout wrapper
-  if (isStudioRoute) {
+  // Use isMounted to ensure consistent initial render
+  if (isMounted && isStudioRoute) {
     return <>{children}</>;
   }
 
