@@ -14,6 +14,7 @@ export type MockSupabaseClient = {
     exchangeCodeForSession: Mock;
     getSession: Mock;
     getUser: Mock;
+    onAuthStateChange: Mock;
   };
   from: Mock;
 };
@@ -60,6 +61,18 @@ export function createMockSupabaseClient(): MockSupabaseClient {
       getUser: vi.fn().mockResolvedValue({
         data: { user: null },
         error: null,
+      }),
+      onAuthStateChange: vi.fn((callback) => {
+        // Call callback immediately with no session
+        callback("SIGNED_OUT", null);
+        return {
+          data: {
+            subscription: {
+              unsubscribe: vi.fn(),
+            },
+          },
+          error: null,
+        };
       }),
     },
     from: vi.fn(() => ({

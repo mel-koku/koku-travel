@@ -82,7 +82,7 @@ export const FormField = ({
       <FormLabel
         htmlFor={controlId}
         required={required}
-        className={labelHidden ? "sr-only mb-0" : undefined}
+        className={labelHidden ? "sr-only" : undefined}
       >
         {label}
       </FormLabel>

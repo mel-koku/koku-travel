@@ -100,9 +100,20 @@ describe("AppState", () => {
   describe("debounced writes", () => {
     it("should debounce localStorage writes by 500ms", async () => {
       vi.useFakeTimers();
+      // Clear localStorage before test
+      localStorage.clear();
+      
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
       });
+
+      // Wait for initial mount effects to complete and clear any initial writes
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+      
+      // Clear localStorage after initial mount to ensure clean state
+      localStorage.clear();
 
       act(() => {
         result.current.setUser({ displayName: "First" });
@@ -116,18 +127,18 @@ describe("AppState", () => {
       });
 
       // Fast-forward 500ms
-      act(() => {
+      await act(async () => {
         vi.advanceTimersByTime(500);
+        await vi.runAllTimersAsync();
       });
 
-      await waitFor(() => {
-        const stored = localStorage.getItem("koku_app_state_v1");
-        expect(stored).toBeTruthy();
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          expect(parsed.user.displayName).toBe("Second");
-        }
-      });
+      // Check localStorage directly (no waitFor needed with fake timers)
+      const stored = localStorage.getItem("koku_app_state_v1");
+      expect(stored).toBeTruthy();
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        expect(parsed.user.displayName).toBe("Second");
+      }
 
       vi.useRealTimers();
     });
@@ -270,8 +281,16 @@ describe("AppState", () => {
 
   describe("selective state persistence", () => {
     it("should only persist user, favorites, guideBookmarks, and trips", async () => {
+      vi.useFakeTimers();
+      localStorage.clear();
+      
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for initial mount
+      await act(async () => {
+        await vi.runAllTimersAsync();
       });
 
       act(() => {
@@ -279,21 +298,26 @@ describe("AppState", () => {
         result.current.toggleFavorite("place-1");
       });
 
-      await waitFor(
-        () => {
-          const stored = localStorage.getItem("koku_app_state_v1");
-          if (stored) {
-            const parsed = JSON.parse(stored);
-            expect(parsed).toHaveProperty("user");
-            expect(parsed).toHaveProperty("favorites");
-            expect(parsed).toHaveProperty("guideBookmarks");
-            expect(parsed).toHaveProperty("trips");
-            expect(parsed).not.toHaveProperty("isLoadingRefresh");
-            expect(parsed).not.toHaveProperty("loadingBookmarks");
-          }
-        },
-        { timeout: 1000 },
-      );
+      // Advance timers to trigger debounced write
+      await act(async () => {
+        vi.advanceTimersByTime(500);
+        await vi.runAllTimersAsync();
+      });
+
+      // Check localStorage directly (no waitFor needed with fake timers)
+      const stored = localStorage.getItem("koku_app_state_v1");
+      expect(stored).toBeTruthy();
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        expect(parsed).toHaveProperty("user");
+        expect(parsed).toHaveProperty("favorites");
+        expect(parsed).toHaveProperty("guideBookmarks");
+        expect(parsed).toHaveProperty("trips");
+        expect(parsed).not.toHaveProperty("isLoadingRefresh");
+        expect(parsed).not.toHaveProperty("loadingBookmarks");
+      }
+
+      vi.useRealTimers();
     });
   });
 });

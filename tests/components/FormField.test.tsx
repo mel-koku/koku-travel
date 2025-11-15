@@ -51,7 +51,8 @@ describe("FormField", () => {
           <Input id="test-field" />
         </FormField>,
       );
-      const label = screen.getByText("Hidden Label");
+      const labelText = screen.getByText("Hidden Label");
+      const label = labelText.closest("label");
       expect(label).toBeInTheDocument();
       expect(label).toHaveClass("sr-only");
     });
@@ -65,7 +66,8 @@ describe("FormField", () => {
         </FormField>,
       );
       const input = screen.getByRole("textbox");
-      const label = screen.getByText("Test Label");
+      const labelText = screen.getByText("Test Label");
+      const label = labelText.closest("label");
       expect(label).toHaveAttribute("for", "test-field");
       expect(input).toHaveAttribute("id", "test-field");
     });
