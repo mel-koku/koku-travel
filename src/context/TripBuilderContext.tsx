@@ -11,9 +11,10 @@ import {
 } from "react";
 
 import { getLocal, setLocal } from "@/lib/storageHelpers";
-import type { EntryPoint, InterestId, TripBuilderData, TripStyle } from "@/types/trip";
+import type { EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import { getEntryPointById } from "@/data/entryPoints";
+import { REGIONS } from "@/data/regions";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
@@ -25,6 +26,10 @@ const STORAGE_KEY = "koku_trip_builder";
 
 const MAX_INTEREST_SELECTION = 5;
 const VALID_INTERESTS = new Set<InterestId>(INTEREST_CATEGORIES.map((category) => category.id));
+const VALID_REGION_IDS = new Set<RegionId>(REGIONS.map((region) => region.id));
+const REGION_ID_BY_NAME = new Map<string, RegionId>(
+  REGIONS.map((region) => [region.name.toLowerCase(), region.id])
+);
 
 const createDefaultData = (): TripBuilderData => ({
   dates: {},
@@ -45,6 +50,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedStyle = sanitizeStyle(raw.style);
   const normalizedAccessibility = sanitizeAccessibility(raw.accessibility);
   const normalizedEntryPoint = sanitizeEntryPoint(raw.entryPoint);
+  const normalizedRegions = sanitizeRegions(raw.regions);
   return {
     ...base,
     ...raw,
@@ -52,7 +58,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
       ...base.dates,
       ...raw.dates,
     },
-    regions: raw.regions ?? base.regions,
+    regions: normalizedRegions,
     cities: raw.cities ?? base.cities,
     interests: normalizedInterests,
     style: normalizedStyle,
@@ -124,9 +130,19 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     }
   }, []);
 
+  const setDataNormalized = useCallback(
+    (updater: React.SetStateAction<TripBuilderData>) => {
+      setData((prev) => {
+        const next = typeof updater === "function" ? updater(prev) : updater;
+        return normalizeData(next);
+      });
+    },
+    [],
+  );
+
   const value: TripBuilderContextValue = {
     data,
-    setData,
+    setData: setDataNormalized,
     reset,
   };
 
@@ -139,6 +155,31 @@ export function useTripBuilder() {
     throw new Error("useTripBuilder must be used within a TripBuilderProvider");
   }
   return context;
+}
+
+function sanitizeRegions(regions?: RegionId[] | string[]): RegionId[] {
+  if (!regions || regions.length === 0) {
+    return [];
+  }
+  const next: RegionId[] = [];
+  const seen = new Set<RegionId>();
+  for (const region of regions) {
+    let regionId: RegionId | undefined;
+    if (typeof region === "string") {
+      // Check if it's already a valid ID
+      if (VALID_REGION_IDS.has(region as RegionId)) {
+        regionId = region as RegionId;
+      } else {
+        // Try to find by name (case-insensitive)
+        regionId = REGION_ID_BY_NAME.get(region.toLowerCase());
+      }
+    }
+    if (regionId && !seen.has(regionId)) {
+      seen.add(regionId);
+      next.push(regionId);
+    }
+  }
+  return next;
 }
 
 function sanitizeInterests(interests?: InterestId[]): InterestId[] {
