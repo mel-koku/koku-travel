@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
-import { Select } from "@/components/ui/Select";
 import { useAppState } from "@/state/AppState";
 import { MOCK_ITINERARY } from "@/data/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
@@ -23,7 +22,6 @@ const formatDateLabel = (iso: string | undefined) => {
 };
 
 export default function ItineraryPage() {
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchParamsString = searchParams.toString();
@@ -36,12 +34,6 @@ export default function ItineraryPage() {
   // AppState loads from localStorage in useEffect, so trips may be empty on server
   useEffect(() => {
     setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (headingRef.current) {
-      headingRef.current.focus();
-    }
   }, []);
 
   const selectedTripId = useMemo(() => {
@@ -98,14 +90,6 @@ export default function ItineraryPage() {
     ? trips.find((trip) => trip.id === selectedTripId)
     : null;
 
-  const itineraryOptions = useMemo(
-    () =>
-      trips.map((trip) => ({
-        label: trip.name,
-        value: trip.id,
-      })),
-    [trips],
-  );
 
   const activeItinerary: Itinerary | null = selectedTrip
     ? selectedTrip.itinerary
@@ -143,48 +127,20 @@ export default function ItineraryPage() {
 
   return (
     <div className="bg-slate-50 py-6 sm:py-8 md:py-10">
-      <div className="mx-auto max-w-screen-2xl px-4 sm:px-6">
-        <h1
-          ref={headingRef}
-          tabIndex={-1}
-          className="text-2xl font-semibold text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 sm:text-3xl"
-        >
-          {trips.length > 1 ? "Your Itineraries" : "Your Itinerary"}
-        </h1>
-        {isUsingMock ? (
-          <p className="mt-2 text-sm text-gray-500 sm:mt-3">
-            Showing mock itinerary for development. Build a trip to see your personalized plan.
-          </p>
-        ) : null}
-        {trips.length > 0 ? (
-          <div className="mt-4 flex flex-col gap-4 sm:mt-6 md:flex-row md:items-end md:justify-between">
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600">
-                Choose a saved trip to review or continue planning.
-              </p>
-              {createdLabel ? (
-                <p className="text-xs text-gray-400">
-                  Saved {createdLabel}
-                  {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
-                </p>
-              ) : null}
-            </div>
-            <div className="w-full md:max-w-xs">
-              <Select
-                value={selectedTripId ?? ""}
-                onChange={handleTripChange}
-                options={itineraryOptions}
-                placeholder="Select a trip"
-              />
-            </div>
-          </div>
-        ) : null}
-      </div>
       <ItineraryShell
         key={selectedTrip?.id ?? "mock-itinerary"}
         itinerary={activeItinerary}
         tripId={selectedTrip?.id ?? "mock"}
         onItineraryChange={selectedTrip ? handleItineraryChange : undefined}
+        selectedTripId={selectedTripId}
+        onTripChange={handleTripChange}
+        trips={trips}
+        headingText={trips.length > 1 ? "Your Itineraries" : "Your Itinerary"}
+        descriptionText="Choose a saved trip to review or continue planning."
+        createdLabel={createdLabel}
+        updatedLabel={updatedLabel}
+        isUsingMock={isUsingMock}
+        tripStartDate={selectedTrip?.builderData?.dates?.start}
       />
     </div>
   );

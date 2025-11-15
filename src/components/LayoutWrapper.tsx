@@ -16,18 +16,21 @@ export function LayoutWrapper({
   showPreviewBanner: boolean;
 }) {
   const pathname = usePathname();
-  const [isStudioRoute, setIsStudioRoute] = useState(false);
+  
+  // Check if this is a studio route synchronously to avoid hydration mismatch
+  const isStudioRouteSync = pathname?.startsWith("/studio") ?? false;
+  
   const [isMounted, setIsMounted] = useState(false);
 
-  // Only check pathname on client after mount to avoid hydration mismatch
+  // Only update state on client after mount to avoid hydration mismatch
   useEffect(() => {
     setIsMounted(true);
-    setIsStudioRoute(pathname?.startsWith("/studio") ?? false);
-  }, [pathname]);
+  }, []);
 
   // Studio routes should render without the standard layout wrapper
   // Use isMounted to ensure consistent initial render
-  if (isMounted && isStudioRoute) {
+  // Always render the same structure on server and initial client render
+  if (isMounted && isStudioRouteSync) {
     return <>{children}</>;
   }
 

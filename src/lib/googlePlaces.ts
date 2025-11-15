@@ -1,5 +1,4 @@
-import { createClient as createSupabaseServerClient } from "@/lib/supabase/server";
-import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { Location, LocationDetails, LocationPhoto, LocationReview } from "@/types/location";
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { logger } from "@/lib/logger";
@@ -42,12 +41,11 @@ const SUPABASE_DETAILS_COLUMN_SET = "place_id, payload, fetched_at";
 let supabaseWarningLogged = false;
 let supabaseServiceWarningLogged = false;
 
-type SupabaseServerClient = Awaited<ReturnType<typeof createSupabaseServerClient>>;
-type SupabaseServiceClient = ReturnType<typeof getServiceRoleClient>;
-type SupabaseClient = SupabaseServerClient | SupabaseServiceClient;
+// Use SupabaseClient type from @supabase/supabase-js which works for both server and service clients
+// This avoids importing the server module which uses next/headers
 
 type SupabaseClientState = {
-  client: SupabaseClient | null;
+  client: SupabaseClient<Record<string, unknown>> | null;
   canPersist: boolean;
 };
 
@@ -71,27 +69,23 @@ type PlaceDetailsRow = {
 };
 
 async function getSupabaseClientSafe(): Promise<SupabaseClientState> {
+  // Skip Supabase entirely on client-side (service role key is server-only)
+  // This prevents Next.js from trying to analyze server-only modules during client builds
+  if (typeof window !== "undefined") {
+    return { client: null, canPersist: false };
+  }
+
+  // Use dynamic import to avoid analyzing server-only modules during client builds
+  // Only use service role client (doesn't require next/headers)
   try {
+    const { getServiceRoleClient } = await import("@/lib/supabase/serviceRole");
     return { client: getServiceRoleClient(), canPersist: true };
   } catch (serviceError) {
     if (!supabaseServiceWarningLogged && process.env.NODE_ENV !== "production") {
       supabaseServiceWarningLogged = true;
       logger.warn(
-        "Service-role client unavailable for Google Places cache. Falling back to anon client.",
+        "Service-role client unavailable for Google Places cache. Falling back to in-memory cache only.",
         { error: serviceError },
-      );
-    }
-  }
-
-  try {
-    const client = await createSupabaseServerClient();
-    return { client, canPersist: false };
-  } catch (error) {
-    if (!supabaseWarningLogged && process.env.NODE_ENV !== "production") {
-      supabaseWarningLogged = true;
-      logger.warn(
-        "Unable to initialize server client for Google Places cache. Falling back to in-memory cache only.",
-        { error },
       );
     }
     return { client: null, canPersist: false };
@@ -403,9 +397,9 @@ export async function fetchLocationDetails(location: Location): Promise<Location
     const { error } = await supabase.from(PLACE_DETAILS_TABLE).upsert({
       location_id: location.id,
       place_id: details.placeId,
-      payload: details,
+      payload: details as unknown as Record<string, unknown>,
       fetched_at: details.fetchedAt,
-    });
+    } as never);
 
     if (error && process.env.NODE_ENV !== "production") {
       logger.warn("Failed to persist Google Place details", {

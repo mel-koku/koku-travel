@@ -1,0 +1,239 @@
+"use client";
+
+import { useMemo } from "react";
+import type { ItineraryDay } from "@/types/itinerary";
+import { findLocationForActivity } from "@/lib/itineraryLocations";
+import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
+
+type DayHeaderProps = {
+  day: ItineraryDay;
+  dayIndex: number;
+  tripStartDate?: string; // ISO date string (yyyy-mm-dd)
+};
+
+export function DayHeader({ day, dayIndex, tripStartDate }: DayHeaderProps) {
+  // Calculate the date for this day
+  const dayDate = useMemo(() => {
+    if (tripStartDate) {
+      try {
+        // Parse ISO date string (yyyy-mm-dd) as local date to avoid timezone issues
+        const [year, month, day] = tripStartDate.split("-").map(Number);
+        if (year && month && day && !Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+          const startDate = new Date(year, month - 1, day); // month is 0-indexed
+          const dayDate = new Date(startDate);
+          dayDate.setDate(startDate.getDate() + dayIndex);
+          return dayDate;
+        }
+        // Fallback to Date constructor if format doesn't match
+        const startDate = new Date(tripStartDate);
+        if (!Number.isNaN(startDate.getTime())) {
+          const dayDate = new Date(startDate);
+          dayDate.setDate(startDate.getDate() + dayIndex);
+          return dayDate;
+        }
+      } catch {
+        // Invalid date, fall back to undefined
+      }
+    }
+    return undefined;
+  }, [tripStartDate, dayIndex]);
+
+  // Format date and day name
+  const dateLabel = useMemo(() => {
+    if (dayDate) {
+      const dateFormatter = new Intl.DateTimeFormat(undefined, {
+        month: "long",
+        day: "numeric",
+      });
+      const dayFormatter = new Intl.DateTimeFormat(undefined, {
+        weekday: "long",
+      });
+      return {
+        date: dateFormatter.format(dayDate),
+        dayName: dayFormatter.format(dayDate),
+      };
+    }
+    // Fallback to dateLabel if available, or just "Day X"
+    const fallbackLabel = day.dateLabel || `Day ${dayIndex + 1}`;
+    return {
+      date: fallbackLabel,
+      dayName: undefined,
+    };
+  }, [dayDate, day.dateLabel, dayIndex]);
+
+  // Calculate total duration
+  // Uses durationMin (displayed as "Plan for X hours") + travel times
+  // Falls back to calculating from schedule times if durationMin is not set
+  const totalDuration = useMemo(() => {
+    const activities = day.activities ?? [];
+    if (activities.length === 0) {
+      return 0;
+    }
+
+    // Helper to parse time string (HH:MM) to minutes since midnight
+    const parseTimeToMinutes = (timeStr: string): number | null => {
+      const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+      if (!match) return null;
+      const hours = Number.parseInt(match[1] || "0", 10);
+      const minutes = Number.parseInt(match[2] || "0", 10);
+      if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
+      return hours * 60 + minutes;
+    };
+
+    // Filter to place activities only
+    const placeActivities = activities.filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place");
+    
+    if (placeActivities.length === 0) {
+      return 0;
+    }
+
+    let totalMinutes = 0;
+    let visitDurations = 0;
+    let travelTimes = 0;
+
+    // Sum all visit durations
+    for (const activity of placeActivities) {
+      let activityDuration: number | null = null;
+
+      // Priority 1: Use durationMin if available (what's shown as "Plan for X hours")
+      if (activity.durationMin) {
+        activityDuration = activity.durationMin;
+      } 
+      // Priority 2: Calculate from schedule times if available
+      else if (activity.schedule?.arrivalTime && activity.schedule?.departureTime) {
+        const arrival = parseTimeToMinutes(activity.schedule.arrivalTime);
+        const departure = parseTimeToMinutes(activity.schedule.departureTime);
+        if (arrival !== null && departure !== null) {
+          const duration = departure >= arrival ? departure - arrival : (24 * 60) - arrival + departure;
+          if (duration > 0) {
+            activityDuration = duration;
+          }
+        }
+      }
+      // Priority 3: Get duration from location data
+      else {
+        const location = findLocationForActivity(activity);
+        if (location) {
+          // Check location's recommended visit duration
+          if (location.recommendedVisit?.typicalMinutes) {
+            activityDuration = location.recommendedVisit.typicalMinutes;
+          } else if (location.recommendedVisit?.minMinutes) {
+            activityDuration = location.recommendedVisit.minMinutes;
+          } 
+          // Fallback to category default
+          else if (location.category) {
+            activityDuration = getCategoryDefaultDuration(location.category);
+          }
+        }
+      }
+
+      if (activityDuration !== null && activityDuration > 0) {
+        visitDurations += activityDuration;
+        totalMinutes += activityDuration;
+      }
+    }
+
+    // Sum all travel times between activities
+    for (const activity of placeActivities) {
+      if (activity.travelFromPrevious?.durationMinutes) {
+        const travelTime = activity.travelFromPrevious.durationMinutes;
+        travelTimes += travelTime;
+        totalMinutes += travelTime;
+      }
+    }
+
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV === "development") {
+      console.log("[DayHeader] Duration calculation:", {
+        placeActivitiesCount: placeActivities.length,
+        visitDurations,
+        travelTimes,
+        cityTransition: day.cityTransition?.durationMinutes ?? 0,
+        totalMinutes,
+        activities: placeActivities.map((a) => ({
+          title: a.title,
+          durationMin: a.durationMin,
+          hasSchedule: Boolean(a.schedule?.arrivalTime && a.schedule?.departureTime),
+          travelTime: a.travelFromPrevious?.durationMinutes ?? 0,
+        })),
+      });
+    }
+
+    // Add city transition time if present
+    if (day.cityTransition?.durationMinutes) {
+      totalMinutes += day.cityTransition.durationMinutes;
+    }
+
+    return totalMinutes;
+  }, [day.activities, day.cityTransition]);
+
+  // Format duration
+  const durationLabel = useMemo(() => {
+    if (totalDuration === 0) {
+      return "No activities planned";
+    }
+
+    const hours = Math.floor(totalDuration / 60);
+    const minutes = totalDuration % 60;
+
+    if (hours === 0) {
+      return `${minutes} min`;
+    } else if (minutes === 0) {
+      return `${hours} ${hours === 1 ? "hour" : "hours"}`;
+    } else {
+      return `${hours} ${hours === 1 ? "hour" : "hours"} ${minutes} min`;
+    }
+  }, [totalDuration]);
+
+  return (
+    <div className="mb-6 rounded-xl border border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50 p-4 sm:p-5">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl">
+            {dateLabel.dayName ? (
+              <>
+                {dateLabel.dayName}
+                <span className="ml-2 text-lg font-normal text-gray-600 sm:text-xl">
+                  {dateLabel.date}
+                </span>
+              </>
+            ) : (
+              dateLabel.date
+            )}
+          </h2>
+          {day.cityId && (
+            <p className="text-sm font-medium text-gray-600 capitalize">
+              {day.cityId}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-1">
+          <div className="flex items-center gap-2 text-sm text-gray-700 sm:text-base">
+            <svg
+              className="h-5 w-5 text-indigo-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span className="font-medium">Expected duration:</span>
+            <span className="font-semibold text-indigo-700">{durationLabel}</span>
+          </div>
+          {totalDuration > 0 && (
+            <p className="ml-7 text-xs text-gray-600 sm:text-sm">
+              Based on average time at locations and travel between stops
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+

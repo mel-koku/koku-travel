@@ -35,21 +35,25 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
 
   const mobility = data.accessibility?.mobility ?? false;
   const dietarySelections = sortDietarySelections(data.accessibility?.dietary ?? []);
+  const dietaryOtherValue = data.accessibility?.dietaryOther ?? "";
   const notesValue = data.accessibility?.notes ?? "";
 
   const dietarySelectionSet = useMemo(() => new Set(dietarySelections), [dietarySelections]);
+  const isOtherChecked = dietarySelectionSet.has("other");
   const notesDescriptionId = `${formId}-notes-description`;
 
   const upsertAccessibility = useCallback(
-    (updater: (current: { mobility: boolean; dietary: string[]; notes: string }) => {
+    (updater: (current: { mobility: boolean; dietary: string[]; dietaryOther: string; notes: string }) => {
       mobility: boolean;
       dietary: string[];
+      dietaryOther: string;
       notes: string;
     }) => {
       setData((prev) => {
         const current = {
           mobility: prev.accessibility?.mobility ?? false,
           dietary: prev.accessibility?.dietary ?? [],
+          dietaryOther: prev.accessibility?.dietaryOther ?? "",
           notes: prev.accessibility?.notes ?? "",
         };
         const next = updater(current);
@@ -58,6 +62,7 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
           accessibility: {
             mobility: next.mobility,
             dietary: next.dietary,
+            dietaryOther: next.dietaryOther,
             notes: next.notes,
           },
         };
@@ -83,6 +88,14 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
         const working = new Set(current.dietary);
         if (working.has(optionId)) {
           working.delete(optionId);
+          // Clear dietaryOther if "other" is unchecked
+          if (optionId === "other") {
+            return {
+              ...current,
+              dietary: sortDietarySelections(working),
+              dietaryOther: "",
+            };
+          }
         } else {
           working.add(optionId);
         }
@@ -91,6 +104,17 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
           dietary: sortDietarySelections(working),
         };
       });
+    },
+    [upsertAccessibility],
+  );
+
+  const handleDietaryOtherChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const nextValue = event.target.value;
+      upsertAccessibility((current) => ({
+        ...current,
+        dietaryOther: nextValue,
+      }));
     },
     [upsertAccessibility],
   );
@@ -133,12 +157,13 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
         accessibility: {
           mobility,
           dietary: sortDietarySelections(dietarySelections),
+          dietaryOther: dietaryOtherValue.trim(),
           notes: trimmedNotes,
         },
       }));
       onNext();
     },
-    [dietarySelections, mobility, notesValue, onNext, setData],
+    [dietarySelections, dietaryOtherValue, mobility, notesValue, onNext, setData],
   );
 
   const confirmSkip = useCallback(() => {
@@ -213,21 +238,35 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
               <div className="grid gap-3 sm:grid-cols-2">
                 {DIETARY_OPTIONS.map((option) => {
                   const isChecked = dietarySelectionSet.has(option.id);
+                  const isOther = option.id === "other";
                   return (
-                    <label
-                      key={option.id}
-                      htmlFor={`${formId}-dietary-${option.id}`}
-                      className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-700 transition hover:border-indigo-200 hover:bg-indigo-50"
-                    >
-                      <input
-                        id={`${formId}-dietary-${option.id}`}
-                        type="checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleDietaryOption(option.id)}
-                        className="mt-1 h-5 w-5 rounded border-gray-300 accent-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-                      />
-                      <span>{option.label}</span>
-                    </label>
+                    <div key={option.id} className={isOther ? "col-span-full" : ""}>
+                      <label
+                        htmlFor={`${formId}-dietary-${option.id}`}
+                        className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-700 transition hover:border-indigo-200 hover:bg-indigo-50"
+                      >
+                        <input
+                          id={`${formId}-dietary-${option.id}`}
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleDietaryOption(option.id)}
+                          className="mt-1 h-5 w-5 rounded border-gray-300 accent-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                        />
+                        <span>{option.label}</span>
+                      </label>
+                      {isOther && isOtherChecked && (
+                        <div className="mt-3 pl-8">
+                          <input
+                            type="text"
+                            id={`${formId}-dietary-other-input`}
+                            value={dietaryOtherValue}
+                            onChange={handleDietaryOtherChange}
+                            placeholder="Please specify your dietary restriction"
+                            className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
+                          />
+                        </div>
+                      )}
+                    </div>
                   );
                 })}
               </div>

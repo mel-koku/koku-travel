@@ -3,14 +3,113 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import type { ReactNode } from "react";
+import React, { useState, type ReactNode } from "react";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { TimeOfDay } from "./timelineUtils";
 import { SECTION_LABELS } from "./timelineUtils";
+import { TravelSegment } from "./TravelSegment";
+import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
+import type { ItineraryTravelMode } from "@/types/itinerary";
+import type { RoutingRequest } from "@/lib/routing/types";
+import type { Coordinate } from "@/lib/routing/types";
+
+type TravelSegmentWrapperProps = {
+  activity: Extract<ItineraryActivity, { kind: "place" }>;
+  travelFromPrevious: NonNullable<Extract<ItineraryActivity, { kind: "place" }>["travelFromPrevious"]>;
+  originCoordinates: Coordinate;
+  destinationCoordinates: Coordinate;
+  dayTimezone?: string;
+  onUpdate: (activityId: string, patch: Partial<ItineraryActivity>) => void;
+};
+
+function TravelSegmentWrapper({
+  activity,
+  travelFromPrevious,
+  originCoordinates,
+  destinationCoordinates,
+  dayTimezone,
+  onUpdate,
+}: TravelSegmentWrapperProps) {
+  const [isRecalculatingRoute, setIsRecalculatingRoute] = useState(false);
+
+  const handleModeChange = async (newMode: ItineraryTravelMode) => {
+    // Validate coordinates exist before allowing mode change
+    if (!originCoordinates || !destinationCoordinates) {
+      return;
+    }
+
+    // Validate mode is valid
+    const validModes: ItineraryTravelMode[] = ["walk", "car", "taxi", "bus", "train", "subway", "transit", "bicycle"];
+    if (!validModes.includes(newMode)) {
+      return;
+    }
+
+    setIsRecalculatingRoute(true);
+    try {
+      // Fetch new route for the selected mode
+      const request: RoutingRequest = {
+        origin: originCoordinates,
+        destination: destinationCoordinates,
+        mode: newMode,
+        departureTime: travelFromPrevious.departureTime,
+        timezone: dayTimezone,
+      };
+
+      const response = await fetch("/api/routing/route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const routeData = await response.json();
+
+      // Update the travel segment with new route data
+      onUpdate(activity.id, {
+        travelFromPrevious: {
+          ...travelFromPrevious,
+          mode: newMode,
+          durationMinutes: routeData.durationMinutes ?? travelFromPrevious.durationMinutes,
+          distanceMeters: routeData.distanceMeters ?? travelFromPrevious.distanceMeters,
+          path: routeData.path ?? travelFromPrevious.path,
+          instructions: routeData.instructions ?? travelFromPrevious.instructions,
+          arrivalTime: routeData.arrivalTime ?? travelFromPrevious.arrivalTime,
+        },
+      });
+    } catch (error) {
+      // On error, still update mode but keep existing route data
+      // The full itinerary replan will eventually fix it
+      onUpdate(activity.id, {
+        travelFromPrevious: {
+          ...travelFromPrevious,
+          mode: newMode,
+        },
+      });
+    } finally {
+      setIsRecalculatingRoute(false);
+    }
+  };
+
+  return (
+    <TravelSegment
+      segment={travelFromPrevious}
+      origin={originCoordinates}
+      destination={destinationCoordinates}
+      timezone={dayTimezone}
+      onModeChange={handleModeChange}
+      isRecalculating={isRecalculatingRoute}
+    />
+  );
+}
 
 type TimelineSectionProps = {
   sectionKey: TimeOfDay;
   activities: ItineraryActivity[];
+  allActivities?: ItineraryActivity[];
+  dayTimezone?: string;
   selectedActivityId?: string | null;
   onSelectActivity?: (activityId: string) => void;
   onDelete: (activityId: string) => void;
@@ -22,14 +121,15 @@ type TimelineSectionProps = {
 export function TimelineSection({
   sectionKey,
   activities,
+  allActivities = [],
+  dayTimezone,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedActivityId: _selectedActivityId,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSelectActivity: _onSelectActivity,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDelete: _onDelete,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onUpdate: _onUpdate,
+  onUpdate,
   onAddNote,
   children,
 }: TimelineSectionProps) {
@@ -72,7 +172,58 @@ export function TimelineSection({
           strategy={verticalListSortingStrategy}
         >
           <ul ref={setNodeRef} className="space-y-3">
-            {children}
+            {React.Children.map(children, (child, index) => {
+              const activity = activities[index];
+              if (!activity) return child;
+
+              // Check if this activity has travelFromPrevious
+              const travelFromPrevious =
+                activity.kind === "place" ? activity.travelFromPrevious : null;
+
+              // Get previous activity for coordinates (check all activities, not just this section)
+              const currentActivityIndex = allActivities.findIndex((a) => a.id === activity.id);
+              let previousActivity: ItineraryActivity | null = null;
+              if (currentActivityIndex > 0) {
+                for (let i = currentActivityIndex - 1; i >= 0; i--) {
+                  const prev = allActivities[i];
+                  if (prev && prev.kind === "place") {
+                    previousActivity = prev;
+                    break;
+                  }
+                }
+              }
+
+              const originCoordinates =
+                previousActivity && previousActivity.kind === "place"
+                  ? getActivityCoordinates(previousActivity)
+                  : null;
+
+              const destinationCoordinates =
+                activity.kind === "place" ? getActivityCoordinates(activity) : null;
+
+              return (
+                <li key={activity.id} className="space-y-0">
+                  {/* Travel segment before this activity */}
+                  {travelFromPrevious &&
+                    originCoordinates &&
+                    destinationCoordinates &&
+                    activity.kind === "place" && (
+                      <div className="mb-3">
+                        <TravelSegmentWrapper
+                          activity={activity}
+                          travelFromPrevious={travelFromPrevious}
+                          originCoordinates={originCoordinates}
+                          destinationCoordinates={destinationCoordinates}
+                          dayTimezone={dayTimezone}
+                          onUpdate={onUpdate}
+                        />
+                      </div>
+                    )}
+                  {/* Activity card */}
+                  {child}
+                </li>
+              );
+            })}
           </ul>
         </SortableContext>
       ) : (
