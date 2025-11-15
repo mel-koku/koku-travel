@@ -10,7 +10,7 @@
  */
 
 export const apiVersion =
-  process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2025-11-13'
+  process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-10-21'
 
 // Allow these to be undefined during build time
 // Validation will happen at runtime when Studio is actually used
