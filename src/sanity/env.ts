@@ -9,6 +9,8 @@
  * For server-side Sanity operations, use src/lib/sanity/config.ts which uses src/lib/env.ts
  */
 
+// Sanity API version for client-side Studio
+// Use same version as server-side (2024-10-21) for consistency
 export const apiVersion =
   process.env.NEXT_PUBLIC_SANITY_API_VERSION || '2024-10-21'
 

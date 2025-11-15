@@ -122,11 +122,18 @@ export function useFormattedTripData(data: TripBuilderData) {
 
   const formattedDietary = useMemo(() => {
     const dietary = data.accessibility?.dietary ?? [];
-    if (dietary.length === 0) {
+    const dietaryOther = data.accessibility?.dietaryOther?.trim() ?? "";
+    if (dietary.length === 0 && dietaryOther.length === 0) {
       return "No dietary restrictions";
     }
-    return dietary.map((entry) => DIETARY_LABELS[entry] ?? entry).join(", ");
-  }, [data.accessibility?.dietary]);
+    const labels = dietary.map((entry) => {
+      if (entry === "other" && dietaryOther.length > 0) {
+        return `Other: ${dietaryOther}`;
+      }
+      return DIETARY_LABELS[entry] ?? entry;
+    });
+    return labels.join(", ");
+  }, [data.accessibility?.dietary, data.accessibility?.dietaryOther]);
 
   const formattedTripStyle = useMemo(() => {
     return data.style ? TRIP_STYLE_LABEL[data.style] ?? data.style : "Not set";
