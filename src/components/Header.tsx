@@ -1,11 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-import IdentityBadge from "@/components/ui/IdentityBadge";
+import IdentityBadge, { useAuthState } from "@/components/ui/IdentityBadge";
+import { Dropdown } from "@/components/ui/Dropdown";
+import { createClient } from "@/lib/supabase/client";
+import { useAppState } from "@/state/AppState";
 import { cn } from "@/lib/cn";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 const navItems = [
   { label: "Explore", href: "/explore" },
@@ -14,10 +19,111 @@ const navItems = [
   { label: "Trip Builder", href: "/trip-builder" },
 ];
 
+function UserMenu({
+  isSignedIn,
+  supabase,
+  router,
+}: {
+  isSignedIn: boolean;
+  supabase: SupabaseClient;
+  router: AppRouterInstance;
+}) {
+  const { clearAllLocalData } = useAppState();
+
+  const handleClearData = () => {
+    const confirmed = window.confirm(
+      "⚠️ WARNING: Clear All Local Data?\n\n" +
+      "This action cannot be undone. You will permanently lose:\n" +
+      "• All saved trips and itineraries\n" +
+      "• All favorites/bookmarks\n" +
+      "• Trip builder preferences\n" +
+      "• Your display name and local profile\n\n" +
+      "If you're signed in, your cloud data will remain safe.\n\n" +
+      "Are you sure you want to continue?"
+    );
+    
+    if (confirmed) {
+      clearAllLocalData();
+      router.refresh();
+    }
+  };
+
+  const items = isSignedIn
+    ? [
+        {
+          id: "dashboard",
+          label: "Dashboard",
+          onSelect: () => router.push("/dashboard"),
+        },
+        {
+          id: "account",
+          label: "Account",
+          onSelect: () => router.push("/account"),
+        },
+        {
+          id: "signout",
+          label: "Sign out",
+          onSelect: async () => {
+            await supabase.auth.signOut();
+            router.refresh();
+          },
+        },
+      ]
+    : [
+        {
+          id: "dashboard",
+          label: "Dashboard",
+          onSelect: () => router.push("/dashboard"),
+        },
+        {
+          id: "signin",
+          label: "Sign in",
+          onSelect: () => router.push("/account"),
+        },
+        {
+          id: "cleardata",
+          label: (
+            <span className="flex items-center justify-between gap-2">
+              <span>Clear local data</span>
+              <svg
+                className="h-[1em] w-[1em] text-amber-500 flex-shrink-0"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                />
+              </svg>
+            </span>
+          ),
+          onSelect: handleClearData,
+        },
+      ];
+
+  return (
+    <Dropdown
+      label={<IdentityBadge showChevron={true} />}
+      align="end"
+      hideChevron={true}
+      triggerClassName="!border-0 !bg-transparent !shadow-none !p-0 hover:!bg-transparent !rounded-none gap-0"
+      items={items}
+    />
+  );
+}
+
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const prevPathnameRef = useRef(pathname);
+  const supabase = useMemo(() => createClient(), []);
+  const { isSignedIn } = useAuthState();
 
   // Close mobile menu when route changes
   // Use ref to track pathname changes and schedule update outside effect
@@ -76,18 +182,12 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3 sm:gap-6">
-          <Link
-            href="/dashboard"
-            className="hidden rounded-full border border-red-500 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-red-500 transition-colors hover:bg-red-500 hover:text-white md:inline-flex"
-          >
-            Dashboard
-          </Link>
-          <Link href="/account" className="flex items-center">
-            <IdentityBadge className="hidden md:inline-flex" />
-            <span className="inline-flex md:hidden">
+          <div className="hidden md:block">
+            <UserMenu isSignedIn={isSignedIn} supabase={supabase} router={router} />
+          </div>
+          <Link href="/account" className="inline-flex md:hidden">
               <span className="rounded-full border border-red-500 px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold uppercase tracking-wide text-red-500">
-                Account
-              </span>
+              {isSignedIn ? "Account" : "Sign in"}
             </span>
           </Link>
 

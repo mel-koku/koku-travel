@@ -480,6 +480,18 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           } = await supabase.auth.getUser();
 
           if (authError) {
+            const errorMessage =
+              authError instanceof Error
+                ? authError.message
+                : typeof authError === "object" && authError && "message" in authError
+                  ? String((authError as { message?: unknown }).message)
+                  : "";
+
+            if (typeof errorMessage === "string" && errorMessage.includes("Auth session missing")) {
+              // No authenticated Supabase session – keep optimistic local state without logging noise.
+              return;
+            }
+
             logger.error("Failed to read auth session when syncing favorite", authError);
             return;
           }
