@@ -242,9 +242,13 @@ export function DayEntryPointEditor({
 function Dropdown({
   label,
   items,
+  triggerClassName,
+  menuClassName,
 }: {
   label: string;
   items: Array<{ id: string; label: string; onSelect: () => void; separator?: boolean }>;
+  triggerClassName?: string;
+  menuClassName?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -254,7 +258,7 @@ function Dropdown({
         variant="outline"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-gray-50 border border-gray-200 hover:bg-gray-100"
+        className={triggerClassName || "bg-gray-50 border border-gray-200 hover:bg-gray-100"}
         rightIcon={
           <svg
             className={`h-4 w-4 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -273,7 +277,7 @@ function Dropdown({
       {isOpen && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 z-20 mt-2 w-56 rounded-lg bg-white border border-gray-200 shadow-md">
+          <div className={`absolute right-0 z-20 mt-2 w-56 rounded-lg bg-white ${menuClassName || "border border-gray-200 shadow-md"}`}>
             {items.map((item, index) => (
               <div key={item.id}>
                 {item.separator && index > 0 && (
