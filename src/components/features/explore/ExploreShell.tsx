@@ -377,7 +377,7 @@ export function ExploreShell() {
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pb-6 pt-6 sm:gap-8 sm:px-6 sm:pb-8 sm:pt-8 md:gap-10 md:pb-8 md:pt-10 lg:px-12">
       <FeaturedLocationsHero locations={featuredLocations} />
-      <div className="flex flex-col gap-6 sm:gap-8 lg:grid lg:grid-cols-[minmax(260px,_320px)_1fr] lg:gap-12">
+      <div className="flex flex-col gap-6 sm:gap-8 md:grid md:grid-cols-[minmax(260px,_320px)_1fr] md:gap-12">
         <FilterBar
           query={query}
           onQueryChange={setQuery}

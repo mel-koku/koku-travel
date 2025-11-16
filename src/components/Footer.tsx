@@ -16,7 +16,7 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-black/70">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-10 py-10 text-sm md:flex-row md:items-center md:justify-between">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-10 text-sm sm:px-6 md:flex-row md:items-center md:justify-between md:gap-0 md:px-10">
         <div className="flex flex-col gap-2 text-xs uppercase tracking-[0.3em] text-zinc-500">
           <span>Koku Travel</span>
           <span className="tracking-[0.2em]">Japan Planner</span>
