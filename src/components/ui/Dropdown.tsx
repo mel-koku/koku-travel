@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useId, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useId, useMemo, useRef, useState, isValidElement, cloneElement } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -12,11 +12,13 @@ type DropdownItem = {
 };
 
 type DropdownProps = {
-  label: string;
+  label: string | ReactNode;
   items: DropdownItem[];
   align?: "start" | "end";
   className?: string;
   menuClassName?: string;
+  triggerClassName?: string;
+  hideChevron?: boolean;
 };
 
 export function Dropdown({
@@ -25,6 +27,8 @@ export function Dropdown({
   align = "start",
   className,
   menuClassName,
+  triggerClassName,
+  hideChevron = false,
 }: DropdownProps) {
   const triggerId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -154,25 +158,32 @@ export function Dropdown({
         ref={triggerRef}
         type="button"
         id={triggerId}
-        className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+        className={cn(
+          "inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+          triggerClassName
+        )}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? menuId : undefined}
         onClick={() => setOpen((prev) => !prev)}
         onKeyDown={handleTriggerKeyDown}
       >
-        {label}
-        <svg
-          className={cn("h-4 w-4 transform transition-transform", open && "rotate-180")}
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 20 20"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="m6 8 4 4 4-4" />
-        </svg>
+        {isValidElement(label) && typeof label.type !== 'string'
+          ? cloneElement(label as React.ReactElement<{ isOpen?: boolean }>, { isOpen: open })
+          : <span className="flex items-center">{label}</span>}
+        {!hideChevron && (
+          <svg
+            className={cn("h-4 w-4 transform transition-transform", open && "rotate-180")}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 20 20"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="m6 8 4 4 4-4" />
+          </svg>
+        )}
       </button>
 
       {open ? (
