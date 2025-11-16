@@ -6,6 +6,12 @@ import { serviceUnavailable, unauthorized, badRequest } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { sanityWebhookPayloadSchema } from "@/lib/api/schemas";
 import { sanitizePath } from "@/lib/api/sanitization";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+  type RequestContext,
+} from "@/lib/api/middleware";
+import { logger } from "@/lib/logger";
 import type { z } from "zod";
 
 import { env } from "@/lib/env";
@@ -72,33 +78,75 @@ function normalizePaths(payload: z.infer<typeof sanityWebhookPayloadSchema>): st
  * @throws Returns 503 if revalidation secret is not configured
  */
 export async function POST(request: NextRequest) {
+  // Create request context for tracing
+  const context = createRequestContext(request);
+
   // Rate limiting: 20 requests per minute per IP (webhook endpoint - lower limit)
   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
-    return rateLimitResponse;
+    return addRequestContextHeaders(rateLimitResponse, context);
   }
 
   if (!SECRET) {
-    return serviceUnavailable("Revalidation secret is not configured on the server.");
+    return addRequestContextHeaders(
+      serviceUnavailable("Revalidation secret is not configured on the server.", {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   const signature = request.headers.get(SIGNATURE_HEADER) ?? "";
   
   // Validate signature header format
   if (!signature || typeof signature !== "string" || signature.length > 500) {
-    return unauthorized("Invalid signature header format.");
+    return addRequestContextHeaders(
+      unauthorized("Invalid signature header format.", {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   // Get raw body for signature validation (must be done before parsing)
-  const rawBody = await request.text();
+  let rawBody: string;
+  try {
+    rawBody = await request.text();
+  } catch (error) {
+    logger.error("Error reading webhook body", error instanceof Error ? error : new Error(String(error)), {
+      requestId: context.requestId,
+    });
+    return addRequestContextHeaders(
+      badRequest("Failed to read request body.", {
+        error: error instanceof Error ? error.message : String(error),
+      }, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
+  }
 
   // Validate payload size before processing
   if (rawBody.length > MAX_PAYLOAD_SIZE) {
-    return badRequest(`Request body too large (max ${MAX_PAYLOAD_SIZE} bytes).`);
+    return addRequestContextHeaders(
+      badRequest(`Request body too large (max ${MAX_PAYLOAD_SIZE} bytes).`, undefined, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   if (!isValidSignature(rawBody, signature, SECRET)) {
-    return unauthorized("Invalid signature.");
+    logger.warn("Invalid webhook signature", {
+      requestId: context.requestId,
+      ip: context.ip,
+    });
+    return addRequestContextHeaders(
+      unauthorized("Invalid signature.", {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   // Parse and validate JSON structure using Zod schema
@@ -106,17 +154,27 @@ export async function POST(request: NextRequest) {
   try {
     jsonPayload = JSON.parse(rawBody);
   } catch (error) {
-    return badRequest("Failed to parse webhook payload.", {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    return addRequestContextHeaders(
+      badRequest("Failed to parse webhook payload.", {
+        error: error instanceof Error ? error.message : String(error),
+      }, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   const validation = sanityWebhookPayloadSchema.safeParse(jsonPayload);
   
   if (!validation.success) {
-    return badRequest("Invalid webhook payload structure.", {
-      errors: validation.error.issues,
-    });
+    return addRequestContextHeaders(
+      badRequest("Invalid webhook payload structure.", {
+        errors: validation.error.issues,
+      }, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   const payload = validation.data;
@@ -125,6 +183,12 @@ export async function POST(request: NextRequest) {
   // Additional safety: limit number of paths to revalidate
   const MAX_PATHS = 100;
   const pathsToRevalidate = paths.slice(0, MAX_PATHS);
+
+  logger.info("Revalidating paths", {
+    requestId: context.requestId,
+    pathCount: pathsToRevalidate.length,
+    paths: pathsToRevalidate,
+  });
 
   for (const path of pathsToRevalidate) {
     // Double-check path is safe before revalidating
@@ -136,5 +200,8 @@ export async function POST(request: NextRequest) {
 
   revalidateTag("guides", "page");
 
-  return NextResponse.json({ revalidated: pathsToRevalidate, tags: ["guides"] });
+  return addRequestContextHeaders(
+    NextResponse.json({ revalidated: pathsToRevalidate, tags: ["guides"] }),
+    context,
+  );
 }

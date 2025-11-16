@@ -4,6 +4,12 @@ import { internalError, unauthorized, badRequest } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { previewSlugSchema, secretSchema } from "@/lib/api/schemas";
 import { sanitizePath } from "@/lib/api/sanitization";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+  type RequestContext,
+} from "@/lib/api/middleware";
+import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
 import {
   RATE_LIMIT_PREVIEW_MAX_REQUESTS,
@@ -32,17 +38,25 @@ function resolveRedirectUrl(request: NextRequest, slug: string) {
  * @throws Returns 500 if preview secret is not configured
  */
 export async function GET(request: NextRequest) {
+  // Create request context for tracing
+  const context = createRequestContext(request);
+
   // Rate limiting: 20 requests per minute per IP (prevent brute force on secret)
   const rateLimitResponse = await checkRateLimit(request, {
     maxRequests: RATE_LIMIT_PREVIEW_MAX_REQUESTS,
     windowMs: DEFAULT_RATE_LIMIT_WINDOW_MS,
   });
   if (rateLimitResponse) {
-    return rateLimitResponse;
+    return addRequestContextHeaders(rateLimitResponse, context);
   }
 
   if (!PREVIEW_SECRET) {
-    return internalError("Preview secret is not configured on the server.");
+    return addRequestContextHeaders(
+      internalError("Preview secret is not configured on the server.", undefined, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   const { searchParams } = new URL(request.url);
@@ -52,33 +66,70 @@ export async function GET(request: NextRequest) {
   // Validate secret parameter
   const secretValidation = secretSchema.safeParse(secretParam);
   if (!secretValidation.success) {
-    return badRequest("Invalid secret parameter format.");
+    return addRequestContextHeaders(
+      badRequest("Invalid secret parameter format.", undefined, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   if (secretValidation.data !== PREVIEW_SECRET) {
-    return unauthorized("Invalid preview secret.");
+    logger.warn("Invalid preview secret attempt", {
+      requestId: context.requestId,
+      ip: context.ip,
+    });
+    return addRequestContextHeaders(
+      unauthorized("Invalid preview secret.", {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   // Validate slug parameter
   if (!slugParam) {
-    return badRequest("Missing slug parameter.");
+    return addRequestContextHeaders(
+      badRequest("Missing slug parameter.", undefined, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   const slugValidation = previewSlugSchema.safeParse(slugParam);
   if (!slugValidation.success) {
-    return badRequest("Invalid slug parameter format.", {
-      errors: slugValidation.error.issues,
-    });
+    return addRequestContextHeaders(
+      badRequest("Invalid slug parameter format.", {
+        errors: slugValidation.error.issues,
+      }, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
 
   // Additional sanitization for path safety
   const sanitizedSlug = sanitizePath(slugValidation.data);
   if (!sanitizedSlug) {
-    return badRequest("Slug contains unsafe characters.");
+    return addRequestContextHeaders(
+      badRequest("Slug contains unsafe characters.", undefined, {
+        requestId: context.requestId,
+      }),
+      context,
+    );
   }
+
+  logger.info("Preview mode enabled", {
+    requestId: context.requestId,
+    slug: sanitizedSlug,
+  });
 
   const draft = await draftMode();
   draft.enable();
-  return NextResponse.redirect(resolveRedirectUrl(request, sanitizedSlug));
+  
+  const redirectUrl = resolveRedirectUrl(request, sanitizedSlug);
+  const response = NextResponse.redirect(redirectUrl);
+  return addRequestContextHeaders(response, context);
 }
 

@@ -14,11 +14,25 @@ import { env } from "../env";
  * - Without Upstash, rate limits will not be enforced correctly in distributed environments
  * - Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables for production
  * 
- * LIMITATIONS:
- * - Upstash Ratelimit requires limit/window to be set at instance creation
- * - Only the default config (100 req/min) uses Upstash Redis
- * - Custom configs fall back to in-memory rate limiting (not suitable for production)
- * - For custom limits in production, consider using multiple Upstash instances or a different approach
+ * RATE LIMIT CONFIGURATIONS:
+ * - Default config (100 req/min): Uses Upstash Redis if configured ✅ Production-ready
+ * - Custom configs: 
+ *   - If Upstash is configured: Falls back to in-memory (⚠️ NOT production-ready)
+ *   - If Upstash is NOT configured: Uses in-memory (⚠️ Development only)
+ *   - In production: Custom configs will throw an error if Upstash is not configured
+ * 
+ * RECOMMENDATION FOR PRODUCTION:
+ * - Use the default config (100 req/min) for most endpoints
+ * - For endpoints requiring different limits, use the default and implement additional
+ *   application-level throttling if needed
+ * - Alternatively, create multiple Upstash Ratelimit instances for different configs
+ * 
+ * CURRENT USAGE:
+ * - /api/locations: 100 req/min (default) ✅
+ * - /api/places/*: 60 req/min (custom) ⚠️ Falls back to in-memory if Upstash configured
+ * - /api/revalidate: 20 req/min (custom) ⚠️ Falls back to in-memory if Upstash configured
+ * - /api/preview: 20 req/min (custom) ⚠️ Falls back to in-memory if Upstash configured
+ * - /api/routing/*: 100 req/min (default) ✅
  */
 
 type RateLimitConfig = {
