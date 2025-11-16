@@ -71,8 +71,12 @@ function newId() {
   return "u_" + Math.random().toString(36).slice(2, 10);
 }
 
+// Use a stable default ID for SSR to prevent hydration mismatches
+// Real ID will be generated on client after hydration
+const STABLE_DEFAULT_ID = "default-user-id";
+
 const defaultState: AppStateShape = {
-  user: { id: newId(), displayName: "Guest", locale: "en" },
+  user: { id: STABLE_DEFAULT_ID, displayName: "Guest", locale: "en" },
   favorites: [],
   guideBookmarks: [],
   trips: [],
@@ -196,8 +200,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       let nextState: InternalState;
       if (raw) {
         const parsed = JSON.parse(raw);
+        // Ensure user has a valid ID (replace stable default if needed)
+        const user = parsed.user ?? defaultState.user;
+        const userId = user.id === STABLE_DEFAULT_ID ? newId() : user.id;
         nextState = {
-          user: parsed.user ?? defaultState.user,
+          user: { ...user, id: userId },
           favorites: parsed.favorites ?? [],
           guideBookmarks: parsed.guideBookmarks ?? [],
           trips: sanitizeTrips(parsed.trips),
@@ -205,8 +212,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           loadingBookmarks: new Set(),
         };
       } else {
+        // Generate a real ID on first client load
         nextState = {
-          user: defaultState.user,
+          user: { ...defaultState.user, id: newId() },
           favorites: [],
           guideBookmarks: [],
           trips: [],
