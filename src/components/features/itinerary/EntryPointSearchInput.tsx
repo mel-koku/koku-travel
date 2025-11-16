@@ -48,7 +48,7 @@ export function EntryPointSearchInput({
   
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const debounceTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const typeLabels: Record<EntryPointType, string> = {
     airport: "Airport",
