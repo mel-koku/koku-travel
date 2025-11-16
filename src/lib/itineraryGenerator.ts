@@ -5,6 +5,8 @@ import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
 import { getNearestCityToEntryPoint, travelMinutes } from "./travelTime";
 import { getCategoryDefaultDuration } from "./durationExtractor";
+import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
+import { applyDiversityFilter, type DiversityContext } from "@/lib/scoring/diversityRules";
 
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
@@ -145,6 +147,10 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
     // Track interest cycling across the entire day (not per time slot)
     let interestIndex = 0;
 
+    // Track categories for diversity and last location for distance
+    const dayCategories: string[] = [];
+    let lastLocation: Location | undefined;
+
     // Fill each time slot intelligently
     for (const timeSlot of TIME_OF_DAY_SEQUENCE) {
       const availableMinutes = getAvailableTimeForSlot(timeSlot, pace);
@@ -166,6 +172,10 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
           usedLocations,
           remainingTime,
           activityIndex === 0 ? 0 : travelTime, // No travel time for first activity in slot
+          lastLocation?.coordinates, // Pass current location for distance calculation
+          dayCategories, // Pass recent categories for diversity
+          pace, // Pass travel style
+          interestSequence, // Pass all interests for better matching
         );
 
         if (!location) {
@@ -198,6 +208,13 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
             usedLocations.add(location.id);
             remainingTime -= timeNeeded;
             timeSlotUsage.set(timeSlot, (timeSlotUsage.get(timeSlot) ?? 0) + timeNeeded);
+            
+            // Track category and location for diversity and distance
+            if (location.category) {
+              dayCategories.push(location.category);
+            }
+            lastLocation = location;
+            
             activityIndex++;
             interestIndex++;
           } else {
@@ -640,7 +657,7 @@ function pickFromList(
 
 /**
  * Pick a location that fits within the available time budget.
- * Prefers locations that match the interest and fit well in the time slot.
+ * Uses intelligent scoring system to select the best location.
  */
 function pickLocationForTimeSlot(
   list: Location[],
@@ -648,77 +665,50 @@ function pickLocationForTimeSlot(
   usedLocations: Set<string>,
   availableMinutes: number,
   travelTime: number,
+  currentLocation?: { lat: number; lng: number },
+  recentCategories: string[] = [],
+  travelStyle: TripBuilderData["style"] = "balanced",
+  interests: InterestId[] = [],
 ): Location | undefined {
-  const categoryMap: Record<InterestId, LocationCategory[]> = {
-    culture: ["shrine", "temple", "landmark", "historic"],
-    food: ["restaurant", "market"],
-    nature: ["park", "garden"],
-    nightlife: ["bar", "entertainment"],
-    shopping: ["shopping", "market"],
-    photography: ["landmark", "viewpoint", "park"],
-    wellness: ["park", "garden"],
-    history: ["shrine", "temple", "historic", "museum"],
-  };
-
-  const preferredCategories = categoryMap[interest] ?? [];
   const unused = list.filter((loc) => !usedLocations.has(loc.id));
-  
+
   if (unused.length === 0) {
     return list[Math.floor(Math.random() * list.length)];
   }
 
-  // Calculate time needed for each location (duration + travel)
-  const locationsWithTime = unused.map((loc) => ({
-    location: loc,
-    duration: getLocationDurationMinutes(loc),
-    totalTime: getLocationDurationMinutes(loc) + travelTime,
-    matchesInterest: preferredCategories.includes(loc.category),
-  }));
+  // Score all candidates
+  const criteria: LocationScoringCriteria = {
+    interests: interests.length > 0 ? interests : [interest],
+    travelStyle: travelStyle ?? "balanced",
+    currentLocation,
+    availableMinutes: availableMinutes - travelTime, // Subtract travel time from available
+    recentCategories,
+  };
 
-  // Filter to locations that fit in available time
-  const fittingLocations = locationsWithTime.filter((item) => item.totalTime <= availableMinutes);
+  const scored = unused.map((loc) => scoreLocation(loc, criteria));
 
-  // If we have fitting locations, prefer those that match interest
-  if (fittingLocations.length > 0) {
-    const preferred = fittingLocations.filter((item) => item.matchesInterest);
-    if (preferred.length > 0) {
-      // Prefer locations that use time efficiently (not too short, not too long)
-      const optimal = preferred.filter(
-        (item) => item.totalTime >= availableMinutes * 0.4 && item.totalTime <= availableMinutes * 0.9,
-      );
-      if (optimal.length > 0) {
-        const selected = optimal[Math.floor(Math.random() * optimal.length)];
-        return selected?.location;
-      }
-      const selectedPreferred = preferred[Math.floor(Math.random() * preferred.length)];
-      return selectedPreferred?.location;
-    }
-    // If no preferred fit, use any fitting location
-    const selectedFitting = fittingLocations[Math.floor(Math.random() * fittingLocations.length)];
-    return selectedFitting?.location;
+  // Apply diversity filter
+  const diversityContext: DiversityContext = {
+    recentCategories,
+    visitedLocationIds: usedLocations,
+    currentDay: 0, // TODO: Pass from generator if needed
+    energyLevel: 100,
+  };
+
+  const filtered = applyDiversityFilter(scored, diversityContext);
+
+  // Sort by score, descending
+  filtered.sort((a, b) => b.score - a.score);
+
+  // Pick from top 5 with some randomness to avoid identical itineraries
+  const topCandidates = filtered.slice(0, Math.min(5, filtered.length));
+  if (topCandidates.length === 0) {
+    // Fallback if all filtered out
+    return unused[Math.floor(Math.random() * unused.length)];
   }
 
-  // If nothing fits perfectly, find the closest fit that doesn't exceed too much
-  const closeFits = locationsWithTime.filter(
-    (item) => item.totalTime <= availableMinutes * 1.2, // Allow 20% overage
-  );
-  if (closeFits.length > 0) {
-    const preferred = closeFits.filter((item) => item.matchesInterest);
-    if (preferred.length > 0) {
-      const selectedPreferred = preferred[Math.floor(Math.random() * preferred.length)];
-      return selectedPreferred?.location;
-    }
-    const selectedClose = closeFits[Math.floor(Math.random() * closeFits.length)];
-    return selectedClose?.location;
-  }
-
-  // Fallback: return any unused location matching interest
-  const preferred = unused.filter((loc) => preferredCategories.includes(loc.category));
-  if (preferred.length > 0) {
-    return preferred[Math.floor(Math.random() * preferred.length)];
-  }
-
-  return unused[Math.floor(Math.random() * unused.length)];
+  const selected = topCandidates[Math.floor(Math.random() * topCandidates.length)];
+  return selected?.location;
 }
 
 function buildTags(interest: InterestId, category: LocationCategory): string[] {
