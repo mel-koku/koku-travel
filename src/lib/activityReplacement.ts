@@ -49,7 +49,10 @@ export function findReplacementCandidates(
   
   // Get recent categories from day activities (excluding current activity)
   const recentCategories = dayActivities
-    .filter((a) => a.id !== activity.id && a.kind === "place")
+    .filter(
+      (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
+        a.id !== activity.id && a.kind === "place",
+    )
     .map((a) => {
       const loc = findLocationForActivity(a);
       return loc?.category ?? "";
@@ -83,7 +86,7 @@ export function findReplacementCandidates(
   // Filter out the original location and already-used locations
   const usedLocationIds = new Set(
     allActivities
-      .filter((a) => a.kind === "place")
+      .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
       .map((a) => {
         const loc = findLocationForActivity(a);
         return loc?.id;

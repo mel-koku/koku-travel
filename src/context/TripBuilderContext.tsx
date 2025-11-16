@@ -88,7 +88,6 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     const stored = getLocal<TripBuilderData>(STORAGE_KEY);
     if (stored) {
       const normalizedStored = normalizeData(stored);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setData((prev) => {
         const normalizedPrev = normalizeData(prev);
         return {

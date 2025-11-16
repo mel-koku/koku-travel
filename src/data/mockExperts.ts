@@ -75,6 +75,7 @@ const mikaTanakaItineraries: ExpertProfile["itineraries"] = [
       timezone: "Asia/Tokyo",
       days: [
         {
+          id: "kyoto-day-1",
           dateLabel: "Day 1: Eastern Temples",
           timezone: "Asia/Tokyo",
           weekday: "monday",
@@ -138,6 +139,7 @@ const mikaTanakaItineraries: ExpertProfile["itineraries"] = [
           ],
         },
         {
+          id: "kyoto-day-2",
           dateLabel: "Day 2: Southern Temples & Crafts",
           timezone: "Asia/Tokyo",
           weekday: "tuesday",
@@ -201,6 +203,7 @@ const mikaTanakaItineraries: ExpertProfile["itineraries"] = [
           ],
         },
         {
+          id: "kyoto-day-3",
           dateLabel: "Day 3: Arashiyama & Zen Gardens",
           timezone: "Asia/Tokyo",
           weekday: "wednesday",
@@ -281,6 +284,7 @@ const mikaTanakaItineraries: ExpertProfile["itineraries"] = [
       timezone: "Asia/Tokyo",
       days: [
         {
+          id: "kyoto-day-tour-day-1",
           dateLabel: "Full Day Tour",
           timezone: "Asia/Tokyo",
           weekday: "friday",
@@ -460,6 +464,7 @@ const kenjiSatoItineraries: ExpertProfile["itineraries"] = [
       timezone: "Asia/Tokyo",
       days: [
         {
+          id: "tokyo-nightlife-night-1",
           dateLabel: "Night 1: Shibuya & Shinjuku",
           timezone: "Asia/Tokyo",
           weekday: "friday",
@@ -513,6 +518,7 @@ const kenjiSatoItineraries: ExpertProfile["itineraries"] = [
           ],
         },
         {
+          id: "tokyo-nightlife-night-2",
           dateLabel: "Night 2: Roppongi & Ginza",
           timezone: "Asia/Tokyo",
           weekday: "saturday",
@@ -644,6 +650,7 @@ const ayaNakamuraItineraries: ExpertProfile["itineraries"] = [
       timezone: "Asia/Tokyo",
       days: [
         {
+          id: "hokkaido-food-day-1",
           dateLabel: "Day 1: Sapporo Ramen & Markets",
           timezone: "Asia/Tokyo",
           weekday: "monday",
@@ -702,6 +709,7 @@ const ayaNakamuraItineraries: ExpertProfile["itineraries"] = [
           ],
         },
         {
+          id: "hokkaido-food-day-2",
           dateLabel: "Day 2: Seafood & Soup Curry",
           timezone: "Asia/Tokyo",
           weekday: "tuesday",
@@ -760,6 +768,7 @@ const ayaNakamuraItineraries: ExpertProfile["itineraries"] = [
           ],
         },
         {
+          id: "hokkaido-food-day-3",
           dateLabel: "Day 3: Local Specialties",
           timezone: "Asia/Tokyo",
           weekday: "wednesday",

@@ -3,6 +3,7 @@ import { renderHook, act, waitFor } from "@testing-library/react";
 import { AppStateProvider, useAppState } from "@/state/AppState";
 import { createMockSupabaseClient } from "../utils/mocks";
 import { createClient } from "@/lib/supabase/client";
+import type { MockSupabaseClient } from "../utils/mocks";
 
 // Mock dependencies
 vi.mock("@/lib/supabase/client", () => ({
@@ -14,6 +15,10 @@ vi.mock("@/lib/wishlistStorage", () => ({
   WISHLIST_KEY: "koku_wishlist",
 }));
 
+type SupabaseBrowserClient = ReturnType<typeof createClient>;
+const toBrowserClient = (client: MockSupabaseClient): SupabaseBrowserClient =>
+  client as unknown as SupabaseBrowserClient;
+
 describe("AppState", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -22,7 +27,7 @@ describe("AppState", () => {
       localStorage.clear();
     }
     const mockSupabase = createMockSupabaseClient();
-    vi.mocked(createClient).mockReturnValue(mockSupabase as any);
+    vi.mocked(createClient).mockReturnValue(toBrowserClient(mockSupabase));
   });
 
   afterEach(() => {

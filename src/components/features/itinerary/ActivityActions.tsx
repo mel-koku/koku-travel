@@ -15,8 +15,6 @@ type ActivityActionsProps = {
 
 export function ActivityActions({
   activity,
-  tripId,
-  dayId,
   onReplace,
   onDelete,
   onCopy,

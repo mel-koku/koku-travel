@@ -98,6 +98,14 @@ async function findFastestTransitRoute(
   departureTime: string,
   timezone: string,
 ): Promise<RoutingResult | null> {
+  if (!origin || !destination) {
+    logger.warn("Skipping transit route search due to missing coordinates", {
+      origin,
+      destination,
+    });
+    return null;
+  }
+
   const transitModes: ItineraryTravelMode[] = ["transit", "bus", "train", "subway", "tram"];
 
   const routePromises = transitModes.map(async (mode) => {

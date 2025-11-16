@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { GET } from "@/app/auth/callback/route";
 import { createClient } from "@/lib/supabase/server";
 import { createMockRequest, createMockSupabaseClient } from "../utils/mocks";
+import type { MockSupabaseClient } from "../utils/mocks";
 
 // Mock dependencies
 vi.mock("@/lib/supabase/server", () => ({
@@ -11,6 +12,13 @@ vi.mock("@/lib/supabase/server", () => ({
 vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
 }));
+
+type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
+type ExchangeResponse = Awaited<ReturnType<MockSupabaseClient["auth"]["exchangeCodeForSession"]>>;
+type SessionResponse = Awaited<ReturnType<MockSupabaseClient["auth"]["getSession"]>>;
+
+const toSupabaseServerClient = (client: MockSupabaseClient): SupabaseServerClient =>
+  client as unknown as SupabaseServerClient;
 
 describe("Authentication Flow", () => {
   beforeEach(() => {
@@ -22,7 +30,7 @@ describe("Authentication Flow", () => {
   describe("OAuth callback flow", () => {
     it("should complete OAuth callback flow end-to-end", async () => {
       const mockSupabase = createMockSupabaseClient();
-      vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce({
+      const exchangeSuccess: ExchangeResponse = {
         data: {
           session: {
             access_token: "mock-access-token",
@@ -35,8 +43,9 @@ describe("Authentication Flow", () => {
           },
         },
         error: null,
-      } as any);
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      };
+      vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce(exchangeSuccess);
+      vi.mocked(createClient).mockResolvedValue(toSupabaseServerClient(mockSupabase));
 
       const request = createMockRequest("https://example.com/auth/callback?code=valid-auth-code");
       const response = await GET(request);
@@ -49,14 +58,15 @@ describe("Authentication Flow", () => {
 
     it("should handle OAuth callback with invalid code", async () => {
       const mockSupabase = createMockSupabaseClient();
-      vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce({
+      const invalidCodeResponse: ExchangeResponse = {
         data: { session: null },
         error: {
           message: "Invalid authorization code",
           status: 400,
         },
-      } as any);
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      };
+      vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce(invalidCodeResponse);
+      vi.mocked(createClient).mockResolvedValue(toSupabaseServerClient(mockSupabase));
 
       const request = createMockRequest("https://example.com/auth/callback?code=invalid-code");
       const response = await GET(request);
@@ -69,14 +79,15 @@ describe("Authentication Flow", () => {
 
     it("should handle OAuth callback with expired code", async () => {
       const mockSupabase = createMockSupabaseClient();
-      vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce({
+      const expiredResponse: ExchangeResponse = {
         data: { session: null },
         error: {
           message: "Authorization code expired",
           status: 400,
         },
-      } as any);
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      };
+      vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce(expiredResponse);
+      vi.mocked(createClient).mockResolvedValue(toSupabaseServerClient(mockSupabase));
 
       const request = createMockRequest("https://example.com/auth/callback?code=expired-code");
       const response = await GET(request);
@@ -99,11 +110,12 @@ describe("Authentication Flow", () => {
           email: "test@example.com",
         },
       };
-      vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce({
+      const success: ExchangeResponse = {
         data: { session: mockSession },
         error: null,
-      } as any);
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      };
+      vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockResolvedValueOnce(success);
+      vi.mocked(createClient).mockResolvedValue(toSupabaseServerClient(mockSupabase));
 
       const request = createMockRequest("https://example.com/auth/callback?code=valid-code");
       await GET(request);
@@ -117,7 +129,7 @@ describe("Authentication Flow", () => {
       vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockRejectedValueOnce(
         new Error("Network error"),
       );
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      vi.mocked(createClient).mockResolvedValue(toSupabaseServerClient(mockSupabase));
 
       const request = createMockRequest("https://example.com/auth/callback?code=valid-code");
       const response = await GET(request);
@@ -132,7 +144,7 @@ describe("Authentication Flow", () => {
   describe("Protected route access", () => {
     it("should allow access with valid session", async () => {
       const mockSupabase = createMockSupabaseClient();
-      vi.mocked(mockSupabase.auth.getSession).mockResolvedValueOnce({
+      const sessionResponse: SessionResponse = {
         data: {
           session: {
             access_token: "valid-token",
@@ -140,8 +152,9 @@ describe("Authentication Flow", () => {
           },
         },
         error: null,
-      } as any);
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      };
+      vi.mocked(mockSupabase.auth.getSession).mockResolvedValueOnce(sessionResponse);
+      vi.mocked(createClient).mockResolvedValue(toSupabaseServerClient(mockSupabase));
 
       // In a real scenario, this would be tested in middleware or page component
       // For now, we verify the client can be created and session retrieved
@@ -151,11 +164,12 @@ describe("Authentication Flow", () => {
 
     it("should handle missing session gracefully", async () => {
       const mockSupabase = createMockSupabaseClient();
-      vi.mocked(mockSupabase.auth.getSession).mockResolvedValueOnce({
+      const emptySession: SessionResponse = {
         data: { session: null },
         error: null,
-      } as any);
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      };
+      vi.mocked(mockSupabase.auth.getSession).mockResolvedValueOnce(emptySession);
+      vi.mocked(createClient).mockResolvedValue(toSupabaseServerClient(mockSupabase));
 
       const client = await createClient();
       const { data } = await client.auth.getSession();
@@ -181,7 +195,7 @@ describe("Authentication Flow", () => {
       vi.mocked(mockSupabase.auth.exchangeCodeForSession).mockRejectedValueOnce(
         new Error("Network request failed"),
       );
-      vi.mocked(createClient).mockResolvedValue(mockSupabase as any);
+      vi.mocked(createClient).mockResolvedValue(toSupabaseServerClient(mockSupabase));
 
       const request = createMockRequest("https://example.com/auth/callback?code=test-code");
       const response = await GET(request);

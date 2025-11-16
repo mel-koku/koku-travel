@@ -7,7 +7,6 @@ import {
   createRequestContext,
   addRequestContextHeaders,
   getOptionalAuth,
-  type RequestContext,
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
@@ -57,7 +56,7 @@ export async function POST(request: NextRequest) {
 
   try {
     body = await request.json();
-  } catch (error) {
+  } catch {
     return addRequestContextHeaders(
       badRequest("Invalid JSON in request body.", undefined, {
         requestId: finalContext.requestId,

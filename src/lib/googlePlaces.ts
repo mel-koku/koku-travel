@@ -39,7 +39,6 @@ const PLACE_DETAILS_CACHE_TTL = CACHE_TTL_6_HOURS;
 const PLACE_DETAILS_TABLE = "place_details";
 const SUPABASE_DETAILS_COLUMN_SET = "place_id, payload, fetched_at";
 
-let supabaseWarningLogged = false;
 let supabaseServiceWarningLogged = false;
 
 // Use SupabaseClient type from @supabase/supabase-js which works for both server and service clients

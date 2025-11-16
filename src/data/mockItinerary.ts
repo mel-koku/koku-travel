@@ -4,6 +4,7 @@ export const MOCK_ITINERARY: Itinerary = {
   timezone: "Asia/Tokyo",
   days: [
     {
+      id: "mock-itinerary-day-1",
       dateLabel: "Day 1 (Kyoto)",
       timezone: "Asia/Tokyo",
       weekday: "tuesday",
@@ -112,6 +113,7 @@ export const MOCK_ITINERARY: Itinerary = {
       ],
     },
     {
+      id: "mock-itinerary-day-2",
       dateLabel: "Day 2 (Arashiyama)",
       timezone: "Asia/Tokyo",
       weekday: "wednesday",

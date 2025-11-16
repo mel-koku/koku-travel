@@ -237,6 +237,7 @@ function addLocationToItinerary({
 
   while (days.length <= dayIndex) {
     days.push({
+      id: `wishlist-day-${days.length}-${Date.now().toString(36)}`,
       dateLabel: `Day ${days.length + 1}`,
       activities: [],
     });

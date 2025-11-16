@@ -7,6 +7,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { EntryPointSearchInput } from "./EntryPointSearchInput";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
+import { logger } from "@/lib/logger";
 
 type DayEntryPointEditorProps = {
   tripId: string;
@@ -20,8 +21,6 @@ type DayEntryPointEditorProps = {
 };
 
 export function DayEntryPointEditor({
-  tripId,
-  dayId,
   startPoint,
   endPoint,
   activities,
@@ -71,7 +70,7 @@ export function DayEntryPointEditor({
       const optimizedOrder = optimizeRouteOrder(activities, startPoint, endPoint);
       onOptimizeRoute(optimizedOrder);
     } catch (error) {
-      console.error("Failed to optimize route:", error);
+      logger.error("Failed to optimize route", error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsOptimizing(false);
     }

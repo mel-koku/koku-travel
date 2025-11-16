@@ -7,7 +7,6 @@ import { sanitizePath } from "@/lib/api/sanitization";
 import {
   createRequestContext,
   addRequestContextHeaders,
-  type RequestContext,
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";

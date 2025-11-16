@@ -6,7 +6,6 @@ import {
   createRequestContext,
   addRequestContextHeaders,
   getOptionalAuth,
-  type RequestContext,
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
