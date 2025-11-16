@@ -19,6 +19,7 @@ import {
 import { logger } from "./logger";
 
 import { requestRoute } from "./routing";
+import type { RoutingResult } from "./routing/types";
 
 type PlannerOptions = {
   defaultDayStart?: string;
@@ -87,6 +88,59 @@ function chooseTravelMode(
   return "walk";
 }
 
+/**
+ * Finds the fastest transit route by trying several transit-focused modes.
+ * Returns the full routing result for the quickest option or null if all fail.
+ */
+async function findFastestTransitRoute(
+  origin: Coordinates,
+  destination: Coordinates,
+  departureTime: string,
+  timezone: string,
+): Promise<RoutingResult | null> {
+  const transitModes: ItineraryTravelMode[] = ["transit", "bus", "train", "subway", "tram"];
+
+  const routePromises = transitModes.map(async (mode) => {
+    try {
+      return await requestRoute({
+        origin,
+        destination,
+        mode,
+        departureTime,
+        timezone,
+      });
+    } catch (error) {
+      logger.debug(`Failed to get route for mode ${mode}`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return null;
+    }
+  });
+
+  const routeResults = await Promise.all(routePromises);
+  const validRoutes = routeResults.filter((route): route is RoutingResult => Boolean(route));
+
+  if (validRoutes.length === 0) {
+    logger.warn("No transit routes found for any mode", {
+      origin,
+      destination,
+      transitModes,
+    });
+    return null;
+  }
+
+  validRoutes.sort((a, b) => a.durationSeconds - b.durationSeconds);
+  const fastestRoute = validRoutes[0];
+
+  logger.debug("Fastest transit mode found", {
+    mode: fastestRoute?.mode,
+    durationSeconds: fastestRoute?.durationSeconds,
+    totalOptions: validRoutes.length,
+  });
+
+  return fastestRoute ?? null;
+}
+
 function lookupCoordinates(activity: Extract<ItineraryActivity, { kind: "place" }>, location: Location | null): Coordinates {
   if (location?.coordinates) {
     return location.coordinates;
@@ -124,28 +178,6 @@ function parseEstimatedDuration(text?: string | null): number | null {
     return null;
   }
   return Math.round(totalMinutes);
-}
-
-function toRadians(degrees: number): number {
-  return (degrees * Math.PI) / 180;
-}
-
-function straightLineDistanceMeters(
-  origin: NonNullable<Coordinates>,
-  destination: NonNullable<Coordinates>,
-): number {
-  const earthRadiusMeters = 6371e3;
-  const dLat = toRadians(destination.lat - origin.lat);
-  const dLng = toRadians(destination.lng - origin.lng);
-  const lat1 = toRadians(origin.lat);
-  const lat2 = toRadians(destination.lat);
-
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.sin(dLng / 2) * Math.sin(dLng / 2) * Math.cos(lat1) * Math.cos(lat2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return earthRadiusMeters * c;
 }
 
 async function determineVisitDuration(
@@ -378,6 +410,7 @@ function buildTravelSegment(
 export async function planItinerary(
   itinerary: Itinerary,
   options: PlannerOptions = {},
+  dayEntryPoints?: Record<string, { startPoint?: { coordinates: { lat: number; lng: number } }; endPoint?: { coordinates: { lat: number; lng: number } } }>,
 ): Promise<Itinerary> {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
@@ -391,7 +424,14 @@ export async function planItinerary(
       continue; // Skip if day is undefined
     }
     
-    const plannedDay = await planItineraryDay(day, itinerary, mergedOptions);
+    const entryPoints = dayEntryPoints?.[day.id];
+    const plannedDay = await planItineraryDay(
+      day,
+      itinerary,
+      mergedOptions,
+      entryPoints?.startPoint,
+      entryPoints?.endPoint,
+    );
     
     // Detect city change and create transition
     if (previousDay && previousDay.cityId && plannedDay.cityId && previousDay.cityId !== plannedDay.cityId) {
@@ -419,6 +459,8 @@ async function planItineraryDay(
   day: ItineraryDay,
   itinerary: Itinerary,
   options: Required<PlannerOptions>,
+  startPoint?: { coordinates: { lat: number; lng: number } },
+  endPoint?: { coordinates: { lat: number; lng: number } },
 ): Promise<ItineraryDay> {
   const dayTimezone = day.timezone ?? itinerary.timezone ?? "UTC";
   const startMinutes =
@@ -428,7 +470,10 @@ async function planItineraryDay(
 
   let cursorMinutes = startMinutes;
   let lastPlaceIndex: number | null = null;
-  let lastPlaceCoordinates: Coordinates = null;
+  // Use start point coordinates if available, otherwise null
+  let lastPlaceCoordinates: Coordinates = startPoint
+    ? { lat: startPoint.coordinates.lat, lng: startPoint.coordinates.lng }
+    : null;
   let lastPlaceLocation: Location | null = null;
 
   const plannedActivities: ItineraryActivity[] = [];
@@ -455,20 +500,73 @@ async function planItineraryDay(
     let travelInstructions: string[] | undefined;
 
     if (lastPlaceCoordinates && coordinates) {
-      const directDistanceMeters = straightLineDistanceMeters(lastPlaceCoordinates, coordinates);
-      if (activity.travelFromPrevious?.mode) {
-        travelMode = activity.travelFromPrevious.mode;
-      } else {
-        travelMode = directDistanceMeters <= 1000 ? "walk" : "transit";
-      }
+      let route: Awaited<ReturnType<typeof requestRoute>>;
+      const departureTime = formatTime(cursorMinutes);
 
-      const route = await requestRoute({
-        origin: lastPlaceCoordinates,
-        destination: coordinates,
-        mode: travelMode,
-        departureTime: formatTime(cursorMinutes),
-        timezone: dayTimezone,
-      });
+      // If explicit non-walk mode is set (likely user preference), preserve it
+      // Otherwise, recalculate to apply the new logic (walk > 10 min -> transit)
+      if (activity.travelFromPrevious?.mode && activity.travelFromPrevious.mode !== "walk") {
+        travelMode = activity.travelFromPrevious.mode;
+        route = await requestRoute({
+          origin: lastPlaceCoordinates,
+          destination: coordinates,
+          mode: travelMode,
+          departureTime,
+          timezone: dayTimezone,
+        });
+      } else {
+        // First, check walk duration
+        const walkRoute = await requestRoute({
+          origin: lastPlaceCoordinates,
+          destination: coordinates,
+          mode: "walk",
+          departureTime,
+          timezone: dayTimezone,
+        });
+        
+        const walkDurationMinutes = Math.round(walkRoute.durationSeconds / 60);
+        
+        logger.debug("Checking travel mode", {
+          walkDurationMinutes,
+          origin: lastPlaceCoordinates,
+          destination: coordinates,
+        });
+        
+        // If walk is more than 10 minutes, use the fastest transit option
+        if (walkDurationMinutes > 10) {
+          const fastestTransitRoute = await findFastestTransitRoute(
+            lastPlaceCoordinates,
+            coordinates,
+            departureTime,
+            dayTimezone,
+          );
+          
+          if (fastestTransitRoute) {
+            const transitDurationMinutes = Math.round(fastestTransitRoute.durationSeconds / 60);
+            logger.debug("Found transit options, using fastest", {
+              fastestMode: fastestTransitRoute.mode,
+              transitDurationMinutes,
+              walkDurationMinutes,
+            });
+            
+            // Use the fastest transit option (as per requirement: if walk > 10 min, use fastest transit)
+            route = fastestTransitRoute;
+            travelMode = route.mode;
+            logger.debug("Using transit mode", { mode: travelMode, durationMinutes: transitDurationMinutes });
+          } else {
+            // Fallback to walk if no transit options available
+            travelMode = "walk";
+            route = walkRoute;
+            logger.warn("No transit options found for walk > 10 min, using walk", { walkDurationMinutes });
+          }
+        } else {
+          // Walk is 10 minutes or less, use walk
+          travelMode = "walk";
+          route = walkRoute;
+          logger.debug("Walk <= 10 minutes, using walk", { walkDurationMinutes });
+        }
+      }
+      
       travelMode = route.mode;
       travelDurationSeconds = route.durationSeconds;
       travelDistanceMeters = route.distanceMeters;

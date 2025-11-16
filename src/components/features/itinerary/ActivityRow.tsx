@@ -21,6 +21,10 @@ type ActivityRowProps = {
   onSelect?: (activityId: string) => void;
   onHover?: (activityId: string) => void;
   placeNumber?: number;
+  tripId?: string;
+  dayId?: string;
+  onReplace?: () => void;
+  onCopy?: () => void;
 };
 
 export const ActivityRow = forwardRef<HTMLDivElement, ActivityRowProps>(
@@ -36,6 +40,10 @@ export const ActivityRow = forwardRef<HTMLDivElement, ActivityRowProps>(
         allActivities={props.allActivities}
         dayTimezone={props.dayTimezone}
         placeNumber={props.placeNumber}
+        tripId={props.tripId}
+        dayId={props.dayId}
+        onReplace={props.onReplace}
+        onCopy={props.onCopy}
       />
     );
   },

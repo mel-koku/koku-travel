@@ -31,16 +31,17 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
   const { data, setData } = useTripBuilder();
 
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
+  const [notesError, setNotesError] = useState<string | null>(null);
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
   const mobility = data.accessibility?.mobility ?? false;
   const dietarySelections = sortDietarySelections(data.accessibility?.dietary ?? []);
-  const dietaryOtherValue = data.accessibility?.dietaryOther ?? "";
   const notesValue = data.accessibility?.notes ?? "";
 
   const dietarySelectionSet = useMemo(() => new Set(dietarySelections), [dietarySelections]);
   const isOtherChecked = dietarySelectionSet.has("other");
   const notesDescriptionId = `${formId}-notes-description`;
+  const notesErrorId = `${formId}-notes-error`;
 
   const upsertAccessibility = useCallback(
     (updater: (current: { mobility: boolean; dietary: string[]; dietaryOther: string; notes: string }) => {
@@ -84,18 +85,14 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
 
   const toggleDietaryOption = useCallback(
     (optionId: string) => {
+      // Clear error if "Other" is being unchecked
+      if (optionId === "other" && isOtherChecked) {
+        setNotesError(null);
+      }
       upsertAccessibility((current) => {
         const working = new Set(current.dietary);
         if (working.has(optionId)) {
           working.delete(optionId);
-          // Clear dietaryOther if "other" is unchecked
-          if (optionId === "other") {
-            return {
-              ...current,
-              dietary: sortDietarySelections(working),
-              dietaryOther: "",
-            };
-          }
         } else {
           working.add(optionId);
         }
@@ -105,34 +102,23 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
         };
       });
     },
-    [upsertAccessibility],
-  );
-
-  const handleDietaryOtherChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const nextValue = event.target.value;
-      upsertAccessibility((current) => ({
-        ...current,
-        dietaryOther: nextValue,
-      }));
-    },
-    [upsertAccessibility],
+    [isOtherChecked, upsertAccessibility],
   );
 
   const handleNotesChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       const nextValue = event.target.value;
-      upsertAccessibility((current) => {
-        if (current.notes === nextValue) {
-          return current;
-        }
-        return {
-          ...current,
-          notes: nextValue,
-        };
-      });
+      // Clear error when user starts typing
+      if (notesError) {
+        setNotesError(null);
+      }
+      // Update state immediately with the full value including spaces
+      upsertAccessibility((current) => ({
+        ...current,
+        notes: nextValue,
+      }));
     },
-    [upsertAccessibility],
+    [notesError, upsertAccessibility],
   );
 
   const closeSkipConfirmation = useCallback(() => {
@@ -147,6 +133,19 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
       const trimmedNotes = notesValue.trim();
       const hasNotes = trimmedNotes.length > 0;
 
+      // Validate: if "Other" is selected, notes cannot be blank
+      if (isOtherChecked && !hasNotes) {
+        setNotesError("Please specify your dietary restriction in the additional notes.");
+        // Scroll to the notes field
+        const notesElement = document.getElementById(`${formId}-notes`);
+        notesElement?.scrollIntoView({ behavior: "smooth", block: "center" });
+        notesElement?.focus();
+        return;
+      }
+
+      // Clear any previous errors
+      setNotesError(null);
+
       if (!hasMobility && !hasDietary && !hasNotes) {
         setShowSkipConfirm(true);
         return;
@@ -157,13 +156,13 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
         accessibility: {
           mobility,
           dietary: sortDietarySelections(dietarySelections),
-          dietaryOther: dietaryOtherValue.trim(),
+          dietaryOther: prev.accessibility?.dietaryOther ?? "",
           notes: trimmedNotes,
         },
       }));
       onNext();
     },
-    [dietarySelections, dietaryOtherValue, mobility, notesValue, onNext, setData],
+    [dietarySelections, formId, isOtherChecked, mobility, notesValue, onNext, setData],
   );
 
   const confirmSkip = useCallback(() => {
@@ -256,14 +255,9 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
                       </label>
                       {isOther && isOtherChecked && (
                         <div className="mt-3 pl-8">
-                          <input
-                            type="text"
-                            id={`${formId}-dietary-other-input`}
-                            value={dietaryOtherValue}
-                            onChange={handleDietaryOtherChange}
-                            placeholder="Please specify your dietary restriction"
-                            className="w-full rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm text-gray-700 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
-                          />
+                          <p className="text-sm text-gray-600">
+                            Please specify your dietary restriction in the &quot;Additional notes&quot; section below.
+                          </p>
                         </div>
                       )}
                     </div>
@@ -281,19 +275,34 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
                   Additional notes
                 </label>
                 <p id={notesDescriptionId} className="text-sm text-gray-500">
-                  Optional. Add details like allergies, mobility devices, or anything else we should
+                  {isOtherChecked ? "Required" : "Optional"}. Add details like allergies, mobility devices{isOtherChecked ? ", dietary restrictions" : ""}, or anything else we should
                   keep in mind.
                 </p>
               </div>
-              <textarea
-                id={`${formId}-notes`}
-                value={notesValue}
-                onChange={handleNotesChange}
-                aria-describedby={notesDescriptionId}
-                rows={4}
-                placeholder="Tell us anything else that will help us tailor your trip."
-                className="w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-700 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-0"
-              />
+              <div className="space-y-2">
+                <textarea
+                  id={`${formId}-notes`}
+                  value={notesValue}
+                  onChange={handleNotesChange}
+                  aria-describedby={notesError ? notesErrorId : notesDescriptionId}
+                  aria-invalid={notesError ? true : undefined}
+                  rows={4}
+                  maxLength={5000}
+                  placeholder="Tell us anything else that will help us tailor your trip."
+                  autoComplete="off"
+                  spellCheck="true"
+                  className={`w-full resize-none rounded-xl border bg-white px-4 py-3 text-sm text-gray-700 shadow-sm transition focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                    notesError
+                      ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+                      : "border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                  }`}
+                />
+                {notesError && (
+                  <p id={notesErrorId} className="text-sm text-red-600" role="alert">
+                    {notesError}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </section>

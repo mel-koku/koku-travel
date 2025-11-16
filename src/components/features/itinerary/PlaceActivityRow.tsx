@@ -1,16 +1,18 @@
 "use client";
 
-import { forwardRef, useMemo, useState, type ChangeEvent, type MouseEvent } from "react";
+import { forwardRef, useMemo, useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
 
 import { LocationDetailsModal } from "@/components/features/explore/LocationDetailsModal";
 import { useLocationEditorialSummary } from "@/state/locationDetailsStore";
 import type { ItineraryActivity } from "@/types/itinerary";
+import type { Location } from "@/types/location";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { DragHandle } from "./DragHandle";
 import { StarIcon } from "./activityIcons";
+import { ActivityActions } from "./ActivityActions";
 import {
   getShortOverview,
   getLocationRating,
@@ -34,7 +36,7 @@ const DEFAULT_FALLBACK_IMAGE =
 
 function buildFallbackLocation(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
-) {
+): Location {
   const fallbackCategory = activity.tags?.[0] ?? "culture";
   const fallbackCity = activity.neighborhood ?? "Japan";
 
@@ -46,6 +48,50 @@ function buildFallbackLocation(
     category: fallbackCategory,
     image: FALLBACK_IMAGES[fallbackCategory] ?? DEFAULT_FALLBACK_IMAGE,
   };
+}
+
+/**
+ * Hook to fetch location details for entry points via Google Places API
+ */
+function useEntryPointLocation(
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
+): Location | null {
+  const [location, setLocation] = useState<Location | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Extract placeId from entry point locationId
+    const placeIdMatch = activity.locationId?.match(/^__entry_point_(?:start|end)__(.+?)__$/);
+    const placeId = placeIdMatch ? placeIdMatch[1] : null;
+
+    if (!placeId) {
+      return;
+    }
+
+    setIsLoading(true);
+    fetch(`/api/places/details?placeId=${encodeURIComponent(placeId)}&name=${encodeURIComponent(activity.title)}`)
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch place details: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data.location) {
+          setLocation(data.location);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching entry point location details:", error);
+        // Fall back to basic location
+        setLocation(buildFallbackLocation(activity));
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [activity.locationId, activity.title]);
+
+  return location;
 }
 
 type PlaceActivityRowProps = {
@@ -63,6 +109,10 @@ type PlaceActivityRowProps = {
   onSelect?: (activityId: string) => void;
   onHover?: (activityId: string) => void;
   placeNumber?: number;
+  tripId?: string;
+  dayId?: string;
+  onReplace?: () => void;
+  onCopy?: () => void;
 };
 
 export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps>(
@@ -82,6 +132,10 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
       onSelect,
       onHover,
       placeNumber,
+      tripId,
+      dayId,
+      onReplace,
+      onCopy,
     },
     ref,
   ) => {
@@ -128,10 +182,17 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
           }
         : undefined;
 
+    // Check if this is an entry point that needs API fetch
+    const isEntryPoint = activity.locationId?.startsWith("__entry_point_");
+    const entryPointLocation = useEntryPointLocation(activity);
+    
     const placeLocation = useMemo(() => {
+      if (isEntryPoint && entryPointLocation) {
+        return entryPointLocation;
+      }
       const resolved = findLocationForActivity(activity);
       return resolved ?? buildFallbackLocation(activity);
-    }, [activity]);
+    }, [activity, isEntryPoint, entryPointLocation]);
     const cachedEditorialSummary = useLocationEditorialSummary(placeLocation?.id);
     const summary = placeLocation
       ? getShortOverview(placeLocation, cachedEditorialSummary)
@@ -244,37 +305,50 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
                   <p className="text-sm font-semibold text-gray-900">
                     {placeLocation.name}
                   </p>
-                  <p className="text-xs text-gray-600">
-                    {placeLocation.city}
-                    {placeLocation.city && placeLocation.region ? ", " : ""}
-                    {placeLocation.region}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <p className="text-xs text-gray-600">
+                      {placeLocation.city}
+                      {placeLocation.city && placeLocation.region ? ", " : ""}
+                      {placeLocation.region}
+                    </p>
+                    {rating ? (
+                      <div className="flex shrink-0 items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-gray-800 shadow-sm ring-1 ring-gray-200">
+                        <StarIcon />
+                        <span>{rating.toFixed(1)}</span>
+                        {reviewCount ? (
+                          <span className="text-[10px] font-normal text-gray-500">
+                            ({numberFormatter.format(reviewCount)})
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-wrap items-center justify-end gap-2">
-                {rating ? (
-                  <div className="flex shrink-0 items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-gray-800 shadow-sm ring-1 ring-gray-200">
-                    <StarIcon />
-                    <span>{rating.toFixed(1)}</span>
-                    {reviewCount ? (
-                      <span className="text-[10px] font-normal text-gray-500">
-                        ({numberFormatter.format(reviewCount)})
-                      </span>
-                    ) : null}
-                  </div>
-                ) : null}
-                <button
-                  type="button"
-                  className="rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-semibold text-red-600 shadow-sm ring-1 ring-red-200 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    handleDelete();
-                  }}
-                  aria-label={`Delete ${activity.title}`}
-                >
-                  Delete
-                </button>
+                {tripId && dayId && (onReplace || onCopy) ? (
+                  <ActivityActions
+                    activity={activity}
+                    tripId={tripId}
+                    dayId={dayId}
+                    onReplace={onReplace ?? (() => {})}
+                    onDelete={handleDelete}
+                    onCopy={onCopy ?? (() => {})}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className="rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-semibold text-red-600 shadow-sm ring-1 ring-red-200 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleDelete();
+                    }}
+                    aria-label={`Delete ${activity.title}`}
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
 
