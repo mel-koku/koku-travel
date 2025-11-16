@@ -25,7 +25,7 @@ export type SectionProps = {
   children: ReactNode;
 };
 
-const headingBlockSpacing = "mb-10 md:mb-8 sm:mb-6";
+const headingBlockSpacing = "mb-6 sm:mb-8 md:mb-10";
 
 /**
  * Establishes vertical rhythm and an optional heading group for content bands.
@@ -39,8 +39,8 @@ export function Section({
 }: SectionProps) {
   const outerClassName = cn("w-full", className);
   const containerClassName = cn(
-    "py-16 md:py-12 sm:py-10",
-    bleed && "px-0 md:px-0 sm:px-0",
+    "py-10 sm:py-12 md:py-16",
+    bleed && "px-0",
   );
 
   return (

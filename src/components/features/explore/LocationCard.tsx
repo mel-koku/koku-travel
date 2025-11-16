@@ -46,7 +46,7 @@ export function LocationCard({ location, onSelect }: LocationCardProps) {
         ref={buttonRef}
         className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
       >
-        <div className="relative h-48 w-full">
+        <div className="relative aspect-[4/3] w-full">
           <Image
             src={imageSrc || FALLBACK_IMAGE_SRC}
             alt={location.name}
