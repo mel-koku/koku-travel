@@ -52,7 +52,9 @@ This guide will help you deploy a fresh instance of Koku Travel to Vercel, ensur
 #### Sanity CMS - Client-side (3)
 - [ ] `NEXT_PUBLIC_SANITY_PROJECT_ID` (same as `SANITY_PROJECT_ID`)
 - [ ] `NEXT_PUBLIC_SANITY_DATASET` (same as `SANITY_DATASET`)
-- [ ] `NEXT_PUBLIC_SANITY_API_VERSION` = `2024-10-21` (same as server-side)
+- [ ] `NEXT_PUBLIC_SANITY_API_VERSION` = `2025-11-13`
+
+**Note:** The different API versions are intentional - Sanity uses different versions for client-side Studio vs server-side API.
 
 ### Optional Variables
 - [ ] `NEXT_PUBLIC_SITE_URL` - Set AFTER first deployment
@@ -197,7 +199,7 @@ For content revalidation:
 
 1. **API Versions:** Sanity uses different API versions:
    - Server-side: `2024-10-21`
-   - Client-side (Studio): `2024-10-21` (same as server-side)
+   - Client-side (Studio): `2025-11-13`
    - This is correct and intentional
 
 2. **Site URL:** Must be set AFTER first deployment to get actual Vercel URL
@@ -225,7 +227,7 @@ For content revalidation:
 
 **Sanity Studio Not Working?**
 - Verify all `NEXT_PUBLIC_SANITY_*` variables are set
-- Check that `NEXT_PUBLIC_SANITY_API_VERSION` is `2024-10-21`
+- Check that `NEXT_PUBLIC_SANITY_API_VERSION` is `2025-11-13`
 
 **API Routes Failing?**
 - Check `SUPABASE_SERVICE_ROLE_KEY` is set
