@@ -1,8 +1,16 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 import { autocompletePlaces, fetchPlaceCoordinates } from "@/lib/googlePlaces";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+  getOptionalAuth,
+  type RequestContext,
+} from "@/lib/api/middleware";
+import { logger } from "@/lib/logger";
+import { locationIdSchema } from "@/lib/api/schemas";
 
 /**
  * POST /api/places/autocomplete
@@ -21,11 +29,18 @@ import { checkRateLimit } from "@/lib/api/rateLimit";
  * @throws Returns 500 for other errors
  */
 export async function POST(request: NextRequest) {
+  // Create request context for tracing
+  const context = createRequestContext(request);
+
   // Rate limiting: 60 requests per minute per IP
   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 60, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
-    return rateLimitResponse;
+    return addRequestContextHeaders(rateLimitResponse, context);
   }
+
+  // Optional authentication (for future user-specific features)
+  const authResult = await getOptionalAuth(request, context);
+  const finalContext = authResult.context;
 
   let body: {
     input?: string;
@@ -43,19 +58,53 @@ export async function POST(request: NextRequest) {
   try {
     body = await request.json();
   } catch (error) {
-    return badRequest("Invalid JSON in request body.");
+    return addRequestContextHeaders(
+      badRequest("Invalid JSON in request body.", undefined, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
   }
 
   const { input, languageCode, regionCode, includedPrimaryTypes, locationBias } = body;
 
   if (!input || typeof input !== "string" || input.trim().length === 0) {
-    return badRequest("Missing or invalid 'input' field. Must be a non-empty string.");
+    return addRequestContextHeaders(
+      badRequest("Missing or invalid 'input' field. Must be a non-empty string.", undefined, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
+  }
+
+  // Validate input length
+  if (input.trim().length > 500) {
+    return addRequestContextHeaders(
+      badRequest("Input field too long (max 500 characters).", undefined, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
   }
 
   // Validate includedPrimaryTypes if provided
   if (includedPrimaryTypes !== undefined) {
     if (!Array.isArray(includedPrimaryTypes) || includedPrimaryTypes.some((type) => typeof type !== "string")) {
-      return badRequest("'includedPrimaryTypes' must be an array of strings.");
+      return addRequestContextHeaders(
+        badRequest("'includedPrimaryTypes' must be an array of strings.", undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
+    }
+    // Limit array size to prevent DoS
+    if (includedPrimaryTypes.length > 50) {
+      return addRequestContextHeaders(
+        badRequest("'includedPrimaryTypes' array too large (max 50 items).", undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
   }
 
@@ -66,9 +115,15 @@ export async function POST(request: NextRequest) {
       typeof center?.latitude !== "number" ||
       typeof center?.longitude !== "number" ||
       typeof radius !== "number" ||
-      radius < 0
+      radius < 0 ||
+      radius > 50000 // Max radius: 50km
     ) {
-      return badRequest("Invalid 'locationBias.circle'. Must have valid center coordinates and non-negative radius.");
+      return addRequestContextHeaders(
+        badRequest("Invalid 'locationBias.circle'. Must have valid center coordinates and radius between 0 and 50000 meters.", undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
   }
 
@@ -81,20 +136,36 @@ export async function POST(request: NextRequest) {
       locationBias,
     });
 
-    return Response.json({ places }, {
-      headers: {
-        "Cache-Control": "public, max-age=300, s-maxage=300", // Cache for 5 minutes
-      },
-    });
+    return addRequestContextHeaders(
+      NextResponse.json({ places }, {
+        headers: {
+          "Cache-Control": "public, max-age=300, s-maxage=300", // Cache for 5 minutes
+        },
+      }),
+      finalContext,
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to autocomplete places.";
     const errorMessage = error instanceof Error ? error.message : "";
 
+    logger.error("Error autocompleting places", error instanceof Error ? error : new Error(String(error)), {
+      requestId: finalContext.requestId,
+      input: input.trim(),
+    });
+
     if (errorMessage.includes("Missing Google Places API key")) {
-      return serviceUnavailable("Google Places API is not configured.");
+      return addRequestContextHeaders(
+        serviceUnavailable("Google Places API is not configured.", {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
 
-    return internalError(message);
+    return addRequestContextHeaders(
+      internalError(message, undefined, { requestId: finalContext.requestId }),
+      finalContext,
+    );
   }
 }
 
@@ -111,40 +182,88 @@ export async function POST(request: NextRequest) {
  * @throws Returns 500 for other errors
  */
 export async function GET(request: NextRequest) {
+  // Create request context for tracing
+  const context = createRequestContext(request);
+
   // Rate limiting: 60 requests per minute per IP
   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 60, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
-    return rateLimitResponse;
+    return addRequestContextHeaders(rateLimitResponse, context);
   }
+
+  // Optional authentication (for future user-specific features)
+  const authResult = await getOptionalAuth(request, context);
+  const finalContext = authResult.context;
 
   const { searchParams } = new URL(request.url);
   const placeId = searchParams.get("placeId");
 
   if (!placeId || placeId.trim().length === 0) {
-    return badRequest("Missing required query parameter 'placeId'.");
+    return addRequestContextHeaders(
+      badRequest("Missing required query parameter 'placeId'.", undefined, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
   }
 
+  // Validate placeId format using schema
+  const placeIdValidation = locationIdSchema.safeParse(placeId.trim());
+  if (!placeIdValidation.success) {
+    return addRequestContextHeaders(
+      badRequest("Invalid placeId format.", {
+        errors: placeIdValidation.error.issues,
+      }, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
+  }
+
+  const validatedPlaceId = placeIdValidation.data;
+
   try {
-    const place = await fetchPlaceCoordinates(placeId.trim());
+    const place = await fetchPlaceCoordinates(validatedPlaceId);
 
     if (!place) {
-      return badRequest(`Place not found for placeId: ${placeId}`);
+      return addRequestContextHeaders(
+        badRequest(`Place not found for placeId: ${validatedPlaceId}`, undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
 
-    return Response.json({ place }, {
-      headers: {
-        "Cache-Control": "public, max-age=86400, s-maxage=86400", // Cache for 24 hours
-      },
-    });
+    return addRequestContextHeaders(
+      NextResponse.json({ place }, {
+        headers: {
+          "Cache-Control": "public, max-age=86400, s-maxage=86400", // Cache for 24 hours
+        },
+      }),
+      finalContext,
+    );
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to fetch place coordinates.";
     const errorMessage = error instanceof Error ? error.message : "";
 
+    logger.error("Error fetching place coordinates", error instanceof Error ? error : new Error(String(error)), {
+      requestId: finalContext.requestId,
+      placeId: validatedPlaceId,
+    });
+
     if (errorMessage.includes("Missing Google Places API key")) {
-      return serviceUnavailable("Google Places API is not configured.");
+      return addRequestContextHeaders(
+        serviceUnavailable("Google Places API is not configured.", {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
 
-    return internalError(message);
+    return addRequestContextHeaders(
+      internalError(message, undefined, { requestId: finalContext.requestId }),
+      finalContext,
+    );
   }
 }
 
