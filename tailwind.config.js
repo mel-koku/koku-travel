@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      zIndex: {
+        '60': '60',
+        '70': '70',
+      },
       borderRadius: {
         koku: "1rem", // rounded-2xl equivalent
       },
