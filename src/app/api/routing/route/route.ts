@@ -7,7 +7,6 @@ import {
   createRequestContext,
   addRequestContextHeaders,
   getOptionalAuth,
-  type RequestContext,
 } from "@/lib/api/middleware";
 import { badRequest, internalError } from "@/lib/api/errors";
 
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
   let body: RoutingRequest;
   try {
     body = await request.json() as RoutingRequest;
-  } catch (error) {
+  } catch {
     return addRequestContextHeaders(
       badRequest("Invalid JSON in request body.", undefined, {
         requestId: finalContext.requestId,
@@ -138,7 +137,9 @@ function parseTime(timeStr: string, timezone?: string): Date | null {
     if (match && match[1] && match[2]) {
       const hours = parseInt(match[1], 10);
       const minutes = parseInt(match[2], 10);
-      const now = new Date();
+      const now = timezone
+        ? new Date(new Date().toLocaleString("en-US", { timeZone: timezone }))
+        : new Date();
       const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
       return date;
     }
@@ -150,7 +151,17 @@ function parseTime(timeStr: string, timezone?: string): Date | null {
 }
 
 function formatTime(date: Date, timezone?: string): string {
-  // Format as HH:MM in local time or specified timezone
+  if (timezone) {
+    const formatter = new Intl.DateTimeFormat("en-US", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    return formatter.format(date);
+  }
+
+  // Format as HH:MM in local time
   const hours = date.getHours().toString().padStart(2, "0");
   const minutes = date.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;

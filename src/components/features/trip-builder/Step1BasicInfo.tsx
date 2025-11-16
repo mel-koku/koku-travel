@@ -148,7 +148,10 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
       const startDate = new Date(values.start);
       const calculatedEndDate = new Date(startDate);
       calculatedEndDate.setDate(startDate.getDate() + duration - 1);
-      endDate = calculatedEndDate.toISOString().split("T")[0];
+      const [isoDate] = calculatedEndDate.toISOString().split("T");
+      if (isoDate) {
+        endDate = isoDate;
+      }
     }
 
     setData((prev) => ({

@@ -22,7 +22,7 @@ export function extractBaseLocationId(activityId: string): string | null {
  */
 function extractPlaceIdFromEntryPoint(locationId: string): string | null {
   const match = locationId.match(/^__entry_point_(?:start|end)__(.+?)__$/);
-  return match ? match[1] : null;
+  return typeof match?.[1] === "string" ? match[1] : null;
 }
 
 export function findLocationForActivity(

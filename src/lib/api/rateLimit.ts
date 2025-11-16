@@ -54,7 +54,7 @@ const useUpstash = !!(upstashRedisUrl && upstashRedisToken);
 // Note: Upstash Ratelimit requires limit/window to be set at instance creation.
 // We use a default of 100 requests per minute. For custom configs, we fall back to in-memory.
 let redisClient: Redis | null = null;
-let upstashRatelimit: Ratelimit | null = null;
+const limiterCache = new Map<string, Ratelimit>();
 const DEFAULT_MAX_REQUESTS = 100;
 const DEFAULT_WINDOW_MS = 60 * 1000; // 1 minute
 
@@ -63,11 +63,6 @@ if (useUpstash) {
     redisClient = new Redis({
       url: upstashRedisUrl,
       token: upstashRedisToken,
-    });
-    upstashRatelimit = new Ratelimit({
-      redis: redisClient,
-      limiter: Ratelimit.slidingWindow(DEFAULT_MAX_REQUESTS, `${DEFAULT_WINDOW_MS}ms`),
-      analytics: true,
     });
     logger.info("Upstash Redis rate limiting enabled");
   } catch (error) {
@@ -78,6 +73,29 @@ if (useUpstash) {
 } else {
   // Note: We don't throw here during build time, but will check at runtime
   // The check happens in checkRateLimit() function when actually handling requests
+}
+
+function getLimiterKey(config: RateLimitConfig): string {
+  return `${config.maxRequests}:${config.windowMs}`;
+}
+
+function getUpstashLimiter(config: RateLimitConfig): Ratelimit | null {
+  if (!redisClient) {
+    return null;
+  }
+
+  const key = getLimiterKey(config);
+  let limiter = limiterCache.get(key);
+  if (!limiter) {
+    limiter = new Ratelimit({
+      redis: redisClient,
+      limiter: Ratelimit.slidingWindow(config.maxRequests, `${config.windowMs}ms`),
+      analytics: true,
+    });
+    limiterCache.set(key, limiter);
+  }
+
+  return limiter;
 }
 
 // Fallback: In-memory store for local development
@@ -152,22 +170,17 @@ function getClientIp(request: NextRequest): string {
  */
 export async function checkRateLimit(
   request: NextRequest,
-  config: RateLimitConfig = { maxRequests: 100, windowMs: 60 * 1000 }, // Default: 100 requests per minute
+  config: RateLimitConfig = { maxRequests: DEFAULT_MAX_REQUESTS, windowMs: DEFAULT_WINDOW_MS },
 ): Promise<NextResponse | null> {
   const ip = getClientIp(request);
 
-  // Use Upstash Redis if configured and config matches default
-  // Note: Upstash Ratelimit requires limit/window at instance creation, so we only use it
-  // for the default config. Custom configs fall back to in-memory rate limiting.
-  // WARNING: Custom configs will not work correctly in production with multiple instances.
-  if (
-    useUpstash &&
-    upstashRatelimit &&
-    config.maxRequests === DEFAULT_MAX_REQUESTS &&
-    config.windowMs === DEFAULT_WINDOW_MS
-  ) {
+  if (useUpstash) {
     try {
-      const result = await upstashRatelimit.limit(ip);
+      const limiter = getUpstashLimiter(config);
+      if (!limiter) {
+        throw new Error("Upstash limiter is unavailable.");
+      }
+      const result = await limiter.limit(ip);
 
       if (!result.success) {
         // Rate limited
@@ -196,24 +209,18 @@ export async function checkRateLimit(
       // If Upstash fails, log and fall back to in-memory
       logger.warn("Upstash rate limit check failed, falling back to in-memory", {
         error: error instanceof Error ? error.message : String(error),
+        config,
       });
       // Fall through to in-memory implementation
     }
+  } else if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "Upstash Redis environment variables are required for rate limiting in production. " +
+        "Set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN or disable rate limiting explicitly.",
+    );
   }
 
   // Fallback: In-memory rate limiting (for local development only)
-  // ERROR: This does NOT work correctly in production with multiple server instances
-  // Each instance maintains its own in-memory store, so rate limits are not shared
-  if (process.env.NODE_ENV === "production" && !useUpstash) {
-    throw new Error(
-      `Rate limiting with custom config (${config.maxRequests} req/${config.windowMs}ms) ` +
-        "requires Upstash Redis in production. In-memory storage does NOT work correctly across multiple instances. " +
-        "Please set UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN environment variables. " +
-        "Alternatively, use the default config (100 req/min) which uses Upstash Redis. " +
-        "See https://upstash.com/docs/redis/overall/getstarted for setup instructions.",
-    );
-  }
-  
   const now = Date.now();
 
   // Get or create entry for this IP

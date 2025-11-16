@@ -15,12 +15,17 @@ vi.mock("@/lib/wishlistStorage", () => ({
 }));
 
 import { createMockSupabaseClient } from "../utils/mocks";
+import type { MockSupabaseClient } from "../utils/mocks";
+
+type SupabaseBrowserClient = ReturnType<typeof createClient>;
+const toBrowserClient = (client: MockSupabaseClient): SupabaseBrowserClient =>
+  client as unknown as SupabaseBrowserClient;
 
 describe("WishlistContext", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     const mockSupabase = createMockSupabaseClient();
-    vi.mocked(createClient).mockReturnValue(mockSupabase as any);
+    vi.mocked(createClient).mockReturnValue(toBrowserClient(mockSupabase));
   });
 
   describe("context provider initialization", () => {
