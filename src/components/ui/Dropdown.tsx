@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 
 type DropdownItem = {
   id: string;
-  label: string;
+  label: string | ReactNode;
   description?: string;
   icon?: ReactNode;
   onSelect?: () => void;
