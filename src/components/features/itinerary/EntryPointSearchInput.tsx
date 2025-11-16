@@ -183,12 +183,13 @@ export function EntryPointSearchInput({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const selectedPlaceValue = selectedPlace;
     const newErrors: typeof errors = {};
     if (!searchInput.trim()) {
       newErrors.name = `${typeLabels[type]} name is required`;
     }
 
-    if (!selectedPlace || !selectedPlace.location) {
+    if (!selectedPlaceValue?.location) {
       newErrors.coordinates = "Please select a place from the suggestions";
     }
 
@@ -201,13 +202,13 @@ export function EntryPointSearchInput({
     const entryPoint: EntryPoint = {
       type,
       id: initialValue?.id ?? `ep-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      name: selectedPlace.displayName,
+      name: selectedPlaceValue.displayName,
       coordinates: {
-        lat: selectedPlace.location.latitude,
-        lng: selectedPlace.location.longitude,
+        lat: selectedPlaceValue.location.latitude,
+        lng: selectedPlaceValue.location.longitude,
       },
       cityId,
-      placeId: selectedPlace.placeId, // Store Google Place ID for fetching details
+      placeId: selectedPlaceValue.placeId, // Store Google Place ID for fetching details
     };
 
     onSelect(entryPoint);
