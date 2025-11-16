@@ -183,13 +183,12 @@ export function EntryPointSearchInput({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const selectedPlaceValue = selectedPlace;
     const newErrors: typeof errors = {};
     if (!searchInput.trim()) {
       newErrors.name = `${typeLabels[type]} name is required`;
     }
 
-    if (!selectedPlaceValue?.location) {
+    if (!selectedPlace || !selectedPlace.location) {
       newErrors.coordinates = "Please select a place from the suggestions";
     }
 
@@ -198,17 +197,18 @@ export function EntryPointSearchInput({
       return;
     }
 
+    // At this point, selectedPlace is guaranteed to be non-null and have a location
     // Create entry point
     const entryPoint: EntryPoint = {
       type,
       id: initialValue?.id ?? `ep-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      name: selectedPlaceValue.displayName,
+      name: selectedPlace.displayName,
       coordinates: {
-        lat: selectedPlaceValue.location.latitude,
-        lng: selectedPlaceValue.location.longitude,
+        lat: selectedPlace.location.latitude,
+        lng: selectedPlace.location.longitude,
       },
       cityId,
-      placeId: selectedPlaceValue.placeId, // Store Google Place ID for fetching details
+      placeId: selectedPlace.placeId, // Store Google Place ID for fetching details
     };
 
     onSelect(entryPoint);
