@@ -12,6 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { syncLocalToCloudOnce } from "@/lib/accountSync";
 import { logger } from "@/lib/logger";
+import { env } from "@/lib/env";
 
 type StoredTrip = ReturnType<typeof useAppState>["trips"][number];
 
@@ -418,6 +419,23 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
 
+  /**
+   * Gets the redirect URL for magic link authentication.
+   * Uses NEXT_PUBLIC_SITE_URL in production, falls back to location.origin for development.
+   */
+  function getRedirectUrl(): string {
+    const siteUrl = env.siteUrl;
+    if (siteUrl) {
+      return `${siteUrl}/auth/callback`;
+    }
+    // Fallback to current origin (for development)
+    if (typeof window !== "undefined") {
+      return `${window.location.origin}/auth/callback`;
+    }
+    // Server-side fallback (shouldn't happen in client component)
+    return "/auth/callback";
+  }
+
   async function sendMagicLink(e: FormEvent) {
     e.preventDefault();
     if (!supabase) {
@@ -425,9 +443,10 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
       return;
     }
     setStatus("Sending magic link…");
+    const redirectUrl = getRedirectUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${location.origin}/auth/callback` },
+      options: { emailRedirectTo: redirectUrl },
     });
     setStatus(error ? `Error: ${error.message}` : "Check your email for the sign-in link.");
   }
