@@ -21,7 +21,6 @@ export type UserProfile = {
   id: string; // local-only UUID
   displayName: string; // shown in UI ("Mel", etc.)
   email?: string; // optional for future sync
-  locale: "en" | "jp"; // EN/JP toggle
 };
 
 export type StoredTrip = {
@@ -76,7 +75,7 @@ function newId() {
 const STABLE_DEFAULT_ID = "default-user-id";
 
 const defaultState: AppStateShape = {
-  user: { id: STABLE_DEFAULT_ID, displayName: "Guest", locale: "en" },
+  user: { id: STABLE_DEFAULT_ID, displayName: "Guest" },
   favorites: [],
   guideBookmarks: [],
   trips: [],
@@ -149,23 +148,13 @@ const sanitizeTrips = (raw: unknown): StoredTrip[] => {
     .filter((entry): entry is StoredTrip => Boolean(entry));
 };
 
-const SUPPORTED_LOCALES = new Set<UserProfile["locale"]>(["en", "jp"]);
-
-const sanitizeLocale = (value: unknown): UserProfile["locale"] => {
-  if (typeof value === "string" && SUPPORTED_LOCALES.has(value as UserProfile["locale"])) {
-    return value as UserProfile["locale"];
-  }
-  return "en";
-};
-
 const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): UserProfile => {
   if (!user) {
-    return { id: newId(), displayName: "Guest", locale: "en" };
+    return { id: newId(), displayName: "Guest" };
   }
 
   const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
   const metadataName = typeof metadata.full_name === "string" ? metadata.full_name.trim() : "";
-  const metadataLocale = typeof metadata.locale === "string" ? metadata.locale : undefined;
 
   const fallbackName =
     previous?.displayName ??
@@ -175,7 +164,6 @@ const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): Us
     id: user.id,
     displayName: metadataName.length > 0 ? metadataName : fallbackName,
     email: user.email ?? previous?.email,
-    locale: sanitizeLocale(metadataLocale ?? previous?.locale),
   };
 };
 
@@ -262,7 +250,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           user: {
             id: current.user.id || newId(),
             displayName: current.user.displayName || "Guest",
-            locale: sanitizeLocale(current.user.locale),
           },
           isLoadingRefresh: false,
         }));
@@ -312,7 +299,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           user: {
             id: current.user.id || newId(),
             displayName: current.user.displayName || "Guest",
-            locale: sanitizeLocale(current.user.locale),
           },
         }));
         return;
@@ -650,7 +636,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     const next: InternalState = {
-      user: { id: newId(), displayName: "Guest", locale: "en" },
+      user: { id: newId(), displayName: "Guest" },
       favorites: [],
       guideBookmarks: [],
       trips: [],

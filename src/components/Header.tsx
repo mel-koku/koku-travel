@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import IdentityBadge from "@/components/ui/IdentityBadge";
-import { useAppState } from "@/state/AppState";
 import { cn } from "@/lib/cn";
 
 const navItems = [
@@ -16,21 +15,9 @@ const navItems = [
 ];
 
 export default function Header() {
-  const { user, setUser } = useAppState();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
-
-  // Ensure consistent initial render to prevent hydration mismatch
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const handleLocaleChange = (locale: "en" | "jp") => {
-    if (user.locale === locale) return;
-    setUser({ locale });
-  };
 
   // Close mobile menu when route changes
   // Use ref to track pathname changes and schedule update outside effect
@@ -89,30 +76,6 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-3 sm:gap-6">
-          <div className="hidden items-center rounded-full border border-zinc-200 bg-white p-1 text-xs font-semibold uppercase tracking-wide shadow-sm dark:border-zinc-700 dark:bg-zinc-900 md:flex">
-            <button
-              type="button"
-              onClick={() => handleLocaleChange("en")}
-              className={`rounded-full px-4 py-2 transition-colors ${
-                (isMounted ? user.locale : "en") === "en"
-                  ? "bg-red-500 text-white shadow-sm"
-                  : "hover:text-red-500"
-              }`}
-            >
-              EN
-            </button>
-            <button
-              type="button"
-              onClick={() => handleLocaleChange("jp")}
-              className={`rounded-full px-4 py-2 transition-colors ${
-                (isMounted ? user.locale : "en") === "jp"
-                  ? "bg-red-500 text-white shadow-sm"
-                  : "hover:text-red-500"
-              }`}
-            >
-              JP
-            </button>
-          </div>
           <Link
             href="/dashboard"
             className="hidden rounded-full border border-red-500 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-red-500 transition-colors hover:bg-red-500 hover:text-white md:inline-flex"
@@ -236,38 +199,6 @@ export default function Header() {
                   >
                     Account
                   </Link>
-                </div>
-
-                <div className="mt-6 border-t border-zinc-200 pt-6">
-                  <div className="flex items-center justify-between px-4">
-                    <span className="text-sm font-medium text-gray-700">Language</span>
-                    <div className="flex items-center rounded-full border border-zinc-200 bg-white p-1 text-xs font-semibold uppercase tracking-wide shadow-sm">
-                      <button
-                        type="button"
-                        onClick={() => handleLocaleChange("en")}
-                        className={cn(
-                          "rounded-full px-4 py-2 transition-colors",
-                          (isMounted ? user.locale : "en") === "en"
-                            ? "bg-red-500 text-white shadow-sm"
-                            : "text-gray-700 hover:text-red-500"
-                        )}
-                      >
-                        EN
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleLocaleChange("jp")}
-                        className={cn(
-                          "rounded-full px-4 py-2 transition-colors",
-                          (isMounted ? user.locale : "en") === "jp"
-                            ? "bg-red-500 text-white shadow-sm"
-                            : "text-gray-700 hover:text-red-500"
-                        )}
-                      >
-                        JP
-                      </button>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
