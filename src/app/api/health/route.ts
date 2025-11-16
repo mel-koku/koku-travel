@@ -3,6 +3,12 @@ import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 import { sanityClient } from "@/lib/sanity/client";
 import { env } from "@/lib/env";
 import { Redis } from "@upstash/redis";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+  type RequestContext,
+} from "@/lib/api/middleware";
+import { logger } from "@/lib/logger";
 
 /**
  * GET /api/health
@@ -13,6 +19,7 @@ import { Redis } from "@upstash/redis";
  */
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
+  const context = createRequestContext(request);
   const timestamp = new Date().toISOString();
   const version = process.env.npm_package_version || "unknown";
   
@@ -21,6 +28,7 @@ export async function GET(request: NextRequest) {
     timestamp: string;
     version: string;
     uptime: number;
+    requestId: string;
     services: {
       supabase: { status: "healthy" | "unhealthy"; message?: string };
       sanity: { status: "healthy" | "unhealthy"; message?: string };
@@ -31,6 +39,7 @@ export async function GET(request: NextRequest) {
     timestamp,
     version,
     uptime: process.uptime(),
+    requestId: context.requestId,
     services: {
       supabase: { status: "unhealthy" },
       sanity: { status: "unhealthy" },
@@ -49,6 +58,9 @@ export async function GET(request: NextRequest) {
     }
     health.services.supabase = { status: "healthy" };
   } catch (error) {
+    logger.error("Supabase health check failed", error instanceof Error ? error : new Error(String(error)), {
+      requestId: context.requestId,
+    });
     health.services.supabase = {
       status: "unhealthy",
       message: error instanceof Error ? error.message : String(error),
@@ -62,6 +74,9 @@ export async function GET(request: NextRequest) {
     await sanityClient.fetch(`*[_type == "guide"][0]{_id}`, {});
     health.services.sanity = { status: "healthy" };
   } catch (error) {
+    logger.error("Sanity health check failed", error instanceof Error ? error : new Error(String(error)), {
+      requestId: context.requestId,
+    });
     health.services.sanity = {
       status: "unhealthy",
       message: error instanceof Error ? error.message : String(error),
@@ -107,6 +122,6 @@ export async function GET(request: NextRequest) {
     },
   );
 
-  return response;
+  return addRequestContextHeaders(response, context);
 }
 

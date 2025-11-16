@@ -2,25 +2,76 @@ import { NextRequest, NextResponse } from "next/server";
 import { requestRoute } from "@/lib/routing";
 import type { RoutingRequest } from "@/lib/routing/types";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/api/rateLimit";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+  getOptionalAuth,
+  type RequestContext,
+} from "@/lib/api/middleware";
+import { badRequest, internalError } from "@/lib/api/errors";
 
 /**
  * POST /api/routing/route
  * 
  * Gets full route details including path, instructions, and timing.
  * Returns complete route information for display.
+ * 
+ * @param request - Next.js request object
+ * @param request.body - RoutingRequest with origin, destination, mode, etc.
+ * @returns JSON object with route details
+ * @throws Returns 400 if required fields are missing
+ * @throws Returns 429 if rate limit exceeded
+ * @throws Returns 500 for other errors
  */
 export async function POST(request: NextRequest) {
+  // Create request context for tracing
+  const context = createRequestContext(request);
+
+  // Rate limiting: 100 requests per minute per IP
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
+  if (rateLimitResponse) {
+    return addRequestContextHeaders(rateLimitResponse, context);
+  }
+
+  // Optional authentication (for future user-specific features)
+  const authResult = await getOptionalAuth(request, context);
+  const finalContext = authResult.context;
+
+  let body: RoutingRequest;
   try {
-    const body = (await request.json()) as RoutingRequest;
-    
-    // Validate required fields
-    if (!body.origin || !body.destination || !body.mode) {
-      return NextResponse.json(
-        { error: "Missing required fields: origin, destination, mode" },
-        { status: 400 }
-      );
-    }
-    
+    body = await request.json() as RoutingRequest;
+  } catch (error) {
+    return addRequestContextHeaders(
+      badRequest("Invalid JSON in request body.", undefined, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
+  }
+  
+  // Validate required fields
+  if (!body.origin || !body.destination || !body.mode) {
+    return addRequestContextHeaders(
+      badRequest("Missing required fields: origin, destination, mode", undefined, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
+  }
+
+  // Validate mode
+  const validModes = ["driving", "walking", "transit", "cycling"];
+  if (!validModes.includes(body.mode)) {
+    return addRequestContextHeaders(
+      badRequest(`Invalid mode. Must be one of: ${validModes.join(", ")}`, undefined, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
+  }
+  
+  try {
     // Request the route
     const result = await requestRoute(body);
     
@@ -45,20 +96,32 @@ export async function POST(request: NextRequest) {
     }
     
     // Return full route response
-    return NextResponse.json({
-      mode: result.mode,
-      durationMinutes: Math.round(result.durationSeconds / 60),
-      distanceMeters: result.distanceMeters,
-      path: result.geometry,
-      instructions: instructions.length > 0 ? instructions : undefined,
-      arrivalTime,
-      departureTime: body.departureTime,
-    });
+    return addRequestContextHeaders(
+      NextResponse.json({
+        mode: result.mode,
+        durationMinutes: Math.round(result.durationSeconds / 60),
+        distanceMeters: result.distanceMeters,
+        path: result.geometry,
+        instructions: instructions.length > 0 ? instructions : undefined,
+        arrivalTime,
+        departureTime: body.departureTime,
+      }),
+      finalContext,
+    );
   } catch (error) {
-    logger.error("Routing route error", error instanceof Error ? error : new Error(String(error)));
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to get route" },
-      { status: 500 }
+    logger.error("Routing route error", error instanceof Error ? error : new Error(String(error)), {
+      requestId: finalContext.requestId,
+      origin: body.origin,
+      destination: body.destination,
+      mode: body.mode,
+    });
+    return addRequestContextHeaders(
+      internalError(
+        error instanceof Error ? error.message : "Failed to get route",
+        undefined,
+        { requestId: finalContext.requestId },
+      ),
+      finalContext,
     );
   }
 }
