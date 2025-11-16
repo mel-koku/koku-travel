@@ -35,7 +35,7 @@ describe("AppState", () => {
   describe("localStorage persistence", () => {
     it("should load state from localStorage on mount", () => {
       const savedState = {
-        user: { id: "test-id", displayName: "Test User", locale: "en" as const },
+        user: { id: "test-id", displayName: "Test User" },
         favorites: ["place-1", "place-2"],
         guideBookmarks: ["guide-1"],
         trips: [],
@@ -151,11 +151,10 @@ describe("AppState", () => {
       });
 
       act(() => {
-        result.current.setUser({ displayName: "New Name", locale: "jp" });
+        result.current.setUser({ displayName: "New Name" });
       });
 
       expect(result.current.user.displayName).toBe("New Name");
-      expect(result.current.user.locale).toBe("jp");
     });
 
     it("should toggle favorites", () => {

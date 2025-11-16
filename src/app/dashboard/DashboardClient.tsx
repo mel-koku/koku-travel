@@ -85,7 +85,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
 
         const { data: prof } = await supabase
           .from("profiles")
-          .select("display_name, locale")
+          .select("display_name")
           .eq("id", sessionUserId)
           .maybeSingle();
 
@@ -95,15 +95,12 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
           authUser?.email?.split("@")[0] ??
           "Guest";
 
-        const locale = (prof?.locale as "en" | "jp") ?? "en";
-
-        setUser({ displayName, locale });
+        setUser({ displayName });
 
         if (!prof) {
           await supabase.from("profiles").upsert({
             id: sessionUserId,
             display_name: displayName,
-            locale,
           });
         }
 
@@ -129,7 +126,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
   // save profile edits (debounced)
   const saveProfile = useMemo(
     () =>
-      debounce(async (name: string, loc: "en" | "jp") => {
+      debounce(async (name: string) => {
         if (!supabase) {
           return;
         }
@@ -140,7 +137,6 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         await supabase.from("profiles").upsert({
           id: authUser.id,
           display_name: name,
-          locale: loc,
         });
       }, 500),
     [supabase]
@@ -148,12 +144,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
 
   function onNameChange(v: string) {
     setUser({ displayName: v });
-    saveProfile(v, user.locale);
-  }
-
-  function onLocaleChange(v: "en" | "jp") {
-    setUser({ locale: v });
-    saveProfile(user.displayName, v);
+    saveProfile(v);
   }
 
   const isAuthenticated = Boolean(sessionUserId);
@@ -299,18 +290,6 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
                         value={user.displayName}
                         onChange={(e) => onNameChange(e.target.value)}
                       />
-                    </label>
-
-                    <label className="text-sm text-gray-700 block">
-                      Language
-                      <select
-                        className="mt-1 w-full h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        value={user.locale}
-                        onChange={(e) => onLocaleChange(e.target.value as "en" | "jp")}
-                      >
-                        <option value="en">English</option>
-                        <option value="jp">日本語 (Japanese)</option>
-                      </select>
                     </label>
 
                     <div className="flex items-center justify-between">
