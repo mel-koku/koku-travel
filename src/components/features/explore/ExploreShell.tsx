@@ -184,24 +184,46 @@ export function ExploreShell() {
       setLoadError(null);
 
       try {
-        const response = await fetch("/api/locations");
-        
-        if (!response.ok) {
-          throw new Error(`Failed to fetch locations: ${response.status} ${response.statusText}`);
-        }
+        // Fetch all locations by requesting max limit and paginating if needed
+        let allLocations: Location[] = [];
+        let page = 1;
+        const limit = 100; // Max allowed by API
+        let hasMore = true;
 
-        const data = await response.json();
+        while (hasMore && !cancelled) {
+          const response = await fetch(`/api/locations?page=${page}&limit=${limit}`);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch locations: ${response.status} ${response.statusText}`);
+          }
+
+          const data = await response.json();
+          
+          if (cancelled) return;
+
+          // Handle paginated response format: { data: Location[], pagination: {...} }
+          const locationsArray = Array.isArray(data.data) ? data.data : [];
+          allLocations = [...allLocations, ...locationsArray];
+
+          // Check if there are more pages
+          hasMore = data.pagination?.hasNext === true;
+          page++;
+
+          // Safety limit to prevent infinite loops
+          if (page > 100) {
+            logger.warn("Reached pagination safety limit");
+            break;
+          }
+        }
         
         if (cancelled) return;
 
-        const locationsArray = Array.isArray(data.locations) ? data.locations : [];
-        
-        if (locationsArray.length === 0) {
-          logger.warn("No locations returned from API");
+        if (allLocations.length === 0) {
+          logger.warn("No locations returned from API after fetching all pages");
           setLoadError("No locations found. Please check the database configuration.");
         }
         
-        setLocations(locationsArray);
+        setLocations(allLocations);
         setLoadError(null);
       } catch (error) {
         if (cancelled) return;
