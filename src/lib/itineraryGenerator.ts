@@ -251,7 +251,15 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
     // Determine city ID for this day
     const dayCityId = cityInfo.key as CityId | undefined;
 
+    // Generate a stable ID for this day
+    // Use a combination of day index and random string for uniqueness
+    const randomSuffix = typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID().slice(0, 8)
+      : Math.random().toString(36).slice(2, 10);
+    const dayId = `day-${dayIndex + 1}-${randomSuffix}`;
+    
     days.push({
+      id: dayId,
       dateLabel: buildDayTitle(dayIndex, cityInfo.key),
       cityId: dayCityId,
       activities: dayActivities,

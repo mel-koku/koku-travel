@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+import { renderHook, act, waitFor } from "@testing-library/react";
 import { WishlistProvider, useWishlist } from "@/context/WishlistContext";
 import { AppStateProvider } from "@/state/AppState";
 import { createClient } from "@/lib/supabase/client";
@@ -24,7 +24,7 @@ describe("WishlistContext", () => {
   });
 
   describe("context provider initialization", () => {
-    it("should initialize with empty wishlist", () => {
+    it("should initialize with empty wishlist", async () => {
       const { result } = renderHook(() => useWishlist(), {
         wrapper: ({ children }) => (
           <AppStateProvider>
@@ -33,19 +33,29 @@ describe("WishlistContext", () => {
         ),
       });
 
+      // Wait for mount effects to complete
+      await waitFor(() => {
+        expect(result.current.wishlist).toBeDefined();
+      });
+
       expect(result.current.wishlist).toEqual([]);
       expect(result.current.isInWishlist("place-1")).toBe(false);
     });
   });
 
   describe("context value updates", () => {
-    it("should toggle wishlist items", () => {
+    it("should toggle wishlist items", async () => {
       const { result } = renderHook(() => useWishlist(), {
         wrapper: ({ children }) => (
           <AppStateProvider>
             <WishlistProvider>{children}</WishlistProvider>
           </AppStateProvider>
         ),
+      });
+
+      // Wait for mount effects to complete
+      await waitFor(() => {
+        expect(result.current.wishlist).toBeDefined();
       });
 
       expect(result.current.isInWishlist("place-1")).toBe(false);
@@ -65,13 +75,18 @@ describe("WishlistContext", () => {
       expect(result.current.wishlist).not.toContain("place-1");
     });
 
-    it("should add multiple items to wishlist", () => {
+    it("should add multiple items to wishlist", async () => {
       const { result } = renderHook(() => useWishlist(), {
         wrapper: ({ children }) => (
           <AppStateProvider>
             <WishlistProvider>{children}</WishlistProvider>
           </AppStateProvider>
         ),
+      });
+
+      // Wait for mount effects to complete
+      await waitFor(() => {
+        expect(result.current.wishlist).toBeDefined();
       });
 
       act(() => {
@@ -88,13 +103,18 @@ describe("WishlistContext", () => {
   });
 
   describe("context consumption", () => {
-    it("should provide wishlist context values", () => {
+    it("should provide wishlist context values", async () => {
       const { result } = renderHook(() => useWishlist(), {
         wrapper: ({ children }) => (
           <AppStateProvider>
             <WishlistProvider>{children}</WishlistProvider>
           </AppStateProvider>
         ),
+      });
+
+      // Wait for mount effects to complete
+      await waitFor(() => {
+        expect(result.current.wishlist).toBeDefined();
       });
 
       expect(result.current).toHaveProperty("wishlist");
@@ -106,13 +126,18 @@ describe("WishlistContext", () => {
   });
 
   describe("integration with AppState", () => {
-    it("should sync with AppState favorites", () => {
+    it("should sync with AppState favorites", async () => {
       const { result: wishlistResult } = renderHook(() => useWishlist(), {
         wrapper: ({ children }) => (
           <AppStateProvider>
             <WishlistProvider>{children}</WishlistProvider>
           </AppStateProvider>
         ),
+      });
+
+      // Wait for mount effects to complete
+      await waitFor(() => {
+        expect(wishlistResult.current.wishlist).toBeDefined();
       });
 
       act(() => {

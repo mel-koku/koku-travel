@@ -19,7 +19,7 @@ export type CityId = "kyoto" | "osaka" | "nara" | "tokyo" | "yokohama";
 
 export type RegionId = "kansai" | "kanto";
 
-export type EntryPointType = "airport" | "city" | "hotel";
+export type EntryPointType = "airport" | "city" | "hotel" | "station";
 
 export type EntryPoint = {
   type: EntryPointType;
@@ -30,6 +30,15 @@ export type EntryPoint = {
     lng: number;
   };
   cityId?: CityId;
+  placeId?: string; // Google Place ID for fetching full location details
+};
+
+/**
+ * Per-day entry point configuration for start/end locations.
+ */
+export type DayEntryPoint = {
+  startPoint?: EntryPoint;
+  endPoint?: EntryPoint;
 };
 
 /**

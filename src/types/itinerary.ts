@@ -105,6 +105,10 @@ export type ItineraryActivity =
     };
 
 export type ItineraryDay = {
+  /**
+   * Unique identifier for this day (used for editing and state management).
+   */
+  id: string;
   dateLabel?: string;
   /**
    * Local timezone for the day's schedule (defaults to itinerary timezone).
@@ -135,6 +139,35 @@ export type Itinerary = {
    * Default timezone for the entire itinerary.
    */
   timezone?: string;
+};
+
+/**
+ * Represents a single edit operation on an itinerary.
+ * Used for tracking edit history for undo/redo functionality.
+ */
+export type ItineraryEdit = {
+  id: string;
+  tripId: string;
+  timestamp: string;
+  type:
+    | "setDayEntryPoint"
+    | "replaceActivity"
+    | "deleteActivity"
+    | "reorderActivities"
+    | "addActivity";
+  dayId: string;
+  /**
+   * Snapshot of the itinerary state before this edit.
+   */
+  previousItinerary: Itinerary;
+  /**
+   * Snapshot of the itinerary state after this edit.
+   */
+  nextItinerary: Itinerary;
+  /**
+   * Additional metadata specific to the edit type.
+   */
+  metadata?: Record<string, unknown>;
 };
 
 

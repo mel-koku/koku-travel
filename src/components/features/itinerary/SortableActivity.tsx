@@ -14,6 +14,10 @@ type SortableActivityProps = {
   onSelect?: (activityId: string) => void;
   placeNumber?: number;
   travelSegment?: ReactNode;
+  tripId?: string;
+  dayId?: string;
+  onReplace?: () => void;
+  onCopy?: () => void;
 };
 
 export function SortableActivity({
@@ -26,6 +30,10 @@ export function SortableActivity({
   onSelect,
   placeNumber,
   travelSegment,
+  tripId,
+  dayId,
+  onReplace,
+  onCopy,
 }: SortableActivityProps) {
   const {
     attributes,
@@ -63,6 +71,10 @@ export function SortableActivity({
         isSelected={isSelected}
         onSelect={onSelect}
         placeNumber={placeNumber}
+        tripId={tripId}
+        dayId={dayId}
+        onReplace={onReplace}
+        onCopy={onCopy}
       />
     </li>
   );

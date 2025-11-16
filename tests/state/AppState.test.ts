@@ -33,7 +33,7 @@ describe("AppState", () => {
   });
 
   describe("localStorage persistence", () => {
-    it("should load state from localStorage on mount", () => {
+    it("should load state from localStorage on mount", async () => {
       const savedState = {
         user: { id: "test-id", displayName: "Test User" },
         favorites: ["place-1", "place-2"],
@@ -46,6 +46,11 @@ describe("AppState", () => {
         wrapper: AppStateProvider,
       });
 
+      // Wait for mount effects to complete
+      await waitFor(() => {
+        expect(result.current.user.displayName).toBe("Test User");
+      });
+
       expect(result.current.user.displayName).toBe("Test User");
       expect(result.current.favorites).toEqual(["place-1", "place-2"]);
       expect(result.current.guideBookmarks).toEqual(["guide-1"]);
@@ -54,6 +59,11 @@ describe("AppState", () => {
     it("should persist state changes to localStorage", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for mount effects
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
       });
 
       act(() => {
@@ -77,6 +87,11 @@ describe("AppState", () => {
     it("should exclude loading states from persistence", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for mount effects
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
       });
 
       act(() => {
@@ -145,9 +160,14 @@ describe("AppState", () => {
   });
 
   describe("state updates", () => {
-    it("should update user profile", () => {
+    it("should update user profile", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for mount effects
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
       });
 
       act(() => {
@@ -157,9 +177,14 @@ describe("AppState", () => {
       expect(result.current.user.displayName).toBe("New Name");
     });
 
-    it("should toggle favorites", () => {
+    it("should toggle favorites", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for mount effects
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
       });
 
       expect(result.current.isFavorite("place-1")).toBe(false);
@@ -177,9 +202,14 @@ describe("AppState", () => {
       expect(result.current.isFavorite("place-1")).toBe(false);
     });
 
-    it("should create trip", () => {
+    it("should create trip", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for mount effects
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
       });
 
       const itinerary = { days: [] };
@@ -200,9 +230,14 @@ describe("AppState", () => {
       expect(trip?.name).toBe("Test Trip");
     });
 
-    it("should update trip itinerary", () => {
+    it("should update trip itinerary", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for mount effects
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
       });
 
       const itinerary1 = { days: [] };
@@ -226,9 +261,14 @@ describe("AppState", () => {
       expect(trip?.itinerary.days).toHaveLength(1);
     });
 
-    it("should rename trip", () => {
+    it("should rename trip", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for mount effects
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
       });
 
       const itinerary = { days: [] };
@@ -251,9 +291,14 @@ describe("AppState", () => {
       expect(trip?.name).toBe("New Name");
     });
 
-    it("should delete trip", () => {
+    it("should delete trip", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
+      });
+
+      // Wait for mount effects
+      await waitFor(() => {
+        expect(result.current.user).toBeDefined();
       });
 
       const itinerary = { days: [] };

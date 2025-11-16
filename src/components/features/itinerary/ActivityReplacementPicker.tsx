@@ -1,0 +1,224 @@
+"use client";
+
+import { useState, useMemo } from "react";
+import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
+import type { ReplacementCandidate } from "@/lib/activityReplacement";
+import type { ItineraryActivity } from "@/types/itinerary";
+import { numberFormatter } from "./activityUtils";
+
+type ActivityReplacementPickerProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  candidates: ReplacementCandidate[];
+  originalActivity: Extract<ItineraryActivity, { kind: "place" }>;
+  onSelect: (candidate: ReplacementCandidate) => void;
+  isLoading?: boolean;
+};
+
+export function ActivityReplacementPicker({
+  isOpen,
+  onClose,
+  candidates,
+  originalActivity,
+  onSelect,
+  isLoading = false,
+}: ActivityReplacementPickerProps) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<"score" | "rating" | "distance">("score");
+
+  const sortedCandidates = useMemo(() => {
+    const sorted = [...candidates];
+    
+    switch (sortBy) {
+      case "rating":
+        sorted.sort((a, b) => {
+          const ratingA = a.location.rating ?? 0;
+          const ratingB = b.location.rating ?? 0;
+          return ratingB - ratingA;
+        });
+        break;
+      case "distance":
+        // Sort by logistical fit (which includes distance)
+        sorted.sort((a, b) => b.breakdown.logisticalFit - a.breakdown.logisticalFit);
+        break;
+      case "score":
+      default:
+        sorted.sort((a, b) => b.score - a.score);
+        break;
+    }
+    
+    return sorted;
+  }, [candidates, sortBy]);
+
+  const handleSelect = (candidate: ReplacementCandidate) => {
+    onSelect(candidate);
+    setSelectedIndex(null);
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return "text-emerald-600 bg-emerald-50";
+    if (score >= 60) return "text-blue-600 bg-blue-50";
+    if (score >= 40) return "text-amber-600 bg-amber-50";
+    return "text-gray-600 bg-gray-50";
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Replace "${originalActivity.title}"`}
+      description="Choose an alternative activity from the suggestions below"
+      panelClassName="max-w-3xl"
+    >
+      <div className="space-y-4">
+        {/* Sort controls */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-700">Sort by:</span>
+          <div className="flex gap-1 rounded-lg border border-gray-200 p-1">
+            {(["score", "rating", "distance"] as const).map((option) => (
+              <button
+                key={option}
+                onClick={() => setSortBy(option)}
+                className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                  sortBy === option
+                    ? "bg-indigo-600 text-white"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {option.charAt(0).toUpperCase() + option.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Candidates list */}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-sm text-gray-500">Finding alternatives...</div>
+          </div>
+        ) : sortedCandidates.length === 0 ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-sm text-gray-500">No alternatives found</div>
+          </div>
+        ) : (
+          <div className="space-y-3 max-h-[60vh] overflow-y-auto">
+            {sortedCandidates.map((candidate, index) => {
+              const location = candidate.location;
+              const rating = location.rating ?? 0;
+              const reviewCount = location.reviewCount ?? 0;
+              const isSelected = selectedIndex === index;
+
+              return (
+                <div
+                  key={location.id}
+                  className={`rounded-lg border-2 p-4 transition ${
+                    isSelected
+                      ? "border-indigo-500 bg-indigo-50"
+                      : "border-gray-200 bg-white hover:border-indigo-200"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start gap-3">
+                        {location.image && (
+                          <img
+                            src={location.image}
+                            alt={location.name}
+                            className="h-20 w-20 shrink-0 rounded-lg object-cover"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-semibold text-gray-900">
+                            {location.name}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {location.city}
+                            {location.region && `, ${location.region}`}
+                          </p>
+                          {location.category && (
+                            <span className="mt-1 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
+                              {location.category}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Rating and score */}
+                      <div className="mt-3 flex flex-wrap items-center gap-3">
+                        {rating > 0 && (
+                          <div className="flex items-center gap-1">
+                            <svg
+                              className="h-4 w-4 text-amber-500"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            <span className="text-sm font-semibold text-gray-900">
+                              {rating.toFixed(1)}
+                            </span>
+                            {reviewCount > 0 && (
+                              <span className="text-xs text-gray-500">
+                                ({numberFormatter.format(reviewCount)})
+                              </span>
+                            )}
+                          </div>
+                        )}
+                        <div
+                          className={`rounded-full px-2 py-0.5 text-xs font-semibold ${getScoreColor(candidate.score)}`}
+                        >
+                          Score: {candidate.score}
+                        </div>
+                      </div>
+
+                      {/* Reasoning */}
+                      {candidate.reasoning.length > 0 && (
+                        <div className="mt-2 text-xs text-gray-600">
+                          <details className="cursor-pointer">
+                            <summary className="font-medium text-gray-700">
+                              Why this match?
+                            </summary>
+                            <ul className="mt-1 ml-4 list-disc space-y-0.5">
+                              {candidate.reasoning.slice(0, 3).map((reason, i) => (
+                                <li key={i}>{reason}</li>
+                              ))}
+                            </ul>
+                          </details>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col items-end gap-2">
+                      <Button
+                        variant={isSelected ? "primary" : "outline"}
+                        size="sm"
+                        onClick={() => {
+                          if (isSelected) {
+                            handleSelect(candidate);
+                          } else {
+                            setSelectedIndex(index);
+                          }
+                        }}
+                      >
+                        {isSelected ? "Confirm Replace" : "Select"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Actions */}
+        <div className="flex justify-end gap-2 pt-4 border-t border-gray-200">
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+

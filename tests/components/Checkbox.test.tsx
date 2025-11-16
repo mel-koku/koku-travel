@@ -70,16 +70,18 @@ describe("Checkbox", () => {
 
   describe("Controlled component", () => {
     it("should respect checked prop", () => {
-      render(<Checkbox label="Controlled" checked />);
+      const handleChange = vi.fn();
+      render(<Checkbox label="Controlled" checked onChange={handleChange} />);
       const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeChecked();
     });
 
     it("should update when checked prop changes", () => {
-      const { rerender } = render(<Checkbox label="Controlled" checked={false} />);
+      const handleChange = vi.fn();
+      const { rerender } = render(<Checkbox label="Controlled" checked={false} onChange={handleChange} />);
       let checkbox = screen.getByRole("checkbox");
       expect(checkbox).not.toBeChecked();
-      rerender(<Checkbox label="Controlled" checked={true} />);
+      rerender(<Checkbox label="Controlled" checked={true} onChange={handleChange} />);
       checkbox = screen.getByRole("checkbox");
       expect(checkbox).toBeChecked();
     });

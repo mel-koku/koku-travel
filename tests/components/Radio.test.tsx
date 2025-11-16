@@ -94,7 +94,8 @@ describe("Radio", () => {
 
   describe("Controlled component", () => {
     it("should respect checked prop", () => {
-      render(<Radio label="Controlled" checked name="test" value="1" />);
+      const handleChange = vi.fn();
+      render(<Radio label="Controlled" checked name="test" value="1" onChange={handleChange} />);
       const radio = screen.getByRole("radio");
       expect(radio).toBeChecked();
     });

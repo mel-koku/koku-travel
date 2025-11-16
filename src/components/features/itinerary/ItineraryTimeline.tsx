@@ -17,6 +17,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useMemo,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -29,6 +30,7 @@ import {
 import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
+import { ActivityRow } from "./ActivityRow";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { REGIONS } from "@/data/regions";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
@@ -44,6 +46,31 @@ function formatCityName(cityId: string): string {
   return cityId.charAt(0).toUpperCase() + cityId.slice(1);
 }
 
+/**
+ * Creates a virtual activity from an entry point (start or end point)
+ * Uses placeId if available, otherwise falls back to coordinates-based ID
+ */
+function createEntryPointActivity(
+  entryPoint: { name: string; coordinates: { lat: number; lng: number }; placeId?: string },
+  type: "start" | "end",
+): Extract<ItineraryActivity, { kind: "place" }> {
+  // Use placeId if available, otherwise use coordinates
+  const locationId = entryPoint.placeId 
+    ? `__entry_point_${type}__${entryPoint.placeId}__`
+    : `__entry_point_${type}__${entryPoint.coordinates.lat}-${entryPoint.coordinates.lng}`;
+  
+  return {
+    kind: "place",
+    id: `entry-point-${type}-${entryPoint.placeId ?? `${entryPoint.coordinates.lat}-${entryPoint.coordinates.lng}`}`,
+    title: entryPoint.name,
+    timeOfDay: type === "start" ? "morning" : "evening",
+    neighborhood: entryPoint.name,
+    tags: [],
+    // Mark as entry point using a special locationId format that includes placeId
+    locationId,
+  };
+}
+
 type ItineraryTimelineProps = {
   day: ItineraryDay;
   dayIndex: number;
@@ -52,6 +79,12 @@ type ItineraryTimelineProps = {
   selectedActivityId?: string | null;
   onSelectActivity?: (activityId: string) => void;
   tripStartDate?: string; // ISO date string (yyyy-mm-dd)
+  tripId?: string;
+  onReorder?: (dayId: string, activityIds: string[]) => void;
+  onReplace?: (activityId: string) => void;
+  onCopy?: (activityId: string) => void;
+  startPoint?: { name: string; coordinates: { lat: number; lng: number }; placeId?: string };
+  endPoint?: { name: string; coordinates: { lat: number; lng: number }; placeId?: string };
 };
 
 export const ItineraryTimeline = ({
@@ -62,6 +95,12 @@ export const ItineraryTimeline = ({
   selectedActivityId,
   onSelectActivity,
   tripStartDate,
+  tripId,
+  onReorder,
+  startPoint,
+  endPoint,
+  onReplace,
+  onCopy,
 }: ItineraryTimelineProps) => {
   void _model;
   const sensors = useSensors(
@@ -72,8 +111,60 @@ export const ItineraryTimeline = ({
 
   const activities = day.activities ?? [];
 
+  // Build extended activities list with start/end points as virtual activities
+  const extendedActivities = useMemo(() => {
+    const result: ItineraryActivity[] = [];
+    
+    // Add start point as first activity if it exists
+    if (startPoint) {
+      result.push(createEntryPointActivity(startPoint, "start"));
+    }
+    
+    // Add all regular activities
+    result.push(...activities);
+    
+    // Add end point as last activity if it exists
+    if (endPoint) {
+      result.push(createEntryPointActivity(endPoint, "end"));
+    }
+    
+    return result;
+  }, [activities, startPoint, endPoint]);
+
+  // Helper to check if an activity is an entry point
+  const isEntryPoint = useCallback((activity: ItineraryActivity): boolean => {
+    return activity.kind === "place" && 
+           activity.locationId !== undefined && 
+           (activity.locationId.startsWith("__entry_point_start__") || 
+            activity.locationId.startsWith("__entry_point_end__"));
+  }, []);
+
+  // Store entry point data for lookup
+  const entryPointData = useMemo(() => {
+    const data = new Map<string, { name: string; coordinates: { lat: number; lng: number }; placeId?: string }>();
+    if (startPoint) {
+      const startActivity = extendedActivities.find(a => isEntryPoint(a) && a.locationId?.startsWith("__entry_point_start__"));
+      if (startActivity) {
+        data.set(startActivity.id, startPoint);
+      }
+    }
+    if (endPoint) {
+      const endActivity = extendedActivities.find(a => isEntryPoint(a) && a.locationId?.startsWith("__entry_point_end__"));
+      if (endActivity) {
+        data.set(endActivity.id, endPoint);
+      }
+    }
+    return data;
+  }, [extendedActivities, startPoint, endPoint, isEntryPoint]);
+
   const handleDelete = useCallback(
     (activityId: string) => {
+      // Prevent deleting entry point activities
+      const activityToDelete = extendedActivities.find(a => a.id === activityId);
+      if (activityToDelete && isEntryPoint(activityToDelete)) {
+        return; // Don't allow deleting entry points
+      }
+
       setModel((current) => {
         let hasChanged = false;
         const nextDays = current.days.map((entry, index) => {
@@ -97,7 +188,7 @@ export const ItineraryTimeline = ({
         return hasChanged ? { ...current, days: nextDays } : current;
       });
     },
-    [dayIndex, setModel],
+    [dayIndex, setModel, extendedActivities, isEntryPoint],
   );
 
   const handleUpdate = useCallback(
@@ -191,11 +282,19 @@ export const ItineraryTimeline = ({
 
       if (activeId === overId) return;
 
+      // Prevent dragging entry points
+      const activeActivity = extendedActivities.find(a => a.id === activeId);
+      const overActivity = extendedActivities.find(a => a.id === overId);
+      if (activeActivity && isEntryPoint(activeActivity)) return;
+      if (overActivity && isEntryPoint(overActivity)) return;
+
       let oldIndex = -1;
       let newIndex = -1;
       let movedActivity: ItineraryActivity | null = null as ItineraryActivity | null;
 
       // First, update the model with the new order
+      let activityIdsForReorder: string[] | null = null;
+      
       setModel((current) => {
         let hasChanged = false;
 
@@ -237,11 +336,25 @@ export const ItineraryTimeline = ({
           updatedList.splice(newIndex, 0, movingActivity);
 
           hasChanged = true;
+          
+          // Capture activityIds for reorder call outside of setState
+          if (hasChanged && tripId && day.id && onReorder) {
+            activityIdsForReorder = updatedList.map((a) => a.id);
+          }
+          
           return { ...entry, activities: updatedList };
         });
 
         return hasChanged ? { ...current, days: nextDays } : current;
       });
+
+      // Call AppState reorder after state update completes (outside of setState)
+      if (activityIdsForReorder && tripId && day.id && onReorder) {
+        // Use setTimeout to defer to next tick, ensuring state update completes first
+        setTimeout(() => {
+          onReorder(day.id, activityIdsForReorder!);
+        }, 0);
+      }
 
       // After model update, recalculate affected travel segments
       if (movedActivity && movedActivity.kind === "place" && oldIndex !== -1 && newIndex !== -1) {
@@ -389,7 +502,7 @@ export const ItineraryTimeline = ({
         }, 0);
       }
     },
-    [dayIndex, setModel, recalculateTravelSegment],
+    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, extendedActivities, isEntryPoint],
   );
 
   const handleAddNote = useCallback(() => {
@@ -431,7 +544,7 @@ export const ItineraryTimeline = ({
     >
       <div className="space-y-6">
         {/* Day Header */}
-        <DayHeader day={day} dayIndex={dayIndex} tripStartDate={tripStartDate} />
+        <DayHeader day={day} dayIndex={dayIndex} tripStartDate={tripStartDate} tripId={tripId} />
 
         {/* City Transition Display */}
         {day.cityTransition && (
@@ -488,19 +601,22 @@ export const ItineraryTimeline = ({
         )}
 
         {/* Simple list of activities with travel segments */}
-        {activities.length > 0 ? (
+        {extendedActivities.length > 0 ? (
           <SortableContext
-            items={activities.map((activity) => activity.id)}
+            items={extendedActivities.filter(a => !isEntryPoint(a)).map((activity) => activity.id)}
             strategy={verticalListSortingStrategy}
           >
             <ul className="space-y-3">
-              {activities.map((activity, index) => {
-                // Calculate place number (only for place activities, sequential starting from 1)
+              {extendedActivities.map((activity, index) => {
+                const isEntryPointActivity = isEntryPoint(activity);
+                
+                // Calculate place number (only for place activities, sequential starting from 0)
                 let placeNumber: number | undefined = undefined;
                 if (activity.kind === "place") {
-                  let placeCounter = 1;
+                  // Count place activities before this index
+                  let placeCounter = 0;
                   for (let i = 0; i < index; i++) {
-                    if (activities[i]?.kind === "place") {
+                    if (extendedActivities[i]?.kind === "place") {
                       placeCounter++;
                     }
                   }
@@ -510,28 +626,47 @@ export const ItineraryTimeline = ({
                 // Get previous place activity for travel segment
                 let previousActivity: ItineraryActivity | null = null;
                 for (let i = index - 1; i >= 0; i--) {
-                  const prev = activities[i];
+                  const prev = extendedActivities[i];
                   if (prev && prev.kind === "place") {
                     previousActivity = prev;
                     break;
                   }
                 }
 
+                // Helper to get coordinates for an activity (handles entry points)
+                const getCoordsForActivity = (act: ItineraryActivity): { lat: number; lng: number } | null => {
+                  if (act.kind !== "place") return null;
+                  const isStartPoint = act.locationId?.startsWith("__entry_point_start__");
+                  const isEndPoint = act.locationId?.startsWith("__entry_point_end__");
+                  if (isStartPoint && startPoint) {
+                    return startPoint.coordinates;
+                  }
+                  if (isEndPoint && endPoint) {
+                    return endPoint.coordinates;
+                  }
+                  return getActivityCoordinates(act);
+                };
+
                 const originCoordinates =
                   previousActivity && previousActivity.kind === "place"
-                    ? getActivityCoordinates(previousActivity)
+                    ? getCoordsForActivity(previousActivity)
                     : null;
 
                 const destinationCoordinates =
-                  activity.kind === "place" ? getActivityCoordinates(activity) : null;
+                  activity.kind === "place" ? getCoordsForActivity(activity) : null;
 
+                // For entry points, get travelFromPrevious from the next/previous real activity
                 const travelFromPrevious =
-                  activity.kind === "place" ? activity.travelFromPrevious : null;
+                  activity.kind === "place" 
+                    ? (isEntryPointActivity 
+                        ? undefined // Entry points don't have travelFromPrevious stored on them
+                        : activity.travelFromPrevious)
+                    : null;
 
-                // Show travel segment if we have both coordinates, even if travelFromPrevious doesn't exist yet
+                // Show travel segment if we have both coordinates and a previous place activity
                 const shouldShowTravelSegment =
                   activity.kind === "place" &&
-                  previousActivity &&
+                  previousActivity !== null &&
                   previousActivity.kind === "place" &&
                   originCoordinates &&
                   destinationCoordinates;
@@ -547,6 +682,7 @@ export const ItineraryTimeline = ({
                   path: undefined,
                 } : null);
 
+                // Render travel segment between activities
                 const travelSegmentElement =
                   shouldShowTravelSegment && displayTravelSegment && previousActivity && previousActivity.kind === "place" ? (
                     <TravelSegmentWrapper
@@ -560,11 +696,40 @@ export const ItineraryTimeline = ({
                     />
                   ) : undefined;
 
+                // For entry points, render a non-sortable version
+                if (isEntryPointActivity) {
+                  return (
+                    <li key={activity.id} className="space-y-0">
+                      {travelSegmentElement && (
+                        <div className="mb-3">
+                          {travelSegmentElement}
+                        </div>
+                      )}
+                      <ActivityRow
+                        activity={activity}
+                        allActivities={extendedActivities}
+                        dayTimezone={day.timezone}
+                        onDelete={() => {}} // Entry points can't be deleted
+                        onUpdate={(patch) => handleUpdate(activity.id, patch)}
+                        isSelected={activity.id === selectedActivityId}
+                        onSelect={onSelectActivity}
+                        placeNumber={placeNumber}
+                        tripId={tripId}
+                        dayId={day.id}
+                        onReplace={undefined}
+                        onCopy={undefined}
+                        attributes={{}}
+                        listeners={{}}
+                      />
+                    </li>
+                  );
+                }
+
                 return (
                   <SortableActivity
                     key={activity.id}
                     activity={activity}
-                    allActivities={activities}
+                    allActivities={extendedActivities}
                     dayTimezone={day.timezone}
                     onDelete={() => handleDelete(activity.id)}
                     onUpdate={(patch) => handleUpdate(activity.id, patch)}
@@ -572,6 +737,10 @@ export const ItineraryTimeline = ({
                     onSelect={onSelectActivity}
                     placeNumber={placeNumber}
                     travelSegment={travelSegmentElement}
+                    tripId={tripId}
+                    dayId={day.id}
+                    onReplace={onReplace ? () => onReplace(activity.id) : undefined}
+                    onCopy={onCopy ? () => onCopy(activity.id) : undefined}
                   />
                 );
               })}
@@ -700,6 +869,120 @@ function TravelSegmentWrapper({
       origin={originCoordinates}
       destination={destinationCoordinates}
       originName={previousActivity.title}
+      destinationName={activity.title}
+      timezone={dayTimezone}
+      onModeChange={handleModeChange}
+      isRecalculating={isRecalculatingRoute}
+    />
+  );
+}
+
+// StartPointTravelSegmentWrapper component for travel from start point to first activity
+type StartPointTravelSegmentWrapperProps = {
+  activity: Extract<ItineraryActivity, { kind: "place" }>;
+  startPoint: { name: string; coordinates: { lat: number; lng: number } };
+  travelFromPrevious: NonNullable<Extract<ItineraryActivity, { kind: "place" }>["travelFromPrevious"]>;
+  originCoordinates: Coordinate;
+  destinationCoordinates: Coordinate;
+  dayTimezone?: string;
+  onUpdate: (activityId: string, patch: Partial<ItineraryActivity>) => void;
+};
+
+function StartPointTravelSegmentWrapper({
+  activity,
+  startPoint,
+  travelFromPrevious,
+  originCoordinates,
+  destinationCoordinates,
+  dayTimezone,
+  onUpdate,
+}: StartPointTravelSegmentWrapperProps) {
+  const [isRecalculatingRoute, setIsRecalculatingRoute] = useState(false);
+  const [hasAutoFetched, setHasAutoFetched] = useState(false);
+
+  const handleModeChange = useCallback(async (newMode: ItineraryTravelMode) => {
+    // Validate coordinates exist before allowing mode change
+    if (!originCoordinates || !destinationCoordinates) {
+      return;
+    }
+
+    // Validate mode is valid
+    const validModes: ItineraryTravelMode[] = ["walk", "car", "taxi", "bus", "train", "subway", "transit", "bicycle"];
+    if (!validModes.includes(newMode)) {
+      return;
+    }
+
+    setIsRecalculatingRoute(true);
+    try {
+      // Fetch new route for the selected mode
+      const request: RoutingRequest = {
+        origin: originCoordinates,
+        destination: destinationCoordinates,
+        mode: newMode,
+        departureTime: travelFromPrevious.departureTime,
+        timezone: dayTimezone,
+      };
+
+      const response = await fetch("/api/routing/route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const routeData = await response.json();
+
+      // Update the travel segment with new route data
+      onUpdate(activity.id, {
+        travelFromPrevious: {
+          ...travelFromPrevious,
+          mode: newMode,
+          durationMinutes: routeData.durationMinutes ?? travelFromPrevious.durationMinutes,
+          distanceMeters: routeData.distanceMeters ?? travelFromPrevious.distanceMeters,
+          path: routeData.path ?? travelFromPrevious.path,
+          instructions: routeData.instructions ?? travelFromPrevious.instructions,
+          arrivalTime: routeData.arrivalTime ?? travelFromPrevious.arrivalTime,
+        },
+      });
+    } catch (error) {
+      // On error, still update mode but keep existing route data
+      // The full itinerary replan will eventually fix it
+      onUpdate(activity.id, {
+        travelFromPrevious: {
+          ...travelFromPrevious,
+          mode: newMode,
+        },
+      });
+    } finally {
+      setIsRecalculatingRoute(false);
+    }
+  }, [activity.id, originCoordinates, destinationCoordinates, travelFromPrevious, dayTimezone, onUpdate]);
+
+  // Auto-fetch route if segment is missing or incomplete (duration is 0)
+  useEffect(() => {
+    if (
+      !hasAutoFetched &&
+      !isRecalculatingRoute &&
+      travelFromPrevious.durationMinutes === 0 &&
+      originCoordinates &&
+      destinationCoordinates
+    ) {
+      setHasAutoFetched(true);
+      handleModeChange(travelFromPrevious.mode).catch(() => {
+        // Silently fail - planning system will handle it
+      });
+    }
+  }, [hasAutoFetched, isRecalculatingRoute, travelFromPrevious.durationMinutes, travelFromPrevious.mode, originCoordinates, destinationCoordinates, handleModeChange]);
+
+  return (
+    <TravelSegment
+      segment={travelFromPrevious}
+      origin={originCoordinates}
+      destination={destinationCoordinates}
+      originName={startPoint.name}
       destinationName={activity.title}
       timezone={dayTimezone}
       onModeChange={handleModeChange}

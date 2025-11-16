@@ -1,7 +1,7 @@
 "use client";
 
-import { type Itinerary } from "@/types/itinerary";
-import type { TripBuilderData } from "@/types/trip";
+import { type Itinerary, type ItineraryActivity, type ItineraryEdit, type ItineraryDay } from "@/types/itinerary";
+import type { TripBuilderData, DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
 import { loadWishlist, WISHLIST_KEY } from "@/lib/wishlistStorage";
 import type { Session, User } from "@supabase/supabase-js";
@@ -48,6 +48,11 @@ export type AppStateShape = {
   isLoadingRefresh: boolean;
   loadingBookmarks: Set<string>; // Set of guide IDs currently being bookmarked/unbookmarked
 
+  // editing state
+  dayEntryPoints: Record<string, DayEntryPoint>; // keyed by `${tripId}-${dayId}`
+  editHistory: Record<string, ItineraryEdit[]>; // keyed by tripId
+  currentHistoryIndex: Record<string, number>; // keyed by tripId
+
   // actions
   setUser: (patch: Partial<UserProfile>) => void;
   toggleFavorite: (id: string) => void;
@@ -60,6 +65,17 @@ export type AppStateShape = {
   deleteTrip: (tripId: string) => void;
   restoreTrip: (trip: StoredTrip) => void;
   getTripById: (tripId: string) => StoredTrip | undefined;
+
+  // editing actions
+  setDayEntryPoint: (tripId: string, dayId: string, type: "start" | "end", entryPoint: EntryPoint | undefined) => void;
+  replaceActivity: (tripId: string, dayId: string, activityId: string, newActivity: ItineraryActivity) => void;
+  deleteActivity: (tripId: string, dayId: string, activityId: string) => void;
+  reorderActivities: (tripId: string, dayId: string, activityIds: string[]) => void;
+  addActivity: (tripId: string, dayId: string, activity: ItineraryActivity, position?: number) => void;
+  undo: (tripId: string) => void;
+  redo: (tripId: string) => void;
+  canUndo: (tripId: string) => boolean;
+  canRedo: (tripId: string) => boolean;
 
   clearAllLocalData: () => void;
   refreshFromSupabase: () => Promise<void>;
@@ -81,6 +97,9 @@ const defaultState: AppStateShape = {
   trips: [],
   isLoadingRefresh: false,
   loadingBookmarks: new Set(),
+  dayEntryPoints: {},
+  editHistory: {},
+  currentHistoryIndex: {},
 
   setUser: () => {},
   toggleFavorite: () => {},
@@ -93,6 +112,15 @@ const defaultState: AppStateShape = {
   deleteTrip: () => {},
   restoreTrip: () => {},
   getTripById: () => undefined,
+  setDayEntryPoint: () => {},
+  replaceActivity: () => {},
+  deleteActivity: () => {},
+  reorderActivities: () => {},
+  addActivity: () => {},
+  undo: () => {},
+  redo: () => {},
+  canUndo: () => false,
+  canRedo: () => false,
 
   clearAllLocalData: () => {},
   refreshFromSupabase: async () => {},
@@ -102,7 +130,7 @@ const Ctx = createContext<AppStateShape>(defaultState);
 
 type InternalState = Pick<
   AppStateShape,
-  "user" | "favorites" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks"
+  "user" | "favorites" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "editHistory" | "currentHistoryIndex"
 >;
 
 const sanitizeTrips = (raw: unknown): StoredTrip[] => {
@@ -176,6 +204,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     trips: [],
     isLoadingRefresh: false,
     loadingBookmarks: new Set(),
+    dayEntryPoints: {},
+    editHistory: {},
+    currentHistoryIndex: {},
   });
 
   // load
@@ -198,6 +229,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           trips: sanitizeTrips(parsed.trips),
           isLoadingRefresh: false,
           loadingBookmarks: new Set(),
+          dayEntryPoints: parsed.dayEntryPoints ?? {},
+          editHistory: parsed.editHistory ?? {},
+          currentHistoryIndex: parsed.currentHistoryIndex ?? {},
         };
       } else {
         // Generate a real ID on first client load
@@ -208,6 +242,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           trips: [],
           isLoadingRefresh: false,
           loadingBookmarks: new Set(),
+          dayEntryPoints: {},
+          editHistory: {},
+          currentHistoryIndex: {},
         };
       }
 
@@ -323,6 +360,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         favorites: state.favorites,
         guideBookmarks: state.guideBookmarks,
         trips: state.trips,
+        dayEntryPoints: state.dayEntryPoints,
+        editHistory: state.editHistory,
+        currentHistoryIndex: state.currentHistoryIndex,
       };
       localStorage.setItem(KEY, JSON.stringify(persistedState));
     }, 500); // Debounce writes by 500ms
@@ -330,7 +370,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [state.user, state.favorites, state.guideBookmarks, state.trips]);
+  }, [state.user, state.favorites, state.guideBookmarks, state.trips, state.dayEntryPoints, state.editHistory, state.currentHistoryIndex]);
 
   const setUser = useCallback(
     (patch: Partial<UserProfile>) =>
@@ -643,6 +683,283 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [supabase],
   );
 
+  // Helper function to create edit history entry
+  const createEditHistoryEntry = useCallback(
+    (
+      tripId: string,
+      dayId: string,
+      type: ItineraryEdit["type"],
+      previousItinerary: Itinerary,
+      nextItinerary: Itinerary,
+      metadata?: Record<string, unknown>,
+    ): ItineraryEdit => {
+      return {
+        id: newId(),
+        tripId,
+        timestamp: new Date().toISOString(),
+        type,
+        dayId,
+        previousItinerary,
+        nextItinerary,
+        metadata,
+      };
+    },
+    [],
+  );
+
+  // Helper function to update itinerary and add to history
+  const updateItineraryWithHistory = useCallback(
+    (
+      tripId: string,
+      dayId: string,
+      editType: ItineraryEdit["type"],
+      updater: (itinerary: Itinerary) => Itinerary,
+      metadata?: Record<string, unknown>,
+    ) => {
+      setState((s) => {
+        const trip = s.trips.find((t) => t.id === tripId);
+        if (!trip) return s;
+
+        const previousItinerary = trip.itinerary;
+        const nextItinerary = updater(previousItinerary);
+
+        // Create edit history entry
+        const edit = createEditHistoryEntry(tripId, dayId, editType, previousItinerary, nextItinerary, metadata);
+
+        // Get current history for this trip
+        const history = s.editHistory[tripId] ?? [];
+        const currentIndex = s.currentHistoryIndex[tripId] ?? -1;
+
+        // Remove any edits after current index (when undoing and then making new edit)
+        const newHistory = history.slice(0, currentIndex + 1);
+        newHistory.push(edit);
+
+        // Limit history to last 50 edits
+        const trimmedHistory = newHistory.slice(-50);
+
+        // Update trip itinerary
+        const updatedTrips = s.trips.map((t) =>
+          t.id === tripId
+            ? {
+                ...t,
+                itinerary: nextItinerary,
+                updatedAt: new Date().toISOString(),
+              }
+            : t,
+        );
+
+        return {
+          ...s,
+          trips: updatedTrips,
+          editHistory: {
+            ...s.editHistory,
+            [tripId]: trimmedHistory,
+          },
+          currentHistoryIndex: {
+            ...s.currentHistoryIndex,
+            [tripId]: trimmedHistory.length - 1,
+          },
+        };
+      });
+    },
+    [createEditHistoryEntry],
+  );
+
+  const setDayEntryPoint = useCallback(
+    (tripId: string, dayId: string, type: "start" | "end", entryPoint: EntryPoint | undefined) => {
+      const key = `${tripId}-${dayId}`;
+      setState((s) => {
+        const current = s.dayEntryPoints[key] ?? {};
+        const updated: DayEntryPoint = {
+          ...current,
+          [type === "start" ? "startPoint" : "endPoint"]: entryPoint,
+        };
+        return {
+          ...s,
+          dayEntryPoints: {
+            ...s.dayEntryPoints,
+            [key]: updated,
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  const replaceActivity = useCallback(
+    (tripId: string, dayId: string, activityId: string, newActivity: ItineraryActivity) => {
+      updateItineraryWithHistory(tripId, dayId, "replaceActivity", (itinerary) => {
+        return {
+          ...itinerary,
+          days: itinerary.days.map((day) => {
+            if (day.id !== dayId) return day;
+            return {
+              ...day,
+              activities: day.activities.map((activity) =>
+                activity.id === activityId ? newActivity : activity,
+              ),
+            };
+          }),
+        };
+      }, { activityId, newActivityId: newActivity.id });
+    },
+    [updateItineraryWithHistory],
+  );
+
+  const deleteActivity = useCallback(
+    (tripId: string, dayId: string, activityId: string) => {
+      updateItineraryWithHistory(tripId, dayId, "deleteActivity", (itinerary) => {
+        return {
+          ...itinerary,
+          days: itinerary.days.map((day) => {
+            if (day.id !== dayId) return day;
+            return {
+              ...day,
+              activities: day.activities.filter((activity) => activity.id !== activityId),
+            };
+          }),
+        };
+      }, { activityId });
+    },
+    [updateItineraryWithHistory],
+  );
+
+  const reorderActivities = useCallback(
+    (tripId: string, dayId: string, activityIds: string[]) => {
+      updateItineraryWithHistory(tripId, dayId, "reorderActivities", (itinerary) => {
+        return {
+          ...itinerary,
+          days: itinerary.days.map((day) => {
+            if (day.id !== dayId) return day;
+            // Create a map for quick lookup
+            const activityMap = new Map(day.activities.map((a) => [a.id, a]));
+            // Reorder activities based on the provided order
+            const reorderedActivities = activityIds
+              .map((id) => activityMap.get(id))
+              .filter((a): a is ItineraryActivity => a !== undefined);
+            return {
+              ...day,
+              activities: reorderedActivities,
+            };
+          }),
+        };
+      }, { activityIds });
+    },
+    [updateItineraryWithHistory],
+  );
+
+  const addActivity = useCallback(
+    (tripId: string, dayId: string, activity: ItineraryActivity, position?: number) => {
+      updateItineraryWithHistory(tripId, dayId, "addActivity", (itinerary) => {
+        return {
+          ...itinerary,
+          days: itinerary.days.map((day) => {
+            if (day.id !== dayId) return day;
+            const activities = [...day.activities];
+            if (position !== undefined && position >= 0 && position <= activities.length) {
+              activities.splice(position, 0, activity);
+            } else {
+              activities.push(activity);
+            }
+            return {
+              ...day,
+              activities,
+            };
+          }),
+        };
+      }, { activityId: activity.id, position });
+    },
+    [updateItineraryWithHistory],
+  );
+
+  const undo = useCallback(
+    (tripId: string) => {
+      setState((s) => {
+        const history = s.editHistory[tripId] ?? [];
+        const currentIndex = s.currentHistoryIndex[tripId] ?? -1;
+
+        if (currentIndex < 0) return s; // Nothing to undo
+
+        const edit = history[currentIndex];
+        if (!edit) return s;
+
+        // Restore previous itinerary state
+        const updatedTrips = s.trips.map((t) =>
+          t.id === tripId
+            ? {
+                ...t,
+                itinerary: edit.previousItinerary,
+                updatedAt: new Date().toISOString(),
+              }
+            : t,
+        );
+
+        return {
+          ...s,
+          trips: updatedTrips,
+          currentHistoryIndex: {
+            ...s.currentHistoryIndex,
+            [tripId]: currentIndex - 1,
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  const redo = useCallback(
+    (tripId: string) => {
+      setState((s) => {
+        const history = s.editHistory[tripId] ?? [];
+        const currentIndex = s.currentHistoryIndex[tripId] ?? -1;
+
+        if (currentIndex >= history.length - 1) return s; // Nothing to redo
+
+        const edit = history[currentIndex + 1];
+        if (!edit) return s;
+
+        // Restore next itinerary state
+        const updatedTrips = s.trips.map((t) =>
+          t.id === tripId
+            ? {
+                ...t,
+                itinerary: edit.nextItinerary,
+                updatedAt: new Date().toISOString(),
+              }
+            : t,
+        );
+
+        return {
+          ...s,
+          trips: updatedTrips,
+          currentHistoryIndex: {
+            ...s.currentHistoryIndex,
+            [tripId]: currentIndex + 1,
+          },
+        };
+      });
+    },
+    [],
+  );
+
+  const canUndo = useCallback(
+    (tripId: string) => {
+      const history = state.editHistory[tripId] ?? [];
+      const currentIndex = state.currentHistoryIndex[tripId] ?? -1;
+      return currentIndex >= 0;
+    },
+    [state.editHistory, state.currentHistoryIndex],
+  );
+
+  const canRedo = useCallback(
+    (tripId: string) => {
+      const history = state.editHistory[tripId] ?? [];
+      const currentIndex = state.currentHistoryIndex[tripId] ?? -1;
+      return currentIndex < history.length - 1;
+    },
+    [state.editHistory, state.currentHistoryIndex],
+  );
+
   const clearAllLocalData = useCallback(() => {
     if (typeof window !== "undefined" && !window.confirm("Clear all local Koku data on this device?")) {
       return;
@@ -654,6 +971,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       trips: [],
       isLoadingRefresh: false,
       loadingBookmarks: new Set(),
+      dayEntryPoints: {},
+      editHistory: {},
+      currentHistoryIndex: {},
     };
     setState(next);
     if (typeof window !== "undefined") {
@@ -675,6 +995,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       deleteTrip,
       restoreTrip,
       getTripById: (tripId: string) => state.trips.find((trip) => trip.id === tripId),
+      setDayEntryPoint,
+      replaceActivity,
+      deleteActivity,
+      reorderActivities,
+      addActivity,
+      undo,
+      redo,
+      canUndo,
+      canRedo,
       clearAllLocalData,
       refreshFromSupabase,
     }),
@@ -688,6 +1017,15 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       renameTrip,
       deleteTrip,
       restoreTrip,
+      setDayEntryPoint,
+      replaceActivity,
+      deleteActivity,
+      reorderActivities,
+      addActivity,
+      undo,
+      redo,
+      canUndo,
+      canRedo,
       clearAllLocalData,
       refreshFromSupabase,
     ],

@@ -14,7 +14,6 @@ import type { EntryPointType } from "@/types/trip";
 type Step1FormValues = {
   duration?: number;
   start?: string;
-  end?: string;
   entryPointType?: EntryPointType | "";
   entryPointId?: string;
 };
@@ -35,7 +34,6 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
     () => ({
       duration: data.duration ?? undefined,
       start: data.dates.start ?? "",
-      end: data.dates.end ?? "",
       entryPointType: data.entryPoint?.type ?? "",
       entryPointId: data.entryPoint?.id ?? "",
     }),
@@ -47,7 +45,6 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
     register,
     handleSubmit,
     reset,
-    getValues,
     setValue,
     formState: { errors, isValid },
   } = useForm<Step1FormValues>({
@@ -69,10 +66,41 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
     name: "start",
   });
 
+  const durationValue = useWatch({
+    control,
+    name: "duration",
+  });
+
   const entryPointType = useWatch({
     control,
     name: "entryPointType",
   });
+
+  // Calculate end date from start date and duration
+  const calculatedEndDate = useMemo(() => {
+    if (!startValue || !durationValue || durationValue < 1) {
+      return null;
+    }
+
+    const duration = Math.floor(durationValue);
+    const startDate = new Date(startValue);
+    const endDate = new Date(startDate);
+    endDate.setDate(startDate.getDate() + duration - 1);
+    
+    return endDate.toISOString().split("T")[0];
+  }, [startValue, durationValue]);
+
+  // Format end date for display
+  const formattedEndDate = useMemo(() => {
+    if (!calculatedEndDate) return null;
+    
+    const date = new Date(calculatedEndDate);
+    const formatter = new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+    });
+    
+    return formatter.format(date);
+  }, [calculatedEndDate]);
 
   const entryPointOptions = useMemo(() => {
     if (!entryPointType) {
@@ -113,13 +141,23 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
       entryPoint = allPoints.find((ep) => ep.id === values.entryPointId);
     }
 
+    // Calculate end date from start date and duration
+    let endDate = "";
+    if (values.start && values.duration && values.duration >= 1) {
+      const duration = Math.floor(values.duration);
+      const startDate = new Date(values.start);
+      const calculatedEndDate = new Date(startDate);
+      calculatedEndDate.setDate(startDate.getDate() + duration - 1);
+      endDate = calculatedEndDate.toISOString().split("T")[0];
+    }
+
     setData((prev) => ({
       ...prev,
       duration: values.duration,
       dates: {
         ...prev.dates,
         start: values.start,
-        end: values.end,
+        end: endDate,
       },
       entryPoint,
     }));
@@ -179,7 +217,7 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
         />
       </FormField>
 
-      <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2">
+      <div className="flex flex-col gap-6 sm:gap-8">
         <Controller
           control={control}
           name="start"
@@ -193,39 +231,28 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
               required
               value={field.value ?? ""}
               onChange={field.onChange}
-              max={getValues("end")}
               error={errors.start?.message}
-              help="Choose the first day of your trip."
+              help={
+                durationValue && durationValue >= 1
+                  ? `Choose the first day. Your trip will be exactly ${Math.floor(durationValue)} days.`
+                  : "Choose the first day of your trip."
+              }
             />
           )}
         />
 
-        <Controller
-          control={control}
-          name="end"
-          rules={{
-            required: "End date is required",
-            validate: (value) => {
-              const start = getValues("start");
-              if (start && value && value < start) {
-                return "End date must be on or after the start date";
-              }
-              return true;
-            },
-          }}
-          render={({ field }) => (
-            <DatePicker
-              id="trip-end"
-              label="End date"
-              required
-              min={startValue || undefined}
-              value={field.value ?? ""}
-              onChange={field.onChange}
-              error={errors.end?.message}
-              help="Pick when you plan to wrap up."
-            />
-          )}
-        />
+        {calculatedEndDate && formattedEndDate && (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-900">End date</p>
+                <p className="mt-1 text-sm text-gray-600">
+                  {formattedEndDate} ({Math.floor(durationValue || 0)} day{durationValue === 1 ? "" : "s"} from start)
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-2 sm:gap-3">
