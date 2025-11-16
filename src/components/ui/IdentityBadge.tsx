@@ -13,10 +13,19 @@ function circle(initial: string) {
   );
 }
 
-export default function IdentityBadge({ className = "" }: { className?: string }) {
+export default function IdentityBadge({ 
+  className = "",
+  showChevron = false,
+  isOpen = false,
+}: { 
+  className?: string;
+  showChevron?: boolean;
+  isOpen?: boolean;
+}) {
   const supabase = useMemo(() => createClient(), []);
   const { user } = useAppState();
   const [email, setEmail] = useState<string | null>(null);
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
 
   useEffect(() => {
     let alive = true;
@@ -24,10 +33,16 @@ export default function IdentityBadge({ className = "" }: { className?: string }
       .auth
       .getUser()
       .then(({ data: { user } }: { data: { user: User | null } }) => {
-        if (alive) setEmail(user?.email ?? null);
+        if (alive) {
+          setEmail(user?.email ?? null);
+          setIsSignedIn(Boolean(user));
+        }
       })
       .catch((error: unknown) => {
         logger.warn("Failed to read Supabase user", { error });
+        if (alive) {
+          setIsSignedIn(false);
+        }
       });
     return () => {
       alive = false;
@@ -38,9 +53,66 @@ export default function IdentityBadge({ className = "" }: { className?: string }
   const initial = (label?.[0] ?? "G").toUpperCase();
 
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`}>
+    <span className={`inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm ${className}`}>
       {circle(initial)}
-      <span className="text-sm text-gray-800">{label}</span>
+      <span className="text-sm font-semibold text-gray-800">{label}</span>
+      {showChevron && (
+        <svg
+          className={`h-4 w-4 text-gray-800 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 20 20"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="m6 8 4 4 4-4" />
+        </svg>
+      )}
     </span>
   );
+}
+
+// Export a hook to check authentication state
+export function useAuthState() {
+  const supabase = useMemo(() => createClient(), []);
+  const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    let alive = true;
+    setIsLoading(true);
+    supabase
+      .auth
+      .getUser()
+      .then(({ data: { user } }) => {
+        if (alive) {
+          setIsSignedIn(Boolean(user));
+          setIsLoading(false);
+        }
+      })
+      .catch((error: unknown) => {
+        logger.warn("Failed to read Supabase user", { error });
+        if (alive) {
+          setIsSignedIn(false);
+          setIsLoading(false);
+        }
+      });
+
+    // Listen for auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (alive) {
+        setIsSignedIn(Boolean(session?.user));
+      }
+    });
+
+    return () => {
+      alive = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  return { isSignedIn, isLoading };
 }
