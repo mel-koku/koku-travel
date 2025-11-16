@@ -228,7 +228,7 @@ export default function Header() {
       <>
         <div
           className={cn(
-            "fixed inset-0 z-[60] bg-black/50 transition-opacity duration-300 ease-out md:hidden",
+            "fixed inset-0 z-[9998] bg-black/50 transition-opacity duration-300 ease-out md:hidden",
             isMobileMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
           )}
           onClick={() => setIsMobileMenuOpen(false)}
@@ -236,7 +236,7 @@ export default function Header() {
         />
         <nav
           className={cn(
-            "fixed inset-y-0 right-0 z-[70] w-full max-w-xs sm:max-w-sm bg-white shadow-xl transition-transform duration-300 ease-out md:hidden overflow-y-auto scroll-smooth",
+            "fixed inset-y-0 right-0 z-[9999] w-full max-w-xs sm:max-w-sm bg-white shadow-xl transition-transform duration-300 ease-out md:hidden overflow-y-auto scroll-smooth",
             isMobileMenuOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
           )}
           aria-label="Mobile navigation"
