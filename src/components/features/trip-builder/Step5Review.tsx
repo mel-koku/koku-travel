@@ -119,7 +119,7 @@ export function Step5Review({ onEditStep }: Step5ReviewProps) {
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
-          <Button type="button" variant="outline" size="lg" onClick={handleStartOver} className="w-full sm:w-auto">
+          <Button type="button" variant="secondary" size="lg" onClick={handleStartOver} className="w-full sm:w-auto">
             Start Over
           </Button>
           <Button type="button" size="lg" onClick={handleConfirmClick} className="w-full sm:w-auto">

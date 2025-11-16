@@ -31,6 +31,8 @@ type ItineraryMapPanelProps = {
   selectedActivityId?: string | null;
   onSelectActivity?: (activityId: string | null) => void;
   isPlanning?: boolean;
+  startPoint?: { name: string; coordinates: { lat: number; lng: number } };
+  endPoint?: { name: string; coordinates: { lat: number; lng: number } };
 };
 
 function isPlaceActivity(
@@ -45,6 +47,8 @@ export const ItineraryMapPanel = ({
   selectedActivityId,
   onSelectActivity,
   isPlanning = false,
+  startPoint,
+  endPoint,
 }: ItineraryMapPanelProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -57,8 +61,22 @@ export const ItineraryMapPanel = ({
 
   const points = useMemo<MapPoint[]>(() => {
     const results: MapPoint[] = [];
-    let placeCounter = 1;
+    let placeCounter = 0; // Start at 0 for start point
     
+    // Add start point as marker 0
+    if (startPoint) {
+      results.push({
+        id: "start-point",
+        title: startPoint.name,
+        lat: startPoint.coordinates.lat,
+        lng: startPoint.coordinates.lng,
+        tags: [],
+        timeOfDay: "morning",
+        placeNumber: placeCounter++,
+      });
+    }
+    
+    // Add regular activities (starting from 1 if start point exists, otherwise from 1)
     activities.forEach((activity) => {
       if (!isPlaceActivity(activity)) {
         return;
@@ -94,7 +112,7 @@ export const ItineraryMapPanel = ({
     });
 
     return results;
-  }, [activities]);
+  }, [activities, startPoint]);
 
   const pointLookup = useMemo(() => {
     const map = new Map<string, MapPoint>();
@@ -109,7 +127,7 @@ export const ItineraryMapPanel = ({
   const travelSegments = useMemo(() => {
     const segments: Array<{
       id: string;
-      from: Extract<ItineraryActivity, { kind: "place" }>;
+      from: Extract<ItineraryActivity, { kind: "place" }> | "start";
       to: Extract<ItineraryActivity, { kind: "place" }>;
       mode: ItineraryTravelMode;
       durationMinutes?: number;
@@ -119,8 +137,50 @@ export const ItineraryMapPanel = ({
       isFallback?: boolean;
     }> = [];
 
-    let previousPlace: Extract<ItineraryActivity, { kind: "place" }> | null = null;
+    let previousPlace: Extract<ItineraryActivity, { kind: "place" }> | "start" | null = null;
     let previousPoint: MapPoint | null = null;
+
+    // If start point exists, add travel segment from start to first activity
+    if (startPoint && activities.length > 0) {
+      const firstActivity = activities.find(isPlaceActivity);
+      if (firstActivity) {
+        const firstPoint = pointLookup.get(firstActivity.id) ?? null;
+        if (firstPoint) {
+          const startPointMap: MapPoint = {
+            id: "start-point",
+            title: startPoint.name,
+            lat: startPoint.coordinates.lat,
+            lng: startPoint.coordinates.lng,
+            tags: [],
+            timeOfDay: "morning",
+            placeNumber: 0,
+          };
+          
+          const heuristic = estimateHeuristicRoute({
+            origin: { lat: startPointMap.lat, lng: startPointMap.lng },
+            destination: { lat: firstPoint.lat, lng: firstPoint.lng },
+            mode: "walk",
+          });
+
+          segments.push({
+            id: `start-${firstActivity.id}`,
+            from: "start",
+            to: firstActivity,
+            mode: "walk",
+            durationMinutes: Math.max(1, Math.round(heuristic.durationSeconds / 60)),
+            distanceMeters: heuristic.distanceMeters,
+            path: heuristic.geometry?.map((coordinate) => ({
+              lat: coordinate.lat,
+              lng: coordinate.lng,
+            })),
+            isFallback: true,
+          });
+
+          previousPlace = "start";
+          previousPoint = startPointMap;
+        }
+      }
+    }
 
     activities.forEach((activity) => {
       if (activity.kind !== "place") {
@@ -163,9 +223,10 @@ export const ItineraryMapPanel = ({
           isFallback = true;
         }
 
+        const fromId = previousPlace === "start" ? "start" : previousPlace.id;
         segments.push({
-          id: `${previousPlace.id}-${activity.id}`,
-          from: previousPlace,
+          id: `${fromId}-${activity.id}`,
+          from: previousPlace === "start" ? "start" : previousPlace,
           to: activity,
           mode,
           durationMinutes,
@@ -181,7 +242,7 @@ export const ItineraryMapPanel = ({
     });
 
     return segments;
-  }, [activities, pointLookup]);
+  }, [activities, pointLookup, startPoint]);
 
   useEffect(() => {
     let cancelled = false;
@@ -234,6 +295,10 @@ export const ItineraryMapPanel = ({
 
         points.forEach((point) => {
           // Create custom numbered marker icon
+          // Start point (0) gets a different color
+          const isStartPoint = point.placeNumber === 0;
+          const backgroundColor = isStartPoint ? "#10B981" : "#4F46E5"; // Green for start, indigo for others
+          
           const iconHtml = `
             <div style="
               display: flex;
@@ -241,7 +306,7 @@ export const ItineraryMapPanel = ({
               justify-content: center;
               width: 28px;
               height: 28px;
-              background-color: #4F46E5;
+              background-color: ${backgroundColor};
               border: 2px solid white;
               border-radius: 50%;
               box-shadow: 0 2px 4px rgba(0,0,0,0.3);
@@ -260,9 +325,13 @@ export const ItineraryMapPanel = ({
           });
           
           const marker = Leaflet.marker([point.lat, point.lng], { icon: customIcon });
-          marker.bindPopup(`<strong>${point.title}</strong>`);
+          const popupLabel = isStartPoint ? `<strong>Start: ${point.title}</strong>` : `<strong>${point.title}</strong>`;
+          marker.bindPopup(popupLabel);
           marker.on("click", () => {
-            onSelectActivity?.(point.id);
+            // Only allow selecting activities, not the start point
+            if (!isStartPoint) {
+              onSelectActivity?.(point.id);
+            }
           });
           markersLayerRef.current?.addLayer(marker);
           markerInstancesRef.current.set(point.id, marker);
@@ -279,6 +348,7 @@ export const ItineraryMapPanel = ({
             return;
           }
           const coordinates = path.map((point) => [point.lat, point.lng]) as [number, number][];
+          const segmentId = segment.from === "start" ? `start-${segment.to.id}` : segment.id;
           const polyline = Leaflet.polyline(coordinates, {
             color: ROUTE_POLYLINE_COLOR,
             weight: 4,
@@ -286,7 +356,7 @@ export const ItineraryMapPanel = ({
             className: "koku-map-route",
           });
           routesLayerRef.current.addLayer(polyline);
-          polylineInstancesRef.current.set(segment.to.id, polyline);
+          polylineInstancesRef.current.set(segmentId, polyline);
           coordinates.forEach(([lat, lng]) => {
             bounds.extend({ lat, lng });
             hasBounds = true;

@@ -230,8 +230,10 @@ function sanitizeAccessibility(
         ),
       )
     : [];
-  const dietaryOther = typeof accessibility.dietaryOther === "string" ? accessibility.dietaryOther.trim() : "";
-  const notes = typeof accessibility.notes === "string" ? accessibility.notes.trim() : "";
+  const dietaryOtherRaw = typeof accessibility.dietaryOther === "string" ? accessibility.dietaryOther : "";
+  const dietaryOther = dietaryOtherRaw.trim();
+  const notesRaw = typeof accessibility.notes === "string" ? accessibility.notes : "";
+  const notes = notesRaw.trim();
 
   if (!hasMobility && dietary.length === 0 && dietaryOther.length === 0 && notes.length === 0) {
     return undefined;
@@ -245,10 +247,10 @@ function sanitizeAccessibility(
     sanitized.mobility = true;
   }
   if (dietaryOther.length > 0) {
-    sanitized.dietaryOther = dietaryOther;
+    sanitized.dietaryOther = dietaryOtherRaw;
   }
   if (notes.length > 0) {
-    sanitized.notes = notes;
+    sanitized.notes = notesRaw;
   }
 
   return sanitized;

@@ -2,17 +2,43 @@
 
 import { useMemo } from "react";
 import type { ItineraryDay } from "@/types/itinerary";
+import type { EntryPoint } from "@/types/trip";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { logger } from "@/lib/logger";
+import { DayEntryPointEditor } from "./DayEntryPointEditor";
+import { useAppState } from "@/state/AppState";
 
 type DayHeaderProps = {
   day: ItineraryDay;
   dayIndex: number;
   tripStartDate?: string; // ISO date string (yyyy-mm-dd)
+  tripId?: string;
 };
 
-export function DayHeader({ day, dayIndex, tripStartDate }: DayHeaderProps) {
+export function DayHeader({ day, dayIndex, tripStartDate, tripId }: DayHeaderProps) {
+  const { dayEntryPoints, setDayEntryPoint, reorderActivities } = useAppState();
+  
+  const entryPointKey = tripId && day.id ? `${tripId}-${day.id}` : undefined;
+  const entryPoints = entryPointKey ? dayEntryPoints[entryPointKey] : undefined;
+
+  const handleSetStartPoint = (entryPoint: EntryPoint | undefined) => {
+    if (tripId && day.id) {
+      setDayEntryPoint(tripId, day.id, "start", entryPoint);
+    }
+  };
+
+  const handleSetEndPoint = (entryPoint: EntryPoint | undefined) => {
+    if (tripId && day.id) {
+      setDayEntryPoint(tripId, day.id, "end", entryPoint);
+    }
+  };
+
+  const handleOptimizeRoute = (activityIds: string[]) => {
+    if (tripId && day.id) {
+      reorderActivities(tripId, day.id, activityIds);
+    }
+  };
   // Calculate the date for this day
   const dayDate = useMemo(() => {
     if (tripStartDate) {
@@ -232,6 +258,20 @@ export function DayHeader({ day, dayIndex, tripStartDate }: DayHeaderProps) {
           )}
         </div>
       </div>
+      {tripId && (
+        <div className="mt-4">
+          <DayEntryPointEditor
+            tripId={tripId}
+            dayId={day.id}
+            startPoint={entryPoints?.startPoint}
+            endPoint={entryPoints?.endPoint}
+            activities={day.activities ?? []}
+            onSetStartPoint={handleSetStartPoint}
+            onSetEndPoint={handleSetEndPoint}
+            onOptimizeRoute={handleOptimizeRoute}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   type RefObject,
   type SetStateAction,
 } from "react";
+import { useAppState } from "@/state/AppState";
 import { Itinerary, type ItineraryActivity } from "@/types/itinerary";
 import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
@@ -19,6 +20,8 @@ import { Select } from "@/components/ui/Select";
 import { planItinerary } from "@/lib/itineraryPlanner";
 import { logger } from "@/lib/logger";
 import type { StoredTrip } from "@/state/AppState";
+import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
+import { findReplacementCandidates, locationToActivity, type ReplacementCandidate } from "@/lib/activityReplacement";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -38,8 +41,10 @@ type ItineraryShellProps = {
 
 const normalizeItinerary = (incoming: Itinerary): Itinerary => {
   return {
-    days: (incoming.days ?? []).map((day) => ({
+    days: (incoming.days ?? []).map((day, index) => ({
       ...day,
+      // Ensure day has an ID for backward compatibility
+      id: day.id ?? `day-${index + 1}-legacy-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
       activities: (day.activities ?? []).map((activity) => {
         if (
           activity &&
@@ -93,13 +98,170 @@ export const ItineraryShell = ({
   isUsingMock,
   tripStartDate,
 }: ItineraryShellProps) => {
+  const { reorderActivities, replaceActivity, addActivity, getTripById, dayEntryPoints } = useAppState();
   const [selectedDay, setSelectedDay] = useState(0);
   const [model, setModelState] = useState<Itinerary>(() => normalizeItinerary(itinerary));
   const [isPlanning, setIsPlanning] = useState(false);
   const [planningError, setPlanningError] = useState<string | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
+  const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
+  const [isLoadingReplacements, setIsLoadingReplacements] = useState(false);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
+
+  const currentTrip = useMemo(() => {
+    return tripId && !isUsingMock ? getTripById(tripId) : null;
+  }, [tripId, isUsingMock, getTripById]);
+
+  const buildDayEntryPointsMap = useCallback(
+    (target: Itinerary) => {
+      if (!tripId) {
+        return {};
+      }
+      const map: Record<
+        string,
+        {
+          startPoint?: { coordinates: { lat: number; lng: number } };
+          endPoint?: { coordinates: { lat: number; lng: number } };
+        }
+      > = {};
+
+      for (const day of target.days ?? []) {
+        if (!day?.id) {
+          continue;
+        }
+        const entryPoints = dayEntryPoints[`${tripId}-${day.id}`];
+        if (!entryPoints) {
+          continue;
+        }
+        const { startPoint, endPoint } = entryPoints;
+        if (!startPoint && !endPoint) {
+          continue;
+        }
+        map[day.id] = {
+          startPoint: startPoint ? { coordinates: startPoint.coordinates } : undefined,
+          endPoint: endPoint ? { coordinates: endPoint.coordinates } : undefined,
+        };
+      }
+
+      return map;
+    },
+    [tripId, dayEntryPoints],
+  );
+
+  const handleReorder = useCallback(
+    (dayId: string, activityIds: string[]) => {
+      if (tripId && !isUsingMock) {
+        reorderActivities(tripId, dayId, activityIds);
+      }
+    },
+    [tripId, isUsingMock, reorderActivities],
+  );
+
+  const handleReplace = useCallback(
+    (activityId: string) => {
+      if (!tripId || isUsingMock || !currentTrip) return;
+
+      const currentDay = model.days[selectedDay];
+      if (!currentDay) return;
+
+      const activity = currentDay.activities.find((a) => a.id === activityId);
+      if (!activity || activity.kind !== "place") return;
+
+      setIsLoadingReplacements(true);
+      setReplacementActivityId(activityId);
+
+      // Find replacement candidates
+      const options = findReplacementCandidates(
+        activity,
+        currentTrip.builderData,
+        model.days.flatMap((d) => d.activities),
+        currentDay.activities,
+        selectedDay,
+      );
+
+      setReplacementCandidates(options.candidates);
+      setIsLoadingReplacements(false);
+    },
+    [tripId, isUsingMock, currentTrip, model, selectedDay],
+  );
+
+  const handleReplaceSelect = useCallback(
+    (candidate: ReplacementCandidate) => {
+      if (!tripId || isUsingMock || !replacementActivityId) return;
+
+      const currentDay = model.days[selectedDay];
+      if (!currentDay) return;
+
+      const activity = currentDay.activities.find((a) => a.id === replacementActivityId);
+      if (!activity || activity.kind !== "place") return;
+
+      const newActivity = locationToActivity(candidate.location, activity);
+
+      if (tripId && !isUsingMock) {
+        replaceActivity(tripId, currentDay.id, replacementActivityId, newActivity);
+      }
+
+      // Update local model
+      setModelState((current) => {
+        const nextDays = current.days.map((d) => {
+          if (d.id !== currentDay.id) return d;
+          return {
+            ...d,
+            activities: d.activities.map((a) => (a.id === replacementActivityId ? newActivity : a)),
+          };
+        });
+        return { ...current, days: nextDays };
+      });
+
+      setReplacementActivityId(null);
+      setReplacementCandidates([]);
+    },
+    [tripId, isUsingMock, replacementActivityId, model, selectedDay, replaceActivity],
+  );
+
+  const handleCopy = useCallback(
+    (activityId: string) => {
+      if (!tripId || isUsingMock) return;
+
+      const currentDay = model.days[selectedDay];
+      if (!currentDay) return;
+
+      const activity = currentDay.activities.find((a) => a.id === activityId);
+      if (!activity) return;
+
+      // Create a copy with new ID
+      const copiedActivity: ItineraryActivity = {
+        ...activity,
+        id: `${activity.id}-copy-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+      };
+
+      // Find position to insert (after the original)
+      const originalIndex = currentDay.activities.findIndex((a) => a.id === activityId);
+      const insertPosition = originalIndex >= 0 ? originalIndex + 1 : undefined;
+
+      if (tripId && !isUsingMock) {
+        addActivity(tripId, currentDay.id, copiedActivity, insertPosition);
+      }
+
+      // Update local model
+      setModelState((current) => {
+        const nextDays = current.days.map((d) => {
+          if (d.id !== currentDay.id) return d;
+          const activities = [...d.activities];
+          if (insertPosition !== undefined && insertPosition <= activities.length) {
+            activities.splice(insertPosition, 0, copiedActivity);
+          } else {
+            activities.push(copiedActivity);
+          }
+          return { ...d, activities };
+        });
+        return { ...current, days: nextDays };
+      });
+    },
+    [tripId, isUsingMock, model, selectedDay, addActivity],
+  );
 
   useEffect(() => {
     if (finalHeadingRef.current) {
@@ -166,7 +328,9 @@ export const ItineraryShell = ({
         setPlanningError(null);
         setIsPlanning(true);
 
-        planItinerary(target)
+        const dayEntryPointsMap = buildDayEntryPointsMap(target);
+        
+        planItinerary(target, undefined, dayEntryPointsMap)
           .then((planned) => {
             if (planningRequestRef.current !== runId || !isMountedRef.current) {
               return;
@@ -193,7 +357,7 @@ export const ItineraryShell = ({
           });
       }, 450);
     },
-    [setIsPlanning, setModelState, setPlanningError],
+    [setIsPlanning, setModelState, setPlanningError, buildDayEntryPointsMap],
   );
 
   const applyModelUpdate = useCallback<Dispatch<SetStateAction<Itinerary>>>(
@@ -260,7 +424,9 @@ export const ItineraryShell = ({
       setPlanningError(null);
     }, 0);
 
-    planItinerary(nextNormalized)
+    const dayEntryPointsMap = buildDayEntryPointsMap(nextNormalized);
+    
+    planItinerary(nextNormalized, undefined, dayEntryPointsMap)
       .then((planned) => {
         if (
           cancelled ||
@@ -307,7 +473,7 @@ export const ItineraryShell = ({
         planWatchdogRef.current = null;
       }
     };
-  }, [serializedItinerary, itinerary, tripId]);
+  }, [serializedItinerary, itinerary, tripId, buildDayEntryPointsMap]);
 
   useEffect(() => {
     if (skipSyncRef.current) {
@@ -321,6 +487,8 @@ export const ItineraryShell = ({
   const safeSelectedDay =
     days.length === 0 ? 0 : Math.min(selectedDay, Math.max(days.length - 1, 0));
   const currentDay = days[safeSelectedDay];
+  const currentDayEntryPoints =
+    tripId && currentDay?.id ? dayEntryPoints[`${tripId}-${currentDay.id}`] : undefined;
 
   const handleSelectDayChange = useCallback((dayIndex: number) => {
     setSelectedDay(dayIndex);
@@ -353,6 +521,8 @@ export const ItineraryShell = ({
               selectedActivityId={selectedActivityId}
               onSelectActivity={handleSelectActivity}
               isPlanning={isPlanning}
+              startPoint={currentDayEntryPoints?.startPoint}
+              endPoint={currentDayEntryPoints?.endPoint}
             />
           </div>
         </div>
@@ -422,6 +592,12 @@ export const ItineraryShell = ({
                 selectedActivityId={selectedActivityId}
                 onSelectActivity={handleSelectActivity}
                 tripStartDate={tripStartDate}
+                tripId={tripId && !isUsingMock ? tripId : undefined}
+                onReorder={handleReorder}
+                onReplace={tripId && !isUsingMock ? handleReplace : undefined}
+                onCopy={tripId && !isUsingMock ? handleCopy : undefined}
+                startPoint={currentDayEntryPoints?.startPoint}
+                endPoint={currentDayEntryPoints?.endPoint}
               />
             ) : (
               <p className="text-sm text-gray-500">
@@ -456,6 +632,29 @@ export const ItineraryShell = ({
           </div>
         </div>
       </div>
+
+      {/* Replacement Picker Modal */}
+      {replacementActivityId && (() => {
+        const originalActivity = model.days[selectedDay]?.activities.find(
+          (a) => a.id === replacementActivityId && a.kind === "place",
+        ) as Extract<ItineraryActivity, { kind: "place" }> | undefined;
+        
+        if (!originalActivity) return null;
+        
+        return (
+          <ActivityReplacementPicker
+            isOpen={true}
+            onClose={() => {
+              setReplacementActivityId(null);
+              setReplacementCandidates([]);
+            }}
+            candidates={replacementCandidates}
+            originalActivity={originalActivity}
+            onSelect={handleReplaceSelect}
+            isLoading={isLoadingReplacements}
+          />
+        );
+      })()}
     </section>
   );
 };

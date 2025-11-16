@@ -17,10 +17,26 @@ export function extractBaseLocationId(activityId: string): string | null {
   return baseId ?? null;
 }
 
+/**
+ * Extracts Google Place ID from entry point locationId format: __entry_point_{type}__{placeId}__
+ */
+function extractPlaceIdFromEntryPoint(locationId: string): string | null {
+  const match = locationId.match(/^__entry_point_(?:start|end)__(.+?)__$/);
+  return match ? match[1] : null;
+}
+
 export function findLocationForActivity(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
 ): Location | null {
   if (activity.locationId) {
+    // Check if it's an entry point with a placeId
+    const placeId = extractPlaceIdFromEntryPoint(activity.locationId);
+    if (placeId) {
+      // Return null - caller should fetch details via API
+      // This allows async fetching of place details
+      return null;
+    }
+
     const fromExplicit = LOCATION_INDEX.get(activity.locationId);
     if (fromExplicit) {
       return fromExplicit;
