@@ -131,25 +131,37 @@ export const ItineraryTimeline = ({
     return result;
   }, [activities, startPoint, endPoint]);
 
+  type EntryPointActivity = Extract<ItineraryActivity, { kind: "place" }> & { locationId: string };
+
   // Helper to check if an activity is an entry point
-  const isEntryPoint = useCallback((activity: ItineraryActivity): boolean => {
-    return activity.kind === "place" && 
-           activity.locationId !== undefined && 
-           (activity.locationId.startsWith("__entry_point_start__") || 
-            activity.locationId.startsWith("__entry_point_end__"));
-  }, []);
+  const isEntryPoint = useCallback(
+    (activity: ItineraryActivity): activity is EntryPointActivity => {
+      return (
+        activity.kind === "place" &&
+        typeof activity.locationId === "string" &&
+        (activity.locationId.startsWith("__entry_point_start__") ||
+          activity.locationId.startsWith("__entry_point_end__"))
+      );
+    },
+    [],
+  );
 
   // Store entry point data for lookup
   const entryPointData = useMemo(() => {
     const data = new Map<string, { name: string; coordinates: { lat: number; lng: number }; placeId?: string }>();
+    const entryPoints: EntryPointActivity[] = extendedActivities.filter(isEntryPoint);
     if (startPoint) {
-      const startActivity = extendedActivities.find(a => isEntryPoint(a) && a.locationId?.startsWith("__entry_point_start__"));
+      const startActivity = entryPoints.find((activity: EntryPointActivity) =>
+        activity.locationId.startsWith("__entry_point_start__"),
+      );
       if (startActivity) {
         data.set(startActivity.id, startPoint);
       }
     }
     if (endPoint) {
-      const endActivity = extendedActivities.find(a => isEntryPoint(a) && a.locationId?.startsWith("__entry_point_end__"));
+      const endActivity = entryPoints.find((activity: EntryPointActivity) =>
+        activity.locationId.startsWith("__entry_point_end__"),
+      );
       if (endActivity) {
         data.set(endActivity.id, endPoint);
       }

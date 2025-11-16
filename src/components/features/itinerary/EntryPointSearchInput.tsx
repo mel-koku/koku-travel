@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useId } from "react";
 import type { EntryPoint, EntryPointType } from "@/types/trip";
 import { Button } from "@/components/ui/Button";
+import { logger } from "@/lib/logger";
 
 type AutocompletePlace = {
   placeId: string;
@@ -49,6 +50,7 @@ export function EntryPointSearchInput({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const suggestionsRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const listboxId = useId();
 
   const typeLabels: Record<EntryPointType, string> = {
     airport: "Airport",
@@ -108,7 +110,7 @@ export function EntryPointSearchInput({
         setSuggestions(data.places || []);
         setShowSuggestions(true);
       } catch (error) {
-        console.error("Error fetching autocomplete suggestions:", error);
+        logger.error("Error fetching autocomplete suggestions", error instanceof Error ? error : new Error(String(error)));
         const errorMessage = error instanceof Error ? error.message : "Failed to fetch suggestions";
         setErrors({ name: errorMessage });
         setSuggestions([]);
@@ -173,7 +175,7 @@ export function EntryPointSearchInput({
         throw new Error("Place coordinates not found");
       }
     } catch (error) {
-      console.error("Error fetching place coordinates:", error);
+      logger.error("Error fetching place coordinates", error instanceof Error ? error : new Error(String(error)));
       setErrors({ coordinates: "Failed to get location coordinates. Please try again." });
     } finally {
       setIsFetchingCoordinates(false);
@@ -197,18 +199,22 @@ export function EntryPointSearchInput({
       return;
     }
 
-    // At this point, selectedPlace is guaranteed to be non-null and have a location
+    const confirmedPlace = selectedPlace;
+    if (!confirmedPlace || !confirmedPlace.location) {
+      return;
+    }
+
     // Create entry point
     const entryPoint: EntryPoint = {
       type,
       id: initialValue?.id ?? `ep-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      name: selectedPlace.displayName,
+      name: confirmedPlace.displayName,
       coordinates: {
-        lat: selectedPlace.location.latitude,
-        lng: selectedPlace.location.longitude,
+        lat: confirmedPlace.location.latitude,
+        lng: confirmedPlace.location.longitude,
       },
       cityId,
-      placeId: selectedPlace.placeId, // Store Google Place ID for fetching details
+      placeId: confirmedPlace.placeId, // Store Google Place ID for fetching details
     };
 
     onSelect(entryPoint);
@@ -238,8 +244,10 @@ export function EntryPointSearchInput({
             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             aria-invalid={errors.name ? "true" : "false"}
             aria-describedby={errors.name ? "name-error" : undefined}
+            role="combobox"
             aria-autocomplete="list"
             aria-expanded={showSuggestions && suggestions.length > 0}
+            aria-controls={showSuggestions && suggestions.length > 0 ? listboxId : undefined}
             autoComplete="off"
           />
           {isLoading && (
@@ -279,6 +287,7 @@ export function EntryPointSearchInput({
             ref={suggestionsRef}
             className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg max-h-60 overflow-auto"
             role="listbox"
+            id={listboxId}
           >
             {suggestions.map((place) => (
               <button
@@ -287,6 +296,7 @@ export function EntryPointSearchInput({
                 onClick={() => handleSelectPlace(place)}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
                 role="option"
+                aria-selected="false"
               >
                 <div className="font-medium text-gray-900">{place.displayName}</div>
                 {place.formattedAddress && (

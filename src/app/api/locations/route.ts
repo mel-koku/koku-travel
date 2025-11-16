@@ -8,12 +8,10 @@ import {
   createRequestContext,
   addRequestContextHeaders,
   getOptionalAuth,
-  type RequestContext,
 } from "@/lib/api/middleware";
 import {
   parsePaginationParams,
   createPaginatedResponse,
-  type PaginationConfig,
 } from "@/lib/api/pagination";
 
 /**

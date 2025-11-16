@@ -6,11 +6,7 @@ import { serviceUnavailable, unauthorized, badRequest } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { sanityWebhookPayloadSchema } from "@/lib/api/schemas";
 import { sanitizePath } from "@/lib/api/sanitization";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  type RequestContext,
-} from "@/lib/api/middleware";
+import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import type { z } from "zod";
 

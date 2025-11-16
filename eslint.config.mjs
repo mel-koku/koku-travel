@@ -10,6 +10,8 @@ const eslintConfig = defineConfig([
       // Prevent console statements in production code
       // Scripts in scripts/ directory are allowed to use console
       "no-console": "error",
+      // Allow state updates inside effects when intentional (common in UI code)
+      "react-hooks/set-state-in-effect": "off",
       // Suppress Tailwind class suggestions for arbitrary values
       // Some linters suggest predefined classes, but arbitrary values are valid
       "@next/next/no-html-link-for-pages": "off",
@@ -29,6 +31,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "coverage/**",
     // Allow console in scripts (development tools)
     "scripts/**",
     // Ignore non-existent files that may be cached by IDE

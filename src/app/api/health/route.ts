@@ -3,11 +3,7 @@ import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 import { sanityClient } from "@/lib/sanity/client";
 import { env } from "@/lib/env";
 import { Redis } from "@upstash/redis";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  type RequestContext,
-} from "@/lib/api/middleware";
+import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 
 /**

@@ -19,6 +19,7 @@ import {
   getLocationReviewCount,
   numberFormatter,
 } from "./activityUtils";
+import { logger } from "@/lib/logger";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -57,7 +58,6 @@ function useEntryPointLocation(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
 ): Location | null {
   const [location, setLocation] = useState<Location | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Extract placeId from entry point locationId
@@ -68,8 +68,9 @@ function useEntryPointLocation(
       return;
     }
 
-    setIsLoading(true);
-    fetch(`/api/places/details?placeId=${encodeURIComponent(placeId)}&name=${encodeURIComponent(activity.title)}`)
+    fetch(
+      `/api/places/details?placeId=${encodeURIComponent(placeId)}&name=${encodeURIComponent(activity.title)}`,
+    )
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Failed to fetch place details: ${res.status}`);
@@ -82,12 +83,13 @@ function useEntryPointLocation(
         }
       })
       .catch((error) => {
-        console.error("Error fetching entry point location details:", error);
+        logger.error(
+          "Error fetching entry point location details",
+          error instanceof Error ? error : new Error(String(error)),
+          { activityId: activity.id },
+        );
         // Fall back to basic location
         setLocation(buildFallbackLocation(activity));
-      })
-      .finally(() => {
-        setIsLoading(false);
       });
   }, [activity.locationId, activity.title]);
 

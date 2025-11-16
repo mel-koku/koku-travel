@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import { TripBuilderProvider, useTripBuilder } from "@/context/TripBuilderContext";
+import type { TripStyle } from "@/types/trip";
 
 describe("TripBuilderContext", () => {
   beforeEach(() => {
@@ -176,7 +177,7 @@ describe("TripBuilderContext", () => {
       act(() => {
         result.current.setData((prev) => ({
           ...prev,
-          style: "invalid-style" as any,
+          style: "invalid-style" as TripStyle,
         }));
       });
 
