@@ -5,6 +5,7 @@ import { calculateDistance, estimateTravelTime } from "@/lib/utils/geoUtils";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { scoreWeatherFit } from "@/lib/weather/weatherScoring";
 import { scoreTimeOfDayFit, checkOpeningHoursFit } from "./timeOptimization";
+import { scoreGroupFit } from "./groupScoring";
 
 /**
  * Criteria for scoring a location.
@@ -42,6 +43,14 @@ export interface LocationScoringCriteria {
    * Date for this activity (ISO date string) - used for weekday calculation
    */
   date?: string;
+  /**
+   * Group information for group-based scoring
+   */
+  group?: {
+    size?: number;
+    type?: "solo" | "couple" | "family" | "friends" | "business";
+    childrenAges?: number[];
+  };
 }
 
 /**
@@ -56,6 +65,7 @@ export interface ScoreBreakdown {
   diversityBonus: number;
   weatherFit: number;
   timeOptimization: number;
+  groupFit: number;
 }
 
 /**
@@ -590,6 +600,9 @@ export function scoreLocation(
   const finalTimeScore = openingHoursResult.fits
     ? timeOptimizationResult.scoreAdjustment
     : timeOptimizationResult.scoreAdjustment - 5; // Penalty for closed hours
+  
+  // Group-based scoring
+  const groupResult = scoreGroupFit(location, criteria.group);
 
   const breakdown: ScoreBreakdown = {
     interestMatch: interestResult.score,
@@ -600,6 +613,7 @@ export function scoreLocation(
     diversityBonus: diversityResult.score,
     weatherFit: weatherResult.scoreAdjustment,
     timeOptimization: finalTimeScore,
+    groupFit: groupResult.scoreAdjustment,
   };
 
   const totalScore =
@@ -610,7 +624,8 @@ export function scoreLocation(
     breakdown.accessibilityFit +
     breakdown.diversityBonus +
     breakdown.weatherFit +
-    breakdown.timeOptimization;
+    breakdown.timeOptimization +
+    breakdown.groupFit;
 
   const reasoning = [
     interestResult.reasoning,
@@ -622,6 +637,7 @@ export function scoreLocation(
     weatherResult.reasoning,
     timeOptimizationResult.reasoning,
     openingHoursResult.reasoning,
+    groupResult.reasoning,
   ];
 
   return {
