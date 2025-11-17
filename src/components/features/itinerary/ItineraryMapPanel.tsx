@@ -1,13 +1,14 @@
-"use client";
-
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
-import type { ItineraryActivity } from "@/types/itinerary";
+import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { ItineraryTravelMode } from "@/types/itinerary";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { ensureLeafletResources, type LeafletMap, type LeafletMarker, type LeafletPolyline, type LeafletLayerGroup } from "./leafletUtils";
+import { ItineraryMap } from "./ItineraryMap";
+import { mapboxService } from "@/lib/mapbox/mapService";
+import { featureFlags } from "@/lib/env/featureFlags";
 
 const DEFAULT_CENTER = { lat: 35.0116, lng: 135.7681 }; // Kyoto station area
 const DEFAULT_ZOOM = 12;
@@ -50,6 +51,7 @@ export const ItineraryMapPanel = ({
   startPoint,
   endPoint,
 }: ItineraryMapPanelProps) => {
+  const useMapbox = featureFlags.enableMapbox && mapboxService.isEnabled();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markersLayerRef = useRef<LeafletLayerGroup | null>(null);
@@ -121,8 +123,6 @@ export const ItineraryMapPanel = ({
     });
     return map;
   }, [points]);
-
-  const placeActivities = useMemo(() => activities.filter(isPlaceActivity), [activities]);
 
   const travelSegments = useMemo(() => {
     const segments: Array<{
@@ -245,6 +245,9 @@ export const ItineraryMapPanel = ({
   }, [activities, pointLookup, startPoint]);
 
   useEffect(() => {
+    if (useMapbox) {
+      return;
+    }
     let cancelled = false;
 
     ensureLeafletResources()
@@ -380,7 +383,7 @@ export const ItineraryMapPanel = ({
     return () => {
       cancelled = true;
     };
-  }, [points, travelSegments, onSelectActivity]);
+  }, [points, travelSegments, onSelectActivity, useMapbox]);
 
   useEffect(() => {
     if (!mapReady || !mapRef.current) {
@@ -436,35 +439,49 @@ export const ItineraryMapPanel = ({
         <p className="text-sm text-gray-500">
           Visualize the stops planned for this day and preview travel flow.
         </p>
+        {endPoint && (
+          <p className="text-xs text-gray-400">Ending at {endPoint.name}</p>
+        )}
       </header>
       <div className="relative flex-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100">
-        <div
-          ref={containerRef}
-          className="absolute inset-0"
-          aria-label="Map showing planned activities"
-        />
-        {!mapReady && !mapError ? (
-          <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-500">
-            Loading map…
-          </div>
-        ) : null}
+        {useMapbox ? (
+          <ItineraryMap
+            day={{ id: `day-${day}`, dateLabel: `Day ${day + 1}`, activities: activities ?? [] } as ItineraryDay}
+            activities={activities}
+            selectedActivityId={selectedActivityId}
+            onActivityClick={onSelectActivity}
+          />
+        ) : (
+          <>
+            <div
+              ref={containerRef}
+              className="absolute inset-0"
+              aria-label="Map showing planned activities"
+            />
+            {!mapReady && !mapError ? (
+              <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-500">
+                Loading map…
+              </div>
+            ) : null}
+            {mapError ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-rose-600">
+                <p>We couldn&apos;t load the map right now.</p>
+                <p className="mt-1 text-gray-500">Please refresh or try again later.</p>
+              </div>
+            ) : null}
+            {mapReady && points.length === 0 ? (
+              <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-gray-500">
+                <p>No mappable activities yet.</p>
+                <p className="mt-1">Add places with known locations to see them here.</p>
+              </div>
+            ) : null}
+          </>
+        )}
         {isPlanning ? (
           <div className="pointer-events-none absolute inset-0 flex items-end justify-end p-3">
             <div className="rounded-lg bg-indigo-600/90 px-3 py-1 text-xs font-semibold text-white shadow-lg">
               Updating schedule…
             </div>
-          </div>
-        ) : null}
-        {mapError ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-rose-600">
-            <p>We couldn&apos;t load the map right now.</p>
-            <p className="mt-1 text-gray-500">Please refresh or try again later.</p>
-          </div>
-        ) : null}
-        {mapReady && points.length === 0 ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-gray-500">
-            <p>No mappable activities yet.</p>
-            <p className="mt-1">Add places with known locations to see them here.</p>
           </div>
         ) : null}
       </div>
