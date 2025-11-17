@@ -1,7 +1,9 @@
 import type { Location } from "@/types/location";
 import type { InterestId, TripBuilderData } from "@/types/trip";
+import type { WeatherForecast } from "@/types/weather";
 import { calculateDistance, estimateTravelTime } from "@/lib/utils/geoUtils";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
+import { scoreWeatherFit } from "@/lib/weather/weatherScoring";
 
 /**
  * Criteria for scoring a location.
@@ -19,6 +21,18 @@ export interface LocationScoringCriteria {
   currentLocation?: { lat: number; lng: number };
   availableMinutes: number;
   recentCategories: string[];
+  /**
+   * Weather forecast for the date/location being scored
+   */
+  weatherForecast?: WeatherForecast;
+  /**
+   * Weather preferences
+   */
+  weatherPreferences?: {
+    preferIndoorOnRain?: boolean;
+    minTemperature?: number;
+    maxTemperature?: number;
+  };
 }
 
 /**
@@ -31,6 +45,7 @@ export interface ScoreBreakdown {
   budgetFit: number;
   accessibilityFit: number;
   diversityBonus: number;
+  weatherFit: number;
 }
 
 /**
@@ -549,6 +564,7 @@ export function scoreLocation(
   });
   const accessibilityResult = scoreAccessibilityFit(location, criteria.accessibility);
   const diversityResult = scoreDiversity(location, criteria.recentCategories);
+  const weatherResult = scoreWeatherFit(location, criteria.weatherForecast, criteria.weatherPreferences);
 
   const breakdown: ScoreBreakdown = {
     interestMatch: interestResult.score,
@@ -557,6 +573,7 @@ export function scoreLocation(
     budgetFit: budgetResult.score,
     accessibilityFit: accessibilityResult.score,
     diversityBonus: diversityResult.score,
+    weatherFit: weatherResult.scoreAdjustment,
   };
 
   const totalScore =
@@ -565,7 +582,8 @@ export function scoreLocation(
     breakdown.logisticalFit +
     breakdown.budgetFit +
     breakdown.accessibilityFit +
-    breakdown.diversityBonus;
+    breakdown.diversityBonus +
+    breakdown.weatherFit;
 
   const reasoning = [
     interestResult.reasoning,
@@ -574,6 +592,7 @@ export function scoreLocation(
     budgetResult.reasoning,
     accessibilityResult.reasoning,
     diversityResult.reasoning,
+    weatherResult.reasoning,
   ];
 
   return {

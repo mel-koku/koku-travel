@@ -98,6 +98,23 @@ export type TripBuilderData = {
     childrenAges?: number[];
   };
   /**
+   * Weather preferences for trip planning
+   */
+  weatherPreferences?: {
+    /**
+     * Prefer indoor alternatives on rainy days
+     */
+    preferIndoorOnRain?: boolean;
+    /**
+     * Minimum temperature preference (Celsius)
+     */
+    minTemperature?: number;
+    /**
+     * Maximum temperature preference (Celsius)
+     */
+    maxTemperature?: number;
+  };
+  /**
    * Optional TravelerProfile. If not provided, will be built from other fields.
    * This allows gradual migration to the new domain model.
    */
