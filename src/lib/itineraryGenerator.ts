@@ -230,6 +230,8 @@ export async function generateItinerary(data: TripBuilderData): Promise<Itinerar
           } : undefined, // Pass accessibility requirements
           dayWeatherForecast, // Pass weather forecast
           data.weatherPreferences, // Pass weather preferences
+          timeSlot, // Pass time slot for time optimization
+          dayDate, // Pass date for weekday calculation
         );
         
         const location = locationResult && "_scoringReasoning" in locationResult 
@@ -768,6 +770,8 @@ function pickLocationForTimeSlot(
     minTemperature?: number;
     maxTemperature?: number;
   },
+  timeSlot?: "morning" | "afternoon" | "evening",
+  date?: string,
 ): (Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown }) | undefined {
   const unused = list.filter((loc) => !usedLocations.has(loc.id));
 
@@ -788,6 +792,8 @@ function pickLocationForTimeSlot(
     recentCategories,
     weatherForecast,
     weatherPreferences,
+    timeSlot,
+    date,
   };
 
   const scored = unused.map((loc) => scoreLocation(loc, criteria));

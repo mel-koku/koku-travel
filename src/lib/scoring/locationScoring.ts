@@ -4,6 +4,7 @@ import type { WeatherForecast } from "@/types/weather";
 import { calculateDistance, estimateTravelTime } from "@/lib/utils/geoUtils";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { scoreWeatherFit } from "@/lib/weather/weatherScoring";
+import { scoreTimeOfDayFit, checkOpeningHoursFit } from "./timeOptimization";
 
 /**
  * Criteria for scoring a location.
@@ -33,6 +34,14 @@ export interface LocationScoringCriteria {
     minTemperature?: number;
     maxTemperature?: number;
   };
+  /**
+   * Time slot for this activity (morning, afternoon, evening)
+   */
+  timeSlot?: "morning" | "afternoon" | "evening";
+  /**
+   * Date for this activity (ISO date string) - used for weekday calculation
+   */
+  date?: string;
 }
 
 /**
@@ -46,6 +55,7 @@ export interface ScoreBreakdown {
   accessibilityFit: number;
   diversityBonus: number;
   weatherFit: number;
+  timeOptimization: number;
 }
 
 /**
@@ -565,6 +575,21 @@ export function scoreLocation(
   const accessibilityResult = scoreAccessibilityFit(location, criteria.accessibility);
   const diversityResult = scoreDiversity(location, criteria.recentCategories);
   const weatherResult = scoreWeatherFit(location, criteria.weatherForecast, criteria.weatherPreferences);
+  
+  // Time-of-day optimization scoring
+  const timeOptimizationResult = criteria.timeSlot
+    ? scoreTimeOfDayFit(location, criteria.timeSlot, criteria.date)
+    : { scoreAdjustment: 0, reasoning: "No time slot specified" };
+  
+  // Check opening hours fit
+  const openingHoursResult = criteria.timeSlot
+    ? checkOpeningHoursFit(location, criteria.timeSlot, criteria.date)
+    : { fits: true, reasoning: "No time slot specified" };
+  
+  // Adjust time optimization score if opening hours don't fit
+  const finalTimeScore = openingHoursResult.fits
+    ? timeOptimizationResult.scoreAdjustment
+    : timeOptimizationResult.scoreAdjustment - 5; // Penalty for closed hours
 
   const breakdown: ScoreBreakdown = {
     interestMatch: interestResult.score,
@@ -574,6 +599,7 @@ export function scoreLocation(
     accessibilityFit: accessibilityResult.score,
     diversityBonus: diversityResult.score,
     weatherFit: weatherResult.scoreAdjustment,
+    timeOptimization: finalTimeScore,
   };
 
   const totalScore =
@@ -583,7 +609,8 @@ export function scoreLocation(
     breakdown.budgetFit +
     breakdown.accessibilityFit +
     breakdown.diversityBonus +
-    breakdown.weatherFit;
+    breakdown.weatherFit +
+    breakdown.timeOptimization;
 
   const reasoning = [
     interestResult.reasoning,
@@ -593,6 +620,8 @@ export function scoreLocation(
     accessibilityResult.reasoning,
     diversityResult.reasoning,
     weatherResult.reasoning,
+    timeOptimizationResult.reasoning,
+    openingHoursResult.reasoning,
   ];
 
   return {
