@@ -36,6 +36,11 @@ type EnvConfig = {
   // Site
   NEXT_PUBLIC_SITE_URL?: string;
   NEXT_PUBLIC_USE_MOCK_ITINERARY?: string;
+
+  // Cost Control Feature Flags
+  ENABLE_GOOGLE_PLACES?: string;
+  ENABLE_MAPBOX?: string;
+  CHEAP_MODE?: string;
 };
 
 type RequiredEnvKeys =
@@ -101,6 +106,9 @@ function createLenientConfig(): EnvConfig {
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_USE_MOCK_ITINERARY: process.env.NEXT_PUBLIC_USE_MOCK_ITINERARY,
+    ENABLE_GOOGLE_PLACES: process.env.ENABLE_GOOGLE_PLACES,
+    ENABLE_MAPBOX: process.env.ENABLE_MAPBOX,
+    CHEAP_MODE: process.env.CHEAP_MODE,
   };
 }
 
@@ -149,6 +157,9 @@ function validateEnv(): EnvConfig {
     UPSTASH_REDIS_REST_TOKEN: getOptionalEnv("UPSTASH_REDIS_REST_TOKEN"),
     NEXT_PUBLIC_SITE_URL: getOptionalEnv("NEXT_PUBLIC_SITE_URL"),
     NEXT_PUBLIC_USE_MOCK_ITINERARY: getOptionalEnv("NEXT_PUBLIC_USE_MOCK_ITINERARY"),
+    ENABLE_GOOGLE_PLACES: getOptionalEnv("ENABLE_GOOGLE_PLACES"),
+    ENABLE_MAPBOX: getOptionalEnv("ENABLE_MAPBOX"),
+    CHEAP_MODE: getOptionalEnv("CHEAP_MODE"),
   };
 }
 
