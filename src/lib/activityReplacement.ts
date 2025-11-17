@@ -1,6 +1,7 @@
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { TripBuilderData, InterestId } from "@/types/trip";
+import type { WeatherForecast } from "@/types/weather";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { MOCK_LOCATIONS } from "@/data/mockLocations";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
@@ -17,6 +18,9 @@ export interface ReplacementCandidate {
     budgetFit: number;
     accessibilityFit: number;
     diversityBonus: number;
+    weatherFit: number;
+    timeOptimization: number;
+    groupFit: number;
   };
   reasoning: string[];
 }
@@ -37,6 +41,10 @@ export function findReplacementCandidates(
   dayActivities: ItineraryActivity[],
   currentDayIndex: number,
   maxCandidates: number = 10,
+  options?: {
+    weatherForecast?: WeatherForecast;
+    date?: string; // ISO date string for weekday calculation
+  },
 ): ReplacementOptions {
   // Get the original location if available
   const originalLocation = findLocationForActivity(activity);
@@ -63,15 +71,13 @@ export function findReplacementCandidates(
   // Get activity duration or estimate
   const activityDuration = activity.durationMin ?? 90;
   
-  // Build scoring criteria
+  // Build scoring criteria with enhanced factors
   const criteria: LocationScoringCriteria = {
     interests,
     travelStyle: tripData.style ?? "balanced",
-    budgetLevel: tripData.accessibility?.dietary?.includes("budget")
-      ? "budget"
-      : tripData.accessibility?.dietary?.includes("luxury")
-        ? "luxury"
-        : "moderate",
+    budgetLevel: tripData.budget?.level,
+    budgetTotal: tripData.budget?.total,
+    budgetPerDay: tripData.budget?.perDay,
     accessibility: tripData.accessibility?.mobility
       ? {
           wheelchairAccessible: true,
@@ -81,6 +87,11 @@ export function findReplacementCandidates(
     currentLocation: currentCoordinates ?? undefined,
     availableMinutes: activityDuration,
     recentCategories,
+    weatherForecast: options?.weatherForecast,
+    weatherPreferences: tripData.weatherPreferences,
+    timeSlot: activity.timeOfDay,
+    date: options?.date,
+    group: tripData.group,
   };
   
   // Filter out the original location and already-used locations

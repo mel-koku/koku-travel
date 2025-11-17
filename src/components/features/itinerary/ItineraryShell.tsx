@@ -172,19 +172,40 @@ export const ItineraryShell = ({
       setIsLoadingReplacements(true);
       setReplacementActivityId(activityId);
 
-      // Find replacement candidates
+      // Calculate date for this day
+      let dayDate: string | undefined;
+      if (tripStartDate) {
+        const startDate = new Date(tripStartDate);
+        startDate.setDate(startDate.getDate() + selectedDay);
+        dayDate = startDate.toISOString().split("T")[0];
+      }
+
+      // Get weather forecast for this day (if available)
+      // Note: Weather would need to be fetched/stored separately
+      // For now, we'll pass undefined and let the scoring system work without weather
+      let weatherForecast: import("@/types/weather").WeatherForecast | undefined;
+      
+      // TODO: Fetch weather forecast if trip data includes weather context
+      // This would require storing weather forecasts in trip data or fetching on demand
+
+      // Find replacement candidates with enhanced options
       const options = findReplacementCandidates(
         activity,
         currentTrip.builderData,
         model.days.flatMap((d) => d.activities),
         currentDay.activities,
         selectedDay,
+        10,
+        {
+          weatherForecast,
+          date: dayDate,
+        },
       );
 
       setReplacementCandidates(options.candidates);
       setIsLoadingReplacements(false);
     },
-    [tripId, isUsingMock, currentTrip, model, selectedDay],
+    [tripId, isUsingMock, currentTrip, model, selectedDay, tripStartDate],
   );
 
   const handleReplaceSelect = useCallback(

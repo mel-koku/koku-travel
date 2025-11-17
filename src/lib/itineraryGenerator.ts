@@ -232,6 +232,7 @@ export async function generateItinerary(data: TripBuilderData): Promise<Itinerar
           data.weatherPreferences, // Pass weather preferences
           timeSlot, // Pass time slot for time optimization
           dayDate, // Pass date for weekday calculation
+          data.group, // Pass group information
         );
         
         const location = locationResult && "_scoringReasoning" in locationResult 
@@ -772,6 +773,11 @@ function pickLocationForTimeSlot(
   },
   timeSlot?: "morning" | "afternoon" | "evening",
   date?: string,
+  group?: {
+    size?: number;
+    type?: "solo" | "couple" | "family" | "friends" | "business";
+    childrenAges?: number[];
+  },
 ): (Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown }) | undefined {
   const unused = list.filter((loc) => !usedLocations.has(loc.id));
 
@@ -794,6 +800,7 @@ function pickLocationForTimeSlot(
     weatherPreferences,
     timeSlot,
     date,
+    group,
   };
 
   const scored = unused.map((loc) => scoreLocation(loc, criteria));
