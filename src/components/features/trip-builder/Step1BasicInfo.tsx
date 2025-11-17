@@ -16,6 +16,9 @@ type Step1FormValues = {
   start?: string;
   entryPointType?: EntryPointType | "";
   entryPointId?: string;
+  budgetTotal?: number;
+  budgetPerDay?: number;
+  budgetLevel?: "budget" | "moderate" | "luxury" | "";
 };
 
 export type Step1BasicInfoProps = {
@@ -36,6 +39,9 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
       start: data.dates.start ?? "",
       entryPointType: data.entryPoint?.type ?? "",
       entryPointId: data.entryPoint?.id ?? "",
+      budgetTotal: data.budget?.total ?? undefined,
+      budgetPerDay: data.budget?.perDay ?? undefined,
+      budgetLevel: data.budget?.level ?? "",
     }),
     [data],
   );
@@ -163,6 +169,11 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
         end: endDate,
       },
       entryPoint,
+      budget: {
+        total: values.budgetTotal,
+        perDay: values.budgetPerDay,
+        level: values.budgetLevel ? (values.budgetLevel as "budget" | "moderate" | "luxury") : undefined,
+      },
     }));
     onNext();
   });
@@ -256,6 +267,89 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
             </div>
           </div>
         )}
+      </div>
+
+      <div className="flex flex-col gap-2 sm:gap-3">
+        <h3 className="text-lg font-medium text-gray-900">Budget (Optional)</h3>
+        <p className="text-sm text-gray-600">
+          Help us recommend activities that fit your budget. You can specify a total budget, per-day budget, or budget level.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-3">
+        <FormField
+          id="budget-level"
+          label="Budget Level"
+          help="General budget category"
+          error={errors.budgetLevel?.message}
+        >
+          <Controller
+            control={control}
+            name="budgetLevel"
+            render={({ field }) => (
+              <Select
+                id="budget-level"
+                placeholder="Select level"
+                options={[
+                  { label: "Budget", value: "budget" },
+                  { label: "Moderate", value: "moderate" },
+                  { label: "Luxury", value: "luxury" },
+                ]}
+                value={field.value ?? ""}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  field.onChange(val === "" ? undefined : val);
+                }}
+              />
+            )}
+          />
+        </FormField>
+
+        <FormField
+          id="budget-total"
+          label="Total Budget (¥)"
+          help="Total trip budget in Japanese Yen"
+          error={errors.budgetTotal?.message}
+        >
+          <Input
+            id="budget-total"
+            type="number"
+            min={0}
+            inputMode="numeric"
+            placeholder="e.g., 50000"
+            className="min-h-[44px]"
+            {...register("budgetTotal", {
+              valueAsNumber: true,
+              min: {
+                value: 0,
+                message: "Budget cannot be negative",
+              },
+            })}
+          />
+        </FormField>
+
+        <FormField
+          id="budget-per-day"
+          label="Per-Day Budget (¥)"
+          help="Daily budget in Japanese Yen"
+          error={errors.budgetPerDay?.message}
+        >
+          <Input
+            id="budget-per-day"
+            type="number"
+            min={0}
+            inputMode="numeric"
+            placeholder="e.g., 5000"
+            className="min-h-[44px]"
+            {...register("budgetPerDay", {
+              valueAsNumber: true,
+              min: {
+                value: 0,
+                message: "Budget cannot be negative",
+              },
+            })}
+          />
+        </FormField>
       </div>
 
       <div className="flex flex-col gap-2 sm:gap-3">

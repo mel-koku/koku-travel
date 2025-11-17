@@ -64,6 +64,40 @@ export type TripBuilderData = {
     notes?: string;
   };
   /**
+   * Budget information for the trip
+   */
+  budget?: {
+    /**
+     * Total trip budget in local currency (optional)
+     */
+    total?: number;
+    /**
+     * Per-day budget in local currency (optional)
+     */
+    perDay?: number;
+    /**
+     * Budget level classification
+     */
+    level?: "budget" | "moderate" | "luxury";
+  };
+  /**
+   * Group information
+   */
+  group?: {
+    /**
+     * Number of travelers
+     */
+    size?: number;
+    /**
+     * Type of group
+     */
+    type?: "solo" | "couple" | "family" | "friends" | "business";
+    /**
+     * Ages of children (if applicable)
+     */
+    childrenAges?: number[];
+  };
+  /**
    * Optional TravelerProfile. If not provided, will be built from other fields.
    * This allows gradual migration to the new domain model.
    */
