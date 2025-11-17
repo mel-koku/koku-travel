@@ -12,6 +12,8 @@ import { locationIdSchema } from "@/lib/api/schemas";
 import type { Location } from "@/types/location";
 import { getPlaceFromCache, storePlaceInCache } from "@/lib/cache/placeCache";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
+import { googlePlacesLimiter } from "@/lib/cost/googlePlacesLimiter";
+import { featureFlags } from "@/lib/env/featureFlags";
 
 /**
  * GET /api/places/details?placeId=...&name=...
@@ -125,8 +127,26 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Cache miss - fetch from Google Places API
+    // Cache miss - check cost limits before fetching from Google Places API
+    const tripId = request.headers.get("x-trip-id") ?? "unknown";
+    
+    if (!featureFlags.enableGooglePlaces || !googlePlacesLimiter.canMakeCall(tripId)) {
+      return addRequestContextHeaders(
+        serviceUnavailable(
+          "Google Places API calls are disabled or rate limit exceeded for this trip.",
+          {
+            requestId: finalContext.requestId,
+            callCount: googlePlacesLimiter.getCallCount(tripId),
+          },
+        ),
+        finalContext,
+      );
+    }
+
     const place = await fetchPlaceCoordinates(validatedPlaceId);
+    
+    // Record the API call
+    googlePlacesLimiter.recordCall(tripId);
 
     if (!place) {
       return addRequestContextHeaders(
