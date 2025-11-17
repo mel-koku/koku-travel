@@ -404,12 +404,64 @@ function scoreAccessibilityFit(
     return { score: 5, reasoning: "No accessibility requirements specified" };
   }
 
-  // For now, we don't have accessibility data in Location type
-  // This is a placeholder that gives neutral score
-  // In the future, this would check location.accessibility metadata
+  const locationAccessibility = location.accessibility;
+
+  // If no accessibility data available, give neutral score
+  if (!locationAccessibility) {
+    return {
+      score: 5,
+      reasoning: "Accessibility information not available for this location",
+    };
+  }
+
+  let score = 0;
+  const reasons: string[] = [];
+
+  // Check wheelchair accessibility requirement
+  if (accessibility.wheelchairAccessible) {
+    if (locationAccessibility.wheelchairAccessible) {
+      score += 5;
+      reasons.push("Wheelchair accessible");
+    } else {
+      score -= 3;
+      reasons.push("Not wheelchair accessible");
+    }
+  }
+
+  // Check elevator requirement
+  if (accessibility.elevatorRequired) {
+    if (locationAccessibility.elevatorRequired) {
+      score += 3;
+      reasons.push("Elevator available");
+    } else if (locationAccessibility.stepFreeAccess) {
+      score += 2;
+      reasons.push("Step-free access available (no elevator needed)");
+    } else {
+      score -= 2;
+      reasons.push("Elevator not available");
+    }
+  }
+
+  // Bonus for step-free access if wheelchair accessible is required
+  if (accessibility.wheelchairAccessible && locationAccessibility.stepFreeAccess) {
+    score += 2;
+    reasons.push("Step-free access confirmed");
+  }
+
+  // Clamp score to 0-10 range
+  score = Math.max(0, Math.min(10, score));
+
+  // If score is low, this location should be filtered out
+  if (score < 3) {
+    return {
+      score: 0,
+      reasoning: `Does not meet accessibility requirements: ${reasons.join("; ")}`,
+    };
+  }
+
   return {
-    score: 5,
-    reasoning: "Accessibility data not available in location metadata",
+    score,
+    reasoning: reasons.length > 0 ? reasons.join("; ") : "Meets accessibility requirements",
   };
 }
 

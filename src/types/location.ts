@@ -119,6 +119,27 @@ export type Location = {
    * If not provided the application will resolve it dynamically.
    */
   placeId?: string;
+  /**
+   * Accessibility information for the location
+   */
+  accessibility?: {
+    /**
+     * Whether the location is wheelchair accessible
+     */
+    wheelchairAccessible?: boolean;
+    /**
+     * Whether an elevator is required or available
+     */
+    elevatorRequired?: boolean;
+    /**
+     * Whether step-free access is available
+     */
+    stepFreeAccess?: boolean;
+    /**
+     * Additional accessibility notes
+     */
+    notes?: string;
+  };
 };
 
 export type LocationReview = {
