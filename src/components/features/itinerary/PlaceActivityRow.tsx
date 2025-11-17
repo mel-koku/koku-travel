@@ -143,6 +143,7 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
   ) => {
     const [notesOpen, setNotesOpen] = useState(() => Boolean(activity.notes));
     const [detailsOpen, setDetailsOpen] = useState(false);
+    const [reasoningOpen, setReasoningOpen] = useState(false);
 
     const durationLabel = useMemo(() => {
       if (!activity.durationMin) return null;
@@ -380,6 +381,48 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
 
             {summary ? (
               <p className="text-xs leading-relaxed text-gray-700 line-clamp-2">{summary}</p>
+            ) : null}
+            {activity.recommendationReason ? (
+              <div className="border-t border-gray-100 pt-2 mt-2">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setReasoningOpen((prev) => !prev);
+                  }}
+                  className="flex w-full items-center justify-between text-left text-xs font-medium text-indigo-600 hover:text-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                >
+                  <span>Why this recommendation?</span>
+                  <span className="text-gray-400">{reasoningOpen ? "−" : "+"}</span>
+                </button>
+                {reasoningOpen ? (
+                  <div className="mt-2 space-y-2 text-xs text-gray-700">
+                    <p className="font-medium">{activity.recommendationReason.primaryReason}</p>
+                    {activity.recommendationReason.factors && activity.recommendationReason.factors.length > 0 ? (
+                      <div className="space-y-1">
+                        <p className="font-semibold text-gray-900">Scoring breakdown:</p>
+                        <ul className="space-y-1 pl-2">
+                          {activity.recommendationReason.factors.map((factor, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                              <span className="text-gray-500">•</span>
+                              <span>
+                                <span className="font-medium">{factor.factor}</span>
+                                {factor.score !== undefined && (
+                                  <span className="text-gray-500"> ({factor.score} pts)</span>
+                                )}
+                                {factor.reasoning && (
+                                  <span className="text-gray-600">: {factor.reasoning}</span>
+                                )}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
             ) : null}
             <div className="flex flex-wrap items-center gap-1.5">
               {placeLocation.category ? (

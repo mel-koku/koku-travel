@@ -166,7 +166,7 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
         }
 
         // Pick a location that fits the available time
-        const location = pickLocationForTimeSlot(
+        const locationResult = pickLocationForTimeSlot(
           availableLocations,
           interest,
           usedLocations,
@@ -178,6 +178,14 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
           interestSequence, // Pass all interests for better matching
           data.budget, // Pass budget information
         );
+        
+        const location = locationResult && "_scoringReasoning" in locationResult 
+          ? (locationResult as Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown })
+          : locationResult;
+        const scoringData = location && "_scoringReasoning" in location ? {
+          reasoning: location._scoringReasoning,
+          breakdown: location._scoreBreakdown,
+        } : null;
 
         if (!location) {
           // If no location fits, try next interest
@@ -198,6 +206,19 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
           if (timeNeeded <= remainingTime * 1.1) {
             const locationKey = normalizeKey(location.city);
             dayCityUsage.set(locationKey, (dayCityUsage.get(locationKey) ?? 0) + 1);
+            // Build recommendation reason from scoring data
+            const recommendationReason = scoringData?.reasoning && scoringData.reasoning.length > 0 ? {
+              primaryReason: scoringData.reasoning[0] ?? "Selected based on your interests and preferences",
+              factors: scoringData.breakdown ? [
+                { factor: "Interest Match", score: scoringData.breakdown.interestMatch, reasoning: scoringData.reasoning[0] ?? "" },
+                { factor: "Rating Quality", score: scoringData.breakdown.ratingQuality, reasoning: scoringData.reasoning[1] ?? "" },
+                { factor: "Logistical Fit", score: scoringData.breakdown.logisticalFit, reasoning: scoringData.reasoning[2] ?? "" },
+                { factor: "Budget Fit", score: scoringData.breakdown.budgetFit, reasoning: scoringData.reasoning[3] ?? "" },
+                { factor: "Accessibility", score: scoringData.breakdown.accessibilityFit, reasoning: scoringData.reasoning[4] ?? "" },
+                { factor: "Diversity", score: scoringData.breakdown.diversityBonus, reasoning: scoringData.reasoning[5] ?? "" },
+              ].filter(f => f.reasoning) : undefined,
+            } : undefined;
+
             dayActivities.push({
               kind: "place",
               id: `${location.id}-${dayIndex + 1}-${timeSlot}-${activityIndex + 1}`,
@@ -205,6 +226,7 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
               timeOfDay: timeSlot,
               neighborhood: location.city,
               tags: buildTags(interest, location.category),
+              recommendationReason,
             });
             usedLocations.add(location.id);
             remainingTime -= timeNeeded;
@@ -683,7 +705,7 @@ function pickLocationForTimeSlot(
     total?: number;
     perDay?: number;
   },
-): Location | undefined {
+): (Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown }) | undefined {
   const unused = list.filter((loc) => !usedLocations.has(loc.id));
 
   if (unused.length === 0) {
@@ -725,7 +747,17 @@ function pickLocationForTimeSlot(
   }
 
   const selected = topCandidates[Math.floor(Math.random() * topCandidates.length)];
-  return selected?.location;
+  
+  // Return location with reasoning metadata attached
+  if (selected?.location) {
+    return {
+      ...selected.location,
+      _scoringReasoning: selected.reasoning,
+      _scoreBreakdown: selected.breakdown,
+    };
+  }
+  
+  return undefined;
 }
 
 function buildTags(interest: InterestId, category: LocationCategory): string[] {
