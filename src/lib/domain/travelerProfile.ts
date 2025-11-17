@@ -6,28 +6,58 @@ import type { TripBuilderData } from "@/types/trip";
  * Builds a TravelerProfile from TripBuilderData
  */
 export function buildTravelerProfile(data: TripBuilderData): TravelerProfile {
+  // Preserve existing travelerProfile if present
+  const existing = data.travelerProfile ?? {};
+  
+  // Map weatherPreferences from TripBuilderData format to TravelerProfile format
+  let weatherPreferences: TravelerProfile["weatherPreferences"] | undefined;
+  if (data.weatherPreferences) {
+    // Convert TripBuilderData weatherPreferences to TravelerProfile format
+    if (data.weatherPreferences.preferIndoorOnRain) {
+      weatherPreferences = { preference: "indoor_alternatives" };
+    } else {
+      // Default to outdoor_preferred if temperature preferences are set, otherwise no_preference
+      weatherPreferences = {
+        preference: data.weatherPreferences.minTemperature !== undefined || 
+                    data.weatherPreferences.maxTemperature !== undefined
+          ? "outdoor_preferred"
+          : "no_preference",
+      };
+    }
+  }
+
   const profile: TravelerProfile = {
     ...DEFAULT_TRAVELER_PROFILE,
-    pace: data.style ?? "balanced",
-    interests: data.interests ?? [],
+    // Preserve existing top-level fields
+    experienceLevel: existing.experienceLevel,
+    // Override with TripBuilderData mappings, falling back to existing values
+    pace: data.style ?? existing.pace ?? "balanced",
+    interests: data.interests ?? existing.interests ?? [],
     budget: {
-      total: data.budget?.total,
-      perDay: data.budget?.perDay,
-      level: data.budget?.level ?? "moderate",
+      ...existing.budget,
+      total: data.budget?.total ?? existing.budget?.total,
+      perDay: data.budget?.perDay ?? existing.budget?.perDay,
+      level: data.budget?.level ?? existing.budget?.level ?? "moderate",
     },
     mobility: {
-      required: data.accessibility?.mobility ?? false,
-      needs: data.accessibility?.mobility ? ["step_free_access"] : undefined,
+      ...existing.mobility,
+      required: data.accessibility?.mobility ?? existing.mobility?.required ?? false,
+      needs: data.accessibility?.mobility 
+        ? ["step_free_access"] 
+        : existing.mobility?.needs,
     },
     dietary: {
-      restrictions: data.accessibility?.dietary ?? [],
-      notes: data.accessibility?.dietaryOther || data.accessibility?.notes,
+      ...existing.dietary,
+      restrictions: data.accessibility?.dietary ?? existing.dietary?.restrictions ?? [],
+      notes: data.accessibility?.dietaryOther || data.accessibility?.notes || existing.dietary?.notes,
     },
     group: {
-      size: data.group?.size ?? 1,
-      type: data.group?.type ?? "solo",
-      childrenAges: data.group?.childrenAges,
+      ...existing.group,
+      size: data.group?.size ?? existing.group?.size ?? 1,
+      type: data.group?.type ?? existing.group?.type ?? "solo",
+      childrenAges: data.group?.childrenAges ?? existing.group?.childrenAges,
     },
+    weatherPreferences: weatherPreferences ?? existing.weatherPreferences,
   };
 
   return profile;
