@@ -177,6 +177,10 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
           pace, // Pass travel style
           interestSequence, // Pass all interests for better matching
           data.budget, // Pass budget information
+          data.accessibility?.mobility ? {
+            wheelchairAccessible: true,
+            elevatorRequired: false, // Can be enhanced based on specific needs
+          } : undefined, // Pass accessibility requirements
         );
         
         const location = locationResult && "_scoringReasoning" in locationResult 
@@ -705,6 +709,10 @@ function pickLocationForTimeSlot(
     total?: number;
     perDay?: number;
   },
+  accessibility?: {
+    wheelchairAccessible?: boolean;
+    elevatorRequired?: boolean;
+  },
 ): (Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown }) | undefined {
   const unused = list.filter((loc) => !usedLocations.has(loc.id));
 
@@ -719,6 +727,7 @@ function pickLocationForTimeSlot(
     budgetLevel: budget?.level,
     budgetTotal: budget?.total,
     budgetPerDay: budget?.perDay,
+    accessibility,
     currentLocation,
     availableMinutes: availableMinutes - travelTime, // Subtract travel time from available
     recentCategories,
