@@ -8,9 +8,9 @@ import { Input } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { useAppState } from "@/state/AppState";
-import { generateItinerary } from "@/lib/itineraryGenerator";
 import type { TripBuilderData } from "@/types/trip";
 import { logger } from "@/lib/logger";
+import { convertTripToItinerary } from "@/lib/tripConverter";
 
 type TripNameDialogProps = {
   isOpen: boolean;
@@ -52,7 +52,7 @@ export function TripNameDialog({
   );
 
   const handleSubmitTripName = useCallback(
-    (event: FormEvent<HTMLFormElement>) => {
+    async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (isSaving) {
         return;
@@ -66,7 +66,28 @@ export function TripNameDialog({
       setIsSaving(true);
       try {
         const builderSnapshot = JSON.parse(JSON.stringify(data)) as TripBuilderData;
-        const itinerary = generateItinerary(builderSnapshot);
+        
+        // Call API to generate itinerary
+        const response = await fetch("/api/itinerary/plan", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            builderData: builderSnapshot,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to generate itinerary");
+        }
+
+        const { trip } = await response.json();
+        
+        // Convert Trip domain model to Itinerary legacy format
+        const itinerary = convertTripToItinerary(trip);
+        
         const tripId = createTrip({
           name: finalName,
           itinerary,

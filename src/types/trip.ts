@@ -1,6 +1,9 @@
 /**
  * Defines the start and end ISO date strings used throughout the trip builder.
  */
+import { INTEREST_CATEGORIES } from "@/data/interests";
+import type { TravelerProfile } from "./traveler";
+
 export type TravelDates = {
   start?: string;
   end?: string;
@@ -9,7 +12,6 @@ export type TravelDates = {
 /**
  * Enumerates the pacing options for a trip. Additional options can be added in later phases.
  */
-import { INTEREST_CATEGORIES } from "@/data/interests";
 
 export type TripStyle = "relaxed" | "balanced" | "fast";
 
@@ -43,6 +45,9 @@ export type DayEntryPoint = {
 
 /**
  * Aggregates all mutable wizard fields. Future steps can extend this structure as needed.
+ * 
+ * Note: The TravelerProfile can be built from the individual fields using buildTravelerProfile().
+ * The travelerProfile field is optional and will be populated automatically when needed.
  */
 export type TripBuilderData = {
   duration?: number; // 1-14
@@ -58,6 +63,11 @@ export type TripBuilderData = {
     dietaryOther?: string;
     notes?: string;
   };
+  /**
+   * Optional TravelerProfile. If not provided, will be built from other fields.
+   * This allows gradual migration to the new domain model.
+   */
+  travelerProfile?: TravelerProfile;
 };
 
 
