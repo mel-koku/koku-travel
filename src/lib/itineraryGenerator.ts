@@ -3,10 +3,12 @@ import { CITY_TO_REGION, REGIONS } from "@/data/regions";
 import type { Itinerary, ItineraryTravelMode } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
+import type { WeatherForecast, TripWeatherContext } from "@/types/weather";
 import { getNearestCityToEntryPoint, travelMinutes } from "./travelTime";
 import { getCategoryDefaultDuration } from "./durationExtractor";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { applyDiversityFilter, type DiversityContext } from "@/lib/scoring/diversityRules";
+import { fetchWeatherForecast } from "./weather/weatherService";
 
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
@@ -111,7 +113,7 @@ function inferTravelMode(
   return "walk";
 }
 
-export function generateItinerary(data: TripBuilderData): Itinerary {
+export async function generateItinerary(data: TripBuilderData): Promise<Itinerary> {
   const totalDays =
     typeof data.duration === "number" && data.duration > 0 ? data.duration : DEFAULT_TOTAL_DAYS;
 
@@ -121,6 +123,38 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
   const usedLocations = new Set<string>();
   const pace = data.style ?? "balanced";
   const travelTime = getTravelTime(pace);
+
+  // Fetch weather forecasts for all cities and dates
+  const weatherContext: TripWeatherContext = {
+    forecasts: new Map(),
+    cityForecasts: new Map(),
+  };
+
+  if (data.dates.start && data.dates.end) {
+    // Get unique cities from the expanded sequence
+    const uniqueCities = new Set<CityId>();
+    for (const cityInfo of expandedCitySequence) {
+      const cityId = cityInfo.key as CityId;
+      if (cityId && ["kyoto", "osaka", "nara", "tokyo", "yokohama"].includes(cityId)) {
+        uniqueCities.add(cityId);
+      }
+    }
+
+    // Fetch weather for each city
+    for (const cityId of uniqueCities) {
+      try {
+        const forecasts = await fetchWeatherForecast(cityId, data.dates.start, data.dates.end);
+        weatherContext.cityForecasts.set(cityId, forecasts);
+        // Merge into overall forecasts map (later dates override earlier ones)
+        for (const [date, forecast] of forecasts.entries()) {
+          weatherContext.forecasts.set(date, forecast);
+        }
+      } catch (error) {
+        // Weather fetch failed, continue without weather data
+        console.warn(`Failed to fetch weather for ${cityId}:`, error);
+      }
+    }
+  }
 
   const days: Itinerary["days"] = [];
 
@@ -165,6 +199,19 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
           break;
         }
 
+        // Get weather forecast for this day and city
+        const dayDate = data.dates.start
+          ? (() => {
+              const startDate = new Date(data.dates.start);
+              startDate.setDate(startDate.getDate() + dayIndex);
+              return startDate.toISOString().split("T")[0];
+            })()
+          : undefined;
+        const dayCityId = cityInfo.key as CityId | undefined;
+        const dayWeatherForecast: WeatherForecast | undefined = dayDate && dayCityId
+          ? weatherContext.cityForecasts.get(dayCityId)?.get(dayDate ?? "")
+          : undefined;
+
         // Pick a location that fits the available time
         const locationResult = pickLocationForTimeSlot(
           availableLocations,
@@ -181,6 +228,8 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
             wheelchairAccessible: true,
             elevatorRequired: false, // Can be enhanced based on specific needs
           } : undefined, // Pass accessibility requirements
+          dayWeatherForecast, // Pass weather forecast
+          data.weatherPreferences, // Pass weather preferences
         );
         
         const location = locationResult && "_scoringReasoning" in locationResult 
@@ -713,6 +762,12 @@ function pickLocationForTimeSlot(
     wheelchairAccessible?: boolean;
     elevatorRequired?: boolean;
   },
+  weatherForecast?: WeatherForecast,
+  weatherPreferences?: {
+    preferIndoorOnRain?: boolean;
+    minTemperature?: number;
+    maxTemperature?: number;
+  },
 ): (Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown }) | undefined {
   const unused = list.filter((loc) => !usedLocations.has(loc.id));
 
@@ -731,6 +786,8 @@ function pickLocationForTimeSlot(
     currentLocation,
     availableMinutes: availableMinutes - travelTime, // Subtract travel time from available
     recentCategories,
+    weatherForecast,
+    weatherPreferences,
   };
 
   const scored = unused.map((loc) => scoreLocation(loc, criteria));

@@ -37,6 +37,7 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
   const mobility = data.accessibility?.mobility ?? false;
   const dietarySelections = sortDietarySelections(data.accessibility?.dietary ?? []);
   const notesValue = data.accessibility?.notes ?? "";
+  const preferIndoorOnRain = data.weatherPreferences?.preferIndoorOnRain ?? false;
 
   const dietarySelectionSet = useMemo(() => new Set(dietarySelections), [dietarySelections]);
   const isOtherChecked = dietarySelectionSet.has("other");
@@ -121,6 +122,20 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
     [notesError, upsertAccessibility],
   );
 
+  const handleWeatherPreferenceChange = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const nextChecked = event.target.checked;
+      setData((prev) => ({
+        ...prev,
+        weatherPreferences: {
+          ...prev.weatherPreferences,
+          preferIndoorOnRain: nextChecked,
+        },
+      }));
+    },
+    [setData],
+  );
+
   const closeSkipConfirmation = useCallback(() => {
     setShowSkipConfirm(false);
   }, []);
@@ -158,6 +173,10 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
           dietary: sortDietarySelections(dietarySelections),
           dietaryOther: prev.accessibility?.dietaryOther ?? "",
           notes: trimmedNotes,
+        },
+        weatherPreferences: {
+          ...prev.weatherPreferences,
+          preferIndoorOnRain,
         },
       }));
       onNext();
@@ -303,6 +322,39 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
                   </p>
                 )}
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-xl bg-gray-50 p-6">
+          <div className="space-y-8">
+            <div className="grid gap-4 lg:grid-cols-[220px,1fr] lg:gap-8">
+              <div className="space-y-2">
+                <label
+                  htmlFor={`${formId}-weather-indoor`}
+                  className="text-sm font-semibold text-gray-900"
+                >
+                  Weather preferences
+                </label>
+                <p className="text-sm text-gray-500">
+                  Help us adjust your itinerary based on weather conditions.
+                </p>
+              </div>
+              <label
+                htmlFor={`${formId}-weather-indoor`}
+                className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 transition hover:border-indigo-200 hover:bg-indigo-50"
+              >
+                <input
+                  id={`${formId}-weather-indoor`}
+                  type="checkbox"
+                  checked={preferIndoorOnRain}
+                  onChange={handleWeatherPreferenceChange}
+                  className="mt-1 h-5 w-5 rounded border-gray-300 accent-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+                />
+                <span className="text-sm text-gray-700">
+                  Prefer indoor alternatives on rainy days
+                </span>
+              </label>
             </div>
           </div>
         </section>
