@@ -13,8 +13,8 @@ const baseTrip: TripBuilderData = {
 };
 
 describe("generateItinerary", () => {
-  it("creates one day per requested duration with morning/afternoon/evening slots", () => {
-    const itinerary = generateItinerary({ ...baseTrip, duration: 4 });
+  it("creates one day per requested duration with morning/afternoon/evening slots", async () => {
+    const itinerary = await generateItinerary({ ...baseTrip, duration: 4 });
 
     expect(itinerary.days).toHaveLength(4);
     itinerary.days.forEach((day) => {
@@ -28,14 +28,14 @@ describe("generateItinerary", () => {
     });
   });
 
-  it("cycles through interests across a single day", () => {
+  it("cycles through interests across a single day", async () => {
     const interestsTrip: TripBuilderData = {
       ...baseTrip,
       duration: 1,
       interests: ["food", "culture"],
     };
 
-    const itinerary = generateItinerary(interestsTrip);
+    const itinerary = await generateItinerary(interestsTrip);
     const [day] = itinerary.days;
     // Each day should have at least 3 activities (morning, afternoon, evening)
     // For shorter trips, may have more activities
@@ -55,7 +55,7 @@ describe("generateItinerary", () => {
     expect(timeSlots).toContain("evening");
   });
 
-  it("groups cities by region to minimize travel time", () => {
+  it("groups cities by region to minimize travel time", async () => {
     const multiCityTrip: TripBuilderData = {
       ...baseTrip,
       duration: 10,
@@ -63,7 +63,7 @@ describe("generateItinerary", () => {
       regions: undefined,
     };
 
-    const itinerary = generateItinerary(multiCityTrip);
+    const itinerary = await generateItinerary(multiCityTrip);
     
     // Extract city IDs from days
     const citySequence = itinerary.days.map((day) => day.cityId).filter(Boolean);
@@ -81,7 +81,7 @@ describe("generateItinerary", () => {
     }
   });
 
-  it("preserves region grouping when expanding for multiple days", () => {
+  it("preserves region grouping when expanding for multiple days", async () => {
     const longTrip: TripBuilderData = {
       ...baseTrip,
       duration: 7,
@@ -89,7 +89,7 @@ describe("generateItinerary", () => {
       regions: undefined,
     };
 
-    const itinerary = generateItinerary(longTrip);
+    const itinerary = await generateItinerary(longTrip);
     const citySequence = itinerary.days.map((day) => day.cityId).filter(Boolean);
     
     // Count transitions between regions
@@ -112,7 +112,7 @@ describe("generateItinerary", () => {
     expect(regionTransitions).toBeLessThanOrEqual(1);
   });
 
-  it("adjusts activity count based on travel pace", () => {
+  it("adjusts activity count based on travel pace", async () => {
     const relaxedTrip: TripBuilderData = {
       ...baseTrip,
       duration: 2,
@@ -129,9 +129,9 @@ describe("generateItinerary", () => {
       style: "fast",
     };
 
-    const relaxedItinerary = generateItinerary(relaxedTrip);
-    const balancedItinerary = generateItinerary(balancedTrip);
-    const fastItinerary = generateItinerary(fastTrip);
+    const relaxedItinerary = await generateItinerary(relaxedTrip);
+    const balancedItinerary = await generateItinerary(balancedTrip);
+    const fastItinerary = await generateItinerary(fastTrip);
 
     // Fast pace should generally have more activities per day than relaxed
     const relaxedAvg = relaxedItinerary.days.reduce((sum, day) => sum + day.activities.length, 0) / relaxedItinerary.days.length;

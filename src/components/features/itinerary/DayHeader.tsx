@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo } from "react";
-import type { ItineraryDay } from "@/types/itinerary";
+import type { Itinerary, ItineraryDay } from "@/types/itinerary";
+import type { TripBuilderData } from "@/types/trip";
 import type { EntryPoint } from "@/types/trip";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { logger } from "@/lib/logger";
 import { DayEntryPointEditor } from "./DayEntryPointEditor";
+import { DayRefinementButtons } from "./DayRefinementButtons";
 import { useAppState } from "@/state/AppState";
 
 type DayHeaderProps = {
@@ -14,9 +16,12 @@ type DayHeaderProps = {
   dayIndex: number;
   tripStartDate?: string; // ISO date string (yyyy-mm-dd)
   tripId?: string;
+  builderData?: TripBuilderData;
+  itinerary?: Itinerary;
+  onRefineDay?: (refinedDay: ItineraryDay) => void;
 };
 
-export function DayHeader({ day, dayIndex, tripStartDate, tripId }: DayHeaderProps) {
+export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, itinerary, onRefineDay }: DayHeaderProps) {
   const { dayEntryPoints, setDayEntryPoint, reorderActivities } = useAppState();
   
   const entryPointKey = tripId && day.id ? `${tripId}-${day.id}` : undefined;
@@ -259,7 +264,7 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId }: DayHeaderPro
         </div>
       </div>
       {tripId && (
-        <div className="mt-4">
+        <div className="mt-4 space-y-4">
           <DayEntryPointEditor
             tripId={tripId}
             dayId={day.id}
@@ -270,6 +275,18 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId }: DayHeaderPro
             onSetEndPoint={handleSetEndPoint}
             onOptimizeRoute={handleOptimizeRoute}
           />
+          {onRefineDay && (
+            <div className="border-t border-gray-200 pt-4">
+              <p className="mb-2 text-sm font-medium text-gray-700">Refine this day:</p>
+              <DayRefinementButtons
+                dayIndex={dayIndex}
+                tripId={tripId}
+                builderData={builderData}
+                itinerary={itinerary}
+                onRefine={onRefineDay}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

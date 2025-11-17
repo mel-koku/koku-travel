@@ -9,6 +9,7 @@ import { getCategoryDefaultDuration } from "./durationExtractor";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { applyDiversityFilter, type DiversityContext } from "@/lib/scoring/diversityRules";
 import { fetchWeatherForecast } from "./weather/weatherService";
+import { logger } from "@/lib/logger";
 
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
@@ -151,7 +152,7 @@ export async function generateItinerary(data: TripBuilderData): Promise<Itinerar
         }
       } catch (error) {
         // Weather fetch failed, continue without weather data
-        console.warn(`Failed to fetch weather for ${cityId}:`, error);
+        logger.warn(`Failed to fetch weather for ${cityId}`, { error: error instanceof Error ? error.message : String(error) });
       }
     }
   }
