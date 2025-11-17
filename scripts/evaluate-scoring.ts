@@ -15,14 +15,14 @@ interface QualityMetrics {
   uniqueCategories: number; // Number of unique categories
 }
 
-function evaluateItinerary(
+async function evaluateItinerary(
   preferences: TripBuilderData,
   iterations: number = 10,
-): QualityMetrics {
+): Promise<QualityMetrics> {
   const results: QualityMetrics[] = [];
 
   for (let i = 0; i < iterations; i++) {
-    const itinerary = generateItinerary(preferences);
+    const itinerary = await generateItinerary(preferences);
 
     // Calculate metrics
     const categories: string[] = [];
@@ -91,33 +91,36 @@ const testPreferences: TripBuilderData = {
   dates: {},
 };
 
-console.log("Evaluating itinerary quality...");
-console.log("Preferences:", JSON.stringify(testPreferences, null, 2));
-console.log("\nGenerating 20 itineraries...\n");
+// Wrap in async IIFE for top-level await
+(async () => {
+  console.log("Evaluating itinerary quality...");
+  console.log("Preferences:", JSON.stringify(testPreferences, null, 2));
+  console.log("\nGenerating 20 itineraries...\n");
 
-const metrics = evaluateItinerary(testPreferences, 20);
+  const metrics = await evaluateItinerary(testPreferences, 20);
 
-console.log("Quality Metrics:");
-console.log(JSON.stringify(metrics, null, 2));
+  console.log("Quality Metrics:");
+  console.log(JSON.stringify(metrics, null, 2));
 
-console.log("\nInterpretation:");
-console.log(`- Location Variety: ${(metrics.locationVariety * 100).toFixed(1)}% (higher is better)`);
-console.log(`- Max Category Streak: ${metrics.categoryStreaks.toFixed(1)} (should be ≤ 2)`);
-console.log(`- Average Rating: ${metrics.averageRating.toFixed(2)} (if available)`);
-console.log(`- Rating Coverage: ${(metrics.ratingCoverage * 100).toFixed(1)}%`);
-console.log(`- Total Activities: ${metrics.totalActivities.toFixed(1)} per itinerary`);
-console.log(`- Unique Categories: ${metrics.uniqueCategories.toFixed(1)} per itinerary`);
+  console.log("\nInterpretation:");
+  console.log(`- Location Variety: ${(metrics.locationVariety * 100).toFixed(1)}% (higher is better)`);
+  console.log(`- Max Category Streak: ${metrics.categoryStreaks.toFixed(1)} (should be ≤ 2)`);
+  console.log(`- Average Rating: ${metrics.averageRating.toFixed(2)} (if available)`);
+  console.log(`- Rating Coverage: ${(metrics.ratingCoverage * 100).toFixed(1)}%`);
+  console.log(`- Total Activities: ${metrics.totalActivities.toFixed(1)} per itinerary`);
+  console.log(`- Unique Categories: ${metrics.uniqueCategories.toFixed(1)} per itinerary`);
 
-// Check if metrics meet acceptance criteria
-console.log("\n✅ Acceptance Criteria Check:");
-const varietyPass = metrics.locationVariety >= 0.5; // At least 50% variety
-const streakPass = metrics.categoryStreaks <= 2.5; // Allow slight margin for rounding
-console.log(`- Location Variety ≥ 50%: ${varietyPass ? "✅ PASS" : "❌ FAIL"}`);
-console.log(`- Max Streak ≤ 2: ${streakPass ? "✅ PASS" : "❌ FAIL"}`);
+  // Check if metrics meet acceptance criteria
+  console.log("\n✅ Acceptance Criteria Check:");
+  const varietyPass = metrics.locationVariety >= 0.5; // At least 50% variety
+  const streakPass = metrics.categoryStreaks <= 2.5; // Allow slight margin for rounding
+  console.log(`- Location Variety ≥ 50%: ${varietyPass ? "✅ PASS" : "❌ FAIL"}`);
+  console.log(`- Max Streak ≤ 2: ${streakPass ? "✅ PASS" : "❌ FAIL"}`);
 
-if (varietyPass && streakPass) {
-  console.log("\n🎉 All acceptance criteria met!");
-} else {
-  console.log("\n⚠️  Some acceptance criteria not met. Review implementation.");
-}
+  if (varietyPass && streakPass) {
+    console.log("\n🎉 All acceptance criteria met!");
+  } else {
+    console.log("\n⚠️  Some acceptance criteria not met. Review implementation.");
+  }
+})();
 

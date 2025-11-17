@@ -121,7 +121,7 @@ export async function generateTripFromBuilderData(
   tripId: string,
 ): Promise<Trip> {
   // Generate itinerary using existing generator
-  let itinerary = generateItinerary(builderData);
+  let itinerary = await generateItinerary(builderData);
 
   // Get restaurants for meal planning (locations with "food" category or restaurant in name)
   const restaurants = MOCK_LOCATIONS.filter(
