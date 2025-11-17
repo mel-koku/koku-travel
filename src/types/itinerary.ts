@@ -2,6 +2,28 @@ import type { LocationTransitMode } from "./location";
 
 export type ActivityKind = "place" | "note";
 
+/**
+ * Recommendation reason explaining why a location was selected
+ */
+export type RecommendationReason = {
+  /**
+   * Primary reason for the recommendation
+   */
+  primaryReason: string;
+  /**
+   * Breakdown of scoring factors
+   */
+  factors?: Array<{
+    factor: string;
+    score: number;
+    reasoning: string;
+  }>;
+  /**
+   * Alternative locations that were considered
+   */
+  alternativesConsidered?: string[];
+};
+
 export type ItineraryTime = {
   startTime?: string;
   endTime?: string;
@@ -81,6 +103,10 @@ export type ItineraryActivity =
        * Meal type if this is a meal activity (breakfast, lunch, dinner)
        */
       mealType?: "breakfast" | "lunch" | "dinner";
+      /**
+       * Recommendation reason explaining why this location was selected
+       */
+      recommendationReason?: RecommendationReason;
       /**
        * Finalized schedule for this visit.
        */
