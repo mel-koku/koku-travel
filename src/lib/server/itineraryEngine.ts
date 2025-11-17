@@ -4,6 +4,7 @@ import type { Trip, TripDay, TripActivity } from "@/types/tripDomain";
 import type { TripBuilderData } from "@/types/trip";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { insertMealActivities } from "@/lib/mealPlanning";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -52,7 +53,7 @@ function convertItineraryToTrip(
           duration: activity.durationMin ?? 90,
           startTime: activity.schedule?.arrivalTime,
           endTime: activity.schedule?.departureTime,
-          mealType: activity.tags?.includes("dining") ? "lunch" : undefined,
+          mealType: activity.mealType ?? (activity.tags?.includes("dining") ? "lunch" : undefined),
         };
       });
 
@@ -120,12 +121,47 @@ export async function generateTripFromBuilderData(
   tripId: string,
 ): Promise<Trip> {
   // Generate itinerary using existing generator
-  const itinerary = generateItinerary(builderData);
+  let itinerary = generateItinerary(builderData);
+
+  // Get restaurants for meal planning (locations with "food" category or restaurant in name)
+  const restaurants = MOCK_LOCATIONS.filter(
+    (loc) => loc.category === "food" || loc.name.toLowerCase().includes("restaurant"),
+  );
+
+  // Insert meal activities into each day
+  itinerary = {
+    ...itinerary,
+    days: itinerary.days.map((day) => insertMealActivities(day, builderData, restaurants)),
+  };
 
   // Convert to Trip domain model
   const trip = convertItineraryToTrip(itinerary, builderData, tripId);
 
   return trip;
+}
+
+/**
+ * Parse price level from minBudget string.
+ * Returns numeric value or symbol count.
+ */
+function parsePriceLevel(minBudget?: string): { level: number; type: "numeric" | "symbol" } {
+  if (!minBudget) {
+    return { level: 0, type: "numeric" };
+  }
+
+  // Try to parse numeric value (e.g., "¥400")
+  const numericMatch = minBudget.match(/¥?\s*(\d+)/);
+  if (numericMatch) {
+    return { level: parseInt(numericMatch[1] ?? "0", 10), type: "numeric" };
+  }
+
+  // Count symbols (e.g., "¥¥¥" = 3)
+  const symbolCount = (minBudget.match(/¥/g) || []).length;
+  if (symbolCount > 0) {
+    return { level: symbolCount, type: "symbol" };
+  }
+
+  return { level: 0, type: "numeric" };
 }
 
 /**
@@ -146,6 +182,36 @@ export function validateTripConstraints(trip: Trip): {
       issues.push(`Day ${index + 1} is overpacked (${Math.round(totalDuration / 60)} hours of activities)`);
     }
   });
+
+  // Check budget constraints
+  const budget = trip.travelerProfile.budget;
+  if (budget.perDay !== undefined || budget.total !== undefined) {
+    let totalCost = 0;
+    
+    trip.days.forEach((day, index) => {
+      let dayCost = 0;
+      
+      day.activities.forEach((activity) => {
+        if (activity.location?.minBudget) {
+          const priceInfo = parsePriceLevel(activity.location.minBudget);
+          if (priceInfo.type === "numeric" && priceInfo.level > 0) {
+            dayCost += priceInfo.level;
+            totalCost += priceInfo.level;
+          }
+        }
+      });
+
+      // Check per-day budget
+      if (budget.perDay !== undefined && dayCost > budget.perDay * 1.1) {
+        issues.push(`Day ${index + 1} exceeds per-day budget (¥${dayCost} vs ¥${budget.perDay} budget, ${Math.round((dayCost / budget.perDay - 1) * 100)}% over)`);
+      }
+    });
+
+    // Check total budget
+    if (budget.total !== undefined && totalCost > budget.total * 1.1) {
+      issues.push(`Total trip cost (¥${totalCost}) exceeds total budget (¥${budget.total}, ${Math.round((totalCost / budget.total - 1) * 100)}% over)`);
+    }
+  }
 
   // Check for backtracking (simplified - would need routing data)
   // This is a placeholder for future implementation

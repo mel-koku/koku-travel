@@ -176,6 +176,7 @@ export function generateItinerary(data: TripBuilderData): Itinerary {
           dayCategories, // Pass recent categories for diversity
           pace, // Pass travel style
           interestSequence, // Pass all interests for better matching
+          data.budget, // Pass budget information
         );
 
         if (!location) {
@@ -677,6 +678,11 @@ function pickLocationForTimeSlot(
   recentCategories: string[] = [],
   travelStyle: TripBuilderData["style"] = "balanced",
   interests: InterestId[] = [],
+  budget?: {
+    level?: "budget" | "moderate" | "luxury";
+    total?: number;
+    perDay?: number;
+  },
 ): Location | undefined {
   const unused = list.filter((loc) => !usedLocations.has(loc.id));
 
@@ -688,6 +694,9 @@ function pickLocationForTimeSlot(
   const criteria: LocationScoringCriteria = {
     interests: interests.length > 0 ? interests : [interest],
     travelStyle: travelStyle ?? "balanced",
+    budgetLevel: budget?.level,
+    budgetTotal: budget?.total,
+    budgetPerDay: budget?.perDay,
     currentLocation,
     availableMinutes: availableMinutes - travelTime, // Subtract travel time from available
     recentCategories,

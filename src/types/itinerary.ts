@@ -78,6 +78,10 @@ export type ItineraryActivity =
        */
       locationId?: string;
       /**
+       * Meal type if this is a meal activity (breakfast, lunch, dinner)
+       */
+      mealType?: "breakfast" | "lunch" | "dinner";
+      /**
        * Finalized schedule for this visit.
        */
       schedule?: ItineraryScheduledVisit;

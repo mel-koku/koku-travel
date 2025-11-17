@@ -10,6 +10,11 @@ export function buildTravelerProfile(data: TripBuilderData): TravelerProfile {
     ...DEFAULT_TRAVELER_PROFILE,
     pace: data.style ?? "balanced",
     interests: data.interests ?? [],
+    budget: {
+      total: data.budget?.total,
+      perDay: data.budget?.perDay,
+      level: data.budget?.level ?? "moderate",
+    },
     mobility: {
       required: data.accessibility?.mobility ?? false,
       needs: data.accessibility?.mobility ? ["step_free_access"] : undefined,
@@ -17,6 +22,11 @@ export function buildTravelerProfile(data: TripBuilderData): TravelerProfile {
     dietary: {
       restrictions: data.accessibility?.dietary ?? [],
       notes: data.accessibility?.dietaryOther || data.accessibility?.notes,
+    },
+    group: {
+      size: data.group?.size ?? 1,
+      type: data.group?.type ?? "solo",
+      childrenAges: data.group?.childrenAges,
     },
   };
 

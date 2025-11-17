@@ -10,6 +10,8 @@ export interface LocationScoringCriteria {
   interests: InterestId[];
   travelStyle: "relaxed" | "balanced" | "fast";
   budgetLevel?: "budget" | "moderate" | "luxury";
+  budgetTotal?: number;
+  budgetPerDay?: number;
   accessibility?: {
     wheelchairAccessible?: boolean;
     elevatorRequired?: boolean;
@@ -263,16 +265,73 @@ function parsePriceLevel(minBudget?: string): { level: number; type: "numeric" |
 /**
  * Score budget fit.
  * Range: 0-10 points
+ * 
+ * Uses explicit budget values (total/perDay) if provided, otherwise falls back to budgetLevel.
  */
 function scoreBudgetFit(
   location: Location,
-  budgetLevel?: "budget" | "moderate" | "luxury",
+  criteria: {
+    budgetLevel?: "budget" | "moderate" | "luxury";
+    budgetTotal?: number;
+    budgetPerDay?: number;
+  },
 ): { score: number; reasoning: string } {
-  if (!budgetLevel) {
+  const priceInfo = parsePriceLevel(location.minBudget);
+
+  // If explicit budget values are provided, use them for validation
+  if (criteria.budgetPerDay !== undefined && priceInfo.type === "numeric" && priceInfo.level > 0) {
+    // Check if location price fits within per-day budget
+    // Allow up to 30% of daily budget for a single activity
+    const maxAllowedPerActivity = criteria.budgetPerDay * 0.3;
+    
+    if (priceInfo.level <= maxAllowedPerActivity) {
+      return {
+        score: 10,
+        reasoning: `Price (¥${priceInfo.level}) fits within daily budget (¥${criteria.budgetPerDay}, max ¥${Math.round(maxAllowedPerActivity)} per activity)`,
+      };
+    } else if (priceInfo.level <= criteria.budgetPerDay) {
+      return {
+        score: 7,
+        reasoning: `Price (¥${priceInfo.level}) is within daily budget but high (¥${criteria.budgetPerDay})`,
+      };
+    } else {
+      return {
+        score: 2,
+        reasoning: `Price (¥${priceInfo.level}) exceeds daily budget (¥${criteria.budgetPerDay})`,
+      };
+    }
+  }
+
+  if (criteria.budgetTotal !== undefined && priceInfo.type === "numeric" && priceInfo.level > 0) {
+    // For total budget, we'd need to know how many activities are planned
+    // For now, use a conservative estimate: assume 20 activities total
+    const estimatedActivities = 20;
+    const avgBudgetPerActivity = criteria.budgetTotal / estimatedActivities;
+    
+    if (priceInfo.level <= avgBudgetPerActivity) {
+      return {
+        score: 10,
+        reasoning: `Price (¥${priceInfo.level}) fits within total budget estimate (¥${criteria.budgetTotal} total, ~¥${Math.round(avgBudgetPerActivity)} per activity)`,
+      };
+    } else if (priceInfo.level <= avgBudgetPerActivity * 1.5) {
+      return {
+        score: 7,
+        reasoning: `Price (¥${priceInfo.level}) is within total budget but on the higher side`,
+      };
+    } else {
+      return {
+        score: 3,
+        reasoning: `Price (¥${priceInfo.level}) may exceed total budget (¥${criteria.budgetTotal})`,
+      };
+    }
+  }
+
+  // Fall back to budget level if no explicit values
+  if (!criteria.budgetLevel) {
     return { score: 5, reasoning: "No budget preference specified" };
   }
 
-  const priceInfo = parsePriceLevel(location.minBudget);
+  const budgetLevel = criteria.budgetLevel;
 
   // Map budget levels to expected price ranges
   const budgetRanges = {
@@ -431,7 +490,11 @@ export function scoreLocation(
   const interestResult = scoreInterestMatch(location, criteria.interests);
   const ratingResult = scoreRatingQuality(location);
   const logisticalResult = scoreLogisticalFit(location, criteria);
-  const budgetResult = scoreBudgetFit(location, criteria.budgetLevel);
+  const budgetResult = scoreBudgetFit(location, {
+    budgetLevel: criteria.budgetLevel,
+    budgetTotal: criteria.budgetTotal,
+    budgetPerDay: criteria.budgetPerDay,
+  });
   const accessibilityResult = scoreAccessibilityFit(location, criteria.accessibility);
   const diversityResult = scoreDiversity(location, criteria.recentCategories);
 
