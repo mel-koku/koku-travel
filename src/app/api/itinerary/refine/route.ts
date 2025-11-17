@@ -7,6 +7,14 @@ import type { Itinerary, ItineraryActivity, ItineraryDay, RecommendationReason a
 import type { TripBuilderData } from "@/types/trip";
 import type { Trip, TripActivity, TripDay, RecommendationReason as TripRecommendationReason } from "@/types/tripDomain";
 
+// Simple stub request format (as specified in plan)
+type RefineRequestBody = {
+  trip: Trip;
+  refinementType: RefinementType;
+  dayIndex?: number;
+};
+
+// Legacy request format (for backward compatibility)
 type RefinementRequest = {
   tripId: string;
   dayIndex: number;
@@ -133,6 +141,38 @@ const mapTripDayToItineraryDay = (day: TripDay): ItineraryDay => ({
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+
+    // Check if this is the simple stub format (trip domain model)
+    if (body.trip && body.refinementType) {
+      const { trip, refinementType, dayIndex } = body as RefineRequestBody;
+
+      if (!trip || !refinementType) {
+        return NextResponse.json(
+          { error: "Missing trip or refinementType" },
+          { status: 400 }
+        );
+      }
+
+      if (!VALID_REFINEMENT_TYPES.includes(refinementType)) {
+        return badRequest(`Invalid refinement type: ${refinementType}`);
+      }
+
+      // Stub: return trip unchanged for now
+      const refined: Trip = {
+        ...trip,
+      };
+
+      return NextResponse.json(
+        {
+          trip: refined,
+          refinementType,
+          message: "Refinement stub – no changes applied yet.",
+        },
+        { status: 200 }
+      );
+    }
+
+    // Legacy format (for backward compatibility)
     const { tripId, dayIndex, refinementType, builderData, itinerary } = body as RefinementRequest;
 
     if (!tripId || typeof dayIndex !== "number" || !refinementType) {
