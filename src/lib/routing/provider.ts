@@ -3,6 +3,7 @@ import { fetchGoogleRoute } from "./google";
 import { fetchMapboxRoute } from "./mapbox";
 import { getCachedRoute, setCachedRoute } from "./cache";
 import type { RoutingRequest, RoutingResult, RoutingProviderName, RoutingFetchFn } from "./types";
+import { env } from "@/lib/env";
 
 type ProviderConfig = {
   name: RoutingProviderName;
@@ -12,15 +13,15 @@ type ProviderConfig = {
 
 const PROVIDERS: ProviderConfig[] = [
   {
+    name: "mapbox",
+    handler: fetchMapboxRoute,
+    isEnabled: () => Boolean(process.env.ROUTING_MAPBOX_ACCESS_TOKEN),
+  },
+  {
     name: "google",
     handler: fetchGoogleRoute,
     isEnabled: () =>
       Boolean(process.env.ROUTING_GOOGLE_MAPS_API_KEY ?? process.env.GOOGLE_DIRECTIONS_API_KEY),
-  },
-  {
-    name: "mapbox",
-    handler: fetchMapboxRoute,
-    isEnabled: () => Boolean(process.env.ROUTING_MAPBOX_ACCESS_TOKEN),
   },
 ];
 
@@ -40,6 +41,12 @@ export async function requestRoute(request: RoutingRequest): Promise<RoutingResu
   const cached = getCachedRoute(request);
   if (cached) {
     return cached;
+  }
+
+  if (env.isCheapMode) {
+    const heuristic = estimateHeuristicRoute(request);
+    setCachedRoute(request, heuristic);
+    return heuristic;
   }
 
   const provider = resolveProvider();
