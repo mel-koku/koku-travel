@@ -15,6 +15,7 @@ import type { EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } fro
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import { getEntryPointById } from "@/data/entryPoints";
 import { REGIONS } from "@/data/regions";
+import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
