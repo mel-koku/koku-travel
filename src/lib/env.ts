@@ -236,5 +236,8 @@ export const env = {
   get useMockItinerary() {
     return envConfig.NEXT_PUBLIC_USE_MOCK_ITINERARY === "true";
   },
+  get isCheapMode() {
+    return envConfig.CHEAP_MODE === "true";
+  },
 } as const;
 
