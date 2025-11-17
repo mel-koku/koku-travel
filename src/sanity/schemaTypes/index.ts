@@ -5,6 +5,7 @@ import { blogPost } from './blogPost'
 import { destination } from './destination'
 import { itinerary, itineraryActivity, itineraryDay } from './itinerary'
 import { blockContent } from './blockContent'
+import { place } from './place'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -16,5 +17,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     itineraryActivity,
     itineraryDay,
     blockContent,
+    place,
   ],
 }

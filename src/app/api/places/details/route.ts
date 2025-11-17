@@ -10,6 +10,8 @@ import {
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
 import type { Location } from "@/types/location";
+import { getPlaceFromCache, storePlaceInCache } from "@/lib/cache/placeCache";
+import { fetchLocationDetails } from "@/lib/googlePlaces";
 
 /**
  * GET /api/places/details?placeId=...&name=...
@@ -80,7 +82,50 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Fetch place coordinates and basic info
+    // Check Sanity cache first
+    const cached = await getPlaceFromCache(validatedPlaceId);
+    
+    if (cached) {
+      // Use cached coordinates if available, otherwise fetch them
+      let coordinates = cached.coordinates;
+      if (!coordinates) {
+        const place = await fetchPlaceCoordinates(validatedPlaceId);
+        coordinates = place
+          ? {
+              lat: place.location.latitude,
+              lng: place.location.longitude,
+            }
+          : null;
+      }
+      
+      const location: Location = {
+        id: validatedPlaceId,
+        name: name || cached.details.formattedAddress?.split(",")[0] || "",
+        region: cached.details.formattedAddress?.split(",").pop()?.trim() || "",
+        city: cached.details.formattedAddress?.split(",")[0]?.trim() || "",
+        category: "point_of_interest",
+        image: "",
+        coordinates: coordinates ?? {
+          lat: 0,
+          lng: 0,
+        },
+        placeId: validatedPlaceId,
+      };
+
+      logger.debug(`Returning cached place ${validatedPlaceId} from Sanity`);
+      
+      return addRequestContextHeaders(
+        NextResponse.json({ location }, {
+          headers: {
+            "Cache-Control": "public, max-age=86400, s-maxage=86400",
+            "X-Cache": "sanity",
+          },
+        }),
+        finalContext,
+      );
+    }
+
+    // Cache miss - fetch from Google Places API
     const place = await fetchPlaceCoordinates(validatedPlaceId);
 
     if (!place) {
@@ -90,6 +135,33 @@ export async function GET(request: NextRequest) {
         }),
         finalContext,
       );
+    }
+
+    // Try to fetch full details for caching
+    try {
+      const tempLocation: Location = {
+        id: validatedPlaceId,
+        name: place.displayName || "",
+        region: place.formattedAddress?.split(",").pop()?.trim() || "",
+        city: place.formattedAddress?.split(",")[0]?.trim() || "",
+        category: "point_of_interest",
+        image: "",
+        coordinates: {
+          lat: place.location.latitude,
+          lng: place.location.longitude,
+        },
+        placeId: place.placeId,
+      };
+      
+      // Fetch full details and cache them (async, don't wait)
+      fetchLocationDetails(tempLocation)
+        .then((fullDetails) => storePlaceInCache(validatedPlaceId, fullDetails))
+        .catch((cacheError) => {
+          logger.warn("Failed to cache place details", { placeId: validatedPlaceId, error: cacheError });
+        });
+    } catch (cacheError) {
+      // Don't fail if caching fails
+      logger.warn("Failed to cache place details", { placeId: validatedPlaceId, error: cacheError });
     }
 
     // Create Location object from place data
@@ -111,6 +183,7 @@ export async function GET(request: NextRequest) {
       NextResponse.json({ location }, {
         headers: {
           "Cache-Control": "public, max-age=86400, s-maxage=86400", // Cache for 24 hours
+          "X-Cache": "miss",
         },
       }),
       finalContext,
