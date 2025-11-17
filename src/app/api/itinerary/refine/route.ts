@@ -157,16 +157,37 @@ export async function POST(request: NextRequest) {
         return badRequest(`Invalid refinement type: ${refinementType}`);
       }
 
-      // Stub: return trip unchanged for now
+      // Default to day 0 if dayIndex not provided
+      const targetDayIndex = dayIndex ?? 0;
+
+      if (!trip.days[targetDayIndex]) {
+        return badRequest(`Day index ${targetDayIndex} not found in trip`);
+      }
+
+      // Perform actual refinement using refineDay function
+      const refinedDay = refineDay({
+        trip,
+        dayIndex: targetDayIndex,
+        type: refinementType,
+      });
+
+      // Update the trip with the refined day
+      const updatedDays = trip.days.map((day, index) =>
+        index === targetDayIndex ? refinedDay : day
+      );
+
       const refined: Trip = {
         ...trip,
+        days: updatedDays,
+        updatedAt: new Date().toISOString(),
       };
 
       return NextResponse.json(
         {
           trip: refined,
           refinementType,
-          message: "Refinement stub – no changes applied yet.",
+          dayIndex: targetDayIndex,
+          message: `Successfully refined day ${targetDayIndex + 1} with ${refinementType} refinement.`,
         },
         { status: 200 }
       );
