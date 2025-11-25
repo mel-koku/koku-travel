@@ -124,7 +124,9 @@ export function checkOpeningHoursFit(
     }
 
     // Check if time slot overlaps with operating hours
-    if (slotRange.start >= openHour && slotRange.end <= closeHour) {
+    // Two ranges overlap if: range1.start < range2.end && range1.end > range2.start
+    // Time slot overlaps operating hours if: slotStart < closeHour && slotEnd > openHour
+    if (slotRange.start < closeHour && slotRange.end > openHour) {
       return {
         fits: true,
         reasoning: `Open during ${timeSlot} (${period.open}-${period.close})`,

@@ -123,6 +123,14 @@ export type ItineraryActivity =
        * Annotated opening hours relevant to this visit.
        */
       operatingWindow?: ItineraryOperatingWindow;
+      /**
+       * Real-time availability status for this location
+       */
+      availabilityStatus?: import("./availability").AvailabilityStatus;
+      /**
+       * Availability information message
+       */
+      availabilityMessage?: string;
     }
   | {
       kind: "note";

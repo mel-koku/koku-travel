@@ -9,7 +9,7 @@ import { insertMealActivities } from "@/lib/mealPlanning";
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
  */
-function convertItineraryToTrip(
+export function convertItineraryToTrip(
   itinerary: Itinerary,
   builderData: TripBuilderData,
   tripId: string,

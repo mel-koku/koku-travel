@@ -13,6 +13,7 @@ import {
 } from "react";
 import { useAppState } from "@/state/AppState";
 import { Itinerary, type ItineraryActivity } from "@/types/itinerary";
+import type { TripBuilderData } from "@/types/trip";
 import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
@@ -37,6 +38,7 @@ type ItineraryShellProps = {
   updatedLabel: string | null;
   isUsingMock: boolean;
   tripStartDate?: string; // ISO date string (yyyy-mm-dd)
+  tripBuilderData?: TripBuilderData;
 };
 
 const normalizeItinerary = (incoming: Itinerary): Itinerary => {
@@ -97,6 +99,7 @@ export const ItineraryShell = ({
   updatedLabel,
   isUsingMock,
   tripStartDate,
+  tripBuilderData,
 }: ItineraryShellProps) => {
   const { reorderActivities, replaceActivity, addActivity, getTripById, dayEntryPoints } = useAppState();
   const [selectedDay, setSelectedDay] = useState(0);
@@ -288,7 +291,7 @@ export const ItineraryShell = ({
     if (finalHeadingRef.current) {
       finalHeadingRef.current.focus();
     }
-  }, []);
+  }, [finalHeadingRef]);
   const serializedItinerary = useMemo(() => JSON.stringify(itinerary), [itinerary]);
   const previousSerializedRef = useRef<string | null>(null);
   const skipSyncRef = useRef(true);
@@ -619,6 +622,7 @@ export const ItineraryShell = ({
                 onCopy={tripId && !isUsingMock ? handleCopy : undefined}
                 startPoint={currentDayEntryPoints?.startPoint}
                 endPoint={currentDayEntryPoints?.endPoint}
+                tripBuilderData={tripBuilderData}
               />
             ) : (
               <p className="text-sm text-gray-500">

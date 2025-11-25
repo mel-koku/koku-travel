@@ -27,6 +27,7 @@ import {
   type ItineraryDay,
   type ItineraryTravelMode,
 } from "@/types/itinerary";
+import type { TripBuilderData } from "@/types/trip";
 import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
@@ -85,12 +86,13 @@ type ItineraryTimelineProps = {
   onCopy?: (activityId: string) => void;
   startPoint?: { name: string; coordinates: { lat: number; lng: number }; placeId?: string };
   endPoint?: { name: string; coordinates: { lat: number; lng: number }; placeId?: string };
+  tripBuilderData?: TripBuilderData;
 };
 
 export const ItineraryTimeline = ({
   day,
   dayIndex,
-  model: _model,
+  model,
   setModel,
   selectedActivityId,
   onSelectActivity,
@@ -101,8 +103,8 @@ export const ItineraryTimeline = ({
   endPoint,
   onReplace,
   onCopy,
+  tripBuilderData,
 }: ItineraryTimelineProps) => {
-  void _model;
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 6 },
@@ -556,7 +558,21 @@ export const ItineraryTimeline = ({
     >
       <div className="space-y-6">
         {/* Day Header */}
-        <DayHeader day={day} dayIndex={dayIndex} tripStartDate={tripStartDate} tripId={tripId} />
+          <DayHeader
+            day={day}
+            dayIndex={dayIndex}
+            tripStartDate={tripStartDate}
+            tripId={tripId}
+            builderData={tripBuilderData}
+            itinerary={model}
+            onRefineDay={(refinedDay) => {
+              setModel((current) => {
+                const nextDays = [...current.days];
+                nextDays[dayIndex] = refinedDay;
+                return { ...current, days: nextDays };
+              });
+            }}
+          />
 
         {/* City Transition Display */}
         {day.cityTransition && (

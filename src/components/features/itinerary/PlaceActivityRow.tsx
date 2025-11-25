@@ -20,6 +20,8 @@ import {
   numberFormatter,
 } from "./activityUtils";
 import { logger } from "@/lib/logger";
+import { recordPreferenceEvent } from "@/lib/learning/preferenceStorage";
+import { generateActivityTips, type ActivityTip } from "@/lib/tips/tipGenerator";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -144,6 +146,12 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
     const [notesOpen, setNotesOpen] = useState(() => Boolean(activity.notes));
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [reasoningOpen, setReasoningOpen] = useState(false);
+    const [availabilityStatus, setAvailabilityStatus] = useState<{
+      status: string;
+      message?: string;
+      reservationRequired?: boolean;
+    } | null>(null);
+    const [tips, setTips] = useState<ActivityTip[]>([]);
 
     const durationLabel = useMemo(() => {
       if (!activity.durationMin) return null;
@@ -197,6 +205,61 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
       return resolved ?? buildFallbackLocation(activity);
     }, [activity, isEntryPoint, entryPointLocation]);
     const cachedEditorialSummary = useLocationEditorialSummary(placeLocation?.id);
+
+    // Check availability when location is available
+    useEffect(() => {
+      // Use availability status from activity if available, otherwise check
+      if (activity.availabilityStatus && activity.availabilityMessage) {
+        setAvailabilityStatus({
+          status: activity.availabilityStatus,
+          message: activity.availabilityMessage,
+        });
+        return;
+      }
+
+      // Only check if we have a placeId
+      if (!placeLocation?.placeId || isEntryPoint) {
+        return;
+      }
+
+      // Check availability via API
+      fetch("/api/itinerary/availability", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ activities: [activity] }),
+      })
+        .then((res) => {
+          if (!res.ok) return null;
+          return res.json();
+        })
+        .then((data) => {
+          if (data?.results?.[0]) {
+            const result = data.results[0];
+            setAvailabilityStatus({
+              status: result.status,
+              message: result.message,
+              reservationRequired: result.reservationRequired,
+            });
+          }
+        })
+        .catch((error) => {
+          logger.warn("Failed to check availability", {
+            activityId: activity.id,
+            error: error instanceof Error ? error.message : String(error),
+          });
+        });
+    }, [activity, placeLocation?.placeId, isEntryPoint]);
+
+    // Generate tips when location is available
+    useEffect(() => {
+      if (placeLocation && activity.kind === "place") {
+        const generatedTips = generateActivityTips(activity, placeLocation, {
+          allActivities,
+        });
+        setTips(generatedTips);
+      }
+    }, [activity, placeLocation, allActivities]);
+
     const summary = placeLocation
       ? getShortOverview(placeLocation, cachedEditorialSummary)
       : null;
@@ -254,6 +317,20 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
 
     const handleHover = () => {
       onHover?.(activity.id);
+    };
+
+    // Handle feedback (thumbs up/down)
+    const handleFeedback = (type: "favorite" | "unfavorite" | "skip") => {
+      const location = findLocationForActivity(activity);
+      if (!location) return;
+
+      recordPreferenceEvent({
+        type: type === "favorite" ? "favorite" : type === "skip" ? "skip" : "unfavorite",
+        activityId: activity.id,
+        locationId: location.id,
+        location,
+        timestamp: new Date().toISOString(),
+      });
     };
 
     const notesId = `notes-${activity.id}`;
@@ -329,6 +406,39 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
                 </div>
               </div>
               <div className="flex flex-wrap items-center justify-end gap-2">
+                {/* Feedback buttons */}
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    className="rounded-full bg-white/95 p-1.5 text-gray-600 shadow-sm ring-1 ring-gray-200 transition hover:bg-green-50 hover:text-green-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleFeedback("favorite");
+                    }}
+                    aria-label={`Like ${activity.title}`}
+                    title="Like this activity"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="rounded-full bg-white/95 p-1.5 text-gray-600 shadow-sm ring-1 ring-gray-200 transition hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleFeedback("skip");
+                    }}
+                    aria-label={`Skip ${activity.title}`}
+                    title="Skip this activity"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
                 {tripId && dayId && (onReplace || onCopy) ? (
                   <ActivityActions
                     activity={activity}
@@ -377,6 +487,41 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
             ) : null}
             {schedule?.operatingWindow?.note ? (
               <p className="text-[11px] text-gray-500">{schedule.operatingWindow.note}</p>
+            ) : null}
+            {availabilityStatus && availabilityStatus.status !== "open" && availabilityStatus.status !== "unknown" ? (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {availabilityStatus.status === "closed" ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-600">
+                    ⚠️ Closed
+                  </span>
+                ) : availabilityStatus.status === "busy" ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600">
+                    ⚠️ Busy
+                  </span>
+                ) : availabilityStatus.status === "requires_reservation" || availabilityStatus.reservationRequired ? (
+                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold text-orange-600">
+                    📞 Reservation recommended
+                  </span>
+                ) : null}
+                {availabilityStatus.message ? (
+                  <p className="text-[11px] text-gray-600">{availabilityStatus.message}</p>
+                ) : null}
+              </div>
+            ) : null}
+
+            {tips.length > 0 ? (
+              <div className="space-y-1.5 rounded-lg bg-blue-50/50 p-2">
+                <p className="text-xs font-semibold text-blue-900">💡 Tips:</p>
+                {tips.map((tip, index) => (
+                  <div key={index} className="flex items-start gap-2 text-xs text-blue-800">
+                    <span className="mt-0.5">{tip.icon ?? "•"}</span>
+                    <div className="flex-1">
+                      <span className="font-medium">{tip.title}:</span>{" "}
+                      <span>{tip.message}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : null}
 
             {summary ? (
