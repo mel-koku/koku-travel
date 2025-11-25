@@ -176,7 +176,7 @@ const LOCATION_COORDINATES_BY_ID: Record<string, Coordinates> = {
   "osaka-salon-de-aimer": { lat: 34.7101031, lng: 135.49771410000002 },
   "osaka-osaka-kimono-rental-yae": { lat: 34.676074, lng: 135.523842 },
   "osaka-wasabi-kimono-rental": { lat: 34.9970566, lng: 135.7770248 },
-  "osaka-kimono-tea-ceremony-maikoya": { lat: 35.0076598, lng: 135.76637119999998 },
+  "kyoto-kimono-tea-ceremony-maikoya": { lat: 35.0076598, lng: 135.76637119999998 },
   "osaka-universal-studios-japan": { lat: 34.6656768, lng: 135.4323185 },
   "osaka-osaka-aquarium-kaiyukan": { lat: 34.6545182, lng: 135.4289645 },
   "osaka-entertainment-umeda-sky-building": { lat: 34.7052872, lng: 135.4896527 },

@@ -181,7 +181,16 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
       }));
       onNext();
     },
-    [dietarySelections, formId, isOtherChecked, mobility, notesValue, onNext, setData],
+    [
+      dietarySelections,
+      formId,
+      isOtherChecked,
+      mobility,
+      notesValue,
+      preferIndoorOnRain,
+      onNext,
+      setData,
+    ],
   );
 
   const confirmSkip = useCallback(() => {

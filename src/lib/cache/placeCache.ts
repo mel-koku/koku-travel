@@ -139,7 +139,11 @@ export async function getPlaceFromCache(placeId: string): Promise<{
 /**
  * Store place in Sanity cache
  */
-export async function storePlaceInCache(placeId: string, details: LocationDetails): Promise<void> {
+export async function storePlaceInCache(
+  placeId: string,
+  details: LocationDetails,
+  coordinates?: { lat: number; lng: number },
+): Promise<void> {
   try {
     // Check if write token is available
     if (!env.sanityApiWriteToken) {
@@ -156,13 +160,13 @@ export async function storePlaceInCache(placeId: string, details: LocationDetail
     // Get coordinates from a Location object if available
     // For now, coordinates will be 0,0 and need to be populated separately
     // This is a limitation - we'd need to pass coordinates separately
-    const placeDoc = {
+      const placeDoc = {
       _type: "place",
       placeId,
       name: details.formattedAddress?.split(",")[0] ?? placeId,
       coordinates: {
-        lat: 0, // Coordinates need to be fetched separately or passed in
-        lng: 0,
+        lat: coordinates?.lat ?? 0,
+        lng: coordinates?.lng ?? 0,
       },
       formattedAddress: details.formattedAddress,
       openingHours: details.regularOpeningHours ?? details.currentOpeningHours,
