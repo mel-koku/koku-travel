@@ -119,7 +119,6 @@ function refineTooLight(day: TripDay, trip: Trip): TripDay {
     group: trip.travelerProfile.group,
     availableMinutes: 120, // 2 hours for new activity
     recentCategories: day.activities.map((a) => a.location?.category ?? "").filter(Boolean),
-    travelerProfile: trip.travelerProfile, // Pass full TravelerProfile for comprehensive scoring
   };
 
   const scored = availableLocations.map((loc) => scoreLocation(loc, criteria));
@@ -180,7 +179,6 @@ function refineMoreFood(day: TripDay, trip: Trip): TripDay {
     availableMinutes: 90, // 1.5 hours for meal
     recentCategories: day.activities.map((a) => a.location?.category ?? "").filter(Boolean),
     timeSlot: "afternoon",
-    travelerProfile: trip.travelerProfile,
   };
 
   const scored = foodLocations.map((loc) => scoreLocation(loc, criteria));
@@ -257,7 +255,6 @@ function refineMoreCulture(day: TripDay, trip: Trip): TripDay {
     availableMinutes: 120,
     recentCategories: day.activities.map((a) => a.location?.category ?? "").filter(Boolean),
     timeSlot: "morning",
-    travelerProfile: trip.travelerProfile, // Pass full TravelerProfile for comprehensive scoring
   };
 
   const scored = cultureLocations.map((loc) => scoreLocation(loc, criteria));
@@ -323,7 +320,6 @@ function refineMoreKidFriendly(day: TripDay, trip: Trip): TripDay {
     group: trip.travelerProfile.group, // Group info important for kid-friendly scoring
     availableMinutes: 120,
     recentCategories: day.activities.map((a) => a.location?.category ?? "").filter(Boolean),
-    travelerProfile: trip.travelerProfile,
   };
 
   const scored = kidFriendlyLocations.map((loc) => scoreLocation(loc, criteria));

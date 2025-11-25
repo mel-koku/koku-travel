@@ -1860,10 +1860,10 @@ export const MOCK_LOCATIONS: Location[] = [
     estimatedDuration: "1.5 hours",
   },
   {
-    id: "osaka-kimono-tea-ceremony-maikoya",
+    id: "kyoto-kimono-tea-ceremony-maikoya",
     name: "Kimono Tea Ceremony Maikoya",
     region: "Kansai",
-    city: "Osaka",
+    city: "Kyoto",
     category: "culture",
     image: "https://images.unsplash.com/photo-1641887913107-2f9e6940cc1c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8S2ltb25vJTIwVGVhJTIwQ2VyZW1vbnklMjBNYWlrb3lhJTIwT3Nha2F8ZW58MHx8fHwxNzYyNzUwOTc2fDA&ixlib=rb-4.1.0&q=80&w=1600",
     minBudget: "¥5,000",

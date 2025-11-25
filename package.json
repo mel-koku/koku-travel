@@ -25,7 +25,8 @@
     "supabase:db:reset": "supabase db reset",
     "supabase:db:diff": "supabase db diff",
     "supabase:migration:new": "supabase migration new",
-    "supabase:link": "supabase link"
+    "supabase:link": "supabase link",
+    "sanity:sync-places": "tsx scripts/sanity/sync-places.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -40,6 +41,7 @@
     "@upstash/ratelimit": "^2.0.7",
     "@upstash/redis": "^1.35.6",
     "dotenv": "^17.2.3",
+    "mapbox-gl": "^3.16.0",
     "next": "16.0.1",
     "next-sanity": "^11.6.6",
     "react": "19.2.0",
@@ -60,14 +62,14 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^4.0.0",
+    "@vitest/coverage-v8": "^1.6.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
-    "@vitest/coverage-v8": "^1.6.0",
     "jsdom": "^27.0.1",
-    "sanity": "^4.15.0",
+    "sanity": "^3.87.1",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "typescript": "^5",
-    "vitest": "^1.6.0"
+    "vitest": "^3.2.4"
   }
 }

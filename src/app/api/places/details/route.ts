@@ -175,7 +175,9 @@ export async function GET(request: NextRequest) {
       
       // Fetch full details and cache them (async, don't wait)
       fetchLocationDetails(tempLocation)
-        .then((fullDetails) => storePlaceInCache(validatedPlaceId, fullDetails))
+        .then((fullDetails) =>
+          storePlaceInCache(validatedPlaceId, fullDetails, tempLocation.coordinates),
+        )
         .catch((cacheError) => {
           logger.warn("Failed to cache place details", { placeId: validatedPlaceId, error: cacheError });
         });

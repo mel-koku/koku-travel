@@ -141,6 +141,7 @@ export default function ItineraryPage() {
         updatedLabel={updatedLabel}
         isUsingMock={isUsingMock}
         tripStartDate={selectedTrip?.builderData?.dates?.start}
+        tripBuilderData={selectedTrip?.builderData}
       />
     </div>
   );

@@ -235,7 +235,7 @@ describe("Location Scoring", () => {
       });
 
       expect(result.reasoning).toBeInstanceOf(Array);
-      expect(result.reasoning.length).toBe(11); // One for each factor (interest, rating, logistical, budget, accessibility, diversity, weather, time optimization, opening hours, group fit, learned preferences)
+      expect(result.reasoning.length).toBe(10); // One for each factor (interest, rating, logistical, budget, accessibility, diversity, weather, time optimization, opening hours, group fit)
       result.reasoning.forEach((reason) => {
         expect(typeof reason).toBe("string");
         expect(reason.length).toBeGreaterThan(0);

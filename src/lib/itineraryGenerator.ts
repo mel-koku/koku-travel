@@ -8,6 +8,7 @@ import { getNearestCityToEntryPoint, travelMinutes } from "./travelTime";
 import { getCategoryDefaultDuration } from "./durationExtractor";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { applyDiversityFilter, type DiversityContext } from "@/lib/scoring/diversityRules";
+import { checkOpeningHoursFit } from "@/lib/scoring/timeOptimization";
 import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
 
@@ -170,7 +171,13 @@ export async function generateItinerary(data: TripBuilderData): Promise<Itinerar
     const regionLocations = cityInfo.regionId
       ? LOCATIONS_BY_REGION_ID.get(cityInfo.regionId) ?? []
       : [];
-    const availableLocations = cityLocations.length > 0 ? cityLocations : regionLocations;
+    // Use city locations if available, otherwise fall back to region locations
+    // But always filter to ensure locations match the day's city to prevent cross-city mixing
+    const rawAvailableLocations = cityLocations.length > 0 ? cityLocations : regionLocations;
+    const availableLocations = rawAvailableLocations.filter((loc) => {
+      const locationCityKey = normalizeKey(loc.city);
+      return locationCityKey === cityInfo.key;
+    });
 
     const dayActivities: Itinerary["days"][number]["activities"] = [];
     const dayCityUsage = new Map<string, number>();
@@ -786,6 +793,26 @@ function pickLocationForTimeSlot(
     return list[Math.floor(Math.random() * list.length)];
   }
 
+  // Pre-filter by hard constraints (opening hours)
+  // Only filter if we have time slot and date information
+  let candidates = unused;
+  if (timeSlot && date) {
+    candidates = unused.filter((loc) => {
+      const openingHoursCheck = checkOpeningHoursFit(loc, timeSlot, date);
+      return openingHoursCheck.fits;
+    });
+    
+    // If all candidates filtered out, fall back to unused (better than no location)
+    if (candidates.length === 0) {
+      logger.warn("All locations filtered out by opening hours, using unfiltered list", {
+        timeSlot,
+        date,
+        unusedCount: unused.length,
+      });
+      candidates = unused;
+    }
+  }
+
   // Score all candidates
   const criteria: LocationScoringCriteria = {
     interests: interests.length > 0 ? interests : [interest],
@@ -804,7 +831,7 @@ function pickLocationForTimeSlot(
     group,
   };
 
-  const scored = unused.map((loc) => scoreLocation(loc, criteria));
+  const scored = candidates.map((loc) => scoreLocation(loc, criteria));
 
   // Apply diversity filter
   const diversityContext: DiversityContext = {
@@ -823,7 +850,7 @@ function pickLocationForTimeSlot(
   const topCandidates = filtered.slice(0, Math.min(5, filtered.length));
   if (topCandidates.length === 0) {
     // Fallback if all filtered out
-    return unused[Math.floor(Math.random() * unused.length)];
+    return candidates[Math.floor(Math.random() * candidates.length)];
   }
 
   const selected = topCandidates[Math.floor(Math.random() * topCandidates.length)];
