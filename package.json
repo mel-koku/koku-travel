@@ -68,7 +68,7 @@
     "jsdom": "^27.0.1",
     "sanity": "^3.87.1",
     "tailwindcss": "^4",
-    "tsx": "^4.20.6",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^3.2.4"
   }
