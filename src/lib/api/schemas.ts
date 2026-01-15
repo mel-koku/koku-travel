@@ -113,22 +113,6 @@ export const redirectUrlSchema = z
   );
 
 /**
- * Schema for Sanity webhook payload
- */
-export const sanityWebhookPayloadSchema = z.object({
-  _type: z.string().optional(),
-  slug: z
-    .object({
-      current: z.string().optional(),
-    })
-    .optional(),
-  paths: z
-    .array(z.string().min(1).max(500))
-    .max(100) // Prevent DoS with too many paths
-    .optional(),
-});
-
-/**
  * Schema for secret parameter (preview/revalidate routes)
  */
 export const secretSchema = z
