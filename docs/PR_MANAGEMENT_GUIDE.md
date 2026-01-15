@@ -2,49 +2,46 @@
 
 ## Quick Reference
 
+### Automated Triage Workflow
+
+1. **Check PR status** - Open PRs are automatically tested by CI
+2. **Passing CI + Minor/Patch** → Auto-merge (if enabled) or quick review
+3. **Passing CI + Major** → Review changelog, test locally, then merge
+4. **Failing CI** → Investigate, fix, then merge
+
 ### Your PRs
 1. Review and merge PRs as needed
 
 ### Dependabot PRs - Recommended Actions
 
-#### ✅ Safe to Merge (Passing CI)
-- **#6**: Testing group updates - Merge
-- **#3**: Next.js/React group updates - Merge  
-- **#2**: actions/setup-node update - Merge
+#### ✅ Safe to Auto-Merge (Passing CI, Minor/Patch)
+- Testing group updates
+- Dev tools updates  
+- Type definition updates
+- GitHub Actions updates
 
-#### ⚠️ Review Before Merging (Failing CI)
-- **#8**: web-vitals 4.2.4 → 5.1.0 (Major version) - Check breaking changes
-- **#7**: eslint-config-next - Check ESLint config compatibility
-- **#5**: @supabase/supabase-js - Check Supabase API changes
-- **#1**: actions/checkout - Usually safe, check CI errors
+#### ⚠️ Review Before Merging (Major Version or Failing CI)
+- Major version updates (web-vitals 5.x, etc.)
+- Failing CI checks
+- Critical dependencies (@supabase/supabase-js, next, react)
 
 ## Strategy
 
-### Step 1: Merge Your Fix First
-Wait for your PR (#10) to pass CI, then merge it. This ensures main branch is stable.
+### Daily Workflow (5 minutes)
+1. Check GitHub notifications for new Dependabot PRs
+2. If CI passes and it's minor/patch → Merge immediately (or let auto-merge handle it)
+3. If CI fails → Add to review queue
 
-### Step 2: Merge Passing Dependabot PRs
-Merge the passing PRs (#6, #3, #2) in order:
-1. Start with GitHub Actions updates (#2)
-2. Then testing dependencies (#6)
-3. Finally Next.js/React updates (#3)
+### Weekly Workflow (30 minutes)
+1. Review all open PRs
+2. Merge passing PRs in batches using the batch script
+3. Fix failing PRs one at a time
+4. Handle major version updates separately
 
-### Step 3: Fix Failing Dependabot PRs
-For each failing PR:
-
-1. **Check the CI error** - Click on the PR to see what failed
-2. **Review changelog** - Check the package's release notes for breaking changes
-3. **Update code if needed** - Fix any breaking changes
-4. **Re-run CI** - Push fixes and verify tests pass
-5. **Merge** - Once CI passes
-
-### Step 4: Handle Major Version Updates Carefully
-
-Major version updates (web-vitals 5.x, etc.) require:
-- Reading the migration guide
-- Testing thoroughly
-- Updating code to match new APIs
-- Consider creating a separate branch for major updates
+### Monthly Workflow (1 hour)
+1. Review ignored major version updates
+2. Plan migration for critical dependencies
+3. Update Dependabot config if needed
 
 ## Quick Commands
 
@@ -64,6 +61,15 @@ npm run test
 npm run build
 ```
 
+### Batch merge passing PRs
+```bash
+# Using GitHub CLI (requires gh CLI installed)
+gh pr list --label "dependencies" --state open --json number,title | jq '.[] | .number' | xargs -I {} gh pr merge {} --squash
+
+# Or use the provided script
+./scripts/batch-merge-dependabot.sh
+```
+
 ### Merge strategy
 ```bash
 # After merging your PR, update main
@@ -78,22 +84,50 @@ git merge origin/dependabot/BRANCH_NAME
 
 ## Best Practices
 
-1. **One PR at a time** - Merge PRs sequentially to avoid conflicts
-2. **Test locally first** - Check out failing PRs and test them
+1. **Merge frequently** - Don't let PRs accumulate
+2. **Test locally for major updates** - Always verify breaking changes
 3. **Read changelogs** - Especially for major version updates
-4. **Update in order** - Dependencies → Dev tools → Application code
-5. **Keep main stable** - Only merge when CI passes
+4. **Keep main stable** - Only merge when CI passes
+5. **Batch similar updates** - Merge related packages together
+6. **Use auto-merge** - Enable for safe minor/patch updates to reduce manual work
 
 ## Dependabot Configuration
 
-Your `.github/dependabot.yml` is configured to:
-- Group related packages (Next.js/React, Supabase, Testing)
-- Ignore major version updates for critical packages
-- Create PRs weekly on Mondays
-- Limit to 10 open PRs
+Current settings:
+- **Open PR limit**: 5 (reduced from 10)
+- **Update frequency**: Weekly (Mondays at 09:00)
+- **Grouping**: Enabled for related packages:
+  - `nextjs-react`: next, react, react-dom, @types/react, @types/react-dom
+  - `supabase`: @supabase/*
+  - `testing`: vitest, @vitest/*, @testing-library/*, jsdom
+  - `typescript-types`: typescript, @types/*
+  - `dev-tools`: eslint*, tsx, tailwindcss, @tailwindcss/*
+  - `dnd-kit`: @dnd-kit/*
+- **Major updates**: Ignored for critical packages (next, react, react-dom, @supabase/supabase-js, web-vitals, mapbox-gl)
 
-Consider adjusting if you get overwhelmed:
-- Reduce `open-pull-requests-limit` to 5
-- Increase update interval
+### Auto-Merge Workflow
+
+An automated workflow (`.github/workflows/auto-merge-dependabot.yml`) is configured to:
+- Auto-merge Dependabot PRs that pass CI
+- Only merge minor/patch updates (not major versions)
+- Use squash merge method
+
+**Note**: Auto-merge requires branch protection rules to allow it. If you want to disable auto-merge, you can delete or disable the workflow file.
+
+## Troubleshooting
+
+### Too many PRs?
+- Reduce `open-pull-requests-limit` further (currently 5)
+- Increase update interval to bi-weekly
 - Add more packages to ignore list
 
+### PRs failing CI?
+1. Check the error message in the PR
+2. Review the package changelog for breaking changes
+3. Test locally by checking out the PR branch
+4. Fix issues and push updates
+
+### Major version updates piling up?
+- Review them monthly in a dedicated session
+- Create a separate branch for major updates
+- Consider upgrading critical packages together
