@@ -54,19 +54,67 @@ class Logger {
 
   /**
    * Sends error to external error tracking service
-   * Can be extended to integrate with error tracking services if needed
+   * Supports Sentry, LogRocket, or custom error tracking services
    */
   private sendToErrorTracking(
     message: string,
     error?: Error | unknown,
     context?: LogContext,
   ): void {
-    // Log structured error for potential log aggregation (Vercel, etc.)
-    if (process.env.NEXT_PUBLIC_ENABLE_ERROR_TRACKING === "true") {
+    const errorTrackingService = process.env.NEXT_PUBLIC_ERROR_TRACKING_SERVICE;
+    const sanitizedContext = this.sanitizeContext(context || {});
+
+    // Sentry integration
+    if (errorTrackingService === "sentry") {
+      try {
+        // Dynamic import to avoid bundling Sentry in client if not used
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const Sentry = require("@sentry/nextjs");
+        if (Sentry && typeof Sentry.captureException === "function") {
+          Sentry.captureException(error instanceof Error ? error : new Error(message), {
+            tags: {
+              source: "logger",
+            },
+            extra: {
+              message,
+              context: sanitizedContext,
+            },
+          });
+          return;
+        }
+      } catch {
+        // Sentry not installed or failed to load
+      }
+    }
+
+    // LogRocket integration
+    if (errorTrackingService === "logrocket") {
+      try {
+        if (typeof window !== "undefined" && (window as { LogRocket?: { captureException?: (error: unknown, options?: unknown) => void } }).LogRocket) {
+          const LogRocket = (window as { LogRocket: { captureException: (error: unknown, options?: unknown) => void } }).LogRocket;
+          LogRocket.captureException(error instanceof Error ? error : new Error(message), {
+            tags: {
+              source: "logger",
+            },
+            extra: {
+              message,
+              context: sanitizedContext,
+            },
+          });
+          return;
+        }
+      } catch {
+        // LogRocket not available
+      }
+    }
+
+    // Fallback: Log structured error for potential log aggregation (Vercel, etc.)
+    if (process.env.NEXT_PUBLIC_ENABLE_ERROR_TRACKING === "true" || errorTrackingService) {
       console.error("[ERROR_TRACKING]", {
         message,
         error: error instanceof Error ? error.message : String(error),
-        context: this.sanitizeContext(context || {}),
+        context: sanitizedContext,
+        service: errorTrackingService || "console",
       });
     }
   }

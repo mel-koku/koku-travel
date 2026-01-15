@@ -1,5 +1,7 @@
 import { type RoutingRequest, type RoutingResult, type RoutingLegStep } from "./types";
 import { env } from "@/lib/env";
+import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
+import { TIMEOUT_10_SECONDS } from "@/lib/constants";
 
 type MapboxProfile = "driving" | "driving-traffic" | "walking" | "cycling";
 
@@ -172,7 +174,7 @@ export async function fetchMapboxRoute(request: RoutingRequest): Promise<Routing
   const { profile, warnings } = resolveProfile(request.mode);
   const { url, warnings: urlWarnings } = buildUrl(request, accessToken, profile);
 
-  const response = await fetch(url);
+  const response = await fetchWithTimeout(url, {}, TIMEOUT_10_SECONDS);
   if (!response.ok) {
     const body = await response.text();
     throw new Error(`Mapbox Directions error (${response.status}): ${body}`);
