@@ -1,5 +1,5 @@
 import TopicDetailClient from "@/components/features/community/TopicDetailClient";
-import { MOCK_TOPICS } from "@/data/mockCommunity";
+import { MOCK_TOPICS } from "@/data/mocks/mockCommunity";
 
 export default async function CommunityTopicPage({
   params,

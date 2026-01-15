@@ -1,3 +1,5 @@
+import { getLocal, setLocal } from "./storageHelpers";
+
 const KEY = "koku_community_topics_v1";
 
 type TopicWithId = { id: string };
@@ -15,34 +17,39 @@ function isTopicArray(value: unknown): value is TopicWithId[] {
   );
 }
 
+/**
+ * Loads community topics from localStorage, merging with seed data.
+ * Uses unified storage helper for consistency.
+ */
 export function loadTopics<T extends TopicWithId>(seed: T[]): T[] {
   if (typeof window === "undefined") return seed;
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) {
-      localStorage.setItem(KEY, JSON.stringify(seed));
-      return seed;
-    }
-    const parsed = JSON.parse(raw);
-    if (!isTopicArray(parsed)) {
-      localStorage.setItem(KEY, JSON.stringify(seed));
-      return seed;
-    }
-    const existingIds = new Set(parsed.map((topic) => topic.id));
-    const merged = [
-      ...parsed,
-      ...seed.filter((topic) => !existingIds.has(topic.id)),
-    ] as T[];
-    localStorage.setItem(KEY, JSON.stringify(merged));
-    return merged;
-  } catch {
+  
+  const stored = getLocal<T[]>(KEY);
+  if (!stored) {
+    setLocal(KEY, seed);
     return seed;
   }
+  
+  if (!isTopicArray(stored)) {
+    setLocal(KEY, seed);
+    return seed;
+  }
+  
+  const existingIds = new Set(stored.map((topic) => topic.id));
+  const merged = [
+    ...stored,
+    ...seed.filter((topic) => !existingIds.has(topic.id)),
+  ] as T[];
+  setLocal(KEY, merged);
+  return merged;
 }
 
+/**
+ * Saves community topics to localStorage.
+ * Uses unified storage helper for consistency.
+ */
 export function saveTopics<T extends TopicWithId>(list: T[]): void {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(KEY, JSON.stringify(list));
+  setLocal(KEY, list);
 }
 
 export function addTopic<T extends TopicWithId>(list: T[], topic: T): T[] {

@@ -1,6 +1,6 @@
 import type { Location } from "@/types/location";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { detectMealGap, getMealTypeForTime, type MealType } from "@/data/mealCategories";
 import type { InterestId, TripBuilderData } from "@/types/trip";

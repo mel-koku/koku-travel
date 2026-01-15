@@ -1,6 +1,6 @@
 import Avatar from "@/components/ui/Avatar";
 import { timeAgo } from "@/lib/time";
-import type { CommunityTopic } from "@/data/mockCommunity";
+import type { CommunityTopic } from "@/data/mocks/mockCommunity";
 
 type TopicHeaderProps = {
   topic: CommunityTopic;

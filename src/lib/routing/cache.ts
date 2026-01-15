@@ -28,9 +28,10 @@ const DEFAULT_TTL_MS = 60 * 60 * 1000; // 1 hour
  */
 const cache = new LRUCache<CacheKey, CacheEntry>({
   maxSize: MAX_CACHE_SIZE,
-  onEvict: (key, value) => {
+  onEvict: (key, _value) => {
     // Optional: log evictions in development for debugging
     if (process.env.NODE_ENV === "development") {
+      // eslint-disable-next-line no-console
       console.debug(`[Routing Cache] Evicted entry: ${key}`);
     }
   },

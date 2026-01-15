@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { MOCK_TOPICS, type CommunityTopic } from "@/data/mockCommunity";
+import { MOCK_TOPICS, type CommunityTopic } from "@/data/mocks/mockCommunity";
 import CommunityTopicCard from "./CommunityTopicCard";
 import CreateDiscussionModal from "./CreateDiscussionModal";
 import { addTopic, loadTopics } from "@/lib/communityStorage";
