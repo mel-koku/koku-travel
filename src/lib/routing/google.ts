@@ -1,6 +1,8 @@
 import type { ItineraryTravelMode } from "@/types/itinerary";
 
 import type { RoutingRequest, RoutingResult, RoutingLeg, RoutingLegStep } from "./types";
+import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
+import { TIMEOUT_10_SECONDS } from "@/lib/constants";
 
 type DirectionsValue = {
   value: number;
@@ -334,7 +336,8 @@ export async function fetchGoogleRoute(request: RoutingRequest): Promise<Routing
     params.set("transit_routing_preference", "fewer_transfers");
   }
 
-  const response = await fetch(`https://maps.googleapis.com/maps/api/directions/json?${params.toString()}`);
+  const url = `https://maps.googleapis.com/maps/api/directions/json?${params.toString()}`;
+  const response = await fetchWithTimeout(url, {}, TIMEOUT_10_SECONDS);
 
   if (!response.ok) {
     const message = await response.text();

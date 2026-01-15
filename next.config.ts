@@ -55,7 +55,8 @@ if (siteUrl) {
 const isProduction = process.env.NODE_ENV === "production";
 
 // CSP directives - Next.js requires 'unsafe-inline' for hydration scripts
-// In production, Next.js uses nonce-based CSP, but we need to allow inline scripts for hydration
+// In production, Next.js uses nonce-based CSP automatically, but we still need 'unsafe-inline' as fallback
+// Consider using 'strict-dynamic' with nonces in the future for better security
 const scriptSrc = isProduction
   ? ["'self'", "'unsafe-inline'", "https://unpkg.com"] // Production: allow inline for Next.js hydration + unpkg.com for Leaflet
   : ["'self'", "'unsafe-eval'", "'unsafe-inline'", "https://unpkg.com"]; // Development: allow for Next.js hot reload + unpkg.com
@@ -88,6 +89,10 @@ const securityHeaders = [
   {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",
+  },
+  {
+    key: "X-Permitted-Cross-Domain-Policies",
+    value: "none",
   },
   {
     key: "Content-Security-Policy",
