@@ -46,7 +46,7 @@ export function TravelModeSelector({
   currentMode,
   durationMinutes,
   departureTime,
-  arrivalTime,
+  arrivalTime: _arrivalTime,
   origin,
   destination,
   timezone,
@@ -167,7 +167,7 @@ export function TravelModeSelector({
     }
   }, [isOpen, fetchAllEstimates]);
 
-  const currentModeOption = TRAVEL_MODES.find((m) => m.mode === currentMode) ?? TRAVEL_MODES[0];
+  const _currentModeOption = TRAVEL_MODES.find((m) => m.mode === currentMode) ?? TRAVEL_MODES[0];
 
   const formatDuration = (minutes: number) => {
     if (minutes === 0) return "—";
@@ -185,7 +185,7 @@ export function TravelModeSelector({
     return duration === "—" ? duration : `${icon} ${duration} ${label}`;
   };
 
-  const formatDistance = (meters?: number) => {
+  const _formatDistance = (meters?: number) => {
     if (!meters) return null;
     if (meters < 1000) return `${Math.ceil(meters)} meters`;
     const km = (meters / 1000).toFixed(1);

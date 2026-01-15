@@ -79,7 +79,7 @@ function TravelSegmentWrapper({
           arrivalTime: routeData.arrivalTime ?? travelFromPrevious.arrivalTime,
         },
       });
-    } catch (error) {
+    } catch (_error) {
       // On error, still update mode but keep existing route data
       // The full itinerary replan will eventually fix it
       onUpdate(activity.id, {
@@ -123,11 +123,8 @@ export function TimelineSection({
   activities,
   allActivities = [],
   dayTimezone,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedActivityId: _selectedActivityId,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSelectActivity: _onSelectActivity,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onDelete: _onDelete,
   onUpdate,
   onAddNote,

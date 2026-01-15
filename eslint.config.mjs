@@ -15,6 +15,15 @@ const eslintConfig = defineConfig([
       // Suppress Tailwind class suggestions for arbitrary values
       // Some linters suggest predefined classes, but arbitrary values are valid
       "@next/next/no-html-link-for-pages": "off",
+      // Allow unused variables prefixed with underscore (common convention)
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
+        },
+      ],
     },
   },
   {
