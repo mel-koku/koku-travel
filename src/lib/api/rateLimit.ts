@@ -1,24 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 import { logger } from "../logger";
+import { env } from "../env";
 
 /**
- * In-memory rate limiter
- * 
- * ⚠️ PRODUCTION LIMITATION:
- * This implementation only works for single-instance deployments.
- * 
- * In production environments with multiple server instances (e.g., Vercel, AWS Lambda with multiple instances),
- * each instance maintains its own in-memory rate limit store. This means:
- * - Rate limits are NOT shared across instances
- * - Users can bypass rate limits by distributing requests across different instances
- * - Each instance will independently track and enforce limits
- * 
- * For production deployments with multiple instances, you MUST use a distributed
- * rate limiting solution such as:
- * - Upstash Redis (commented out but can be restored)
- * - Redis with a custom implementation
- * - Vercel KV or similar managed Redis service
- * - Other distributed caching solutions
+ * Distributed rate limiter with Upstash Redis
+ * Falls back to in-memory rate limiting if Redis is not configured
  * 
  * CURRENT USAGE:
  * - /api/locations: 100 req/min
@@ -38,11 +26,86 @@ type RateLimitEntry = {
   resetAt: number; // Timestamp when the window resets
 };
 
-// In-memory store for rate limiting
+// In-memory store for rate limiting (fallback when Redis is not available)
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 // Module-level cleanup interval reference
 let cleanupInterval: NodeJS.Timeout | null = null;
+
+// Upstash Redis client (initialized lazily)
+let redisClient: Redis | null = null;
+let upstashRatelimit: Ratelimit | null = null;
+let redisInitialized = false;
+let redisAvailable = false;
+
+/**
+ * Initializes Upstash Redis client if credentials are available
+ */
+function initializeRedis(): void {
+  if (redisInitialized) {
+    return;
+  }
+  redisInitialized = true;
+
+  const redisUrl = env.upstashRedisRestUrl;
+  const redisToken = env.upstashRedisRestToken;
+
+  if (redisUrl && redisToken) {
+    try {
+      redisClient = new Redis({
+        url: redisUrl,
+        token: redisToken,
+      });
+
+      // Test connection with a simple ping
+      redisClient.ping()
+        .then(() => {
+          redisAvailable = true;
+          logger.info("Upstash Redis rate limiting enabled");
+        })
+        .catch((error) => {
+          logger.warn("Failed to connect to Upstash Redis, falling back to in-memory rate limiting", {
+            error: error instanceof Error ? error.message : String(error),
+          });
+          redisAvailable = false;
+        });
+    } catch (error) {
+      logger.warn("Failed to initialize Upstash Redis, falling back to in-memory rate limiting", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      redisAvailable = false;
+    }
+  } else {
+    if (process.env.NODE_ENV === "production") {
+      logger.warn(
+        "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN not configured. " +
+        "Using in-memory rate limiting which will NOT work correctly with multiple server instances. " +
+        "Consider configuring Upstash Redis for production deployments.",
+      );
+    }
+    redisAvailable = false;
+  }
+}
+
+/**
+ * Creates or gets Upstash Ratelimit instance
+ */
+function getUpstashRatelimit(config: RateLimitConfig): Ratelimit | null {
+  if (!redisAvailable || !redisClient) {
+    return null;
+  }
+
+  if (!upstashRatelimit) {
+    upstashRatelimit = new Ratelimit({
+      redis: redisClient,
+      limiter: Ratelimit.slidingWindow(config.maxRequests, `${config.windowMs} ms`),
+      analytics: true,
+      prefix: "@koku-travel/ratelimit",
+    });
+  }
+
+  return upstashRatelimit;
+}
 
 // Cleanup function to ensure interval is cleared
 function cleanupRateLimitStore(): void {
@@ -52,7 +115,7 @@ function cleanupRateLimitStore(): void {
   }
 }
 
-// Cleanup old entries every 5 minutes
+// Cleanup old entries every 5 minutes (for in-memory fallback)
 if (typeof process !== "undefined") {
   cleanupInterval = setInterval(() => {
     const now = Date.now();
@@ -95,31 +158,12 @@ function getClientIp(request: NextRequest): string {
 }
 
 /**
- * Checks if a request should be rate limited
- * 
- * @param request - Next.js request object
- * @param config - Rate limit configuration (default: 100 requests per minute)
- * @returns null if allowed, or a NextResponse with 429 status if rate limited
+ * In-memory rate limiting (fallback when Redis is not available)
  */
-export async function checkRateLimit(
-  request: NextRequest,
-  config: RateLimitConfig = { maxRequests: 100, windowMs: 60 * 1000 },
-): Promise<NextResponse | null> {
-  // Warn in production about multi-instance limitation
-  if (process.env.NODE_ENV === "production" && !process.env.RATE_LIMIT_WARNING_DISABLED) {
-    // Only log once per process to avoid spam
-    if (!(globalThis as { rateLimitWarningLogged?: boolean }).rateLimitWarningLogged) {
-      logger.warn(
-        "Using in-memory rate limiting in production. This will NOT work correctly with multiple server instances. " +
-        "Each instance will have independent rate limit counters, allowing users to bypass limits. " +
-        "Consider implementing distributed rate limiting (e.g., Upstash Redis) for production deployments. " +
-        "Set RATE_LIMIT_WARNING_DISABLED=1 to suppress this warning.",
-      );
-      (globalThis as { rateLimitWarningLogged?: boolean }).rateLimitWarningLogged = true;
-    }
-  }
-
-  const ip = getClientIp(request);
+async function checkRateLimitInMemory(
+  ip: string,
+  config: RateLimitConfig,
+): Promise<{ allowed: boolean; retryAfter?: number; resetAt?: number; remaining?: number }> {
   const now = Date.now();
 
   // Get or create entry for this IP
@@ -132,37 +176,112 @@ export async function checkRateLimit(
       resetAt: now + config.windowMs,
     };
     rateLimitStore.set(ip, entry);
-    return null; // Allowed
+    return {
+      allowed: true,
+      remaining: config.maxRequests - 1,
+      resetAt: entry.resetAt,
+    };
   }
 
   // Increment count
   entry.count += 1;
+  rateLimitStore.set(ip, entry);
 
   if (entry.count > config.maxRequests) {
     // Rate limited
     const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
+    return {
+      allowed: false,
+      retryAfter,
+      resetAt: entry.resetAt,
+      remaining: 0,
+    };
+  }
+
+  return {
+    allowed: true,
+    remaining: config.maxRequests - entry.count,
+    resetAt: entry.resetAt,
+  };
+}
+
+/**
+ * Checks if a request should be rate limited
+ * Uses Upstash Redis if available, otherwise falls back to in-memory rate limiting
+ * 
+ * @param request - Next.js request object
+ * @param config - Rate limit configuration (default: 100 requests per minute)
+ * @returns null if allowed, or a NextResponse with 429 status if rate limited
+ */
+export async function checkRateLimit(
+  request: NextRequest,
+  config: RateLimitConfig = { maxRequests: 100, windowMs: 60 * 1000 },
+): Promise<NextResponse | null> {
+  // Initialize Redis on first call
+  initializeRedis();
+
+  const ip = getClientIp(request);
+
+  try {
+    // Try to use Upstash Redis if available
+    const ratelimit = getUpstashRatelimit(config);
+    if (ratelimit) {
+      const result = await ratelimit.limit(ip);
+      
+      if (!result.success) {
+        const retryAfter = Math.ceil((result.reset - Date.now()) / 1000);
+        return NextResponse.json(
+          {
+            error: "Too many requests",
+            code: "RATE_LIMIT_EXCEEDED",
+            retryAfter,
+          },
+          {
+            status: 429,
+            headers: {
+              "Retry-After": String(retryAfter),
+              "X-RateLimit-Limit": String(config.maxRequests),
+              "X-RateLimit-Remaining": String(result.remaining),
+              "X-RateLimit-Reset": String(result.reset),
+            },
+          },
+        );
+      }
+
+      // Request allowed
+      return null;
+    }
+  } catch (error) {
+    // If Redis fails, log and fall back to in-memory
+    logger.warn("Redis rate limiting failed, falling back to in-memory", {
+      error: error instanceof Error ? error.message : String(error),
+      ip,
+    });
+  }
+
+  // Fallback to in-memory rate limiting
+  const result = await checkRateLimitInMemory(ip, config);
+
+  if (!result.allowed) {
     return NextResponse.json(
       {
         error: "Too many requests",
         code: "RATE_LIMIT_EXCEEDED",
-        retryAfter,
+        retryAfter: result.retryAfter,
       },
       {
         status: 429,
         headers: {
-          "Retry-After": String(retryAfter),
+          "Retry-After": String(result.retryAfter || 60),
           "X-RateLimit-Limit": String(config.maxRequests),
-          "X-RateLimit-Remaining": "0",
-          "X-RateLimit-Reset": String(entry.resetAt),
+          "X-RateLimit-Remaining": String(result.remaining || 0),
+          "X-RateLimit-Reset": String(result.resetAt || Date.now() + config.windowMs),
         },
       },
     );
   }
 
-  // Update store
-  rateLimitStore.set(ip, entry);
-
-  // Return null to indicate request is allowed
+  // Request allowed
   return null;
 }
 
