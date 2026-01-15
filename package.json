@@ -47,7 +47,6 @@
     "@sanity/client": "^6.21.3",
     "@sanity/image-url": "^1.2.0",
     "@sanity/webhook": "^3.0.0",
-    "@sentry/nextjs": "^10.25.0",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.80.0",
     "@upstash/ratelimit": "^2.0.7",
