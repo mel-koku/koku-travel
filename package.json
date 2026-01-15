@@ -11,10 +11,6 @@
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "test:ui": "vitest --ui",
-    "sanity:dev": "sanity dev --host 127.0.0.1 --port 3333",
-    "sanity:seed:guides": "node scripts/sanity/import-guides.mjs",
-    "sanity:migrate:authors": "node scripts/sanity/migrate-authors.mjs",
-    "warm:places": "tsx scripts/warm-place-cache.ts",
     "geocode:locations": "tsx scripts/batch-geocode-locations.ts",
     "seed:locations": "tsx scripts/seed-locations.ts",
     "seed:scraped": "tsx scripts/seed-locations.ts --scraped",
@@ -37,8 +33,7 @@
     "supabase:db:reset": "supabase db reset",
     "supabase:db:diff": "supabase db diff",
     "supabase:migration:new": "supabase migration new",
-    "supabase:link": "supabase link",
-    "sanity:sync-places": "tsx scripts/sanity/sync-places.ts"
+    "supabase:link": "supabase link"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
