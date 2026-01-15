@@ -1,6 +1,5 @@
 import type { Trip, TripDay } from "@/types/tripDomain";
-import type { Location } from "@/types/location";
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 
 /**

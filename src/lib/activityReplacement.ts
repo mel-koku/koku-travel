@@ -3,7 +3,7 @@ import type { Location } from "@/types/location";
 import type { TripBuilderData, InterestId } from "@/types/trip";
 import type { WeatherForecast } from "@/types/weather";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";

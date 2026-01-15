@@ -1,29 +1,22 @@
 "use client";
 
+import { getLocal, setLocal } from "./storageHelpers";
+
 export const WISHLIST_KEY = "koku_wishlist";
 
+/**
+ * Loads wishlist from localStorage.
+ * Uses unified storage helper for consistency.
+ */
 export function loadWishlist(): string[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  try {
-    const stored = window.localStorage.getItem(WISHLIST_KEY);
-    return stored ? (JSON.parse(stored) as string[]) : [];
-  } catch {
-    return [];
-  }
+  return getLocal<string[]>(WISHLIST_KEY, []) ?? [];
 }
 
-export function saveWishlist(ids: string[]) {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  try {
-    window.localStorage.setItem(WISHLIST_KEY, JSON.stringify(ids));
-  } catch {
-    // Swallow to prevent crashes in environments where storage is unavailable.
-  }
+/**
+ * Saves wishlist to localStorage.
+ * Uses unified storage helper for consistency.
+ */
+export function saveWishlist(ids: string[]): void {
+  setLocal(WISHLIST_KEY, ids);
 }
 

@@ -1,4 +1,3 @@
-import type { InterestId } from "./trip";
 import type { Location } from "./location";
 
 /**

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 import Link from "next/link";
-import { MOCK_TOPICS } from "@/data/mockCommunity";
+import { MOCK_TOPICS } from "@/data/mocks/mockCommunity";
 import Avatar from "@/components/ui/Avatar";
 import { timeAgo } from "@/lib/time";
 

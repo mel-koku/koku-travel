@@ -3,7 +3,7 @@ import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 import type { Trip, TripDay, TripActivity } from "@/types/tripDomain";
 import type { TripBuilderData } from "@/types/trip";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { insertMealActivities } from "@/lib/mealPlanning";
 
 /**

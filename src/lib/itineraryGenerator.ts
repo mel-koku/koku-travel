@@ -1,4 +1,4 @@
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { CITY_TO_REGION, REGIONS } from "@/data/regions";
 import type { Itinerary, ItineraryTravelMode } from "@/types/itinerary";
 import type { Location } from "@/types/location";
