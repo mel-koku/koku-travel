@@ -7,7 +7,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 5
     reviewers:
       - "meljunpicardal"
     labels:
@@ -35,17 +35,29 @@ updates:
       supabase:
         patterns:
           - "@supabase/*"
-      # Group testing packages
+      # Group testing packages (expanded)
       testing:
         patterns:
           - "vitest"
+          - "@vitest/*"
+          - "@testing-library/*"
+          - "jsdom"
+      # Group TypeScript and type definitions
+      typescript-types:
+        patterns:
+          - "typescript"
           - "@types/*"
       # Group development tools
       dev-tools:
         patterns:
           - "eslint*"
-          - "typescript"
           - "tsx"
+          - "tailwindcss"
+          - "@tailwindcss/*"
+      # Group dnd-kit packages
+      dnd-kit:
+        patterns:
+          - "@dnd-kit/*"
     # Ignore major version updates for critical packages (review manually)
     ignore:
       # Ignore major version updates - review manually
@@ -57,7 +69,11 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@supabase/supabase-js"
         update-types: ["version-update:semver-major"]
-      - dependency-name: "@sanity/client"
+      # Ignore web-vitals major updates (review manually)
+      - dependency-name: "web-vitals"
+        update-types: ["version-update:semver-major"]
+      # Ignore major updates for critical infrastructure
+      - dependency-name: "mapbox-gl"
         update-types: ["version-update:semver-major"]
 
   # Enable version updates for GitHub Actions
