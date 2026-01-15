@@ -14,10 +14,48 @@ vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
 }));
 
+// Mock Supabase client - use hoisted variable pattern
+let mockSupabaseResponse: { data: unknown; error: unknown } = { data: null, error: null };
+
+vi.mock("@/lib/supabase/server", () => ({
+  createClient: vi.fn().mockImplementation(async () => ({
+    from: () => ({
+      select: () => ({
+        eq: () => ({
+          single: () => Promise.resolve(mockSupabaseResponse),
+        }),
+      }),
+    }),
+  })),
+}));
+
+// Helper to set up Supabase mock for a location
+const mockSupabaseLocation = (location: typeof MOCK_LOCATIONS[0] | null) => {
+  if (location) {
+    mockSupabaseResponse = {
+      data: {
+        id: location.id,
+        name: location.name,
+        region: location.region,
+        city: location.city,
+        category: location.category,
+        image: location.image,
+        place_id: location.placeId,
+        coordinates: location.coordinates,
+      },
+      error: null,
+    };
+  } else {
+    mockSupabaseResponse = { data: null, error: { message: "Not found" } };
+  }
+};
+
 describe("GET /api/locations/[id]/primary-photo", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.stubEnv("GOOGLE_PLACES_API_KEY", "test-api-key");
+    // Default: return first mock location
+    mockSupabaseLocation(MOCK_LOCATIONS[0]);
   });
 
   describe("Rate limiting", () => {
@@ -86,6 +124,9 @@ describe("GET /api/locations/[id]/primary-photo", () => {
 
   describe("Location not found", () => {
     it("should return 404 for non-existent location", async () => {
+      // Mock Supabase returning no location
+      mockSupabaseLocation(null);
+
       const request = createMockRequest("https://example.com/api/locations/non-existent-id/primary-photo");
       const context = {
         params: Promise.resolve({ id: "non-existent-id" }),
