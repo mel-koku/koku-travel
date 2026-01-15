@@ -1,4 +1,4 @@
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 

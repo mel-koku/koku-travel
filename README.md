@@ -42,8 +42,19 @@ npm run test     # run Vitest suite (includes itinerary planner coverage)
 - `src/app` – Next.js App Router pages and layouts.
 - `src/components` – Reusable UI and feature components.
 - `src/state` – Global state containers.
-- `src/data` – Mock data and static content.
+- `src/data` – Static content and mock data.
+  - `src/data/mocks/` – Mock data files (locations, itineraries, community topics).
+- `src/lib` – Utility functions and services.
+  - `src/lib/storageHelpers.ts` – Unified localStorage utilities.
+  - `src/lib/constants/` – Application constants (time, rate limits, sizes).
 - `docs` – Project documentation.
+
+## Code Organization
+
+- **Storage Helpers**: Unified localStorage utilities in `src/lib/storageHelpers.ts` are used by domain-specific wrappers (wishlist, community, app state).
+- **Mock Data**: Mock data files are organized in `src/data/mocks/` subdirectory.
+- **Code Splitting**: Trip builder steps use dynamic imports for optimal bundle size.
+- **Type Safety**: TypeScript strict mode enabled with unused variable/parameter checks.
 
 ## Getting Help
 

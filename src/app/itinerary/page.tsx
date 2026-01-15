@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
 import { useAppState } from "@/state/AppState";
-import { MOCK_ITINERARY } from "@/data/mockItinerary";
+import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
 import { env } from "@/lib/env";
 

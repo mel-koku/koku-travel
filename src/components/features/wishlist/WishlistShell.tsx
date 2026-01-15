@@ -6,7 +6,7 @@ import { LocationCard } from "@/components/features/explore/LocationCard";
 import WishlistHeader from "@/components/features/wishlist/WishlistHeader";
 import { AddToItineraryButton } from "@/components/features/wishlist/AddToItineraryButton";
 import { useWishlist } from "@/context/WishlistContext";
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 
 export default function WishlistShell() {
   const { wishlist } = useWishlist();

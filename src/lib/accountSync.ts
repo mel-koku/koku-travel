@@ -81,6 +81,11 @@ export async function syncLocalToCloudOnce() {
   return { ok: true as const };
 }
 
+/**
+ * Pulls cloud favorites and guide bookmarks to local storage.
+ * Reserved for future use - currently not called anywhere in the codebase.
+ * Use this function when implementing cloud-first sync strategy.
+ */
 export async function pullCloudToLocal() {
   const supabase = createClient();
   if (!supabase) {

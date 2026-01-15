@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { genId } from "@/lib/communityStorage";
-import type { CommunityTopic } from "@/data/mockCommunity";
+import type { CommunityTopic } from "@/data/mocks/mockCommunity";
 
 const CATEGORIES: CommunityTopic["category"][] = [
   "Travel Tips",

@@ -1,4 +1,4 @@
-import type { WeatherForecast, WeatherCondition } from "@/types/weather";
+import type { WeatherForecast } from "@/types/weather";
 import type { Location } from "@/types/location";
 
 /**

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-import type { CommunityTopic } from "@/data/mockCommunity";
+import type { CommunityTopic } from "@/data/mocks/mockCommunity";
 import { loadTopics } from "@/lib/communityStorage";
 import {
   type Reply,

@@ -1,5 +1,5 @@
 import type { Location } from "@/types/location";
-import type { InterestId, TripBuilderData } from "@/types/trip";
+import type { InterestId } from "@/types/trip";
 import type { WeatherForecast } from "@/types/weather";
 import { calculateDistance, estimateTravelTime } from "@/lib/utils/geoUtils";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
