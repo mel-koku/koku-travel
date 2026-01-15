@@ -167,8 +167,6 @@ export function TravelModeSelector({
     }
   }, [isOpen, fetchAllEstimates]);
 
-  const _currentModeOption = TRAVEL_MODES.find((m) => m.mode === currentMode) ?? TRAVEL_MODES[0];
-
   const formatDuration = (minutes: number) => {
     if (minutes === 0) return "—";
     if (minutes < 60) return `${minutes} min`;
