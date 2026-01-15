@@ -9,7 +9,6 @@ import { useLocationEditorialSummary } from "@/state/locationDetailsStore";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
-import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { DragHandle } from "./DragHandle";
 import { StarIcon } from "./activityIcons";
 import { ActivityActions } from "./ActivityActions";
@@ -277,39 +276,12 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
     };
 
     const schedule = activity?.schedule;
-    const _travelFromPrevious = activity?.travelFromPrevious;
     const travelStatus = schedule?.status ?? "scheduled";
     const isOutOfHours = travelStatus === "out-of-hours";
     const waitLabel =
       schedule?.arrivalBufferMinutes && schedule.arrivalBufferMinutes > 0
         ? `Wait ${schedule.arrivalBufferMinutes} min`
         : null;
-
-    // Find previous activity to get origin coordinates
-    const currentActivityIndex = useMemo(() => {
-      return allActivities.findIndex((a) => a.id === activity.id);
-    }, [allActivities, activity.id]);
-
-    const previousActivity = useMemo(() => {
-      if (currentActivityIndex <= 0) return null;
-      // Find the most recent place activity before this one
-      for (let i = currentActivityIndex - 1; i >= 0; i--) {
-        const prev = allActivities[i];
-        if (prev && prev.kind === "place") {
-          return prev;
-        }
-      }
-      return null;
-    }, [allActivities, currentActivityIndex]);
-
-    const _originCoordinates = useMemo(() => {
-      if (!previousActivity || previousActivity.kind !== "place") return null;
-      return getActivityCoordinates(previousActivity);
-    }, [previousActivity]);
-
-    const _destinationCoordinates = useMemo(() => {
-      return getActivityCoordinates(activity);
-    }, [activity]);
 
     const handleSelect = () => {
       onSelect?.(activity.id);
