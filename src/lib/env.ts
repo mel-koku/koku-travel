@@ -20,9 +20,9 @@ type EnvConfig = {
   ROUTING_PROVIDER?: string;
   ROUTING_MAPBOX_ACCESS_TOKEN?: string;
 
-  // Rate Limiting (Optional - for production)
-  UPSTASH_REDIS_REST_URL?: string;
-  UPSTASH_REDIS_REST_TOKEN?: string;
+  // Rate Limiting - Upstash removed temporarily (can be restored later)
+  // UPSTASH_REDIS_REST_URL?: string;
+  // UPSTASH_REDIS_REST_TOKEN?: string;
 
   // Site
   NEXT_PUBLIC_SITE_URL?: string;
@@ -83,8 +83,8 @@ function createLenientConfig(): EnvConfig {
     GOOGLE_DIRECTIONS_API_KEY: process.env.GOOGLE_DIRECTIONS_API_KEY,
     ROUTING_PROVIDER: process.env.ROUTING_PROVIDER,
     ROUTING_MAPBOX_ACCESS_TOKEN: process.env.ROUTING_MAPBOX_ACCESS_TOKEN,
-    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
-    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
+    // UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    // UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     NEXT_PUBLIC_USE_MOCK_ITINERARY: process.env.NEXT_PUBLIC_USE_MOCK_ITINERARY,
     ENABLE_GOOGLE_PLACES: process.env.ENABLE_GOOGLE_PLACES,
@@ -127,8 +127,8 @@ function validateEnv(): EnvConfig {
     GOOGLE_DIRECTIONS_API_KEY: getOptionalEnv("GOOGLE_DIRECTIONS_API_KEY"),
     ROUTING_PROVIDER: getOptionalEnv("ROUTING_PROVIDER"),
     ROUTING_MAPBOX_ACCESS_TOKEN: getOptionalEnv("ROUTING_MAPBOX_ACCESS_TOKEN"),
-    UPSTASH_REDIS_REST_URL: getOptionalEnv("UPSTASH_REDIS_REST_URL"),
-    UPSTASH_REDIS_REST_TOKEN: getOptionalEnv("UPSTASH_REDIS_REST_TOKEN"),
+    // UPSTASH_REDIS_REST_URL: getOptionalEnv("UPSTASH_REDIS_REST_URL"),
+    // UPSTASH_REDIS_REST_TOKEN: getOptionalEnv("UPSTASH_REDIS_REST_TOKEN"),
     NEXT_PUBLIC_SITE_URL: getOptionalEnv("NEXT_PUBLIC_SITE_URL"),
     NEXT_PUBLIC_USE_MOCK_ITINERARY: getOptionalEnv("NEXT_PUBLIC_USE_MOCK_ITINERARY"),
     ENABLE_GOOGLE_PLACES: getOptionalEnv("ENABLE_GOOGLE_PLACES"),
@@ -177,12 +177,13 @@ export const env = {
   get googleDirectionsApiKey() {
     return envConfig.GOOGLE_DIRECTIONS_API_KEY;
   },
-  get upstashRedisRestUrl() {
-    return envConfig.UPSTASH_REDIS_REST_URL;
-  },
-  get upstashRedisRestToken() {
-    return envConfig.UPSTASH_REDIS_REST_TOKEN;
-  },
+  // Upstash removed temporarily - can be restored later
+  // get upstashRedisRestUrl() {
+  //   return envConfig.UPSTASH_REDIS_REST_URL;
+  // },
+  // get upstashRedisRestToken() {
+  //   return envConfig.UPSTASH_REDIS_REST_TOKEN;
+  // },
   get siteUrl() {
     return envConfig.NEXT_PUBLIC_SITE_URL;
   },

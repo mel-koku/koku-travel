@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { logger } from '@/lib/logger'
 
 export default function GlobalError({
   error,
@@ -10,8 +11,12 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    // eslint-disable-next-line no-console -- Global error boundary requires console for error reporting
-    console.error('Global error:', error)
+    // Log error using centralized logger
+    logger.error('Global error boundary triggered', error, {
+      digest: error.digest,
+      message: error.message,
+      stack: error.stack,
+    })
   }, [error])
 
   return (
