@@ -87,15 +87,6 @@ export function createMockSupabaseClient(): MockSupabaseClient {
   };
 }
 
-/**
- * Mock Sanity client
- */
-export function createMockSanityClient() {
-  return {
-    fetch: vi.fn().mockResolvedValue(null),
-    withConfig: vi.fn().mockReturnThis(),
-  };
-}
 
 /**
  * Mock Google Places API response

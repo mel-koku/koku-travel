@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /**
  * Centralized logging utility
- * In production, this can be extended to send logs to external services (Sentry, LogRocket, etc.)
+ * In production, this can be extended to send logs to external services if needed
  */
 
 type LogContext = {
@@ -54,7 +54,7 @@ class Logger {
 
   /**
    * Sends error to external error tracking service
-   * Can be extended to integrate with error tracking services (e.g., Sentry, LogRocket)
+   * Can be extended to integrate with error tracking services if needed
    */
   private sendToErrorTracking(
     message: string,

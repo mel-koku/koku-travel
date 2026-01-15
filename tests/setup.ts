@@ -2,8 +2,6 @@ import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
 // Set default environment variables for tests
-process.env.SANITY_PREVIEW_SECRET = process.env.SANITY_PREVIEW_SECRET || "test-secret-123";
-process.env.SANITY_REVALIDATE_SECRET = process.env.SANITY_REVALIDATE_SECRET || "test-secret-123";
 process.env.GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY || "test-api-key";
 
 // Mock Next.js headers

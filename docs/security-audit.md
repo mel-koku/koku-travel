@@ -168,13 +168,6 @@ The application implements comprehensive security headers via Next.js configurat
 - ✅ Anon key used for client-side operations
 - ✅ Database migrations reviewed for security
 
-### Sanity CMS
-
-- ✅ Read tokens scoped appropriately
-- ✅ Write tokens only for server-side scripts
-- ✅ Preview secret for draft mode
-- ✅ Webhook signature validation
-
 ### Google Places API
 
 - ✅ API key restricted to specific domains/IPs (recommended)
@@ -211,7 +204,7 @@ The application implements comprehensive security headers via Next.js configurat
 - ✅ Centralized logging utility
 - ✅ Error boundary for React errors
 - ✅ Server-side error logging
-- ✅ Production error tracking ready (Sentry integration prepared)
+- ✅ Production error tracking ready (can be extended if needed)
 
 **Files:**
 - `src/lib/logger.ts` - Centralized logger
@@ -302,7 +295,7 @@ The application implements comprehensive security headers via Next.js configurat
    - **Recommendation**: Use Redis for distributed rate limiting
 
 2. **Error Tracking**: Placeholder implementation
-   - **Recommendation**: Integrate Sentry or similar service
+   - **Recommendation**: Integrate error tracking service if needed
 
 3. **CSP**: Uses `unsafe-inline` and `unsafe-eval` for Next.js/Tailwind
    - **Note**: Required for Next.js development mode

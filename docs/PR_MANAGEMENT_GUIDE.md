@@ -3,7 +3,7 @@
 ## Quick Reference
 
 ### Your PRs
-1. **Fix/vercel build sanity config (#10)** - Wait for CI to pass, then merge
+1. Review and merge PRs as needed
 
 ### Dependabot PRs - Recommended Actions
 
@@ -16,7 +16,6 @@
 - **#8**: web-vitals 4.2.4 → 5.1.0 (Major version) - Check breaking changes
 - **#7**: eslint-config-next - Check ESLint config compatibility
 - **#5**: @supabase/supabase-js - Check Supabase API changes
-- **#4**: @sanity/webhook 3.0.1 → 4.0.0 (Major version) - Review breaking changes
 - **#1**: actions/checkout - Usually safe, check CI errors
 
 ## Strategy
@@ -41,7 +40,7 @@ For each failing PR:
 
 ### Step 4: Handle Major Version Updates Carefully
 
-Major version updates (web-vitals 5.x, sanity/webhook 4.x) require:
+Major version updates (web-vitals 5.x, etc.) require:
 - Reading the migration guide
 - Testing thoroughly
 - Updating code to match new APIs
@@ -88,7 +87,7 @@ git merge origin/dependabot/BRANCH_NAME
 ## Dependabot Configuration
 
 Your `.github/dependabot.yml` is configured to:
-- Group related packages (Next.js/React, Sanity, Supabase, Testing)
+- Group related packages (Next.js/React, Supabase, Testing)
 - Ignore major version updates for critical packages
 - Create PRs weekly on Mondays
 - Limit to 10 open PRs

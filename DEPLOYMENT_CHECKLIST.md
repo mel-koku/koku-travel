@@ -42,41 +42,6 @@ Before deploying, gather all required environment variables:
   - **⚠️ SENSITIVE:** Mark as "Sensitive" in Vercel
   - **⚠️ NEVER expose in client-side code**
 
-### Sanity CMS - Server-side (5 required)
-- [ ] `SANITY_PROJECT_ID`
-  - **Source:** Sanity Dashboard → Project Settings → Project ID
-  - **Example:** `abc123xyz`
-
-- [ ] `SANITY_DATASET`
-  - **Value:** `production` (or your dataset name)
-  - **Source:** Sanity Dashboard → Datasets
-
-- [ ] `SANITY_API_READ_TOKEN`
-  - **Source:** Sanity Dashboard → Project Settings → API → Tokens → Create Read Token
-  - **Permissions:** Read-only access
-  - **⚠️ SENSITIVE:** Mark as "Sensitive" in Vercel
-
-- [ ] `SANITY_API_VERSION`
-  - **Value:** `2024-10-21`
-  - **Fixed value** - use exactly this
-
-- [ ] `SANITY_REVALIDATE_SECRET`
-  - **Generate:** `openssl rand -hex 32`
-  - **⚠️ SENSITIVE:** Mark as "Sensitive" in Vercel
-  - **Used for:** Webhook revalidation
-
-### Sanity CMS - Client-side (3 required)
-- [ ] `NEXT_PUBLIC_SANITY_PROJECT_ID`
-  - **Value:** Same as `SANITY_PROJECT_ID` above
-  - **Note:** Must have `NEXT_PUBLIC_` prefix for client-side
-
-- [ ] `NEXT_PUBLIC_SANITY_DATASET`
-  - **Value:** Same as `SANITY_DATASET` above (usually `production`)
-
-- [ ] `NEXT_PUBLIC_SANITY_API_VERSION`
-  - **Value:** `2024-10-21`
-  - **Fixed value** - same as server-side
-
 ### Optional Variables (Set after first deployment)
 - [ ] `NEXT_PUBLIC_SITE_URL`
   - **Value:** Will be your Vercel URL (e.g., `https://koku-travel.vercel.app`)
@@ -93,13 +58,6 @@ Before deploying, gather all required environment variables:
 - [ ] `GOOGLE_PLACES_API_KEY`
 - [ ] `ROUTING_GOOGLE_MAPS_API_KEY`
 - [ ] `GOOGLE_DIRECTIONS_API_KEY`
-
-### Optional: Error Tracking (Sentry)
-- [ ] `NEXT_PUBLIC_SENTRY_DSN`
-- [ ] `SENTRY_DSN`
-- [ ] `SENTRY_ORG`
-- [ ] `SENTRY_PROJECT`
-- [ ] `NEXT_PUBLIC_ENABLE_ERROR_TRACKING` = `true`
 
 ### Optional: Rate Limiting (Upstash Redis)
 - [ ] `UPSTASH_REDIS_REST_URL`
@@ -133,8 +91,6 @@ Before deploying, gather all required environment variables:
 - [ ] Set each variable for **Production** environment
 - [ ] Mark sensitive variables as "Sensitive":
   - `SUPABASE_SERVICE_ROLE_KEY`
-  - `SANITY_API_READ_TOKEN`
-  - `SANITY_REVALIDATE_SECRET`
 - [ ] **DO NOT set `NEXT_PUBLIC_SITE_URL` yet** - we'll do this after first deploy
 
 ### 2.4 Deploy
@@ -154,21 +110,6 @@ Before deploying, gather all required environment variables:
 - [ ] Set for **Production** environment
 - [ ] Redeploy (or wait for next push)
 
-### 3.2 Configure Sanity Webhook (Recommended)
-For content revalidation when you update Sanity content:
-
-- [ ] Go to **Sanity Dashboard → Project Settings → API → Webhooks**
-- [ ] Click **"Create webhook"**
-- [ ] Configure:
-  - **URL:** `https://your-project.vercel.app/api/revalidate`
-  - **Dataset:** `production` (or your dataset)
-  - **Trigger on:** Create, Update, Delete
-  - **HTTP method:** POST
-  - **API version:** `2024-10-21`
-  - **Secret:** Your `SANITY_REVALIDATE_SECRET` value
-- [ ] Click **"Save"**
-- [ ] Test by updating content in Sanity Studio
-
 ---
 
 ## 🧪 Step 4: Verification Tests
@@ -187,7 +128,7 @@ For content revalidation when you update Sanity content:
 - [ ] Protected routes redirect correctly
 
 ### 4.3 Features
-- [ ] Content loads from Sanity CMS
+- [ ] Content loads correctly
 - [ ] Favorites/bookmarks work
 - [ ] Itinerary builder functions
 - [ ] Travel mode selector works
@@ -195,13 +136,7 @@ For content revalidation when you update Sanity content:
 - [ ] Community features work
 - [ ] API routes respond correctly
 
-### 4.4 Sanity Studio
-- [ ] Studio accessible at `/studio`
-- [ ] Can log in to Studio
-- [ ] Can view/edit content
-- [ ] Changes reflect on site (after webhook triggers)
-
-### 4.5 Performance
+### 4.4 Performance
 - [ ] Page load times are acceptable
 - [ ] Images optimize correctly
 - [ ] No memory leaks (check browser console)
@@ -219,7 +154,6 @@ For content revalidation when you update Sanity content:
 - [ ] Redeploy
 
 ### 5.2 Monitoring Setup (Optional)
-- [ ] Configure Sentry (if using error tracking)
 - [ ] Set up uptime monitoring
 - [ ] Configure performance monitoring
 - [ ] Set up log aggregation
@@ -254,7 +188,7 @@ For content revalidation when you update Sanity content:
 **Check:**
 - [ ] `NEXT_PUBLIC_SITE_URL` is set correctly
 - [ ] Image domains in `next.config.ts` are correct
-- [ ] Sanity CDN access is working
+- [ ] Image CDN access is working
 - [ ] Check browser console for CORS errors
 
 ### API Routes Failing
@@ -263,13 +197,6 @@ For content revalidation when you update Sanity content:
 - [ ] API keys are valid
 - [ ] Check server logs in Vercel dashboard
 - [ ] Verify rate limiting isn't blocking requests
-
-### Sanity Studio Not Working
-**Check:**
-- [ ] All `NEXT_PUBLIC_SANITY_*` variables are set
-- [ ] `NEXT_PUBLIC_SANITY_API_VERSION` is `2024-10-21`
-- [ ] `NEXT_PUBLIC_SANITY_PROJECT_ID` matches `SANITY_PROJECT_ID`
-- [ ] Check browser console for errors
 
 ### Authentication Not Working
 **Check:**
@@ -315,7 +242,7 @@ Before marking deployment as complete:
 - [ ] App accessible at Vercel URL
 - [ ] No runtime errors
 - [ ] Authentication works
-- [ ] Content loads from Sanity
+- [ ] Content loads correctly
 - [ ] Site URL updated
 - [ ] Webhook configured (optional but recommended)
 - [ ] All verification tests passed
