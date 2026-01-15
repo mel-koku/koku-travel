@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
 import type { Location } from "@/types/location";
 import { isValidLocationId } from "@/lib/api/validation";
 import { locationIdSchema } from "@/lib/api/schemas";
 import { badRequest, notFound, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
-
-const locationsById = new Map<string, Location>(MOCK_LOCATIONS.map((location) => [location.id, location]));
+import { createClient } from "@/lib/supabase/server";
 
 type RouteContext = {
   params: Promise<{
@@ -49,10 +47,38 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   const validatedId = idValidation.data;
 
-  const location = locationsById.get(validatedId);
-  if (!location) {
+  // Fetch location from database
+  const supabase = await createClient();
+  const { data: locationData, error: dbError } = await supabase
+    .from("locations")
+    .select("*")
+    .eq("id", validatedId)
+    .single();
+
+  if (dbError || !locationData) {
     return notFound("Location not found");
   }
+
+  // Transform database row to Location type
+  const location: Location = {
+    id: locationData.id,
+    name: locationData.name,
+    region: locationData.region,
+    city: locationData.city,
+    category: locationData.category,
+    image: locationData.image,
+    minBudget: locationData.min_budget ?? undefined,
+    estimatedDuration: locationData.estimated_duration ?? undefined,
+    operatingHours: locationData.operating_hours ?? undefined,
+    recommendedVisit: locationData.recommended_visit ?? undefined,
+    preferredTransitModes: locationData.preferred_transit_modes ?? undefined,
+    coordinates: locationData.coordinates ?? undefined,
+    timezone: locationData.timezone ?? undefined,
+    shortDescription: locationData.short_description ?? undefined,
+    rating: locationData.rating ?? undefined,
+    reviewCount: locationData.review_count ?? undefined,
+    placeId: locationData.place_id ?? undefined,
+  };
 
   try {
     const details = await fetchLocationDetails(location);
