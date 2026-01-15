@@ -95,7 +95,7 @@ export function findReplacementCandidates(
   };
   
   // Filter out the original location and already-used locations
-  const usedLocationIds = new Set(
+  const _usedLocationIds = new Set(
     allActivities
       .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
       .map((a) => {

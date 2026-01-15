@@ -1,4 +1,4 @@
-import type { TravelerProfile, BudgetLevel, GroupType, ExperienceLevel, WeatherPreference } from "@/types/traveler";
+import type { TravelerProfile } from "@/types/traveler";
 import { DEFAULT_TRAVELER_PROFILE } from "@/types/traveler";
 import type { TripBuilderData } from "@/types/trip";
 

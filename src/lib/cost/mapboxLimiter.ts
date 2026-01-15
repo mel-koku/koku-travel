@@ -1,6 +1,6 @@
 import { logger } from "@/lib/logger";
 import { featureFlags } from "@/lib/env/featureFlags";
-import { getCachedRoute, setCachedRoute } from "@/lib/routing";
+import { getCachedRoute } from "@/lib/routing";
 import type { RoutingRequest, RoutingResult } from "@/lib/routing/types";
 
 /**

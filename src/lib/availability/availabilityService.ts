@@ -1,5 +1,5 @@
 import type { Location } from "@/types/location";
-import type { AvailabilityInfo, AvailabilityStatus } from "@/types/availability";
+import type { AvailabilityInfo } from "@/types/availability";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
 import { logger } from "@/lib/logger";
 import { featureFlags } from "@/lib/env/featureFlags";
@@ -17,7 +17,7 @@ export async function checkAvailability(
     useCache?: boolean;
   },
 ): Promise<AvailabilityInfo> {
-  const useCache = options?.useCache ?? true;
+  const _useCache = options?.useCache ?? true;
 
   // If no placeId, return unknown status
   if (!location.placeId) {
@@ -98,7 +98,7 @@ export async function checkAvailability(
  */
 function checkAvailabilityFromOperatingHours(
   location: Location,
-  details?: { regularOpeningHours?: string[] },
+  _details?: { regularOpeningHours?: string[] },
 ): AvailabilityInfo {
   const operatingHours = location.operatingHours;
   
