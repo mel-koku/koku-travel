@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 py-12 sm:gap-16 sm:px-6 sm:py-16 md:px-10 md:py-24">
@@ -15,12 +17,18 @@ export default function Home() {
             that feel handpicked just for you.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4">
-            <button className="min-h-[44px] rounded-full bg-red-500 px-6 py-3 text-sm font-medium text-white shadow-md transition-transform hover:-translate-y-0.5 hover:bg-red-600 active:translate-y-0 sm:text-base">
+            <Link
+              href="/trip-builder"
+              className="min-h-[44px] rounded-full bg-red-500 px-6 py-3 text-sm font-medium text-white shadow-md transition-transform hover:-translate-y-0.5 hover:bg-red-600 active:translate-y-0 sm:text-base text-center flex items-center justify-center"
+            >
               Start Planning
-            </button>
-            <button className="min-h-[44px] rounded-full border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-700 transition-colors hover:border-red-500 hover:text-red-500 active:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 sm:text-base">
+            </Link>
+            <Link
+              href="/explore"
+              className="min-h-[44px] rounded-full border border-zinc-300 px-6 py-3 text-sm font-medium text-zinc-700 transition-colors hover:border-red-500 hover:text-red-500 active:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 sm:text-base text-center flex items-center justify-center"
+            >
               View Sample Trip
-            </button>
+            </Link>
           </div>
         </div>
         <div className="rounded-2xl border border-dashed border-red-200 bg-red-50 p-6 text-center text-sm text-red-600 shadow-inner sm:rounded-3xl sm:p-8 md:p-10 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200">

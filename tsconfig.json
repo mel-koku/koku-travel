@@ -37,6 +37,11 @@
   ],
   "exclude": [
     "node_modules",
-    "**/LanguageDropdown.tsx"
+    "**/LanguageDropdown.tsx",
+    "scripts/**/*.ts",
+    "**/__tests__/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "tests/**"
   ]
 }
