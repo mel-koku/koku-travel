@@ -16,11 +16,14 @@ import {
 
 /**
  * GET /api/locations
- * Fetches locations from Supabase with pagination support.
+ * Fetches locations from Supabase with pagination and filtering support.
  *
  * Query parameters:
  * - page: Page number (default: 1)
  * - limit: Items per page (default: 20, max: 100)
+ * - region: Filter by region (e.g., "Kansai", "Tohoku", "Hokkaido")
+ * - category: Filter by category (e.g., "attraction", "food", "nature")
+ * - search: Search locations by name (partial match)
  *
  * @param request - Next.js request object
  * @returns Paginated array of Location objects, or error response
@@ -45,10 +48,18 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const pagination = parsePaginationParams(request);
 
-    // Get total count for pagination metadata
-    const { count, error: countError } = await supabase
-      .from("locations")
-      .select("*", { count: "exact", head: true });
+    // Parse filter parameters
+    const searchParams = request.nextUrl.searchParams;
+    const region = searchParams.get("region");
+    const category = searchParams.get("category");
+    const search = searchParams.get("search");
+
+    // Get total count for pagination metadata (with filters)
+    let countQuery = supabase.from("locations").select("*", { count: "exact", head: true });
+    if (region) countQuery = countQuery.eq("region", region);
+    if (category) countQuery = countQuery.eq("category", category);
+    if (search) countQuery = countQuery.ilike("name", `%${search}%`);
+    const { count, error: countError } = await countQuery;
 
     if (countError) {
       logger.error("Failed to count locations", {
@@ -65,10 +76,12 @@ export async function GET(request: NextRequest) {
 
     const total = count || 0;
 
-    // Fetch paginated locations
-    const { data, error } = await supabase
-      .from("locations")
-      .select("*")
+    // Fetch paginated locations (with filters)
+    let dataQuery = supabase.from("locations").select("*");
+    if (region) dataQuery = dataQuery.eq("region", region);
+    if (category) dataQuery = dataQuery.eq("category", category);
+    if (search) dataQuery = dataQuery.ilike("name", `%${search}%`);
+    const { data, error } = await dataQuery
       .order("name", { ascending: true })
       .range(pagination.offset, pagination.offset + pagination.limit - 1);
 
