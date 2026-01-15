@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+// Force dynamic rendering since we use useSearchParams()
+export const dynamic = "force-dynamic";
+
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
 import { useAppState } from "@/state/AppState";
 import { MOCK_ITINERARY } from "@/data/mockItinerary";

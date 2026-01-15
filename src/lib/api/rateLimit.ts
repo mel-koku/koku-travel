@@ -4,9 +4,21 @@ import { logger } from "../logger";
 /**
  * In-memory rate limiter
  * 
- * NOTE: This implementation only works for single-instance deployments.
- * For production with multiple server instances, consider using a distributed
- * rate limiting solution like Upstash Redis or similar.
+ * ⚠️ PRODUCTION LIMITATION:
+ * This implementation only works for single-instance deployments.
+ * 
+ * In production environments with multiple server instances (e.g., Vercel, AWS Lambda with multiple instances),
+ * each instance maintains its own in-memory rate limit store. This means:
+ * - Rate limits are NOT shared across instances
+ * - Users can bypass rate limits by distributing requests across different instances
+ * - Each instance will independently track and enforce limits
+ * 
+ * For production deployments with multiple instances, you MUST use a distributed
+ * rate limiting solution such as:
+ * - Upstash Redis (commented out but can be restored)
+ * - Redis with a custom implementation
+ * - Vercel KV or similar managed Redis service
+ * - Other distributed caching solutions
  * 
  * CURRENT USAGE:
  * - /api/locations: 100 req/min
@@ -93,6 +105,20 @@ export async function checkRateLimit(
   request: NextRequest,
   config: RateLimitConfig = { maxRequests: 100, windowMs: 60 * 1000 },
 ): Promise<NextResponse | null> {
+  // Warn in production about multi-instance limitation
+  if (process.env.NODE_ENV === "production" && !process.env.RATE_LIMIT_WARNING_DISABLED) {
+    // Only log once per process to avoid spam
+    if (!(globalThis as { rateLimitWarningLogged?: boolean }).rateLimitWarningLogged) {
+      logger.warn(
+        "Using in-memory rate limiting in production. This will NOT work correctly with multiple server instances. " +
+        "Each instance will have independent rate limit counters, allowing users to bypass limits. " +
+        "Consider implementing distributed rate limiting (e.g., Upstash Redis) for production deployments. " +
+        "Set RATE_LIMIT_WARNING_DISABLED=1 to suppress this warning.",
+      );
+      (globalThis as { rateLimitWarningLogged?: boolean }).rateLimitWarningLogged = true;
+    }
+  }
+
   const ip = getClientIp(request);
   const now = Date.now();
 

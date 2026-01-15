@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
+// Force dynamic rendering since we use useSearchParams()
+export const dynamic = "force-dynamic";
+
 type ErrorMessage = {
   title: string;
   description: string;
