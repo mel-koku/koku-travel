@@ -93,7 +93,7 @@ function useEntryPointLocation(
         // Fall back to basic location
         setLocation(buildFallbackLocation(activity));
       });
-  }, [activity.locationId, activity.title]);
+  }, [activity]);
 
   return location;
 }
@@ -124,7 +124,7 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
     {
       activity,
       allActivities = [],
-      dayTimezone,
+      dayTimezone: _dayTimezone,
       onDelete,
       onUpdate,
       attributes,
@@ -277,7 +277,7 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
     };
 
     const schedule = activity?.schedule;
-    const travelFromPrevious = activity?.travelFromPrevious;
+    const _travelFromPrevious = activity?.travelFromPrevious;
     const travelStatus = schedule?.status ?? "scheduled";
     const isOutOfHours = travelStatus === "out-of-hours";
     const waitLabel =
@@ -302,12 +302,12 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
       return null;
     }, [allActivities, currentActivityIndex]);
 
-    const originCoordinates = useMemo(() => {
+    const _originCoordinates = useMemo(() => {
       if (!previousActivity || previousActivity.kind !== "place") return null;
       return getActivityCoordinates(previousActivity);
     }, [previousActivity]);
 
-    const destinationCoordinates = useMemo(() => {
+    const _destinationCoordinates = useMemo(() => {
       return getActivityCoordinates(activity);
     }, [activity]);
 
