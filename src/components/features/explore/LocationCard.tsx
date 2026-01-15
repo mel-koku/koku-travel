@@ -6,9 +6,10 @@ import type { RefObject } from "react";
 
 import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
-import { useLocationEditorialSummary } from "@/state/locationDetailsStore";
+import { useLocationEditorialSummary, useLocationDisplayName } from "@/state/locationDetailsStore";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
+import { getLocationDisplayName } from "@/lib/locationNameUtils";
 
 type LocationCardProps = {
   location: Location;
@@ -19,6 +20,8 @@ export function LocationCard({ location, onSelect }: LocationCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const active = isInWishlist(location.id);
   const cachedEditorialSummary = useLocationEditorialSummary(location.id);
+  const cachedDisplayName = useLocationDisplayName(location.id);
+  const displayName = getLocationDisplayName(cachedDisplayName, location);
   const summary = getShortOverview(location, cachedEditorialSummary);
   const estimatedDuration = location.estimatedDuration?.trim();
   const rating = getLocationRating(location);
@@ -49,7 +52,7 @@ export function LocationCard({ location, onSelect }: LocationCardProps) {
         <div className="relative aspect-[4/3] w-full">
           <Image
             src={imageSrc || FALLBACK_IMAGE_SRC}
-            alt={location.name}
+            alt={displayName}
             fill
             className="object-cover"
             sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
@@ -59,7 +62,7 @@ export function LocationCard({ location, onSelect }: LocationCardProps) {
         <div className="p-4 space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h3 className="font-semibold text-gray-900">{location.name}</h3>
+              <h3 className="font-semibold text-gray-900">{displayName}</h3>
               <p className="text-sm text-gray-600">
                 {location.city}, {location.region}
               </p>

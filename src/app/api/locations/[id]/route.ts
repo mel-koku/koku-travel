@@ -80,6 +80,14 @@ export async function GET(request: NextRequest, context: RouteContext) {
     placeId: locationData.place_id ?? undefined,
   };
 
+  // Check if location has a valid place_id
+  // Locations without place_id cannot fetch Google Places details
+  if (!location.placeId || location.placeId.trim() === "") {
+    return notFound(
+      `Location "${location.name}" does not have a valid Google Place ID and cannot load details.`,
+    );
+  }
+
   try {
     const details = await fetchLocationDetails(location);
 

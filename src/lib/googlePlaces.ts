@@ -183,6 +183,40 @@ async function searchPlaceId(options: SearchPlaceOptions): Promise<PlaceIdCacheE
   };
 }
 
+/**
+ * Safely checks if a location can resolve its Google Place ID without throwing an error.
+ * Returns true if the location has a placeId or can successfully resolve one.
+ */
+export async function canResolvePlaceId(location: Location): Promise<boolean> {
+  try {
+    // If location already has a place_id, consider it valid
+    if (location.placeId) {
+      return true;
+    }
+
+    const cache = getPlaceIdCache();
+    const cached = cache.get(location.id);
+    if (cached && cached.expiresAt > Date.now()) {
+      return true;
+    }
+
+    // Try to resolve Place ID
+    const query = [location.name, location.city, location.region, "Japan"]
+      .filter(Boolean)
+      .join(", ");
+
+    const found = await searchPlaceId({ query });
+    if (found) {
+      cache.set(location.id, found);
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    return false;
+  }
+}
+
 async function resolvePlaceId(location: Location): Promise<PlaceIdCacheEntry> {
   const cache = getPlaceIdCache();
   const cached = cache.get(location.id);
@@ -286,6 +320,7 @@ function transformPhotos(photos: PlaceDetailsPayload["photos"]): LocationPhoto[]
 function transformPlaceDetails(payload: PlaceDetailsPayload, fallbackPlaceId: string): LocationDetails {
   return {
     placeId: payload.id ?? fallbackPlaceId,
+    displayName: payload.displayName?.text,
     formattedAddress: payload.formattedAddress,
     shortAddress: payload.shortFormattedAddress,
     rating: payload.rating,

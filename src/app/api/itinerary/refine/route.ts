@@ -14,6 +14,9 @@ import { z } from "zod";
 import type { Itinerary, ItineraryActivity, ItineraryDay, RecommendationReason as ItineraryRecommendationReason } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { Trip, TripActivity, TripDay, RecommendationReason as TripRecommendationReason } from "@/types/tripDomain";
+import type { Location } from "@/types/location";
+import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
+import { createClient } from "@/lib/supabase/server";
 
 // Simple stub request format (as specified in plan)
 type RefineRequestBody = {
@@ -44,6 +47,111 @@ const VALID_REFINEMENT_TYPES: RefinementType[] = [
   "more_kid_friendly",
   "more_rest",
 ];
+
+/**
+ * Fetches all locations from Supabase database.
+ * In production, throws errors if database is unavailable.
+ * In development, falls back to mock data for easier local development.
+ */
+async function fetchAllLocations(): Promise<Location[]> {
+  const isDevelopment = process.env.NODE_ENV === "development";
+
+  try {
+    const supabase = await createClient();
+    const allLocations: Location[] = [];
+    let page = 0;
+    const limit = 100; // Max per page
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from("locations")
+        .select("*")
+        .order("name", { ascending: true })
+        .range(page * limit, (page + 1) * limit - 1);
+
+      if (error) {
+        const errorMessage = `Failed to fetch locations from database: ${error.message}`;
+        if (isDevelopment) {
+          logger.warn(errorMessage + " Falling back to mock data.", { error: error.message, page });
+          return [...MOCK_LOCATIONS];
+        } else {
+          logger.error(errorMessage, { error: error.message, page });
+          throw new Error(errorMessage);
+        }
+      }
+
+      if (!data || data.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      // Transform Supabase data to Location type
+      const locations: Location[] = data.map((row) => ({
+        id: row.id,
+        name: row.name,
+        region: row.region,
+        city: row.city,
+        category: row.category,
+        image: row.image,
+        minBudget: row.min_budget ?? undefined,
+        estimatedDuration: row.estimated_duration ?? undefined,
+        operatingHours: row.operating_hours ?? undefined,
+        recommendedVisit: row.recommended_visit ?? undefined,
+        preferredTransitModes: row.preferred_transit_modes ?? undefined,
+        coordinates: row.coordinates ?? undefined,
+        timezone: row.timezone ?? undefined,
+        shortDescription: row.short_description ?? undefined,
+        rating: row.rating ?? undefined,
+        reviewCount: row.review_count ?? undefined,
+        placeId: row.place_id ?? undefined,
+      }));
+
+      allLocations.push(...locations);
+
+      // Check if there are more pages
+      hasMore = data.length === limit;
+      page++;
+
+      // Safety limit to prevent infinite loops
+      if (page > 100) {
+        logger.warn("Reached pagination safety limit when fetching locations");
+        break;
+      }
+    }
+
+    if (allLocations.length === 0) {
+      const errorMessage = "No locations found in database. Please ensure locations are seeded.";
+      if (isDevelopment) {
+        logger.warn(errorMessage + " Falling back to mock data.");
+        return [...MOCK_LOCATIONS];
+      } else {
+        logger.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+    }
+
+    return allLocations;
+  } catch (error) {
+    // If it's already our custom error, re-throw it
+    if (error instanceof Error && !isDevelopment) {
+      throw error;
+    }
+
+    // In development, fall back to mock data
+    if (isDevelopment) {
+      logger.warn("Error fetching locations from database, falling back to mock data", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return [...MOCK_LOCATIONS];
+    }
+
+    // In production, fail loudly
+    const errorMessage = `Failed to fetch locations from database: ${error instanceof Error ? error.message : String(error)}`;
+    logger.error(errorMessage, { error });
+    throw new Error(errorMessage);
+  }
+}
 
 const convertRecommendationReason = (
   reason: TripRecommendationReason | undefined,
@@ -284,7 +392,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const trip = convertItineraryToTrip(itinerary, builderData, tripId);
+    // Fetch locations from database (with fallback to mock data)
+    const allLocations = await fetchAllLocations();
+    const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);
     if (!trip.days[dayIndex]) {
       return addRequestContextHeaders(
         badRequest(`Day index ${dayIndex} not found for trip ${tripId}`, undefined, {
