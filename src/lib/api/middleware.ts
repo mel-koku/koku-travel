@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { unauthorized } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
+import { trackApiPerformance } from "@/lib/api/performance";
 import type { User } from "@supabase/supabase-js";
 
 /**
@@ -128,15 +129,33 @@ export async function getOptionalAuth(
 
 /**
  * Adds request context to response headers for debugging
+ * Also tracks performance metrics
  */
 export function addRequestContextHeaders(
   response: NextResponse,
   context: RequestContext,
+  request?: NextRequest,
 ): NextResponse {
   response.headers.set("X-Request-ID", context.requestId);
   if (context.user) {
     response.headers.set("X-User-ID", context.user.id);
   }
+
+  // Track performance if request is provided
+  if (request) {
+    const startTime = request.headers.get("x-start-time");
+    if (startTime) {
+      const duration = Date.now() - Number.parseInt(startTime, 10);
+      trackApiPerformance(
+        request.nextUrl.pathname,
+        request.method,
+        duration,
+        response.status,
+        context,
+      );
+    }
+  }
+
   return response;
 }
 

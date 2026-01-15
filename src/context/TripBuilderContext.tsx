@@ -80,6 +80,10 @@ export type TripBuilderProviderProps = {
 export function TripBuilderProvider({ initialData, children }: TripBuilderProviderProps) {
   const [data, setData] = useState<TripBuilderData>(() => normalizeData(initialData));
   const isHydrated = useRef(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Debounce delay for localStorage writes (500ms)
+  const DEBOUNCE_DELAY_MS = 500;
 
   useEffect(() => {
     if (isHydrated.current) {
@@ -113,7 +117,25 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     if (!isHydrated.current) {
       return;
     }
-    setLocal(STORAGE_KEY, normalizeData(data));
+
+    // Clear existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Set new timeout for debounced write
+    debounceTimeoutRef.current = setTimeout(() => {
+      setLocal(STORAGE_KEY, normalizeData(data));
+      debounceTimeoutRef.current = null;
+    }, DEBOUNCE_DELAY_MS);
+
+    // Cleanup timeout on unmount
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+        debounceTimeoutRef.current = null;
+      }
+    };
   }, [data]);
 
   const reset = useCallback(() => {
