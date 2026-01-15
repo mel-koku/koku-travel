@@ -1,6 +1,8 @@
 import type { WeatherForecast, WeatherCondition } from "@/types/weather";
 import type { CityId } from "@/types/trip";
 import { logger } from "@/lib/logger";
+import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
+import { TIMEOUT_10_SECONDS } from "@/lib/constants";
 
 /**
  * City coordinates for weather API calls
@@ -57,7 +59,7 @@ export async function fetchWeatherForecast(
     // OpenWeatherMap 5-day forecast API
     const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${coords.lat}&lon=${coords.lng}&appid=${apiKey}&units=metric`;
     
-    const response = await fetch(url);
+    const response = await fetchWithTimeout(url, {}, TIMEOUT_10_SECONDS);
     if (!response.ok) {
       throw new Error(`Weather API error: ${response.status}`);
     }
