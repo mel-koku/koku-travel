@@ -20,10 +20,6 @@ const remotePatterns: Array<{
   },
   {
     protocol: "https",
-    hostname: "cdn.sanity.io",
-  },
-  {
-    protocol: "https",
     hostname: "images.pexels.com",
   },
   {
@@ -101,7 +97,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com", // Allow Google Fonts stylesheets + Tailwind CSS inline styles
       "img-src 'self' data: https: blob:",
       "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
-      "connect-src 'self' https://*.supabase.co https://*.sanity.io https://*.googleapis.com https://api.mapbox.com https://*.sentry.io",
+      "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.mapbox.com",
       "frame-src 'self'",
       "object-src 'none'",
       "base-uri 'self'",
