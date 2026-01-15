@@ -68,8 +68,11 @@ class Logger {
     if (errorTrackingService === "sentry") {
       try {
         // Dynamic import to avoid bundling Sentry in client if not used
+        // Use string-based require to prevent Turbopack from statically analyzing
         // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const Sentry = require("@sentry/nextjs");
+        const sentryModule = "@sentry/nextjs";
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const Sentry = require(sentryModule);
         if (Sentry && typeof Sentry.captureException === "function") {
           Sentry.captureException(error instanceof Error ? error : new Error(message), {
             tags: {
@@ -83,7 +86,7 @@ class Logger {
           return;
         }
       } catch {
-        // Sentry not installed or failed to load
+        // Sentry not installed or failed to load - this is expected if @sentry/nextjs is not installed
       }
     }
 
