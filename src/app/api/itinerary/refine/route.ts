@@ -3,6 +3,14 @@ import { refineDay, type RefinementType } from "@/lib/server/refinementEngine";
 import { convertItineraryToTrip } from "@/lib/server/itineraryEngine";
 import { badRequest, internalError } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/api/rateLimit";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+  getOptionalAuth,
+} from "@/lib/api/middleware";
+import { validateRequestBody } from "@/lib/api/schemas";
+import { z } from "zod";
 import type { Itinerary, ItineraryActivity, ItineraryDay, RecommendationReason as ItineraryRecommendationReason } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { Trip, TripActivity, TripDay, RecommendationReason as TripRecommendationReason } from "@/types/tripDomain";
@@ -138,30 +146,82 @@ const mapTripDayToItineraryDay = (day: TripDay): ItineraryDay => ({
   activities: day.activities.map(mapTripActivityToItineraryActivity),
 });
 
+/**
+ * POST /api/itinerary/refine
+ * 
+ * Refines a specific day in an itinerary based on refinement type.
+ * 
+ * @throws Returns 400 if request body is invalid
+ * @throws Returns 429 if rate limit exceeded
+ * @throws Returns 500 for server errors
+ */
 export async function POST(request: NextRequest) {
+  // Create request context for tracing
+  const context = createRequestContext(request);
+
+  // Rate limiting: 30 requests per minute per IP
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
+  if (rateLimitResponse) {
+    return addRequestContextHeaders(rateLimitResponse, context);
+  }
+
+  // Optional authentication (for future user-specific features)
+  const authResult = await getOptionalAuth(request, context);
+  const finalContext = authResult.context;
+
   try {
-    const body = await request.json();
+    // Validate request body with size limit (2MB for trip data)
+    const bodyValidation = await validateRequestBody(
+      request,
+      z.any(), // Accept flexible structure for backward compatibility
+      2 * 1024 * 1024
+    );
+    
+    if (!bodyValidation.success) {
+      return addRequestContextHeaders(
+        badRequest("Invalid request body", {
+          errors: bodyValidation.error.issues,
+        }, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
+    }
+
+    const body = bodyValidation.data;
 
     // Check if this is the simple stub format (trip domain model)
     if (body.trip && body.refinementType) {
       const { trip, refinementType, dayIndex } = body as RefineRequestBody;
 
       if (!trip || !refinementType) {
-        return NextResponse.json(
-          { error: "Missing trip or refinementType" },
-          { status: 400 }
+        return addRequestContextHeaders(
+          badRequest("Missing trip or refinementType", undefined, {
+            requestId: finalContext.requestId,
+          }),
+          finalContext,
         );
       }
 
       if (!VALID_REFINEMENT_TYPES.includes(refinementType)) {
-        return badRequest(`Invalid refinement type: ${refinementType}`);
+        return addRequestContextHeaders(
+          badRequest(`Invalid refinement type: ${refinementType}`, undefined, {
+            requestId: finalContext.requestId,
+          }),
+          finalContext,
+        );
       }
 
       // Default to day 0 if dayIndex not provided
       const targetDayIndex = dayIndex ?? 0;
 
       if (!trip.days[targetDayIndex]) {
-        return badRequest(`Day index ${targetDayIndex} not found in trip`);
+        return addRequestContextHeaders(
+          badRequest(`Day index ${targetDayIndex} not found in trip`, undefined, {
+            requestId: finalContext.requestId,
+          }),
+          finalContext,
+        );
       }
 
       // Perform actual refinement using refineDay function
@@ -182,14 +242,17 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date().toISOString(),
       };
 
-      return NextResponse.json(
-        {
-          trip: refined,
-          refinementType,
-          dayIndex: targetDayIndex,
-          message: `Successfully refined day ${targetDayIndex + 1} with ${refinementType} refinement.`,
-        },
-        { status: 200 }
+      return addRequestContextHeaders(
+        NextResponse.json(
+          {
+            trip: refined,
+            refinementType,
+            dayIndex: targetDayIndex,
+            message: `Successfully refined day ${targetDayIndex + 1} with ${refinementType} refinement.`,
+          },
+          { status: 200 }
+        ),
+        finalContext,
       );
     }
 
@@ -197,18 +260,38 @@ export async function POST(request: NextRequest) {
     const { tripId, dayIndex, refinementType, builderData, itinerary } = body as RefinementRequest;
 
     if (!tripId || typeof dayIndex !== "number" || !refinementType) {
-      return badRequest("tripId, dayIndex, and refinementType are required");
+      return addRequestContextHeaders(
+        badRequest("tripId, dayIndex, and refinementType are required", undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
     if (!VALID_REFINEMENT_TYPES.includes(refinementType)) {
-      return badRequest(`Invalid refinement type: ${refinementType}`);
+      return addRequestContextHeaders(
+        badRequest(`Invalid refinement type: ${refinementType}`, undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
     if (!builderData || !itinerary || !Array.isArray(itinerary.days) || itinerary.days.length === 0) {
-      return badRequest("builderData and itinerary are required to refine a trip");
+      return addRequestContextHeaders(
+        badRequest("builderData and itinerary are required to refine a trip", undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
 
     const trip = convertItineraryToTrip(itinerary, builderData, tripId);
     if (!trip.days[dayIndex]) {
-      return badRequest(`Day index ${dayIndex} not found for trip ${tripId}`);
+      return addRequestContextHeaders(
+        badRequest(`Day index ${dayIndex} not found for trip ${tripId}`, undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
     }
 
     const refinedDay = refineDay({ trip, dayIndex, type: refinementType });
@@ -224,12 +307,21 @@ export async function POST(request: NextRequest) {
       updatedTrip,
     };
 
-    return NextResponse.json(responseBody);
+    return addRequestContextHeaders(
+      NextResponse.json(responseBody),
+      finalContext,
+    );
   } catch (error) {
     logger.error(
       "Error refining itinerary day",
       error instanceof Error ? error : new Error(String(error)),
+      { requestId: finalContext.requestId },
     );
-    return internalError("Failed to refine day");
+    return addRequestContextHeaders(
+      internalError("Failed to refine day", undefined, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
   }
 }

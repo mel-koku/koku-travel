@@ -3,6 +3,36 @@ import { generateTripFromBuilderData, validateTripConstraints } from "@/lib/serv
 import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 import type { TripBuilderData } from "@/types/trip";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/api/rateLimit";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+  getOptionalAuth,
+} from "@/lib/api/middleware";
+import { validateRequestBody } from "@/lib/api/schemas";
+import { badRequest, internalError } from "@/lib/api/errors";
+import { z } from "zod";
+
+/**
+ * Schema for trip ID validation
+ */
+const tripIdSchema = z
+  .string()
+  .min(1, "Trip ID cannot be empty")
+  .max(255, "Trip ID too long")
+  .regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters")
+  .optional();
+
+/**
+ * Schema for request body validation
+ * Validates the structure but allows flexible TripBuilderData content
+ */
+const planRequestSchema = z.object({
+  builderData: z.any().refine((data) => data && typeof data === "object", {
+    message: "builderData must be an object",
+  }),
+  tripId: tripIdSchema,
+});
 
 /**
  * POST /api/itinerary/plan
@@ -20,16 +50,41 @@ import { logger } from "@/lib/logger";
  *   trip: Trip,
  *   validation: { valid: boolean, issues: string[] }
  * }
+ * 
+ * @throws Returns 400 if request body is invalid
+ * @throws Returns 429 if rate limit exceeded
+ * @throws Returns 500 for server errors
  */
 export async function POST(request: NextRequest) {
+  // Create request context for tracing
+  const context = createRequestContext(request);
+
+  // Rate limiting: 20 requests per minute per IP (itinerary generation is expensive)
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
+  if (rateLimitResponse) {
+    return addRequestContextHeaders(rateLimitResponse, context);
+  }
+
+  // Optional authentication (for future user-specific features)
+  const authResult = await getOptionalAuth(request, context);
+  const finalContext = authResult.context;
+
+  // Validate request body with size limit (1MB)
+  const validation = await validateRequestBody(request, planRequestSchema, 1024 * 1024);
+  if (!validation.success) {
+    return addRequestContextHeaders(
+      badRequest("Invalid request body", {
+        errors: validation.error.issues,
+      }, {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
+  }
+
+  const { builderData, tripId } = validation.data;
+
   try {
-    const body = await request.json();
-    const { builderData, tripId } = body as { builderData: TripBuilderData; tripId?: string };
-
-    if (!builderData) {
-      return NextResponse.json({ error: "builderData is required" }, { status: 400 });
-    }
-
     // Generate trip ID if not provided
     const finalTripId = tripId ?? `trip-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
@@ -42,17 +97,30 @@ export async function POST(request: NextRequest) {
     const trip = await generateTripFromBuilderData(builderData, finalTripId);
 
     // Validate constraints
-    const validation = validateTripConstraints(trip);
+    const tripValidation = validateTripConstraints(trip);
 
-    return NextResponse.json({
-      trip,
-      validation,
-    });
+    return addRequestContextHeaders(
+      NextResponse.json({
+        trip,
+        validation: tripValidation,
+      }, {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+        },
+      }),
+      finalContext,
+    );
   } catch (error) {
-    logger.error("Failed to generate itinerary", error);
-    return NextResponse.json(
-      { error: "Failed to generate itinerary", message: error instanceof Error ? error.message : String(error) },
-      { status: 500 },
+    logger.error("Failed to generate itinerary", error instanceof Error ? error : new Error(String(error)), {
+      requestId: finalContext.requestId,
+    });
+    return addRequestContextHeaders(
+      internalError(
+        "Failed to generate itinerary",
+        { message: error instanceof Error ? error.message : String(error) },
+        { requestId: finalContext.requestId },
+      ),
+      finalContext,
     );
   }
 }
