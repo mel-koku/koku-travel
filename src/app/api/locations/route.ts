@@ -55,7 +55,12 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search");
 
     // Get total count for pagination metadata (with filters)
-    let countQuery = supabase.from("locations").select("*", { count: "exact", head: true });
+    // Only count locations with valid place_id to match filtered results
+    let countQuery = supabase
+      .from("locations")
+      .select("*", { count: "exact", head: true })
+      .not("place_id", "is", null)
+      .neq("place_id", "");
     if (region) countQuery = countQuery.eq("region", region);
     if (category) countQuery = countQuery.eq("category", category);
     if (search) countQuery = countQuery.ilike("name", `%${search}%`);
@@ -77,7 +82,12 @@ export async function GET(request: NextRequest) {
     const total = count || 0;
 
     // Fetch paginated locations (with filters)
-    let dataQuery = supabase.from("locations").select("*");
+    // Only fetch locations with valid place_id to prevent errors
+    let dataQuery = supabase
+      .from("locations")
+      .select("*")
+      .not("place_id", "is", null)
+      .neq("place_id", "");
     if (region) dataQuery = dataQuery.eq("region", region);
     if (category) dataQuery = dataQuery.eq("category", category);
     if (search) dataQuery = dataQuery.ilike("name", `%${search}%`);
@@ -99,25 +109,33 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform Supabase data to Location type
-    const locations: Location[] = (data || []).map((row) => ({
-      id: row.id,
-      name: row.name,
-      region: row.region,
-      city: row.city,
-      category: row.category,
-      image: row.image,
-      minBudget: row.min_budget ?? undefined,
-      estimatedDuration: row.estimated_duration ?? undefined,
-      operatingHours: row.operating_hours ?? undefined,
-      recommendedVisit: row.recommended_visit ?? undefined,
-      preferredTransitModes: row.preferred_transit_modes ?? undefined,
-      coordinates: row.coordinates ?? undefined,
-      timezone: row.timezone ?? undefined,
-      shortDescription: row.short_description ?? undefined,
-      rating: row.rating ?? undefined,
-      reviewCount: row.review_count ?? undefined,
-      placeId: row.place_id ?? undefined,
-    }));
+    // Filter out locations without place_id to avoid errors when fetching details
+    // Locations without place_id will fail when trying to resolve Google Place ID
+    const locations: Location[] = (data || [])
+      .filter((row) => {
+        // Only include locations that have a place_id set
+        // This prevents "Could not resolve Google Place ID" errors
+        return row.place_id != null && row.place_id.trim() !== "";
+      })
+      .map((row) => ({
+        id: row.id,
+        name: row.name,
+        region: row.region,
+        city: row.city,
+        category: row.category,
+        image: row.image,
+        minBudget: row.min_budget ?? undefined,
+        estimatedDuration: row.estimated_duration ?? undefined,
+        operatingHours: row.operating_hours ?? undefined,
+        recommendedVisit: row.recommended_visit ?? undefined,
+        preferredTransitModes: row.preferred_transit_modes ?? undefined,
+        coordinates: row.coordinates ?? undefined,
+        timezone: row.timezone ?? undefined,
+        shortDescription: row.short_description ?? undefined,
+        rating: row.rating ?? undefined,
+        reviewCount: row.review_count ?? undefined,
+        placeId: row.place_id ?? undefined,
+      }));
 
     // Create paginated response
     const response = createPaginatedResponse(locations, total, pagination);

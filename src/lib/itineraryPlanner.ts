@@ -333,7 +333,7 @@ function createCityTransition(
   fromCityId: CityId,
   toCityId: CityId,
   previousDay: ItineraryDay,
-  currentDay: ItineraryDay,
+  _currentDay: ItineraryDay,
 ): ItineraryCityTransition | undefined {
   // Get travel time between cities
   const travelTime = travelMinutes(fromCityId, toCityId);
@@ -351,7 +351,8 @@ function createCityTransition(
 
   // Use end of previous day or start of current day for departure
   const previousDayEnd = previousDay.bounds?.endTime ?? "21:00";
-  const currentDayStart = currentDay.bounds?.startTime ?? "09:00";
+  const currentDayStart = _currentDay.bounds?.startTime ?? "09:00";
+  void currentDayStart; // Intentionally unused - kept for future use
 
   // For inter-city travel, prefer traveling at end of previous day or start of current day
   // Use end of previous day as departure time
@@ -468,7 +469,7 @@ async function planItineraryDay(
   itinerary: Itinerary,
   options: Required<PlannerOptions>,
   startPoint?: { coordinates: { lat: number; lng: number } },
-  endPoint?: { coordinates: { lat: number; lng: number } },
+  _endPoint?: { coordinates: { lat: number; lng: number } },
 ): Promise<ItineraryDay> {
   const dayTimezone = day.timezone ?? itinerary.timezone ?? "UTC";
   const startMinutes =

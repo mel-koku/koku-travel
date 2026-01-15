@@ -68,7 +68,7 @@ class Logger {
     if (errorTrackingService === "logrocket") {
       try {
         if (typeof window !== "undefined" && (window as { LogRocket?: { captureException?: (error: unknown, options?: unknown) => void } }).LogRocket) {
-          const LogRocket = (window as { LogRocket: { captureException: (error: unknown, options?: unknown) => void } }).LogRocket;
+          const LogRocket = (window as unknown as { LogRocket: { captureException: (error: unknown, options?: unknown) => void } }).LogRocket;
           LogRocket.captureException(error instanceof Error ? error : new Error(message), {
             tags: {
               source: "logger",

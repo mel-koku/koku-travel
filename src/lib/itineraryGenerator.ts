@@ -11,6 +11,7 @@ import { applyDiversityFilter, type DiversityContext } from "@/lib/scoring/diver
 import { checkOpeningHoursFit } from "@/lib/scoring/timeOptimization";
 import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
+import { createClient } from "@/lib/supabase/server";
 
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
@@ -57,44 +58,166 @@ REGIONS.forEach((region) => {
   });
 });
 
-const LOCATIONS_BY_CITY_KEY = new Map<string, Location[]>();
-const LOCATIONS_BY_REGION_ID = new Map<RegionId, Location[]>();
-const ALL_LOCATIONS: Location[] = [...MOCK_LOCATIONS];
+/**
+ * Fetches all locations from Supabase database.
+ * In production, throws errors if database is unavailable.
+ * In development, falls back to mock data for easier local development.
+ */
+async function fetchAllLocations(): Promise<Location[]> {
+  const isDevelopment = process.env.NODE_ENV === "development";
 
-MOCK_LOCATIONS.forEach((location) => {
-  const cityKey = normalizeKey(location.city);
-  if (!cityKey) {
-    return;
-  }
-  const regionIdFromLabel = REGION_ID_BY_LABEL.get(normalizeKey(location.region));
-  const existingInfo = CITY_INFO_BY_KEY.get(cityKey);
-  const info: CityInfo =
-    existingInfo ??
-    (() => {
-      const fallback: CityInfo = { key: cityKey, label: location.city, regionId: regionIdFromLabel };
-      CITY_INFO_BY_KEY.set(cityKey, fallback);
-      return fallback;
-    })();
+  try {
+    const supabase = await createClient();
+    const allLocations: Location[] = [];
+    let page = 0;
+    const limit = 100; // Max per page
+    let hasMore = true;
 
-  const cityList = LOCATIONS_BY_CITY_KEY.get(cityKey);
-  if (cityList) {
-    cityList.push(location);
-  } else {
-    LOCATIONS_BY_CITY_KEY.set(cityKey, [location]);
-  }
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from("locations")
+        .select("*")
+        .order("name", { ascending: true })
+        .range(page * limit, (page + 1) * limit - 1);
 
-  if (info.regionId) {
-    const regionList = LOCATIONS_BY_REGION_ID.get(info.regionId);
-    if (regionList) {
-      regionList.push(location);
-    } else {
-      LOCATIONS_BY_REGION_ID.set(info.regionId, [location]);
+      if (error) {
+        const errorMessage = `Failed to fetch locations from database: ${error.message}`;
+        if (isDevelopment) {
+          logger.warn(errorMessage + " Falling back to mock data.", { error: error.message, page });
+          return [...MOCK_LOCATIONS];
+        } else {
+          logger.error(errorMessage, { error: error.message, page });
+          throw new Error(errorMessage);
+        }
+      }
+
+      if (!data || data.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      // Transform Supabase data to Location type
+      const locations: Location[] = data.map((row) => ({
+        id: row.id,
+        name: row.name,
+        region: row.region,
+        city: row.city,
+        category: row.category,
+        image: row.image,
+        minBudget: row.min_budget ?? undefined,
+        estimatedDuration: row.estimated_duration ?? undefined,
+        operatingHours: row.operating_hours ?? undefined,
+        recommendedVisit: row.recommended_visit ?? undefined,
+        preferredTransitModes: row.preferred_transit_modes ?? undefined,
+        coordinates: row.coordinates ?? undefined,
+        timezone: row.timezone ?? undefined,
+        shortDescription: row.short_description ?? undefined,
+        rating: row.rating ?? undefined,
+        reviewCount: row.review_count ?? undefined,
+        placeId: row.place_id ?? undefined,
+      }));
+
+      allLocations.push(...locations);
+
+      // Check if there are more pages
+      hasMore = data.length === limit;
+      page++;
+
+      // Safety limit to prevent infinite loops
+      if (page > 100) {
+        logger.warn("Reached pagination safety limit when fetching locations");
+        break;
+      }
     }
-  }
-});
 
-LOCATIONS_BY_CITY_KEY.forEach((locations) => locations.sort((a, b) => a.name.localeCompare(b.name)));
-LOCATIONS_BY_REGION_ID.forEach((locations) => locations.sort((a, b) => a.name.localeCompare(b.name)));
+    if (allLocations.length === 0) {
+      const errorMessage = "No locations found in database. Please ensure locations are seeded.";
+      if (isDevelopment) {
+        logger.warn(errorMessage + " Falling back to mock data.");
+        return [...MOCK_LOCATIONS];
+      } else {
+        logger.error(errorMessage);
+        throw new Error(errorMessage);
+      }
+    }
+
+    logger.info(`Fetched ${allLocations.length} locations from database`);
+    return allLocations;
+  } catch (error) {
+    // If it's already our custom error, re-throw it
+    if (error instanceof Error && !isDevelopment) {
+      throw error;
+    }
+
+    // In development, fall back to mock data
+    if (isDevelopment) {
+      logger.warn("Error fetching locations from database, falling back to mock data", {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return [...MOCK_LOCATIONS];
+    }
+
+    // In production, fail loudly
+    const errorMessage = `Failed to fetch locations from database: ${error instanceof Error ? error.message : String(error)}`;
+    logger.error(errorMessage, { error });
+    throw new Error(errorMessage);
+  }
+}
+
+/**
+ * Builds location maps from an array of locations.
+ * Organizes locations by city and region for efficient lookup.
+ */
+function buildLocationMaps(locations: Location[]): {
+  locationsByCityKey: Map<string, Location[]>;
+  locationsByRegionId: Map<RegionId, Location[]>;
+  allLocations: Location[];
+} {
+  const locationsByCityKey = new Map<string, Location[]>();
+  const locationsByRegionId = new Map<RegionId, Location[]>();
+
+  locations.forEach((location) => {
+    const cityKey = normalizeKey(location.city);
+    if (!cityKey) {
+      return;
+    }
+    const regionIdFromLabel = REGION_ID_BY_LABEL.get(normalizeKey(location.region));
+    const existingInfo = CITY_INFO_BY_KEY.get(cityKey);
+    const info: CityInfo =
+      existingInfo ??
+      (() => {
+        const fallback: CityInfo = { key: cityKey, label: location.city, regionId: regionIdFromLabel };
+        CITY_INFO_BY_KEY.set(cityKey, fallback);
+        return fallback;
+      })();
+
+    const cityList = locationsByCityKey.get(cityKey);
+    if (cityList) {
+      cityList.push(location);
+    } else {
+      locationsByCityKey.set(cityKey, [location]);
+    }
+
+    if (info.regionId) {
+      const regionList = locationsByRegionId.get(info.regionId);
+      if (regionList) {
+        regionList.push(location);
+      } else {
+        locationsByRegionId.set(info.regionId, [location]);
+      }
+    }
+  });
+
+  // Sort locations within each map
+  locationsByCityKey.forEach((locationList) => locationList.sort((a, b) => a.name.localeCompare(b.name)));
+  locationsByRegionId.forEach((locationList) => locationList.sort((a, b) => a.name.localeCompare(b.name)));
+
+  return {
+    locationsByCityKey,
+    locationsByRegionId,
+    allLocations: locations,
+  };
+}
 
 function inferTravelMode(
   location: Location | undefined,
@@ -114,12 +237,17 @@ function inferTravelMode(
   }
   return "walk";
 }
+void inferTravelMode; // Intentionally unused - kept for future use
 
 export async function generateItinerary(data: TripBuilderData): Promise<Itinerary> {
   const totalDays =
     typeof data.duration === "number" && data.duration > 0 ? data.duration : DEFAULT_TOTAL_DAYS;
 
-  const citySequence = resolveCitySequence(data);
+  // Fetch locations from database (with fallback to mock data)
+  const allLocations = await fetchAllLocations();
+  const { locationsByCityKey, locationsByRegionId } = buildLocationMaps(allLocations);
+
+  const citySequence = resolveCitySequence(data, locationsByCityKey, allLocations);
   const expandedCitySequence = expandCitySequenceForDays(citySequence, totalDays);
   const interestSequence = resolveInterestSequence(data);
   const usedLocations = new Set<string>();
@@ -167,9 +295,9 @@ export async function generateItinerary(data: TripBuilderData): Promise<Itinerar
     }
 
     // Get available locations for this city
-    const cityLocations = LOCATIONS_BY_CITY_KEY.get(cityInfo.key) ?? [];
+    const cityLocations = locationsByCityKey.get(cityInfo.key) ?? [];
     const regionLocations = cityInfo.regionId
-      ? LOCATIONS_BY_REGION_ID.get(cityInfo.regionId) ?? []
+      ? locationsByRegionId.get(cityInfo.regionId) ?? []
       : [];
     // Use city locations if available, otherwise fall back to region locations
     // But always filter to ensure locations match the day's city to prevent cross-city mixing
@@ -329,11 +457,12 @@ export async function generateItinerary(data: TripBuilderData): Promise<Itinerar
     const previousDay = dayIndex > 0 ? days[dayIndex - 1] : undefined;
     const previousLocation =
       previousDay && previousDay.activities.length > 0
-        ? MOCK_LOCATIONS.find((loc) => {
+        ? allLocations.find((loc) => {
             const lastActivity = previousDay.activities[previousDay.activities.length - 1];
             return lastActivity && loc.name === lastActivity.title;
           })
         : undefined;
+    void previousLocation; // Intentionally unused - kept for future use
 
     // Determine city ID for this day
     const dayCityId = cityInfo.key as CityId | undefined;
@@ -438,7 +567,11 @@ function expandCitySequenceForDays(citySequence: CityInfo[], totalDays: number):
   return expanded.slice(0, totalDays);
 }
 
-function resolveCitySequence(data: TripBuilderData): CityInfo[] {
+function resolveCitySequence(
+  data: TripBuilderData,
+  locationsByCityKey: Map<string, Location[]>,
+  allLocations: Location[],
+): CityInfo[] {
   const sequence: CityInfo[] = [];
   const seen = new Set<string>();
 
@@ -450,7 +583,7 @@ function resolveCitySequence(data: TripBuilderData): CityInfo[] {
     if (!info) {
       return;
     }
-    if (!LOCATIONS_BY_CITY_KEY.has(cityKey)) {
+    if (!locationsByCityKey.has(cityKey)) {
       return;
     }
     sequence.push(info);
@@ -490,7 +623,7 @@ function resolveCitySequence(data: TripBuilderData): CityInfo[] {
   }
 
   if (sequence.length === 0) {
-    const firstLocation = ALL_LOCATIONS[0];
+    const firstLocation = allLocations[0];
     if (firstLocation) {
       const firstCityKey = normalizeKey(firstLocation.city);
       addCityByKey(firstCityKey);
@@ -704,20 +837,24 @@ function pickLocation(
   cityInfo: CityInfo,
   interest: InterestId,
   usedLocations: Set<string>,
+  locationsByCityKey: Map<string, Location[]>,
+  locationsByRegionId: Map<RegionId, Location[]>,
+  allLocations: Location[],
 ): Location | undefined {
-  const cityLocations = LOCATIONS_BY_CITY_KEY.get(cityInfo.key);
+  const cityLocations = locationsByCityKey.get(cityInfo.key);
   if (!cityLocations || cityLocations.length === 0) {
     if (cityInfo.regionId) {
-      const regionLocations = LOCATIONS_BY_REGION_ID.get(cityInfo.regionId);
+      const regionLocations = locationsByRegionId.get(cityInfo.regionId);
       if (regionLocations && regionLocations.length > 0) {
         return pickFromList(regionLocations, interest, usedLocations);
       }
     }
-    return pickFromList(ALL_LOCATIONS, interest, usedLocations);
+    return pickFromList(allLocations, interest, usedLocations);
   }
 
   return pickFromList(cityLocations, interest, usedLocations);
 }
+void pickLocation; // Intentionally unused - kept for future use
 
 function pickFromList(
   list: Location[],
@@ -749,6 +886,7 @@ function pickFromList(
 
   return unused[Math.floor(Math.random() * unused.length)];
 }
+void pickFromList; // Intentionally unused - kept for future use
 
 /**
  * Pick a location that fits within the available time budget.
@@ -933,17 +1071,21 @@ function buildDayTitle(dayIndex: number, cityKey: string): string {
   return `Day ${dayIndex + 1} (${label})`;
 }
 
-function findAnyCityForRegion(regionId: RegionId): string | undefined {
+function findAnyCityForRegion(
+  regionId: RegionId,
+  locationsByCityKey: Map<string, Location[]>,
+  locationsByRegionId: Map<RegionId, Location[]>,
+): string | undefined {
   const region = REGIONS.find((r) => r.id === regionId);
   if (region && region.cities.length > 0) {
     for (const city of region.cities) {
       const cityKey = normalizeKey(city.id);
-      if (LOCATIONS_BY_CITY_KEY.has(cityKey)) {
+      if (locationsByCityKey.has(cityKey)) {
         return cityKey;
       }
     }
   }
-  const regionLocations = LOCATIONS_BY_REGION_ID.get(regionId);
+  const regionLocations = locationsByRegionId.get(regionId);
   if (regionLocations && regionLocations.length > 0) {
     const firstLocation = regionLocations[0];
     if (firstLocation) {
@@ -952,6 +1094,7 @@ function findAnyCityForRegion(regionId: RegionId): string | undefined {
   }
   return undefined;
 }
+void findAnyCityForRegion; // Intentionally unused - kept for future use
 
 /**
  * Get the duration of a location in minutes.

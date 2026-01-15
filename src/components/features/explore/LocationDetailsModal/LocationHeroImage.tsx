@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Location, LocationDetails } from "@/types/location";
+import { getLocationDisplayName } from "@/lib/locationNameUtils";
 
 const FALLBACK_IMAGE_SRC =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -12,7 +13,8 @@ type LocationHeroImageProps = {
 
 export function LocationHeroImage({ location, details, favoriteButton }: LocationHeroImageProps) {
   const heroImageUrl = details?.photos?.[0]?.proxyUrl ?? location.image ?? null;
-  const heroImageAlt = `${location.name} hero photo`;
+  const displayName = getLocationDisplayName(details?.displayName, location);
+  const heroImageAlt = `${displayName} hero photo`;
 
   if (!heroImageUrl) {
     return favoriteButton ? <div className="flex justify-end">{favoriteButton}</div> : null;

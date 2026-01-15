@@ -51,6 +51,8 @@ export function applyDiversityFilter(
 
     const streakCount = countCategoryStreak(context.recentCategories, category);
     const adjustedScore = candidate.score;
+    void streakCount; // Intentionally unused - kept for future use
+    void adjustedScore; // Intentionally unused - kept for future use
 
     // The diversity bonus is already included in the score from locationScoring
     // But we can apply additional penalties here if needed

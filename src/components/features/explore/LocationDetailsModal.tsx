@@ -12,6 +12,7 @@ import { LocationDetailsError } from "./LocationDetailsModal/LocationDetailsErro
 import { LocationHeroImage } from "./LocationDetailsModal/LocationHeroImage";
 import { LocationDetailsSections } from "./LocationDetailsModal/LocationDetailsSections";
 import { LocationPhotos } from "./LocationDetailsModal/LocationPhotos";
+import { getLocationDisplayName } from "@/lib/locationNameUtils";
 
 type LocationDetailsModalProps = {
   location: Location | null;
@@ -44,9 +45,14 @@ export function LocationDetailsModal({ location, onClose }: LocationDetailsModal
     );
   }, [location, isFavorite, handleToggleFavorite]);
 
+  const displayName = useMemo(() => {
+    if (!location) return null;
+    return getLocationDisplayName(details?.displayName, location);
+  }, [location, details]);
+
   const heroImageAlt = useMemo(
-    () => (location ? `${location.name} hero photo` : "Location photo"),
-    [location],
+    () => (displayName ? `${displayName} hero photo` : "Location photo"),
+    [displayName],
   );
 
   if (!location) {
@@ -57,7 +63,7 @@ export function LocationDetailsModal({ location, onClose }: LocationDetailsModal
     <Modal
       isOpen={Boolean(location)}
       onClose={onClose}
-      title={location.name}
+      title={displayName ?? location.name}
       description={`${location.city}, ${location.region}`}
       panelClassName="max-w-4xl"
     >

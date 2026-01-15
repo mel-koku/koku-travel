@@ -168,6 +168,7 @@ export type LocationPhoto = {
 
 export type LocationDetails = {
   placeId: string;
+  displayName?: string;
   formattedAddress?: string;
   shortAddress?: string;
   rating?: number;

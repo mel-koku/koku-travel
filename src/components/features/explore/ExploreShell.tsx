@@ -7,6 +7,12 @@ import { FilterBar } from "./FilterBar";
 import { LocationGrid } from "./LocationGrid";
 import { FeaturedLocationsHero } from "./FeaturedLocationsHero";
 import { logger } from "@/lib/logger";
+import {
+  getCachedLocations,
+  getCachedLocationsIncludingStale,
+  isCacheStale,
+  setCachedLocations,
+} from "@/lib/locationsCache";
 
 const BUDGET_FILTERS = [
   {
@@ -180,8 +186,34 @@ export function ExploreShell() {
     let cancelled = false;
 
     async function fetchLocations() {
-      setIsLoading(true);
-      setLoadError(null);
+      // Check for cached locations first (including stale ones for immediate display)
+      const cachedLocations = getCachedLocationsIncludingStale();
+      const cacheIsStale = isCacheStale();
+      const hasFreshCache = cachedLocations && !cacheIsStale;
+
+      // If we have fresh cache, use it and skip fetching
+      if (hasFreshCache) {
+        logger.info("Using fresh locations cache", { count: cachedLocations.length });
+        setLocations(cachedLocations);
+        setIsLoading(false);
+        setLoadError(null);
+        return;
+      }
+
+      // If we have stale cache, show it immediately while fetching fresh data
+      if (cachedLocations && cacheIsStale) {
+        logger.info("Using stale locations cache, refreshing in background", {
+          count: cachedLocations.length,
+        });
+        setLocations(cachedLocations);
+        setIsLoading(false);
+        setLoadError(null);
+        // Continue to fetch fresh data below
+      } else {
+        // No cache or expired - show loading state
+        setIsLoading(true);
+        setLoadError(null);
+      }
 
       try {
         // Fetch all locations by requesting max limit and paginating if needed
@@ -219,22 +251,36 @@ export function ExploreShell() {
         if (cancelled) return;
 
         if (allLocations.length === 0) {
-          logger.warn("No locations returned from API after fetching all pages");
-          setLoadError("No locations found. Please check the database configuration.");
+          // Only show error if we don't have cached data to fall back to
+          if (!cachedLocations) {
+            logger.warn("No locations returned from API after fetching all pages");
+            setLoadError("No locations found. Please check the database configuration.");
+          }
+        } else {
+          // Save to cache and update state
+          setCachedLocations(allLocations);
+          setLocations(allLocations);
+          setLoadError(null);
         }
-        
-        setLocations(allLocations);
-        setLoadError(null);
       } catch (error) {
         if (cancelled) return;
         
-        logger.error("Failed to load locations from API", error);
-        setLoadError(
-          error instanceof Error && error.message.includes("fetch")
-            ? "Unable to connect to the server. Please check your internet connection and try again."
-            : "Unable to load locations. Please refresh the page to try again."
-        );
-        setLocations([]);
+        // If we have cached data, use it even if fetch fails
+        if (cachedLocations) {
+          logger.warn("Failed to refresh locations, using cached data", { error });
+          // Locations already set from cache above, just ensure loading is false
+          setIsLoading(false);
+          // Don't set error - user can still use cached data
+        } else {
+          // No cache to fall back to - show error
+          logger.error("Failed to load locations from API", error);
+          setLoadError(
+            error instanceof Error && error.message.includes("fetch")
+              ? "Unable to connect to the server. Please check your internet connection and try again."
+              : "Unable to load locations. Please refresh the page to try again."
+          );
+          setLocations([]);
+        }
       } finally {
         if (!cancelled) {
           setIsLoading(false);

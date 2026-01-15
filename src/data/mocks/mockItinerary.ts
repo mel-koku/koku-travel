@@ -1,4 +1,4 @@
-import { Itinerary } from "../types/itinerary";
+import { Itinerary } from "../../types/itinerary";
 
 export const MOCK_ITINERARY: Itinerary = {
   timezone: "Asia/Tokyo",

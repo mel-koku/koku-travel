@@ -47,6 +47,7 @@ export function optimizeRouteOrder(
     (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
   );
   const noteActivities = activities.filter((a) => a.kind === "note");
+  void noteActivities; // Intentionally unused - kept for future use
 
   if (placeActivities.length === 0) {
     // No place activities to optimize, return original order
