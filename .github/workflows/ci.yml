@@ -32,10 +32,6 @@ jobs:
             echo "❌ Missing NEXT_PUBLIC_SUPABASE_URL secret"
             exit 1
           fi
-          if [ -z "${{ secrets.SANITY_PROJECT_ID }}" ]; then
-            echo "❌ Missing SANITY_PROJECT_ID secret"
-            exit 1
-          fi
           echo "✅ All required secrets present"
 
       - name: Run linter
@@ -69,9 +65,6 @@ jobs:
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          SANITY_PROJECT_ID: ${{ secrets.SANITY_PROJECT_ID }}
-          SANITY_DATASET: production
-          SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
@@ -133,4 +126,3 @@ jobs:
             npm-debug.log
             package-lock.json
           retention-days: 7
-

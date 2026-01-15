@@ -10,18 +10,16 @@ import {
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
 import type { Location } from "@/types/location";
-import { getPlaceFromCache, storePlaceInCache } from "@/lib/cache/placeCache";
-import { fetchLocationDetails } from "@/lib/googlePlaces";
 import { googlePlacesLimiter } from "@/lib/cost/googlePlacesLimiter";
 import { featureFlags } from "@/lib/env/featureFlags";
 
 /**
  * GET /api/places/details?placeId=...&name=...
  * Fetch place details by Google Place ID and return as Location object.
- * 
+ *
  * Note: This endpoint is public but rate-limited. Authentication is optional
  * and may be used for user-specific features in the future.
- * 
+ *
  * @param request - Next.js request object
  * @param request.url - Must contain query parameter 'placeId', optional 'name'
  * @returns JSON object with Location details
@@ -84,52 +82,9 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Check Sanity cache first
-    const cached = await getPlaceFromCache(validatedPlaceId);
-    
-    if (cached) {
-      // Use cached coordinates if available, otherwise fetch them
-      let coordinates = cached.coordinates;
-      if (!coordinates) {
-        const place = await fetchPlaceCoordinates(validatedPlaceId);
-        coordinates = place
-          ? {
-              lat: place.location.latitude,
-              lng: place.location.longitude,
-            }
-          : null;
-      }
-      
-      const location: Location = {
-        id: validatedPlaceId,
-        name: name || cached.details.formattedAddress?.split(",")[0] || "",
-        region: cached.details.formattedAddress?.split(",").pop()?.trim() || "",
-        city: cached.details.formattedAddress?.split(",")[0]?.trim() || "",
-        category: "point_of_interest",
-        image: "",
-        coordinates: coordinates ?? {
-          lat: 0,
-          lng: 0,
-        },
-        placeId: validatedPlaceId,
-      };
-
-      logger.debug(`Returning cached place ${validatedPlaceId} from Sanity`);
-      
-      return addRequestContextHeaders(
-        NextResponse.json({ location }, {
-          headers: {
-            "Cache-Control": "public, max-age=86400, s-maxage=86400",
-            "X-Cache": "sanity",
-          },
-        }),
-        finalContext,
-      );
-    }
-
-    // Cache miss - check cost limits before fetching from Google Places API
+    // Check cost limits before fetching from Google Places API
     const tripId = request.headers.get("x-trip-id") ?? "unknown";
-    
+
     if (!featureFlags.enableGooglePlaces || !googlePlacesLimiter.canMakeCall(tripId)) {
       return addRequestContextHeaders(
         serviceUnavailable(
@@ -144,7 +99,7 @@ export async function GET(request: NextRequest) {
     }
 
     const place = await fetchPlaceCoordinates(validatedPlaceId);
-    
+
     // Record the API call
     googlePlacesLimiter.recordCall(tripId);
 
@@ -155,35 +110,6 @@ export async function GET(request: NextRequest) {
         }),
         finalContext,
       );
-    }
-
-    // Try to fetch full details for caching
-    try {
-      const tempLocation: Location = {
-        id: validatedPlaceId,
-        name: place.displayName || "",
-        region: place.formattedAddress?.split(",").pop()?.trim() || "",
-        city: place.formattedAddress?.split(",")[0]?.trim() || "",
-        category: "point_of_interest",
-        image: "",
-        coordinates: {
-          lat: place.location.latitude,
-          lng: place.location.longitude,
-        },
-        placeId: place.placeId,
-      };
-      
-      // Fetch full details and cache them (async, don't wait)
-      fetchLocationDetails(tempLocation)
-        .then((fullDetails) =>
-          storePlaceInCache(validatedPlaceId, fullDetails, tempLocation.coordinates),
-        )
-        .catch((cacheError) => {
-          logger.warn("Failed to cache place details", { placeId: validatedPlaceId, error: cacheError });
-        });
-    } catch (cacheError) {
-      // Don't fail if caching fails
-      logger.warn("Failed to cache place details", { placeId: validatedPlaceId, error: cacheError });
     }
 
     // Create Location object from place data
@@ -205,7 +131,6 @@ export async function GET(request: NextRequest) {
       NextResponse.json({ location }, {
         headers: {
           "Cache-Control": "public, max-age=86400, s-maxage=86400", // Cache for 24 hours
-          "X-Cache": "miss",
         },
       }),
       finalContext,
@@ -234,4 +159,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

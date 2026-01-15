@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
-import { sanityClient } from "@/lib/sanity/client";
 import { env } from "@/lib/env";
 import { Redis } from "@upstash/redis";
 import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
@@ -9,7 +8,7 @@ import { logger } from "@/lib/logger";
 /**
  * GET /api/health
  * Health check endpoint that verifies critical service dependencies
- * 
+ *
  * @returns 200 with health status if all services are healthy
  * @returns 503 if any critical service is unhealthy
  */
@@ -18,7 +17,7 @@ export async function GET(request: NextRequest) {
   const context = createRequestContext(request);
   const timestamp = new Date().toISOString();
   const version = process.env.npm_package_version || "unknown";
-  
+
   const health: {
     status: "healthy" | "unhealthy";
     timestamp: string;
@@ -27,7 +26,6 @@ export async function GET(request: NextRequest) {
     requestId: string;
     services: {
       supabase: { status: "healthy" | "unhealthy"; message?: string };
-      sanity: { status: "healthy" | "unhealthy"; message?: string };
       upstash: { status: "healthy" | "unhealthy" | "not_configured"; message?: string };
     };
   } = {
@@ -38,7 +36,6 @@ export async function GET(request: NextRequest) {
     requestId: context.requestId,
     services: {
       supabase: { status: "unhealthy" },
-      sanity: { status: "unhealthy" },
       upstash: { status: "not_configured" },
     },
   };
@@ -58,22 +55,6 @@ export async function GET(request: NextRequest) {
       requestId: context.requestId,
     });
     health.services.supabase = {
-      status: "unhealthy",
-      message: error instanceof Error ? error.message : String(error),
-    };
-    health.status = "unhealthy";
-  }
-
-  // Check Sanity connection
-  try {
-    // Simple health check query - fetch a single document
-    await sanityClient.fetch(`*[_type == "guide"][0]{_id}`, {});
-    health.services.sanity = { status: "healthy" };
-  } catch (error) {
-    logger.error("Sanity health check failed", error instanceof Error ? error : new Error(String(error)), {
-      requestId: context.requestId,
-    });
-    health.services.sanity = {
       status: "unhealthy",
       message: error instanceof Error ? error.message : String(error),
     };
@@ -120,4 +101,3 @@ export async function GET(request: NextRequest) {
 
   return addRequestContextHeaders(response, context);
 }
-

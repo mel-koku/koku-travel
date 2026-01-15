@@ -11,15 +11,6 @@ type EnvConfig = {
   NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
   SUPABASE_SERVICE_ROLE_KEY?: string;
 
-  // Sanity
-  SANITY_PROJECT_ID: string;
-  SANITY_DATASET: string;
-  SANITY_API_READ_TOKEN: string;
-  SANITY_API_WRITE_TOKEN?: string;
-  SANITY_PREVIEW_SECRET?: string;
-  SANITY_API_VERSION?: string;
-  SANITY_REVALIDATE_SECRET?: string;
-
   // Google APIs
   GOOGLE_PLACES_API_KEY?: string;
   ROUTING_GOOGLE_MAPS_API_KEY?: string;
@@ -45,10 +36,7 @@ type EnvConfig = {
 
 type RequiredEnvKeys =
   | "NEXT_PUBLIC_SUPABASE_URL"
-  | "NEXT_PUBLIC_SUPABASE_ANON_KEY"
-  | "SANITY_PROJECT_ID"
-  | "SANITY_DATASET"
-  | "SANITY_API_READ_TOKEN";
+  | "NEXT_PUBLIC_SUPABASE_ANON_KEY";
 
 type OptionalEnvKeys = Exclude<keyof EnvConfig, RequiredEnvKeys>;
 
@@ -90,13 +78,6 @@ function createLenientConfig(): EnvConfig {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || "",
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-    SANITY_PROJECT_ID: process.env.SANITY_PROJECT_ID || "",
-    SANITY_DATASET: process.env.SANITY_DATASET || "production",
-    SANITY_API_READ_TOKEN: process.env.SANITY_API_READ_TOKEN || "",
-    SANITY_API_WRITE_TOKEN: process.env.SANITY_API_WRITE_TOKEN,
-    SANITY_PREVIEW_SECRET: process.env.SANITY_PREVIEW_SECRET,
-    SANITY_API_VERSION: process.env.SANITY_API_VERSION || "2024-10-21",
-    SANITY_REVALIDATE_SECRET: process.env.SANITY_REVALIDATE_SECRET,
     GOOGLE_PLACES_API_KEY: process.env.GOOGLE_PLACES_API_KEY,
     ROUTING_GOOGLE_MAPS_API_KEY: process.env.ROUTING_GOOGLE_MAPS_API_KEY,
     GOOGLE_DIRECTIONS_API_KEY: process.env.GOOGLE_DIRECTIONS_API_KEY,
@@ -119,7 +100,7 @@ function createLenientConfig(): EnvConfig {
 function validateEnv(): EnvConfig {
   const isProduction = process.env.NODE_ENV === "production";
   const isClientSide = isBrowser();
-  
+
   // On client-side, NEXT_PUBLIC_* variables are embedded at build time
   // If they're missing, we can't fix it at runtime, so be lenient
   // This prevents runtime errors in the browser when variables weren't set during build
@@ -141,13 +122,6 @@ function validateEnv(): EnvConfig {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
     SUPABASE_SERVICE_ROLE_KEY: getOptionalEnv("SUPABASE_SERVICE_ROLE_KEY"),
-    SANITY_PROJECT_ID: requireEnv("SANITY_PROJECT_ID"),
-    SANITY_DATASET: requireEnv("SANITY_DATASET"),
-    SANITY_API_READ_TOKEN: requireEnv("SANITY_API_READ_TOKEN"),
-    SANITY_API_WRITE_TOKEN: getOptionalEnv("SANITY_API_WRITE_TOKEN"),
-    SANITY_PREVIEW_SECRET: getOptionalEnv("SANITY_PREVIEW_SECRET"),
-    SANITY_API_VERSION: getOptionalEnv("SANITY_API_VERSION") || "2024-10-21",
-    SANITY_REVALIDATE_SECRET: getOptionalEnv("SANITY_REVALIDATE_SECRET"),
     GOOGLE_PLACES_API_KEY: getOptionalEnv("GOOGLE_PLACES_API_KEY"),
     ROUTING_GOOGLE_MAPS_API_KEY: getOptionalEnv("ROUTING_GOOGLE_MAPS_API_KEY"),
     GOOGLE_DIRECTIONS_API_KEY: getOptionalEnv("GOOGLE_DIRECTIONS_API_KEY"),
@@ -188,27 +162,6 @@ export const env = {
   get supabaseServiceRoleKey() {
     return envConfig.SUPABASE_SERVICE_ROLE_KEY;
   },
-  get sanityProjectId() {
-    return envConfig.SANITY_PROJECT_ID;
-  },
-  get sanityDataset() {
-    return envConfig.SANITY_DATASET;
-  },
-  get sanityApiReadToken() {
-    return envConfig.SANITY_API_READ_TOKEN;
-  },
-  get sanityApiWriteToken() {
-    return envConfig.SANITY_API_WRITE_TOKEN;
-  },
-  get sanityPreviewSecret() {
-    return envConfig.SANITY_PREVIEW_SECRET;
-  },
-  get sanityApiVersion() {
-    return envConfig.SANITY_API_VERSION || "2024-10-21";
-  },
-  get sanityRevalidateSecret() {
-    return envConfig.SANITY_REVALIDATE_SECRET;
-  },
   get routingProvider() {
     return envConfig.ROUTING_PROVIDER;
   },
@@ -240,4 +193,3 @@ export const env = {
     return envConfig.CHEAP_MODE === "true";
   },
 } as const;
-
