@@ -54,49 +54,15 @@ class Logger {
 
   /**
    * Sends error to external error tracking service
-   * Integrates with Sentry if configured
+   * Can be extended to integrate with error tracking services (e.g., Sentry, LogRocket)
    */
   private sendToErrorTracking(
     message: string,
     error?: Error | unknown,
     context?: LogContext,
   ): void {
-    // Try to use Sentry if available and configured
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN || process.env.SENTRY_DSN) {
-      try {
-        // Dynamic import to avoid breaking if Sentry is not installed
-        if (typeof window !== "undefined") {
-          // Client-side: use dynamic import
-          import("@sentry/nextjs").then((Sentry) => {
-            Sentry.captureException(error || new Error(message), {
-              extra: this.sanitizeContext(context || {}),
-              tags: { source: "logger" },
-            });
-          }).catch(() => {
-            // Sentry not available, continue silently
-          });
-        } else {
-          // Server-side: use dynamic import (works in Node.js)
-          import("@sentry/nextjs")
-            .then((Sentry) => {
-              Sentry.captureException(error || new Error(message), {
-                extra: this.sanitizeContext(context || {}),
-                tags: { source: "logger" },
-              });
-            })
-            .catch(() => {
-              // Sentry not available, continue silently
-            });
-        }
-        return;
-      } catch {
-        // Sentry not available, fall through to default logging
-      }
-    }
-
-    // Default: log to console in production if error tracking is enabled
+    // Log structured error for potential log aggregation (Vercel, etc.)
     if (process.env.NEXT_PUBLIC_ENABLE_ERROR_TRACKING === "true") {
-      // Log structured error for potential log aggregation
       console.error("[ERROR_TRACKING]", {
         message,
         error: error instanceof Error ? error.message : String(error),

@@ -131,43 +131,6 @@ const nextConfig: NextConfig = {
   // Next.js 16 App Router doesn't support the old api.bodyParser.sizeLimit config
   // Use checkBodySizeLimit() or readBodyWithSizeLimit() from @/lib/api/bodySizeLimit
   // Default limit is 1MB, but individual routes can set stricter limits
-  // Note: instrumentationHook is enabled by default in Next.js 16+ when instrumentation.ts exists
 };
 
-// Conditionally wrap with Sentry if DSN is configured and package is installed
-// Sentry is enabled when either SENTRY_DSN (server-side) or NEXT_PUBLIC_SENTRY_DSN (client-side) is set
-// To enable Sentry in production:
-// 1. Set SENTRY_DSN for server-side error tracking (required for API routes and server components)
-// 2. Set NEXT_PUBLIC_SENTRY_DSN for client-side error tracking (required for browser errors)
-// 3. Optionally set SENTRY_ORG and SENTRY_PROJECT for better organization
-// Note: The wrapper is applied if either DSN is set to ensure proper build-time configuration
-let finalConfig: NextConfig = nextConfig;
-
-if (process.env.SENTRY_DSN || process.env.NEXT_PUBLIC_SENTRY_DSN) {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { withSentryConfig } = require("@sentry/nextjs");
-    const sentryConfig: {
-      silent: boolean;
-      org?: string;
-      project?: string;
-    } = {
-      silent: true,
-    };
-    
-    // Only include org and project if they are defined
-    if (process.env.SENTRY_ORG) {
-      sentryConfig.org = process.env.SENTRY_ORG;
-    }
-    if (process.env.SENTRY_PROJECT) {
-      sentryConfig.project = process.env.SENTRY_PROJECT;
-    }
-    
-    finalConfig = withSentryConfig(nextConfig, sentryConfig);
-  } catch {
-    // Sentry not available, use default config
-    // This is fine - Sentry is optional
-  }
-}
-
-export default finalConfig;
+export default nextConfig;

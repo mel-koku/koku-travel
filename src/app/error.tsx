@@ -12,30 +12,12 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log error using centralized logger (handles Sentry integration if configured)
+    // Log error using centralized logger
     logger.error("Application error boundary triggered", error, {
       digest: error.digest,
       message: error.message,
       stack: error.stack,
     });
-
-    // Also try to capture directly to Sentry if available
-    if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
-      // Dynamic import with error handling - Sentry is optional
-      import("@sentry/nextjs")
-        .then((Sentry) => {
-          Sentry.captureException(error, {
-            tags: {
-              errorBoundary: true,
-              digest: error.digest,
-            },
-            level: "error",
-          });
-        })
-        .catch(() => {
-          // Sentry not available, continue silently
-        });
-    }
   }, [error]);
 
   return (
