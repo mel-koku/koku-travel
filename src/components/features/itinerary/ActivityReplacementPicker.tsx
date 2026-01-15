@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Image from "next/image";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import type { ReplacementCandidate } from "@/lib/activityReplacement";
@@ -122,9 +123,11 @@ export function ActivityReplacementPicker({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start gap-3">
                         {location.image && (
-                          <img
+                          <Image
                             src={location.image}
                             alt={location.name}
+                            width={80}
+                            height={80}
                             className="h-20 w-20 shrink-0 rounded-lg object-cover"
                           />
                         )}

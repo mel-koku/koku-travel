@@ -1,4 +1,4 @@
-import { forwardRef, useState, type ChangeEvent } from "react";
+import { forwardRef, type ChangeEvent } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
 import type { ItineraryActivity } from "@/types/itinerary";
@@ -35,8 +35,6 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
     },
     ref,
   ) => {
-    // Reserved for future use - prefix with underscore to indicate intentionally unused
-    const [_notesOpen] = useState(() => Boolean(activity.notes));
     const noteStartTime = activity.startTime ?? "";
     const noteEndTime = activity.endTime ?? "";
     const timeInvalid =

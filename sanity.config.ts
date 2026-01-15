@@ -8,6 +8,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 
 // Go to https://www.sanity.io/docs/api-versioning to learn how API versioning works
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- apiVersion reserved for visionTool when re-enabled
 import {apiVersion, dataset, projectId} from './src/sanity/env'
 import {schema} from './src/sanity/schemaTypes'
 import {structure} from './src/sanity/structure'

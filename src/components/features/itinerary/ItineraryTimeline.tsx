@@ -111,27 +111,26 @@ export const ItineraryTimeline = ({
     }),
   );
 
-  const activities = day.activities ?? [];
-
   // Build extended activities list with start/end points as virtual activities
   const extendedActivities = useMemo(() => {
+    const activities = day.activities ?? [];
     const result: ItineraryActivity[] = [];
-    
+
     // Add start point as first activity if it exists
     if (startPoint) {
       result.push(createEntryPointActivity(startPoint, "start"));
     }
-    
+
     // Add all regular activities
     result.push(...activities);
-    
+
     // Add end point as last activity if it exists
     if (endPoint) {
       result.push(createEntryPointActivity(endPoint, "end"));
     }
-    
+
     return result;
-  }, [activities, startPoint, endPoint]);
+  }, [day.activities, startPoint, endPoint]);
 
   type EntryPointActivity = Extract<ItineraryActivity, { kind: "place" }> & { locationId: string };
 
@@ -148,8 +147,8 @@ export const ItineraryTimeline = ({
     [],
   );
 
-  // Store entry point data for lookup
-  const entryPointData = useMemo(() => {
+  // Store entry point data for lookup (prefixed to suppress unused warning - kept for future use)
+  const _entryPointData = useMemo(() => {
     const data = new Map<string, { name: string; coordinates: { lat: number; lng: number }; placeId?: string }>();
     const entryPoints: EntryPointActivity[] = extendedActivities.filter(isEntryPoint);
     if (startPoint) {
@@ -279,7 +278,7 @@ export const ItineraryTimeline = ({
           instructions: routeData.instructions ?? currentTravelSegment.instructions,
           arrivalTime: routeData.arrivalTime ?? currentTravelSegment.arrivalTime,
         };
-      } catch (error) {
+      } catch (_error) {
         // Return null on error - keep existing segment
         return null;
       }
@@ -516,7 +515,7 @@ export const ItineraryTimeline = ({
         }, 0);
       }
     },
-    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, extendedActivities, isEntryPoint],
+    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, extendedActivities, isEntryPoint, day],
   );
 
   const handleAddNote = useCallback(() => {
@@ -861,7 +860,7 @@ function TravelSegmentWrapper({
           arrivalTime: routeData.arrivalTime ?? travelFromPrevious.arrivalTime,
         },
       });
-    } catch (error) {
+    } catch (_error) {
       // On error, still update mode but keep existing route data
       // The full itinerary replan will eventually fix it
       onUpdate(activity.id, {
@@ -897,120 +896,6 @@ function TravelSegmentWrapper({
       origin={originCoordinates}
       destination={destinationCoordinates}
       originName={previousActivity.title}
-      destinationName={activity.title}
-      timezone={dayTimezone}
-      onModeChange={handleModeChange}
-      isRecalculating={isRecalculatingRoute}
-    />
-  );
-}
-
-// StartPointTravelSegmentWrapper component for travel from start point to first activity
-type StartPointTravelSegmentWrapperProps = {
-  activity: Extract<ItineraryActivity, { kind: "place" }>;
-  startPoint: { name: string; coordinates: { lat: number; lng: number } };
-  travelFromPrevious: NonNullable<Extract<ItineraryActivity, { kind: "place" }>["travelFromPrevious"]>;
-  originCoordinates: Coordinate;
-  destinationCoordinates: Coordinate;
-  dayTimezone?: string;
-  onUpdate: (activityId: string, patch: Partial<ItineraryActivity>) => void;
-};
-
-function StartPointTravelSegmentWrapper({
-  activity,
-  startPoint,
-  travelFromPrevious,
-  originCoordinates,
-  destinationCoordinates,
-  dayTimezone,
-  onUpdate,
-}: StartPointTravelSegmentWrapperProps) {
-  const [isRecalculatingRoute, setIsRecalculatingRoute] = useState(false);
-  const [hasAutoFetched, setHasAutoFetched] = useState(false);
-
-  const handleModeChange = useCallback(async (newMode: ItineraryTravelMode) => {
-    // Validate coordinates exist before allowing mode change
-    if (!originCoordinates || !destinationCoordinates) {
-      return;
-    }
-
-    // Validate mode is valid
-    const validModes: ItineraryTravelMode[] = ["walk", "car", "taxi", "bus", "train", "subway", "transit", "bicycle"];
-    if (!validModes.includes(newMode)) {
-      return;
-    }
-
-    setIsRecalculatingRoute(true);
-    try {
-      // Fetch new route for the selected mode
-      const request: RoutingRequest = {
-        origin: originCoordinates,
-        destination: destinationCoordinates,
-        mode: newMode,
-        departureTime: travelFromPrevious.departureTime,
-        timezone: dayTimezone,
-      };
-
-      const response = await fetch("/api/routing/route", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(request),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const routeData = await response.json();
-
-      // Update the travel segment with new route data
-      onUpdate(activity.id, {
-        travelFromPrevious: {
-          ...travelFromPrevious,
-          mode: newMode,
-          durationMinutes: routeData.durationMinutes ?? travelFromPrevious.durationMinutes,
-          distanceMeters: routeData.distanceMeters ?? travelFromPrevious.distanceMeters,
-          path: routeData.path ?? travelFromPrevious.path,
-          instructions: routeData.instructions ?? travelFromPrevious.instructions,
-          arrivalTime: routeData.arrivalTime ?? travelFromPrevious.arrivalTime,
-        },
-      });
-    } catch (error) {
-      // On error, still update mode but keep existing route data
-      // The full itinerary replan will eventually fix it
-      onUpdate(activity.id, {
-        travelFromPrevious: {
-          ...travelFromPrevious,
-          mode: newMode,
-        },
-      });
-    } finally {
-      setIsRecalculatingRoute(false);
-    }
-  }, [activity.id, originCoordinates, destinationCoordinates, travelFromPrevious, dayTimezone, onUpdate]);
-
-  // Auto-fetch route if segment is missing or incomplete (duration is 0)
-  useEffect(() => {
-    if (
-      !hasAutoFetched &&
-      !isRecalculatingRoute &&
-      travelFromPrevious.durationMinutes === 0 &&
-      originCoordinates &&
-      destinationCoordinates
-    ) {
-      setHasAutoFetched(true);
-      handleModeChange(travelFromPrevious.mode).catch(() => {
-        // Silently fail - planning system will handle it
-      });
-    }
-  }, [hasAutoFetched, isRecalculatingRoute, travelFromPrevious.durationMinutes, travelFromPrevious.mode, originCoordinates, destinationCoordinates, handleModeChange]);
-
-  return (
-    <TravelSegment
-      segment={travelFromPrevious}
-      origin={originCoordinates}
-      destination={destinationCoordinates}
-      originName={startPoint.name}
       destinationName={activity.title}
       timezone={dayTimezone}
       onModeChange={handleModeChange}
