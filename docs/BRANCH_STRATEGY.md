@@ -20,26 +20,6 @@ This document maps features to their corresponding files and directories.
 - `src/app/dashboard/page.tsx`
 - `src/app/dashboard/DashboardClient.tsx`
 
-#### `feature/sanity-integration`
-**Purpose:** Sanity CMS setup and integration
-
-**Files:**
-- `src/lib/sanity/client.ts`
-- `src/lib/sanity/config.ts`
-- `src/lib/sanity/guides.ts`
-- `src/lib/sanity/authors.ts`
-- `src/lib/sanity/queries.ts`
-- `src/sanity/` (all files)
-- `src/app/studio/` (all files)
-- `src/app/api/preview/route.ts`
-- `src/app/api/preview/exit/route.ts`
-- `src/app/api/revalidate/route.ts`
-- `sanity.config.ts`
-- `sanity.cli.ts`
-- `scripts/sanity/` (all files)
-- `docs/sanity-setup.md`
-- `docs/sanity-authors-setup.md`
-
 #### `feature/supabase-integration`
 **Purpose:** Supabase database setup
 
@@ -65,7 +45,7 @@ This document maps features to their corresponding files and directories.
 ### Feature Branches
 
 #### `feature/guides`
-**Purpose:** Guides feature with Sanity CMS
+**Purpose:** Guides feature
 
 **Files:**
 - `src/app/guides/page.tsx`
@@ -76,8 +56,6 @@ This document maps features to their corresponding files and directories.
 - `src/app/guides/experts/page.tsx`
 - `src/components/features/guides/` (all files)
 - `src/types/guide.ts`
-- `src/lib/sanity/guides.ts`
-- `src/lib/sanity/authors.ts`
 
 #### `feature/explore`
 **Purpose:** Location discovery and exploration
@@ -180,12 +158,8 @@ This document maps features to their corresponding files and directories.
 **Purpose:** Error tracking & performance monitoring
 
 **Files:**
-- `sentry.client.config.ts`
-- `sentry.server.config.ts`
-- `sentry.edge.config.ts`
 - `src/lib/web-vitals.ts`
 - `src/components/WebVitals.tsx`
-- `docs/sentry-setup.md`
 
 ## Shared Files (on all branches)
 

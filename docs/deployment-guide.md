@@ -32,18 +32,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key  # Server-side only
 ```
 
-#### Sanity CMS Configuration
-
-```bash
-SANITY_PROJECT_ID=your_sanity_project_id
-SANITY_DATASET=production
-SANITY_API_READ_TOKEN=your_sanity_read_token
-SANITY_API_WRITE_TOKEN=your_sanity_write_token  # Optional, for scripts
-SANITY_PREVIEW_SECRET=your_random_preview_secret
-SANITY_API_VERSION=2024-10-21
-SANITY_REVALIDATE_SECRET=your_revalidate_secret
-```
-
 #### Optional Configuration
 
 ```bash
@@ -207,24 +195,9 @@ The application can be deployed to any platform that supports Node.js:
 - [ ] Verify API routes are accessible
 - [ ] Check image optimization works
 
-### 2. Configure Sanity Webhook
+### 2. Set Up Monitoring
 
-Set up webhook in Sanity Studio to trigger revalidation:
-
-1. Go to Sanity Project Settings → API → Webhooks
-2. Create new webhook:
-   - **URL**: `https://your-domain.com/api/revalidate`
-   - **Dataset**: `production`
-   - **Trigger on**: Create, Update, Delete
-   - **Secret**: Use `SANITY_REVALIDATE_SECRET` value
-   - **HTTP method**: POST
-   - **API version**: `2024-10-21`
-
-3. Test webhook by updating content in Sanity Studio
-
-### 3. Set Up Monitoring
-
-- [ ] Configure error tracking (Sentry, LogRocket, etc.)
+- [ ] Configure error tracking (if needed)
 - [ ] Set up uptime monitoring
 - [ ] Configure performance monitoring
 - [ ] Set up log aggregation
@@ -287,7 +260,7 @@ npx tsc --noEmit
 
 **Solution:**
 - Check server logs for detailed error messages
-- Verify API keys (Google Places, Supabase, Sanity) are valid
+- Verify API keys (Google Places, Supabase) are valid
 - Check rate limiting isn't blocking legitimate requests
 - Verify database migrations are applied
 
