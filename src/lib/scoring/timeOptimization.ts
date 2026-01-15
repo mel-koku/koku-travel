@@ -26,7 +26,7 @@ const OPTIMAL_TIMES_BY_CATEGORY: Record<string, Array<"morning" | "afternoon" | 
 export function scoreTimeOfDayFit(
   location: Location,
   timeSlot: "morning" | "afternoon" | "evening",
-  date?: string, // ISO date string (yyyy-mm-dd) for weekday calculation
+  _date?: string, // ISO date string (yyyy-mm-dd) for weekday calculation
 ): { scoreAdjustment: number; reasoning: string } {
   const category = location.category?.toLowerCase() ?? "";
   const optimalTimes = OPTIMAL_TIMES_BY_CATEGORY[category];

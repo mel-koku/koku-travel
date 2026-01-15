@@ -110,6 +110,7 @@ const INTEREST_TO_CATEGORIES: Record<InterestId, string[]> = {
   wellness: ["park", "garden"],
   history: ["shrine", "temple", "historic", "museum"],
 };
+void INTEREST_TO_CATEGORIES; // Intentionally unused - kept for future use
 
 /**
  * Score how well a location matches user interests.
@@ -215,6 +216,7 @@ function scoreLogisticalFit(
   if (criteria.currentLocation && location.coordinates) {
     const distanceKm = calculateDistance(criteria.currentLocation, location.coordinates);
     const travelTime = estimateTravelTime(distanceKm, "walk");
+    void travelTime; // Intentionally unused - kept for future use
 
     // Prefer nearby locations
     if (distanceKm < 1) {

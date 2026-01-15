@@ -82,7 +82,7 @@ export function generateActivityTips(
 function generateCrowdTips(
   location: Location,
   activity: Extract<ItineraryActivity, { kind: "place" }>,
-  options?: { allActivities?: ItineraryActivity[]; dayIndex?: number },
+  _options?: { allActivities?: ItineraryActivity[]; dayIndex?: number },
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
   const category = location.category?.toLowerCase() ?? "";
@@ -164,7 +164,7 @@ function generatePhotoTips(
  */
 function generateWeatherTips(
   location: Location,
-  activity: Extract<ItineraryActivity, { kind: "place" }>,
+  _activity: Extract<ItineraryActivity, { kind: "place" }>,
   weatherForecast: WeatherForecast,
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];

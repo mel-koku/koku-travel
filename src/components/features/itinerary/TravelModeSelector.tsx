@@ -189,6 +189,7 @@ export function TravelModeSelector({
     const km = (meters / 1000).toFixed(1);
     return `${km}km`;
   };
+  void _formatDistance; // Intentionally unused - kept for future use
 
   const getEstimate = (mode: ItineraryTravelMode): ModeEstimate | undefined => {
     return estimates.get(mode);

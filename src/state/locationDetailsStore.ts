@@ -57,4 +57,22 @@ export function useLocationEditorialSummary(locationId: string | null | undefine
   );
 }
 
+export function useLocationDisplayName(locationId: string | null | undefined): string | null {
+  return useSyncExternalStore(
+    (listener) => {
+      if (!locationId) {
+        return () => {};
+      }
+      return subscribeToLocationDetails(locationId, listener);
+    },
+    () => {
+      if (!locationId) {
+        return null;
+      }
+      return getCachedLocationDetails(locationId)?.displayName ?? null;
+    },
+    () => null,
+  );
+}
+
 

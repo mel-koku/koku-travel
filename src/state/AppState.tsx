@@ -1,6 +1,6 @@
 "use client";
 
-import { type Itinerary, type ItineraryActivity, type ItineraryEdit, type ItineraryDay } from "@/types/itinerary";
+import { type Itinerary, type ItineraryActivity, type ItineraryEdit } from "@/types/itinerary";
 import type { TripBuilderData, DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
 import { loadWishlist, WISHLIST_KEY } from "@/lib/wishlistStorage";
@@ -945,6 +945,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const canUndo = useCallback(
     (tripId: string) => {
       const history = state.editHistory[tripId] ?? [];
+      void history; // Intentionally unused - kept for future use
       const currentIndex = state.currentHistoryIndex[tripId] ?? -1;
       return currentIndex >= 0;
     },

@@ -18,6 +18,7 @@ export async function checkAvailability(
   },
 ): Promise<AvailabilityInfo> {
   const _useCache = options?.useCache ?? true;
+  void _useCache; // Intentionally unused - kept for future use
 
   // If no placeId, return unknown status
   if (!location.placeId) {

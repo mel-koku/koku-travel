@@ -371,7 +371,7 @@ function refineMoreKidFriendly(day: TripDay, trip: Trip): TripDay {
 /**
  * Adds more rest time
  */
-function refineMoreRest(day: TripDay, trip: Trip): TripDay {
+function refineMoreRest(day: TripDay, _trip: Trip): TripDay {
   // Remove some activities and add rest gaps
   const activities = [...day.activities];
   if (activities.length <= 1) {

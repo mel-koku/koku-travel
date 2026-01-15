@@ -39,7 +39,7 @@ export function findReplacementCandidates(
   tripData: TripBuilderData,
   allActivities: ItineraryActivity[],
   dayActivities: ItineraryActivity[],
-  currentDayIndex: number,
+  _currentDayIndex: number,
   maxCandidates: number = 10,
   options?: {
     weatherForecast?: WeatherForecast;
@@ -104,6 +104,7 @@ export function findReplacementCandidates(
       })
       .filter((id): id is string => Boolean(id)),
   );
+  void _usedLocationIds; // Intentionally unused - kept for future use
   
   // Score all available locations
   const scoredCandidates: ReplacementCandidate[] = MOCK_LOCATIONS.filter((location) => {
