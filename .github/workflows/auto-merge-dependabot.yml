@@ -1,29 +1,69 @@
 name: Auto-merge Dependabot PRs
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-  check_suite:
-    types: [completed]
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
 
 permissions:
   contents: write
   pull-requests: write
+  checks: read
 
 jobs:
   auto-merge:
-    if: github.actor == 'dependabot[bot]'
     runs-on: ubuntu-latest
+    # Only proceed if CI workflow completed successfully
+    if: github.event.workflow_run.conclusion == 'success'
     steps:
+      - name: Find Dependabot PR
+        uses: actions/github-script@v7
+        id: find-pr
+        with:
+          script: |
+            // Find the PR associated with this workflow run
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${github.event.workflow_run.head_branch}`,
+              state: 'open',
+            });
+            
+            const dependabotPR = prs.find(pr => pr.user.login === 'dependabot[bot]');
+            
+            if (!dependabotPR) {
+              core.setOutput('found', 'false');
+              return;
+            }
+            
+            core.setOutput('found', 'true');
+            core.setOutput('pr_number', dependabotPR.number);
+            core.setOutput('pr_labels', JSON.stringify(dependabotPR.labels.map(l => l.name)));
+            core.setOutput('pr_title', dependabotPR.title);
+
+      - name: Check PR conditions
+        if: steps.find-pr.outputs.found == 'true'
+        uses: actions/github-script@v7
+        id: check-conditions
+        env:
+          PR_LABELS: ${{ steps.find-pr.outputs.pr_labels }}
+          PR_TITLE: ${{ steps.find-pr.outputs.pr_title }}
+        with:
+          script: |
+            const labels = JSON.parse(process.env.PR_LABELS);
+            const title = process.env.PR_TITLE;
+            
+            const hasDependenciesLabel = labels.includes('dependencies');
+            const isMajorUpdate = title.toLowerCase().includes('major');
+            
+            core.setOutput('should_merge', hasDependenciesLabel && !isMajorUpdate ? 'true' : 'false');
+
       - name: Enable auto-merge for Dependabot PRs
-        if: |
-          github.event.pull_request.labels.*.name == 'dependencies' &&
-          !contains(github.event.pull_request.title, 'major') &&
-          !contains(github.event.pull_request.title, 'Major') &&
-          github.event.pull_request.mergeable == true
+        # Only run if PR was found, has 'dependencies' label, and is not a Major update
+        if: steps.check-conditions.outputs.should_merge == 'true'
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          pull-request-number: ${{ github.event.pull_request.number }}
+          pull-request-number: ${{ steps.find-pr.outputs.pr_number }}
           merge-method: squash
-          enabled-for-manual-changes: false
