@@ -54,7 +54,7 @@ class Logger {
 
   /**
    * Sends error to external error tracking service
-   * Supports Sentry, LogRocket, or custom error tracking services
+   * Supports LogRocket or custom error tracking services
    */
   private sendToErrorTracking(
     message: string,
@@ -63,32 +63,6 @@ class Logger {
   ): void {
     const errorTrackingService = process.env.NEXT_PUBLIC_ERROR_TRACKING_SERVICE;
     const sanitizedContext = this.sanitizeContext(context || {});
-
-    // Sentry integration
-    if (errorTrackingService === "sentry") {
-      try {
-        // Dynamic import to avoid bundling Sentry in client if not used
-        // Use string-based require to prevent Turbopack from statically analyzing
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const sentryModule = "@sentry/nextjs";
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const Sentry = require(sentryModule);
-        if (Sentry && typeof Sentry.captureException === "function") {
-          Sentry.captureException(error instanceof Error ? error : new Error(message), {
-            tags: {
-              source: "logger",
-            },
-            extra: {
-              message,
-              context: sanitizedContext,
-            },
-          });
-          return;
-        }
-      } catch {
-        // Sentry not installed or failed to load - this is expected if @sentry/nextjs is not installed
-      }
-    }
 
     // LogRocket integration
     if (errorTrackingService === "logrocket") {
