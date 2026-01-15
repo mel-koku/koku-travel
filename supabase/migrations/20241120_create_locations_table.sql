@@ -31,6 +31,7 @@ create index if not exists idx_locations_rating on locations(rating desc nulls l
 alter table locations enable row level security;
 
 -- Allow public read access to locations
+drop policy if exists "Locations are viewable by everyone" on locations;
 create policy "Locations are viewable by everyone"
   on locations
   for select
@@ -46,6 +47,7 @@ end;
 $$ language plpgsql;
 
 -- Trigger to automatically update updated_at
+drop trigger if exists update_locations_updated_at on locations;
 create trigger update_locations_updated_at
   before update on locations
   for each row
