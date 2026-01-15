@@ -161,3 +161,6 @@ docs/VERCEL_DEPLOYMENT_CHECKLIST.md
 docs/DEPLOYMENT_QUICK_START.md
 docs/ENV_VARIABLES_REFERENCE.md
 docs/BRANCH_QUICK_START.md
+
+# Scraped data (temporary)
+tmp/
