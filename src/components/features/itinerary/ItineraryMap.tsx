@@ -90,6 +90,7 @@ export function ItineraryMap({
     import("mapbox-gl")
       .then((module) => {
         const mapboxgl = ("default" in module ? module.default : module) as unknown as MapboxModule;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mapbox GL dynamic import typing
         (mapboxgl as any).accessToken = mapboxService.getAccessToken() ?? "";
         import("mapbox-gl/dist/mapbox-gl.css" as string).catch(() => {});
         if (!cancelled) {
@@ -142,6 +143,7 @@ export function ItineraryMap({
     const bounds = new mapboxModule.LngLatBounds();
     activityPoints.forEach((point) => bounds.extend([point.coordinates.lng, point.coordinates.lat]));
     if (!bounds.isEmpty()) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- LngLatBounds.pad() type not exposed
       map.fitBounds((bounds as any).pad(0.3), { maxZoom: 16, duration: 400 });
     }
   }, [activityPoints, mapReady]);

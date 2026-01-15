@@ -270,6 +270,7 @@ describe("Time Optimization", () => {
         name: "Test Location",
         city: "Kyoto",
         region: "Kansai",
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing unknown category handling
         category: "unknown" as any,
       };
 
