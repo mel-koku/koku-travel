@@ -160,7 +160,7 @@ export function Dropdown({
       // Use fixed positioning when near bottom to allow overflow outside card
       // Calculate distance from bottom of viewport
       const distanceFromBottom = viewportHeight - triggerRect.bottom;
-      const isNearBottom = distanceFromBottom < 300;
+      const _isNearBottom = distanceFromBottom < 300;
       
       // Always use fixed positioning when portaled (which we always do now)
       // Position relative to trigger button in viewport coordinates
