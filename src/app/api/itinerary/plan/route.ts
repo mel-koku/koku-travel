@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateTripFromBuilderData, validateTripConstraints } from "@/lib/server/itineraryEngine";
 import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
-import type { TripBuilderData } from "@/types/trip";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
