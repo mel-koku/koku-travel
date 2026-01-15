@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
-import { env } from "@/lib/env";
-import { Redis } from "@upstash/redis";
 import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 
@@ -26,7 +24,6 @@ export async function GET(request: NextRequest) {
     requestId: string;
     services: {
       supabase: { status: "healthy" | "unhealthy"; message?: string };
-      upstash: { status: "healthy" | "unhealthy" | "not_configured"; message?: string };
     };
   } = {
     status: "healthy",
@@ -36,7 +33,6 @@ export async function GET(request: NextRequest) {
     requestId: context.requestId,
     services: {
       supabase: { status: "unhealthy" },
-      upstash: { status: "not_configured" },
     },
   };
 
@@ -59,27 +55,6 @@ export async function GET(request: NextRequest) {
       message: error instanceof Error ? error.message : String(error),
     };
     health.status = "unhealthy";
-  }
-
-  // Check Upstash Redis (if configured)
-  const upstashRedisUrl = env.upstashRedisRestUrl;
-  const upstashRedisToken = env.upstashRedisRestToken;
-  if (upstashRedisUrl && upstashRedisToken) {
-    try {
-      const redis = new Redis({
-        url: upstashRedisUrl,
-        token: upstashRedisToken,
-      });
-      // Simple ping command
-      await redis.ping();
-      health.services.upstash = { status: "healthy" };
-    } catch (error) {
-      health.services.upstash = {
-        status: "unhealthy",
-        message: error instanceof Error ? error.message : String(error),
-      };
-      // Upstash is optional, so don't mark overall status as unhealthy
-    }
   }
 
   const responseTime = Date.now() - startTime;
