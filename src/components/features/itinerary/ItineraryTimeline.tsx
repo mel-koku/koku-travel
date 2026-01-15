@@ -169,6 +169,9 @@ export const ItineraryTimeline = ({
     }
     return data;
   }, [extendedActivities, startPoint, endPoint, isEntryPoint]);
+  
+  // Mark as intentionally unused (kept for future use)
+  void _entryPointData;
 
   const handleDelete = useCallback(
     (activityId: string) => {
