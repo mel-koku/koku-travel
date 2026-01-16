@@ -125,8 +125,14 @@ function cleanupRateLimitStore(): void {
   }
 }
 
+// Initialize cleanup interval only once (prevent memory leaks on module reload)
+let cleanupInitialized = false;
+
 // Cleanup old entries every 5 minutes (for in-memory fallback)
-if (typeof process !== "undefined") {
+if (typeof process !== "undefined" && !cleanupInitialized) {
+  // Clear any existing interval before creating a new one (handles module reload)
+  cleanupRateLimitStore();
+  
   cleanupInterval = setInterval(() => {
     const now = Date.now();
     for (const [ip, entry] of rateLimitStore.entries()) {
@@ -141,10 +147,34 @@ if (typeof process !== "undefined") {
     cleanupRateLimitStore();
   };
   
-  process.on("SIGTERM", cleanupOnExit);
-  process.on("SIGINT", cleanupOnExit);
-  process.on("uncaughtException", cleanupOnExit);
-  process.on("unhandledRejection", cleanupOnExit);
+  // Register cleanup handlers (only once)
+  if (process.listenerCount("SIGTERM") === 0) {
+    process.on("SIGTERM", cleanupOnExit);
+  }
+  if (process.listenerCount("SIGINT") === 0) {
+    process.on("SIGINT", cleanupOnExit);
+  }
+  if (process.listenerCount("uncaughtException") === 0) {
+    process.on("uncaughtException", cleanupOnExit);
+  }
+  if (process.listenerCount("unhandledRejection") === 0) {
+    process.on("unhandledRejection", cleanupOnExit);
+  }
+  
+  cleanupInitialized = true;
+  
+  // Cleanup on module unload (for development hot reload)
+  if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
+    // In Next.js, modules can be reloaded, so we need to handle cleanup
+    // This is a best-effort cleanup for development
+    const originalExit = process.exit;
+    process.exit = function(code?: number): never {
+      cleanupRateLimitStore();
+      originalExit.call(process, code);
+      // This will never be reached, but satisfies TypeScript's never return type
+      throw new Error("Process exit should not return");
+    };
+  }
 }
 
 /**

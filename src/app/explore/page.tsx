@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 
 import { ExploreShell } from "@/components/features/explore/ExploreShell";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "Explore Japan – Koku",
 };
 
 export default function ExplorePage() {
-  return <ExploreShell />;
+  return (
+    <ErrorBoundary>
+      <ExploreShell />
+    </ErrorBoundary>
+  );
 }
 
