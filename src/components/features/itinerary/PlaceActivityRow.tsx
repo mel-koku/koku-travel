@@ -145,6 +145,8 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
     const [notesOpen, setNotesOpen] = useState(() => Boolean(activity.notes));
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [reasoningOpen, setReasoningOpen] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [tempManualTime, setTempManualTime] = useState(activity.manualStartTime ?? "");
     const [availabilityStatus, setAvailabilityStatus] = useState<{
       status: string;
       message?: string;
@@ -309,6 +311,23 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
     const noteLabel = `Notes for ${activity.title}`;
     const notesValue = activity.notes ? activity.notes : "";
 
+    // Manual time editing handlers
+    const handleSetManualTime = () => {
+      if (tempManualTime && /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(tempManualTime)) {
+        onUpdate({ manualStartTime: tempManualTime } as Partial<ItineraryActivity>);
+        setShowTimePicker(false);
+      }
+    };
+
+    const handleClearManualTime = () => {
+      onUpdate({ manualStartTime: undefined } as Partial<ItineraryActivity>);
+      setTempManualTime("");
+      setShowTimePicker(false);
+    };
+
+    const hasManualTime = Boolean(activity.manualStartTime);
+    const displayArrivalTime = activity.manualStartTime ?? schedule?.arrivalTime;
+
     return (
       <div
         ref={ref}
@@ -437,20 +456,76 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
               </div>
             </div>
 
-            {schedule ? (
+            {schedule || hasManualTime ? (
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
-                  Arrive {schedule.arrivalTime}
-                </span>
+                {/* Arrival time with manual edit option */}
+                <div className="relative inline-flex items-center">
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setShowTimePicker(!showTimePicker);
+                      setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
+                    }}
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold transition hover:ring-2 hover:ring-indigo-300 ${
+                      hasManualTime
+                        ? "bg-indigo-100 text-indigo-700"
+                        : "bg-emerald-50 text-emerald-600"
+                    }`}
+                    title={hasManualTime ? "Manual time set - click to edit" : "Click to set manual time"}
+                  >
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Arrive {displayArrivalTime}
+                    {hasManualTime && <span className="ml-1 text-[9px] uppercase">Manual</span>}
+                  </button>
+
+                  {/* Time picker popover */}
+                  {showTimePicker && (
+                    <div
+                      className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-gray-200 bg-white p-3 shadow-lg"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <p className="mb-2 text-xs font-medium text-gray-700">Set arrival time</p>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="time"
+                          value={tempManualTime}
+                          onChange={(e) => setTempManualTime(e.target.value)}
+                          className="rounded border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleSetManualTime}
+                          className="rounded bg-indigo-600 px-2 py-1 text-xs font-medium text-white hover:bg-indigo-700"
+                        >
+                          Set
+                        </button>
+                      </div>
+                      {hasManualTime && (
+                        <button
+                          type="button"
+                          onClick={handleClearManualTime}
+                          className="mt-2 text-xs text-gray-500 hover:text-red-600"
+                        >
+                          Reset to auto
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-600">
-                  Depart {schedule.departureTime}
+                  Depart {schedule?.departureTime ?? "—"}
                 </span>
                 {waitLabel ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600">
                     {waitLabel}
                   </span>
                 ) : null}
-                {schedule.operatingWindow?.status === "outside" || isOutOfHours ? (
+                {schedule?.operatingWindow?.status === "outside" || isOutOfHours ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-600">
                     Outside hours
                   </span>
