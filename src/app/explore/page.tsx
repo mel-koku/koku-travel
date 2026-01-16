@@ -7,10 +7,6 @@ export const metadata: Metadata = {
 };
 
 export default function ExplorePage() {
-  return (
-    <div className="min-h-screen bg-gray-50 pt-2 sm:pt-4">
-      <ExploreShell />
-    </div>
-  );
+  return <ExploreShell />;
 }
 
