@@ -131,6 +131,11 @@ export type ItineraryActivity =
        * Availability information message
        */
       availabilityMessage?: string;
+      /**
+       * User-specified manual start time (HH:MM format).
+       * When set, overrides auto-calculated arrival time.
+       */
+      manualStartTime?: string;
     }
   | {
       kind: "note";

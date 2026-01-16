@@ -114,7 +114,7 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
     }
     // Type guard: check if entryPointType is a valid EntryPointType (not empty string)
     const isValidType = (val: string | undefined): val is EntryPointType => {
-      return val === "airport" || val === "city" || val === "hotel";
+      return val === "airport" || val === "city" || val === "hotel" || val === "station";
     };
     if (!isValidType(entryPointType)) {
       return [];
@@ -134,6 +134,7 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
   const entryPointTypeOptions = useMemo(
     () => [
       { label: "Airport", value: "airport" },
+      { label: "Train Station", value: "station" },
       { label: "City", value: "city" },
       { label: "Hotel", value: "hotel" },
     ],

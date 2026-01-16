@@ -64,6 +64,91 @@ const HOTELS: EntryPoint[] = [
 ];
 
 /**
+ * Major train stations in Japan (Shinkansen hubs)
+ */
+const STATIONS: EntryPoint[] = [
+  {
+    type: "station",
+    id: "tokyo-station",
+    name: "Tokyo Station",
+    coordinates: { lat: 35.6812, lng: 139.7671 },
+    cityId: "tokyo",
+  },
+  {
+    type: "station",
+    id: "kyoto-station",
+    name: "Kyoto Station",
+    coordinates: { lat: 34.9858, lng: 135.7588 },
+    cityId: "kyoto",
+  },
+  {
+    type: "station",
+    id: "shin-osaka-station",
+    name: "Shin-Osaka Station",
+    coordinates: { lat: 34.7334, lng: 135.5001 },
+    cityId: "osaka",
+  },
+  {
+    type: "station",
+    id: "osaka-station",
+    name: "Osaka Station",
+    coordinates: { lat: 34.7024, lng: 135.4959 },
+    cityId: "osaka",
+  },
+  {
+    type: "station",
+    id: "shinagawa-station",
+    name: "Shinagawa Station",
+    coordinates: { lat: 35.6284, lng: 139.7387 },
+    cityId: "tokyo",
+  },
+  {
+    type: "station",
+    id: "nagoya-station",
+    name: "Nagoya Station",
+    coordinates: { lat: 35.1709, lng: 136.8815 },
+  },
+  {
+    type: "station",
+    id: "hiroshima-station",
+    name: "Hiroshima Station",
+    coordinates: { lat: 34.3981, lng: 132.4754 },
+  },
+  {
+    type: "station",
+    id: "hakata-station",
+    name: "Hakata Station",
+    coordinates: { lat: 33.5897, lng: 130.4207 },
+  },
+  {
+    type: "station",
+    id: "kanazawa-station",
+    name: "Kanazawa Station",
+    coordinates: { lat: 36.5781, lng: 136.6479 },
+  },
+  {
+    type: "station",
+    id: "sendai-station",
+    name: "Sendai Station",
+    coordinates: { lat: 38.2601, lng: 140.8823 },
+  },
+  {
+    type: "station",
+    id: "yokohama-station",
+    name: "Yokohama Station",
+    coordinates: { lat: 35.4657, lng: 139.6225 },
+    cityId: "yokohama",
+  },
+  {
+    type: "station",
+    id: "nara-station",
+    name: "Nara Station",
+    coordinates: { lat: 34.6806, lng: 135.8199 },
+    cityId: "nara",
+  },
+];
+
+/**
  * Approximate city center coordinates
  */
 function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: number } {
@@ -80,7 +165,7 @@ function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: number } 
 /**
  * All entry points combined
  */
-const ALL_ENTRY_POINTS: EntryPoint[] = [...AIRPORTS, ...CITY_ENTRY_POINTS, ...HOTELS];
+const ALL_ENTRY_POINTS: EntryPoint[] = [...AIRPORTS, ...CITY_ENTRY_POINTS, ...HOTELS, ...STATIONS];
 
 /**
  * Get an entry point by its ID

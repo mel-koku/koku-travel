@@ -5,8 +5,9 @@ import dynamic from "next/dynamic";
 
 import { Container } from "@/components/layouts/Container";
 import { Wizard } from "@/components/features/trip-builder/Wizard";
-import { TripBuilderProvider } from "@/context/TripBuilderContext";
+import { TripBuilderProvider, useTripBuilder } from "@/context/TripBuilderContext";
 import { logger } from "@/lib/logger";
+import type { TripTemplate } from "@/data/tripTemplates";
 
 // Error fallback component
 const ErrorFallback = ({ message }: { message: string }) => (
@@ -83,13 +84,28 @@ const Step5Review = dynamic(
   }
 );
 
+const TemplateSelector = dynamic(
+  () =>
+    import("@/components/features/trip-builder/TemplateSelector")
+      .then((mod) => ({ default: mod.TemplateSelector }))
+      .catch((error) => {
+        logger.error("Failed to load TemplateSelector", error);
+        return { default: () => <ErrorFallback message="Failed to load templates. Please refresh the page." /> };
+      }),
+  {
+    loading: () => <div className="flex h-64 items-center justify-center text-gray-500">Loading...</div>,
+  }
+);
+
 const TOTAL_STEPS = 5;
 const STEP1_FORM_ID = "trip-builder-step1-form";
 const STEP2_FORM_ID = "trip-builder-step2-form";
 const STEP3_FORM_ID = "trip-builder-step3-form";
 const STEP4_FORM_ID = "trip-builder-step4-form";
 
-export default function TripBuilderPage() {
+function TripBuilderContent() {
+  const { loadTemplate } = useTripBuilder();
+  const [showTemplates, setShowTemplates] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
   const [step1Valid, setStep1Valid] = useState(false);
   const [step2Valid, setStep2Valid] = useState(false);
@@ -107,8 +123,31 @@ export default function TripBuilderPage() {
   }, [currentStep, goToStep]);
 
   const handleBack = useCallback(() => {
-    goToStep(currentStep - 1);
+    if (currentStep === 1) {
+      // Go back to template selection
+      setShowTemplates(true);
+    } else {
+      goToStep(currentStep - 1);
+    }
   }, [currentStep, goToStep]);
+
+  const handleSelectTemplate = useCallback((template: TripTemplate) => {
+    loadTemplate(template);
+    setShowTemplates(false);
+    // Template pre-fills Step 1-3, so we can skip to step 1 where the user can review/adjust
+    setCurrentStep(1);
+  }, [loadTemplate]);
+
+  const handleStartFromScratch = useCallback(() => {
+    setShowTemplates(false);
+    setCurrentStep(1);
+  }, []);
+
+  const handleStepHydrated = useCallback((step: number) => {
+    // If there's saved progress, skip template selection
+    setShowTemplates(false);
+    goToStep(step);
+  }, [goToStep]);
 
   const isNextDisabled = useMemo(() => {
     if (currentStep === 1) {
@@ -181,8 +220,8 @@ export default function TripBuilderPage() {
     );
   }, [currentStep, goToStep]);
 
-  return (
-    <TripBuilderProvider>
+  if (showTemplates) {
+    return (
       <div className="bg-gray-50 min-h-screen">
         <Container className="pb-6 pt-8 sm:pb-8 sm:pt-12 md:pb-10 md:pt-16">
           <div className="max-w-3xl">
@@ -193,20 +232,50 @@ export default function TripBuilderPage() {
             </p>
           </div>
         </Container>
-        <Wizard
-          step={currentStep}
-          totalSteps={TOTAL_STEPS}
-          onNext={handleNext}
-          onBack={handleBack}
-          onStepSelect={goToStep}
-          onStepHydrated={goToStep}
-          isNextDisabled={isNextDisabled}
-          activeFormId={activeFormId}
-          hideFooter={currentStep === TOTAL_STEPS}
-        >
-          {content}
-        </Wizard>
+        <Container className="pb-12 sm:pb-16">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+            <TemplateSelector
+              onSelectTemplate={handleSelectTemplate}
+              onStartFromScratch={handleStartFromScratch}
+            />
+          </div>
+        </Container>
       </div>
+    );
+  }
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      <Container className="pb-6 pt-8 sm:pb-8 sm:pt-12 md:pb-10 md:pt-16">
+        <div className="max-w-3xl">
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl md:text-4xl">Create Your Trip</h1>
+          <p className="mt-3 text-base text-gray-600 sm:mt-4 sm:text-lg">
+            Begin crafting your Japan adventure with a few key details. We&apos;ll save your
+            progress automatically as you go.
+          </p>
+        </div>
+      </Container>
+      <Wizard
+        step={currentStep}
+        totalSteps={TOTAL_STEPS}
+        onNext={handleNext}
+        onBack={handleBack}
+        onStepSelect={goToStep}
+        onStepHydrated={handleStepHydrated}
+        isNextDisabled={isNextDisabled}
+        activeFormId={activeFormId}
+        hideFooter={currentStep === TOTAL_STEPS}
+      >
+        {content}
+      </Wizard>
+    </div>
+  );
+}
+
+export default function TripBuilderPage() {
+  return (
+    <TripBuilderProvider>
+      <TripBuilderContent />
     </TripBuilderProvider>
   );
 }
