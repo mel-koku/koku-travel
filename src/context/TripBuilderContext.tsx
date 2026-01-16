@@ -11,6 +11,7 @@ import {
 } from "react";
 
 import { getLocal, setLocal } from "@/lib/storageHelpers";
+import { TRIP_BUILDER_STORAGE_KEY, APP_STATE_DEBOUNCE_MS } from "@/lib/constants";
 import type { CityId, EntryPoint, InterestId, KnownCityId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import { getEntryPointById } from "@/data/entryPoints";
@@ -23,8 +24,6 @@ type TripBuilderContextValue = {
   reset: () => void;
   loadTemplate: (template: TripTemplate) => void;
 };
-
-const STORAGE_KEY = "koku_trip_builder";
 
 const MAX_INTEREST_SELECTION = 5;
 const VALID_INTERESTS = new Set<InterestId>(INTEREST_CATEGORIES.map((category) => category.id));
@@ -81,14 +80,14 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
   const isHydrated = useRef(false);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounce delay for localStorage writes (500ms)
-  const DEBOUNCE_DELAY_MS = 500;
+  // Debounce delay for localStorage writes
+  const DEBOUNCE_DELAY_MS = APP_STATE_DEBOUNCE_MS;
 
   useEffect(() => {
     if (isHydrated.current) {
       return;
     }
-    const stored = getLocal<TripBuilderData>(STORAGE_KEY);
+    const stored = getLocal<TripBuilderData>(TRIP_BUILDER_STORAGE_KEY);
     if (stored) {
       const normalizedStored = normalizeData(stored);
       setData((prev) => {

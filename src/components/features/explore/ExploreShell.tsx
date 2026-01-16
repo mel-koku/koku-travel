@@ -3,10 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { Location } from "@/types/location";
 
-import { CategoryBar } from "./CategoryBar";
 import { FiltersModal } from "./FiltersModal";
 import { LocationGrid } from "./LocationGrid";
-import { SearchHeader } from "./SearchHeader";
+import { StickyExploreHeader } from "./StickyExploreHeader";
 import { logger } from "@/lib/logger";
 import {
   getCachedLocationsIncludingStale,
@@ -422,7 +421,7 @@ export function ExploreShell() {
     return (
       <div className="min-h-screen bg-white">
         {/* Skeleton category bar */}
-        <div className="sticky top-0 z-40 bg-white border-b border-gray-200">
+        <div className="sticky top-20 z-40 bg-white border-b border-gray-200">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex gap-8">
               {Array.from({ length: 6 }).map((_, index) => (
@@ -476,15 +475,11 @@ export function ExploreShell() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Search Header */}
-      <SearchHeader
+      {/* Sticky Header with Search & Categories */}
+      <StickyExploreHeader
         query={query}
         onQueryChange={setQuery}
         totalCount={locations.length}
-      />
-
-      {/* Category Bar */}
-      <CategoryBar
         categories={categoryOptions}
         selectedCategories={selectedCategories}
         onCategoriesChange={setSelectedCategories}

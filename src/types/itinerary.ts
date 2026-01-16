@@ -3,7 +3,10 @@ import type { LocationTransitMode } from "./location";
 export type ActivityKind = "place" | "note";
 
 /**
- * Recommendation reason explaining why a location was selected
+ * Recommendation reason explaining why a location was selected.
+ * 
+ * Note: A similar RecommendationReason exists in tripDomain.ts with structured scoring factors.
+ * This version is more flexible and used in itinerary editing contexts.
  */
 export type RecommendationReason = {
   /**

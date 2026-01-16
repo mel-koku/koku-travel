@@ -8,30 +8,8 @@ import {
   addRequestContextHeaders,
   getOptionalAuth,
 } from "@/lib/api/middleware";
-import { validateRequestBody } from "@/lib/api/schemas";
+import { validateRequestBody, planRequestSchema } from "@/lib/api/schemas";
 import { badRequest, internalError } from "@/lib/api/errors";
-import { z } from "zod";
-
-/**
- * Schema for trip ID validation
- */
-const tripIdSchema = z
-  .string()
-  .min(1, "Trip ID cannot be empty")
-  .max(255, "Trip ID too long")
-  .regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters")
-  .optional();
-
-/**
- * Schema for request body validation
- * Validates the structure but allows flexible TripBuilderData content
- */
-const planRequestSchema = z.object({
-  builderData: z.any().refine((data) => data && typeof data === "object", {
-    message: "builderData must be an object",
-  }),
-  tripId: tripIdSchema,
-});
 
 /**
  * POST /api/itinerary/plan

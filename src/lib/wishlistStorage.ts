@@ -1,15 +1,17 @@
 "use client";
 
 import { getLocal, setLocal } from "./storageHelpers";
+import { WISHLIST_STORAGE_KEY } from "./constants/storage";
 
-export const WISHLIST_KEY = "koku_wishlist";
+// Export for backward compatibility
+export const WISHLIST_KEY = WISHLIST_STORAGE_KEY;
 
 /**
  * Loads wishlist from localStorage.
  * Uses unified storage helper for consistency.
  */
 export function loadWishlist(): string[] {
-  return getLocal<string[]>(WISHLIST_KEY, []) ?? [];
+  return getLocal<string[]>(WISHLIST_STORAGE_KEY, []) ?? [];
 }
 
 /**
@@ -17,6 +19,6 @@ export function loadWishlist(): string[] {
  * Uses unified storage helper for consistency.
  */
 export function saveWishlist(ids: string[]): void {
-  setLocal(WISHLIST_KEY, ids);
+  setLocal(WISHLIST_STORAGE_KEY, ids);
 }
 
