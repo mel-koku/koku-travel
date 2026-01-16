@@ -1,5 +1,5 @@
 import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
-import { CITY_TO_REGION, REGIONS } from "@/data/regions";
+import { getRegionForCity, REGIONS } from "@/data/regions";
 import type { Itinerary, ItineraryTravelMode } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
@@ -653,7 +653,7 @@ function optimizeCitySequence(
   // Group cities by region
   const citiesByRegion = new Map<RegionId, CityId[]>();
   for (const city of cities) {
-    const regionId = CITY_TO_REGION[city];
+    const regionId = getRegionForCity(city);
     if (regionId) {
       const regionCities = citiesByRegion.get(regionId) ?? [];
       regionCities.push(city);
@@ -769,7 +769,7 @@ function optimizeRegionOrder(
   if (entryPoint) {
     const nearestCity = getNearestCityToEntryPoint(entryPoint);
     if (nearestCity) {
-      const nearestRegion = CITY_TO_REGION[nearestCity];
+      const nearestRegion = getRegionForCity(nearestCity);
       if (nearestRegion && regions.includes(nearestRegion)) {
         startRegion = nearestRegion;
       }
@@ -1048,22 +1048,18 @@ function buildTags(interest: InterestId, category: LocationCategory): string[] {
 }
 
 function buildDayTitle(dayIndex: number, cityKey: string): string {
-  const region = CITY_TO_REGION[cityKey as CityId];
+  const region = getRegionForCity(cityKey);
   if (region) {
     const cityInfo = CITY_INFO_BY_KEY.get(cityKey);
     const cityLabel = cityInfo?.label ?? capitalize(cityKey);
     return `Day ${dayIndex + 1} (${cityLabel})`;
   }
-  
-  for (const [regionId, cities] of Object.entries(CITY_TO_REGION)) {
-    if (cities.includes(cityKey as CityId)) {
-      const region = REGIONS.find((r) => r.id === regionId);
-      if (region) {
-        const city = region.cities.find((c) => c.id === cityKey);
-        if (city) {
-          return `Day ${dayIndex + 1} (${city.name})`;
-        }
-      }
+
+  // For unknown cities, try to find city name from REGIONS
+  for (const regionData of REGIONS) {
+    const city = regionData.cities.find((c) => c.id === cityKey);
+    if (city) {
+      return `Day ${dayIndex + 1} (${city.name})`;
     }
   }
   const info = CITY_INFO_BY_KEY.get(cityKey);

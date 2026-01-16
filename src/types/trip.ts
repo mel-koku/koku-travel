@@ -17,9 +17,41 @@ export type TripStyle = "relaxed" | "balanced" | "fast";
 
 export type InterestId = (typeof INTEREST_CATEGORIES)[number]["id"];
 
-export type CityId = "kyoto" | "osaka" | "nara" | "tokyo" | "yokohama";
+/**
+ * Known city IDs for static references. Dynamic cities from database
+ * may have additional IDs not in this union.
+ */
+export type KnownCityId = "kyoto" | "osaka" | "nara" | "tokyo" | "yokohama";
 
-export type RegionId = "kansai" | "kanto";
+/**
+ * City ID type that accepts both known static cities and dynamic database cities.
+ * Use KnownCityId when you need strict typing for static cities.
+ */
+export type CityId = string;
+
+/**
+ * Known region IDs for static references. Dynamic regions from database
+ * may have additional IDs not in this union.
+ */
+export type KnownRegionId = "kansai" | "kanto";
+
+/**
+ * Region ID type that accepts both known static regions and dynamic database regions.
+ * Use KnownRegionId when you need strict typing for static regions.
+ */
+export type RegionId = string;
+
+/**
+ * City option returned from the /api/cities endpoint.
+ * Includes location count and preview images for UI display.
+ */
+export type CityOption = {
+  id: string;
+  name: string;
+  region: string;
+  locationCount: number;
+  previewImages: string[];
+};
 
 export type EntryPointType = "airport" | "city" | "hotel" | "station";
 
