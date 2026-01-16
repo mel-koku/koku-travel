@@ -11,10 +11,10 @@ import {
 } from "react";
 
 import { getLocal, setLocal } from "@/lib/storageHelpers";
-import type { CityId, EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
+import type { CityId, EntryPoint, InterestId, KnownCityId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import { getEntryPointById } from "@/data/entryPoints";
-import { REGIONS, CITY_TO_REGION } from "@/data/regions";
+import { CITY_TO_REGION } from "@/data/regions";
 import type { TripTemplate } from "@/data/tripTemplates";
 
 type TripBuilderContextValue = {
@@ -28,10 +28,6 @@ const STORAGE_KEY = "koku_trip_builder";
 
 const MAX_INTEREST_SELECTION = 5;
 const VALID_INTERESTS = new Set<InterestId>(INTEREST_CATEGORIES.map((category) => category.id));
-const VALID_REGION_IDS = new Set<RegionId>(REGIONS.map((region) => region.id));
-const REGION_ID_BY_NAME = new Map<string, RegionId>(
-  REGIONS.map((region) => [region.name.toLowerCase(), region.id])
-);
 
 const createDefaultData = (): TripBuilderData => ({
   dates: {},
@@ -53,6 +49,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedAccessibility = sanitizeAccessibility(raw.accessibility);
   const normalizedEntryPoint = sanitizeEntryPoint(raw.entryPoint);
   const normalizedRegions = sanitizeRegions(raw.regions);
+  const normalizedCities = sanitizeCities(raw.cities);
   return {
     ...base,
     ...raw,
@@ -61,7 +58,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
       ...raw.dates,
     },
     regions: normalizedRegions,
-    cities: raw.cities ?? base.cities,
+    cities: normalizedCities,
     interests: normalizedInterests,
     style: normalizedStyle,
     entryPoint: normalizedEntryPoint,
@@ -155,13 +152,17 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
 
   const loadTemplate = useCallback((template: TripTemplate) => {
     // Derive regions from cities if not explicitly provided
-    const regionsFromCities = Array.from(
-      new Set(
-        template.cities
-          .map((cityId) => CITY_TO_REGION[cityId as CityId])
-          .filter((regionId): regionId is RegionId => regionId !== undefined)
-      )
-    );
+    // For known cities, use the static mapping; otherwise use template regions
+    const regionsFromCities: RegionId[] = [];
+    const seenRegions = new Set<string>();
+
+    for (const cityId of template.cities) {
+      const regionId = CITY_TO_REGION[cityId as KnownCityId];
+      if (regionId && !seenRegions.has(regionId)) {
+        seenRegions.add(regionId);
+        regionsFromCities.push(regionId);
+      }
+    }
 
     const next: TripBuilderData = {
       ...createDefaultData(),
@@ -204,26 +205,43 @@ export function useTripBuilder() {
   return context;
 }
 
+/**
+ * Sanitize regions - accepts any string as region ID now that we support dynamic regions
+ */
 function sanitizeRegions(regions?: RegionId[] | string[]): RegionId[] {
   if (!regions || regions.length === 0) {
     return [];
   }
   const next: RegionId[] = [];
-  const seen = new Set<RegionId>();
+  const seen = new Set<string>();
   for (const region of regions) {
-    let regionId: RegionId | undefined;
-    if (typeof region === "string") {
-      // Check if it's already a valid ID
-      if (VALID_REGION_IDS.has(region as RegionId)) {
-        regionId = region as RegionId;
-      } else {
-        // Try to find by name (case-insensitive)
-        regionId = REGION_ID_BY_NAME.get(region.toLowerCase());
+    if (typeof region === "string" && region.trim().length > 0) {
+      const regionId = region.trim();
+      if (!seen.has(regionId)) {
+        seen.add(regionId);
+        next.push(regionId);
       }
     }
-    if (regionId && !seen.has(regionId)) {
-      seen.add(regionId);
-      next.push(regionId);
+  }
+  return next;
+}
+
+/**
+ * Sanitize cities - accepts any string as city ID now that we support dynamic cities
+ */
+function sanitizeCities(cities?: CityId[] | string[]): CityId[] {
+  if (!cities || cities.length === 0) {
+    return [];
+  }
+  const next: CityId[] = [];
+  const seen = new Set<string>();
+  for (const city of cities) {
+    if (typeof city === "string" && city.trim().length > 0) {
+      const cityId = city.trim();
+      if (!seen.has(cityId)) {
+        seen.add(cityId);
+        next.push(cityId);
+      }
     }
   }
   return next;

@@ -1,13 +1,13 @@
 "use client";
 
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 
-import { Checkbox } from "@/components/ui/Checkbox";
 import { Input } from "@/components/ui/Input";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { REGIONS, CITY_TO_REGION } from "@/data/regions";
 import { cn } from "@/lib/cn";
-import type { CityId, RegionId } from "@/types/trip";
+import type { CityId, CityOption, RegionId } from "@/types/trip";
+import { logger } from "@/lib/logger";
 
 export type Step2RegionsProps = {
   formId: string;
@@ -15,41 +15,116 @@ export type Step2RegionsProps = {
   onValidityChange: (isValid: boolean) => void;
 };
 
-const CITY_ORDER = REGIONS.flatMap((region) => region.cities.map((city) => city.id));
-const CITY_ORDER_MAP = CITY_ORDER.reduce<Record<CityId, number>>((acc, cityId, index) => {
-  acc[cityId] = index;
-  return acc;
-}, {} as Record<CityId, number>);
-
-const REGION_ORDER_MAP = REGIONS.reduce<Record<RegionId, number>>((acc, region, index) => {
-  acc[region.id] = index;
-  return acc;
-}, {} as Record<RegionId, number>);
+type GroupedCities = {
+  region: string;
+  cities: CityOption[];
+};
 
 export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsProps) {
   const { data, setData } = useTripBuilder();
   const [searchTerm, setSearchTerm] = useState("");
+  const [cities, setCities] = useState<CityOption[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch cities from API
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchCities() {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await fetch("/api/cities");
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch cities: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (cancelled) return;
+
+        setCities(data.cities || []);
+      } catch (err) {
+        if (cancelled) return;
+        logger.error("Failed to fetch cities", err);
+        setError("Failed to load cities. Please try again.");
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchCities();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // City name lookup map
+  const cityNameMap = useMemo(() => {
+    const map = new Map<string, string>();
+    cities.forEach((city) => {
+      map.set(city.id, city.name);
+    });
+    return map;
+  }, [cities]);
 
   const selectedCities = useMemo(
-    () => (data.cities && data.cities.length > 0 ? sortCityIds(data.cities) : []),
+    () => (data.cities && data.cities.length > 0 ? [...data.cities] : []),
     [data.cities],
   );
-  const selectedRegions = useMemo(
-    () => (data.regions && data.regions.length > 0 ? sortRegionIds(data.regions) : []),
-    [data.regions],
-  );
+
   const selectedCitiesSet = useMemo(() => new Set<CityId>(selectedCities), [selectedCities]);
 
   useEffect(() => {
     onValidityChange(selectedCities.length > 0);
   }, [onValidityChange, selectedCities.length]);
 
+  // Group cities by region
+  const groupedCities = useMemo((): GroupedCities[] => {
+    const groups = new Map<string, CityOption[]>();
+
+    cities.forEach((city) => {
+      const existing = groups.get(city.region) || [];
+      existing.push(city);
+      groups.set(city.region, existing);
+    });
+
+    return Array.from(groups.entries())
+      .map(([region, cities]) => ({
+        region,
+        cities: cities.sort((a, b) => b.locationCount - a.locationCount),
+      }))
+      .sort((a, b) => {
+        // Sort regions by total location count
+        const countA = a.cities.reduce((sum, c) => sum + c.locationCount, 0);
+        const countB = b.cities.reduce((sum, c) => sum + c.locationCount, 0);
+        return countB - countA;
+      });
+  }, [cities]);
+
+  // Derive regions from selected cities
+  const deriveRegionIds = useCallback((cityIds: CityId[]): RegionId[] => {
+    const regionSet = new Set<RegionId>();
+    cityIds.forEach((cityId) => {
+      const city = cities.find((c) => c.id === cityId);
+      if (city) {
+        regionSet.add(city.region);
+      }
+    });
+    return Array.from(regionSet);
+  }, [cities]);
+
   const applySelection = useCallback(
     (mutator: (working: Set<CityId>) => void) => {
       setData((prev) => {
         const working = new Set<CityId>(prev.cities ?? []);
         mutator(working);
-        const nextCities = sortCityIds(working);
+        const nextCities = Array.from(working);
         const nextRegions = deriveRegionIds(nextCities);
         return {
           ...prev,
@@ -58,7 +133,7 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
         };
       });
     },
-    [setData],
+    [setData, deriveRegionIds],
   );
 
   const handleToggleCity = useCallback(
@@ -84,14 +159,13 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
   );
 
   const handleToggleRegion = useCallback(
-    (regionId: RegionId) => {
-      const region = REGIONS.find((entry) => entry.id === regionId);
-      if (!region) {
-        return;
-      }
+    (regionName: string) => {
+      const regionCities = cities.filter((c) => c.region === regionName);
+      if (regionCities.length === 0) return;
+
       applySelection((working) => {
-        const allSelected = region.cities.every((city) => working.has(city.id));
-        region.cities.forEach((city) => {
+        const allSelected = regionCities.every((city) => working.has(city.id));
+        regionCities.forEach((city) => {
           if (allSelected) {
             working.delete(city.id);
           } else {
@@ -100,48 +174,96 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
         });
       });
     },
-    [applySelection],
+    [applySelection, cities],
   );
 
   const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   }, []);
 
-  const filteredRegions = useMemo(() => {
+  const filteredGroups = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) {
-      return REGIONS.map((region) => ({
-        ...region,
-        filteredCities: region.cities,
-      }));
+      return groupedCities;
     }
-    return REGIONS.map((region) => {
-      const filteredCities = region.cities.filter((city) =>
-        city.name.toLowerCase().includes(term),
-      );
-      return {
-        ...region,
-        filteredCities,
-      };
-    }).filter((region) => region.filteredCities.length > 0);
-  }, [searchTerm]);
+    return groupedCities
+      .map((group) => ({
+        ...group,
+        cities: group.cities.filter((city) =>
+          city.name.toLowerCase().includes(term),
+        ),
+      }))
+      .filter((group) => group.cities.length > 0);
+  }, [searchTerm, groupedCities]);
 
-  const hasMatches = filteredRegions.some((region) => region.filteredCities.length > 0);
+  const hasMatches = filteredGroups.some((group) => group.cities.length > 0);
 
   const handleSubmit = useCallback(
     (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      setData((prev) => ({
-        ...prev,
-        cities: arraysEqual(prev.cities, selectedCities) ? prev.cities : sortCityIds(selectedCities),
-        regions: arraysEqual(prev.regions, selectedRegions)
-          ? prev.regions
-          : sortRegionIds(selectedRegions),
-      }));
       onNext();
     },
-    [onNext, selectedCities, selectedRegions, setData],
+    [onNext],
   );
+
+  const getCityName = useCallback(
+    (cityId: CityId): string => {
+      return cityNameMap.get(cityId) || cityId;
+    },
+    [cityNameMap],
+  );
+
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <div className="flex h-full flex-col gap-10 lg:flex-row">
+        <aside className="flex w-full flex-col gap-6 lg:w-72">
+          <div className="h-24 animate-pulse rounded-xl bg-gray-100" />
+          <div className="h-32 animate-pulse rounded-xl bg-gray-100" />
+        </aside>
+        <section className="flex-1">
+          <div className="flex flex-col gap-6">
+            <div className="h-16 animate-pulse rounded-xl bg-gray-100" />
+            <div className="grid gap-6">
+              {[1, 2].map((i) => (
+                <div key={i} className="rounded-2xl border border-gray-200 p-6">
+                  <div className="mb-4 h-8 w-32 animate-pulse rounded bg-gray-100" />
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {[1, 2, 3].map((j) => (
+                      <div key={j} className="rounded-xl border border-gray-200 p-3">
+                        <div className="mb-3 flex gap-1">
+                          {[1, 2, 3].map((k) => (
+                            <div key={k} className="h-16 w-16 animate-pulse rounded-lg bg-gray-100" />
+                          ))}
+                        </div>
+                        <div className="h-5 w-24 animate-pulse rounded bg-gray-100" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="flex h-64 flex-col items-center justify-center rounded-xl border border-red-200 bg-red-50 p-8 text-center">
+        <p className="text-sm font-medium text-red-800">{error}</p>
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form
@@ -222,9 +344,9 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
           )}
 
           <div className="grid gap-6">
-            {filteredRegions.map((region) => {
-              const totalCities = region.cities.length;
-              const selectedCount = region.cities.filter((city) =>
+            {filteredGroups.map((group) => {
+              const totalCities = group.cities.length;
+              const selectedCount = group.cities.filter((city) =>
                 selectedCitiesSet.has(city.id),
               ).length;
               const hasSelection = selectedCount > 0;
@@ -232,7 +354,7 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
 
               return (
                 <fieldset
-                  key={region.id}
+                  key={group.region}
                   className={cn(
                     "rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition",
                     hasSelection && "border-indigo-200 ring-1 ring-inset ring-indigo-100",
@@ -241,42 +363,35 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
                   <legend className="mb-4 flex items-center justify-between gap-3">
                     <button
                       type="button"
-                      onClick={() => handleToggleRegion(region.id)}
+                      onClick={() => handleToggleRegion(group.region)}
                       aria-pressed={hasSelection}
                       className={cn(
                         "rounded-xl px-3 py-1.5 text-left text-lg font-semibold text-gray-900 transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
                         hasSelection ? "bg-indigo-50 text-indigo-700" : "hover:bg-gray-100",
                       )}
                     >
-                      {region.name}
+                      {group.region}
                     </button>
                     <span className="text-sm text-gray-500">
                       {selectedCount}/{totalCities} selected
                     </span>
                   </legend>
-                  <div className="grid gap-3 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    {region.filteredCities.map((city) => {
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {group.cities.map((city) => {
                       const isSelected = selectedCitiesSet.has(city.id);
                       return (
-                        <Checkbox
+                        <CityCard
                           key={city.id}
-                          label={city.name}
-                          checked={isSelected}
-                          onChange={() => handleToggleCity(city.id)}
-                          containerClassName={cn(
-                            "border border-gray-200 bg-white",
-                            isSelected && "border-indigo-200 bg-indigo-50 ring-1 ring-inset ring-indigo-100",
-                          )}
+                          city={city}
+                          isSelected={isSelected}
+                          onToggle={() => handleToggleCity(city.id)}
                         />
                       );
                     })}
-                    {region.filteredCities.length === 0 && (
-                      <p className="text-sm text-gray-500">No cities match this search.</p>
-                    )}
                   </div>
                   {allSelected && (
                     <p className="mt-3 text-xs text-indigo-600">
-                      All cities in {region.name} are selected.
+                      All cities in {group.region} are selected.
                     </p>
                   )}
                 </fieldset>
@@ -289,42 +404,105 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
   );
 }
 
-function sortCityIds(cityIds: Iterable<CityId>): CityId[] {
-  return Array.from(new Set(cityIds)).sort((a, b) => CITY_ORDER_MAP[a] - CITY_ORDER_MAP[b]);
+type CityCardProps = {
+  city: CityOption;
+  isSelected: boolean;
+  onToggle: () => void;
+};
+
+function CityCard({ city, isSelected, onToggle }: CityCardProps) {
+  const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
+
+  const handleImageError = (index: number) => {
+    setImgErrors((prev) => new Set(prev).add(index));
+  };
+
+  const visibleImages = city.previewImages.slice(0, 3);
+  const placeholderCount = Math.max(0, 3 - visibleImages.length);
+
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      className={cn(
+        "group flex flex-col rounded-xl border p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+        isSelected
+          ? "border-indigo-300 bg-indigo-50 ring-1 ring-inset ring-indigo-200"
+          : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50",
+      )}
+    >
+      {/* Preview images row */}
+      <div className="mb-3 flex gap-1 overflow-hidden rounded-lg">
+        {visibleImages.map((src, index) => (
+          <div
+            key={index}
+            className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-gray-100"
+          >
+            {!imgErrors.has(index) ? (
+              <Image
+                src={src}
+                alt={`${city.name} preview ${index + 1}`}
+                fill
+                sizes="64px"
+                className="object-cover"
+                onError={() => handleImageError(index)}
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            )}
+          </div>
+        ))}
+        {/* Placeholder slots */}
+        {Array.from({ length: placeholderCount }).map((_, index) => (
+          <div
+            key={`placeholder-${index}`}
+            className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-300"
+          >
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        ))}
+      </div>
+
+      {/* City info */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {/* Checkbox indicator */}
+          <div
+            className={cn(
+              "flex h-5 w-5 items-center justify-center rounded border-2 transition",
+              isSelected
+                ? "border-indigo-600 bg-indigo-600 text-white"
+                : "border-gray-300 bg-white group-hover:border-gray-400",
+            )}
+          >
+            {isSelected && (
+              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+          </div>
+          <span className={cn(
+            "font-medium",
+            isSelected ? "text-indigo-900" : "text-gray-900",
+          )}>
+            {city.name}
+          </span>
+        </div>
+        <span className={cn(
+          "rounded-full px-2 py-0.5 text-xs font-medium",
+          isSelected
+            ? "bg-indigo-100 text-indigo-700"
+            : "bg-gray-100 text-gray-600",
+        )}>
+          {city.locationCount} places
+        </span>
+      </div>
+    </button>
+  );
 }
-
-function sortRegionIds(regionIds: Iterable<RegionId>): RegionId[] {
-  const order = Array.from(new Set(regionIds));
-  order.sort((a, b) => REGION_ORDER_MAP[a] - REGION_ORDER_MAP[b]);
-  return order;
-}
-
-function deriveRegionIds(cityIds: CityId[]): RegionId[] {
-  const regionSet = new Set<RegionId>();
-  cityIds.forEach((cityId) => {
-    const regionId = CITY_TO_REGION[cityId];
-    if (regionId) {
-      regionSet.add(regionId);
-    }
-  });
-  return sortRegionIds(regionSet);
-}
-
-function arraysEqual<T>(a: readonly T[] | undefined, b: readonly T[]): boolean {
-  if (!a || a.length !== b.length) {
-    return false;
-  }
-  return a.every((value, index) => value === b[index]);
-}
-
-function getCityName(cityId: CityId) {
-  for (const region of REGIONS) {
-    const match = region.cities.find((city) => city.id === cityId);
-    if (match) {
-      return match.name;
-    }
-  }
-  return cityId;
-}
-
-

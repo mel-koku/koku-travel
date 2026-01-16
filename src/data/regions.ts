@@ -1,10 +1,10 @@
-import type { CityId, RegionId } from "../types/trip";
+import type { KnownCityId, KnownRegionId, CityId, RegionId } from "../types/trip";
 
 export type Region = {
-  id: RegionId;
+  id: KnownRegionId;
   name: string;
   cities: {
-    id: CityId;
+    id: KnownCityId;
     name: string;
   }[];
 };
@@ -31,16 +31,33 @@ export const REGIONS: readonly Region[] = [
 
 export const ALL_CITY_IDS = REGIONS.flatMap((region) =>
   region.cities.map((city) => city.id)
-) as readonly CityId[];
+) as readonly KnownCityId[];
 
-export const CITY_TO_REGION: Record<CityId, RegionId> = REGIONS.reduce(
+export const CITY_TO_REGION: Record<KnownCityId, KnownRegionId> = REGIONS.reduce(
   (acc, region) => {
     region.cities.forEach((city) => {
       acc[city.id] = region.id;
     });
     return acc;
   },
-  {} as Record<CityId, RegionId>,
+  {} as Record<KnownCityId, KnownRegionId>,
 );
+
+/**
+ * Check if a city ID is a known static city
+ */
+export function isKnownCity(cityId: string): cityId is KnownCityId {
+  return ALL_CITY_IDS.includes(cityId as KnownCityId);
+}
+
+/**
+ * Get the region for a city, returns undefined for unknown cities
+ */
+export function getRegionForCity(cityId: CityId): RegionId | undefined {
+  if (isKnownCity(cityId)) {
+    return CITY_TO_REGION[cityId];
+  }
+  return undefined;
+}
 
 
