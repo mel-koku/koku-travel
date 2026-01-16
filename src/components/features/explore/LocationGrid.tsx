@@ -26,40 +26,50 @@ export function LocationGrid({
 
   return (
     <>
-      <section aria-live="polite" className="mt-8">
-        <div
-          className={`grid grid-cols-1 gap-6 sm:grid-cols-2 ${
-            layout === "sidebar"
-              ? "md:grid-cols-2 lg:grid-cols-3"
-              : "lg:grid-cols-3 xl:grid-cols-4"
-          }`}
-        >
-          {locations.length === 0 && (
-            <p className="col-span-full text-center text-gray-500 py-16">
-              No locations match your search.
-            </p>
-          )}
-
-          {locations.map((location) => (
-            <LocationCard
-              key={location.id}
-              location={location}
-              onSelect={setSelectedLocation}
-            />
-          ))}
-
-          {hasMore && (
-            <div className="col-span-full mt-6 flex justify-center pb-4">
-              <button
-                type="button"
-                onClick={onLoadMore}
-                className="rounded-full bg-gray-900 px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-              >
-                Load more places
-              </button>
+      <section aria-live="polite">
+        {locations.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 px-4">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+              <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
             </div>
-          )}
-        </div>
+            <p className="text-base font-medium text-gray-900 mb-1">No places found</p>
+            <p className="text-sm text-gray-500 text-center max-w-sm">
+              Try adjusting your filters or search to find what you&apos;re looking for.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div
+              className={`grid gap-x-6 gap-y-10 ${
+                layout === "sidebar"
+                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              }`}
+            >
+              {locations.map((location) => (
+                <LocationCard
+                  key={location.id}
+                  location={location}
+                  onSelect={setSelectedLocation}
+                />
+              ))}
+            </div>
+
+            {hasMore && (
+              <div className="mt-12 flex justify-center pb-8">
+                <button
+                  type="button"
+                  onClick={onLoadMore}
+                  className="rounded-xl bg-gray-900 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+                >
+                  Show more
+                </button>
+              </div>
+            )}
+          </>
+        )}
       </section>
 
       <LocationDetailsModal location={selectedLocation} onClose={handleClose} />

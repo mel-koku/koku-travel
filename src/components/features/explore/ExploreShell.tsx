@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Location } from "@/types/location";
 
-import { FilterBar } from "./FilterBar";
+import { CategoryBar } from "./CategoryBar";
+import { FiltersModal } from "./FiltersModal";
 import { LocationGrid } from "./LocationGrid";
-import { FeaturedLocationsHero } from "./FeaturedLocationsHero";
+import { SearchHeader } from "./SearchHeader";
 import { logger } from "@/lib/logger";
 import {
-  getCachedLocations,
   getCachedLocationsIncludingStale,
   isCacheStale,
   setCachedLocations,
@@ -169,6 +169,7 @@ export function ExploreShell() {
   const [page, setPage] = useState(1);
   const [selectedSort] =
     useState<SortOptionId>("relevance");
+  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
 
   useEffect(() => {
     setPage(1);
@@ -399,27 +400,51 @@ export function ExploreShell() {
   );
 
   const hasMore = visibleLocations.length < sortedLocations.length;
-  const featuredLocations = useMemo(() => {
-    return [...enhancedLocations]
-      .sort((a, b) => {
-        const ratingA = a.ratingValue ?? -Infinity;
-        const ratingB = b.ratingValue ?? -Infinity;
-        if (ratingA === ratingB) {
-          return a.name.localeCompare(b.name);
-        }
-        return ratingB - ratingA;
-      })
-      .slice(0, 3);
-  }, [enhancedLocations]);
+
+  // Count active non-category filters
+  const activeFilterCount = [
+    selectedCity,
+    selectedBudget,
+    selectedDuration,
+    selectedTag,
+    query,
+  ].filter(Boolean).length;
+
+  const clearAllFilters = () => {
+    setQuery("");
+    setSelectedCity(null);
+    setSelectedBudget(null);
+    setSelectedDuration(null);
+    setSelectedTag(null);
+  };
 
   if (isLoading) {
     return (
-      <div className="mx-auto flex w-full max-w-full flex-col gap-6 px-4 py-8 sm:gap-8 sm:px-6 sm:py-12 md:px-8 md:py-16">
-        <div className="h-10 w-full max-w-md animate-pulse rounded-lg bg-gray-200" />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className="h-64 animate-pulse rounded-2xl bg-gray-200" />
-          ))}
+      <div className="min-h-screen bg-white">
+        {/* Skeleton category bar */}
+        <div className="sticky top-0 z-40 bg-white border-b border-gray-200">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+            <div className="flex gap-8">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <div key={index} className="flex flex-col items-center gap-2">
+                  <div className="h-6 w-6 rounded-full bg-gray-200 animate-pulse" />
+                  <div className="h-3 w-12 rounded bg-gray-200 animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        {/* Skeleton grid */}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div key={index} className="space-y-3">
+                <div className="aspect-square rounded-xl bg-gray-200 animate-pulse" />
+                <div className="h-4 w-3/4 rounded bg-gray-200 animate-pulse" />
+                <div className="h-3 w-1/2 rounded bg-gray-200 animate-pulse" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -427,58 +452,93 @@ export function ExploreShell() {
 
   if (loadError) {
     return (
-      <div className="mx-auto max-w-screen-md px-4 py-12 text-center sm:px-6 sm:py-16 md:px-8 md:py-24">
-        <div className="rounded-lg border border-red-200 bg-red-50 p-6">
-          <p className="text-sm font-medium text-red-800 mb-2">Error loading locations</p>
-          <p className="text-sm text-red-600">{loadError}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-4 rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
-          >
-            Refresh Page
-          </button>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="mx-auto max-w-md px-4 py-12 text-center">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-8">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            <p className="text-base font-semibold text-red-800 mb-2">Unable to load destinations</p>
+            <p className="text-sm text-red-600 mb-6">{loadError}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+            >
+              Try again
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 pb-6 pt-6 sm:gap-8 sm:px-6 sm:pb-8 sm:pt-8 md:gap-10 md:pb-8 md:pt-10 lg:px-12">
-      <FeaturedLocationsHero locations={featuredLocations} />
-      <div className="flex flex-col gap-6 sm:gap-8 md:grid md:grid-cols-[minmax(260px,_320px)_1fr] md:gap-12">
-        <FilterBar
-          query={query}
-          onQueryChange={setQuery}
-          cityOptions={cityOptions}
-          selectedCity={selectedCity}
-          onCityChange={setSelectedCity}
-          budgetOptions={BUDGET_FILTERS.map(({ id, label }) => ({
-            value: id,
-            label,
-          }))}
-          selectedBudget={selectedBudget}
-          onBudgetChange={setSelectedBudget}
-          durationOptions={DURATION_FILTERS.map(({ id, label }) => ({
-            value: id,
-            label,
-          }))}
-          selectedDuration={selectedDuration}
-          onDurationChange={setSelectedDuration}
-          categoryOptions={categoryOptions}
-          selectedCategories={selectedCategories}
-          onCategoriesChange={setSelectedCategories}
-          tagOptions={tagOptions}
-          selectedTag={selectedTag}
-          onTagChange={setSelectedTag}
-          layout="vertical"
-        />
+    <div className="min-h-screen bg-white">
+      {/* Search Header */}
+      <SearchHeader
+        query={query}
+        onQueryChange={setQuery}
+        totalCount={locations.length}
+      />
+
+      {/* Category Bar */}
+      <CategoryBar
+        categories={categoryOptions}
+        selectedCategories={selectedCategories}
+        onCategoriesChange={setSelectedCategories}
+        onFiltersClick={() => setIsFiltersModalOpen(true)}
+        activeFilterCount={activeFilterCount}
+      />
+
+      {/* Main Content */}
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+        {/* Results count */}
+        <div className="mb-6">
+          <p className="text-sm text-gray-600">
+            {filteredLocations.length === locations.length
+              ? `${locations.length.toLocaleString()} places to explore`
+              : `${filteredLocations.length.toLocaleString()} of ${locations.length.toLocaleString()} places`}
+          </p>
+        </div>
+
+        {/* Location Grid */}
         <LocationGrid
           locations={visibleLocations}
           hasMore={hasMore}
           onLoadMore={() => setPage((current) => current + 1)}
-          layout="sidebar"
+          layout="default"
         />
-      </div>
+      </main>
+
+      {/* Filters Modal */}
+      <FiltersModal
+        isOpen={isFiltersModalOpen}
+        onClose={() => setIsFiltersModalOpen(false)}
+        query={query}
+        onQueryChange={setQuery}
+        cityOptions={cityOptions}
+        selectedCity={selectedCity}
+        onCityChange={setSelectedCity}
+        budgetOptions={BUDGET_FILTERS.map(({ id, label }) => ({
+          value: id,
+          label,
+        }))}
+        selectedBudget={selectedBudget}
+        onBudgetChange={setSelectedBudget}
+        durationOptions={DURATION_FILTERS.map(({ id, label }) => ({
+          value: id,
+          label,
+        }))}
+        selectedDuration={selectedDuration}
+        onDurationChange={setSelectedDuration}
+        tagOptions={tagOptions}
+        selectedTag={selectedTag}
+        onTagChange={setSelectedTag}
+        resultsCount={filteredLocations.length}
+        onClearAll={clearAllFilters}
+      />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import type { RefObject } from "react";
 
 import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
-import { useLocationEditorialSummary, useLocationDisplayName } from "@/state/locationDetailsStore";
+import { useLocationEditorialSummary, useLocationDisplayName, cacheLocationDetails, getCachedLocationDetails } from "@/state/locationDetailsStore";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
@@ -25,72 +25,75 @@ export function LocationCard({ location, onSelect }: LocationCardProps) {
   const summary = getShortOverview(location, cachedEditorialSummary);
   const estimatedDuration = location.estimatedDuration?.trim();
   const rating = getLocationRating(location);
-  const reviewCount = getLocationReviewCount(location);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const isVisible = useInViewport(buttonRef);
   const primaryPhotoUrl = usePrimaryPhoto(location.id, isVisible);
   const imageSrc = primaryPhotoUrl ?? location.image;
 
   return (
-    <article className="relative rounded-2xl overflow-hidden border border-gray-200 bg-white hover:shadow-lg transition text-gray-900 focus-within:ring-2 focus-within:ring-indigo-500">
+    <article className="group relative text-gray-900">
+      {/* Wishlist button */}
       <button
         aria-label={active ? "Remove from Trip" : "Add to Trip"}
         onClick={(event) => {
           event.stopPropagation();
           toggleWishlist(location.id);
         }}
-        className={`absolute top-3 right-3 z-10 rounded-full border border-gray-200 bg-white/90 p-2 text-gray-400 transition hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 ${active ? "text-indigo-600" : "text-gray-400"}`}
+        className={`absolute top-3 right-3 z-10 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
+          active ? "text-red-500" : "text-white drop-shadow-md hover:text-red-400"
+        }`}
       >
         <HeartIcon active={active} />
       </button>
+
+      {/* Main clickable area */}
       <button
         type="button"
         onClick={() => onSelect?.(location)}
         ref={buttonRef}
-        className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+        className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 rounded-xl"
       >
-        <div className="relative aspect-[4/3] w-full">
+        {/* Image */}
+        <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
           <Image
             src={imageSrc || FALLBACK_IMAGE_SRC}
             alt={displayName}
             fill
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
             sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
             priority={false}
           />
         </div>
-        <div className="p-4 space-y-3">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="font-semibold text-gray-900">{displayName}</h3>
-              <p className="text-sm text-gray-600">
-                {location.city}, {location.region}
-              </p>
-            </div>
 
+        {/* Content */}
+        <div className="mt-3 space-y-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-medium text-gray-900 line-clamp-1">{displayName}</h3>
             {rating ? (
-              <div className="flex shrink-0 items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-gray-800 shadow-sm ring-1 ring-gray-200">
+              <div className="flex shrink-0 items-center gap-1 text-sm">
                 <StarIcon />
                 <span>{rating.toFixed(1)}</span>
-                {reviewCount ? (
-                  <span className="text-[11px] font-normal text-gray-500">
-                    ({numberFormatter.format(reviewCount)})
-                  </span>
-                ) : null}
               </div>
             ) : null}
           </div>
 
-          <p className="text-sm leading-relaxed text-gray-700">{summary}</p>
+          <p className="text-sm text-gray-500">
+            {location.city}, {location.region}
+          </p>
 
-          <div className="flex flex-wrap gap-2 pt-1">
-            <span className="inline-block text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-700">
+          <p className="text-sm text-gray-500 line-clamp-2">{summary}</p>
+
+          <div className="flex items-center gap-2 pt-1">
+            <span className="text-sm text-gray-900 font-medium capitalize">
               {location.category}
             </span>
             {estimatedDuration ? (
-              <span className="inline-block text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 font-semibold">
-                Est. {estimatedDuration}
-              </span>
+              <>
+                <span className="text-gray-300">·</span>
+                <span className="text-sm text-gray-500">
+                  {estimatedDuration}
+                </span>
+              </>
             ) : null}
           </div>
         </div>
@@ -103,10 +106,9 @@ export function HeartIcon({ active }: { active: boolean }) {
   return (
     <svg
       aria-hidden="true"
-      className={active ? "h-4 w-4 fill-indigo-600 stroke-indigo-600" : "h-4 w-4 stroke-current"}
-      fill="none"
+      className={`h-6 w-6 transition-colors ${active ? "fill-red-500 stroke-red-500" : "fill-black/50 stroke-white"}`}
       viewBox="0 0 24 24"
-      strokeWidth={1.8}
+      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
     >
@@ -114,8 +116,6 @@ export function HeartIcon({ active }: { active: boolean }) {
     </svg>
   );
 }
-
-const numberFormatter = new Intl.NumberFormat("en-US");
 
 const CATEGORY_DESCRIPTORS: Record<string, string> = {
   culture: "Historic cultural landmark",
@@ -166,22 +166,10 @@ function getLocationRating(location: Location): number | null {
   return baseValue ? Math.round(baseValue * 10) / 10 : null;
 }
 
-function getLocationReviewCount(location: Location): number | null {
-  if (Number.isInteger(location.reviewCount) && (location.reviewCount as number) > 0) {
-    return location.reviewCount as number;
-  }
-  return generateReviewCountFromId(location.id);
-}
-
 function generateRatingFromId(seed: string): number {
   const hash = hashString(seed);
   const rating = 3.9 + (hash % 18) / 20; // 3.9 - 4.8 range
   return clamp(rating, 0, 5);
-}
-
-function generateReviewCountFromId(seed: string): number {
-  const hash = hashString(seed);
-  return 120 + (hash % 780) + Math.floor(hash % 4) * 100;
 }
 
 function hashString(value: string): number {
@@ -216,6 +204,8 @@ type PrimaryPhotoSuccessResponse = {
   photo: {
     proxyUrl?: string;
   } | null;
+  displayName: string | null;
+  editorialSummary: string | null;
 };
 
 type PrimaryPhotoErrorResponse = {
@@ -328,6 +318,20 @@ async function requestPrimaryPhoto(locationId: string): Promise<string | null> {
   }
 
   const payload = (await response.json()) as PrimaryPhotoSuccessResponse;
+
+  // Cache displayName and editorialSummary from the response
+  if (payload.displayName || payload.editorialSummary) {
+    const existingDetails = getCachedLocationDetails(locationId);
+    cacheLocationDetails(locationId, {
+      placeId: payload.placeId,
+      fetchedAt: payload.fetchedAt,
+      displayName: payload.displayName ?? existingDetails?.displayName,
+      editorialSummary: payload.editorialSummary ?? existingDetails?.editorialSummary,
+      photos: existingDetails?.photos ?? [],
+      reviews: existingDetails?.reviews ?? [],
+    });
+  }
+
   return payload.photo?.proxyUrl ?? null;
 }
 
