@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useAppState } from "@/state/AppState";
 import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
@@ -131,22 +132,24 @@ function ItineraryPageContent() {
 
   return (
     <div className="bg-slate-50 py-6 sm:py-8 md:py-10">
-      <ItineraryShell
-        key={selectedTrip?.id ?? "mock-itinerary"}
-        itinerary={activeItinerary}
-        tripId={selectedTrip?.id ?? "mock"}
-        onItineraryChange={selectedTrip ? handleItineraryChange : undefined}
-        selectedTripId={selectedTripId}
-        onTripChange={handleTripChange}
-        trips={trips}
-        headingText={trips.length > 1 ? "Your Itineraries" : "Your Itinerary"}
-        descriptionText="Choose a saved trip to review or continue planning."
-        createdLabel={createdLabel}
-        updatedLabel={updatedLabel}
-        isUsingMock={isUsingMock}
-        tripStartDate={selectedTrip?.builderData?.dates?.start}
-        tripBuilderData={selectedTrip?.builderData}
-      />
+      <ErrorBoundary>
+        <ItineraryShell
+          key={selectedTrip?.id ?? "mock-itinerary"}
+          itinerary={activeItinerary}
+          tripId={selectedTrip?.id ?? "mock"}
+          onItineraryChange={selectedTrip ? handleItineraryChange : undefined}
+          selectedTripId={selectedTripId}
+          onTripChange={handleTripChange}
+          trips={trips}
+          headingText={trips.length > 1 ? "Your Itineraries" : "Your Itinerary"}
+          descriptionText="Choose a saved trip to review or continue planning."
+          createdLabel={createdLabel}
+          updatedLabel={updatedLabel}
+          isUsingMock={isUsingMock}
+          tripStartDate={selectedTrip?.builderData?.dates?.start}
+          tripBuilderData={selectedTrip?.builderData}
+        />
+      </ErrorBoundary>
     </div>
   );
 }
