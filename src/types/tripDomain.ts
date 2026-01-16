@@ -13,7 +13,10 @@ export type TripStatus = "draft" | "planning" | "planned" | "active" | "complete
 export type TimeSlot = "morning" | "afternoon" | "evening";
 
 /**
- * Recommendation reason explaining why an activity was selected
+ * Recommendation reason explaining why an activity was selected.
+ * 
+ * Note: A similar RecommendationReason exists in itinerary.ts with flexible factors.
+ * This version has structured scoring factors and is used in the domain model.
  */
 export type RecommendationReason = {
   /**

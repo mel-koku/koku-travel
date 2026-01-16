@@ -3,7 +3,9 @@
 import { type Itinerary, type ItineraryActivity, type ItineraryEdit } from "@/types/itinerary";
 import type { TripBuilderData, DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
-import { loadWishlist, WISHLIST_KEY } from "@/lib/wishlistStorage";
+import { loadWishlist } from "@/lib/wishlistStorage";
+import { APP_STATE_STORAGE_KEY, APP_STATE_DEBOUNCE_MS, MAX_EDIT_HISTORY_ENTRIES, STABLE_DEFAULT_USER_ID } from "@/lib/constants";
+import { WISHLIST_STORAGE_KEY } from "@/lib/constants/storage";
 import type { Session, User } from "@supabase/supabase-js";
 import React, {
   createContext,
@@ -14,8 +16,6 @@ import React, {
   useState,
 } from "react";
 import { logger } from "@/lib/logger";
-
-const KEY = "koku_app_state_v1";
 
 export type UserProfile = {
   id: string; // local-only UUID
@@ -88,10 +88,9 @@ function newId() {
 
 // Use a stable default ID for SSR to prevent hydration mismatches
 // Real ID will be generated on client after hydration
-const STABLE_DEFAULT_ID = "default-user-id";
 
 const defaultState: AppStateShape = {
-  user: { id: STABLE_DEFAULT_ID, displayName: "Guest" },
+  user: { id: STABLE_DEFAULT_USER_ID, displayName: "Guest" },
   favorites: [],
   guideBookmarks: [],
   trips: [],
@@ -213,7 +212,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
-      const raw = localStorage.getItem(KEY);
+      const raw = localStorage.getItem(APP_STATE_STORAGE_KEY);
       const legacyFavorites = loadWishlist();
 
       let nextState: InternalState;
@@ -221,7 +220,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         const parsed = JSON.parse(raw);
         // Ensure user has a valid ID (replace stable default if needed)
         const user = parsed.user ?? defaultState.user;
-        const userId = user.id === STABLE_DEFAULT_ID ? newId() : user.id;
+        const userId = user.id === STABLE_DEFAULT_USER_ID ? newId() : user.id;
         nextState = {
           user: { ...user, id: userId },
           favorites: parsed.favorites ?? [],
@@ -254,10 +253,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       }
 
       setState(nextState);
-      localStorage.setItem(KEY, JSON.stringify(nextState));
+      localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(nextState));
 
       if (legacyFavorites.length > 0) {
-        localStorage.removeItem(WISHLIST_KEY);
+        localStorage.removeItem(WISHLIST_STORAGE_KEY);
       }
     } catch {
       // ignore malformed data
@@ -364,8 +363,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         editHistory: state.editHistory,
         currentHistoryIndex: state.currentHistoryIndex,
       };
-      localStorage.setItem(KEY, JSON.stringify(persistedState));
-    }, 500); // Debounce writes by 500ms
+      localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(persistedState));
+    }, APP_STATE_DEBOUNCE_MS);
 
     return () => {
       clearTimeout(timeoutId);
@@ -734,8 +733,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         const newHistory = history.slice(0, currentIndex + 1);
         newHistory.push(edit);
 
-        // Limit history to last 50 edits
-        const trimmedHistory = newHistory.slice(-50);
+        // Limit history to last N edits
+        const trimmedHistory = newHistory.slice(-MAX_EDIT_HISTORY_ENTRIES);
 
         // Update trip itinerary
         const updatedTrips = s.trips.map((t) =>
@@ -944,12 +943,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const canUndo = useCallback(
     (tripId: string) => {
-      const history = state.editHistory[tripId] ?? [];
-      void history; // Intentionally unused - kept for future use
       const currentIndex = state.currentHistoryIndex[tripId] ?? -1;
       return currentIndex >= 0;
     },
-    [state.editHistory, state.currentHistoryIndex],
+    [state.currentHistoryIndex],
   );
 
   const canRedo = useCallback(
@@ -978,7 +975,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     };
     setState(next);
     if (typeof window !== "undefined") {
-      localStorage.setItem(KEY, JSON.stringify(next));
+      localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(next));
     }
   }, []);
 

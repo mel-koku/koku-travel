@@ -9,7 +9,7 @@ import {
   addRequestContextHeaders,
   getOptionalAuth,
 } from "@/lib/api/middleware";
-import { validateRequestBody } from "@/lib/api/schemas";
+import { validateRequestBody, refineRequestSchema } from "@/lib/api/schemas";
 import { z } from "zod";
 import type { Itinerary, ItineraryActivity, ItineraryDay, RecommendationReason as ItineraryRecommendationReason } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -279,9 +279,19 @@ export async function POST(request: NextRequest) {
 
   try {
     // Validate request body with size limit (2MB for trip data)
+    // Note: refine endpoint accepts multiple formats (legacy and new), so we validate structure first
+    // Using passthrough() to allow additional fields for backward compatibility
+    const refineSchema = z.object({
+      trip: z.any().optional(), // Trip object validation handled separately in refinement engine
+      refinementType: z.enum(["more_diverse", "more_focused", "more_adventurous", "more_relaxed", "more_budget_friendly", "more_luxury"]).optional(),
+      dayIndex: z.number().int().min(0).max(30).optional(),
+      tripId: z.string().max(255).regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters").optional(),
+      builderData: z.any().optional(), // Partial TripBuilderData - validated separately if provided
+    }).passthrough(); // Allow additional fields for backward compatibility
+    
     const bodyValidation = await validateRequestBody(
       request,
-      z.any(), // Accept flexible structure for backward compatibility
+      refineSchema,
       2 * 1024 * 1024
     );
     

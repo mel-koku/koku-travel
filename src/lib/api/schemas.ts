@@ -3,6 +3,7 @@
  */
 
 import { z } from "zod";
+import { INTEREST_CATEGORIES } from "@/data/interests";
 
 /**
  * Schema for location ID parameter
@@ -124,6 +125,167 @@ export const secretSchema = z
   });
 
 /**
+ * Schema for trip ID validation
+ */
+export const tripIdSchema = z
+  .string()
+  .min(1, "Trip ID cannot be empty")
+  .max(255, "Trip ID too long")
+  .regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters")
+  .optional();
+
+/**
+ * Schema for date strings (ISO format: YYYY-MM-DD)
+ */
+const isoDateSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in ISO format (YYYY-MM-DD)")
+  .refine((val) => {
+    const date = new Date(val);
+    return !Number.isNaN(date.getTime()) && val === date.toISOString().split("T")[0];
+  }, "Invalid date")
+  .optional();
+
+/**
+ * Schema for travel dates
+ */
+const travelDatesSchema = z.object({
+  start: isoDateSchema,
+  end: isoDateSchema,
+}).strict();
+
+/**
+ * Schema for entry point type
+ */
+const entryPointTypeSchema = z.enum(["airport", "city", "hotel", "station"]);
+
+/**
+ * Schema for coordinates
+ */
+const coordinatesSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lng: z.number().min(-180).max(180),
+}).strict();
+
+/**
+ * Schema for entry point
+ */
+const entryPointSchema = z.object({
+  type: entryPointTypeSchema,
+  id: z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/),
+  name: z.string().min(1).max(500),
+  coordinates: coordinatesSchema,
+  cityId: z.string().max(255).optional(),
+  placeId: z.string().max(500).optional(),
+}).strict().optional();
+
+/**
+ * Schema for region ID (allows any string but validates format)
+ */
+const regionIdSchema = z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/);
+
+/**
+ * Schema for city ID (allows any string but validates format)
+ */
+const cityIdSchema = z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/);
+
+/**
+ * Schema for interest ID (must be valid interest from INTEREST_CATEGORIES)
+ */
+const interestIdSchema = z.enum(
+  INTEREST_CATEGORIES.map((cat) => cat.id) as [string, ...string[]]
+);
+
+/**
+ * Schema for trip style
+ */
+const tripStyleSchema = z.enum(["relaxed", "balanced", "fast"]).optional();
+
+/**
+ * Schema for budget level
+ */
+const budgetLevelSchema = z.enum(["budget", "moderate", "luxury"]).optional();
+
+/**
+ * Schema for budget information
+ */
+const budgetSchema = z.object({
+  total: z.number().positive().max(10000000).optional(),
+  perDay: z.number().positive().max(1000000).optional(),
+  level: budgetLevelSchema,
+}).strict().optional();
+
+/**
+ * Schema for group type
+ */
+const groupTypeSchema = z.enum(["solo", "couple", "family", "friends", "business"]).optional();
+
+/**
+ * Schema for group information
+ */
+const groupSchema = z.object({
+  size: z.number().int().positive().max(100).optional(),
+  type: groupTypeSchema,
+  childrenAges: z.array(z.number().int().min(0).max(18)).max(20).optional(),
+}).strict().optional();
+
+/**
+ * Schema for accessibility information
+ */
+const accessibilitySchema = z.object({
+  mobility: z.boolean().optional(),
+  dietary: z.array(z.string().max(500)).max(50).optional(),
+  dietaryOther: z.string().max(1000).optional(),
+  notes: z.string().max(5000).optional(),
+}).strict().optional();
+
+/**
+ * Schema for weather preferences
+ */
+const weatherPreferencesSchema = z.object({
+  preferIndoorOnRain: z.boolean().optional(),
+  minTemperature: z.number().min(-50).max(50).optional(),
+  maxTemperature: z.number().min(-50).max(50).optional(),
+}).strict().optional();
+
+/**
+ * Comprehensive schema for TripBuilderData
+ * Validates all fields with proper types and constraints
+ */
+export const tripBuilderDataSchema = z.object({
+  duration: z.number().int().min(1).max(14).optional(),
+  dates: travelDatesSchema,
+  regions: z.array(regionIdSchema).max(50).optional(),
+  cities: z.array(cityIdSchema).max(50).optional(),
+  interests: z.array(interestIdSchema).max(20).optional(),
+  style: tripStyleSchema,
+  entryPoint: entryPointSchema,
+  accessibility: accessibilitySchema,
+  budget: budgetSchema,
+  group: groupSchema,
+  weatherPreferences: weatherPreferencesSchema,
+  // travelerProfile is optional and will be built from other fields if not provided
+  travelerProfile: z.any().optional(),
+}).strict();
+
+/**
+ * Schema for itinerary plan request
+ */
+export const planRequestSchema = z.object({
+  builderData: tripBuilderDataSchema,
+  tripId: tripIdSchema,
+}).strict();
+
+/**
+ * Schema for itinerary refine request (more flexible for backward compatibility)
+ * Accepts partial TripBuilderData updates
+ */
+export const refineRequestSchema = z.object({
+  builderData: tripBuilderDataSchema.partial().passthrough(),
+  tripId: tripIdSchema,
+}).strict();
+
+/**
  * Helper to validate query parameters
  */
 export function validateQueryParams<T extends z.ZodSchema>(
@@ -219,4 +381,3 @@ export async function validateRequestBody<T extends z.ZodSchema>(
     } as { success: false; error: { issues: Array<{ code: string; path: unknown[]; message: string }> } };
   }
 }
-
