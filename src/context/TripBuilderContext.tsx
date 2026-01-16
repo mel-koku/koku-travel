@@ -123,7 +123,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
 
     // Set new timeout for debounced write
     debounceTimeoutRef.current = setTimeout(() => {
-      setLocal(STORAGE_KEY, normalizeData(data));
+      setLocal(TRIP_BUILDER_STORAGE_KEY, normalizeData(data));
       debounceTimeoutRef.current = null;
     }, DEBOUNCE_DELAY_MS);
 
@@ -139,7 +139,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
   const reset = useCallback(() => {
     const next = createDefaultData();
     setData(next);
-    setLocal(STORAGE_KEY, next);
+    setLocal(TRIP_BUILDER_STORAGE_KEY, next);
     if (typeof window !== "undefined") {
       try {
         window.localStorage.removeItem("koku_trip_step");
@@ -173,7 +173,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     };
 
     setData(next);
-    setLocal(STORAGE_KEY, next);
+    setLocal(TRIP_BUILDER_STORAGE_KEY, next);
   }, []);
 
   const setDataNormalized = useCallback(

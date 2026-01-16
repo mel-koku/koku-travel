@@ -9,7 +9,7 @@ import {
   addRequestContextHeaders,
   getOptionalAuth,
 } from "@/lib/api/middleware";
-import { validateRequestBody, refineRequestSchema } from "@/lib/api/schemas";
+import { validateRequestBody } from "@/lib/api/schemas";
 import { z } from "zod";
 import type { Itinerary, ItineraryActivity, ItineraryDay, RecommendationReason as ItineraryRecommendationReason } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";

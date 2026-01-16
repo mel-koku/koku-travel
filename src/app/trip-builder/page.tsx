@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 
 import { Container } from "@/components/layouts/Container";
 import { Wizard } from "@/components/features/trip-builder/Wizard";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { TripBuilderProvider, useTripBuilder } from "@/context/TripBuilderContext";
 import { logger } from "@/lib/logger";
 import type { TripTemplate } from "@/data/tripTemplates";
@@ -274,9 +275,11 @@ function TripBuilderContent() {
 
 export default function TripBuilderPage() {
   return (
-    <TripBuilderProvider>
-      <TripBuilderContent />
-    </TripBuilderProvider>
+    <ErrorBoundary>
+      <TripBuilderProvider>
+        <TripBuilderContent />
+      </TripBuilderProvider>
+    </ErrorBoundary>
   );
 }
 
