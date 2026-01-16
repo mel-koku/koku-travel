@@ -11,15 +11,17 @@ import {
 } from "react";
 
 import { getLocal, setLocal } from "@/lib/storageHelpers";
-import type { EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
+import type { CityId, EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import { getEntryPointById } from "@/data/entryPoints";
-import { REGIONS } from "@/data/regions";
+import { REGIONS, CITY_TO_REGION } from "@/data/regions";
+import type { TripTemplate } from "@/data/tripTemplates";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
   setData: React.Dispatch<React.SetStateAction<TripBuilderData>>;
   reset: () => void;
+  loadTemplate: (template: TripTemplate) => void;
 };
 
 const STORAGE_KEY = "koku_trip_builder";
@@ -151,6 +153,29 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     }
   }, []);
 
+  const loadTemplate = useCallback((template: TripTemplate) => {
+    // Derive regions from cities if not explicitly provided
+    const regionsFromCities = Array.from(
+      new Set(
+        template.cities
+          .map((cityId) => CITY_TO_REGION[cityId as CityId])
+          .filter((regionId): regionId is RegionId => regionId !== undefined)
+      )
+    );
+
+    const next: TripBuilderData = {
+      ...createDefaultData(),
+      duration: template.duration,
+      regions: template.regions.length > 0 ? template.regions : regionsFromCities,
+      cities: template.cities,
+      interests: template.interests,
+      style: template.style,
+    };
+
+    setData(next);
+    setLocal(STORAGE_KEY, next);
+  }, []);
+
   const setDataNormalized = useCallback(
     (updater: React.SetStateAction<TripBuilderData>) => {
       setData((prev) => {
@@ -165,6 +190,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     data,
     setData: setDataNormalized,
     reset,
+    loadTemplate,
   };
 
   return <TripBuilderContext.Provider value={value}>{children}</TripBuilderContext.Provider>;
@@ -296,7 +322,7 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
   }
 
   // Validate type
-  if (entryPoint.type !== "airport" && entryPoint.type !== "city" && entryPoint.type !== "hotel") {
+  if (entryPoint.type !== "airport" && entryPoint.type !== "city" && entryPoint.type !== "hotel" && entryPoint.type !== "station") {
     return undefined;
   }
 
