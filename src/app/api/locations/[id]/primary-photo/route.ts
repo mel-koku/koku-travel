@@ -80,6 +80,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
         placeId: details.placeId,
         fetchedAt: details.fetchedAt,
         photo: photo ?? null,
+        displayName: details.displayName ?? null,
+        editorialSummary: details.editorialSummary ?? null,
       },
       {
         status: 200,

@@ -3,7 +3,7 @@ import { getLocal, setLocal } from "./storageHelpers";
 import { logger } from "./logger";
 
 const CACHE_KEY = "koku_locations_cache";
-const CACHE_VERSION = "1"; // Increment when cache structure changes
+const CACHE_VERSION = "2"; // Increment when cache structure changes - v2: cleaned up invalid locations
 
 // Cache expires after 1 hour (3600000ms)
 const CACHE_MAX_AGE_MS = 60 * 60 * 1000;

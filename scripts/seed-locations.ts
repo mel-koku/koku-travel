@@ -72,6 +72,35 @@ function generateLocationId(name: string, region: string): string {
   return `${normalized}-${hash}`;
 }
 
+/**
+ * Checks if a string contains Japanese characters (Hiragana, Katakana, or Kanji)
+ */
+function containsJapanese(text: string): boolean {
+  // Hiragana: \u3040-\u309F, Katakana: \u30A0-\u30FF, Kanji: \u4E00-\u9FFF
+  const japanesePattern = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/;
+  return japanesePattern.test(text);
+}
+
+/**
+ * Gets the best display name for a location.
+ * Prefers Google's displayName unless it contains Japanese characters,
+ * in which case we use the original English scraped name.
+ */
+function getBestDisplayName(scrapedName: string, googleDisplayName?: string): string {
+  if (!googleDisplayName || googleDisplayName.trim() === "") {
+    return scrapedName;
+  }
+
+  const trimmedGoogleName = googleDisplayName.trim();
+
+  // If Google's name contains Japanese, prefer the scraped English name
+  if (containsJapanese(trimmedGoogleName)) {
+    return scrapedName;
+  }
+
+  return trimmedGoogleName;
+}
+
 function transformLocationForDb(location: Location) {
   return {
     id: location.id,
@@ -97,9 +126,12 @@ function transformLocationForDb(location: Location) {
 function transformScrapedLocationForDb(location: EnrichedLocation) {
   const id = generateLocationId(location.name, location.region);
 
+  // Use Google's displayName unless it contains Japanese characters
+  const displayName = getBestDisplayName(location.name, location.googleDisplayName);
+
   return {
     id,
-    name: location.name,
+    name: displayName,
     region: location.region,
     city: location.city || location.prefecture || location.region,
     category: location.category,
