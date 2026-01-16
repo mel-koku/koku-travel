@@ -11,8 +11,10 @@ export type TravelDates = {
 
 /**
  * Enumerates the pacing options for a trip. Additional options can be added in later phases.
+ * 
+ * Note: This type is semantically equivalent to TravelPace in traveler.ts but kept separate
+ * as they may diverge in the future (e.g., trip-level vs traveler-level pacing).
  */
-
 export type TripStyle = "relaxed" | "balanced" | "fast";
 
 export type InterestId = (typeof INTEREST_CATEGORIES)[number]["id"];

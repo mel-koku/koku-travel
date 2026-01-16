@@ -147,31 +147,8 @@ export const ItineraryTimeline = ({
     [],
   );
 
-  // Store entry point data for lookup (prefixed to suppress unused warning - kept for future use)
-  const _entryPointData = useMemo(() => {
-    const data = new Map<string, { name: string; coordinates: { lat: number; lng: number }; placeId?: string }>();
-    const entryPoints: EntryPointActivity[] = extendedActivities.filter(isEntryPoint);
-    if (startPoint) {
-      const startActivity = entryPoints.find((activity: EntryPointActivity) =>
-        activity.locationId.startsWith("__entry_point_start__"),
-      );
-      if (startActivity) {
-        data.set(startActivity.id, startPoint);
-      }
-    }
-    if (endPoint) {
-      const endActivity = entryPoints.find((activity: EntryPointActivity) =>
-        activity.locationId.startsWith("__entry_point_end__"),
-      );
-      if (endActivity) {
-        data.set(endActivity.id, endPoint);
-      }
-    }
-    return data;
-  }, [extendedActivities, startPoint, endPoint, isEntryPoint]);
-  
-  // Mark as intentionally unused (kept for future use)
-  void _entryPointData;
+  // Entry point data lookup removed - not currently used
+  // Can be re-added if needed for future features
 
   const handleDelete = useCallback(
     (activityId: string) => {

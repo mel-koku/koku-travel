@@ -1,7 +1,6 @@
 "use client";
 
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 
 import { Input } from "@/components/ui/Input";
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -26,6 +25,7 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
   const [cities, setCities] = useState<CityOption[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedRegions, setExpandedRegions] = useState<Set<string>>(new Set());
 
   // Fetch cities from API
   useEffect(() => {
@@ -179,6 +179,18 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
 
   const handleSearchChange = useCallback((event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+  }, []);
+
+  const toggleRegionExpanded = useCallback((region: string) => {
+    setExpandedRegions((prev) => {
+      const next = new Set(prev);
+      if (next.has(region)) {
+        next.delete(region);
+      } else {
+        next.add(region);
+      }
+      return next;
+    });
   }, []);
 
   const filteredGroups = useMemo(() => {
@@ -343,58 +355,91 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
             </div>
           )}
 
-          <div className="grid gap-6">
+          <div className="grid gap-3">
             {filteredGroups.map((group) => {
               const totalCities = group.cities.length;
               const selectedCount = group.cities.filter((city) =>
                 selectedCitiesSet.has(city.id),
               ).length;
               const hasSelection = selectedCount > 0;
-              const allSelected = selectedCount === totalCities && totalCities > 0;
+              const isExpanded = expandedRegions.has(group.region);
 
               return (
-                <fieldset
+                <div
                   key={group.region}
                   className={cn(
-                    "rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition",
-                    hasSelection && "border-indigo-200 ring-1 ring-inset ring-indigo-100",
+                    "rounded-xl border bg-white shadow-sm transition",
+                    hasSelection ? "border-indigo-200" : "border-gray-200",
                   )}
                 >
-                  <legend className="mb-4 flex items-center justify-between gap-3">
-                    <button
-                      type="button"
-                      onClick={() => handleToggleRegion(group.region)}
-                      aria-pressed={hasSelection}
-                      className={cn(
-                        "rounded-xl px-3 py-1.5 text-left text-lg font-semibold text-gray-900 transition focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
-                        hasSelection ? "bg-indigo-50 text-indigo-700" : "hover:bg-gray-100",
+                  {/* Region header - clickable to expand/collapse */}
+                  <button
+                    type="button"
+                    onClick={() => toggleRegionExpanded(group.region)}
+                    className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500"
+                  >
+                    <div className="flex items-center gap-3">
+                      {/* Chevron icon */}
+                      <svg
+                        className={cn(
+                          "h-5 w-5 text-gray-400 transition-transform duration-200",
+                          isExpanded && "rotate-90",
+                        )}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                      </svg>
+                      <span className={cn(
+                        "text-base font-semibold",
+                        hasSelection ? "text-indigo-700" : "text-gray-900",
+                      )}>
+                        {group.region}
+                      </span>
+                      {hasSelection && (
+                        <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                          {selectedCount} selected
+                        </span>
                       )}
-                    >
-                      {group.region}
-                    </button>
+                    </div>
                     <span className="text-sm text-gray-500">
-                      {selectedCount}/{totalCities} selected
+                      {totalCities} cities
                     </span>
-                  </legend>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {group.cities.map((city) => {
-                      const isSelected = selectedCitiesSet.has(city.id);
-                      return (
-                        <CityCard
-                          key={city.id}
-                          city={city}
-                          isSelected={isSelected}
-                          onToggle={() => handleToggleCity(city.id)}
-                        />
-                      );
-                    })}
-                  </div>
-                  {allSelected && (
-                    <p className="mt-3 text-xs text-indigo-600">
-                      All cities in {group.region} are selected.
-                    </p>
+                  </button>
+
+                  {/* Collapsible content */}
+                  {isExpanded && (
+                    <div className="border-t border-gray-100 px-4 py-4">
+                      <div className="mb-3 flex items-center justify-between">
+                        <button
+                          type="button"
+                          onClick={() => handleToggleRegion(group.region)}
+                          className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+                        >
+                          {selectedCount === totalCities ? "Deselect all" : "Select all"}
+                        </button>
+                        <span className="text-xs text-gray-500">
+                          {selectedCount}/{totalCities} selected
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {group.cities.map((city) => {
+                          const isSelected = selectedCitiesSet.has(city.id);
+                          return (
+                            <CityCard
+                              key={city.id}
+                              city={city}
+                              isSelected={isSelected}
+                              onToggle={() => handleToggleCity(city.id)}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
-                </fieldset>
+                </div>
               );
             })}
           </div>
@@ -411,98 +456,41 @@ type CityCardProps = {
 };
 
 function CityCard({ city, isSelected, onToggle }: CityCardProps) {
-  const [imgErrors, setImgErrors] = useState<Set<number>>(new Set());
-
-  const handleImageError = (index: number) => {
-    setImgErrors((prev) => new Set(prev).add(index));
-  };
-
-  const visibleImages = city.previewImages.slice(0, 3);
-  const placeholderCount = Math.max(0, 3 - visibleImages.length);
-
   return (
     <button
       type="button"
       onClick={onToggle}
       className={cn(
-        "group flex flex-col rounded-xl border p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+        "group inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
         isSelected
-          ? "border-indigo-300 bg-indigo-50 ring-1 ring-inset ring-indigo-200"
-          : "border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50",
+          ? "border-indigo-300 bg-indigo-100 text-indigo-900"
+          : "border-gray-200 bg-white text-gray-700 hover:border-gray-300 hover:bg-gray-50",
       )}
     >
-      {/* Preview images row */}
-      <div className="mb-3 flex gap-1 overflow-hidden rounded-lg">
-        {visibleImages.map((src, index) => (
-          <div
-            key={index}
-            className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-md bg-gray-100"
-          >
-            {!imgErrors.has(index) ? (
-              <Image
-                src={src}
-                alt={`${city.name} preview ${index + 1}`}
-                fill
-                sizes="64px"
-                className="object-cover"
-                onError={() => handleImageError(index)}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gray-200 text-gray-400">
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            )}
-          </div>
-        ))}
-        {/* Placeholder slots */}
-        {Array.from({ length: placeholderCount }).map((_, index) => (
-          <div
-            key={`placeholder-${index}`}
-            className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-md bg-gray-100 text-gray-300"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-        ))}
-      </div>
-
-      {/* City info */}
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          {/* Checkbox indicator */}
-          <div
-            className={cn(
-              "flex h-5 w-5 items-center justify-center rounded border-2 transition",
-              isSelected
-                ? "border-indigo-600 bg-indigo-600 text-white"
-                : "border-gray-300 bg-white group-hover:border-gray-400",
-            )}
-          >
-            {isSelected && (
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            )}
-          </div>
-          <span className={cn(
-            "font-medium",
-            isSelected ? "text-indigo-900" : "text-gray-900",
-          )}>
-            {city.name}
-          </span>
-        </div>
-        <span className={cn(
-          "rounded-full px-2 py-0.5 text-xs font-medium",
+      {/* Checkbox indicator */}
+      <div
+        className={cn(
+          "flex h-4 w-4 shrink-0 items-center justify-center rounded border-2 transition",
           isSelected
-            ? "bg-indigo-100 text-indigo-700"
-            : "bg-gray-100 text-gray-600",
-        )}>
-          {city.locationCount} places
-        </span>
+            ? "border-indigo-600 bg-indigo-600 text-white"
+            : "border-gray-300 bg-white group-hover:border-gray-400",
+        )}
+      >
+        {isSelected && (
+          <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+        )}
       </div>
+      <span className="whitespace-nowrap font-medium">
+        {city.name}
+        <span className={cn(
+          "ml-1 font-normal",
+          isSelected ? "text-indigo-600" : "text-gray-500",
+        )}>
+          ({city.locationCount})
+        </span>
+      </span>
     </button>
   );
 }

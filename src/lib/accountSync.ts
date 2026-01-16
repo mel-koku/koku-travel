@@ -1,16 +1,15 @@
 import { createClient } from "@/lib/supabase/client";
 import { AppStateShape } from "@/state/AppState";
 import { logger } from "@/lib/logger";
+import { APP_STATE_STORAGE_KEY } from "./constants/storage";
 
 type FavoriteRow = { place_id: string };
 type BookmarkRow = { guide_id: string };
 
-const APP_KEY = "koku_app_state_v1";
-
 export function getLocalAppState(): Pick<AppStateShape, "favorites" | "guideBookmarks"> {
   if (typeof window === "undefined") return { favorites: [], guideBookmarks: [] };
   try {
-    const raw = localStorage.getItem(APP_KEY);
+    const raw = localStorage.getItem(APP_STATE_STORAGE_KEY);
     if (!raw) return { favorites: [], guideBookmarks: [] };
     const parsed = JSON.parse(raw);
     return {
@@ -110,11 +109,11 @@ export async function pullCloudToLocal() {
   const bookmarksList = (bookmarks ?? []).map((row) => row.guide_id);
 
   if (typeof window !== "undefined") {
-    const raw = localStorage.getItem(APP_KEY);
+    const raw = localStorage.getItem(APP_STATE_STORAGE_KEY);
     const parsed = raw ? JSON.parse(raw) : {};
     parsed.favorites = favoritesList;
     parsed.guideBookmarks = bookmarksList;
-    localStorage.setItem(APP_KEY, JSON.stringify(parsed));
+    localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(parsed));
   }
 
   return { favorites: favoritesList, guideBookmarks: bookmarksList, ok: true as const };

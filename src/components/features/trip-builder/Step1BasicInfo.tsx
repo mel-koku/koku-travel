@@ -33,7 +33,7 @@ const MAX_DURATION = 14;
 export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicInfoProps) {
   const { data, setData } = useTripBuilder();
 
-  const defaultValues = useMemo<Step1FormValues>(
+  const formValues = useMemo<Step1FormValues>(
     () => ({
       duration: data.duration ?? undefined,
       start: data.dates.start ?? "",
@@ -43,25 +43,20 @@ export function Step1BasicInfo({ formId, onNext, onValidityChange }: Step1BasicI
       budgetPerDay: data.budget?.perDay ?? undefined,
       budgetLevel: data.budget?.level ?? "",
     }),
-    [data],
+    [data.duration, data.dates.start, data.entryPoint?.type, data.entryPoint?.id, data.budget?.total, data.budget?.perDay, data.budget?.level],
   );
 
   const {
     control,
     register,
     handleSubmit,
-    reset,
     setValue,
     formState: { errors, isValid },
   } = useForm<Step1FormValues>({
-    defaultValues,
+    values: formValues,
     mode: "onChange",
     reValidateMode: "onChange",
   });
-
-  useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
 
   useEffect(() => {
     onValidityChange(isValid);

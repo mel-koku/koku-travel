@@ -975,7 +975,7 @@ function pickLocationForTimeSlot(
   const diversityContext: DiversityContext = {
     recentCategories,
     visitedLocationIds: usedLocations,
-    currentDay: 0, // TODO: Pass from generator if needed
+    currentDay: 0, // Not currently used in diversity scoring, but kept for future enhancements
     energyLevel: 100,
   };
 
