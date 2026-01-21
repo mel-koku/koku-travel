@@ -75,8 +75,11 @@ All 9 phases implemented:
 
 ### Priority 3: Medium (PENDING)
 
-- [ ] Complete weather integration (TODO exists in ItineraryShell.tsx)
 - [ ] Add trip sharing feature
+
+### Not Planned
+
+- **Weather integration**: Real-time weather forecasts only useful for trips within 5-7 days. Historical/seasonal weather data would be more valuable for advance planning but requires different approach. Backend weather scoring during itinerary generation uses mock data and works fine.
 
 ### Priority 4: Low (PENDING)
 
@@ -144,7 +147,7 @@ npm test -- tests/services/trip/  # Run specific tests
 
 ## Next Steps
 
-1. **Priority 3**: Weather integration, trip sharing
+1. **Priority 3**: Trip sharing feature
 2. **Testing**: Add more integration tests for API routes
 3. **Consider**: Further React Query migration for other data fetching
 
