@@ -1,10 +1,14 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import { MOCK_TOPICS, type CommunityTopic } from "@/data/mocks/mockCommunity";
 import CommunityTopicCard from "./CommunityTopicCard";
-import CreateDiscussionModal from "./CreateDiscussionModal";
+
+const CreateDiscussionModal = dynamic(() => import("./CreateDiscussionModal"), {
+  ssr: false,
+});
 import { addTopic, loadTopics } from "@/lib/communityStorage";
 
 export default function CommunityShell() {

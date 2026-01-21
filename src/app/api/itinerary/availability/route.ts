@@ -3,6 +3,7 @@ import { checkAvailability } from "@/lib/availability/availabilityService";
 import { findLocationForActivity } from "@/lib/itineraryLocations";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { badRequest, internalError } from "@/lib/api/errors";
+import { checkRateLimit } from "@/lib/api/rateLimit";
 import { logger } from "@/lib/logger";
 
 /**
@@ -10,6 +11,13 @@ import { logger } from "@/lib/logger";
  * Check availability for one or more itinerary activities
  */
 export async function POST(request: NextRequest) {
+  // Apply rate limiting: 60 requests per minute
+  const rateLimitResponse = await checkRateLimit(request, {
+    maxRequests: 60,
+    windowMs: 60 * 1000,
+  });
+  if (rateLimitResponse) return rateLimitResponse;
+
   try {
     const body = await request.json();
     const { activities } = body as { activities: ItineraryActivity[] };

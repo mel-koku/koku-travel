@@ -6,6 +6,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -156,11 +157,14 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     [],
   );
 
-  const value: TripBuilderContextValue = {
-    data,
-    setData: setDataNormalized,
-    reset,
-  };
+  const value = useMemo<TripBuilderContextValue>(
+    () => ({
+      data,
+      setData: setDataNormalized,
+      reset,
+    }),
+    [data, setDataNormalized, reset],
+  );
 
   return <TripBuilderContext.Provider value={value}>{children}</TripBuilderContext.Provider>;
 }

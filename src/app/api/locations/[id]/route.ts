@@ -7,6 +7,7 @@ import { locationIdSchema } from "@/lib/api/schemas";
 import { badRequest, notFound, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { createClient } from "@/lib/supabase/server";
+import { LOCATION_DETAIL_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 
 type RouteContext = {
   params: Promise<{
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   const supabase = await createClient();
   const { data: locationData, error: dbError } = await supabase
     .from("locations")
-    .select("*")
+    .select(LOCATION_DETAIL_COLUMNS)
     .eq("id", validatedId)
     .single();
 
@@ -60,24 +61,25 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 
   // Transform database row to Location type
+  const row = locationData as unknown as LocationDbRow;
   const location: Location = {
-    id: locationData.id,
-    name: locationData.name,
-    region: locationData.region,
-    city: locationData.city,
-    category: locationData.category,
-    image: locationData.image,
-    minBudget: locationData.min_budget ?? undefined,
-    estimatedDuration: locationData.estimated_duration ?? undefined,
-    operatingHours: locationData.operating_hours ?? undefined,
-    recommendedVisit: locationData.recommended_visit ?? undefined,
-    preferredTransitModes: locationData.preferred_transit_modes ?? undefined,
-    coordinates: locationData.coordinates ?? undefined,
-    timezone: locationData.timezone ?? undefined,
-    shortDescription: locationData.short_description ?? undefined,
-    rating: locationData.rating ?? undefined,
-    reviewCount: locationData.review_count ?? undefined,
-    placeId: locationData.place_id ?? undefined,
+    id: row.id,
+    name: row.name,
+    region: row.region,
+    city: row.city,
+    category: row.category,
+    image: row.image,
+    minBudget: row.min_budget ?? undefined,
+    estimatedDuration: row.estimated_duration ?? undefined,
+    operatingHours: row.operating_hours ?? undefined,
+    recommendedVisit: row.recommended_visit ?? undefined,
+    preferredTransitModes: row.preferred_transit_modes ?? undefined,
+    coordinates: row.coordinates ?? undefined,
+    timezone: row.timezone ?? undefined,
+    shortDescription: row.short_description ?? undefined,
+    rating: row.rating ?? undefined,
+    reviewCount: row.review_count ?? undefined,
+    placeId: row.place_id ?? undefined,
   };
 
   // Check if location has a valid place_id

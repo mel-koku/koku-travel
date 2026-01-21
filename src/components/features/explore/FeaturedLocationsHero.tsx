@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import type { Location } from "@/types/location";
 
 type EnhancedLocation = Location & {
@@ -36,20 +38,16 @@ export function FeaturedLocationsHero({ locations }: FeaturedLocationsHeroProps)
             key={location.id}
             className="group overflow-hidden rounded-2xl border border-stone-200/40 bg-white/40 backdrop-blur-md transition-all hover:border-stone-300/60 hover:bg-white/60 hover:shadow-lg"
           >
-            <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 bg-slate-800 transition-transform duration-500 group-hover:scale-105"
-                style={
-                  location.image
-                    ? {
-                        backgroundImage: `url(${location.image})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                      }
-                    : undefined
-                }
-              />
+            <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-slate-800">
+              {location.image && (
+                <Image
+                  src={location.image}
+                  alt=""
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/0" />
               <div className="absolute inset-x-0 bottom-0 p-5">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-white/70">

@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
@@ -15,8 +16,16 @@ import {
 import { TopicHeader } from "./TopicHeader";
 import { ReplyForm } from "./ReplyForm";
 import { ReplyList } from "./ReplyList";
-import { EditReplyModal } from "./EditReplyModal";
-import { HistoryModal } from "./HistoryModal";
+
+const EditReplyModal = dynamic(
+  () => import("./EditReplyModal").then((m) => ({ default: m.EditReplyModal })),
+  { ssr: false }
+);
+
+const HistoryModal = dynamic(
+  () => import("./HistoryModal").then((m) => ({ default: m.HistoryModal })),
+  { ssr: false }
+);
 
 const NAME_KEY = "koku_community_current_name";
 

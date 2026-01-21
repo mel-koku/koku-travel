@@ -13,6 +13,7 @@ import {
   parsePaginationParams,
   createPaginatedResponse,
 } from "@/lib/api/pagination";
+import { LOCATION_LISTING_COLUMNS, type LocationListingDbRow } from "@/lib/supabase/projections";
 
 /**
  * GET /api/locations
@@ -85,7 +86,7 @@ export async function GET(request: NextRequest) {
     // Only fetch locations with valid place_id to prevent errors
     let dataQuery = supabase
       .from("locations")
-      .select("*")
+      .select(LOCATION_LISTING_COLUMNS)
       .not("place_id", "is", null)
       .neq("place_id", "");
     if (region) dataQuery = dataQuery.eq("region", region);
@@ -111,7 +112,8 @@ export async function GET(request: NextRequest) {
     // Transform Supabase data to Location type
     // Filter out locations without place_id to avoid errors when fetching details
     // Locations without place_id will fail when trying to resolve Google Place ID
-    const locations: Location[] = (data || [])
+    const rows = (data || []) as unknown as LocationListingDbRow[];
+    const locations: Location[] = rows
       .filter((row) => {
         // Only include locations that have a place_id set
         // This prevents "Could not resolve Google Place ID" errors
@@ -126,11 +128,6 @@ export async function GET(request: NextRequest) {
         image: row.image,
         minBudget: row.min_budget ?? undefined,
         estimatedDuration: row.estimated_duration ?? undefined,
-        operatingHours: row.operating_hours ?? undefined,
-        recommendedVisit: row.recommended_visit ?? undefined,
-        preferredTransitModes: row.preferred_transit_modes ?? undefined,
-        coordinates: row.coordinates ?? undefined,
-        timezone: row.timezone ?? undefined,
         shortDescription: row.short_description ?? undefined,
         rating: row.rating ?? undefined,
         reviewCount: row.review_count ?? undefined,

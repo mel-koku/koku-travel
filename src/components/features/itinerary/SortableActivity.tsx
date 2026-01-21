@@ -1,8 +1,9 @@
+import { memo } from "react";
+import type { ReactNode } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { ActivityRow } from "./ActivityRow";
-import type { ReactNode } from "react";
 
 type SortableActivityProps = {
   activity: ItineraryActivity;
@@ -20,7 +21,7 @@ type SortableActivityProps = {
   onCopy?: () => void;
 };
 
-export function SortableActivity({
+export const SortableActivity = memo(function SortableActivity({
   activity,
   allActivities,
   dayTimezone,
@@ -78,5 +79,4 @@ export function SortableActivity({
       />
     </li>
   );
-}
-
+});

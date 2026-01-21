@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, memo } from "react";
 import type { Transform } from "@dnd-kit/utilities";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { PlaceActivityRow } from "./PlaceActivityRow";
@@ -27,7 +27,7 @@ type ActivityRowProps = {
   onCopy?: () => void;
 };
 
-export const ActivityRow = forwardRef<HTMLDivElement, ActivityRowProps>(
+export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
   (props, ref) => {
     if (props.activity.kind === "note") {
       return <NoteActivityRow ref={ref} {...props} activity={props.activity} />;
@@ -47,7 +47,7 @@ export const ActivityRow = forwardRef<HTMLDivElement, ActivityRowProps>(
       />
     );
   },
-);
+));
 
 ActivityRow.displayName = "ActivityRow";
 

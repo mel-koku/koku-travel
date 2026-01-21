@@ -12,6 +12,7 @@ import { checkOpeningHoursFit } from "@/lib/scoring/timeOptimization";
 import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
+import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
@@ -59,11 +60,13 @@ REGIONS.forEach((region) => {
 });
 
 /**
- * Fetches all locations from Supabase database.
+ * Fetches locations from Supabase database, optionally filtered by cities.
  * In production, throws errors if database is unavailable.
  * In development, falls back to mock data for easier local development.
+ *
+ * @param cities - Optional array of city names to filter by (reduces memory usage)
  */
-async function fetchAllLocations(): Promise<Location[]> {
+async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
   const isDevelopment = process.env.NODE_ENV === "development";
 
   try {
@@ -74,11 +77,17 @@ async function fetchAllLocations(): Promise<Location[]> {
     let hasMore = true;
 
     while (hasMore) {
-      const { data, error } = await supabase
+      let query = supabase
         .from("locations")
-        .select("*")
-        .order("name", { ascending: true })
-        .range(page * limit, (page + 1) * limit - 1);
+        .select(LOCATION_ITINERARY_COLUMNS)
+        .order("name", { ascending: true });
+
+      // Filter by cities if provided to reduce memory usage
+      if (cities && cities.length > 0) {
+        query = query.in("city", cities);
+      }
+
+      const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
 
       if (error) {
         const errorMessage = `Failed to fetch locations from database: ${error.message}`;
@@ -97,7 +106,7 @@ async function fetchAllLocations(): Promise<Location[]> {
       }
 
       // Transform Supabase data to Location type
-      const locations: Location[] = data.map((row) => ({
+      const locations: Location[] = (data as unknown as LocationDbRow[]).map((row) => ({
         id: row.id,
         name: row.name,
         region: row.region,
@@ -243,8 +252,12 @@ export async function generateItinerary(data: TripBuilderData): Promise<Itinerar
   const totalDays =
     typeof data.duration === "number" && data.duration > 0 ? data.duration : DEFAULT_TOTAL_DAYS;
 
+  // Determine cities to filter by for optimized database queries
+  // If user selected specific cities, filter at DB level to reduce memory usage
+  const selectedCities = data.cities && data.cities.length > 0 ? data.cities : undefined;
+
   // Fetch locations from database (with fallback to mock data)
-  const allLocations = await fetchAllLocations();
+  const allLocations = await fetchAllLocations(selectedCities);
   const { locationsByCityKey, locationsByRegionId } = buildLocationMaps(allLocations);
 
   const citySequence = resolveCitySequence(data, locationsByCityKey, allLocations);

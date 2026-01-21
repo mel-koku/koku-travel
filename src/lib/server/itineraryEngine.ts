@@ -7,14 +7,17 @@ import type { Location } from "@/types/location";
 import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { insertMealActivities } from "@/lib/mealPlanning";
 import { createClient } from "@/lib/supabase/server";
+import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { logger } from "@/lib/logger";
 
 /**
- * Fetches all locations from Supabase database.
+ * Fetches locations from Supabase database, optionally filtered by cities.
  * In production, throws errors if database is unavailable.
  * In development, falls back to mock data for easier local development.
+ *
+ * @param cities - Optional array of city names to filter by (reduces memory usage)
  */
-async function fetchAllLocations(): Promise<Location[]> {
+async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
   const isDevelopment = process.env.NODE_ENV === "development";
 
   try {
@@ -25,11 +28,17 @@ async function fetchAllLocations(): Promise<Location[]> {
     let hasMore = true;
 
     while (hasMore) {
-      const { data, error } = await supabase
+      let query = supabase
         .from("locations")
-        .select("*")
-        .order("name", { ascending: true })
-        .range(page * limit, (page + 1) * limit - 1);
+        .select(LOCATION_ITINERARY_COLUMNS)
+        .order("name", { ascending: true });
+
+      // Filter by cities if provided to reduce memory usage
+      if (cities && cities.length > 0) {
+        query = query.in("city", cities);
+      }
+
+      const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
 
       if (error) {
         const errorMessage = `Failed to fetch locations from database: ${error.message}`;
@@ -48,7 +57,7 @@ async function fetchAllLocations(): Promise<Location[]> {
       }
 
       // Transform Supabase data to Location type
-      const locations: Location[] = data.map((row) => ({
+      const locations: Location[] = (data as unknown as LocationDbRow[]).map((row) => ({
         id: row.id,
         name: row.name,
         region: row.region,
@@ -229,8 +238,11 @@ export async function generateTripFromBuilderData(
   builderData: TripBuilderData,
   tripId: string,
 ): Promise<Trip> {
+  // Determine cities to filter by for optimized database queries
+  const selectedCities = builderData.cities && builderData.cities.length > 0 ? builderData.cities : undefined;
+
   // Fetch locations from database (with fallback to mock data)
-  const allLocations = await fetchAllLocations();
+  const allLocations = await fetchAllLocations(selectedCities);
 
   // Generate itinerary using existing generator
   let itinerary = await generateItinerary(builderData);
