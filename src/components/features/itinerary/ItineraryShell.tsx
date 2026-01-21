@@ -183,13 +183,9 @@ export const ItineraryShell = ({
         dayDate = startDate.toISOString().split("T")[0];
       }
 
-      // Get weather forecast for this day (if available)
-      // Note: Weather would need to be fetched/stored separately
-      // For now, we'll pass undefined and let the scoring system work without weather
+      // Weather forecast is not implemented - scoring system works without it
+      // Backend uses mock/historical data during itinerary generation
       let weatherForecast: import("@/types/weather").WeatherForecast | undefined;
-      
-      // TODO: Fetch weather forecast if trip data includes weather context
-      // This would require storing weather forecasts in trip data or fetching on demand
 
       // Find replacement candidates with enhanced options
       const options = findReplacementCandidates(
