@@ -7,6 +7,7 @@ import { locationIdSchema } from "@/lib/api/schemas";
 import { badRequest, notFound, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { createClient } from "@/lib/supabase/server";
+import { LOCATION_PHOTO_COLUMNS, type LocationPhotoDbRow } from "@/lib/supabase/projections";
 
 type RouteContext = {
   params: Promise<{
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
   const supabase = await createClient();
   const { data: locationData, error: dbError } = await supabase
     .from("locations")
-    .select("*")
+    .select(LOCATION_PHOTO_COLUMNS)
     .eq("id", validatedId)
     .single();
 
@@ -60,15 +61,16 @@ export async function GET(request: NextRequest, context: RouteContext) {
   }
 
   // Transform database row to Location type
+  const row = locationData as unknown as LocationPhotoDbRow;
   const location: Location = {
-    id: locationData.id,
-    name: locationData.name,
-    region: locationData.region,
-    city: locationData.city,
-    category: locationData.category,
-    image: locationData.image,
-    placeId: locationData.place_id ?? undefined,
-    coordinates: locationData.coordinates ?? undefined,
+    id: row.id,
+    name: row.name,
+    region: row.region,
+    city: row.city,
+    category: row.category,
+    image: row.image,
+    placeId: row.place_id ?? undefined,
+    coordinates: row.coordinates ?? undefined,
   };
 
   try {

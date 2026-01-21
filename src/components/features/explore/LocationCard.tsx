@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { memo, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { RefObject } from "react";
 
 import { useWishlist } from "@/context/WishlistContext";
@@ -16,7 +16,7 @@ type LocationCardProps = {
   onSelect?: (location: Location) => void;
 };
 
-export function LocationCard({ location, onSelect }: LocationCardProps) {
+export const LocationCard = memo(function LocationCard({ location, onSelect }: LocationCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const active = isInWishlist(location.id);
   const cachedEditorialSummary = useLocationEditorialSummary(location.id);
@@ -104,7 +104,7 @@ export function LocationCard({ location, onSelect }: LocationCardProps) {
       </button>
     </article>
   );
-}
+});
 
 export function HeartIcon({ active }: { active: boolean }) {
   return (

@@ -1,11 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 
 import { Location } from "@/types/location";
 
 import { LocationCard } from "./LocationCard";
-import { LocationDetailsModal } from "./LocationDetailsModal";
+
+const LocationDetailsModal = dynamic(
+  () => import("./LocationDetailsModal").then((m) => ({ default: m.LocationDetailsModal })),
+  { ssr: false }
+);
 
 type LocationGridProps = {
   locations: Location[];
