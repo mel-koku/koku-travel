@@ -1,10 +1,14 @@
 "use client";
 
-import { forwardRef, useMemo, useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
+import dynamic from "next/dynamic";
+import { forwardRef, memo, useMemo, useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
 
-import { LocationDetailsModal } from "@/components/features/explore/LocationDetailsModal";
+const LocationDetailsModal = dynamic(
+  () => import("@/components/features/explore/LocationDetailsModal").then((m) => ({ default: m.LocationDetailsModal })),
+  { ssr: false }
+);
 import { useLocationEditorialSummary } from "@/state/locationDetailsStore";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
@@ -118,7 +122,7 @@ type PlaceActivityRowProps = {
   onCopy?: () => void;
 };
 
-export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps>(
+export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRowProps>(
   (
     {
       activity,
@@ -675,7 +679,7 @@ export const PlaceActivityRow = forwardRef<HTMLDivElement, PlaceActivityRowProps
       </div>
     );
   },
-);
+));
 
 PlaceActivityRow.displayName = "PlaceActivityRow";
 
