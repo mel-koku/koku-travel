@@ -1,0 +1,22 @@
+/**
+ * Types for Supabase sync operations
+ */
+
+export type SyncResult<T> = {
+  success: boolean;
+  data?: T;
+  error?: string;
+};
+
+export type FavoriteRow = {
+  place_id: string;
+};
+
+export type GuideBookmarkRow = {
+  guide_id: string;
+};
+
+export type SyncConfig = {
+  /** Whether to suppress "Auth session missing" errors */
+  suppressAuthErrors?: boolean;
+};
