@@ -9,6 +9,7 @@ import {
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
+import { createApiResponse } from "@/lib/api/pagination";
 import type { Location } from "@/types/location";
 import { googlePlacesLimiter } from "@/lib/cost/googlePlacesLimiter";
 import { featureFlags } from "@/lib/env/featureFlags";
@@ -127,8 +128,13 @@ export async function GET(request: NextRequest) {
       placeId: place.placeId,
     };
 
+    // Use standardized response format: { data: {...}, meta: { ... } }
+    const response = createApiResponse(location, {
+      requestId: finalContext.requestId,
+    });
+
     return addRequestContextHeaders(
-      NextResponse.json({ location }, {
+      NextResponse.json(response, {
         headers: {
           "Cache-Control": "public, max-age=86400, s-maxage=86400", // Cache for 24 hours
         },

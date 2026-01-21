@@ -3,6 +3,19 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { logger } from "../logger";
 import { env } from "../env";
+import { getClientIp } from "./middleware";
+
+/**
+ * Rate limit configuration constants
+ */
+const RATE_LIMIT_CONSTANTS = {
+  /** Interval for cleaning up expired entries in memory store (ms) */
+  CLEANUP_INTERVAL_MS: 5 * 60 * 1000, // 5 minutes
+  /** Maximum page number for pagination safety */
+  MAX_PAGINATION_PAGE: 100,
+  /** Prefix for Upstash Redis rate limit keys */
+  REDIS_KEY_PREFIX: "@koku-travel/ratelimit",
+} as const;
 
 /**
  * Distributed rate limiter with Upstash Redis
@@ -110,7 +123,7 @@ function getUpstashRatelimit(config: RateLimitConfig): Ratelimit | null {
       redis: redisClient,
       limiter: Ratelimit.slidingWindow(config.maxRequests, `${config.windowMs} ms`),
       analytics: true,
-      prefix: "@koku-travel/ratelimit",
+      prefix: RATE_LIMIT_CONSTANTS.REDIS_KEY_PREFIX,
     });
   }
 
@@ -140,7 +153,7 @@ if (typeof process !== "undefined" && !cleanupInitialized) {
         rateLimitStore.delete(ip);
       }
     }
-  }, 5 * 60 * 1000); // 5 minutes
+  }, RATE_LIMIT_CONSTANTS.CLEANUP_INTERVAL_MS);
 
   // Cleanup on process exit
   const cleanupOnExit = () => {
@@ -175,26 +188,6 @@ if (typeof process !== "undefined" && !cleanupInitialized) {
       throw new Error("Process exit should not return");
     };
   }
-}
-
-/**
- * Gets the client IP address from the request
- */
-function getClientIp(request: NextRequest): string {
-  // Check various headers for the real IP
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0]?.trim() || "unknown";
-  }
-
-  const realIp = request.headers.get("x-real-ip");
-  if (realIp) {
-    return realIp;
-  }
-
-  // Fallback (useful for development)
-  // Note: request.ip is not available in Next.js App Router
-  return "unknown";
 }
 
 /**

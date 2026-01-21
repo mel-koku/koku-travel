@@ -120,3 +120,35 @@ export function createPaginatedResponse<T>(
   };
 }
 
+/**
+ * Standard API response wrapper for non-paginated data
+ * Provides consistent envelope format across all endpoints
+ */
+export type ApiResponse<T> = {
+  data: T;
+  meta?: {
+    requestId?: string;
+    cached?: boolean;
+    [key: string]: unknown;
+  };
+};
+
+/**
+ * Creates a standardized API response
+ * Use this for non-paginated endpoints to maintain consistent response format
+ *
+ * @param data - The response data (single item or array)
+ * @param meta - Optional metadata (requestId, cache status, etc.)
+ * @returns Standardized response object
+ */
+export function createApiResponse<T>(
+  data: T,
+  meta?: ApiResponse<T>["meta"],
+): ApiResponse<T> {
+  const response: ApiResponse<T> = { data };
+  if (meta && Object.keys(meta).length > 0) {
+    response.meta = meta;
+  }
+  return response;
+}
+

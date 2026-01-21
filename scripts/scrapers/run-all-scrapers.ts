@@ -18,9 +18,11 @@
  * - tmp/*-scraped.json (individual scraper outputs)
  *
  * Usage:
- *   npm run scrape:all
+ *   npm run scrape:all              # Run all 8 regional DMO scrapers
+ *   npm run scrape:all -- --jnto   # Include JNTO scraper (optional)
  *   or
  *   npx tsx scripts/scrapers/run-all-scrapers.ts
+ *   npx tsx scripts/scrapers/run-all-scrapers.ts --jnto
  */
 
 import { writeFileSync } from "fs";
@@ -34,6 +36,7 @@ import ChugokuScraper from "./chugoku-scraper";
 import ShikokuScraper from "./shikoku-scraper";
 import KyushuScraper from "./kyushu-scraper";
 import OkinawaScraper from "./okinawa-scraper";
+import JNTOScraper from "./jnto-scraper";
 
 interface ScraperResult {
   name: string;
@@ -74,6 +77,9 @@ async function runAllScrapers(): Promise<void> {
   console.log("=".repeat(80));
   console.log("");
 
+  // Check if JNTO scraper should be included (via --jnto flag)
+  const includeJNTO = process.argv.includes("--jnto");
+
   // Define all scrapers
   const scrapers = [
     { Scraper: HokkaidoScraper, name: "Hokkaido", region: "Hokkaido" },
@@ -84,6 +90,8 @@ async function runAllScrapers(): Promise<void> {
     { Scraper: ShikokuScraper, name: "Shikoku", region: "Shikoku" },
     { Scraper: KyushuScraper, name: "Kyushu", region: "Kyushu" },
     { Scraper: OkinawaScraper, name: "Okinawa", region: "Okinawa" },
+    // JNTO scraper is optional (can run standalone)
+    ...(includeJNTO ? [{ Scraper: JNTOScraper, name: "JNTO", region: "All" }] : []),
   ];
 
   // Run each scraper

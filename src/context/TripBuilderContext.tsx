@@ -12,17 +12,14 @@ import {
 
 import { getLocal, setLocal } from "@/lib/storageHelpers";
 import { TRIP_BUILDER_STORAGE_KEY, APP_STATE_DEBOUNCE_MS } from "@/lib/constants";
-import type { CityId, EntryPoint, InterestId, KnownCityId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
+import type { CityId, EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import { getEntryPointById } from "@/data/entryPoints";
-import { CITY_TO_REGION } from "@/data/regions";
-import type { TripTemplate } from "@/data/tripTemplates";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
   setData: React.Dispatch<React.SetStateAction<TripBuilderData>>;
   reset: () => void;
-  loadTemplate: (template: TripTemplate) => void;
 };
 
 const MAX_INTEREST_SELECTION = 5;
@@ -134,7 +131,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
         debounceTimeoutRef.current = null;
       }
     };
-  }, [data]);
+  }, [data, DEBOUNCE_DELAY_MS]);
 
   const reset = useCallback(() => {
     const next = createDefaultData();
@@ -147,33 +144,6 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
         // Ignore storage errors to avoid interrupting reset.
       }
     }
-  }, []);
-
-  const loadTemplate = useCallback((template: TripTemplate) => {
-    // Derive regions from cities if not explicitly provided
-    // For known cities, use the static mapping; otherwise use template regions
-    const regionsFromCities: RegionId[] = [];
-    const seenRegions = new Set<string>();
-
-    for (const cityId of template.cities) {
-      const regionId = CITY_TO_REGION[cityId as KnownCityId];
-      if (regionId && !seenRegions.has(regionId)) {
-        seenRegions.add(regionId);
-        regionsFromCities.push(regionId);
-      }
-    }
-
-    const next: TripBuilderData = {
-      ...createDefaultData(),
-      duration: template.duration,
-      regions: template.regions.length > 0 ? template.regions : regionsFromCities,
-      cities: template.cities,
-      interests: template.interests,
-      style: template.style,
-    };
-
-    setData(next);
-    setLocal(TRIP_BUILDER_STORAGE_KEY, next);
   }, []);
 
   const setDataNormalized = useCallback(
@@ -190,7 +160,6 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     data,
     setData: setDataNormalized,
     reset,
-    loadTemplate,
   };
 
   return <TripBuilderContext.Provider value={value}>{children}</TripBuilderContext.Provider>;

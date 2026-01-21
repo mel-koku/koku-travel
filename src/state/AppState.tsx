@@ -1,10 +1,10 @@
 "use client";
 
-import { type Itinerary, type ItineraryActivity, type ItineraryEdit } from "@/types/itinerary";
-import type { TripBuilderData, DayEntryPoint, EntryPoint } from "@/types/trip";
+import type { Itinerary, ItineraryActivity, ItineraryEdit } from "@/types/itinerary";
+import type { DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
 import { loadWishlist } from "@/lib/wishlistStorage";
-import { APP_STATE_STORAGE_KEY, APP_STATE_DEBOUNCE_MS, MAX_EDIT_HISTORY_ENTRIES, STABLE_DEFAULT_USER_ID } from "@/lib/constants";
+import { APP_STATE_STORAGE_KEY, APP_STATE_DEBOUNCE_MS, STABLE_DEFAULT_USER_ID } from "@/lib/constants";
 import { WISHLIST_STORAGE_KEY } from "@/lib/constants/storage";
 import type { Session, User } from "@supabase/supabase-js";
 import React, {
@@ -17,43 +17,65 @@ import React, {
 } from "react";
 import { logger } from "@/lib/logger";
 
+// Import extracted services
+import {
+  type StoredTrip,
+  type CreateTripInput,
+  type EditHistoryState,
+  createTripRecord,
+  updateTripItinerary as updateTripItineraryOp,
+  renameTrip as renameTripOp,
+  deleteTrip as deleteTripOp,
+  restoreTrip as restoreTripOp,
+  getTripById as getTripByIdOp,
+  sanitizeTrips,
+} from "@/services/trip";
+import {
+  replaceActivity as replaceActivityOp,
+  deleteActivity as deleteActivityOp,
+  reorderActivities as reorderActivitiesOp,
+  addActivity as addActivityOp,
+} from "@/services/trip";
+import {
+  createEditHistoryEntry,
+  addEditToHistory,
+  performUndo,
+  performRedo,
+  canUndo as canUndoCheck,
+  canRedo as canRedoCheck,
+} from "@/services/trip";
+import {
+  syncFavoriteToggle,
+  syncBookmarkToggle,
+  fetchFavorites,
+  fetchGuideBookmarks,
+} from "@/services/sync";
+
+// Re-export types for consumers
+export type { StoredTrip, CreateTripInput };
+
 export type UserProfile = {
-  id: string; // local-only UUID
-  displayName: string; // shown in UI ("Mel", etc.)
-  email?: string; // optional for future sync
-};
-
-export type StoredTrip = {
   id: string;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-  itinerary: Itinerary;
-  builderData: TripBuilderData;
-};
-
-type CreateTripInput = {
-  name: string;
-  itinerary: Itinerary;
-  builderData: TripBuilderData;
+  displayName: string;
+  email?: string;
 };
 
 export type AppStateShape = {
   user: UserProfile;
-  favorites: string[]; // place IDs
-  guideBookmarks: string[]; // guide IDs (future)
+  favorites: string[];
+  guideBookmarks: string[];
   trips: StoredTrip[];
 
-  // loading states
+  // Loading states
   isLoadingRefresh: boolean;
-  loadingBookmarks: Set<string>; // Set of guide IDs currently being bookmarked/unbookmarked
+  loadingBookmarks: Set<string>;
 
-  // editing state
-  dayEntryPoints: Record<string, DayEntryPoint>; // keyed by `${tripId}-${dayId}`
-  editHistory: Record<string, ItineraryEdit[]>; // keyed by tripId
-  currentHistoryIndex: Record<string, number>; // keyed by tripId
+  // Editing state
+  dayEntryPoints: Record<string, DayEntryPoint>;
+  editHistory: Record<string, ItineraryEdit[]>;
+  currentHistoryIndex: Record<string, number>;
 
-  // actions
+  // Actions
   setUser: (patch: Partial<UserProfile>) => void;
   toggleFavorite: (id: string) => void;
   isFavorite: (id: string) => boolean;
@@ -66,7 +88,7 @@ export type AppStateShape = {
   restoreTrip: (trip: StoredTrip) => void;
   getTripById: (tripId: string) => StoredTrip | undefined;
 
-  // editing actions
+  // Editing actions
   setDayEntryPoint: (tripId: string, dayId: string, type: "start" | "end", entryPoint: EntryPoint | undefined) => void;
   replaceActivity: (tripId: string, dayId: string, activityId: string, newActivity: ItineraryActivity) => void;
   deleteActivity: (tripId: string, dayId: string, activityId: string) => void;
@@ -81,13 +103,10 @@ export type AppStateShape = {
   refreshFromSupabase: () => Promise<void>;
 };
 
-function newId() {
+function newId(): string {
   if (typeof crypto !== "undefined" && crypto.randomUUID) return crypto.randomUUID();
   return "u_" + Math.random().toString(36).slice(2, 10);
 }
-
-// Use a stable default ID for SSR to prevent hydration mismatches
-// Real ID will be generated on client after hydration
 
 const defaultState: AppStateShape = {
   user: { id: STABLE_DEFAULT_USER_ID, displayName: "Guest" },
@@ -132,49 +151,6 @@ type InternalState = Pick<
   "user" | "favorites" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "editHistory" | "currentHistoryIndex"
 >;
 
-const sanitizeTrips = (raw: unknown): StoredTrip[] => {
-  if (!Array.isArray(raw)) {
-    return [];
-  }
-
-  return raw
-    .map((entry) => {
-      if (!entry || typeof entry !== "object") {
-        return null;
-      }
-      const record = entry as Partial<StoredTrip>;
-      if (typeof record.id !== "string" || record.id.length === 0) {
-        return null;
-      }
-      if (typeof record.name !== "string" || record.name.length === 0) {
-        return null;
-      }
-      const itinerary = record.itinerary;
-      if (!itinerary || typeof itinerary !== "object" || !Array.isArray((itinerary as Itinerary).days)) {
-        return null;
-      }
-      const builderData = record.builderData;
-      if (!builderData || typeof builderData !== "object") {
-        return null;
-      }
-      return {
-        id: record.id,
-        name: record.name,
-        createdAt:
-          typeof record.createdAt === "string" && record.createdAt.length > 0
-            ? record.createdAt
-            : new Date().toISOString(),
-        updatedAt:
-          typeof record.updatedAt === "string" && record.updatedAt.length > 0
-            ? record.updatedAt
-            : new Date().toISOString(),
-        itinerary: itinerary as Itinerary,
-        builderData: builderData as TripBuilderData,
-      } satisfies StoredTrip;
-    })
-    .filter((entry): entry is StoredTrip => Boolean(entry));
-};
-
 const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): UserProfile => {
   if (!user) {
     return { id: newId(), displayName: "Guest" };
@@ -208,7 +184,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     currentHistoryIndex: {},
   });
 
-  // load
+  // Load from localStorage on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
     try {
@@ -218,7 +194,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       let nextState: InternalState;
       if (raw) {
         const parsed = JSON.parse(raw);
-        // Ensure user has a valid ID (replace stable default if needed)
         const user = parsed.user ?? defaultState.user;
         const userId = user.id === STABLE_DEFAULT_USER_ID ? newId() : user.id;
         nextState = {
@@ -233,7 +208,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           currentHistoryIndex: parsed.currentHistoryIndex ?? {},
         };
       } else {
-        // Generate a real ID on first client load
         nextState = {
           user: { ...defaultState.user, id: newId() },
           favorites: [],
@@ -259,22 +233,18 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         localStorage.removeItem(WISHLIST_STORAGE_KEY);
       }
     } catch {
-      // ignore malformed data
+      // Ignore malformed data
     }
   }, []);
 
+  // Refresh from Supabase
   const refreshFromSupabase = useCallback(async () => {
-    if (!supabase) {
-      return;
-    }
+    if (!supabase) return;
 
     setState((s) => ({ ...s, isLoadingRefresh: true }));
 
     try {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
 
       if (authError) {
         logger.warn("Failed to read auth session", { error: authError });
@@ -292,26 +262,16 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const [favoritesResponse, bookmarksResponse] = await Promise.all([
-        supabase.from("favorites").select("place_id").eq("user_id", user.id),
-        supabase.from("guide_bookmarks").select("guide_id").eq("user_id", user.id),
+      const [favoritesResult, bookmarksResult] = await Promise.all([
+        fetchFavorites(supabase, user.id),
+        fetchGuideBookmarks(supabase, user.id),
       ]);
-
-      if (favoritesResponse.error) {
-        logger.warn("Failed to load favorites", { error: favoritesResponse.error });
-      }
-      if (bookmarksResponse.error) {
-        logger.warn("Failed to load guide bookmarks", { error: bookmarksResponse.error });
-      }
-
-      const favoriteRows = (favoritesResponse.data ?? []) as Array<{ place_id: string }>;
-      const bookmarkRows = (bookmarksResponse.data ?? []) as Array<{ guide_id: string }>;
 
       setState((s) => ({
         ...s,
         user: buildProfileFromSupabase(user, s.user),
-        favorites: favoriteRows.map((row) => row.place_id),
-        guideBookmarks: bookmarkRows.map((row) => row.guide_id),
+        favorites: favoritesResult.success ? (favoritesResult.data ?? []) : s.favorites,
+        guideBookmarks: bookmarksResult.success ? (bookmarksResult.data ?? []) : s.guideBookmarks,
         isLoadingRefresh: false,
       }));
     } catch (error) {
@@ -320,40 +280,37 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     }
   }, [supabase]);
 
+  // Auth state listener
   useEffect(() => {
-    if (!supabase) {
-      return;
-    }
+    if (!supabase) return;
 
     refreshFromSupabase();
-    const {
-      data: authListener,
-    } = supabase.auth.onAuthStateChange((_event: string | null, session: Session | null) => {
-      if (!session?.user) {
-        setState((current) => ({
-          ...current,
-          user: {
-            id: current.user.id || newId(),
-            displayName: current.user.displayName || "Guest",
-          },
-        }));
-        return;
-      }
-      refreshFromSupabase();
-    });
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event: string | null, session: Session | null) => {
+        if (!session?.user) {
+          setState((current) => ({
+            ...current,
+            user: {
+              id: current.user.id || newId(),
+              displayName: current.user.displayName || "Guest",
+            },
+          }));
+          return;
+        }
+        refreshFromSupabase();
+      },
+    );
 
     return () => {
       authListener?.subscription.unsubscribe();
     };
   }, [refreshFromSupabase, supabase]);
 
-  // save - debounced and only persist essential fields (exclude loading states)
+  // Debounced save to localStorage
   useEffect(() => {
     if (typeof window === "undefined") return;
-    
+
     const timeoutId = setTimeout(() => {
-      // Only persist essential fields, not the entire state object
-      // Exclude loading states as they are runtime-only
       const persistedState = {
         user: state.user,
         favorites: state.favorites,
@@ -366,133 +323,55 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(persistedState));
     }, APP_STATE_DEBOUNCE_MS);
 
-    return () => {
-      clearTimeout(timeoutId);
-    };
+    return () => clearTimeout(timeoutId);
   }, [state.user, state.favorites, state.guideBookmarks, state.trips, state.dayEntryPoints, state.editHistory, state.currentHistoryIndex]);
 
+  // User actions
   const setUser = useCallback(
     (patch: Partial<UserProfile>) =>
       setState((s) => ({ ...s, user: { ...s.user, ...patch } })),
     [],
   );
 
-  const generateTripId = useCallback(() => {
-    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-      return crypto.randomUUID();
-    }
-    return `trip_${Math.random().toString(36).slice(2, 10)}`;
-  }, []);
-
+  // Trip actions
   const createTrip = useCallback(
-    ({ name, itinerary, builderData }: CreateTripInput) => {
-      const id = generateTripId();
-      const timestamp = new Date().toISOString();
-      const trimmedName = name.trim();
-      const record: StoredTrip = {
-        id,
-        name: trimmedName.length > 0 ? trimmedName : "Untitled itinerary",
-        createdAt: timestamp,
-        updatedAt: timestamp,
-        itinerary,
-        builderData,
-      };
-      setState((s) => ({
-        ...s,
-        trips: [...s.trips, record],
-      }));
-      return id;
+    (input: CreateTripInput) => {
+      const record = createTripRecord(input);
+      setState((s) => ({ ...s, trips: [...s.trips, record] }));
+      return record.id;
     },
-    [generateTripId],
+    [],
   );
 
   const updateTripItinerary = useCallback((tripId: string, itinerary: Itinerary) => {
     setState((s) => {
-      let hasChanged = false;
-      const nextTrips = s.trips.map((trip) => {
-        if (trip.id !== tripId) {
-          return trip;
-        }
-        if (trip.itinerary === itinerary) {
-          return trip;
-        }
-        hasChanged = true;
-        return {
-          ...trip,
-          itinerary,
-          updatedAt: new Date().toISOString(),
-        };
-      });
-      if (!hasChanged) {
-        return s;
-      }
-      return {
-        ...s,
-        trips: nextTrips,
-      };
+      const nextTrips = updateTripItineraryOp(s.trips, tripId, itinerary);
+      return nextTrips ? { ...s, trips: nextTrips } : s;
     });
   }, []);
 
   const renameTrip = useCallback((tripId: string, name: string) => {
     setState((s) => {
-      const trimmedName = name.trim();
-      if (trimmedName.length === 0) {
-        return s;
-      }
-      let hasChanged = false;
-      const nextTrips = s.trips.map((trip) => {
-        if (trip.id !== tripId) {
-          return trip;
-        }
-        if (trip.name === trimmedName) {
-          return trip;
-        }
-        hasChanged = true;
-        return {
-          ...trip,
-          name: trimmedName,
-          updatedAt: new Date().toISOString(),
-        };
-      });
-      if (!hasChanged) {
-        return s;
-      }
-      return {
-        ...s,
-        trips: nextTrips,
-      };
+      const nextTrips = renameTripOp(s.trips, tripId, name);
+      return nextTrips ? { ...s, trips: nextTrips } : s;
     });
   }, []);
 
   const deleteTrip = useCallback((tripId: string) => {
     setState((s) => {
-      const nextTrips = s.trips.filter((trip) => trip.id !== tripId);
-      if (nextTrips.length === s.trips.length) {
-        return s;
-      }
-      return {
-        ...s,
-        trips: nextTrips,
-      };
+      const nextTrips = deleteTripOp(s.trips, tripId);
+      return nextTrips ? { ...s, trips: nextTrips } : s;
     });
   }, []);
 
   const restoreTrip = useCallback((trip: StoredTrip) => {
     setState((s) => {
-      const exists = s.trips.some((entry) => entry.id === trip.id);
-      if (exists) {
-        return s;
-      }
-      const nextTrips = [...s.trips, trip].sort((a, b) => {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      });
-      return {
-        ...s,
-        trips: nextTrips,
-      };
+      const nextTrips = restoreTripOp(s.trips, trip);
+      return nextTrips ? { ...s, trips: nextTrips } : s;
     });
   }, []);
 
+  // Favorites actions
   const toggleFavorite = useCallback(
     (id: string) => {
       let existed = false;
@@ -507,69 +386,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         return { ...s, favorites: Array.from(set) };
       });
 
-      if (!supabase) {
-        return;
+      if (supabase) {
+        void syncFavoriteToggle(supabase, id, existed);
       }
-
-      void (async (favoriteId: string, existedBeforeToggle: boolean) => {
-        try {
-          const {
-            data: { user },
-            error: authError,
-          } = await supabase.auth.getUser();
-
-          if (authError) {
-            const errorMessage =
-              authError instanceof Error
-                ? authError.message
-                : typeof authError === "object" && authError && "message" in authError
-                  ? String((authError as { message?: unknown }).message)
-                  : "";
-
-            if (typeof errorMessage === "string" && errorMessage.includes("Auth session missing")) {
-              // No authenticated Supabase session – keep optimistic local state without logging noise.
-              return;
-            }
-
-            logger.error("Failed to read auth session when syncing favorite", authError);
-            return;
-          }
-
-          if (!user) {
-            // No authenticated user – keep local state but skip remote sync.
-            return;
-          }
-
-          if (existedBeforeToggle) {
-            const { error } = await supabase
-              .from("favorites")
-              .delete()
-              .eq("user_id", user.id)
-              .eq("place_id", favoriteId);
-
-            if (error) {
-              throw error;
-            }
-          } else {
-            const { error } = await supabase
-              .from("favorites")
-              .upsert({ user_id: user.id, place_id: favoriteId }, { onConflict: "user_id,place_id" });
-
-            if (error) {
-              throw error;
-            }
-          }
-        } catch (error) {
-          const message =
-            error instanceof Error ? error.message : JSON.stringify(error ?? {});
-          logger.error("Failed to sync favorite", new Error(message));
-          // Keep optimistic local state so the UI stays responsive even if remote sync fails.
-        }
-      })(id, existed);
     },
     [supabase],
   );
 
+  // Guide bookmark actions
   const toggleGuideBookmark = useCallback(
     (id: string) => {
       let existed = false;
@@ -595,118 +419,50 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      void (async (guideId: string, existedBeforeToggle: boolean) => {
-        try {
-          const {
-            data: { user },
-            error: authError,
-          } = await supabase.auth.getUser();
+      void (async () => {
+        const result = await syncBookmarkToggle(supabase, id, existed);
 
-          if (authError) {
-            logger.error("Failed to read auth session when syncing guide bookmark", authError);
-            setState((s) => {
-              const loadingSet = new Set(s.loadingBookmarks);
-              loadingSet.delete(guideId);
-              return { ...s, loadingBookmarks: loadingSet };
-            });
-            return;
-          }
+        setState((s) => {
+          const loadingSet = new Set(s.loadingBookmarks);
+          loadingSet.delete(id);
 
-          if (!user) {
-            setState((s) => {
-              const loadingSet = new Set(s.loadingBookmarks);
-              loadingSet.delete(guideId);
-              return { ...s, loadingBookmarks: loadingSet };
-            });
-            return;
-          }
-
-          if (existedBeforeToggle) {
-            const { error } = await supabase
-              .from("guide_bookmarks")
-              .delete()
-              .eq("user_id", user.id)
-              .eq("guide_id", guideId);
-
-            if (error) {
-              throw error;
-            }
-          } else {
-            const { error } = await supabase
-              .from("guide_bookmarks")
-              .upsert({ user_id: user.id, guide_id: guideId }, { onConflict: "user_id,guide_id" });
-
-            if (error) {
-              throw error;
-            }
-          }
-
-          setState((s) => {
-            const loadingSet = new Set(s.loadingBookmarks);
-            loadingSet.delete(guideId);
-            return { ...s, loadingBookmarks: loadingSet };
-          });
-        } catch (error) {
-          const message =
-            error instanceof Error
-              ? error.message
-              : typeof error === "object" && error && "message" in error
-                ? String((error as { message?: unknown }).message)
-                : "";
-
-          if (typeof message === "string" && message.includes("Auth session missing")) {
-            // No authenticated Supabase session – keep optimistic local state without logging noise.
-            setState((s) => {
-              const loadingSet = new Set(s.loadingBookmarks);
-              loadingSet.delete(guideId);
-              return { ...s, loadingBookmarks: loadingSet };
-            });
-            return;
-          }
-
-          logger.error("Failed to sync guide bookmark", message || error);
-          setState((s) => {
+          if (result.shouldRevert) {
             const set = new Set(s.guideBookmarks);
-            if (existedBeforeToggle) {
-              set.add(guideId);
+            if (existed) {
+              set.add(id);
             } else {
-              set.delete(guideId);
+              set.delete(id);
             }
-            const loadingSet = new Set(s.loadingBookmarks);
-            loadingSet.delete(guideId);
             return { ...s, guideBookmarks: Array.from(set), loadingBookmarks: loadingSet };
-          });
-        }
-      })(id, existed);
+          }
+
+          return { ...s, loadingBookmarks: loadingSet };
+        });
+      })();
     },
     [supabase],
   );
 
-  // Helper function to create edit history entry
-  const createEditHistoryEntry = useCallback(
-    (
-      tripId: string,
-      dayId: string,
-      type: ItineraryEdit["type"],
-      previousItinerary: Itinerary,
-      nextItinerary: Itinerary,
-      metadata?: Record<string, unknown>,
-    ): ItineraryEdit => {
-      return {
-        id: newId(),
-        tripId,
-        timestamp: new Date().toISOString(),
-        type,
-        dayId,
-        previousItinerary,
-        nextItinerary,
-        metadata,
-      };
+  // Day entry point actions
+  const setDayEntryPoint = useCallback(
+    (tripId: string, dayId: string, type: "start" | "end", entryPoint: EntryPoint | undefined) => {
+      const key = `${tripId}-${dayId}`;
+      setState((s) => {
+        const current = s.dayEntryPoints[key] ?? {};
+        const updated: DayEntryPoint = {
+          ...current,
+          [type === "start" ? "startPoint" : "endPoint"]: entryPoint,
+        };
+        return {
+          ...s,
+          dayEntryPoints: { ...s.dayEntryPoints, [key]: updated },
+        };
+      });
     },
     [],
   );
 
-  // Helper function to update itinerary and add to history
+  // Helper for itinerary updates with history
   const updateItineraryWithHistory = useCallback(
     (
       tripId: string,
@@ -722,184 +478,100 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         const previousItinerary = trip.itinerary;
         const nextItinerary = updater(previousItinerary);
 
-        // Create edit history entry
         const edit = createEditHistoryEntry(tripId, dayId, editType, previousItinerary, nextItinerary, metadata);
 
-        // Get current history for this trip
-        const history = s.editHistory[tripId] ?? [];
-        const currentIndex = s.currentHistoryIndex[tripId] ?? -1;
+        const historyState: EditHistoryState = {
+          editHistory: s.editHistory,
+          currentHistoryIndex: s.currentHistoryIndex,
+        };
+        const newHistoryState = addEditToHistory(historyState, tripId, edit);
 
-        // Remove any edits after current index (when undoing and then making new edit)
-        const newHistory = history.slice(0, currentIndex + 1);
-        newHistory.push(edit);
-
-        // Limit history to last N edits
-        const trimmedHistory = newHistory.slice(-MAX_EDIT_HISTORY_ENTRIES);
-
-        // Update trip itinerary
         const updatedTrips = s.trips.map((t) =>
           t.id === tripId
-            ? {
-                ...t,
-                itinerary: nextItinerary,
-                updatedAt: new Date().toISOString(),
-              }
+            ? { ...t, itinerary: nextItinerary, updatedAt: new Date().toISOString() }
             : t,
         );
 
         return {
           ...s,
           trips: updatedTrips,
-          editHistory: {
-            ...s.editHistory,
-            [tripId]: trimmedHistory,
-          },
-          currentHistoryIndex: {
-            ...s.currentHistoryIndex,
-            [tripId]: trimmedHistory.length - 1,
-          },
-        };
-      });
-    },
-    [createEditHistoryEntry],
-  );
-
-  const setDayEntryPoint = useCallback(
-    (tripId: string, dayId: string, type: "start" | "end", entryPoint: EntryPoint | undefined) => {
-      const key = `${tripId}-${dayId}`;
-      setState((s) => {
-        const current = s.dayEntryPoints[key] ?? {};
-        const updated: DayEntryPoint = {
-          ...current,
-          [type === "start" ? "startPoint" : "endPoint"]: entryPoint,
-        };
-        return {
-          ...s,
-          dayEntryPoints: {
-            ...s.dayEntryPoints,
-            [key]: updated,
-          },
+          editHistory: newHistoryState.editHistory,
+          currentHistoryIndex: newHistoryState.currentHistoryIndex,
         };
       });
     },
     [],
   );
 
+  // Activity actions
   const replaceActivity = useCallback(
     (tripId: string, dayId: string, activityId: string, newActivity: ItineraryActivity) => {
-      updateItineraryWithHistory(tripId, dayId, "replaceActivity", (itinerary) => {
-        return {
-          ...itinerary,
-          days: itinerary.days.map((day) => {
-            if (day.id !== dayId) return day;
-            return {
-              ...day,
-              activities: day.activities.map((activity) =>
-                activity.id === activityId ? newActivity : activity,
-              ),
-            };
-          }),
-        };
-      }, { activityId, newActivityId: newActivity.id });
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "replaceActivity",
+        (itinerary) => replaceActivityOp(itinerary, dayId, activityId, newActivity),
+        { activityId, newActivityId: newActivity.id },
+      );
     },
     [updateItineraryWithHistory],
   );
 
   const deleteActivity = useCallback(
     (tripId: string, dayId: string, activityId: string) => {
-      updateItineraryWithHistory(tripId, dayId, "deleteActivity", (itinerary) => {
-        return {
-          ...itinerary,
-          days: itinerary.days.map((day) => {
-            if (day.id !== dayId) return day;
-            return {
-              ...day,
-              activities: day.activities.filter((activity) => activity.id !== activityId),
-            };
-          }),
-        };
-      }, { activityId });
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "deleteActivity",
+        (itinerary) => deleteActivityOp(itinerary, dayId, activityId),
+        { activityId },
+      );
     },
     [updateItineraryWithHistory],
   );
 
   const reorderActivities = useCallback(
     (tripId: string, dayId: string, activityIds: string[]) => {
-      updateItineraryWithHistory(tripId, dayId, "reorderActivities", (itinerary) => {
-        return {
-          ...itinerary,
-          days: itinerary.days.map((day) => {
-            if (day.id !== dayId) return day;
-            // Create a map for quick lookup
-            const activityMap = new Map(day.activities.map((a) => [a.id, a]));
-            // Reorder activities based on the provided order
-            const reorderedActivities = activityIds
-              .map((id) => activityMap.get(id))
-              .filter((a): a is ItineraryActivity => a !== undefined);
-            return {
-              ...day,
-              activities: reorderedActivities,
-            };
-          }),
-        };
-      }, { activityIds });
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "reorderActivities",
+        (itinerary) => reorderActivitiesOp(itinerary, dayId, activityIds),
+        { activityIds },
+      );
     },
     [updateItineraryWithHistory],
   );
 
   const addActivity = useCallback(
     (tripId: string, dayId: string, activity: ItineraryActivity, position?: number) => {
-      updateItineraryWithHistory(tripId, dayId, "addActivity", (itinerary) => {
-        return {
-          ...itinerary,
-          days: itinerary.days.map((day) => {
-            if (day.id !== dayId) return day;
-            const activities = [...day.activities];
-            if (position !== undefined && position >= 0 && position <= activities.length) {
-              activities.splice(position, 0, activity);
-            } else {
-              activities.push(activity);
-            }
-            return {
-              ...day,
-              activities,
-            };
-          }),
-        };
-      }, { activityId: activity.id, position });
+      updateItineraryWithHistory(
+        tripId,
+        dayId,
+        "addActivity",
+        (itinerary) => addActivityOp(itinerary, dayId, activity, position),
+        { activityId: activity.id, position },
+      );
     },
     [updateItineraryWithHistory],
   );
 
+  // Undo/redo actions
   const undo = useCallback(
     (tripId: string) => {
       setState((s) => {
-        const history = s.editHistory[tripId] ?? [];
-        const currentIndex = s.currentHistoryIndex[tripId] ?? -1;
-
-        if (currentIndex < 0) return s; // Nothing to undo
-
-        const edit = history[currentIndex];
-        if (!edit) return s;
-
-        // Restore previous itinerary state
-        const updatedTrips = s.trips.map((t) =>
-          t.id === tripId
-            ? {
-                ...t,
-                itinerary: edit.previousItinerary,
-                updatedAt: new Date().toISOString(),
-              }
-            : t,
-        );
+        const historyState: EditHistoryState = {
+          editHistory: s.editHistory,
+          currentHistoryIndex: s.currentHistoryIndex,
+        };
+        const result = performUndo(s.trips, historyState, tripId);
+        if (!result) return s;
 
         return {
           ...s,
-          trips: updatedTrips,
-          currentHistoryIndex: {
-            ...s.currentHistoryIndex,
-            [tripId]: currentIndex - 1,
-          },
+          trips: result.trips,
+          editHistory: result.historyState.editHistory,
+          currentHistoryIndex: result.historyState.currentHistoryIndex,
         };
       });
     },
@@ -909,32 +581,18 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const redo = useCallback(
     (tripId: string) => {
       setState((s) => {
-        const history = s.editHistory[tripId] ?? [];
-        const currentIndex = s.currentHistoryIndex[tripId] ?? -1;
-
-        if (currentIndex >= history.length - 1) return s; // Nothing to redo
-
-        const edit = history[currentIndex + 1];
-        if (!edit) return s;
-
-        // Restore next itinerary state
-        const updatedTrips = s.trips.map((t) =>
-          t.id === tripId
-            ? {
-                ...t,
-                itinerary: edit.nextItinerary,
-                updatedAt: new Date().toISOString(),
-              }
-            : t,
-        );
+        const historyState: EditHistoryState = {
+          editHistory: s.editHistory,
+          currentHistoryIndex: s.currentHistoryIndex,
+        };
+        const result = performRedo(s.trips, historyState, tripId);
+        if (!result) return s;
 
         return {
           ...s,
-          trips: updatedTrips,
-          currentHistoryIndex: {
-            ...s.currentHistoryIndex,
-            [tripId]: currentIndex + 1,
-          },
+          trips: result.trips,
+          editHistory: result.historyState.editHistory,
+          currentHistoryIndex: result.historyState.currentHistoryIndex,
         };
       });
     },
@@ -943,21 +601,19 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   const canUndo = useCallback(
     (tripId: string) => {
-      const currentIndex = state.currentHistoryIndex[tripId] ?? -1;
-      return currentIndex >= 0;
+      return canUndoCheck({ editHistory: state.editHistory, currentHistoryIndex: state.currentHistoryIndex }, tripId);
     },
-    [state.currentHistoryIndex],
+    [state.currentHistoryIndex, state.editHistory],
   );
 
   const canRedo = useCallback(
     (tripId: string) => {
-      const history = state.editHistory[tripId] ?? [];
-      const currentIndex = state.currentHistoryIndex[tripId] ?? -1;
-      return currentIndex < history.length - 1;
+      return canRedoCheck({ editHistory: state.editHistory, currentHistoryIndex: state.currentHistoryIndex }, tripId);
     },
     [state.editHistory, state.currentHistoryIndex],
   );
 
+  // Clear all local data
   const clearAllLocalData = useCallback(() => {
     if (typeof window !== "undefined" && !window.confirm("Clear all local Koku data on this device?")) {
       return;
@@ -979,6 +635,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Build API
   const api = useMemo<AppStateShape>(
     () => ({
       ...state,
@@ -992,7 +649,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       renameTrip,
       deleteTrip,
       restoreTrip,
-      getTripById: (tripId: string) => state.trips.find((trip) => trip.id === tripId),
+      getTripById: (tripId: string) => getTripByIdOp(state.trips, tripId),
       setDayEntryPoint,
       replaceActivity,
       deleteActivity,
@@ -1035,5 +692,3 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 export function useAppState() {
   return useContext(Ctx);
 }
-
-
