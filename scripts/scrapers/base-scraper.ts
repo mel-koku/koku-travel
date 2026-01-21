@@ -68,6 +68,10 @@ export abstract class BaseScraper {
     "palace": "culture",
     "traditional": "culture",
     "cultural": "culture",
+    "theatre": "culture",
+    "theater": "culture",
+    "festival": "culture",
+    "event": "culture",
 
     // Attraction
     "attraction": "attraction",
@@ -193,10 +197,12 @@ export abstract class BaseScraper {
       }
     }
 
-    // Check for partial matches
-    for (const [key, value] of Object.entries(this.categoryMap)) {
+    // Check for partial matches, prioritizing longer/more specific matches
+    // Sort keys by length (longest first) to match more specific terms before shorter ones
+    const sortedKeys = Object.keys(this.categoryMap).sort((a, b) => b.length - a.length);
+    for (const key of sortedKeys) {
       if (normalized.includes(key)) {
-        return value;
+        return this.categoryMap[key];
       }
     }
 

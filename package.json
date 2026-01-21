@@ -24,6 +24,8 @@
     "scrape:shikoku": "tsx scripts/scrapers/shikoku-scraper.ts",
     "scrape:kyushu": "tsx scripts/scrapers/kyushu-scraper.ts",
     "scrape:okinawa": "tsx scripts/scrapers/okinawa-scraper.ts",
+    "scrape:jnto": "tsx scripts/scrapers/jnto-scraper.ts",
+    "seed:jnto": "tsx scripts/seed-jnto-locations.ts",
     "enrich:scraped": "tsx scripts/enrich-scraped-data.ts",
     "clean:test-data": "tsx scripts/clean-test-data.ts",
     "supabase:start": "supabase start",

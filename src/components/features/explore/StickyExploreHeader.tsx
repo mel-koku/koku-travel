@@ -155,7 +155,7 @@ export function StickyExploreHeader({
             </div>
 
             {/* Full search bar */}
-            <div className="relative w-full sm:w-80 lg:w-96">
+            <div className="relative w-full sm:w-64 lg:w-72">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                 <svg
                   className="h-5 w-5 text-gray-400"

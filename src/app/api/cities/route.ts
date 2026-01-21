@@ -7,6 +7,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
 } from "@/lib/api/middleware";
+import { createApiResponse } from "@/lib/api/pagination";
 
 export type CityOption = {
   id: string;
@@ -133,17 +134,20 @@ export async function GET(request: NextRequest) {
       }))
       .sort((a, b) => b.locationCount - a.locationCount); // Sort by location count descending
 
+    // Use standardized response format: { data: [...], meta: { ... } }
+    const response = createApiResponse(cities, {
+      requestId: context.requestId,
+      total: cities.length,
+    });
+
     return addRequestContextHeaders(
-      NextResponse.json(
-        { cities },
-        {
-          status: 200,
-          headers: {
-            "Cache-Control":
-              "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
-          },
-        }
-      ),
+      NextResponse.json(response, {
+        status: 200,
+        headers: {
+          "Cache-Control":
+            "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
+        },
+      }),
       context
     );
   } catch (error) {
