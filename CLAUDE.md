@@ -10,9 +10,10 @@ Koku Travel is a Japan travel planning application built with Next.js 15 (App Ro
 - **Language**: TypeScript
 - **Database**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS
-- **State Management**: React Context (AppState, TripBuilderContext)
+- **State Management**: React Context (AppState, TripBuilderContext), React Query
 - **Maps**: Mapbox GL
 - **Testing**: Vitest
+- **Caching**: React Query (@tanstack/react-query)
 
 ## Project Structure
 
@@ -26,11 +27,15 @@ src/
 │   └── ui/                # Reusable UI components
 ├── context/               # React contexts
 ├── data/                  # Static data (interests, entry points)
+├── hooks/                 # Custom React hooks (NEW)
+│   └── useLocationDetailsQuery.ts  # React Query hook for location details
 ├── lib/                   # Utilities and services
 │   ├── api/               # API utilities (middleware, rate limiting, pagination)
-│   ├── supabase/          # Supabase client configuration
+│   ├── supabase/          # Supabase client + column projections
 │   └── routing/           # Route calculation utilities
-├── services/              # Domain services (NEW - extracted from AppState)
+├── providers/             # React providers (NEW)
+│   └── QueryProvider.tsx  # React Query provider
+├── services/              # Domain services
 │   ├── sync/              # Supabase sync operations
 │   └── trip/              # Trip CRUD and edit history
 ├── state/                 # Global state (AppState)
@@ -39,45 +44,34 @@ src/
 
 ## Improvement Plan Progress
 
-Based on the comprehensive codebase analysis, here's the current status:
-
 ### Priority 1: Critical (COMPLETED)
 
 - [x] **Security vulnerabilities fixed**
-  - IP address validation in `src/lib/api/middleware.ts`
-  - CORS configuration helpers added
-  - Body size limits added
-  - Search param length validation
-
 - [x] **Code quality fixes**
-  - Removed duplicate `sanitizeContext()` in `src/lib/logger.ts`
-  - Extracted magic numbers to constants in `src/lib/api/rateLimit.ts`
-  - Fixed `any` type casts in `src/components/features/itinerary/ItineraryMap.tsx`
-
 - [x] **API standardization**
-  - Added `createApiResponse()` helper in `src/lib/api/pagination.ts`
-  - Updated `/api/cities` and `/api/places/details` to use standard envelope
+- [x] **Database indexes** - `20260121_add_performance_indexes.sql`
 
-- [x] **Database indexes**
-  - Created migration: `supabase/migrations/20260121_add_performance_indexes.sql`
-  - Full-text search (tsvector + trigram)
-  - Geographic indexes (lat/lng columns)
-  - Composite indexes for explore filters and cities
+### Priority 2: High (COMPLETED)
 
-### Priority 2: High (PARTIALLY COMPLETED)
-
-- [x] **Refactored AppState.tsx**
-  - Split from 1040 lines to 695 lines
-  - Created `src/services/sync/` for Supabase sync operations
-  - Created `src/services/trip/` for trip CRUD, activities, edit history
-  - All logic now in testable pure functions
-
+- [x] **Refactored AppState.tsx** - Split to services
 - [x] **Added tests for extracted services**
-  - `tests/services/trip/tripOperations.test.ts` (21 tests)
-  - `tests/services/trip/activityOperations.test.ts` (14 tests)
-  - `tests/services/trip/editHistory.test.ts` (16 tests)
+- [x] **Consolidated caching with React Query** (Jan 2026)
 
-- [ ] **Consolidate caching** - Adopt React Query or SWR (pending)
+### Performance Refactoring (COMPLETED - Jan 2026)
+
+All 9 phases implemented:
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | React.memo() on LocationCard, SortableActivity, PlaceActivityRow, ActivityRow | ✅ |
+| 2 | TripBuilderContext value memoization with useMemo | ✅ |
+| 3 | Column projections replacing .select("*") | ✅ |
+| 4 | City-based filtering to reduce memory in pagination | ✅ |
+| 5 | Database indexes for favorites, bookmarks, place_details | ✅ |
+| 6 | Lazy loading modals (LocationDetailsModal, FiltersModal, etc.) | ✅ |
+| 7 | FeaturedLocationsHero image optimization with next/image | ✅ |
+| 8 | React Query cache consolidation | ✅ |
+| 9 | Rate limiting on /api/itinerary/availability | ✅ |
 
 ### Priority 3: Medium (PENDING)
 
@@ -90,30 +84,47 @@ Based on the comprehensive codebase analysis, here's the current status:
 - [ ] Real-time collaboration
 - [ ] User review system
 
-## Key Files Modified Recently
+## Key Files Modified in Performance Refactoring
 
 | File | Changes |
 |------|---------|
-| `src/lib/api/middleware.ts` | Added IP validation, CORS, body size limits |
-| `src/lib/api/rateLimit.ts` | Extracted constants, uses middleware IP function |
-| `src/lib/api/pagination.ts` | Added `createApiResponse()` for standard envelope |
-| `src/lib/logger.ts` | Removed duplicate `sanitizeContext()` |
-| `src/state/AppState.tsx` | Refactored to use service modules (695 lines) |
-| `src/services/sync/*` | NEW - Supabase sync operations |
-| `src/services/trip/*` | NEW - Trip operations, activities, edit history |
+| `src/components/features/explore/LocationCard.tsx` | Added React.memo() |
+| `src/components/features/itinerary/SortableActivity.tsx` | Added React.memo() |
+| `src/components/features/itinerary/PlaceActivityRow.tsx` | Added React.memo(), lazy modal import |
+| `src/components/features/itinerary/ActivityRow.tsx` | Added React.memo() |
+| `src/context/TripBuilderContext.tsx` | Added useMemo for context value |
+| `src/lib/supabase/projections.ts` | **NEW** - Column projections & types |
+| `src/lib/itineraryGenerator.ts` | Column projections, city filtering |
+| `src/lib/server/itineraryEngine.ts` | Column projections, city filtering |
+| `src/app/api/itinerary/refine/route.ts` | Column projections, city filtering |
+| `src/app/api/locations/route.ts` | Column projections |
+| `src/app/api/locations/[id]/route.ts` | Column projections |
+| `src/app/api/locations/[id]/primary-photo/route.ts` | Column projections |
+| `src/components/features/explore/ExploreShell.tsx` | Lazy FiltersModal import |
+| `src/components/features/explore/LocationGrid.tsx` | Lazy LocationDetailsModal import |
+| `src/components/features/community/CommunityShell.tsx` | Lazy CreateDiscussionModal |
+| `src/components/features/community/TopicDetailClient.tsx` | Lazy EditReplyModal, HistoryModal |
+| `src/components/features/explore/FeaturedLocationsHero.tsx` | next/image optimization |
+| `src/providers/QueryProvider.tsx` | **NEW** - React Query provider |
+| `src/hooks/useLocationDetailsQuery.ts` | **NEW** - React Query hook |
+| `src/components/LayoutWrapper.tsx` | Added QueryProvider |
+| `src/app/api/itinerary/availability/route.ts` | Added rate limiting |
+| `supabase/migrations/20260122_add_lookup_indexes.sql` | **NEW** - Lookup indexes |
 
-## Service Architecture
+## New Architecture Components
 
-### Sync Services (`src/services/sync/`)
-- `favoriteSync.ts` - Sync favorites with Supabase
-- `bookmarkSync.ts` - Sync guide bookmarks with Supabase
-- `types.ts` - Shared sync types
+### Column Projections (`src/lib/supabase/projections.ts`)
+- `LOCATION_LISTING_COLUMNS` - 11 columns for grids/lists
+- `LOCATION_DETAIL_COLUMNS` - 17 columns for detail views
+- `LOCATION_ITINERARY_COLUMNS` - 17 columns for itinerary generation
+- `LOCATION_PHOTO_COLUMNS` - 8 columns for photo endpoint
+- `LocationDbRow` type for type-safe transformations
 
-### Trip Services (`src/services/trip/`)
-- `tripOperations.ts` - CRUD operations (pure functions)
-- `activityOperations.ts` - Activity mutations within itineraries
-- `editHistory.ts` - Undo/redo functionality
-- `types.ts` - StoredTrip, CreateTripInput, EditHistoryState
+### React Query Setup
+- `QueryProvider` wraps app in `LayoutWrapper`
+- `useLocationDetailsQuery` hook replaces manual caching
+- Legacy `locationDetailsStore` maintained for backwards compatibility
+- DevTools available in development mode
 
 ## Commands
 
@@ -128,16 +139,19 @@ npm test -- tests/services/trip/  # Run specific tests
 ## Known Issues / Pre-existing
 
 - TripBuilderContext tests have localStorage mocking issues (pre-existing)
+- itineraryGenerator tests need Supabase env vars (pre-existing)
 - Some lint warnings in unrelated files (googlePlaces.ts, routing/cache.ts)
 
 ## Next Steps
 
-1. **Priority 2 remaining**: Consolidate caching with React Query or SWR
-2. **Priority 3**: Weather integration, trip sharing
-3. **Testing**: Add more integration tests for API routes
+1. **Priority 3**: Weather integration, trip sharing
+2. **Testing**: Add more integration tests for API routes
+3. **Consider**: Further React Query migration for other data fetching
 
 ## Database
 
 - Uses Supabase PostgreSQL
-- Key tables: `locations`, `favorites`, `guide_bookmarks`
-- Recent migration added performance indexes for search and geographic queries
+- Key tables: `locations`, `favorites`, `guide_bookmarks`, `place_details`
+- Migrations:
+  - `20260121_add_performance_indexes.sql` - Full-text search, geographic indexes
+  - `20260122_add_lookup_indexes.sql` - Lookup indexes for user queries

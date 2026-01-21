@@ -1,9 +1,13 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { Location } from "@/types/location";
 
-import { FiltersModal } from "./FiltersModal";
+const FiltersModal = dynamic(
+  () => import("./FiltersModal").then((m) => ({ default: m.FiltersModal })),
+  { ssr: false }
+);
 import { LocationGrid } from "./LocationGrid";
 import { StickyExploreHeader } from "./StickyExploreHeader";
 import { logger } from "@/lib/logger";
