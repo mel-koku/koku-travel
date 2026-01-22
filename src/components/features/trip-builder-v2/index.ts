@@ -1,0 +1,24 @@
+// Trip Builder V2 - Redesigned 2-step flow with live preview
+
+export { TripBuilderV2 } from "./TripBuilderV2";
+export type { TripBuilderV2Props } from "./TripBuilderV2";
+
+// Step 1 components
+export { PlanStep } from "./PlanStep";
+export { EssentialsForm } from "./EssentialsForm";
+export { InterestChips } from "./InterestChips";
+export { CityMap } from "./CityMap";
+export { CityList } from "./CityList";
+
+// Step 2 components
+export { ReviewStep } from "./ReviewStep";
+export { SelectionReview } from "./SelectionReview";
+export { PreferenceCards } from "./PreferenceCards";
+
+// Preview components
+export { LivePreview } from "./LivePreview";
+export { ItineraryPreview } from "./ItineraryPreview";
+export { TripMap } from "./TripMap";
+
+// Mobile components
+export { MobileBottomSheet, PreviewToggleButton } from "./MobileBottomSheet";

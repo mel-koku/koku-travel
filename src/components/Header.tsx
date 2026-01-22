@@ -17,6 +17,7 @@ const navItems = [
   { label: "Guides", href: "/guides" },
   // { label: "Community", href: "/community" }, // Hidden for future development
   { label: "Trip Builder", href: "/trip-builder" },
+  { label: "Trip Builder V2", href: "/trip-builder-v2" },
 ];
 
 function UserMenu({
