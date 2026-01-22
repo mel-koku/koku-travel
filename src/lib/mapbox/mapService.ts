@@ -10,7 +10,8 @@ export class MapboxService {
   private accessToken: string | undefined;
 
   constructor() {
-    this.accessToken = env.routingMapboxAccessToken;
+    // Use public token for client-side, server token for server-side
+    this.accessToken = env.mapboxAccessToken || env.routingMapboxAccessToken;
   }
 
   /**

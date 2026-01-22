@@ -18,7 +18,9 @@ export const featureFlags = {
    * Set to false to disable Mapbox routing (falls back to heuristics)
    */
   get enableMapbox(): boolean {
-    return process.env.ENABLE_MAPBOX !== "false" && Boolean(env.routingMapboxAccessToken);
+    // Use public token for client-side, server token for server-side
+    const token = env.mapboxAccessToken || env.routingMapboxAccessToken;
+    return process.env.ENABLE_MAPBOX !== "false" && Boolean(token);
   },
 
   /**
