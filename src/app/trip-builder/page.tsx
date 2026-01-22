@@ -95,6 +95,7 @@ function TripBuilderContent() {
   const [step1Valid, setStep1Valid] = useState(false);
   const [step2Valid, setStep2Valid] = useState(false);
   const [step3Valid, setStep3Valid] = useState(false);
+  const [step4Valid, setStep4Valid] = useState(true); // Default to true since step 4 is optional
 
   const goToStep = useCallback((step: number) => {
     setCurrentStep((prev) => {
@@ -126,10 +127,10 @@ function TripBuilderContent() {
       return !step3Valid;
     }
     if (currentStep === 4) {
-      return false;
+      return !step4Valid;
     }
     return true;
-  }, [currentStep, step1Valid, step2Valid, step3Valid]);
+  }, [currentStep, step1Valid, step2Valid, step3Valid, step4Valid]);
 
   const activeFormId =
     currentStep === 1
@@ -172,7 +173,13 @@ function TripBuilderContent() {
     }
 
     if (currentStep === 4) {
-      return <Step4Preferences formId={STEP4_FORM_ID} onNext={() => goToStep(5)} />;
+      return (
+        <Step4Preferences
+          formId={STEP4_FORM_ID}
+          onNext={() => goToStep(5)}
+          onValidityChange={setStep4Valid}
+        />
+      );
     }
 
     if (currentStep === 5) {

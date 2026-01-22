@@ -148,11 +148,25 @@ const isoDateSchema = z
 
 /**
  * Schema for travel dates
+ * Validates that end date is on or after start date
  */
 const travelDatesSchema = z.object({
   start: isoDateSchema,
   end: isoDateSchema,
-}).strict();
+}).strict().refine(
+  (dates) => {
+    // Allow if either date is missing (optional fields)
+    if (!dates.start || !dates.end) {
+      return true;
+    }
+    // Validate that end is on or after start
+    return dates.end >= dates.start;
+  },
+  {
+    message: "End date must be on or after start date",
+    path: ["end"],
+  },
+);
 
 /**
  * Schema for entry point type

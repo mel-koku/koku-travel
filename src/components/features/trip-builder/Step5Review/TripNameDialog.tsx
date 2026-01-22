@@ -51,6 +51,9 @@ export function TripNameDialog({
     [nameError],
   );
 
+  // AbortController ref for canceling API requests on unmount or dialog close
+  const abortControllerRef = useRef<AbortController | null>(null);
+
   const handleSubmitTripName = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
@@ -64,9 +67,14 @@ export function TripNameDialog({
         return;
       }
       setIsSaving(true);
+
+      // Create new AbortController for this request
+      abortControllerRef.current = new AbortController();
+      const { signal } = abortControllerRef.current;
+
       try {
         const builderSnapshot = JSON.parse(JSON.stringify(data)) as TripBuilderData;
-        
+
         // Call API to generate itinerary
         const response = await fetch("/api/itinerary/plan", {
           method: "POST",
@@ -76,6 +84,7 @@ export function TripNameDialog({
           body: JSON.stringify({
             builderData: builderSnapshot,
           }),
+          signal,
         });
 
         if (!response.ok) {
@@ -84,10 +93,10 @@ export function TripNameDialog({
         }
 
         const { trip } = await response.json();
-        
+
         // Convert Trip domain model to Itinerary legacy format
         const itinerary = convertTripToItinerary(trip);
-        
+
         const tripId = createTrip({
           name: finalName,
           itinerary,
@@ -99,14 +108,29 @@ export function TripNameDialog({
         setNameError(null);
         router.push(`/itinerary?trip=${tripId}`);
       } catch (error) {
+        // Don't show error if request was aborted (e.g., dialog closed)
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
         logger.error("Failed to save trip", error);
         setNameError("We couldn't save your itinerary. Please try again.");
       } finally {
         setIsSaving(false);
+        abortControllerRef.current = null;
       }
     },
     [createTrip, data, isSaving, reset, router, tripName, suggestedTripName, onClose],
   );
+
+  // Cleanup: abort any pending request when dialog closes or component unmounts
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+    };
+  }, []);
 
   const handleClose = useCallback(() => {
     if (isSaving) {
