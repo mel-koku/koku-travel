@@ -1,10 +1,83 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import type { Itinerary } from "@/types/itinerary";
+import type { Location } from "@/types/location";
 import type { RoutingRequest } from "../routing/types";
 import { planItinerary } from "../itineraryPlanner";
 
 const mockRequestRoute = vi.fn();
+
+// Create mock locations for the test itinerary
+const mockLocations: Record<string, Location> = {
+  "day1-activity-1": {
+    id: "kyoto-fushimi-inari-taisha",
+    name: "Fushimi Inari Taisha",
+    region: "Kansai",
+    city: "Kyoto",
+    category: "shrine",
+    image: "/images/fushimi-inari.jpg",
+    coordinates: { lat: 34.9671, lng: 135.7727 },
+    operatingHours: {
+      periods: [
+        { day: "monday", open: "00:00", close: "23:59" },
+        { day: "tuesday", open: "00:00", close: "23:59" },
+        { day: "wednesday", open: "00:00", close: "23:59" },
+        { day: "thursday", open: "00:00", close: "23:59" },
+        { day: "friday", open: "00:00", close: "23:59" },
+        { day: "saturday", open: "00:00", close: "23:59" },
+        { day: "sunday", open: "00:00", close: "23:59" },
+      ],
+    },
+    recommendedVisit: {
+      typicalMinutes: 120,
+      minMinutes: 60,
+    },
+    preferredTransitModes: ["train", "bus"],
+    timezone: "Asia/Tokyo",
+  },
+  "day1-activity-2": {
+    id: "kyoto-nishiki-market",
+    name: "Nishiki Market",
+    region: "Kansai",
+    city: "Kyoto",
+    category: "market",
+    image: "/images/nishiki-market.jpg",
+    coordinates: { lat: 35.0050, lng: 135.7648 },
+    // No operatingHours - this will result in "tentative" schedule status
+    recommendedVisit: {
+      typicalMinutes: 90,
+      minMinutes: 45,
+    },
+    preferredTransitModes: ["walk", "bus"],
+    timezone: "Asia/Tokyo",
+  },
+};
+
+// Mock findLocationsForActivities
+vi.mock("../itineraryLocations", () => ({
+  findLocationsForActivities: vi.fn().mockImplementation(async (activities) => {
+    const result = new Map();
+    for (const activity of activities) {
+      result.set(activity.id, mockLocations[activity.id] ?? null);
+    }
+    return result;
+  }),
+}));
+
+// Mock logger to avoid console noise
+vi.mock("../logger", () => ({
+  logger: {
+    info: vi.fn(),
+    warn: vi.fn(),
+    error: vi.fn(),
+    debug: vi.fn(),
+  },
+}));
+
+// Mock Google Places to avoid network calls
+vi.mock("../googlePlaces", () => ({
+  fetchLocationDetails: vi.fn().mockResolvedValue(null),
+}));
 
 vi.mock("../routing", () => ({
   requestRoute: (request: unknown) => mockRequestRoute(request),

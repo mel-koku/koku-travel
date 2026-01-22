@@ -227,16 +227,34 @@ function inferTravelMode(
 }
 void inferTravelMode; // Intentionally unused - kept for future use
 
-export async function generateItinerary(data: TripBuilderData): Promise<Itinerary> {
+/**
+ * Options for generating an itinerary
+ */
+export type GenerateItineraryOptions = {
+  /**
+   * Optional locations array for testing or when locations are pre-fetched.
+   * When provided, skips database fetch.
+   */
+  locations?: Location[];
+};
+
+export async function generateItinerary(
+  data: TripBuilderData,
+  options?: GenerateItineraryOptions,
+): Promise<Itinerary> {
   const totalDays =
     typeof data.duration === "number" && data.duration > 0 ? data.duration : DEFAULT_TOTAL_DAYS;
 
-  // Determine cities to filter by for optimized database queries
-  // If user selected specific cities, filter at DB level to reduce memory usage
-  const selectedCities = data.cities && data.cities.length > 0 ? data.cities : undefined;
-
-  // Fetch locations from database (with fallback to mock data)
-  const allLocations = await fetchAllLocations(selectedCities);
+  // Use provided locations or fetch from database
+  let allLocations: Location[];
+  if (options?.locations && options.locations.length > 0) {
+    allLocations = options.locations;
+  } else {
+    // Determine cities to filter by for optimized database queries
+    // If user selected specific cities, filter at DB level to reduce memory usage
+    const selectedCities = data.cities && data.cities.length > 0 ? data.cities : undefined;
+    allLocations = await fetchAllLocations(selectedCities);
+  }
   const { locationsByCityKey, locationsByRegionId } = buildLocationMaps(allLocations);
 
   const citySequence = resolveCitySequence(data, locationsByCityKey, allLocations);

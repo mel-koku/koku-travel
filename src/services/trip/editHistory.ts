@@ -43,6 +43,10 @@ export function createEditHistoryEntry(
 
 /**
  * Adds an edit to the history, handling redo branch pruning
+ *
+ * When a new edit is added after undoing, the redo branch is pruned.
+ * When history exceeds MAX_EDIT_HISTORY_ENTRIES, old edits are removed.
+ * The index is always recalculated based on the trimmed history length.
  */
 export function addEditToHistory(
   historyState: EditHistoryState,
@@ -53,11 +57,20 @@ export function addEditToHistory(
   const currentIndex = historyState.currentHistoryIndex[tripId] ?? -1;
 
   // Remove any edits after current index (when undoing and then making new edit)
+  // This prunes the redo branch
   const newHistory = history.slice(0, currentIndex + 1);
   newHistory.push(edit);
 
   // Limit history to last N edits
   const trimmedHistory = newHistory.slice(-MAX_EDIT_HISTORY_ENTRIES);
+
+  // Calculate the number of entries removed from the front
+  const entriesRemoved = newHistory.length - trimmedHistory.length;
+
+  // The new index points to the last edit (the one we just added)
+  // Account for trimming: if entries were removed from the front,
+  // the new edit's position is adjusted accordingly
+  const newIndex = Math.max(0, newHistory.length - 1 - entriesRemoved);
 
   return {
     editHistory: {
@@ -66,7 +79,7 @@ export function addEditToHistory(
     },
     currentHistoryIndex: {
       ...historyState.currentHistoryIndex,
-      [tripId]: trimmedHistory.length - 1,
+      [tripId]: newIndex,
     },
   };
 }

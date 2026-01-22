@@ -149,6 +149,11 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
 
   const setDataNormalized = useCallback(
     (updater: React.SetStateAction<TripBuilderData>) => {
+      // Prevent setData calls during hydration to avoid race conditions
+      // During hydration, localStorage data may override external changes
+      if (!isHydrated.current) {
+        return;
+      }
       setData((prev) => {
         const next = typeof updater === "function" ? updater(prev) : updater;
         return normalizeData(next);
@@ -188,7 +193,8 @@ function sanitizeRegions(regions?: RegionId[] | string[]): RegionId[] {
   const seen = new Set<string>();
   for (const region of regions) {
     if (typeof region === "string" && region.trim().length > 0) {
-      const regionId = region.trim();
+      // Preserve original case to maintain backwards compatibility with existing saved trips
+      const regionId = region.trim() as RegionId;
       if (!seen.has(regionId)) {
         seen.add(regionId);
         next.push(regionId);
@@ -284,10 +290,10 @@ function sanitizeAccessibility(
     sanitized.mobility = true;
   }
   if (dietaryOther.length > 0) {
-    sanitized.dietaryOther = dietaryOtherRaw;
+    sanitized.dietaryOther = dietaryOther;
   }
   if (notes.length > 0) {
-    sanitized.notes = notesRaw;
+    sanitized.notes = notes;
   }
 
   return sanitized;
@@ -323,13 +329,21 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
   }
 
   // If not found in our data but structure is valid, return as-is (for custom hotels, etc.)
+  // Validate coordinate bounds to prevent invalid entry points
+  const lat = Number(entryPoint.coordinates.lat);
+  const lng = Number(entryPoint.coordinates.lng);
+
+  if (Number.isNaN(lat) || Number.isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+    return undefined;
+  }
+
   return {
     type: entryPoint.type,
     id: String(entryPoint.id).trim(),
     name: String(entryPoint.name).trim(),
     coordinates: {
-      lat: Number(entryPoint.coordinates.lat),
-      lng: Number(entryPoint.coordinates.lng),
+      lat,
+      lng,
     },
     cityId: entryPoint.cityId,
   };

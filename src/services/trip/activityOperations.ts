@@ -51,6 +51,9 @@ export function deleteActivity(
 
 /**
  * Reorders activities in a day
+ *
+ * Note: If the provided activityIds list is missing any existing activities,
+ * those missing activities will be appended at the end to preserve data integrity.
  */
 export function reorderActivities(
   itinerary: Itinerary,
@@ -67,6 +70,15 @@ export function reorderActivities(
       const reorderedActivities = activityIds
         .map((id) => activityMap.get(id))
         .filter((a): a is ItineraryActivity => a !== undefined);
+
+      // Preserve any activities that weren't in the provided list
+      // This prevents data loss if client sends incomplete activity IDs
+      const providedIds = new Set(activityIds);
+      const missingActivities = day.activities.filter(a => !providedIds.has(a.id));
+      if (missingActivities.length > 0) {
+        reorderedActivities.push(...missingActivities);
+      }
+
       return {
         ...day,
         activities: reorderedActivities,

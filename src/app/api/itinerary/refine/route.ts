@@ -240,9 +240,10 @@ export async function POST(request: NextRequest) {
     // Validate request body with size limit (2MB for trip data)
     // Note: refine endpoint accepts multiple formats (legacy and new), so we validate structure first
     // Using passthrough() to allow additional fields for backward compatibility
+    // Schema must match VALID_REFINEMENT_TYPES for consistency
     const refineSchema = z.object({
       trip: z.any().optional(), // Trip object validation handled separately in refinement engine
-      refinementType: z.enum(["more_diverse", "more_focused", "more_adventurous", "more_relaxed", "more_budget_friendly", "more_luxury"]).optional(),
+      refinementType: z.enum(["too_busy", "too_light", "more_food", "more_culture", "more_kid_friendly", "more_rest"]).optional(),
       dayIndex: z.number().int().min(0).max(30).optional(),
       tripId: z.string().max(255).regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters").optional(),
       builderData: z.any().optional(), // Partial TripBuilderData - validated separately if provided
