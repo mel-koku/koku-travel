@@ -383,6 +383,7 @@ npx tsx scripts/cleanup-data-quality.ts               # Full cleanup
 | Phase | Description | Action |
 |-------|-------------|--------|
 | 1 | Duplicate place_id with different regions | Delete duplicates (keep highest quality score) |
+| 1B | ALL duplicate place_ids (same region) | Delete true duplicates where names are similar |
 | 2 | Prefecture-region mismatches | Update region to match canonical mapping |
 | 3 | Google Places API verification | Fix NULL prefecture, city=region issues, verify region |
 
@@ -403,7 +404,8 @@ npx tsx scripts/cleanup-data-quality.ts               # Full cleanup
 **Usage:**
 ```bash
 npx tsx scripts/cleanup-geography-inconsistencies.ts --dry-run                    # Preview all changes
-npx tsx scripts/cleanup-geography-inconsistencies.ts --phase=1                    # Duplicates only
+npx tsx scripts/cleanup-geography-inconsistencies.ts --phase=1                    # Duplicates with different regions
+npx tsx scripts/cleanup-geography-inconsistencies.ts --phase=1b                   # ALL duplicate place_ids
 npx tsx scripts/cleanup-geography-inconsistencies.ts --phase=2                    # Mismatches only
 npx tsx scripts/cleanup-geography-inconsistencies.ts --verify-with-api            # Include API verification
 npx tsx scripts/cleanup-geography-inconsistencies.ts --verify-with-api --limit=50 # Limit API calls
@@ -414,6 +416,8 @@ npx tsx scripts/cleanup-geography-inconsistencies.ts                            
 **Logs:** `scripts/geography-cleanup-log-2026-01-22.json`
 
 **Results (Jan 22, 2026):**
+
+*Initial Run:*
 | Issue Type | Count | Action |
 |------------|-------|--------|
 | Duplicate place_id with different regions | 8 | Deleted |
@@ -421,7 +425,51 @@ npx tsx scripts/cleanup-geography-inconsistencies.ts                            
 | Malformed prefecture names | 2 | Fixed manually |
 | **Total changes** | **96** | |
 
-**Final location count:** 2,846 → **2,838**
+*Malformed Prefecture Fix (Jan 22, 2026):*
+
+Added comprehensive prefecture normalization to handle:
+- **Japanese kanji prefectures** (22 entries): `京都府` → `Kyoto`, `北海道` → `Hokkaido`, etc.
+- **Comma-separated values** (7 entries): `Kikuchi, Kumamoto` → `Kumamoto`, etc.
+
+| Issue Type | Count | Action |
+|------------|-------|--------|
+| Japanese kanji prefectures | 22 | Normalized to English |
+| Comma-separated prefecture values | 7 | Extracted correct prefecture |
+| Additional duplicate place_ids found | 5 | Deleted |
+| **Total fixes** | **34** | |
+
+**Script Enhancement:**
+- Added `JAPANESE_TO_ENGLISH_PREFECTURE` mapping for all 47 prefectures
+- Enhanced `normalizePrefecture()` to handle kanji and comma-separated formats
+- Phase 2 now normalizes prefecture field in addition to fixing region
+
+*Phase 1B - True Duplicate Cleanup (Jan 22, 2026):*
+
+Added Phase 1B to find and remove ALL duplicate place_id entries where names are clearly
+variants of each other (share common words). This is more comprehensive than Phase 1 which
+only catches duplicates with different regions.
+
+**Smart similarity detection:**
+- Checks for common words between names
+- Handles combined words (e.g., "Amanoiwato" matches "Amano Iwato")
+- Uses connected component analysis for groups >2 entries
+- Skips suspicious groups where names are too different (likely data errors)
+
+| Category | Count |
+|----------|-------|
+| Duplicate groups found | 260 |
+| True duplicates (similar names) | 217 |
+| Skipped (names too different) | 43 |
+| Entries deleted | 247 |
+
+**Examples cleaned:**
+- "Aizu Bukeyashiki" + "Aizu Samurai" → kept "Aizu Bukeyashiki"
+- "Adachi Museum" + "Adachi Museum of Art" → kept "Adachi Museum of Art"
+- "Amano Iwato" + "Amano Iwato-jinja" + "Amanoiwato Shrine Nishi Hongu" → kept "Amanoiwato Shrine Nishi Hongu"
+
+**Remaining 43 skipped groups** have same place_id but very different names (e.g., "Setsubun" vs "Kasuga Taisha") - these are likely data import errors where different entities received the same place_id.
+
+**Final location count:** 2,916 → 2,846 → 2,838 → 2,833 → **2,586**
 
 ### Priority 3: Medium
 
@@ -430,7 +478,7 @@ npx tsx scripts/cleanup-geography-inconsistencies.ts                            
 - [x] **Prefecture-based filtering** - ✅ Complete (Jan 22, 2026)
 - [x] **Location geography enrichment** - ✅ Complete (Jan 22, 2026)
 - [x] **Data quality cleanup** - ✅ Complete (Jan 22, 2026) - Deleted 78 entries total (8 initial + 70 full cleanup)
-- [x] **Geographic inconsistency cleanup** - ✅ Complete (Jan 22, 2026) - Fixed 96 entries (8 deleted, 88 updated)
+- [x] **Geographic inconsistency cleanup** - ✅ Complete (Jan 22, 2026) - Fixed 377 entries (260 duplicates deleted, 86 region fixes, 29 prefecture normalizations, 2 manual fixes)
 - [ ] Add trip sharing feature (PENDING)
 
 ### Not Planned
@@ -484,7 +532,7 @@ npx tsx scripts/cleanup-geography-inconsistencies.ts                            
 | `scripts/enrich-location-geography.ts` | **NEW** - Script to fix city/prefecture data via Google Places API |
 | `scripts/delete-low-quality-locations.ts` | **NEW** - Script to delete low-quality location entries |
 | `scripts/cleanup-data-quality.ts` | **NEW** - Comprehensive data cleanup (services, duplicates, incomplete names) |
-| `scripts/cleanup-geography-inconsistencies.ts` | **NEW** - Geographic inconsistency cleanup (duplicate place_ids, prefecture-region mismatches) |
+| `scripts/cleanup-geography-inconsistencies.ts` | **NEW** - Geographic inconsistency cleanup (duplicate place_ids, prefecture-region mismatches, Japanese/comma-separated prefecture normalization) |
 | `PERFORMANCE_IMPLEMENTATION.md` | **NEW** - Performance overhaul documentation |
 
 ## New Architecture Components
@@ -530,13 +578,13 @@ npm test -- tests/services/trip/  # Run specific tests
    - Phase 1: Deleted 8 low-quality entries
    - Phase 2: Deleted 70 entries (services, duplicates, incomplete names)
 3. ✅ ~~Geographic inconsistency cleanup~~ (COMPLETE - Jan 22, 2026)
-   - Deleted 8 duplicate place_id entries
+   - Deleted 13 duplicate place_id entries (8 initial + 5 additional)
    - Fixed 86 prefecture-region mismatches
-   - Fixed 2 malformed prefecture names
-   - **Current total: 2,838 locations**
+   - Normalized 29 malformed prefecture names (Japanese kanji + comma-separated)
+   - **Final total: 2,833 locations**
 4. **Priority 3**: Trip sharing feature
-4. **Testing**: Add more integration tests for API routes
-5. **Consider**: Further React Query migration for other data fetching
+5. **Testing**: Add more integration tests for API routes
+6. **Consider**: Further React Query migration for other data fetching
 
 ## Database
 
