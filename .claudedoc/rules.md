@@ -1,0 +1,88 @@
+# Development Rules & Known Issues
+
+## Development Rules
+
+### Code Patterns
+
+1. **Use column projections** - Never use `.select("*")`. Import from `src/lib/supabase/projections.ts`.
+
+2. **Server/client boundary** - Server-side code imports from `locationService.ts`. Client-side uses API endpoints via React Query hooks.
+
+3. **React Query for state** - Use React Query hooks for server state. Deprecated stores marked with `@deprecated`.
+
+4. **React.memo() for performance** - Applied to: `LocationCard`, `SortableActivity`, `PlaceActivityRow`, `ActivityRow`.
+
+5. **Lazy loading modals** - Use dynamic imports for modals: `LocationDetailsModal`, `FiltersModal`, etc.
+
+### Testing
+
+- Run tests: `npm test`
+- Run specific tests: `npm test -- tests/services/trip/`
+- API tests in `tests/api/` (149 tests across 11 files)
+- Test fixtures in `tests/fixtures/locations.ts`
+
+### Test Fixtures
+
+```typescript
+// tests/fixtures/locations.ts
+createTestLocation()     // Factory with optional overrides
+TEST_LOCATIONS           // Pre-built test locations
+locationToDbRow()        // Convert Location to database row
+```
+
+## Known Issues
+
+### Pre-existing Test Failures
+
+1. **TripBuilderContext tests** - localStorage mocking issues
+2. **itineraryGenerator tests** - Require Supabase env vars
+
+### Lint Warnings
+
+Some lint warnings exist in unrelated files:
+- `googlePlaces.ts`
+- `routing/cache.ts`
+
+### Schema/Logic Mismatch
+
+`itinerary/refine` route has mismatch:
+- Zod schema accepts: `["more_diverse", "more_focused", ...]`
+- `VALID_REFINEMENT_TYPES` accepts: `["too_busy", "too_light", ...]`
+
+## Deprecated Code
+
+### To Remove in v2.0
+
+| File | Reason |
+|------|--------|
+| `src/state/locationDetailsStore.ts` | Replaced by React Query hooks |
+
+### Migration Examples
+
+```typescript
+// Before (deprecated)
+import { locationDetailsStore } from '@/state/locationDetailsStore';
+
+// After (use React Query)
+import { useLocationDetailsQuery } from '@/hooks';
+```
+
+## Performance Guidelines
+
+### Explore Page
+
+- First 100 locations + filter metadata load in ~500ms
+- Remaining locations load progressively in background
+- Filter options pre-computed server-side
+
+### Photo Loading
+
+- Photos stored in `primary_photo_url` column
+- No more N+1 queries for photos
+- 97.5% of locations have photos (rest use fallback)
+
+### Database Queries
+
+- Always use column projections
+- City-based filtering reduces memory in pagination
+- Indexes on: favorites, bookmarks, place_details, geographic columns
