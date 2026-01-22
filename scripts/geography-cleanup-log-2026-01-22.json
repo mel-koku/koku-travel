@@ -1,0 +1,854 @@
+[
+  {
+    "timestamp": "2026-01-22T03:52:08.859Z",
+    "phase": 1,
+    "action": "delete",
+    "entries": [
+      {
+        "id": "drift-ice-kanto-93195160",
+        "name": "Drift Ice",
+        "place_id": "ChIJocYm5aQzbV8R1NQiDaHztRw",
+        "oldRegion": "Kanto",
+        "oldPrefecture": "Hokkaido",
+        "reason": "Duplicate place_id with inconsistent region (kept entry with score 145, this had score 45)"
+      },
+      {
+        "id": "akame-48-waterfalls-chubu-6f9e7c00",
+        "name": "Akame 48 Waterfalls",
+        "place_id": "ChIJ57-XctCtBmARdPODK8v8VSw",
+        "oldRegion": "Chubu",
+        "oldPrefecture": "Mie",
+        "reason": "Duplicate place_id with inconsistent region (kept entry with score 145, this had score 45)"
+      },
+      {
+        "id": "asahiyama-kanto-10895392",
+        "name": "Asahiyama",
+        "place_id": "ChIJyyPgtczgDF8R01OoHb3cJcg",
+        "oldRegion": "Kanto",
+        "oldPrefecture": "Hokkaido",
+        "reason": "Duplicate place_id with inconsistent region (kept entry with score 145, this had score 45)"
+      },
+      {
+        "id": "explore-hakusan-kanto-7688bc48",
+        "name": "Explore Hakusan",
+        "place_id": "ChIJ_QtBjsR9-F8R4K99jDKRNiA",
+        "oldRegion": "Kanto",
+        "oldPrefecture": "Ishikawa",
+        "reason": "Duplicate place_id with inconsistent region (kept entry with score 145, this had score 45)"
+      },
+      {
+        "id": "oumihachiman-canal-district-tour-chubu-1364f32a",
+        "name": "Hachiman-bori Moat",
+        "place_id": "ChIJPXp_q5x5AWARlu36I6X9POQ",
+        "oldRegion": "Chubu",
+        "oldPrefecture": "Shiga",
+        "reason": "Duplicate place_id with inconsistent region (kept entry with score 145, this had score 45)"
+      },
+      {
+        "id": "hokkaido-jingu-kanto-1dbbfa7c",
+        "name": "Hokkaido-jingu",
+        "place_id": "ChIJk6jwxNwpC18RCNdmWzXijew",
+        "oldRegion": "Kanto",
+        "oldPrefecture": "Hokkaido",
+        "reason": "Duplicate place_id with inconsistent region (kept entry with score 145, this had score 45)"
+      },
+      {
+        "id": "hoshitoge-rice-terraces-tohoku-190ccf40",
+        "name": "Hoshitouge Terraced Rice Field",
+        "place_id": "ChIJ3cHEkELn9V8RDXJMvnYY-NE",
+        "oldRegion": "Tohoku",
+        "oldPrefecture": "Niigata",
+        "reason": "Duplicate place_id with inconsistent region (kept entry with score 145, this had score 45)"
+      },
+      {
+        "id": "fish-town-walk-a-walk-around-a-showa-fishing-town-chubu-71b45f67",
+        "name": "Ine Fishing Village",
+        "place_id": "ChIJC1Z_so2f_18RieRebkLKVII",
+        "oldRegion": "Chubu",
+        "oldPrefecture": "Mie",
+        "reason": "Duplicate place_id with inconsistent region (kept entry with score 145, this had score 45)"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-01-22T03:52:09.369Z",
+    "phase": 2,
+    "action": "update",
+    "entries": [
+      {
+        "id": "shimanami-chugoku-81f5bb13",
+        "name": "Shimanami Kaido (Cycling Route)",
+        "place_id": "ChIJ43JBFQBJUDURPF03BSFYNZE",
+        "oldRegion": "Chugoku",
+        "newRegion": "Shikoku",
+        "prefecture": "Ehime",
+        "reason": "Prefecture \"Ehime\" should be in region \"Shikoku\", not \"Chugoku\""
+      },
+      {
+        "id": "drink-tea-at-the-kuniyoshi-castle-historical-museum-kansai-95d7b728",
+        "name": "Kuniyoshi Castle Ruins",
+        "place_id": "ChIJIVY8kODnAWARIq-2VKxC4r8",
+        "oldRegion": "Kansai",
+        "newRegion": "Chubu",
+        "prefecture": "Fukui",
+        "reason": "Prefecture \"Fukui\" should be in region \"Chubu\", not \"Kansai\""
+      },
+      {
+        "id": "orono-akari-no-object-light-display-shikoku-0ad6cef0",
+        "name": "Minowashi Akari Art Center",
+        "place_id": "ChIJGzcbzCQCA2AREi4WgM9_krM",
+        "oldRegion": "Shikoku",
+        "newRegion": "Chubu",
+        "prefecture": "Gifu",
+        "reason": "Prefecture \"Gifu\" should be in region \"Chubu\", not \"Shikoku\""
+      },
+      {
+        "id": "gehoku-tohoku-c2d9c740",
+        "name": "Gehoku 芸北",
+        "place_id": "ChIJh8kZq_eTWjURe21snJlt4tQ",
+        "oldRegion": "Tohoku",
+        "newRegion": "Chugoku",
+        "prefecture": "Hiroshima",
+        "reason": "Prefecture \"Hiroshima\" should be in region \"Chugoku\", not \"Tohoku\""
+      },
+      {
+        "id": "tokachikawa-kanto-f7dae416",
+        "name": "Tokachikawa",
+        "place_id": "ChIJRcbJjqCjc18Rk8kIsz8hpuw",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "otaru-museum-kanto-46af5aa5",
+        "name": "Otaru Museum",
+        "place_id": "ChIJ25Wx28fhCl8Rhmk8jN3Y-Tc",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "otaru-snow-kanto-829ba4da",
+        "name": "Otaru Snow",
+        "place_id": "ChIJ0UxVV2ThCl8RIZdpda0H7gQ",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "noboribetsu-kanto-bd3e67d4",
+        "name": "Noboribetsu",
+        "place_id": "ChIJ___jisJmdV8RzL7_3Cqwtcc",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "view-from-mt-hakodate-tohoku-04bb3c7d",
+        "name": "Mt. Hakodate Observatory",
+        "place_id": "ChIJ43_MT8vznl8RVq-6L7E6X7k",
+        "oldRegion": "Tohoku",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Tohoku\""
+      },
+      {
+        "id": "shiroi-koibito-kanto-cbe4c5d7",
+        "name": "Shiroi Koibito",
+        "place_id": "ChIJU8vHZBIoC18RkQEK1Lg8HsI",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "sounkyo-kanto-407a4e7d",
+        "name": "Sounkyo 層雲峡",
+        "place_id": "ChIJU4vcTL0vDV8R85q0qgODxgE",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "explore-shiretoko-kanto-fb8facee",
+        "name": "Explore Shiretoko",
+        "place_id": "ChIJV0KQFCYibV8R0lUJO_2LOM0",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "goryokaku-kanto-1343b56f",
+        "name": "Goryokaku",
+        "place_id": "ChIJJVWNy2v0nl8RAtXEli295Kk",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "tarumae-garo-kanto-945e5dd4",
+        "name": "Tarumae Garo",
+        "place_id": "ChIJX_9j0yMVdV8R-MWWdeXddgE",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "tobetsu-trappist-kanto-0d0fe0c6",
+        "name": "Tobetsu Trappist",
+        "place_id": "ChIJuQrLUy3tnl8Req2urrQ8rQI",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "rausu-kanto-91ecdd9d",
+        "name": "Rausu 羅臼",
+        "place_id": "ChIJhxJ3NwTCbF8RBwU7Cu-8Y-w",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "kaminoko-ike-kanto-b4ae4aab",
+        "name": "Kaminoko-ike",
+        "place_id": "ChIJu5UsL_dybV8RJdzGfP2_FgM",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "rishiri-kanto-2647d2d5",
+        "name": "Rishiri &",
+        "place_id": "ChIJ8-Cfss_FD18RbzJShBRRvJs",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "ryuhyo-drift-kanto-61e8c267",
+        "name": "Ryuhyo Drift",
+        "place_id": "ChIJvwlos3M0bV8RMowNjuqTRP4",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "ryusei-falls-kanto-171de16f",
+        "name": "Ryusei Falls",
+        "place_id": "ChIJQ8ZH2kouDV8RyxiRS2Lbrss",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "lake-toya-kanto-8cdd234f",
+        "name": "Lake Toya",
+        "place_id": "ChIJoeV7dL3in18RvxBcDeBVRog",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "wakkanai-kanto-591dddf4",
+        "name": "Wakkanai",
+        "place_id": "ChIJYytB70EwEF8RTMI1gt_NSGo",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "migishi-kotaro-kanto-3480348f",
+        "name": "Migishi Kotaro",
+        "place_id": "ChIJdx8Bfr0pC18RTVJoPgbscnY",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "ainu-culture-kanto-8552b4ec",
+        "name": "Ainu Culture",
+        "place_id": "ChIJs9QMJbrTCl8Rui2NTX_XpkU",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "abashiri-kanto-5ee299dd",
+        "name": "Abashiri",
+        "place_id": "ChIJ8xP4PUE2bV8RnzJvgDoJv6U",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "hokkaido-kanto-14e501e1",
+        "name": "Hokkaido",
+        "place_id": "ChIJB0EzFKpBdV8ReK5leD2pIUQ",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "shizunai-kanto-eb835b59",
+        "name": "Shizunai",
+        "place_id": "ChIJJ264SH_Ec18RC7-AbQBDS6Q",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "lake-furen-kanto-ded84429",
+        "name": "Lake Furen",
+        "place_id": "ChIJ_X5_YRTEbV8RU6Qp2M4swq4",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "asahikawa-kanto-cb2b5646",
+        "name": "Asahikawa",
+        "place_id": "ChIJwwqCmgznDF8RsgnBr9YtEn4",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "blue-pond-kanto-a8d5c31f",
+        "name": "Blue Pond",
+        "place_id": "ChIJbyoi3mLMDF8RnndLnx8YzQQ",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "cape-nosappu-kanto-6643f7ae",
+        "name": "Cape Nosappu",
+        "place_id": "ChIJ-3r90U4vbF8Ri6q2oxzNFZ0",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "shikisai-kanto-79275a5c",
+        "name": "Shikisai",
+        "place_id": "ChIJDeIPuVXIDF8RPhiBRw83_ag",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "hokuryu-sunflower-kanto-ca235601",
+        "name": "Hokuryu Sunflower",
+        "place_id": "ChIJLbmXTa6ODF8RBSCYfBwN4PA",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "hakodate-kanto-1a60d65a",
+        "name": "Hakodate",
+        "place_id": "ChIJIU281S1cnl8RW8N4lip9fZE",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "kushiro-art-kanto-2a7e17dd",
+        "name": "Kushiro Art",
+        "place_id": "ChIJM_WiR2Y9cl8RZwKYfA9-So0",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "lake-notoro-kanto-899d9df0",
+        "name": "Lake Notoro",
+        "place_id": "ChIJ587i-gHLEl8RS8rY6EWqr-o",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "lake-tofutsu-kanto-9951978b",
+        "name": "Lake Tofutsu",
+        "place_id": "ChIJkY0B_W46bV8RFz_TaVvBdLQ",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "notsuke-peninsula-kanto-d0b5ef22",
+        "name": "Notsuke Peninsula",
+        "place_id": "ChIJbSUtgGBNbF8RIv5JHS9_OG0",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "explore-akan-mashu-kanto-42e80b00",
+        "name": "Explore Akan-Mashu",
+        "place_id": "ChIJl5TwA7F9bV8R6ZaZHzGdUZw",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "mt-rishiri-kanto-9a72042d",
+        "name": "Mt. Rishiri",
+        "place_id": "ChIJ3Q9eGszFD18RXVPU4ZNaUTY",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "rusutsu-kanto-5dfa4acf",
+        "name": "Rusutsu ルスツ",
+        "place_id": "ChIJJVMW7yxNdV8RIJXVU_M_MbA",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "kanemori-kanto-61a7461d",
+        "name": "Kanemori",
+        "place_id": "ChIJo1BfeKjznl8R-KEsd6JreQ4",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "sapporo-kokusai-kanto-8fc6a91d",
+        "name": "Sapporo Kokusai",
+        "place_id": "ChIJOSclPs7bCl8REMJOyvKws-o",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "sapporo-station-kanto-e1112cc6",
+        "name": "Sapporo Station",
+        "place_id": "ChIJA_nD0nQpC18RpUdK3Yyx4qU",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "otaru-aquarium-kanto-96e69b14",
+        "name": "Otaru Aquarium",
+        "place_id": "ChIJhSqlPAUeC18RURQ2LaIFswE",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "obihiro-kanto-e8235de5",
+        "name": "Obihiro 帯広エリア",
+        "place_id": "ChIJFw9St7Cbc18RFb3bbKhBjB8",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "sapporo-teine-kanto-315417dd",
+        "name": "Sapporo Teine",
+        "place_id": "ChIJLRLJ7xfYCl8R_MltyFlEiys",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "shiretoko-kanto-77683b4c",
+        "name": "Shiretoko",
+        "place_id": "ChIJV0KQFCYibV8R0lUJO_2LOM0",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "explore-daisetsuzan-kanto-291ebd08",
+        "name": "Explore Daisetsuzan",
+        "place_id": "ChIJSaUC9jgpDV8R_GQHLcGo2qA",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "yoichi-space-kanto-e9c216bb",
+        "name": "Yoichi Space",
+        "place_id": "ChIJRwq8JprlCl8RJloyQ4QtgZo",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "cape-erimo-kanto-c0650ad9",
+        "name": "Cape Erimo",
+        "place_id": "ChIJK_WScu3wdl8RwXe0B76PWUs",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "unkai-terrace-kanto-1eb10250",
+        "name": "Unkai Terrace",
+        "place_id": "ChIJX5GJ6yBhc18R_zmu-H9Ev8M",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "farm-tomita-kanto-6a293de0",
+        "name": "Farm Tomita",
+        "place_id": "ChIJdzcW1F2zDF8Rkm1ghwLPbbc",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "bihoro-pass-kanto-896cec97",
+        "name": "Bihoro Pass",
+        "place_id": "ChIJvbDSEERdbV8RO_BOCV_Gu5g",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "former-hokkaido-kanto-f219674a",
+        "name": "Former Hokkaido",
+        "place_id": "ChIJrQd1AJ8pC18Rt53mDW5dIbs",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "furano-flower-kanto-1e5c6e14",
+        "name": "Furano Flower",
+        "place_id": "ChIJgdGKHAa2DF8R-hXWbANQtjQ",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "ginga-falls-kanto-1840fa12",
+        "name": "Ginga Falls",
+        "place_id": "ChIJfSe3pksuDV8Rgi42OLag0_E",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "cape-soya-kanto-7bf8043b",
+        "name": "Cape Soya",
+        "place_id": "ChIJMZfELUFBEF8RMfvYQ4Y7V_s",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "furano-ski-kanto-f221bced",
+        "name": "Furano Ski",
+        "place_id": "ChIJPbaM-V5Sc18RSyNjT7_uIJA",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "furano-kanto-4341c096",
+        "name": "Furano 富良野市",
+        "place_id": "ChIJ05g-yoZNc18RbPt4jAvn9Ic",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "kushiro-marsh-kanto-cad5097f",
+        "name": "Kushiro Marsh",
+        "place_id": "ChIJxzo5FBoVcl8R0qF4MDKNBYY",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "lake-kuttara-kanto-ab191360",
+        "name": "Lake Kuttara",
+        "place_id": "ChIJh8nMLVxmdV8ROvyp4REDtVM",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "lake-mashu-kanto-ae15fea5",
+        "name": "Lake Mashu",
+        "place_id": "ChIJM2NxnCJ3bV8RbgkPfY2ip10",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "matsumae-kanto-8825bbb1",
+        "name": "Matsumae",
+        "place_id": "ChIJSeIB835JmV8RoOiqy23KS34",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "old-public-kanto-9ed90966",
+        "name": "Old Public",
+        "place_id": "ChIJRw_H56vznl8RMNpSnxrOimg",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "susukino-kanto-c36c8cf8",
+        "name": "Susukino",
+        "place_id": "ChIJD1Ej2J0pC18RLYj6SwBbIvc",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "takino-snow-kanto-803a79d2",
+        "name": "Takino Snow",
+        "place_id": "ChIJQ-NPN-srdV8Rnc_zvxrN30o",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "tokachidake-kanto-9b9c5d0f",
+        "name": "Tokachidake",
+        "place_id": "ChIJmyaJBfUuc18RDEYfrZvEDCY",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "kiroro-kanto-3f3f3c88",
+        "name": "Kiroro キロロリゾート",
+        "place_id": "ChIJ8ejlF1_bCl8Rdb4iszOJVGk",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "jozankei-kanto-1211b1b6",
+        "name": "Jozankei",
+        "place_id": "ChIJKWcJAiPSCl8Rat1E44a-uz0",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "kamuiwakka-kanto-d68df720",
+        "name": "Kamuiwakka",
+        "place_id": "ChIJl_9MneW4bF8RouQxowGAvMc",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "moerenuma-kanto-1e3377a5",
+        "name": "Moerenuma",
+        "place_id": "ChIJo24_lq8vC18RcfiqGApcx1s",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "lake-shikotsu-kanto-dd5349ff",
+        "name": "Lake Shikotsu",
+        "place_id": "ChIJu3JfIRM5dV8R0AKidpfs2Hs",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "miyama-pass-kanto-bd7b06b0",
+        "name": "Miyama Pass",
+        "place_id": "ChIJCc5JIkvIDF8RSVPOOJZWF-k",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "mt-moiwa-kanto-fd4d0731",
+        "name": "Mt. Moiwa",
+        "place_id": "ChIJ6WyfEO7VCl8RITH5sM3AG8M",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "mt-usu-kanto-c11091fa",
+        "name": "Mt. Usu",
+        "place_id": "ChIJ-QzK2Vvin18RU53TVxTNCdk",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "mt-tarumae-kanto-df6f0122",
+        "name": "Mt. Tarumae",
+        "place_id": "ChIJm8L3kow-dV8RLk11siWMDMA",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "mt-io-kanto-c436792e",
+        "name": "Mt. Io",
+        "place_id": "ChIJS1PlcKFxbV8Rno4-4o5XgsE",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "okushiri-kanto-1a92c521",
+        "name": "Okushiri",
+        "place_id": "ChIJLcOYqCdZn18RTDpEFy4rNAo",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "sapporo-hitsujigaoka-kanto-fc91718b",
+        "name": "Sapporo Hitsujigaoka",
+        "place_id": "ChIJx2WCDKMqC18RnEw-r64NwtY",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "onuma-quasi-kanto-b27c879f",
+        "name": "Onuma Quasi",
+        "place_id": "ChIJVfOEWFpUnl8RTa_2CElTIHg",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "otaru-kanto-757b3eb9",
+        "name": "Otaru 小樽エリア",
+        "place_id": "ChIJ0UxVV2ThCl8RIZdpda0H7gQ",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "sapporo-german-kanto-16b8e7bb",
+        "name": "Sapporo German",
+        "place_id": "ChIJRQiGZnIpC18R8sF_vCdnxnw",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "sapporo-snow-kanto-cf2c10b6",
+        "name": "Sapporo Snow",
+        "place_id": "ChIJQ-NPN-srdV8Rnc_zvxrN30o",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "sapporo-clock-kanto-e2d41c73",
+        "name": "Sapporo Clock",
+        "place_id": "ChIJR3JQJ3YpC18R680ES0qomxs",
+        "oldRegion": "Kanto",
+        "newRegion": "Hokkaido",
+        "prefecture": "Hokkaido",
+        "reason": "Prefecture \"Hokkaido\" should be in region \"Hokkaido\", not \"Kanto\""
+      },
+      {
+        "id": "hachimantai-kanto-1c71e0e5",
+        "name": "Hachimantai",
+        "place_id": "ChIJ5yn2VAo7hV8RRmTIinmmd5E",
+        "oldRegion": "Kanto",
+        "newRegion": "Tohoku",
+        "prefecture": "Iwate",
+        "reason": "Prefecture \"Iwate\" should be in region \"Tohoku\", not \"Kanto\""
+      }
+    ]
+  }
+]

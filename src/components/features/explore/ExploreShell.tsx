@@ -235,6 +235,13 @@ export function ExploreShell() {
     const durationFilter = selectedDuration
       ? DURATION_FILTERS.find((filter) => filter.id === selectedDuration) ?? null
       : null;
+
+    // Helper to normalize prefecture names (remove " Prefecture" suffix)
+    const normalizePrefecture = (name: string | undefined): string => {
+      if (!name) return '';
+      return name.replace(/\s+Prefecture$/i, '').trim();
+    };
+
     return enhancedLocations.filter((location) => {
       const matchesQuery =
         !normalizedQuery ||
@@ -245,7 +252,7 @@ export function ExploreShell() {
         location.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery));
 
       const matchesPrefecture = selectedPrefecture
-        ? location.prefecture === selectedPrefecture
+        ? normalizePrefecture(location.prefecture) === selectedPrefecture
         : true;
 
       const matchesBudget = budgetFilter

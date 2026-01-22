@@ -14,7 +14,8 @@ export const locationsKeys = {
   all: ["locations"] as const,
   lists: () => [...locationsKeys.all, "list"] as const,
   list: (filters?: Record<string, string>) => [...locationsKeys.lists(), filters] as const,
-  filterMetadata: () => [...locationsKeys.all, "filter-metadata"] as const,
+  // v3 includes normalized prefecture names (removed " Prefecture" suffix)
+  filterMetadata: () => [...locationsKeys.all, "filter-metadata", "v3"] as const,
 };
 
 type LocationsResponse = PaginatedResponse<Location>;
@@ -48,7 +49,8 @@ async function fetchLocationsPage(
  * Fetches filter metadata from the API
  */
 async function fetchFilterMetadata(): Promise<FilterMetadata> {
-  const response = await fetch("/api/locations/filter-options");
+  // Add version parameter to bust cache (v3 = normalized prefecture names)
+  const response = await fetch("/api/locations/filter-options?v=3");
 
   if (!response.ok) {
     let message = `Request failed with status ${response.status}.`;
