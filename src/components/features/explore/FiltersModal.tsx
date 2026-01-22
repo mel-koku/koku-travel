@@ -153,7 +153,7 @@ export function FiltersModal({
                 isSelected={!selectedPrefecture}
                 onClick={() => onPrefectureChange(null)}
               />
-              {prefectureOptions.slice(0, 12).map((option) => (
+              {prefectureOptions.map((option) => (
                 <FilterChip
                   key={option.value}
                   label={option.label}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { cacheLocationDetails } from "@/state/locationDetailsStore";
 import type { LocationDetails } from "@/types/location";
@@ -71,9 +72,12 @@ export function useLocationDetailsQuery(locationId: string | null) {
 
   // Update legacy store for backwards compatibility with other components
   // that still use useLocationEditorialSummary/useLocationDisplayName
-  if (data && locationId) {
-    cacheLocationDetails(locationId, data);
-  }
+  // Use useEffect to avoid setState during render
+  useEffect(() => {
+    if (data && locationId) {
+      cacheLocationDetails(locationId, data);
+    }
+  }, [data, locationId]);
 
   // Map React Query status to the original hook's status format
   const mappedStatus = locationId
