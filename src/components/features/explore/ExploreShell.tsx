@@ -168,7 +168,7 @@ export function ExploreShell() {
   const { data: filterMetadata } = useFilterMetadataQuery();
 
   const [query, setQuery] = useState("");
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null);
   const [selectedBudget, setSelectedBudget] = useState<string | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -182,7 +182,7 @@ export function ExploreShell() {
     setPage(1);
   }, [
     query,
-    selectedCity,
+    selectedPrefecture,
     selectedBudget,
     selectedDuration,
     selectedCategories,
@@ -204,8 +204,8 @@ export function ExploreShell() {
   }, [locations]);
 
   // Use pre-computed filter metadata from server (instant, no client-side processing)
-  const cityOptions = useMemo(() => {
-    return filterMetadata?.cities || [];
+  const prefectureOptions = useMemo(() => {
+    return filterMetadata?.prefectures || [];
   }, [filterMetadata]);
 
   const categoryOptions = useMemo(() => {
@@ -240,11 +240,12 @@ export function ExploreShell() {
         !normalizedQuery ||
         location.name.toLowerCase().includes(normalizedQuery) ||
         location.city.toLowerCase().includes(normalizedQuery) ||
+        location.prefecture?.toLowerCase().includes(normalizedQuery) ||
         location.region.toLowerCase().includes(normalizedQuery) ||
         location.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery));
 
-      const matchesCity = selectedCity
-        ? location.city === selectedCity
+      const matchesPrefecture = selectedPrefecture
+        ? location.prefecture === selectedPrefecture
         : true;
 
       const matchesBudget = budgetFilter
@@ -265,14 +266,14 @@ export function ExploreShell() {
 
       return (
         matchesQuery &&
-        matchesCity &&
+        matchesPrefecture &&
         matchesBudget &&
         matchesDuration &&
         matchesCategory &&
         matchesTag
       );
     });
-  }, [enhancedLocations, query, selectedCity, selectedBudget, selectedDuration, selectedCategories, selectedTag]);
+  }, [enhancedLocations, query, selectedPrefecture, selectedBudget, selectedDuration, selectedCategories, selectedTag]);
 
   const sortedLocations = useMemo(() => {
     if (selectedSort === "popular") {
@@ -297,7 +298,7 @@ export function ExploreShell() {
 
   // Count active non-category filters
   const activeFilterCount = [
-    selectedCity,
+    selectedPrefecture,
     selectedBudget,
     selectedDuration,
     selectedTag,
@@ -306,7 +307,7 @@ export function ExploreShell() {
 
   const clearAllFilters = () => {
     setQuery("");
-    setSelectedCity(null);
+    setSelectedPrefecture(null);
     setSelectedBudget(null);
     setSelectedDuration(null);
     setSelectedTag(null);
@@ -431,9 +432,9 @@ export function ExploreShell() {
         onClose={() => setIsFiltersModalOpen(false)}
         query={query}
         onQueryChange={setQuery}
-        cityOptions={cityOptions}
-        selectedCity={selectedCity}
-        onCityChange={setSelectedCity}
+        prefectureOptions={prefectureOptions}
+        selectedPrefecture={selectedPrefecture}
+        onPrefectureChange={setSelectedPrefecture}
         budgetOptions={BUDGET_FILTERS.map(({ id, label }) => ({
           value: id,
           label,

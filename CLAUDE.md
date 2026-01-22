@@ -216,10 +216,69 @@ After: Hybrid Progressive (500ms to interactive)
 - See `PERFORMANCE_IMPLEMENTATION.md` for detailed implementation guide
 - All new code has JSDoc comments and inline documentation
 
+### Prefecture-Based Filtering (✅ COMPLETE - Jan 22, 2026)
+
+**Problem:** City-based filtering had 257 options in dropdown, making it unwieldy and difficult to navigate.
+
+**Solution:** Replace city filter with prefecture-based filtering (47 standard Japanese prefectures).
+- Prefecture is the standard administrative division users understand
+- City remains searchable via text input
+- Better UX with manageable number of filter options
+
+**Implementation Status:**
+- ✅ Added `prefecture` field to database column projections
+- ✅ Updated type definitions (`Location`, `FilterMetadata`)
+- ✅ Modified `/api/locations/filter-options` to aggregate prefectures
+- ✅ Updated `/api/locations` to return prefecture in responses
+- ✅ Replaced city filter with prefecture filter in ExploreShell
+- ✅ Updated FiltersModal UI with prefecture dropdown
+- ✅ City remains searchable via search box
+
+**API Changes:**
+- `/api/locations/filter-options` now returns `prefectures` array with counts
+- `/api/locations` includes `prefecture` field in location objects
+- Column projections updated to include `prefecture` in `LOCATION_LISTING_COLUMNS`
+
+**UX Changes:**
+- Filters Modal: "City" section replaced with "Prefecture" section
+- Search box: Updated placeholder to "Search by name, city, or prefecture..."
+- Filter chips: Shows ~47 prefecture options instead of 257 cities
+- City filtering: Still available via text search (no dropdown needed)
+
+**Data Coverage:**
+- ~97% of locations (2,846/2,924) have prefecture data
+- Data includes variations like "Tokyo" and "Tokyo Prefecture"
+- Currently shows 76 unique prefecture values (due to naming inconsistencies)
+- Can be normalized in future for cleaner UX
+
+**Geographic Hierarchy:**
+```
+Region (9 total: Kanto, Kansai, etc.)
+  └─ Prefecture (47 standard prefectures)
+      └─ City (257+ cities)
+```
+
+**Benefits:**
+- More intuitive filtering (prefecture is how people think about Japan)
+- Cleaner UI (47 options vs 257 in dropdown)
+- No data migration needed (prefecture field already exists)
+- Cities still searchable via text input
+- Better mobile experience with fewer filter chips
+
+**Files Modified:**
+- `src/lib/supabase/projections.ts` - Added prefecture to column projections
+- `src/types/filters.ts` - Added prefectures to FilterMetadata
+- `src/types/location.ts` - Added prefecture field to Location type
+- `src/app/api/locations/filter-options/route.ts` - Prefecture aggregation
+- `src/app/api/locations/route.ts` - Prefecture transformation
+- `src/components/features/explore/ExploreShell.tsx` - Prefecture filter logic
+- `src/components/features/explore/FiltersModal.tsx` - Prefecture UI
+
 ### Priority 3: Medium
 
 - [x] **Photo loading optimization** - ✅ Complete (Jan 22, 2026)
 - [x] **Explore page performance overhaul** - ✅ Complete (Jan 22, 2026)
+- [x] **Prefecture-based filtering** - ✅ Complete (Jan 22, 2026)
 - [ ] Add trip sharing feature (PENDING)
 
 ### Not Planned
@@ -263,16 +322,19 @@ After: Hybrid Progressive (500ms to interactive)
 | `src/lib/supabase/projections.ts` | Updated LOCATION_LISTING_COLUMNS to include primary_photo_url |
 | `src/components/features/explore/LocationCard.tsx` | Removed usePrimaryPhoto hook, use location.primaryPhotoUrl |
 | `src/types/location.ts` | Added primaryPhotoUrl field |
-| `src/app/api/locations/filter-options/route.ts` | **NEW** - Filter metadata endpoint |
-| `src/types/filters.ts` | **NEW** - Filter types (FilterOption, TagOption, FilterMetadata) |
+| `src/app/api/locations/filter-options/route.ts` | **NEW** - Filter metadata endpoint, added prefecture aggregation |
+| `src/types/filters.ts` | **NEW** - Filter types (FilterOption, TagOption, FilterMetadata), added prefectures |
 | `src/hooks/useLocationsQuery.ts` | **NEW** - React Query hooks for locations |
 | `src/lib/locationsCache.ts` | Deprecated localStorage functions |
+| `src/types/location.ts` | Added prefecture field |
+| `src/components/features/explore/ExploreShell.tsx` | Prefecture-based filtering logic |
+| `src/components/features/explore/FiltersModal.tsx` | Prefecture UI (replaced city dropdown) |
 | `PERFORMANCE_IMPLEMENTATION.md` | **NEW** - Performance overhaul documentation |
 
 ## New Architecture Components
 
 ### Column Projections (`src/lib/supabase/projections.ts`)
-- `LOCATION_LISTING_COLUMNS` - 11 columns for grids/lists
+- `LOCATION_LISTING_COLUMNS` - 13 columns for grids/lists (includes prefecture)
 - `LOCATION_DETAIL_COLUMNS` - 17 columns for detail views
 - `LOCATION_ITINERARY_COLUMNS` - 17 columns for itinerary generation
 - `LOCATION_PHOTO_COLUMNS` - 8 columns for photo endpoint

@@ -72,6 +72,11 @@ export type Location = {
   name: string;
   region: string;
   city: string;
+  /**
+   * Prefecture (administrative division) where the location is situated.
+   * Used for geographic filtering in the explore page.
+   */
+  prefecture?: string;
   category: string;
   image: string;
   minBudget?: string;

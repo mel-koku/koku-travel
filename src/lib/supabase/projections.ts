@@ -21,6 +21,7 @@ export type LocationDbRow = {
   name: string;
   region: string;
   city: string;
+  prefecture: string | null;
   category: string;
   image: string;
   min_budget: string | null;
@@ -38,7 +39,7 @@ export type LocationDbRow = {
 };
 
 /**
- * Columns needed for location listings/grids (12 columns)
+ * Columns needed for location listings/grids (13 columns)
  * Used by: ExploreShell, LocationGrid, search results
  */
 export const LOCATION_LISTING_COLUMNS = `
@@ -46,6 +47,7 @@ export const LOCATION_LISTING_COLUMNS = `
   name,
   region,
   city,
+  prefecture,
   category,
   image,
   short_description,
@@ -133,6 +135,7 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "name"
   | "region"
   | "city"
+  | "prefecture"
   | "category"
   | "image"
   | "short_description"
