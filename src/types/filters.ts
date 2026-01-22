@@ -27,4 +27,5 @@ export type FilterMetadata = {
   cities: FilterOption[];
   categories: FilterOption[];
   regions: FilterOption[];
+  prefectures: FilterOption[];
 };
