@@ -7,18 +7,19 @@ import type { RoutingRequest, RoutingResult } from "@/lib/routing/types";
  * Provides a clean interface for Mapbox-related operations
  */
 export class MapboxService {
-  private accessToken: string | undefined;
-
-  constructor() {
+  /**
+   * Get Mapbox access token (read lazily to avoid module init order issues)
+   */
+  getAccessToken(): string | undefined {
     // Use public token for client-side, server token for server-side
-    this.accessToken = env.mapboxAccessToken || env.routingMapboxAccessToken;
+    return env.mapboxAccessToken || env.routingMapboxAccessToken;
   }
 
   /**
    * Check if Mapbox is enabled
    */
   isEnabled(): boolean {
-    return Boolean(this.accessToken);
+    return Boolean(this.getAccessToken());
   }
 
   /**
@@ -31,13 +32,6 @@ export class MapboxService {
     }
 
     return requestRoute(request);
-  }
-
-  /**
-   * Get Mapbox access token
-   */
-  getAccessToken(): string | undefined {
-    return this.accessToken;
   }
 }
 
