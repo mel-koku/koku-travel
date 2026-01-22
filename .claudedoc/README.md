@@ -41,6 +41,8 @@ src/
 | `src/hooks/index.ts` | Central hook exports |
 | `src/data/categoryHierarchy.ts` | Category/sub-type definitions for filtering |
 | `src/lib/locations/locationService.ts` | Server-side location fetching |
+| `src/data/cityInterests.json` | Pre-computed city-interest mapping (837 cities) |
+| `src/lib/tripBuilder/cityRelevance.ts` | City relevance calculation utilities |
 
 ## Current Stats
 
