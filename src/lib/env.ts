@@ -1,5 +1,8 @@
 import { logger } from "./logger";
 
+// DEBUG: Log Mapbox token status at build time (remove after debugging)
+console.log("[ENV DEBUG] NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:", process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ? `present (${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN.substring(0, 10)}...)` : "MISSING");
+
 /**
  * Environment variable validation and type-safe access
  * Validates all required environment variables at module load time
@@ -19,6 +22,7 @@ type EnvConfig = {
   // Routing (Optional)
   ROUTING_PROVIDER?: string;
   ROUTING_MAPBOX_ACCESS_TOKEN?: string;
+  NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN?: string;
 
   // Rate Limiting - Upstash Redis
   UPSTASH_REDIS_REST_URL?: string;
@@ -83,6 +87,7 @@ function createLenientConfig(): EnvConfig {
     GOOGLE_DIRECTIONS_API_KEY: process.env.GOOGLE_DIRECTIONS_API_KEY,
     ROUTING_PROVIDER: process.env.ROUTING_PROVIDER,
     ROUTING_MAPBOX_ACCESS_TOKEN: process.env.ROUTING_MAPBOX_ACCESS_TOKEN,
+    NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
@@ -127,6 +132,7 @@ function validateEnv(): EnvConfig {
     GOOGLE_DIRECTIONS_API_KEY: getOptionalEnv("GOOGLE_DIRECTIONS_API_KEY"),
     ROUTING_PROVIDER: getOptionalEnv("ROUTING_PROVIDER"),
     ROUTING_MAPBOX_ACCESS_TOKEN: getOptionalEnv("ROUTING_MAPBOX_ACCESS_TOKEN"),
+    NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN,
     UPSTASH_REDIS_REST_URL: getOptionalEnv("UPSTASH_REDIS_REST_URL"),
     UPSTASH_REDIS_REST_TOKEN: getOptionalEnv("UPSTASH_REDIS_REST_TOKEN"),
     NEXT_PUBLIC_SITE_URL: getOptionalEnv("NEXT_PUBLIC_SITE_URL"),
@@ -167,6 +173,9 @@ export const env = {
   },
   get routingMapboxAccessToken() {
     return envConfig.ROUTING_MAPBOX_ACCESS_TOKEN;
+  },
+  get mapboxAccessToken() {
+    return envConfig.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
   },
   get googlePlacesApiKey() {
     return envConfig.GOOGLE_PLACES_API_KEY;
