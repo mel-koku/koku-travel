@@ -1,14 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import type { RefObject } from "react";
+import { memo, useRef } from "react";
 
 import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
-import { useLocationEditorialSummary, useLocationDisplayName, cacheLocationDetails, getCachedLocationDetails } from "@/state/locationDetailsStore";
+import { useLocationEditorialSummary, useLocationDisplayName } from "@/state/locationDetailsStore";
 import type { Location } from "@/types/location";
-import { logger } from "@/lib/logger";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 
 type LocationCardProps = {
@@ -27,9 +25,8 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
   const rating = getLocationRating(location);
   const reviewCount = getLocationReviewCount(location);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
-  const isVisible = useInViewport(buttonRef);
-  const primaryPhotoUrl = usePrimaryPhoto(location.id, isVisible);
-  const imageSrc = primaryPhotoUrl ?? location.image;
+  // Use primary photo URL from database if available, otherwise fall back to image field
+  const imageSrc = location.primaryPhotoUrl ?? location.image;
 
   return (
     <article className="group relative text-gray-900">
@@ -216,187 +213,6 @@ function StarIcon() {
       <path d="m12 17.27 5.18 3.11-1.64-5.81L20.9 9.9l-6-0.52L12 4 9.1 9.38l-6 .52 5.36 4.67L6.82 20.38 12 17.27z" />
     </svg>
   );
-}
-
-type PrimaryPhotoSuccessResponse = {
-  placeId: string;
-  fetchedAt: string;
-  photo: {
-    proxyUrl?: string;
-  } | null;
-  displayName: string | null;
-  editorialSummary: string | null;
-};
-
-type PrimaryPhotoErrorResponse = {
-  error?: string;
-};
-
-type PhotoStoreEntry = {
-  status: "loaded";
-  url: string | null;
-};
-
-const photoStore = new Map<string, PhotoStoreEntry>();
-const photoPromises = new Map<string, Promise<void>>();
-const photoListeners = new Map<string, Set<() => void>>();
-let hasLoggedPrimaryPhotoError = false;
-
-function usePrimaryPhoto(locationId: string, shouldLoad: boolean): string | null {
-  const photoUrl = useSyncExternalStore(
-    (listener) => subscribeToPhoto(locationId, listener),
-    () => getPhotoSnapshot(locationId),
-    () => null,
-  );
-
-  useEffect(() => {
-    if (!shouldLoad) {
-      return;
-    }
-
-    ensurePrimaryPhoto(locationId);
-  }, [locationId, shouldLoad]);
-
-  return photoUrl ?? null;
-}
-
-function getPhotoSnapshot(locationId: string): string | null {
-  const entry = photoStore.get(locationId);
-  return entry?.url ?? null;
-}
-
-function subscribeToPhoto(locationId: string, listener: () => void): () => void {
-  let listeners = photoListeners.get(locationId);
-  if (!listeners) {
-    listeners = new Set();
-    photoListeners.set(locationId, listeners);
-  }
-  listeners.add(listener);
-  return () => {
-    listeners?.delete(listener);
-    if (listeners && listeners.size === 0) {
-      photoListeners.delete(locationId);
-    }
-  };
-}
-
-function notifyPhotoListeners(locationId: string) {
-  const listeners = photoListeners.get(locationId);
-  if (!listeners) {
-    return;
-  }
-  listeners.forEach((listener) => listener());
-}
-
-function ensurePrimaryPhoto(locationId: string) {
-  if (photoStore.get(locationId)?.status === "loaded") {
-    return;
-  }
-
-  if (photoPromises.has(locationId)) {
-    return;
-  }
-
-  const promise = requestPrimaryPhoto(locationId)
-    .then((url) => {
-      photoStore.set(locationId, { status: "loaded", url });
-      notifyPhotoListeners(locationId);
-    })
-    .catch((error) => {
-      photoStore.set(locationId, { status: "loaded", url: null });
-      notifyPhotoListeners(locationId);
-      if (process.env.NODE_ENV !== "production" && !hasLoggedPrimaryPhotoError) {
-        logger.debug(`Unable to load Google Places primary photo for ${locationId}`, { error });
-        hasLoggedPrimaryPhotoError = true;
-      }
-    })
-    .finally(() => {
-      photoPromises.delete(locationId);
-    });
-
-  photoPromises.set(locationId, promise);
-}
-
-async function requestPrimaryPhoto(locationId: string): Promise<string | null> {
-  const response = await fetch(`/api/locations/${locationId}/primary-photo`);
-
-  if (response.status === 404) {
-    return null;
-  }
-
-  if (!response.ok) {
-    let message = `Failed to load primary photo for location "${locationId}".`;
-    try {
-      const payload = (await response.json()) as PrimaryPhotoErrorResponse;
-      if (payload?.error) {
-        message = payload.error;
-      }
-    } catch {
-      // Ignore JSON parsing issues on error responses.
-    }
-    throw new Error(message);
-  }
-
-  const payload = (await response.json()) as PrimaryPhotoSuccessResponse;
-
-  // Cache displayName and editorialSummary from the response
-  if (payload.displayName || payload.editorialSummary) {
-    const existingDetails = getCachedLocationDetails(locationId);
-    cacheLocationDetails(locationId, {
-      placeId: payload.placeId,
-      fetchedAt: payload.fetchedAt,
-      displayName: payload.displayName ?? existingDetails?.displayName,
-      editorialSummary: payload.editorialSummary ?? existingDetails?.editorialSummary,
-      photos: existingDetails?.photos ?? [],
-      reviews: existingDetails?.reviews ?? [],
-    });
-  }
-
-  return payload.photo?.proxyUrl ?? null;
-}
-
-function useInViewport<T extends Element>(ref: RefObject<T | null>): boolean {
-  const [isIntersecting, setIsIntersecting] = useState<boolean>(() => {
-    if (typeof window === "undefined") {
-      return false;
-    }
-    return typeof window.IntersectionObserver === "undefined";
-  });
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const element = ref.current;
-    if (!element) {
-      return;
-    }
-
-    if (typeof window.IntersectionObserver === "undefined") {
-      return;
-    }
-
-    const observer = new window.IntersectionObserver(
-      (entries, obs) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setIsIntersecting(true);
-            obs.unobserve(entry.target);
-          }
-        }
-      },
-      { rootMargin: "120px" },
-    );
-
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [ref]);
-
-  return isIntersecting;
 }
 
 

@@ -120,6 +120,11 @@ export type Location = {
    */
   placeId?: string;
   /**
+   * Optional primary photo URL from Google Places API.
+   * Stored in database to eliminate N+1 query problem.
+   */
+  primaryPhotoUrl?: string;
+  /**
    * Accessibility information for the location
    */
   accessibility?: {

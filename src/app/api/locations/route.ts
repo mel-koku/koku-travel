@@ -132,6 +132,7 @@ export async function GET(request: NextRequest) {
         rating: row.rating ?? undefined,
         reviewCount: row.review_count ?? undefined,
         placeId: row.place_id ?? undefined,
+        primaryPhotoUrl: row.primary_photo_url ?? undefined,
       }));
 
     // Create paginated response

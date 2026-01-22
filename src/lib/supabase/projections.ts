@@ -34,10 +34,11 @@ export type LocationDbRow = {
   rating: number | null;
   review_count: number | null;
   place_id: string | null;
+  primary_photo_url: string | null;
 };
 
 /**
- * Columns needed for location listings/grids (11 columns)
+ * Columns needed for location listings/grids (12 columns)
  * Used by: ExploreShell, LocationGrid, search results
  */
 export const LOCATION_LISTING_COLUMNS = `
@@ -52,7 +53,8 @@ export const LOCATION_LISTING_COLUMNS = `
   review_count,
   estimated_duration,
   min_budget,
-  place_id
+  place_id,
+  primary_photo_url
 `.replace(/\s+/g, "");
 
 /**
@@ -139,4 +141,5 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "estimated_duration"
   | "min_budget"
   | "place_id"
+  | "primary_photo_url"
 >;

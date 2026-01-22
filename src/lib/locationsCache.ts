@@ -20,6 +20,8 @@ type CachedLocations = {
 /**
  * Gets cached locations from localStorage if available and not expired.
  * Returns null if cache doesn't exist or is expired.
+ *
+ * @deprecated Use React Query (useAggregatedLocations hook) instead - will be removed in v2.0
  */
 export function getCachedLocations(): Location[] | null {
   try {
@@ -53,6 +55,8 @@ export function getCachedLocations(): Location[] | null {
 /**
  * Gets cached locations even if stale (for stale-while-revalidate pattern).
  * Returns null only if cache doesn't exist or version mismatch.
+ *
+ * @deprecated Use React Query (useAggregatedLocations hook) instead - will be removed in v2.0
  */
 export function getCachedLocationsIncludingStale(): Location[] | null {
   try {
@@ -76,6 +80,8 @@ export function getCachedLocationsIncludingStale(): Location[] | null {
 
 /**
  * Checks if cached locations are stale (older than STALE_AGE but not expired).
+ *
+ * @deprecated Use React Query (useAggregatedLocations hook) instead - will be removed in v2.0
  */
 export function isCacheStale(): boolean {
   try {
@@ -94,6 +100,8 @@ export function isCacheStale(): boolean {
 
 /**
  * Saves locations to localStorage cache with current timestamp.
+ *
+ * @deprecated Use React Query (useAggregatedLocations hook) instead - will be removed in v2.0
  */
 export function setCachedLocations(locations: Location[]): void {
   try {
@@ -111,6 +119,8 @@ export function setCachedLocations(locations: Location[]): void {
 
 /**
  * Clears the locations cache.
+ *
+ * @deprecated Use React Query (useQueryClient().clear()) instead - will be removed in v2.0
  */
 export function clearLocationsCache(): void {
   try {
