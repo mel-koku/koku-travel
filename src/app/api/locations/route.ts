@@ -124,6 +124,7 @@ export async function GET(request: NextRequest) {
         name: row.name,
         region: row.region,
         city: row.city,
+        prefecture: row.prefecture ?? undefined,
         category: row.category,
         image: row.image,
         minBudget: row.min_budget ?? undefined,

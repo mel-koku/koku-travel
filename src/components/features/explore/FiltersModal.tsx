@@ -9,10 +9,10 @@ type FiltersModalProps = {
   // Search
   query: string;
   onQueryChange: (value: string) => void;
-  // City filter
-  cityOptions: readonly { value: string; label: string }[];
-  selectedCity: string | null;
-  onCityChange: (city: string | null) => void;
+  // Prefecture filter
+  prefectureOptions: readonly { value: string; label: string }[];
+  selectedPrefecture: string | null;
+  onPrefectureChange: (prefecture: string | null) => void;
   // Budget filter
   budgetOptions: readonly { value: string; label: string }[];
   selectedBudget: string | null;
@@ -36,9 +36,9 @@ export function FiltersModal({
   onClose,
   query,
   onQueryChange,
-  cityOptions,
-  selectedCity,
-  onCityChange,
+  prefectureOptions,
+  selectedPrefecture,
+  onPrefectureChange,
   budgetOptions,
   selectedBudget,
   onBudgetChange,
@@ -77,7 +77,7 @@ export function FiltersModal({
 
   if (!isOpen) return null;
 
-  const hasActiveFilters = query || selectedCity || selectedBudget || selectedDuration || selectedTag;
+  const hasActiveFilters = query || selectedPrefecture || selectedBudget || selectedDuration || selectedTag;
 
   return (
     <div
@@ -127,7 +127,7 @@ export function FiltersModal({
                 type="text"
                 value={query}
                 onChange={(e) => onQueryChange(e.target.value)}
-                placeholder="Search destinations..."
+                placeholder="Search by name, city, or prefecture..."
                 className="w-full rounded-xl border border-gray-300 bg-white py-3 pl-12 pr-4 text-base placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
               />
               {query && (
@@ -144,21 +144,21 @@ export function FiltersModal({
             </div>
           </div>
 
-          {/* City */}
+          {/* Prefecture */}
           <div>
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">City</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">Prefecture</h3>
             <div className="flex flex-wrap gap-2">
               <FilterChip
-                label="All cities"
-                isSelected={!selectedCity}
-                onClick={() => onCityChange(null)}
+                label="All prefectures"
+                isSelected={!selectedPrefecture}
+                onClick={() => onPrefectureChange(null)}
               />
-              {cityOptions.slice(0, 12).map((option) => (
+              {prefectureOptions.slice(0, 12).map((option) => (
                 <FilterChip
                   key={option.value}
                   label={option.label}
-                  isSelected={selectedCity === option.value}
-                  onClick={() => onCityChange(selectedCity === option.value ? null : option.value)}
+                  isSelected={selectedPrefecture === option.value}
+                  onClick={() => onPrefectureChange(selectedPrefecture === option.value ? null : option.value)}
                 />
               ))}
             </div>
