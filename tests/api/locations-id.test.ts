@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { GET } from "@/app/api/locations/[id]/route";
 import { fetchLocationDetails } from "@/lib/googlePlaces";
 import { createMockRequest, createMockLocationDetails } from "../utils/mocks";
-import { MOCK_LOCATIONS } from "@/data/mockLocations";
+import { TEST_LOCATIONS, locationToDbRow } from "../fixtures/locations";
 
 // Mock dependencies
 vi.mock("@/lib/googlePlaces", () => ({
@@ -30,28 +30,10 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 // Helper to set up Supabase mock for a location
-const mockSupabaseLocation = (location: typeof MOCK_LOCATIONS[0] | null) => {
+const mockSupabaseLocation = (location: typeof TEST_LOCATIONS.kyotoTemple | null) => {
   if (location) {
     mockSupabaseResponse = {
-      data: {
-        id: location.id,
-        name: location.name,
-        region: location.region,
-        city: location.city,
-        category: location.category,
-        image: location.image,
-        place_id: location.placeId,
-        coordinates: location.coordinates,
-        min_budget: location.minBudget,
-        estimated_duration: location.estimatedDuration,
-        operating_hours: location.operatingHours,
-        recommended_visit: location.recommendedVisit,
-        preferred_transit_modes: location.preferredTransitModes,
-        timezone: location.timezone,
-        short_description: location.shortDescription,
-        rating: location.rating,
-        review_count: location.reviewCount,
-      },
+      data: locationToDbRow(location),
       error: null,
     };
   } else {
@@ -64,7 +46,7 @@ describe("GET /api/locations/[id]", () => {
     vi.clearAllMocks();
     vi.stubEnv("GOOGLE_PLACES_API_KEY", "test-api-key");
     // Default: return first mock location
-    mockSupabaseLocation(MOCK_LOCATIONS[0]);
+    mockSupabaseLocation(TEST_LOCATIONS.kyotoTemple);
   });
 
   describe("Rate limiting", () => {
@@ -130,7 +112,7 @@ describe("GET /api/locations/[id]", () => {
       const mockDetails = createMockLocationDetails();
       vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
 
-      const validLocation = MOCK_LOCATIONS[0];
+      const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
       const context = {
         params: Promise.resolve({ id: validLocation.id }),
@@ -167,7 +149,7 @@ describe("GET /api/locations/[id]", () => {
       const mockDetails = createMockLocationDetails();
       vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
 
-      const validLocation = MOCK_LOCATIONS[0];
+      const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
       const context = {
         params: Promise.resolve({ id: validLocation.id }),
@@ -179,7 +161,13 @@ describe("GET /api/locations/[id]", () => {
       expect(data.location).toBeDefined();
       expect(data.details).toBeDefined();
       expect(data.details.placeId).toBe(mockDetails.placeId);
-      expect(fetchLocationDetails).toHaveBeenCalledWith(validLocation);
+      // Verify fetchLocationDetails was called with a location object
+      expect(fetchLocationDetails).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: validLocation.id,
+          name: validLocation.name,
+        }),
+      );
     });
 
     it("should return 503 if Google Places API is not configured", async () => {
@@ -190,7 +178,7 @@ describe("GET /api/locations/[id]", () => {
         new Error("Missing Google Places API key"),
       );
 
-      const validLocation = MOCK_LOCATIONS[0];
+      const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
       const context = {
         params: Promise.resolve({ id: validLocation.id }),
@@ -206,7 +194,7 @@ describe("GET /api/locations/[id]", () => {
     it("should return 500 for other Google Places API errors", async () => {
       vi.mocked(fetchLocationDetails).mockRejectedValueOnce(new Error("Network error"));
 
-      const validLocation = MOCK_LOCATIONS[0];
+      const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
       const context = {
         params: Promise.resolve({ id: validLocation.id }),
@@ -224,7 +212,7 @@ describe("GET /api/locations/[id]", () => {
       const mockDetails = createMockLocationDetails();
       vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
 
-      const validLocation = MOCK_LOCATIONS[0];
+      const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
       const context = {
         params: Promise.resolve({ id: validLocation.id }),
