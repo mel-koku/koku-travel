@@ -8,6 +8,7 @@ import { CACHE_TTL_30_DAYS, CACHE_TTL_6_HOURS, TIMEOUT_10_SECONDS } from "@/lib/
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 const SEARCH_FIELD_MASK = ["places.id", "places.displayName", "places.formattedAddress"].join(",");
 const DETAILS_FIELD_MASK = [
+  // Basic info
   "id",
   "displayName",
   "formattedAddress",
@@ -19,17 +20,62 @@ const DETAILS_FIELD_MASK = [
   "websiteUri",
   "internationalPhoneNumber",
   "googleMapsUri",
+  // Opening hours
   "regularOpeningHours.weekdayDescriptions",
   "currentOpeningHours.weekdayDescriptions",
+  // Reviews
   "reviews.authorAttribution",
   "reviews.rating",
   "reviews.relativePublishTimeDescription",
   "reviews.publishTime",
   "reviews.text",
+  // Photos
   "photos.name",
   "photos.widthPx",
   "photos.heightPx",
   "photos.authorAttributions",
+  // NEW: Categorization (for enrichment)
+  "primaryType",
+  "types",
+  // NEW: Status & Price
+  "businessStatus",
+  "priceLevel",
+  // NEW: Accessibility options
+  "accessibilityOptions",
+  // NEW: Restaurant/food service options
+  "servesVegetarianFood",
+  "servesBeer",
+  "servesWine",
+  "dineIn",
+  "takeout",
+  "delivery",
+  "servesBreakfast",
+  "servesBrunch",
+  "servesLunch",
+  "servesDinner",
+].join(",");
+
+/**
+ * Field mask for enrichment script (subset of fields we want to store)
+ * Used by scripts/enrich-google-places-full.ts
+ */
+export const ENRICHMENT_FIELD_MASK = [
+  "id",
+  "primaryType",
+  "types",
+  "businessStatus",
+  "priceLevel",
+  "accessibilityOptions",
+  "servesVegetarianFood",
+  "servesBeer",
+  "servesWine",
+  "dineIn",
+  "takeout",
+  "delivery",
+  "servesBreakfast",
+  "servesBrunch",
+  "servesLunch",
+  "servesDinner",
 ].join(",");
 
 const MAX_REVIEWS = 5;
