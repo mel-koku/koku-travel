@@ -66,6 +66,11 @@ export async function GET(request: NextRequest) {
     const regionMap = new Map<string, number>();
     const prefectureMap = new Map<string, number>();
 
+    // Helper to normalize prefecture names (remove " Prefecture" suffix)
+    const normalizePrefecture = (name: string): string => {
+      return name.replace(/\s+Prefecture$/i, '').trim();
+    };
+
     for (const location of data || []) {
       if (location.city) {
         cityMap.set(location.city, (cityMap.get(location.city) || 0) + 1);
@@ -77,7 +82,9 @@ export async function GET(request: NextRequest) {
         regionMap.set(location.region, (regionMap.get(location.region) || 0) + 1);
       }
       if (location.prefecture) {
-        prefectureMap.set(location.prefecture, (prefectureMap.get(location.prefecture) || 0) + 1);
+        // Normalize prefecture name to remove " Prefecture" suffix
+        const normalized = normalizePrefecture(location.prefecture);
+        prefectureMap.set(normalized, (prefectureMap.get(normalized) || 0) + 1);
       }
     }
 
