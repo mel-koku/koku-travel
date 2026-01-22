@@ -63,15 +63,7 @@ export function CityMap({ onCitySelect, minRelevance = 0 }: CityMapProps) {
   const isAnimatingRef = useRef(false);
 
   const mapboxEnabled = useMemo(
-    () => {
-      const flagEnabled = featureFlags.enableMapbox;
-      const serviceEnabled = mapboxService.isEnabled();
-      const token = mapboxService.getAccessToken();
-      console.log("[CityMap DEBUG] featureFlags.enableMapbox:", flagEnabled);
-      console.log("[CityMap DEBUG] mapboxService.isEnabled():", serviceEnabled);
-      console.log("[CityMap DEBUG] token present:", !!token, token ? `(${token.substring(0, 10)}...)` : "");
-      return flagEnabled && serviceEnabled;
-    },
+    () => featureFlags.enableMapbox && mapboxService.isEnabled(),
     []
   );
 
