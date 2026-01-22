@@ -1,8 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Location } from "@/types/location";
+import { ActiveFilter } from "@/types/filters";
+import { locationMatchesSubTypes, getCategoryById, getSubTypeById } from "@/data/categoryHierarchy";
 
 const FiltersModal = dynamic(
   () => import("./FiltersModal").then((m) => ({ default: m.FiltersModal })),
@@ -10,9 +12,10 @@ const FiltersModal = dynamic(
 );
 import { LocationGrid } from "./LocationGrid";
 import { StickyExploreHeader } from "./StickyExploreHeader";
+import { ActiveFilterChips } from "./ActiveFilterChips";
 import { useAggregatedLocations, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 
-const BUDGET_FILTERS = [
+const ENTRY_FEE_FILTERS = [
   {
     id: "free",
     label: "Free",
@@ -41,7 +44,7 @@ const DURATION_FILTERS = [
   {
     id: "short",
     label: "Under 1 hour",
-    predicate: (value: number | null) => value !== null && value < 60,
+    predicate: (value: number | null) => value !== null && value <= 60,
   },
   {
     id: "medium",
@@ -62,7 +65,6 @@ type SortOptionId = "relevance" | "popular";
 type EnhancedLocation = Location & {
   budgetValue: number | null;
   durationMinutes: number | null;
-  tags: string[];
   ratingValue: number | null;
 };
 
@@ -97,63 +99,6 @@ function parseDuration(value?: string): number | null {
   return null;
 }
 
-const TAG_KEYWORDS: { pattern: RegExp; tag: string }[] = [
-  { pattern: /shrine|torii|inari/, tag: "shrine" },
-  { pattern: /temple|dera|ji\b/, tag: "temple" },
-  { pattern: /market|shopping|arcade|street/, tag: "market" },
-  { pattern: /park|garden|grove|valley|river|bamboo/, tag: "park" },
-  { pattern: /museum/, tag: "museum" },
-  { pattern: /theatre|theater|kabuki|concert|hall|studio/, tag: "performing arts" },
-  { pattern: /tower|observatory|sky|view|scenic/, tag: "viewpoint" },
-  { pattern: /coffee|cafe/, tag: "coffee" },
-  { pattern: /ramen|yakitori|sushi|restaurant|dining|curry/, tag: "restaurant" },
-  { pattern: /sake|bar/, tag: "bar" },
-  { pattern: /railway|railroad|train/, tag: "experience" },
-  { pattern: /kimono|salon|spa|beauty/, tag: "wellness" },
-  { pattern: /disney|universal|theme/, tag: "theme park" },
-  { pattern: /aquarium/, tag: "aquarium" },
-  { pattern: /bamboo/, tag: "bamboo" },
-  { pattern: /anime|manga/, tag: "pop culture" },
-];
-
-function deriveTags(location: Location): string[] {
-  const tags = new Set<string>();
-  const name = location.name.toLowerCase();
-  const category = location.category.toLowerCase();
-
-  if (category === "culture") {
-    tags.add("culture");
-  } else if (category === "food") {
-    tags.add("food & drink");
-  } else if (category === "nature") {
-    tags.add("outdoors");
-  } else if (category === "shopping") {
-    tags.add("shopping");
-  } else if (category === "view") {
-    tags.add("viewpoint");
-  }
-
-  for (const { pattern, tag } of TAG_KEYWORDS) {
-    if (pattern.test(name)) {
-      tags.add(tag);
-    }
-  }
-
-  // Ensure category-specific base tags exist
-  if (tags.size === 0) {
-    tags.add(category);
-  }
-
-  return Array.from(tags);
-}
-
-function toTitleCase(value: string): string {
-  return value
-    .split(" ")
-    .map((piece) => piece.charAt(0).toUpperCase() + piece.slice(1))
-    .join(" ");
-}
-
 export function ExploreShell() {
   // Use React Query hooks for data fetching
   const {
@@ -169,13 +114,16 @@ export function ExploreShell() {
 
   const [query, setQuery] = useState("");
   const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null);
-  const [selectedBudget, setSelectedBudget] = useState<string | null>(null);
+  const [selectedEntryFee, setSelectedEntryFee] = useState<string | null>(null);
+  const [selectedPriceLevel, setSelectedPriceLevel] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>([]);
+  const [wheelchairAccessible, setWheelchairAccessible] = useState(false);
+  const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
+  const [hideClosedLocations, setHideClosedLocations] = useState(false);
   const [page, setPage] = useState(1);
-  const [selectedSort] =
-    useState<SortOptionId>("relevance");
+  const [selectedSort] = useState<SortOptionId>("relevance");
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
 
   useEffect(() => {
@@ -183,10 +131,14 @@ export function ExploreShell() {
   }, [
     query,
     selectedPrefecture,
-    selectedBudget,
+    selectedEntryFee,
+    selectedPriceLevel,
     selectedDuration,
     selectedCategories,
-    selectedTag,
+    selectedSubTypes,
+    wheelchairAccessible,
+    vegetarianFriendly,
+    hideClosedLocations,
     selectedSort,
   ]);
 
@@ -195,7 +147,6 @@ export function ExploreShell() {
       ...location,
       budgetValue: parseBudget(location.minBudget),
       durationMinutes: parseDuration(location.estimatedDuration),
-      tags: deriveTags(location),
       ratingValue:
         typeof location.rating === "number" && Number.isFinite(location.rating)
           ? location.rating
@@ -208,29 +159,10 @@ export function ExploreShell() {
     return filterMetadata?.prefectures || [];
   }, [filterMetadata]);
 
-  const categoryOptions = useMemo(() => {
-    // Convert to title case for display
-    return (filterMetadata?.categories || []).map((cat) => ({
-      value: cat.value,
-      label: toTitleCase(cat.label),
-      count: cat.count,
-    }));
-  }, [filterMetadata]);
-
-  const tagOptions = useMemo(() => {
-    const unique = new Set<string>();
-    enhancedLocations.forEach((location) => {
-      location.tags.forEach((tag) => unique.add(tag));
-    });
-    return Array.from(unique)
-      .sort((a, b) => a.localeCompare(b))
-      .map((tag) => ({ value: tag, label: toTitleCase(tag) }));
-  }, [enhancedLocations]);
-
   const filteredLocations = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    const budgetFilter = selectedBudget
-      ? BUDGET_FILTERS.find((filter) => filter.id === selectedBudget) ?? null
+    const entryFeeFilter = selectedEntryFee
+      ? ENTRY_FEE_FILTERS.find((filter) => filter.id === selectedEntryFee) ?? null
       : null;
     const durationFilter = selectedDuration
       ? DURATION_FILTERS.find((filter) => filter.id === selectedDuration) ?? null
@@ -248,16 +180,20 @@ export function ExploreShell() {
         location.name.toLowerCase().includes(normalizedQuery) ||
         location.city.toLowerCase().includes(normalizedQuery) ||
         location.prefecture?.toLowerCase().includes(normalizedQuery) ||
-        location.region.toLowerCase().includes(normalizedQuery) ||
-        location.tags.some((tag) => tag.toLowerCase().includes(normalizedQuery));
+        location.region.toLowerCase().includes(normalizedQuery);
 
       const matchesPrefecture = selectedPrefecture
         ? normalizePrefecture(location.prefecture) === selectedPrefecture
         : true;
 
-      const matchesBudget = budgetFilter
-        ? budgetFilter.predicate(location.budgetValue)
+      const matchesEntryFee = entryFeeFilter
+        ? entryFeeFilter.predicate(location.budgetValue)
         : true;
+
+      // Price level filter (Google Places based)
+      const matchesPriceLevel = selectedPriceLevel === null
+        ? true
+        : location.priceLevel === selectedPriceLevel;
 
       const matchesDuration = durationFilter
         ? durationFilter.predicate(location.durationMinutes)
@@ -267,20 +203,40 @@ export function ExploreShell() {
         ? true
         : selectedCategories.includes(location.category);
 
-      const matchesTag = selectedTag
-        ? location.tags.includes(selectedTag)
-        : true;
+      // Sub-type matching using the helper from categoryHierarchy
+      const matchesSubType = selectedSubTypes.length === 0
+        ? true
+        : locationMatchesSubTypes(location, selectedSubTypes);
+
+      // Wheelchair accessible filter
+      const matchesWheelchair = !wheelchairAccessible
+        ? true
+        : location.accessibilityOptions?.wheelchairAccessibleEntrance === true;
+
+      // Vegetarian friendly filter
+      const matchesVegetarian = !vegetarianFriendly
+        ? true
+        : location.dietaryOptions?.servesVegetarianFood === true;
+
+      // Hide closed locations filter
+      const matchesStatus = !hideClosedLocations
+        ? true
+        : location.businessStatus !== 'PERMANENTLY_CLOSED';
 
       return (
         matchesQuery &&
         matchesPrefecture &&
-        matchesBudget &&
+        matchesEntryFee &&
+        matchesPriceLevel &&
         matchesDuration &&
         matchesCategory &&
-        matchesTag
+        matchesSubType &&
+        matchesWheelchair &&
+        matchesVegetarian &&
+        matchesStatus
       );
     });
-  }, [enhancedLocations, query, selectedPrefecture, selectedBudget, selectedDuration, selectedCategories, selectedTag]);
+  }, [enhancedLocations, query, selectedPrefecture, selectedEntryFee, selectedPriceLevel, selectedDuration, selectedCategories, selectedSubTypes, wheelchairAccessible, vegetarianFriendly, hideClosedLocations]);
 
   const sortedLocations = useMemo(() => {
     if (selectedSort === "popular") {
@@ -303,22 +259,166 @@ export function ExploreShell() {
 
   const hasMore = visibleLocations.length < sortedLocations.length;
 
-  // Count active non-category filters
-  const activeFilterCount = [
-    selectedPrefecture,
-    selectedBudget,
-    selectedDuration,
-    selectedTag,
-    query,
-  ].filter(Boolean).length;
+  // Build active filters list for chips
+  const activeFilters = useMemo<ActiveFilter[]>(() => {
+    const filters: ActiveFilter[] = [];
 
-  const clearAllFilters = () => {
+    if (query) {
+      filters.push({ type: "search", value: query, label: `"${query}"` });
+    }
+
+    if (selectedPrefecture) {
+      const prefOption = prefectureOptions.find((p) => p.value === selectedPrefecture);
+      filters.push({
+        type: "prefecture",
+        value: selectedPrefecture,
+        label: prefOption?.label || selectedPrefecture,
+      });
+    }
+
+    for (const categoryId of selectedCategories) {
+      const category = getCategoryById(categoryId);
+      if (category) {
+        filters.push({
+          type: "category",
+          value: categoryId,
+          label: category.label,
+        });
+      }
+    }
+
+    for (const subTypeId of selectedSubTypes) {
+      const subType = getSubTypeById(subTypeId);
+      if (subType) {
+        filters.push({
+          type: "subType",
+          value: subTypeId,
+          label: subType.label,
+        });
+      }
+    }
+
+    if (selectedDuration) {
+      const durOption = DURATION_FILTERS.find((d) => d.id === selectedDuration);
+      if (durOption) {
+        filters.push({
+          type: "duration",
+          value: selectedDuration,
+          label: durOption.label,
+        });
+      }
+    }
+
+    if (selectedEntryFee) {
+      const feeOption = ENTRY_FEE_FILTERS.find((f) => f.id === selectedEntryFee);
+      if (feeOption) {
+        filters.push({
+          type: "entryFee",
+          value: selectedEntryFee,
+          label: feeOption.label,
+        });
+      }
+    }
+
+    if (selectedPriceLevel !== null) {
+      const priceLabels: Record<number, string> = { 1: "$", 2: "$$", 3: "$$$", 4: "$$$$" };
+      filters.push({
+        type: "priceLevel",
+        value: String(selectedPriceLevel),
+        label: priceLabels[selectedPriceLevel] || String(selectedPriceLevel),
+      });
+    }
+
+    if (wheelchairAccessible) {
+      filters.push({
+        type: "wheelchair",
+        value: "true",
+        label: "Wheelchair accessible",
+      });
+    }
+
+    if (vegetarianFriendly) {
+      filters.push({
+        type: "vegetarian",
+        value: "true",
+        label: "Vegetarian friendly",
+      });
+    }
+
+    if (hideClosedLocations) {
+      filters.push({
+        type: "hideClosed",
+        value: "true",
+        label: "Hide closed",
+      });
+    }
+
+    return filters;
+  }, [
+    query,
+    selectedPrefecture,
+    prefectureOptions,
+    selectedCategories,
+    selectedSubTypes,
+    selectedDuration,
+    selectedEntryFee,
+    selectedPriceLevel,
+    wheelchairAccessible,
+    vegetarianFriendly,
+    hideClosedLocations,
+  ]);
+
+  // Count active filters for badge (excluding search)
+  const activeFilterCount = activeFilters.filter((f) => f.type !== "search").length;
+
+  // Remove a specific filter
+  const removeFilter = useCallback((filter: ActiveFilter) => {
+    switch (filter.type) {
+      case "search":
+        setQuery("");
+        break;
+      case "prefecture":
+        setSelectedPrefecture(null);
+        break;
+      case "category":
+        setSelectedCategories((prev) => prev.filter((c) => c !== filter.value));
+        break;
+      case "subType":
+        setSelectedSubTypes((prev) => prev.filter((st) => st !== filter.value));
+        break;
+      case "duration":
+        setSelectedDuration(null);
+        break;
+      case "entryFee":
+        setSelectedEntryFee(null);
+        break;
+      case "priceLevel":
+        setSelectedPriceLevel(null);
+        break;
+      case "wheelchair":
+        setWheelchairAccessible(false);
+        break;
+      case "vegetarian":
+        setVegetarianFriendly(false);
+        break;
+      case "hideClosed":
+        setHideClosedLocations(false);
+        break;
+    }
+  }, []);
+
+  const clearAllFilters = useCallback(() => {
     setQuery("");
     setSelectedPrefecture(null);
-    setSelectedBudget(null);
+    setSelectedEntryFee(null);
+    setSelectedPriceLevel(null);
     setSelectedDuration(null);
-    setSelectedTag(null);
-  };
+    setSelectedCategories([]);
+    setSelectedSubTypes([]);
+    setWheelchairAccessible(false);
+    setVegetarianFriendly(false);
+    setHideClosedLocations(false);
+  }, []);
 
   // Background prefetching: Auto-fetch remaining pages after initial render
   // Throttled to avoid rate limits (500ms between pages)
@@ -334,16 +434,11 @@ export function ExploreShell() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
-        {/* Skeleton category bar */}
-        <div className="sticky top-20 z-40 bg-white border-b border-gray-200">
+        {/* Skeleton header - centered button */}
+        <div className="bg-white">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex gap-8">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="flex flex-col items-center gap-2">
-                  <div className="h-6 w-6 rounded-full bg-gray-200 animate-pulse" />
-                  <div className="h-3 w-12 rounded bg-gray-200 animate-pulse" />
-                </div>
-              ))}
+            <div className="flex items-center justify-center">
+              <div className="h-10 w-40 rounded-full bg-gray-200 animate-pulse" />
             </div>
           </div>
         </div>
@@ -389,27 +484,23 @@ export function ExploreShell() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Sticky Header with Search & Categories */}
+      {/* Sticky Header */}
       <StickyExploreHeader
-        query={query}
-        onQueryChange={setQuery}
-        totalCount={locations.length}
-        categories={categoryOptions}
-        selectedCategories={selectedCategories}
-        onCategoriesChange={setSelectedCategories}
+        resultsCount={filteredLocations.length}
         onFiltersClick={() => setIsFiltersModalOpen(true)}
         activeFilterCount={activeFilterCount}
       />
 
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-        {/* Results count */}
+        {/* Active filter chips */}
         <div className="mb-6">
-          <p className="text-sm text-gray-600">
-            {filteredLocations.length === locations.length
-              ? `${locations.length.toLocaleString()} places to explore`
-              : `${filteredLocations.length.toLocaleString()} of ${locations.length.toLocaleString()} places`}
-          </p>
+          <ActiveFilterChips
+            filters={activeFilters}
+            resultsCount={filteredLocations.length}
+            onRemove={removeFilter}
+            onClearAll={clearAllFilters}
+          />
         </div>
 
         {/* Location Grid */}
@@ -442,25 +533,33 @@ export function ExploreShell() {
         prefectureOptions={prefectureOptions}
         selectedPrefecture={selectedPrefecture}
         onPrefectureChange={setSelectedPrefecture}
-        budgetOptions={BUDGET_FILTERS.map(({ id, label }) => ({
+        selectedCategories={selectedCategories}
+        onCategoriesChange={setSelectedCategories}
+        selectedSubTypes={selectedSubTypes}
+        onSubTypesChange={setSelectedSubTypes}
+        entryFeeOptions={ENTRY_FEE_FILTERS.map(({ id, label }) => ({
           value: id,
           label,
         }))}
-        selectedBudget={selectedBudget}
-        onBudgetChange={setSelectedBudget}
+        selectedEntryFee={selectedEntryFee}
+        onEntryFeeChange={setSelectedEntryFee}
+        selectedPriceLevel={selectedPriceLevel}
+        onPriceLevelChange={setSelectedPriceLevel}
         durationOptions={DURATION_FILTERS.map(({ id, label }) => ({
           value: id,
           label,
         }))}
         selectedDuration={selectedDuration}
         onDurationChange={setSelectedDuration}
-        tagOptions={tagOptions}
-        selectedTag={selectedTag}
-        onTagChange={setSelectedTag}
+        wheelchairAccessible={wheelchairAccessible}
+        onWheelchairAccessibleChange={setWheelchairAccessible}
+        vegetarianFriendly={vegetarianFriendly}
+        onVegetarianFriendlyChange={setVegetarianFriendly}
+        hideClosedLocations={hideClosedLocations}
+        onHideClosedLocationsChange={setHideClosedLocations}
         resultsCount={filteredLocations.length}
         onClearAll={clearAllFilters}
       />
     </div>
   );
 }
-
