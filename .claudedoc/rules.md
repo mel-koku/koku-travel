@@ -14,6 +14,20 @@
 
 5. **Lazy loading modals** - Use dynamic imports for modals: `LocationDetailsModal`, `FiltersModal`, etc.
 
+6. **Lazy env access in services** - Singleton services should read environment variables lazily (in methods), not in constructors. This avoids module initialization order issues where `envConfig` may not be populated yet.
+
+```typescript
+// WRONG - may cache undefined
+constructor() {
+  this.token = env.mapboxAccessToken;
+}
+
+// CORRECT - reads lazily
+getToken() {
+  return env.mapboxAccessToken;
+}
+```
+
 ### Testing
 
 - Run tests: `npm test`
