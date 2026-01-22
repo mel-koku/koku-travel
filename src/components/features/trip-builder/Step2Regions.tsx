@@ -27,6 +27,9 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
   const [error, setError] = useState<string | null>(null);
   const [expandedRegions, setExpandedRegions] = useState<Set<string>>(new Set());
 
+  // Track retry count for retry logic
+  const [retryCount, setRetryCount] = useState(0);
+
   // Fetch cities from API
   useEffect(() => {
     let cancelled = false;
@@ -62,6 +65,11 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
     return () => {
       cancelled = true;
     };
+  }, [retryCount]); // Re-fetch when retryCount changes
+
+  // Retry handler that preserves user data
+  const handleRetry = useCallback(() => {
+    setRetryCount((prev) => prev + 1);
   }, []);
 
   // City name lookup map
@@ -268,7 +276,7 @@ export function Step2Regions({ formId, onNext, onValidityChange }: Step2RegionsP
         <p className="text-sm font-medium text-red-800">{error}</p>
         <button
           type="button"
-          onClick={() => window.location.reload()}
+          onClick={handleRetry}
           className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
         >
           Retry
