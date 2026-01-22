@@ -36,11 +36,37 @@ export type LocationDbRow = {
   review_count: number | null;
   place_id: string | null;
   primary_photo_url: string | null;
+  // Google Places enrichment fields
+  google_primary_type: string | null;
+  google_types: string[] | null;
+  business_status: string | null;
+  price_level: number | null;
+  accessibility_options: {
+    wheelchairAccessibleEntrance?: boolean;
+    wheelchairAccessibleParking?: boolean;
+    wheelchairAccessibleRestroom?: boolean;
+    wheelchairAccessibleSeating?: boolean;
+  } | null;
+  dietary_options: {
+    servesVegetarianFood?: boolean;
+  } | null;
+  service_options: {
+    dineIn?: boolean;
+    takeout?: boolean;
+    delivery?: boolean;
+  } | null;
+  meal_options: {
+    servesBreakfast?: boolean;
+    servesBrunch?: boolean;
+    servesLunch?: boolean;
+    servesDinner?: boolean;
+  } | null;
 };
 
 /**
- * Columns needed for location listings/grids (13 columns)
+ * Columns needed for location listings/grids (21 columns)
  * Used by: ExploreShell, LocationGrid, search results
+ * Includes Google Places enrichment fields for filtering
  */
 export const LOCATION_LISTING_COLUMNS = `
   id,
@@ -56,7 +82,14 @@ export const LOCATION_LISTING_COLUMNS = `
   estimated_duration,
   min_budget,
   place_id,
-  primary_photo_url
+  primary_photo_url,
+  google_primary_type,
+  google_types,
+  business_status,
+  price_level,
+  accessibility_options,
+  dietary_options,
+  service_options
 `.replace(/\s+/g, "");
 
 /**
@@ -84,8 +117,9 @@ export const LOCATION_DETAIL_COLUMNS = `
 `.replace(/\s+/g, "");
 
 /**
- * Columns needed for itinerary generation (13 columns)
+ * Columns needed for itinerary generation (21 columns)
  * Used by: itineraryGenerator, itineraryEngine, /api/itinerary/refine
+ * Includes Google Places enrichment fields for meal planning and filtering
  */
 export const LOCATION_ITINERARY_COLUMNS = `
   id,
@@ -104,7 +138,11 @@ export const LOCATION_ITINERARY_COLUMNS = `
   short_description,
   rating,
   review_count,
-  min_budget
+  min_budget,
+  google_primary_type,
+  google_types,
+  business_status,
+  meal_options
 `.replace(/\s+/g, "");
 
 /**
@@ -129,6 +167,7 @@ export type LocationPhotoDbRow = Pick<LocationDbRow, "id" | "name" | "place_id" 
 
 /**
  * Subset of LocationDbRow for listing endpoint
+ * Includes Google Places enrichment fields for filtering
  */
 export type LocationListingDbRow = Pick<LocationDbRow,
   | "id"
@@ -145,4 +184,11 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "min_budget"
   | "place_id"
   | "primary_photo_url"
+  | "google_primary_type"
+  | "google_types"
+  | "business_status"
+  | "price_level"
+  | "accessibility_options"
+  | "dietary_options"
+  | "service_options"
 >;

@@ -80,8 +80,14 @@ export interface LocationScore {
 
 /**
  * Category to interest mapping for scoring.
+ *
+ * Maps location categories to user interests for scoring relevance.
+ * Includes both specific categories (shrine, temple, museum) and
+ * generic fallback categories (culture, food, nature) for backwards
+ * compatibility with legacy data.
  */
 const CATEGORY_TO_INTERESTS: Record<string, InterestId[]> = {
+  // Specific categories (preferred)
   shrine: ["culture", "history"],
   temple: ["culture", "history"],
   landmark: ["culture", "photography"],
@@ -95,6 +101,13 @@ const CATEGORY_TO_INTERESTS: Record<string, InterestId[]> = {
   shopping: ["shopping"],
   museum: ["culture", "history"],
   viewpoint: ["photography", "nature"],
+  nature: ["nature", "photography", "wellness"],
+
+  // Generic fallback categories (for legacy data)
+  // These map to broad interests when specific category is unknown
+  culture: ["culture", "history"],
+  food: ["food"],
+  view: ["photography", "nature"],
 };
 
 /**

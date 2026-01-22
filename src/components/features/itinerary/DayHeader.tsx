@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import type { Itinerary, ItineraryDay } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { EntryPoint } from "@/types/trip";
-import { findLocationForActivity } from "@/lib/itineraryLocations";
+import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { logger } from "@/lib/logger";
 import { DayEntryPointEditor } from "./DayEntryPointEditor";
@@ -93,12 +93,20 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
     };
   }, [dayDate, day.dateLabel, dayIndex]);
 
+  // Filter to place activities for location fetching
+  const placeActivities = useMemo(
+    () => (day.activities ?? []).filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place"),
+    [day.activities],
+  );
+
+  // Fetch location data from database
+  const { locationsMap } = useActivityLocations(placeActivities);
+
   // Calculate total duration
   // Uses durationMin (displayed as "Plan for X hours") + travel times
   // Falls back to calculating from schedule times if durationMin is not set
   const totalDuration = useMemo(() => {
-    const activities = day.activities ?? [];
-    if (activities.length === 0) {
+    if (placeActivities.length === 0) {
       return 0;
     }
 
@@ -112,13 +120,6 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
       return hours * 60 + minutes;
     };
 
-    // Filter to place activities only
-    const placeActivities = activities.filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place");
-    
-    if (placeActivities.length === 0) {
-      return 0;
-    }
-
     let totalMinutes = 0;
     let visitDurations = 0;
     let travelTimes = 0;
@@ -130,7 +131,7 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
       // Priority 1: Use durationMin if available (what's shown as "Plan for X hours")
       if (activity.durationMin) {
         activityDuration = activity.durationMin;
-      } 
+      }
       // Priority 2: Calculate from schedule times if available
       else if (activity.schedule?.arrivalTime && activity.schedule?.departureTime) {
         const arrival = parseTimeToMinutes(activity.schedule.arrivalTime);
@@ -144,14 +145,14 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
       }
       // Priority 3: Get duration from location data
       else {
-        const location = findLocationForActivity(activity);
+        const location = locationsMap.get(activity.id);
         if (location) {
           // Check location's recommended visit duration
           if (location.recommendedVisit?.typicalMinutes) {
             activityDuration = location.recommendedVisit.typicalMinutes;
           } else if (location.recommendedVisit?.minMinutes) {
             activityDuration = location.recommendedVisit.minMinutes;
-          } 
+          }
           // Fallback to category default
           else if (location.category) {
             activityDuration = getCategoryDefaultDuration(location.category);
@@ -195,7 +196,7 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
     }
 
     return totalMinutes;
-  }, [day.activities, day.cityTransition]);
+  }, [placeActivities, locationsMap, day.cityTransition]);
 
   // Format duration
   const durationLabel = useMemo(() => {
