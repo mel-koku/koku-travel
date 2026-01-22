@@ -1,0 +1,7516 @@
+{
+  "timestamp": "2026-01-22T07:52:35.097Z",
+  "totalProcessed": 617,
+  "successful": 616,
+  "failed": 1,
+  "categoryUpdates": 1,
+  "results": [
+    {
+      "id": "beppu-city-kyushu-d264f5f0",
+      "name": "Beppu City",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hitotsuba-kyushu-2f64254b",
+      "name": "Hitotsuba",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matsukawa-river-cruises-chubu-422a9e4c",
+      "name": "Matsukawa Pleasure boat Platform",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "higashiyama-onsen-tohoku-0447ed49",
+      "name": "Higashiyama Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamagata-railway-flower-nagai-line-tohoku-443962e1",
+      "name": "Flower Nagai Line",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hijiori-onsen-tohoku-46d1a91e",
+      "name": "Hijiori Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "uji-bridge-kanto-cd7a2f7a",
+      "name": "Uji Bridge",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ikura-cave-chugoku-dcd35e6b",
+      "name": "Ikura Cave",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "iizaka-onsen-tohoku-fe4cf937",
+      "name": "Iizaka Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kaminoyama-onsen-tohoku-5b09c164",
+      "name": "Kaminoyama Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "aizuwakamatsu-nanukamachi-dori-street-tohoku-03d1bd2c",
+      "name": "Nanokamachi Street",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "cape-oma-tohoku-e25cbc74",
+      "name": "Cape Oma",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tsukioka-onsen-tohoku-c26228a2",
+      "name": "Tsukioka Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tendo-onsen-tohoku-f8d76808",
+      "name": "Tendo Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akiyoshidai-chugoku-bd0bb7c9",
+      "name": "Akiyoshidai",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "genbikei-gorge-tohoku-c0a25f1f",
+      "name": "Gembikei Gorge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakone-autumn-kanto-86774659",
+      "name": "Hakone Autumn",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "aomori-bay-tohoku-e30d6f05",
+      "name": "Aomori Bay Bridge",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "otari-village-chubu-80a8c12e",
+      "name": "Otari Village",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shirogane-blue-pond-hokkaido-c76f9fff",
+      "name": "Shirogane Blue Pond (Aoiike)",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sapporo-clock-kanto-e2d41c73",
+      "name": "Sapporo Clock",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "museum",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakone-gora-kanto-a400c9d7",
+      "name": "Hakone Gora",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tour-around-the-city-of-famous-water-kyoto-kyoto-prefecture-kansai-ef2bcf60",
+      "name": "TOURS IN KYOTO",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akiu-onsen-tohoku-3e18a7d6",
+      "name": "Akiu Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ryuzu-falls-kanto-43e4f02f",
+      "name": "Ryuzu Falls",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "national_park",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "cape-inubo-kanto-a3858361",
+      "name": "Cape Inubo",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "national_park",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tairyuji-ropeway-shikoku-c70d8904",
+      "name": "Tairyuji Ropeway",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yonago-gaina-festival-chugoku-0b684394",
+      "name": "Yonago Gaina Festival",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "uradome-coast-island-boat-tour-chugoku-66a057ec",
+      "name": "Uradome Coast Island Cruise",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "seafood_restaurant",
+        "cafe",
+        "store",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "CLOSED_TEMPORARILY",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shinsekai-kanto-2e2301a4",
+      "name": "Shinsekai",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "cultural_landmark",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sekishu-washi-kaikan-japanese-washi-paper-making-s-chugoku-e9db3e50",
+      "name": "Sekishu Washi Kaikan",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okushiri-kanto-1a92c521",
+      "name": "Okushiri",
+      "success": true,
+      "googleTypes": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "momotaroh-fantasy-some-objects-chugoku-e2b35088",
+      "name": "Momotaro",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagasaki-kyushu-5a8a9eb6",
+      "name": "Nagasaki",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "japan-romantic-kanto-325bf574",
+      "name": "Japan Romantic",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "the-sumida-kanto-74d4db7b",
+      "name": "The Sumida",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tobe-yaki-togeikan-tobe-ware-shikoku-495de958",
+      "name": "Tobe-yaki Pottery Museum",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mimasaka-chugoku-30549faf",
+      "name": "Mimasaka",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kamikochi-snowshoeing-chubu-c8dfeb94",
+      "name": "Kamikōchi",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "CLOSED_TEMPORARILY",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matsuyama-ropeway-shopping-district-shikoku-1f9ddad0",
+      "name": "Matsuyama Ropeway Shopping District",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kitakata-tohoku-cfa9aa3e",
+      "name": "Kitakata",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "pottery-making-chubu-6a5845ee",
+      "name": "Voice of Ceramics",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kamakura-kanto-497c622d",
+      "name": "Kamakura",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hachimantai-dragon-eye-kagami-numa-lake-tohoku-5a62cdf9",
+      "name": "Kagami-numa pond (Hachimantai Dragon Eye)",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "CLOSED_TEMPORARILY",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "dutch-slope-kyushu-578020e5",
+      "name": "Dutch Slope",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kamiyama-town-shikoku-01ed3dcb",
+      "name": "Kamiyama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "fujinomiya-chubu-df4a44bf",
+      "name": "Fujinomiya",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kawazu-seven-chubu-a82d960f",
+      "name": "Kawazu Seven",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nakamura-chubu-1935f149",
+      "name": "Nakamura",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kengo-kuma-designed-buildings-shikoku-77999157",
+      "name": "Yusuhara Wooden Bridge Museum",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kamogawa-kanto-5f9ffdd7",
+      "name": "Kamogawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tsuruoka-tohoku-74cece15",
+      "name": "Tsuruoka",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kanosuke-distillery-kyushu-19b891af",
+      "name": "Kanosuke Distillery",
+      "success": true,
+      "googleTypes": [
+        "corporate_office",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "koza-okinawa-3fada589",
+      "name": "Koza",
+      "success": false,
+      "error": "API call failed"
+    },
+    {
+      "id": "kingdom-of-kyushu-54598a16",
+      "name": "Kingdom of",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nachi-waterfall-kansai-988250ca",
+      "name": "Nachi Waterfall",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "maboroshi-no-taki-falls-wandering-falls-walking-chubu-f454c162",
+      "name": "Maboroshi Falls",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kanazawa-kanto-0e64f74b",
+      "name": "Kanazawa",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamanaka-lacquerware-wood-turning-experience-chubu-e36827b0",
+      "name": "Ishikawa Prefectural Institute for Yamanaka Lacquer Ware （Ishikawa Prefectural Training Institute of Woodturning）",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mie-prefectural-kansai-9838b346",
+      "name": "Mie Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kurashiki-chugoku-2c0ffc8f",
+      "name": "Kurashiki",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nature-experience-at-the-fukui-prefecture-nature-conser-chubu-6f8a38f6",
+      "name": "Fukui Prefectural Nature Protection Center",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "owara-kaze-chubu-5950f48d",
+      "name": "Owara Kaze",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kanazawa-chubu-6d8925be",
+      "name": "Kanazawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "aso-uchinomaki-kyushu-9915d8e3",
+      "name": "Aso Uchinomaki",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "aoshima-kyushu-6166602c",
+      "name": "Aoshima 青島エリア",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sakunami-onsen-tohoku-14cf5566",
+      "name": "Sakunami Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kanba-no-taki-waterfall-park-chugoku-c2706a95",
+      "name": "Kanba Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ryusei-falls-kanto-171de16f",
+      "name": "Ryusei Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shimanto-shikoku-4a91c694",
+      "name": "Shimanto",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nakasu-kyushu-68b2dd9c",
+      "name": "Nakasu 中洲",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kawasaki-kanto-3da8f5e8",
+      "name": "Kawasaki",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sakura-kanto-c6572df8",
+      "name": "Sakura 佐倉",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "furen-stalactite-kyushu-6e47b92f",
+      "name": "Furen Stalactite",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takayu-onsen-tohoku-65354894",
+      "name": "Takayu Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tokowaka-ise-townscape-cycling-tour-ise-kaido-r-chubu-3f7db72e",
+      "name": "Ise-Shima Bicycle Journey",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiraito-chubu-e850f4bd",
+      "name": "Shiraito",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sakae-chubu-2b012136",
+      "name": "Sakae 栄",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sarutobi-chubu-d332be43",
+      "name": "Sarutobi",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "blue-cave-okinawa-1756d741",
+      "name": "Blue Cave",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hachimantai-kanto-1c71e0e5",
+      "name": "Hachimantai",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kinosaki-kansai-f06ccc40",
+      "name": "Kinosaki",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "zao-onsen-zao-hot-springs-tohoku-3c5cce38",
+      "name": "Zao Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hitoyoshi-kyushu-de16d4a7",
+      "name": "Hitoyoshi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "cape-erimo-kanto-c0650ad9",
+      "name": "Cape Erimo",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "canyoning-nametoko-gorge-shikoku-c687f0b1",
+      "name": "Nametoko Gorge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "niijima-island-kanto-bd1665e7",
+      "name": "Niijima Island",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akiya-coast-chugoku-2728cee2",
+      "name": "Akiya Coast",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tsuchiyu-onsen-tohoku-90608137",
+      "name": "Tsuchiyu Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "odate-tohoku-554bdb0e",
+      "name": "Odate 大館",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "seaside-momochi-kyushu-24aa4ac4",
+      "name": "Seaside Momochi",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "paraglider-chubu-827be1a1",
+      "name": "SKYTRAIL Paragliding school",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takegashima-shikoku-7c74e0dd",
+      "name": "Takegashima",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_3",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "senjojiki-kansai-338576bd",
+      "name": "Senjojiki",
+      "success": true,
+      "googleTypes": [
+        "observation_deck",
+        "tourist_attraction",
+        "seafood_restaurant",
+        "store",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okuizumo-chugoku-7e3820e7",
+      "name": "Okuizumo",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okutadami-chubu-6ffdbccd",
+      "name": "Okutadami",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matsukawa-chubu-88f4e946",
+      "name": "Matsukawa",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "munakata-kyushu-9e41e4fe",
+      "name": "Munakata",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "guided-bus-tour-the-great-valley-of-snow-chubu-c9917963",
+      "name": "Yuki no Ōtani",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shirahige-falls-hokkaido-1cf051a8",
+      "name": "Shirahige Waterfall",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "uwajima-city-shikoku-27352258",
+      "name": "Uwajima",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nasu-onsen-kanto-55ab64b1",
+      "name": "Nasu Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "chiba-port-kanto-4ee15402",
+      "name": "Chiba Port",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sakitama-kanto-95156715",
+      "name": "Sakitama",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shuri-okinawa-d183f22d",
+      "name": "Shuri",
+      "success": true,
+      "googleTypes": [
+        "neighborhood",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "motomachi-kanto-c1ffc4f4",
+      "name": "Motomachi",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nihondaira-chubu-c2bb4661",
+      "name": "Nihondaira",
+      "success": true,
+      "googleTypes": [
+        "observation_deck",
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "bandai-azuma-skyline-tohoku-2bbbb918",
+      "name": "Bandai-Azuma Skyline",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakone-tozan-kanto-8464f9dd",
+      "name": "Hakone Tozan",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okutsukei-gorge-the-three-kilometers-gorge-has-some-view-spots-chugoku-721fcf9d",
+      "name": "Okutsu valley",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hirata-fruit-farm-chugoku-7b5e7485",
+      "name": "Hirata Farm",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mikaeri-falls-kyushu-66886e30",
+      "name": "Mikaeri Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akiu-great-falls-tohoku-b208d478",
+      "name": "Akiu Great Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "arimatsu-chubu-40686472",
+      "name": "Arimatsu",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "minato-mirai-kanto-1e0ec292",
+      "name": "Minato Mirai",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "world-heritage-site-bus-chubu-043e235e",
+      "name": "Suganuma Gassho-zukuri Village",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hitome-senbonzakura-view-of-a-thousand-cherry-trees-alon-tohoku-b5d20233",
+      "name": "Hitome Senbonzakura",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tateyama-kurobe-alpine-route-chubu-6d320a7b",
+      "name": "Tateyama Kurobe Alpine Route - Transportation Division",
+      "success": true,
+      "googleTypes": [
+        "hotel",
+        "japanese_restaurant",
+        "lodging",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "central-okinawa-okinawa-305b6f06",
+      "name": "Central Okinawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ueda-chubu-967278dd",
+      "name": "Ueda 上田エリア",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mameda-kyushu-36a3e3ac",
+      "name": "Mameda 豆田町",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ogi-kyushu-405a7efa",
+      "name": "Ogi 小城",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sendai-city-tohoku-b16778a1",
+      "name": "Sendai City",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yosakoi-soran-hokkaido-a9cd0ecc",
+      "name": "Yosakoi Soran",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "fukuoka-asian-kyushu-1e6ee677",
+      "name": "Fukuoka Asian",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "morning-standup-paddle-boarding-sup-experience-chubu-e3636792",
+      "name": "Mauka Outdoor",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagayu-onsen-kyushu-92fa94d0",
+      "name": "Nagayu Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakozakigu-kyushu-b2bc30d1",
+      "name": "Hakozakigu",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "naoshima-shikoku-225b60d9",
+      "name": "Naoshima",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagoya-city-chubu-f054b17b",
+      "name": "Nagoya City",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "onaruto-bridge-kansai-80754ab2",
+      "name": "Onaruto Bridge",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hozu-river-kanto-b6a039ad",
+      "name": "Hozu River",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ureshino-onsen-kyushu-a9db6f27",
+      "name": "Ureshino Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "chichibu-kanto-15df832a",
+      "name": "Chichibu",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "rainbow-bridge-kanto-6fe41eec",
+      "name": "Rainbow Bridge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hamamatsu-chubu-dbf2b23d",
+      "name": "Hamamatsu",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shirarahama-kansai-d1694bb2",
+      "name": "Shirarahama",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "eshikoto-where-fukui-s-great-things-happen-chubu-d3f099a4",
+      "name": "ESHIKOTO",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tanabe-kansai-c0f8515e",
+      "name": "Tanabe 田辺",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "manza-onsen-kanto-8d0f9f3f",
+      "name": "Manza Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tateyama-kanto-7a7d5505",
+      "name": "Tateyama",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akihabara-kanto-8c328625",
+      "name": "Akihabara",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "cape-ashizuri-shikoku-f9804a35",
+      "name": "Cape Ashizuri",
+      "success": true,
+      "googleTypes": [
+        "observation_deck",
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oita-prefectural-kyushu-77174158",
+      "name": "Oita Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "niigata-prefectural-chubu-7030bbe3",
+      "name": "Niigata Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "amami-kurasaki-beach-kyushu-a9ac6cd4",
+      "name": "Sakibaru Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nikka-whisky-sendai-brewery-miyagikyo-distillery-tohoku-225f00e2",
+      "name": "Nikka Whisky Sendai Factory",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "maple-festival-chugoku-df58d350",
+      "name": "Hiroshima Flower Festival Executive Committee Planning Headquarters",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "senjojiki-1-000-tatami-straw-mats-grassland-chugoku-02759a66",
+      "name": "Senjojiki",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "campground",
+        "park",
+        "lodging",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hatagoya-tonbiii-uchiwa-making-and-indigo-dyeing-experience-shikoku-66063617",
+      "name": "Tonbiii",
+      "success": true,
+      "googleTypes": [
+        "budget_japanese_inn",
+        "guest_house",
+        "lodging",
+        "cafe",
+        "store",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "soma-nomaoi-tohoku-f138af56",
+      "name": "Soma",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hamaotsu-kansai-5274818c",
+      "name": "Hamaotsu",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takijiman-sake-brewery-kansai-1c861c23",
+      "name": "Takijiman Sake Brewing",
+      "success": true,
+      "googleTypes": [
+        "liquor_store",
+        "store",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tochigi-prefectural-kanto-62bc4109",
+      "name": "Tochigi Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "suirennuma-tohoku-0c7b060b",
+      "name": "Suirennuma",
+      "success": true,
+      "googleTypes": [
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mikado-valley-shikoku-df41d2d3",
+      "name": "Iya Valley Vine Bridge",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nomura-samurai-family-residence-chubu-1c562cfc",
+      "name": "Nomura-ke Samurai Heritage Residence",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tojinbo-chubu-af43e26d",
+      "name": "Tojinbo 東尋坊",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "miho-no-matsubara-chubu-2c757c67",
+      "name": "Miho-no-Matsubara",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hida-takayama-satoyama-cycling-chubu-55c134cd",
+      "name": "SATOYAMA EXPERIENCE",
+      "success": true,
+      "googleTypes": [
+        "travel_agency",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nikka-whisky-hokkaido-46e1e2d1",
+      "name": "Nikka Whisky",
+      "success": true,
+      "googleTypes": [
+        "museum",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sekinoo-falls-kyushu-23d62936",
+      "name": "Sekinoo Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tendo-tohoku-bff94331",
+      "name": "Tendo 天童市",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hiroshima-chugoku-c9e30bac",
+      "name": "Hiroshima",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tokyo-bay-kanto-16599567",
+      "name": "Tokyo Bay",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nakamachi-district-chubu-cdfebfc7",
+      "name": "Nakamachi Shopping Street Promotion Association",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tokyo-metropolitan-kanto-bc4eda76",
+      "name": "Tokyo Metropolitan",
+      "success": true,
+      "googleTypes": [
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "todoroki-kanto-6577e9da",
+      "name": "Todoroki",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "toyokawa-chubu-b671c1d4",
+      "name": "Toyokawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yatsushiro-kyushu-29061340",
+      "name": "Yatsushiro",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "row-of-cherry-trees-on-mt-tohoku-d9bb4726",
+      "name": "Cherry Tree-Lined Road of Mt. Iwaki",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "-hand-fan-bag-folding-black-for-men-up-to-about-9-06-in-in-length-kyoto-folding-fans-ohnishi-tsune-shoten-kansai-bb79eed4",
+      "name": "Ohnishi Tsune Shoten",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "uchiwa-japanese-traditional-fan-making-experience-uchiwa-kobo-take-shikoku-c935a205",
+      "name": "Aiba",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "fukuyama-chugoku-8953f3fe",
+      "name": "Fukuyama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ashinomaki-onsen-tohoku-72d719a8",
+      "name": "Ashinomaki Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "earth-celebration-chubu-f1b53b8c",
+      "name": "Earth Celebration",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mt-omuro-chubu-93920945",
+      "name": "Mt. Omuro",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tamagawa-tohoku-b8ac8fcb",
+      "name": "Tamagawa",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akita-kanto-tohoku-015d4bc5",
+      "name": "Akita Kanto",
+      "success": true,
+      "googleTypes": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mt-fuji-countryside-cycling-chubu-949d6a97",
+      "name": "Fuji city Cycle Station",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matsuyama-castle-ropeway-shikoku-442f4c4a",
+      "name": "Chojyaganaru Station",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "locomotive-exciting-suspension-bridge-chubu-48026bef",
+      "name": "Ikawa Yume-no-Tsuribashi Suspension Bridge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shimoda-chubu-db187142",
+      "name": "Shimoda 下田",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "lake-kinrin-kyushu-f03e0c9a",
+      "name": "Lake Kinrin",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shinhotaka-snowshoeing-chubu-d3557462",
+      "name": "Shinhotaka Ropeway",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagaoka-festival-tohoku-38066db1",
+      "name": "Nagaoka Fireworks Museum",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "museum",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nogaike-pond-chubu-d5874137",
+      "name": "Nogaike Pond",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oumijima-kanko-kisen-cruise-oumijima-island-famous-chugoku-80eb04ac",
+      "name": "Oumijima Kankō Kisen",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "fukui-prefectural-chubu-69a0d9c3",
+      "name": "Fukui Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "senbonmatsu-kanto-989315ae",
+      "name": "Senbonmatsu",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "udatsu-townscape-shikoku-4dfdb502",
+      "name": "Udatsu Townscape",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "imaicho-town-kansai-ddacfdc1",
+      "name": "Imaicho Town",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nakatsu-kyushu-bc52e4d9",
+      "name": "Nakatsu 中津エリア",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "metal-casting-experience-chubu-be3f65b6",
+      "name": "Risaburo Foundry",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiseido-chubu-6b798cd8",
+      "name": "Shiseido",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "rosoku-jima-chugoku-a794c8db",
+      "name": "Rosoku-Jima",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nasu-heisei-no-mori-kanto-8eca5b89",
+      "name": "Nasu Heisei-no-Mori",
+      "success": true,
+      "googleTypes": [
+        "premise",
+        "street_address"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mashiko-sankokan-kanto-a0a2f6e2",
+      "name": "Mashiko Sankokan",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "uji-kanto-c6d29f8f",
+      "name": "Uji 宇治",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "goshiki-beach-kansai-53f57183",
+      "name": "Goshiki Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hombo-shuzo-mars-tsunuki-distillery-kyushu-1c06891d",
+      "name": "Mars Tsunuki Distillery",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "bar",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "gyoda-kanto-a166d22f",
+      "name": "Gyoda 行田",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kikuchi-onsen-kyushu-0a382dd8",
+      "name": "Kikuchi Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "marugame-shikoku-87ce5020",
+      "name": "Marugame",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tsu-kansai-65f00eda",
+      "name": "Tsu 津",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "unazuki-onsen-chubu-a57d335d",
+      "name": "Unazuki Onsen",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "wada-house-chubu-c3532f00",
+      "name": "Wada House",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "wakasa-benzaiten-chugoku-b1d96fcd",
+      "name": "Wakasa Benzaiten",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matengai-chugoku-ed57620a",
+      "name": "Matengai",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "cape-higashi-okinawa-7e430989",
+      "name": "Cape Higashi",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shibaura-kanto-3a48feaf",
+      "name": "Shibaura",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "wakayama-kansai-d29b1939",
+      "name": "Wakayama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shima-onsen-kanto-b87d013f",
+      "name": "Shima Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "appi-kogen-tohoku-58fedbfe",
+      "name": "Appikogen",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakone-onsen-kanto-f37458d8",
+      "name": "Hakone Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "gion-matsuri-kanto-de0a7370",
+      "name": "Gion Matsuri",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "atsumi-onsen-tohoku-4922abb4",
+      "name": "Atsumi Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nakamura-shikoku-bb9304f5",
+      "name": "Nakamura",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shimanami-shikoku-9e887b7a",
+      "name": "Shimanami",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "to-no-hetsuri-tohoku-202cee44",
+      "name": "To-no-Hetsuri",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "niigata-city-chubu-983f2dc5",
+      "name": "Niigata City",
+      "success": true,
+      "googleTypes": [
+        "administrative_area_level_1",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oimatsu-sake-brewery-kansai-81e58e8c",
+      "name": "Itami Oimatsu Brewing Company",
+      "success": true,
+      "googleTypes": [
+        "liquor_store",
+        "store",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamaguchi-hagi-brewery-co-chugoku-8f75f60b",
+      "name": "Yamaguchi Hagi Beer Head Office",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ganmon-sea-chubu-1c73e286",
+      "name": "Ganmon Sea",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "rural-life-experience-chubu-11d565b1",
+      "name": "Tour du Lac Biwa",
+      "success": true,
+      "googleTypes": [
+        "corporate_office",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yonezawa-tohoku-5ead5a46",
+      "name": "Yonezawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yanagawa-kyushu-014c1088",
+      "name": "Yanagawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kokusai-dori-okinawa-17e9042c",
+      "name": "Kokusai-dori",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "dorogawa-kansai-8f52e0b8",
+      "name": "Dorogawa",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "izu-islands-kanto-05b47092",
+      "name": "Izu Islands",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "seki-chubu-3fdb094d",
+      "name": "Seki 関",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kobe-city-kansai-43bc8aed",
+      "name": "Kobe City",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oharaimachi-kansai-02ddf735",
+      "name": "Oharaimachi",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sakamoto-kansai-0488a621",
+      "name": "Sakamoto",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "onna-seaside-civil-park-nabee-beach-okinawa-c7301c5b",
+      "name": "Nabee Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "store",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matsusaka-kansai-a8f33869",
+      "name": "Matsusaka",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "idemitsu-kanto-6eb99b1a",
+      "name": "Idemitsu",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mt-akakura-chubu-f69ee52c",
+      "name": "Mt. Akakura",
+      "success": true,
+      "googleTypes": [
+        "cafe",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sawara-kanto-16470992",
+      "name": "Sawara 佐原",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hand-fishing-nature-experience-forest-railroad-chubu-dfbae03e",
+      "name": "Happo pond",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "rakusei-kanto-acc7d2e2",
+      "name": "Rakusei 洛西",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamaguchi-chugoku-fa16a421",
+      "name": "Yamaguchi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "utsukushigahara-chubu-10ded187",
+      "name": "Utsukushigahara",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "katsurahama-beach-shikoku-d3bff06f",
+      "name": "Katsura Beach",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kujukuri-kanto-69144974",
+      "name": "Kujukuri",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "karatsu-kunchi-kyushu-28dc74d9",
+      "name": "Karatsu Kunchi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kiyosumi-kanto-e1c16829",
+      "name": "Kiyosumi",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kishiwada-kanto-71864db1",
+      "name": "Kishiwada",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shimanami-chugoku-81f5bb13",
+      "name": "Shimanami Kaido (Cycling Route)",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mishima-skywalk-chubu-debdc1ee",
+      "name": "Mishima Sky Walk",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "asamushi-onsen-tohoku-8a7cf792",
+      "name": "Asamushi Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "craft-hills-kanto-b38c1552",
+      "name": "Craft Hills",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "koishikawa-kanto-d277e5c9",
+      "name": "Koishikawa",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "the-omiya-kanto-95575d50",
+      "name": "The Omiya",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "miyagawa-kansai-06decb48",
+      "name": "Miyagawa",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "arima-onsen-kansai-986ab387",
+      "name": "Arima Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "owakudani-kanto-1fe3f7e5",
+      "name": "Owakudani",
+      "success": true,
+      "googleTypes": [
+        "neighborhood",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oki-islands-chubu-e7a15955",
+      "name": "Oki Islands",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "orange-street-kanto-ef583611",
+      "name": "Orange Street",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sumiyoshi-kanto-f873d571",
+      "name": "Sumiyoshi",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "strolling-around-famous-cherry-blossom-and-autumn-foliage-temples-and-places-dedicated-to-the-industrial-revival-of-meiji-kyoto-kyoto-kyoto-prefecture-kansai-b6b5fea5",
+      "name": "Arashiyama Bamboo Forest",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mikamine-tohoku-a46b1e0e",
+      "name": "Mikamine",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kaminoyama-tohoku-444683d0",
+      "name": "Kaminoyama",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kinugawa-kanto-ba7f6ded",
+      "name": "Kinugawa",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nachi-katsuura-kansai-0043e999",
+      "name": "Nachi-Katsuura",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tatsumahonke-sake-brewery-kansai-11929b7f",
+      "name": "Tatsuuma-Honke Brewing Co. Ltd.",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "awa-sand-pillars-shikoku-3b086897",
+      "name": "Awa Sand Pillars",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "summer-sonic-kanto-d3ceff11",
+      "name": "Summer Sonic",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "bandai-bridge-chubu-c32f1fa1",
+      "name": "Bandai Bridge",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mombetsu-kanto-0d72d8ee",
+      "name": "Mombetsu (Drift Ice & Garinko)",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "itoshima-kyushu-10ae6354",
+      "name": "Itoshima",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yunomine-kansai-82a61e4e",
+      "name": "Yunomine",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mt-io-kanto-c436792e",
+      "name": "Mt. Io",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "achi-village-chubu-52660419",
+      "name": "Achi Village",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "motomachi-kansai-9efba7bb",
+      "name": "Motomachi",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagahama-kansai-db1c893b",
+      "name": "Nagahama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "amagase-onsen-kyushu-34f8dc75",
+      "name": "Amagase Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamagata-tohoku-f6864fce",
+      "name": "Yamagata",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mugenan-pottery-chugoku-e27f2340",
+      "name": "Mugenan Pottery",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiodome-kanto-724424ff",
+      "name": "Shiodome",
+      "success": true,
+      "googleTypes": [
+        "neighborhood",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tokyo-marathon-kanto-633d4eb8",
+      "name": "Tokyo Marathon",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "monet-s-pond-chubu-a01023dc",
+      "name": "Monet's Pond",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamashiro-chubu-1d3bb49c",
+      "name": "Yamashiro",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "walking-in-the-mecca-of-mountain-worship-and-shugendo-yoshino-town-nara-prefecture-kansai-4d6dce31",
+      "name": "Kami-senbon",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shirahama-kansai-eba40190",
+      "name": "Shirahama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "a-typical-winter-scenery-of-murozumi-coast-chugoku-e5c8705b",
+      "name": "Kintaikyo Bridge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "murodo-chubu-9d28e84c",
+      "name": "Murodo 室堂",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kudaka-island-scenery-okinawa-a0016eb8",
+      "name": "Habyan",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kikuchi-kyushu-8a0b762b",
+      "name": "Kikuchi &",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oki-islands-chugoku-a4a82e8a",
+      "name": "Oki Islands",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "togatta-onsen-tohoku-41c6cacf",
+      "name": "Togattaonsen",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiroishi-tohoku-d648e99b",
+      "name": "Shiroishi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "boroboro-falls-shikoku-b2b8e5ef",
+      "name": "Boroboro Falls",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kiryu-yagibushi-kanto-0036dae3",
+      "name": "Kiryu Yagibushi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "great-seto-chugoku-cbf3f74c",
+      "name": "Great Seto",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okinoerabu-kyushu-7f453f39",
+      "name": "Okinoerabu",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "asahi-sake-brewery-kansai-596d34b7",
+      "name": "Asahi Beer Nishinomiya Higashi Delivery Center",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "jogasaki-chubu-86940109",
+      "name": "Jogasaki",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "saga-prefectural-kyushu-fd1cfd67",
+      "name": "Saga Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "onna-coast-okinawa-35b2fee9",
+      "name": "Onna Beach",
+      "success": true,
+      "googleTypes": [
+        "resort_hotel",
+        "hotel",
+        "lodging",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "chiba-prefectural-kanto-579566d8",
+      "name": "Chiba Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kisukedaira-kanto-308f389b",
+      "name": "Kisukedaira",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "noboribetsu-jigokudani-hokkaido-b9cafb3f",
+      "name": "Noboribetsu Jigokudani Valley",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kirishima-kyushu-585c4a22",
+      "name": "Kirishima",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ginga-falls-kanto-1840fa12",
+      "name": "Ginga Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kamotsuru-sake-brewery-tour-and-lunch-chugoku-2d23a93a",
+      "name": "Kamotsuru Sake Brewing Co., Ltd. Head Office",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okurayama-kanto-d5f6d55e",
+      "name": "Okurayama",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagano-kayaking-chubu-ca4f97c9",
+      "name": "Nagano Kayaking",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "dangyokei-gorge-dangyokei-is-chugoku-a97a5f57",
+      "name": "Dangyokei Gorge",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kitakami-tohoku-a15dc403",
+      "name": "Kitakami",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sainokawara-kanto-f6cff96a",
+      "name": "Sainokawara",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "omotesando-kanto-d6f3c486",
+      "name": "Omotesando",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kitayama-kansai-d21b4d47",
+      "name": "Kitayama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "enoshima-kanto-6cb3ca7e",
+      "name": "Enoshima",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "omihachiman-chubu-a6152734",
+      "name": "Omihachiman",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "jinzu-river-rafting-chubu-d0b115eb",
+      "name": "Jinzu River Rafting",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kiyomizuyaki-kanto-787fd824",
+      "name": "Kiyomizuyaki",
+      "success": true,
+      "googleTypes": [
+        "home_goods_store",
+        "store",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "obanazawa-tohoku-6c01e759",
+      "name": "Obanazawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "fukuroda-kanto-6f780b51",
+      "name": "Fukuroda",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "national_park",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sumatakyo-chubu-cac0e1ab",
+      "name": "Sumatakyo",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "sports_activity_location",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "bungo-takada-kyushu-401b2a51",
+      "name": "Bungo Takada",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "odawara-kanto-ade3403e",
+      "name": "Odawara 小田原エリア",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ashikaga-kanto-bcbff5b8",
+      "name": "Ashikaga",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tono-tohoku-c1a73eea",
+      "name": "Tono 遠野市",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nozawa-onsen-chubu-8ee8673b",
+      "name": "Nozawa Onsen",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ufo-line-shikoku-2dd3b8d3",
+      "name": "Ino Town Road Kamegamori Line",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kobe-port-kansai-78eb02ef",
+      "name": "Kobe Port",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "jr-bus-tohoku-tohoku-ed03610a",
+      "name": "JR Bus Tohoku Headquarters",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ginzan-onsen-tohoku-7826d632",
+      "name": "Ginzan Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matsushima-onsen-tohoku-f4a10a06",
+      "name": "Matsushima Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kehi-no-matsubara-chubu-8428f2a7",
+      "name": "Kehi-no-Matsubara",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nicchu-line-weeping-cherry-blossom-tohoku-9dc1e4b2",
+      "name": "Nicchusen Rows of Weeping Cherry Trees",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kojima-jeans-chugoku-ede97a77",
+      "name": "Kojima Jeans",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ondo-bridge-chugoku-53d2434b",
+      "name": "Ondo Bridge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "uruma-okinawa-ca8ebb2e",
+      "name": "Uruma",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tsunagi-onsen-tohoku-45175bd1",
+      "name": "Tsunagi Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akiyoshidai-safari-land-animal-park-visitors-can-chugoku-b4df90b5",
+      "name": "Akiyoshidai Safari Land",
+      "success": true,
+      "googleTypes": [
+        "amusement_park",
+        "zoo",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nirai-beach-okinawa-18a074ef",
+      "name": "Nirai Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sanjo-blacksmith-chubu-7dcab5b2",
+      "name": "Sanjo Blacksmith",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "korankei-chubu-658bf5ba",
+      "name": "Korankei",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shibayama-tideland-yataibune-boat-cruise-chubu-dd63e24f",
+      "name": "The Shimanto River Houseboat Cruising Serivce, Nattoku",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "roppongi-kanto-d9965fe7",
+      "name": "Roppongi",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "toyama-hida-takayama-sightseeing-bus-chubu-9abd14b8",
+      "name": "Takayama Nohi Bus Center",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "-empty-handed-hakkouda-juhy-snowshoe-tour-tohoku-990a0888",
+      "name": "Hakkōda Ropeway Sanroku Station",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "sports_activity_location",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hachinohe-tohoku-66e3b697",
+      "name": "Hachinohe",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shizunai-kanto-eb835b59",
+      "name": "Shizunai",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mabuni-hills-okinawa-b07e5402",
+      "name": "Mabuni Hills",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "harimaya-shikoku-d8503ddb",
+      "name": "Harimaya",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kujukushima-cruising-kyushu-6a4c72b8",
+      "name": "Kujukushima Cruising",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "aoyagi-samurai-tohoku-5298fd3c",
+      "name": "Aoyagi Samurai",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "dangyo-no-taki-chugoku-c7c8f848",
+      "name": "Dangyo-no-taki",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "obama-onsen-kyushu-a0e12732",
+      "name": "Obama Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "furuyu-kumanokawa-kyushu-8971d1d2",
+      "name": "Furuyu/Kumanokawa",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "muroto-shikoku-a74da1db",
+      "name": "Muroto 室戸市",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oko-falls-kyushu-bd5247fc",
+      "name": "Oko Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "harajuku-kanto-e004f8ed",
+      "name": "Harajuku",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "old-public-kanto-9ed90966",
+      "name": "Old Public",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hirayama-chugoku-8fa5a780",
+      "name": "Hirayama",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nita-pass-kyushu-55fa0918",
+      "name": "Nita Pass",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "minoh-takimichi-one-way-sightseeing-kansai-cb56099f",
+      "name": "Minoh Falls",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "sports_activity_location",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akame-48-kansai-6f388a53",
+      "name": "Akame 48",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "amusement_park",
+        "tourist_information_center",
+        "amusement_center",
+        "tour_agency",
+        "travel_agency",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nanatsugama-limestone-cave-kyushu-3c0a8167",
+      "name": "Nanatsugama Limestone Cave",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kusatsu-onsen-kanto-83f2a740",
+      "name": "Kusatsu Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kuromon-market-kanto-039c656e",
+      "name": "Kuromon Market",
+      "success": true,
+      "googleTypes": [
+        "market",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "grand-front-kanto-26bfa296",
+      "name": "Grand Front",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shikamori-dam-shikoku-12ef1020",
+      "name": "Honen Pond Dam",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hoshitoge-chubu-ac68fbf0",
+      "name": "Hoshitoge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tosa-uchi-hamono-knives-shikoku-b656297e",
+      "name": "Tadokoro Cutlery Co. Ltd",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "aizome-awa-indigo-dyeing-technique-shikoku-b93df6d1",
+      "name": "Yamauchi Indigo Workshop",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kaizu-osaki-kansai-2030e0ff",
+      "name": "Kaizu Osaki",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sandankyo-gorge-chugoku-5fcd9af9",
+      "name": "Sandankyo",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tenjin-sanshi-japanese-paper-factory-shikoku-d67f9b34",
+      "name": "Tenjinsanshi Paper Factory",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "chatan-okinawa-bd722792",
+      "name": "Chatan",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tateyama-kyushu-762cd884",
+      "name": "Tateyama",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yoshinobu-rice-terraces-shikoku-f5be53b3",
+      "name": "Yoshinobu Rice Terraces",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "narusawa-chubu-edfbd2af",
+      "name": "Narusawa",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "noshiro-tanabata-festival-tenku-no-fuyajou-noshiro-aki-tohoku-d999303a",
+      "name": "Noshiro Tenku no Fuyajo Council (Tanabata Festival - “Lantern Castles in the Sky”)",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ikei-island-beach-okinawa-56ec210e",
+      "name": "Ikei Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takeo-onsen-kyushu-d0def990",
+      "name": "Takeo Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ainokura-chubu-2c68264e",
+      "name": "Ainokura",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takeo-kyushu-37adfde4",
+      "name": "Takeo 武雄",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tomioka-kanto-a9a9f14f",
+      "name": "Tomioka 富岡",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kakunodate-tohoku-bb796e80",
+      "name": "Kakunodate",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "miyazaki-jingu-kyushu-cfb0c4e2",
+      "name": "Miyazaki-jingu",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "isumi-railway-kanto-a188e89b",
+      "name": "Isumi Railway",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matsumoto-chubu-47f6ba81",
+      "name": "Matsumoto",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kanucha-beach-okinawa-937a1d66",
+      "name": "Kanucha Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yomitan-okinawa-f8bc0265",
+      "name": "Yomitan",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "harajiri-falls-kyushu-958d0d08",
+      "name": "Harajiri Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tsukuba-space-kanto-b30de364",
+      "name": "Tsukuba Space",
+      "success": true,
+      "googleTypes": [
+        "museum",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamanami-kyushu-c3ea7407",
+      "name": "Yamanami",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "abashiri-kanto-5ee299dd",
+      "name": "Abashiri",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "wakimachi-shikoku-d612f961",
+      "name": "Wakimachi",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "zao-yamagata-tohoku-297290af",
+      "name": "Zao (Yamagata)",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shirakawa-go-chubu-c5052180",
+      "name": "Shirakawa-go",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "national_park",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "art-of-the-flames-glass-blowing-experience-chubu-77e699cd",
+      "name": "Notojima Glass Studio",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "cape-irozaki-chubu-cbb92f32",
+      "name": "Cape Irozaki",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kitakyushu-kyushu-b5191d33",
+      "name": "Kitakyushu",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "morioka-handi-works-tohoku-d28ab5f9",
+      "name": "Morioka Handi-Works",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akagi-cherry-kanto-b24af84d",
+      "name": "Akagi Cherry",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hikawa-riverbank-chugoku-6ce66192",
+      "name": "Hikawa Riverbank",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "aoba-dori-tohoku-5dfb5eda",
+      "name": "Aoba-dori",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "daisen-falls-chugoku-b1f6b5f4",
+      "name": "Daisen Falls",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "koiji-coast-chubu-c0ec9feb",
+      "name": "Koiji Coast",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tokamachi-chubu-6f50236a",
+      "name": "Tokamachi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mototaki-fukuryusui-underflow-mototaki-waterfall-tohoku-05af853a",
+      "name": "Mototaki Waterfall",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "sports_activity_location",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "togetsukyo-kanto-1805d0e6",
+      "name": "Togetsukyo",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hyuga-hyottoko-kyushu-02b57842",
+      "name": "Hyuga Hyottoko",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yugawara-kanto-72e5defd",
+      "name": "Yugawara",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "demon-s-washboard-kyushu-12899d46",
+      "name": "Demon's Washboard",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takamatsu-marugamemachi-shopping-arcade-shikoku-8a99f5ad",
+      "name": "Takamatsu Marugamemachi Shopping Street",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shirabu-tohoku-8c6328b0",
+      "name": "Shirabu 白布エリア",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shosenkyo-chubu-1fa5ee20",
+      "name": "Shosenkyo",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nichinan-coast-kyushu-5ff20565",
+      "name": "Nichinan Coast Road Park",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "dakigaeri-valley-tohoku-cbb4986c",
+      "name": "Dakigaeri Valley",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "sports_activity_location",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "eef-beach-okinawa-90799c0a",
+      "name": "Eef Beach",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yunishigawa-kanto-d20c4ae8",
+      "name": "Yunishigawa",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ikaho-onsen-kanto-45510a91",
+      "name": "Ikaho Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kaminoko-ike-kanto-b4ae4aab",
+      "name": "Kaminoko-ike",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "zentsuji-shikoku-821e3797",
+      "name": "Zentsuji",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ebino-highlands-crater-lake-course-kyushu-883bcf95",
+      "name": "Ebino Plateau",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kagawa-urushi-lacquer-ware-institute-shikoku-59ba7b43",
+      "name": "Kagawaken Shitsugei Research Institute",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "inokashira-kanto-821379d4",
+      "name": "Inokashira",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "wakkanai-kanto-591dddf4",
+      "name": "Wakkanai",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shichikawa-kansai-e66b561e",
+      "name": "Shichikawa",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kitano-cho-kansai-19fbe2b9",
+      "name": "Kitano-cho",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kawayu-onsen-kansai-12aa0a4a",
+      "name": "Kawayu Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okuoi-chubu-5928c02b",
+      "name": "Okuoi 奥大井",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kiyomizu-kyushu-3ca219a3",
+      "name": "Kiyomizu",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kamagatani-chubu-4ec2ac4d",
+      "name": "Kamagatani",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "asahikawa-kanto-cb2b5646",
+      "name": "Asahikawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "rokujo-beach-okinawa-03b6f904",
+      "name": "Rokujo Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "cape-nosappu-kanto-6643f7ae",
+      "name": "Cape Nosappu",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mt-kinka-tohoku-62a9267b",
+      "name": "Mt. Kinka",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakodate-kanto-1a60d65a",
+      "name": "Hakodate",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "jozenji-street-tohoku-0b0bc380",
+      "name": "Jozenji Street",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "denden-town-kanto-2a125b41",
+      "name": "Denden Town",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiraho-okinawa-91d54454",
+      "name": "Shiraho 白保",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "matsuyama-shikoku-185577fb",
+      "name": "Matsuyama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "juroku-rakan-tohoku-5c0626f8",
+      "name": "Juroku-rakan",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mima-wagasa-umbrellas-mima-japanese-umbrellas-shikoku-defe1a7a",
+      "name": "Hiyoshiya",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kazurabashi-shikoku-4ed424d3",
+      "name": "Kazurabashi",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "naramachi-kansai-4a4c28a3",
+      "name": "Naramachi",
+      "success": true,
+      "googleTypes": [
+        "neighborhood",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "fukushima-tohoku-096aa4ef",
+      "name": "Fukushima",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "amanohashidate-tohoku-6a10bb27",
+      "name": "Amanohashidate",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "landmark",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "suzu-ware-pottery-hands-on-experience-chubu-b4b12536",
+      "name": "Kutani Kosen Kiln",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "eshima-ohashi-chugoku-9b41ecb1",
+      "name": "Eshima Ohashi",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akasaka-sacas-kanto-94be6b0a",
+      "name": "Akasaka Sacas",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sake-breweries-kansai-fc2a0381",
+      "name": "Sake Breweries",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "concert_hall",
+        "auditorium",
+        "liquor_store",
+        "event_venue",
+        "japanese_restaurant",
+        "store",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kobe-harborland-kansai-e3adcf54",
+      "name": "Kobe Harborland",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "gehoku-tohoku-c2d9c740",
+      "name": "Gehoku 芸北",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oboke-gorge-shikoku-1b6e5a85",
+      "name": "Oboke Gorge",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kinugasa-kanto-6d10f37e",
+      "name": "Kinugasa",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akasaka-kanto-78443dae",
+      "name": "Akasaka 赤坂",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nissan-oppama-kanto-1feeae1f",
+      "name": "Nissan Oppama",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kuma-river-kyushu-1a37e33b",
+      "name": "Kuma River",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "bizan-ropeway-shikoku-b9500956",
+      "name": "Bizan Ropeway",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okinawa-prefectural-okinawa-1be9c267",
+      "name": "Okinawa Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "okaido-shopping-district-shikoku-b0240ba1",
+      "name": "Okaido Shopping Street",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagakute-chubu-8a8350a8",
+      "name": "Nagakute",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sup-stand-up-paddleboard-chubu-0a9b5a06",
+      "name": "FACE Lake Biwa Sup",
+      "success": true,
+      "googleTypes": [
+        "marina",
+        "sports_activity_location",
+        "store",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "suntory-kyoto-kanto-d50c399f",
+      "name": "Suntory Kyoto",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mogami-river-tohoku-4c1591b1",
+      "name": "Mogami River",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nomiaruki-chubu-e5a6db93",
+      "name": "Nomiaruki",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tsushima-kyushu-e96b35fa",
+      "name": "Tsushima",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "namahama-beach-okinawa-1215bc3a",
+      "name": "Nagahama Beach",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagahama-kyushu-e6e6d4a8",
+      "name": "Nagahama",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagasaki-dejima-kyushu-72f5e6ac",
+      "name": "Nagasaki Dejima Wharf",
+      "success": true,
+      "googleTypes": [
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "priceLevel": 2,
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oni-no-chugoku-99427359",
+      "name": "Oni no",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nakameguro-kanto-c6a9029e",
+      "name": "Nakameguro",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "snowshoe-trekking-to-nanataki-frozen-waterfall-impassable-tohoku-749ac62b",
+      "name": "Nanataki Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kobe-nunobiki-kansai-9ea58e1e",
+      "name": "Kobe Nunobiki",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "goishi-coast-tohoku-1494d949",
+      "name": "Goishi Coast",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kankakei-gorge-ropeway-shikoku-5c1044d3",
+      "name": "Kankakei Ropeway",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nikobuchi-shikoku-44316476",
+      "name": "Nikobuchi Waterfall",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "bizen-ware-festival-chugoku-c4b7b3fe",
+      "name": "Bizenyaki Studio (inside Okayama Castle's Tenshukaku)",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nippon-domannaka-chubu-d15294c1",
+      "name": "Nippon Domannaka",
+      "success": true,
+      "googleTypes": [
+        "cultural_landmark",
+        "event_venue",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kabukicho-kanto-a07397ad",
+      "name": "Kabukicho",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "fukuurabashi-tohoku-a4e72551",
+      "name": "Fukuurabashi",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shirahama-chubu-797731ef",
+      "name": "Shirahama",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kumagaya-kanto-88ca23d6",
+      "name": "Kumagaya",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "furukawa-tohoku-ed891015",
+      "name": "Furukawa",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "boso-flower-kanto-8ff940bc",
+      "name": "Boso Flower",
+      "success": true,
+      "googleTypes": [
+        "route"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kurayoshi-chugoku-d2991c19",
+      "name": "Kurayoshi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kurobe-land-of-water-famous-water-spots-tour-chubu-35d1c034",
+      "name": "Kurobe Dam",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kurokawa-onsen-kyushu-1adaa405",
+      "name": "Kurokawa Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "orinasukan-kanto-911339d9",
+      "name": "Orinasukan",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "arashiyama-kanto-f1d3cdee",
+      "name": "Arashiyama",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakata-kyushu-26ccf75f",
+      "name": "Hakata 博多",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yokohama-kanto-c2a176cf",
+      "name": "Yokohama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shimabara-kyushu-9edcdaab",
+      "name": "Shimabara",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "daisetsuzan-asahidake-ropeway-hokkaido-76f0b507",
+      "name": "Daisetsuzan Asahidake Ropeway",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shimonoseki-chugoku-d77d89c2",
+      "name": "Shimonoseki",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "manazuru-kanto-69842bf5",
+      "name": "Manazuru",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiratani-kyushu-4fbfa17e",
+      "name": "Shiratani",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shizuoka-chubu-e47c8875",
+      "name": "Shizuoka",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "maruyama-kanto-787dbf57",
+      "name": "Maruyama",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "state-guest-kanto-53bb8443",
+      "name": "State Guest",
+      "success": true,
+      "oldCategory": "park",
+      "newCategory": "landmark",
+      "googleTypes": [
+        "tourist_attraction",
+        "cultural_landmark",
+        "garden",
+        "park",
+        "government_office",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "suizenji-kyushu-b8f8b57d",
+      "name": "Suizenji",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "suntory-hakushu-chubu-c4ed1ce5",
+      "name": "Suntory Hakushu",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "misumi-west-kyushu-d56dbbdb",
+      "name": "Misumi West",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tajimi-chubu-d2eabf67",
+      "name": "Tajimi 多治見",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "itoman-and-nanjo-okinawa-cbdb24e3",
+      "name": "Itoman",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tanukikoji-shopping-street-hokkaido-b4aced72",
+      "name": "Tanukikoji Shopping Street",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tachikue-chugoku-25925f76",
+      "name": "Tachikue",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakuba-canyoning-chubu-2ee3d94a",
+      "name": "Hakuba Canyoning",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tateyama-chubu-25b79b9e",
+      "name": "Tateyama",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takachiho-gorge-kyushu-aded5c0c",
+      "name": "Takachiho Gorge",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tenjin-kyushu-3aa2ca58",
+      "name": "Tenjin 天神",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takamatsu-tohoku-822c693b",
+      "name": "Takamatsu",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takayama-chubu-9ef1468b",
+      "name": "Takayama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tokashiki-okinawa-7fd91abd",
+      "name": "Tokashiki",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tokorozawa-kanto-487ddfcd",
+      "name": "TOKOROZAWA",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "abashiri-drift-ice-sightseeing-icebreaker-ship-aurora-hokkaido-75be668f",
+      "name": "Abashiri Drift Ice Sightseeing & Icebreaker Ship",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "tour_agency",
+        "travel_agency",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "noho-island-concrete-wharf-okinawa-6470dbcf",
+      "name": "Tomari Wharf ferry terminal building Tomarin Building.",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kagoshima-kyushu-2a9a190f",
+      "name": "Kagoshima",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sandanbeki-kansai-b2a2763c",
+      "name": "Sandanbeki",
+      "success": true,
+      "googleTypes": [
+        "observation_deck",
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "toyohashi-chubu-c50dc74c",
+      "name": "Toyohashi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ina-chubu-41c6536c",
+      "name": "Ina 伊那エリア",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tsukimachi-kanto-cba5b83c",
+      "name": "Tsukimachi",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hiking-at-mt-tsurugi-shikoku-17290ad3",
+      "name": "Tsurugisan Tozan Lift",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "tonami-yumenotaira-chubu-1d508dcb",
+      "name": "Tonami Yumenotaira",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "uchiharano-pottery-craft-center-and-glass-studio-shikoku-fea646bf",
+      "name": "Uchiharano Ceramic Art Museum",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sannomiya-kansai-b74c5802",
+      "name": "Sannomiya",
+      "success": true,
+      "googleTypes": [
+        "neighborhood",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ceatec-ceatec-kanto-5da05c4d",
+      "name": "Ceatec Ceatec",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kujuku-islands-kyushu-72c10fb0",
+      "name": "Kujuku Islands",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kinpozan-chubu-9203de3f",
+      "name": "Kinpozan",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ureshino-kyushu-8e616735",
+      "name": "Ureshino",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ushimado-chugoku-5cf0d9d3",
+      "name": "Ushimado",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "farm",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "african-safari-kyushu-f1635126",
+      "name": "African Safari",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "campground",
+        "playground",
+        "amusement_center",
+        "amusement_park",
+        "zoo",
+        "park",
+        "lodging",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "utsunomiya-kanto-7f91401e",
+      "name": "Utsunomiya",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "jogakura-bridge-tohoku-64aedf28",
+      "name": "Jōgakura Bridge",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "wakanoura-kansai-d77327f8",
+      "name": "Wakanoura",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yaeyama-islands-okinawa-ff16235b",
+      "name": "Yaeyama Islands",
+      "success": true,
+      "googleTypes": [
+        "administrative_area_level_2",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takarazuka-kansai-13e3746c",
+      "name": "Takarazuka",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamato-koriyama-kansai-6a530989",
+      "name": "Yamato Koriyama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "harazuru-onsen-kyushu-ca064e7f",
+      "name": "Harazuru Onsen",
+      "success": true,
+      "googleTypes": [
+        "colloquial_area",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kappabashi-kanto-10c43e0a",
+      "name": "Kappabashi",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "market",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "amerikamura-kanto-ed603e2d",
+      "name": "Amerikamura",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kamikochi-chubu-81bb2736",
+      "name": "Kappa-bashii Bridge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oyasu-ravine-tohoku-d6499609",
+      "name": "Oyasu Ravine",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kumamoto-kyushu-20bfdea3",
+      "name": "Kumamoto",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akaba-daki-chugoku-0aadda97",
+      "name": "Kuniga Coast",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "sports_activity_location",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kagurazaka-kanto-2414ff5f",
+      "name": "Kagurazaka",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "maiko-dancing-girl-and-geisha-dress-up-experience-chubu-d41c89b5",
+      "name": "Gion AYA Maiko & Geisha Makeover",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ikada-kudari-log-rafting-kansai-815f93c3",
+      "name": "Kilakila Rafting",
+      "success": true,
+      "googleTypes": [
+        "cycling_park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yokkaichi-kansai-8a23cad5",
+      "name": "Yokkaichi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "awa-sho-ai-shijiraori-awa-shijira-cotton-cloth-traditional-cotton-cloth-dyed-with-high-quality-awa-indigo-shikoku-d1e4de2c",
+      "name": "Nagao Orifu",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nakanoshima-kanto-2e06d33e",
+      "name": "Nakanoshima",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kyoto-handicraft-kanto-74dd9ee0",
+      "name": "Kyoto Handicraft",
+      "success": true,
+      "googleTypes": [
+        "performing_arts_theater",
+        "event_venue",
+        "restaurant",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagatoro-kanto-79ce7886",
+      "name": "Nagatoro",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "-sake-cup-yoshino-cedar-guinomi-sake-cup-s-kyo-sashimono-joinery-kansai-cf8ba4a4",
+      "name": "Matsui Sake Brewery",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shimokitazawa-kanto-40038786",
+      "name": "Shimokitazawa",
+      "success": true,
+      "googleTypes": [
+        "neighborhood",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oboke-gorge-sightseeing-boat-shikoku-f77e0f2f",
+      "name": "Oboke Gorge Sightseeing Boat",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "motobu-peninsula-okinawa-011bc239",
+      "name": "Motobu",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "manza-beach-okinawa-0a91995e",
+      "name": "Manza Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mission-beach-okinawa-70804236",
+      "name": "Mission Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "naha-okinawa-5bc3817e",
+      "name": "Naha",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "oura-terraced-kyushu-9d71e673",
+      "name": "Oura Terraced",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kurokawa-kyushu-7e2f6ed6",
+      "name": "Kurokawa",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "iwatsuki-kanto-5580d526",
+      "name": "Iwatsuki",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_1",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "akashi-kaikyo-kansai-d684b36b",
+      "name": "Akashi Kaikyo",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "somaro-maiko-tohoku-92c2c0f3",
+      "name": "Somaro Maiko",
+      "success": true,
+      "googleTypes": [
+        "cafe",
+        "museum",
+        "food",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hakuai-waiwai-beach-okinawa-6947132e",
+      "name": "Waiwai Beach",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "usuki-takeyoi-kyushu-b6099ac8",
+      "name": "Usuki Takeyoi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "narcissus-road-shikoku-51279def",
+      "name": "Shikoku Karst",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "park",
+        "sports_activity_location",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hinjitsukan-kansai-da85d64e",
+      "name": "Hinjitsukan",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "anmon-falls-tohoku-e64720bc",
+      "name": "Anmon Falls",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiodawara-kyushu-c178a096",
+      "name": "Shiodawara",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiraito-kanto-418d85ed",
+      "name": "Shiraito",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kimiidera-kansai-ae0271e1",
+      "name": "Kimiidera",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "takehara-chugoku-764f8cb9",
+      "name": "Takehara",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "meganebashi-kyushu-d26ba080",
+      "name": "Meganebashi",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kesennuma-tohoku-d2ef6031",
+      "name": "Kesennuma",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "senjojiki-chubu-776bc94c",
+      "name": "Senjojiki",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "himeji-yukata-kansai-3a859818",
+      "name": "Himeji Yukata",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "amami-oshima-canoe-kayak-kyushu-2c7291b3",
+      "name": "Amami Oshima Canoe/Kayak",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "ozu-shikoku-df33883d",
+      "name": "Ozu 大洲市",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "chichibugahama-beach-shikoku-1a5ccd0d",
+      "name": "Chichibugahama Beach",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "jr-kyushu-aru-ressha-kyushu-5c675ef0",
+      "name": "JR Kyushu Head Office",
+      "success": true,
+      "googleTypes": [
+        "corporate_office",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kakegawa-chubu-d90cbccf",
+      "name": "Kakegawa",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yamate-kyushu-49823446",
+      "name": "Yamate 南山手",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "taketa-kyushu-f794006a",
+      "name": "Taketa 竹田エリア",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiraito-kyushu-a2510d0e",
+      "name": "Shiraito",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kegon-falls-kanto-3ec81d87",
+      "name": "Kegon Falls",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "national_park",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yoro-valley-kanto-afd94ac4",
+      "name": "Yoro Valley",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sakuragicho-kanto-d46bbabc",
+      "name": "Sakuragicho",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "cycling-chugoku-fdb64358",
+      "name": "Cycle Hiroshima",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shimizu-port-chubu-6186d6a6",
+      "name": "Shimizu Port",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hanamaki-tohoku-f6f9d287",
+      "name": "Hanamaki",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yuasa-kansai-8ecbaeb0",
+      "name": "Yuasa 湯浅",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "bandai-azuma-skyline-snow-corridor-tohoku-1b1729b7",
+      "name": "Bandai Azuma Skyline",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yokosuka-kanto-b78d2fe8",
+      "name": "Yokosuka",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shiobara-kanto-456cc351",
+      "name": "Shiobara",
+      "success": true,
+      "googleTypes": [
+        "sublocality_level_2",
+        "sublocality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "dazaifu-kyushu-90afa654",
+      "name": "Dazaifu 太宰府",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shinjuku-kanto-8603bb2d",
+      "name": "Shinjuku",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sasayama-kansai-e7355892",
+      "name": "Sasayama",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "shinsaibashi-suji-kanto-d1112f8d",
+      "name": "Shinsaibashi-suji",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "market",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "beppu-benten-chugoku-3b664929",
+      "name": "Beppu Benten",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "yoshida-fire-chubu-b82b3f2c",
+      "name": "Yoshida Fire Festival",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "geibikei-gorge-tohoku-156d12db",
+      "name": "Geibikei Gorge",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mino-washi-chubu-275cf942",
+      "name": "Mino Washi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "nagaragawa-experience-ticket-gifu-bus-one-day-pass-wit-chubu-32e38e1b",
+      "name": "Gifu bus terminal route bus information office",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kabira-bay-okinawa-84ba3b9a",
+      "name": "Kabira Bay",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "mizushima-chubu-afeaff28",
+      "name": "Mizushima",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "taishaku-chugoku-9458afdb",
+      "name": "Taishaku",
+      "success": true,
+      "googleTypes": [
+        "hiking_area",
+        "tourist_attraction",
+        "sports_activity_location",
+        "park",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "taketomi-okinawa-4cdb368f",
+      "name": "Taketomi",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "higashiyama-tohoku-e7aeefee",
+      "name": "Higashiyama",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kyoto-imperial-kanto-8be8cc0d",
+      "name": "Kyoto Imperial",
+      "success": true,
+      "googleTypes": [
+        "historical_landmark",
+        "historical_place",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": true,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hirosaki-tohoku-86f4d924",
+      "name": "Hirosaki",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "sake-tasting-experience-tohoku-678cd649",
+      "name": "Kyoto Insider Sake Experience",
+      "success": true,
+      "googleTypes": [
+        "bar",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "goshogawara-tohoku-3a47259c",
+      "name": "Goshogawara",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "kashihara-kansai-1a953550",
+      "name": "Kashihara",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "seto-chubu-23fba50e",
+      "name": "Seto &",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hotokegaura-tohoku-865f0b19",
+      "name": "Hotokegaura",
+      "success": true,
+      "googleTypes": [
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "hyogo-prefectural-kansai-7d90903d",
+      "name": "Hyogo Prefectural",
+      "success": true,
+      "googleTypes": [
+        "locality",
+        "political"
+      ],
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    },
+    {
+      "id": "fukuurajima-tohoku-317e2894",
+      "name": "Fukuurajima",
+      "success": true,
+      "googleTypes": [
+        "tourist_attraction",
+        "point_of_interest",
+        "establishment"
+      ],
+      "businessStatus": "OPERATIONAL",
+      "hasAccessibility": false,
+      "hasVegetarian": false
+    }
+  ]
+}
