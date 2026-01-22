@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useCallback, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Modal } from "@/components/ui/Modal";
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -25,9 +25,10 @@ const sortDietarySelections = (selections: Iterable<string>): string[] => {
 export type Step4PreferencesProps = {
   formId: string;
   onNext: () => void;
+  onValidityChange?: (isValid: boolean) => void;
 };
 
-export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
+export function Step4Preferences({ formId, onNext, onValidityChange }: Step4PreferencesProps) {
   const { data, setData } = useTripBuilder();
 
   const [showSkipConfirm, setShowSkipConfirm] = useState(false);
@@ -43,6 +44,19 @@ export function Step4Preferences({ formId, onNext }: Step4PreferencesProps) {
   const isOtherChecked = dietarySelectionSet.has("other");
   const notesDescriptionId = `${formId}-notes-description`;
   const notesErrorId = `${formId}-notes-error`;
+
+  // Validation: if "Other" is selected, notes cannot be empty
+  const isValid = useMemo(() => {
+    if (isOtherChecked) {
+      return notesValue.trim().length > 0;
+    }
+    return true;
+  }, [isOtherChecked, notesValue]);
+
+  // Report validity changes to parent
+  useEffect(() => {
+    onValidityChange?.(isValid);
+  }, [isValid, onValidityChange]);
 
   const upsertAccessibility = useCallback(
     (updater: (current: { mobility: boolean; dietary: string[]; dietaryOther: string; notes: string }) => {
