@@ -42,7 +42,9 @@ src/
 | `src/data/categoryHierarchy.ts` | Category/sub-type definitions for filtering |
 | `src/lib/locations/locationService.ts` | Server-side location fetching |
 | `src/data/cityInterests.json` | Pre-computed city-interest mapping (837 cities) |
+| `src/data/regionData.ts` | Japan's 9 regions with coordinates and bounds |
 | `src/lib/tripBuilder/cityRelevance.ts` | City relevance calculation utilities |
+| `src/lib/tripBuilder/regionAggregation.ts` | Region aggregation for map clustering |
 
 ## Current Stats
 
