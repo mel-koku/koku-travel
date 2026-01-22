@@ -10,12 +10,7 @@ const FiltersModal = dynamic(
 );
 import { LocationGrid } from "./LocationGrid";
 import { StickyExploreHeader } from "./StickyExploreHeader";
-import { logger } from "@/lib/logger";
-import {
-  getCachedLocationsIncludingStale,
-  isCacheStale,
-  setCachedLocations,
-} from "@/lib/locationsCache";
+import { useAggregatedLocations, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 
 const BUDGET_FILTERS = [
   {
@@ -160,9 +155,18 @@ function toTitleCase(value: string): string {
 }
 
 export function ExploreShell() {
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  // Use React Query hooks for data fetching
+  const {
+    locations,
+    total,
+    isLoading,
+    isLoadingMore,
+    error,
+    hasNextPage,
+    fetchNextPage,
+  } = useAggregatedLocations();
+  const { data: filterMetadata } = useFilterMetadataQuery();
+
   const [query, setQuery] = useState("");
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedBudget, setSelectedBudget] = useState<string | null>(null);
@@ -186,119 +190,6 @@ export function ExploreShell() {
     selectedSort,
   ]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchLocations() {
-      // Check for cached locations first (including stale ones for immediate display)
-      const cachedLocations = getCachedLocationsIncludingStale();
-      const cacheIsStale = isCacheStale();
-      const hasFreshCache = cachedLocations && !cacheIsStale;
-
-      // If we have fresh cache, use it and skip fetching
-      if (hasFreshCache) {
-        logger.info("Using fresh locations cache", { count: cachedLocations.length });
-        setLocations(cachedLocations);
-        setIsLoading(false);
-        setLoadError(null);
-        return;
-      }
-
-      // If we have stale cache, show it immediately while fetching fresh data
-      if (cachedLocations && cacheIsStale) {
-        logger.info("Using stale locations cache, refreshing in background", {
-          count: cachedLocations.length,
-        });
-        setLocations(cachedLocations);
-        setIsLoading(false);
-        setLoadError(null);
-        // Continue to fetch fresh data below
-      } else {
-        // No cache or expired - show loading state
-        setIsLoading(true);
-        setLoadError(null);
-      }
-
-      try {
-        // Fetch all locations by requesting max limit and paginating if needed
-        let allLocations: Location[] = [];
-        let page = 1;
-        const limit = 100; // Max allowed by API
-        let hasMore = true;
-
-        while (hasMore && !cancelled) {
-          const response = await fetch(`/api/locations?page=${page}&limit=${limit}`);
-          
-          if (!response.ok) {
-            throw new Error(`Failed to fetch locations: ${response.status} ${response.statusText}`);
-          }
-
-          const data = await response.json();
-          
-          if (cancelled) return;
-
-          // Handle paginated response format: { data: Location[], pagination: {...} }
-          const locationsArray = Array.isArray(data.data) ? data.data : [];
-          allLocations = [...allLocations, ...locationsArray];
-
-          // Check if there are more pages
-          hasMore = data.pagination?.hasNext === true;
-          page++;
-
-          // Safety limit to prevent infinite loops
-          if (page > 100) {
-            logger.warn("Reached pagination safety limit");
-            break;
-          }
-        }
-        
-        if (cancelled) return;
-
-        if (allLocations.length === 0) {
-          // Only show error if we don't have cached data to fall back to
-          if (!cachedLocations) {
-            logger.warn("No locations returned from API after fetching all pages");
-            setLoadError("No locations found. Please check the database configuration.");
-          }
-        } else {
-          // Save to cache and update state
-          setCachedLocations(allLocations);
-          setLocations(allLocations);
-          setLoadError(null);
-        }
-      } catch (error) {
-        if (cancelled) return;
-        
-        // If we have cached data, use it even if fetch fails
-        if (cachedLocations) {
-          logger.warn("Failed to refresh locations, using cached data", { error });
-          // Locations already set from cache above, just ensure loading is false
-          setIsLoading(false);
-          // Don't set error - user can still use cached data
-        } else {
-          // No cache to fall back to - show error
-          logger.error("Failed to load locations from API", error);
-          setLoadError(
-            error instanceof Error && error.message.includes("fetch")
-              ? "Unable to connect to the server. Please check your internet connection and try again."
-              : "Unable to load locations. Please refresh the page to try again."
-          );
-          setLocations([]);
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    fetchLocations();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
     return locations.map((location) => ({
       ...location,
@@ -312,19 +203,19 @@ export function ExploreShell() {
     }));
   }, [locations]);
 
+  // Use pre-computed filter metadata from server (instant, no client-side processing)
   const cityOptions = useMemo(() => {
-    const unique = new Set(enhancedLocations.map((location) => location.city));
-    return Array.from(unique)
-      .sort((a, b) => a.localeCompare(b))
-      .map((city) => ({ value: city, label: city }));
-  }, [enhancedLocations]);
+    return filterMetadata?.cities || [];
+  }, [filterMetadata]);
 
   const categoryOptions = useMemo(() => {
-    const unique = new Set(enhancedLocations.map((location) => location.category));
-    return Array.from(unique)
-      .sort((a, b) => a.localeCompare(b))
-      .map((category) => ({ value: category, label: toTitleCase(category) }));
-  }, [enhancedLocations]);
+    // Convert to title case for display
+    return (filterMetadata?.categories || []).map((cat) => ({
+      value: cat.value,
+      label: toTitleCase(cat.label),
+      count: cat.count,
+    }));
+  }, [filterMetadata]);
 
   const tagOptions = useMemo(() => {
     const unique = new Set<string>();
@@ -421,6 +312,17 @@ export function ExploreShell() {
     setSelectedTag(null);
   };
 
+  // Background prefetching: Auto-fetch remaining pages after initial render
+  // Throttled to avoid rate limits (500ms between pages)
+  useEffect(() => {
+    if (locations.length >= 100 && hasNextPage && !isLoadingMore) {
+      const timer = setTimeout(() => {
+        fetchNextPage();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [locations.length, hasNextPage, isLoadingMore, fetchNextPage]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white">
@@ -453,7 +355,7 @@ export function ExploreShell() {
     );
   }
 
-  if (loadError) {
+  if (error) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="mx-auto max-w-md px-4 py-12 text-center">
@@ -464,7 +366,7 @@ export function ExploreShell() {
               </svg>
             </div>
             <p className="text-base font-semibold text-red-800 mb-2">Unable to load destinations</p>
-            <p className="text-sm text-red-600 mb-6">{loadError}</p>
+            <p className="text-sm text-red-600 mb-6">{error}</p>
             <button
               onClick={() => window.location.reload()}
               className="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
@@ -510,6 +412,18 @@ export function ExploreShell() {
           layout="default"
         />
       </main>
+
+      {/* Background Loading Indicator */}
+      {isLoadingMore && (
+        <div className="fixed bottom-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg border border-gray-200 z-50">
+          <div className="flex items-center gap-2">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
+            <p className="text-sm text-gray-700">
+              Loading more... {locations.length} / {total}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Filters Modal */}
       <FiltersModal
