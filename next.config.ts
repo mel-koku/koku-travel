@@ -103,6 +103,7 @@ const securityHeaders = [
       "img-src 'self' data: https: blob:",
       "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
       "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://*.vercel-insights.com https://vitals.vercel-insights.com",
+      "worker-src 'self' blob:", // Allow Mapbox GL JS Web Workers
       "frame-src 'self'",
       "object-src 'none'",
       "base-uri 'self'",
