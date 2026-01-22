@@ -130,7 +130,8 @@ export type Location = {
    */
   primaryPhotoUrl?: string;
   /**
-   * Accessibility information for the location
+   * Accessibility information for the location (legacy structure)
+   * @deprecated Use accessibilityOptions from Google Places enrichment instead
    */
   accessibility?: {
     /**
@@ -149,6 +150,70 @@ export type Location = {
      * Additional accessibility notes
      */
     notes?: string;
+  };
+
+  // ============================================
+  // Google Places Enrichment Fields
+  // ============================================
+
+  /**
+   * Primary type from Google Places API (e.g., "buddhist_temple", "castle", "restaurant")
+   * More specific than our generic category field
+   */
+  googlePrimaryType?: string;
+
+  /**
+   * Array of all types from Google Places API
+   * A location can have multiple types (e.g., ["tourist_attraction", "museum", "point_of_interest"])
+   */
+  googleTypes?: string[];
+
+  /**
+   * Business status from Google Places API
+   * Used to filter out closed locations from itinerary planning
+   */
+  businessStatus?: 'OPERATIONAL' | 'TEMPORARILY_CLOSED' | 'PERMANENTLY_CLOSED';
+
+  /**
+   * Price level from Google Places API (1-4)
+   * 1 = Inexpensive ($), 2 = Moderate ($$), 3 = Expensive ($$$), 4 = Very Expensive ($$$$)
+   */
+  priceLevel?: 1 | 2 | 3 | 4;
+
+  /**
+   * Accessibility options from Google Places API
+   */
+  accessibilityOptions?: {
+    wheelchairAccessibleEntrance?: boolean;
+    wheelchairAccessibleParking?: boolean;
+    wheelchairAccessibleRestroom?: boolean;
+    wheelchairAccessibleSeating?: boolean;
+  };
+
+  /**
+   * Dietary options from Google Places API (for restaurants)
+   */
+  dietaryOptions?: {
+    servesVegetarianFood?: boolean;
+  };
+
+  /**
+   * Service options from Google Places API (for restaurants)
+   */
+  serviceOptions?: {
+    dineIn?: boolean;
+    takeout?: boolean;
+    delivery?: boolean;
+  };
+
+  /**
+   * Meal options from Google Places API (for restaurants)
+   */
+  mealOptions?: {
+    servesBreakfast?: boolean;
+    servesBrunch?: boolean;
+    servesLunch?: boolean;
+    servesDinner?: boolean;
   };
 };
 

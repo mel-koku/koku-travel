@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
-import { findLocationForActivity } from "@/lib/itineraryLocations";
+import { useActivityLocations } from "@/hooks/useActivityLocations";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { ItineraryTravelMode } from "@/types/itinerary";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
@@ -61,10 +61,19 @@ export const ItineraryMapPanel = ({
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
 
+  // Filter to place activities for location fetching
+  const placeActivities = useMemo(
+    () => activities.filter(isPlaceActivity),
+    [activities],
+  );
+
+  // Fetch location data from database
+  const { locationsMap } = useActivityLocations(placeActivities);
+
   const points = useMemo<MapPoint[]>(() => {
     const results: MapPoint[] = [];
     let placeCounter = 0; // Start at 0 for start point
-    
+
     // Add start point as marker 0
     if (startPoint) {
       results.push({
@@ -77,14 +86,14 @@ export const ItineraryMapPanel = ({
         placeNumber: placeCounter++,
       });
     }
-    
+
     // Add regular activities (starting from 1 if start point exists, otherwise from 1)
     activities.forEach((activity) => {
       if (!isPlaceActivity(activity)) {
         return;
       }
-      const resolvedLocation = findLocationForActivity(activity);
-      
+      const resolvedLocation = locationsMap.get(activity.id) ?? null;
+
       // Check coordinates in priority order:
       // 1. Direct coordinates on the Location object (most reliable)
       // 2. Coordinates from locationCoordinates lookup by ID
@@ -96,7 +105,7 @@ export const ItineraryMapPanel = ({
       const lookupName = resolvedLocation?.name ?? activity.title;
       const coordinatesFromName = lookupName ? getCoordinatesForName(lookupName) : null;
       const coordinatesFromTitle = getCoordinatesForName(activity.title);
-      
+
       const coordinates = coordinatesFromLocation ?? coordinatesFromId ?? coordinatesFromName ?? coordinatesFromTitle;
       if (!coordinates) {
         return;
@@ -114,7 +123,7 @@ export const ItineraryMapPanel = ({
     });
 
     return results;
-  }, [activities, startPoint]);
+  }, [activities, startPoint, locationsMap]);
 
   const pointLookup = useMemo(() => {
     const map = new Map<string, MapPoint>();

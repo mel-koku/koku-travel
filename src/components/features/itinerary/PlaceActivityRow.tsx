@@ -12,7 +12,7 @@ const LocationDetailsModal = dynamic(
 import { useLocationEditorialSummary } from "@/state/locationDetailsStore";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
-import { findLocationForActivity } from "@/lib/itineraryLocations";
+import { useActivityLocation } from "@/hooks/useActivityLocations";
 import { DragHandle } from "./DragHandle";
 import { StarIcon } from "./activityIcons";
 import { ActivityActions } from "./ActivityActions";
@@ -201,14 +201,18 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     // Check if this is an entry point that needs API fetch
     const isEntryPoint = activity.locationId?.startsWith("__entry_point_");
     const entryPointLocation = useEntryPointLocation(activity);
-    
+
+    // Fetch location data from database via API
+    const { location: fetchedLocation } = useActivityLocation(
+      isEntryPoint ? null : activity,
+    );
+
     const placeLocation = useMemo(() => {
       if (isEntryPoint && entryPointLocation) {
         return entryPointLocation;
       }
-      const resolved = findLocationForActivity(activity);
-      return resolved ?? buildFallbackLocation(activity);
-    }, [activity, isEntryPoint, entryPointLocation]);
+      return fetchedLocation ?? buildFallbackLocation(activity);
+    }, [activity, isEntryPoint, entryPointLocation, fetchedLocation]);
     const cachedEditorialSummary = useLocationEditorialSummary(placeLocation?.id);
 
     // Check availability when location is available
@@ -299,14 +303,14 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
     // Handle feedback (thumbs up/down)
     const handleFeedback = (type: "favorite" | "unfavorite" | "skip") => {
-      const location = findLocationForActivity(activity);
-      if (!location) return;
+      // Use the already-fetched location
+      if (!placeLocation) return;
 
       recordPreferenceEvent({
         type: type === "favorite" ? "favorite" : type === "skip" ? "skip" : "unfavorite",
         activityId: activity.id,
-        locationId: location.id,
-        location,
+        locationId: placeLocation.id,
+        location: placeLocation,
         timestamp: new Date().toISOString(),
       });
     };

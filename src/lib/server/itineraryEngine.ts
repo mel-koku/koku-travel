@@ -4,123 +4,73 @@ import type { Trip, TripDay, TripActivity } from "@/types/tripDomain";
 import type { TripBuilderData } from "@/types/trip";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
-import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { insertMealActivities } from "@/lib/mealPlanning";
 import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { logger } from "@/lib/logger";
+import { transformDbRowToLocation } from "@/lib/locations/locationService";
 
 /**
  * Fetches locations from Supabase database, optionally filtered by cities.
- * In production, throws errors if database is unavailable.
- * In development, falls back to mock data for easier local development.
  *
  * @param cities - Optional array of city names to filter by (reduces memory usage)
  */
 async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
-  const isDevelopment = process.env.NODE_ENV === "development";
+  const supabase = await createClient();
+  const allLocations: Location[] = [];
+  let page = 0;
+  const limit = 100; // Max per page
+  let hasMore = true;
 
-  try {
-    const supabase = await createClient();
-    const allLocations: Location[] = [];
-    let page = 0;
-    const limit = 100; // Max per page
-    let hasMore = true;
+  while (hasMore) {
+    let query = supabase
+      .from("locations")
+      .select(LOCATION_ITINERARY_COLUMNS)
+      .order("name", { ascending: true });
 
-    while (hasMore) {
-      let query = supabase
-        .from("locations")
-        .select(LOCATION_ITINERARY_COLUMNS)
-        .order("name", { ascending: true });
-
-      // Filter by cities if provided to reduce memory usage
-      if (cities && cities.length > 0) {
-        query = query.in("city", cities);
-      }
-
-      const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
-
-      if (error) {
-        const errorMessage = `Failed to fetch locations from database: ${error.message}`;
-        if (isDevelopment) {
-          logger.warn(errorMessage + " Falling back to mock data.", { error: error.message, page });
-          return [...MOCK_LOCATIONS];
-        } else {
-          logger.error(errorMessage, { error: error.message, page });
-          throw new Error(errorMessage);
-        }
-      }
-
-      if (!data || data.length === 0) {
-        hasMore = false;
-        break;
-      }
-
-      // Transform Supabase data to Location type
-      const locations: Location[] = (data as unknown as LocationDbRow[]).map((row) => ({
-        id: row.id,
-        name: row.name,
-        region: row.region,
-        city: row.city,
-        category: row.category,
-        image: row.image,
-        minBudget: row.min_budget ?? undefined,
-        estimatedDuration: row.estimated_duration ?? undefined,
-        operatingHours: row.operating_hours ?? undefined,
-        recommendedVisit: row.recommended_visit ?? undefined,
-        preferredTransitModes: row.preferred_transit_modes ?? undefined,
-        coordinates: row.coordinates ?? undefined,
-        timezone: row.timezone ?? undefined,
-        shortDescription: row.short_description ?? undefined,
-        rating: row.rating ?? undefined,
-        reviewCount: row.review_count ?? undefined,
-        placeId: row.place_id ?? undefined,
-      }));
-
-      allLocations.push(...locations);
-
-      // Check if there are more pages
-      hasMore = data.length === limit;
-      page++;
-
-      // Safety limit to prevent infinite loops
-      if (page > 100) {
-        logger.warn("Reached pagination safety limit when fetching locations");
-        break;
-      }
+    // Filter by cities if provided to reduce memory usage
+    if (cities && cities.length > 0) {
+      query = query.in("city", cities);
     }
 
-    if (allLocations.length === 0) {
-      const errorMessage = "No locations found in database. Please ensure locations are seeded.";
-      if (isDevelopment) {
-        logger.warn(errorMessage + " Falling back to mock data.");
-        return [...MOCK_LOCATIONS];
-      } else {
-        logger.error(errorMessage);
-        throw new Error(errorMessage);
-      }
+    const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
+
+    if (error) {
+      const errorMessage = `Failed to fetch locations from database: ${error.message}`;
+      logger.error(errorMessage, { error: error.message, page });
+      throw new Error(errorMessage);
     }
 
-    return allLocations;
-  } catch (error) {
-    // If it's already our custom error, re-throw it
-    if (error instanceof Error && !isDevelopment) {
-      throw error;
+    if (!data || data.length === 0) {
+      hasMore = false;
+      break;
     }
 
-    // In development, fall back to mock data
-    if (isDevelopment) {
-      logger.warn("Error fetching locations from database, falling back to mock data", {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return [...MOCK_LOCATIONS];
-    }
+    // Transform Supabase data to Location type
+    const locations: Location[] = (data as unknown as LocationDbRow[]).map((row) =>
+      transformDbRowToLocation(row),
+    );
 
-    // In production, fail loudly
-    const errorMessage = `Failed to fetch locations from database: ${error instanceof Error ? error.message : String(error)}`;
-    logger.error(errorMessage, { error });
+    allLocations.push(...locations);
+
+    // Check if there are more pages
+    hasMore = data.length === limit;
+    page++;
+
+    // Safety limit to prevent infinite loops
+    if (page > 100) {
+      logger.warn("Reached pagination safety limit when fetching locations");
+      break;
+    }
+  }
+
+  if (allLocations.length === 0) {
+    const errorMessage = "No locations found in database. Please ensure locations are seeded.";
+    logger.error(errorMessage);
     throw new Error(errorMessage);
   }
+
+  return allLocations;
 }
 
 /**
@@ -247,15 +197,61 @@ export async function generateTripFromBuilderData(
   // Generate itinerary using existing generator
   let itinerary = await generateItinerary(builderData);
 
-  // Get restaurants for meal planning (locations with "food" category or restaurant in name)
+  // Get restaurants for meal planning
+  // Filter for actual dining establishments, excluding landmarks and closed locations
+  const DINING_CATEGORIES = ["restaurant", "bar", "market", "food"];
+  const LANDMARK_PATTERNS = /castle|shrine|temple|museum|palace|tower|park|garden|observatory|gate|historic|heritage|ruins|monument|jo\b|jinja|jingu|dera|taisha|-ji\b|城|神社|寺|塔|門/i;
+
+  // Google Places types that indicate dining establishments
+  const DINING_GOOGLE_TYPES = [
+    "restaurant",
+    "cafe",
+    "coffee_shop",
+    "bar",
+    "bakery",
+    "ramen_restaurant",
+    "sushi_restaurant",
+    "japanese_restaurant",
+    "fast_food_restaurant",
+    "meal_takeaway",
+  ];
+
   const restaurants = allLocations.filter(
-    (loc) => loc.category === "food" || loc.name.toLowerCase().includes("restaurant"),
+    (loc) => {
+      // Exclude permanently closed locations
+      if (loc.businessStatus === "PERMANENTLY_CLOSED") {
+        return false;
+      }
+
+      // Check Google primary type first (most accurate)
+      if (loc.googlePrimaryType && DINING_GOOGLE_TYPES.includes(loc.googlePrimaryType)) {
+        return true;
+      }
+
+      // Check Google types array
+      if (loc.googleTypes?.some(type => DINING_GOOGLE_TYPES.includes(type))) {
+        return true;
+      }
+
+      // Fallback to category-based filtering
+      // Must be in a dining category
+      const isDiningCategory = DINING_CATEGORIES.includes(loc.category || "");
+      // Must NOT match landmark name patterns (safety check for miscategorized locations)
+      const isLandmark = LANDMARK_PATTERNS.test(loc.name);
+      // Include if it's a restaurant keyword even if category is wrong
+      const hasRestaurantKeyword = /restaurant|ramen|sushi|izakaya|cafe|café|dining/i.test(loc.name);
+
+      return (isDiningCategory && !isLandmark) || (hasRestaurantKeyword && !isLandmark);
+    }
   );
 
   // Insert meal activities into each day
+  const daysWithMeals = await Promise.all(
+    itinerary.days.map((day) => insertMealActivities(day, builderData, restaurants)),
+  );
   itinerary = {
     ...itinerary,
-    days: itinerary.days.map((day) => insertMealActivities(day, builderData, restaurants)),
+    days: daysWithMeals,
   };
 
   // Convert to Trip domain model
