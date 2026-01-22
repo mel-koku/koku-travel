@@ -1,5 +1,5 @@
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
-import { findLocationForActivity } from "@/lib/itineraryLocations";
+import { findLocationsForActivities } from "@/lib/itineraryLocations";
 import type {
   Itinerary,
   ItineraryActivity,
@@ -487,6 +487,12 @@ async function planItineraryDay(
 
   const plannedActivities: ItineraryActivity[] = [];
 
+  // Pre-fetch all locations at once for efficiency
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
+  );
+  const locationsMap = await findLocationsForActivities(placeActivities);
+
   for (const activity of day.activities) {
     if (activity.kind !== "place") {
       const plannedNote: ItineraryActivity = {
@@ -498,7 +504,7 @@ async function planItineraryDay(
       continue;
     }
 
-    const location = findLocationForActivity(activity);
+    const location = locationsMap.get(activity.id) ?? null;
     const coordinates = lookupCoordinates(activity, location);
 
     const plannerActivity: ItineraryActivity = { ...activity };

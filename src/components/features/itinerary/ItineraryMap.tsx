@@ -1,9 +1,10 @@
 // Mapbox map implementation for activities
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ItineraryDay, ItineraryActivity } from "@/types/itinerary";
+import type { Location } from "@/types/location";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
-import { findLocationForActivity } from "@/lib/itineraryLocations";
+import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import type { Coordinates } from "@/data/locationCoordinates";
 import type { RoutingRequest } from "@/lib/routing/types";
@@ -65,10 +66,14 @@ export function ItineraryMap({
     [activities],
   );
 
+  // Fetch location data for all activities
+  const { locationsMap } = useActivityLocations(placeActivities);
+
   const activityPoints = useMemo<ActivityPoint[]>(() => {
     const points: ActivityPoint[] = [];
     for (const activity of placeActivities) {
-      const coords = resolveCoordinates(activity);
+      const location = locationsMap.get(activity.id) ?? null;
+      const coords = resolveCoordinates(activity, location);
       if (!coords) continue;
       points.push({
         id: activity.id,
@@ -78,7 +83,7 @@ export function ItineraryMap({
       });
     }
     return points;
-  }, [placeActivities]);
+  }, [placeActivities, locationsMap]);
 
   useEffect(() => {
     if (!mapboxEnabled) {
@@ -350,8 +355,10 @@ export function ItineraryMap({
   );
 }
 
-function resolveCoordinates(activity: Extract<ItineraryActivity, { kind: "place" }>): Coordinates | null {
-  const resolvedLocation = findLocationForActivity(activity);
+function resolveCoordinates(
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
+  resolvedLocation: Location | null,
+): Coordinates | null {
   const fromLocation = resolvedLocation?.coordinates ?? null;
   const fallbackId = resolvedLocation?.id ? getCoordinatesForLocationId(resolvedLocation.id) : null;
   const matchByName = resolvedLocation?.name ? getCoordinatesForName(resolvedLocation.name) : null;

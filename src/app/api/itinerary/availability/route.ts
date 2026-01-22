@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkAvailability } from "@/lib/availability/availabilityService";
-import { findLocationForActivity } from "@/lib/itineraryLocations";
+import { findLocationsForActivities } from "@/lib/itineraryLocations";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { badRequest, internalError } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
@@ -26,6 +26,14 @@ export async function POST(request: NextRequest) {
       return badRequest("Activities must be an array");
     }
 
+    // Filter to place activities only
+    const placeActivities = activities.filter(
+      (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
+    );
+
+    // Batch fetch all locations at once
+    const locationsMap = await findLocationsForActivities(placeActivities);
+
     // Check availability for each activity
     const availabilityResults = await Promise.all(
       activities.map(async (activity) => {
@@ -37,7 +45,7 @@ export async function POST(request: NextRequest) {
           };
         }
 
-        const location = findLocationForActivity(activity);
+        const location = locationsMap.get(activity.id);
         if (!location) {
           return {
             activityId: activity.id,

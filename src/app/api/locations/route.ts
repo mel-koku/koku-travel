@@ -134,6 +134,14 @@ export async function GET(request: NextRequest) {
         reviewCount: row.review_count ?? undefined,
         placeId: row.place_id ?? undefined,
         primaryPhotoUrl: row.primary_photo_url ?? undefined,
+        // Google Places enrichment fields
+        googlePrimaryType: row.google_primary_type ?? undefined,
+        googleTypes: row.google_types ?? undefined,
+        businessStatus: row.business_status as Location['businessStatus'] ?? undefined,
+        priceLevel: row.price_level as Location['priceLevel'] ?? undefined,
+        accessibilityOptions: row.accessibility_options ?? undefined,
+        dietaryOptions: row.dietary_options ?? undefined,
+        serviceOptions: row.service_options ?? undefined,
       }));
 
     // Create paginated response

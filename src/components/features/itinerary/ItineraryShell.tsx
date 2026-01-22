@@ -18,11 +18,15 @@ import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { Select } from "@/components/ui/Select";
-import { planItinerary } from "@/lib/itineraryPlanner";
+import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { logger } from "@/lib/logger";
 import type { StoredTrip } from "@/state/AppState";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
-import { findReplacementCandidates, locationToActivity, type ReplacementCandidate } from "@/lib/activityReplacement";
+import {
+  useReplacementCandidates,
+  locationToActivity,
+  type ReplacementCandidate,
+} from "@/hooks/useReplacementCandidates";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -109,9 +113,12 @@ export const ItineraryShell = ({
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
-  const [isLoadingReplacements, setIsLoadingReplacements] = useState(false);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
+
+  // Mutation hook for fetching replacement candidates
+  const replacementMutation = useReplacementCandidates();
+  const isLoadingReplacements = replacementMutation.isPending;
 
   const currentTrip = useMemo(() => {
     return tripId && !isUsingMock ? getTripById(tripId) : null;
@@ -172,39 +179,30 @@ export const ItineraryShell = ({
       const activity = currentDay.activities.find((a) => a.id === activityId);
       if (!activity || activity.kind !== "place") return;
 
-      setIsLoadingReplacements(true);
       setReplacementActivityId(activityId);
 
-      // Calculate date for this day
-      let dayDate: string | undefined;
-      if (tripStartDate) {
-        const startDate = new Date(tripStartDate);
-        startDate.setDate(startDate.getDate() + selectedDay);
-        dayDate = startDate.toISOString().split("T")[0];
-      }
-
-      // Weather forecast is not implemented - scoring system works without it
-      // Backend uses mock/historical data during itinerary generation
-      let weatherForecast: import("@/types/weather").WeatherForecast | undefined;
-
-      // Find replacement candidates with enhanced options
-      const options = findReplacementCandidates(
-        activity,
-        currentTrip.builderData,
-        model.days.flatMap((d) => d.activities),
-        currentDay.activities,
-        selectedDay,
-        10,
+      // Find replacement candidates via API
+      replacementMutation.mutate(
         {
-          weatherForecast,
-          date: dayDate,
+          activity,
+          tripData: currentTrip.builderData,
+          allActivities: model.days.flatMap((d) => d.activities),
+          dayActivities: currentDay.activities,
+          currentDayIndex: selectedDay,
+          maxCandidates: 10,
+        },
+        {
+          onSuccess: (options) => {
+            setReplacementCandidates(options.candidates);
+          },
+          onError: (error) => {
+            logger.error("Failed to find replacement candidates", error);
+            setReplacementCandidates([]);
+          },
         },
       );
-
-      setReplacementCandidates(options.candidates);
-      setIsLoadingReplacements(false);
     },
-    [tripId, isUsingMock, currentTrip, model, selectedDay, tripStartDate],
+    [tripId, isUsingMock, currentTrip, model, selectedDay, replacementMutation],
   );
 
   const handleReplaceSelect = useCallback(
@@ -350,7 +348,7 @@ export const ItineraryShell = ({
 
         const dayEntryPointsMap = buildDayEntryPointsMap(target);
         
-        planItinerary(target, undefined, dayEntryPointsMap)
+        planItineraryClient(target, undefined, dayEntryPointsMap)
           .then((planned) => {
             if (planningRequestRef.current !== runId || !isMountedRef.current) {
               return;
@@ -446,7 +444,7 @@ export const ItineraryShell = ({
 
     const dayEntryPointsMap = buildDayEntryPointsMap(nextNormalized);
     
-    planItinerary(nextNormalized, undefined, dayEntryPointsMap)
+    planItineraryClient(nextNormalized, undefined, dayEntryPointsMap)
       .then((planned) => {
         if (
           cancelled ||

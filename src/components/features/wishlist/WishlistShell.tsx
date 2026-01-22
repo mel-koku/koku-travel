@@ -6,13 +6,46 @@ import { LocationCard } from "@/components/features/explore/LocationCard";
 import WishlistHeader from "@/components/features/wishlist/WishlistHeader";
 import { AddToItineraryButton } from "@/components/features/wishlist/AddToItineraryButton";
 import { useWishlist } from "@/context/WishlistContext";
-import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
+import { useWishlistLocations } from "@/hooks/useWishlistLocations";
 
 export default function WishlistShell() {
   const { wishlist } = useWishlist();
-  const savedLocations = MOCK_LOCATIONS.filter((loc) =>
-    wishlist.includes(loc.id),
-  );
+  const { data: savedLocations = [], isLoading, error } = useWishlistLocations(wishlist);
+
+  // Show loading state
+  if (isLoading && wishlist.length > 0) {
+    return (
+      <section className="mx-auto max-w-7xl px-8">
+        <WishlistHeader count={wishlist.length} />
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {Array.from({ length: Math.min(wishlist.length, 8) }).map((_, i) => (
+            <div key={i} className="space-y-3">
+              <div className="h-64 animate-pulse rounded-lg bg-gray-200" />
+              <div className="h-10 animate-pulse rounded bg-gray-200" />
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <section className="mx-auto max-w-7xl px-8">
+        <WishlistHeader count={0} />
+        <div className="py-32 text-center text-red-500">
+          <p>Failed to load your favorites. Please try again.</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 inline-block font-medium text-indigo-600 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          >
+            Retry
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mx-auto max-w-7xl px-8">
@@ -20,7 +53,7 @@ export default function WishlistShell() {
 
       {savedLocations.length === 0 ? (
         <div className="py-32 text-center text-gray-500">
-          <p>You haven’t added any favorites yet.</p>
+          <p>You haven't added any favorites yet.</p>
           <Link
             href="/explore"
             className="mt-4 inline-block font-medium text-indigo-600 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
@@ -41,4 +74,3 @@ export default function WishlistShell() {
     </section>
   );
 }
-

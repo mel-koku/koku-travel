@@ -3,15 +3,36 @@ import type { LocationDetails } from "@/types/location";
 /**
  * Default duration in minutes for different location categories.
  * These are fallback values when more specific data isn't available.
+ *
+ * Includes both specific categories (shrine, temple, museum, landmark)
+ * and generic fallback categories (culture, food, nature) for backwards
+ * compatibility with legacy data.
  */
 const CATEGORY_DEFAULT_DURATIONS: Record<string, number> = {
-  culture: 90, // Temples, museums, historical sites
-  food: 60, // Restaurants, cafes
-  nature: 120, // Parks, gardens, hiking trails
-  shopping: 90, // Markets, shopping districts
+  // Specific categories (preferred)
+  shrine: 60, // Shinto shrines - typically 30-90 minutes
+  temple: 90, // Buddhist temples - often have gardens, multiple buildings
+  landmark: 120, // Castles, towers - extensive grounds, multiple areas
+  museum: 120, // Museums - comprehensive visits
+  historic: 90, // Historic sites - variable but often extensive
+  park: 90, // Parks - leisurely visits
+  garden: 60, // Japanese gardens - contemplative but focused
+  viewpoint: 30, // Observation decks - quick visits
+  market: 90, // Markets - browsing and food
+  restaurant: 60, // Dining - typical meal duration
+  bar: 90, // Bars - evening drinks
   entertainment: 120, // Shows, events
-  accommodation: 0, // Not a visit duration
-  transportation: 0, // Not a visit duration
+
+  // Generic fallback categories (for legacy data)
+  culture: 90, // Generic cultural sites
+  food: 60, // Generic dining
+  nature: 120, // Generic nature (hiking, etc.)
+  shopping: 90, // Generic shopping
+  view: 30, // Generic viewpoints
+
+  // Infrastructure (not visit durations)
+  accommodation: 0,
+  transportation: 0,
 };
 
 const DEFAULT_DURATION = 90; // Default fallback in minutes

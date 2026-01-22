@@ -1,5 +1,5 @@
 import type { Trip, TripDay } from "@/types/tripDomain";
-import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
+import { fetchLocationsByCity, fetchLocationsByCategories } from "@/lib/locations/locationService";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 
 /**
@@ -23,9 +23,10 @@ export type RefinementRequest = {
 };
 
 /**
- * Refines a specific day based on the refinement type
+ * Refines a specific day based on the refinement type.
+ * Now async because it fetches locations from the database.
  */
-export function refineDay(request: RefinementRequest): TripDay {
+export async function refineDay(request: RefinementRequest): Promise<TripDay> {
   const { trip, dayIndex, type } = request;
   const day = trip.days[dayIndex];
 
@@ -37,13 +38,13 @@ export function refineDay(request: RefinementRequest): TripDay {
     case "too_busy":
       return refineTooBusy(day, trip);
     case "too_light":
-      return refineTooLight(day, trip);
+      return await refineTooLight(day, trip);
     case "more_food":
-      return refineMoreFood(day, trip);
+      return await refineMoreFood(day, trip);
     case "more_culture":
-      return refineMoreCulture(day, trip);
+      return await refineMoreCulture(day, trip);
     case "more_kid_friendly":
-      return refineMoreKidFriendly(day, trip);
+      return await refineMoreKidFriendly(day, trip);
     case "more_rest":
       return refineMoreRest(day, trip);
     default:
@@ -89,14 +90,16 @@ function refineTooBusy(day: TripDay, trip: Trip): TripDay {
 /**
  * Adds more activities to make the day less light
  */
-function refineTooLight(day: TripDay, trip: Trip): TripDay {
+async function refineTooLight(day: TripDay, trip: Trip): Promise<TripDay> {
   const activities = [...day.activities];
   const usedLocationIds = new Set(activities.map((a) => a.locationId));
 
-  // Find available locations in the same city
-  const availableLocations = MOCK_LOCATIONS.filter(
-    (loc) => loc.city.toLowerCase() === day.cityId && !usedLocationIds.has(loc.id),
-  );
+  // Find available locations in the same city from the database
+  const availableLocations = await fetchLocationsByCity(day.cityId, {
+    limit: 50,
+    excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
+    requirePlaceId: true,
+  });
 
   if (availableLocations.length === 0) {
     return day; // No more locations available
@@ -145,16 +148,19 @@ function refineTooLight(day: TripDay, trip: Trip): TripDay {
 /**
  * Adds more food-related activities
  */
-function refineMoreFood(day: TripDay, trip: Trip): TripDay {
+async function refineMoreFood(day: TripDay, trip: Trip): Promise<TripDay> {
   const activities = [...day.activities];
   const usedLocationIds = new Set(activities.map((a) => a.locationId));
 
-  // Find food locations
-  const foodLocations = MOCK_LOCATIONS.filter(
-    (loc) =>
-      (loc.category === "restaurant" || loc.category === "market") &&
-      loc.city.toLowerCase() === day.cityId &&
-      !usedLocationIds.has(loc.id),
+  // Find food locations from the database
+  const foodLocations = await fetchLocationsByCategories(
+    ["restaurant", "market"],
+    {
+      city: day.cityId,
+      limit: 30,
+      excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
+      requirePlaceId: true,
+    },
   );
 
   if (foodLocations.length === 0) {
@@ -218,19 +224,19 @@ function refineMoreFood(day: TripDay, trip: Trip): TripDay {
 /**
  * Adds more culture-related activities
  */
-function refineMoreCulture(day: TripDay, trip: Trip): TripDay {
+async function refineMoreCulture(day: TripDay, trip: Trip): Promise<TripDay> {
   const activities = [...day.activities];
   const usedLocationIds = new Set(activities.map((a) => a.locationId));
 
-  // Find culture locations
-  const cultureLocations = MOCK_LOCATIONS.filter(
-    (loc) =>
-      (loc.category === "shrine" ||
-        loc.category === "temple" ||
-        loc.category === "museum" ||
-        loc.category === "historic") &&
-      loc.city.toLowerCase() === day.cityId &&
-      !usedLocationIds.has(loc.id),
+  // Find culture locations from the database
+  const cultureLocations = await fetchLocationsByCategories(
+    ["shrine", "temple", "museum", "historic"],
+    {
+      city: day.cityId,
+      limit: 30,
+      excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
+      requirePlaceId: true,
+    },
   );
 
   if (cultureLocations.length === 0) {
@@ -259,10 +265,15 @@ function refineMoreCulture(day: TripDay, trip: Trip): TripDay {
   const scored = cultureLocations.map((loc) => scoreLocation(loc, criteria));
   scored.sort((a, b) => b.score - a.score);
 
+  const bestCultureLocation = scored[0];
+  if (!bestCultureLocation) {
+    return day;
+  }
+
   const newCultureActivity = {
     id: `${day.id}-culture-${Date.now()}`,
-    locationId: scored[0]!.location.id,
-    location: scored[0]!.location,
+    locationId: bestCultureLocation.location.id,
+    location: bestCultureLocation.location,
     timeSlot: "morning" as const,
     duration: 90,
   };
@@ -280,19 +291,19 @@ function refineMoreCulture(day: TripDay, trip: Trip): TripDay {
 /**
  * Makes the day more kid-friendly
  */
-function refineMoreKidFriendly(day: TripDay, trip: Trip): TripDay {
+async function refineMoreKidFriendly(day: TripDay, trip: Trip): Promise<TripDay> {
   const activities = [...day.activities];
   const usedLocationIds = new Set(activities.map((a) => a.locationId));
 
-  // Find kid-friendly locations (parks, gardens, family-friendly attractions)
-  const kidFriendlyLocations = MOCK_LOCATIONS.filter(
-    (loc) =>
-      (loc.category === "park" ||
-        loc.category === "garden" ||
-        loc.category === "museum" ||
-        loc.category === "entertainment") &&
-      loc.city.toLowerCase() === day.cityId &&
-      !usedLocationIds.has(loc.id),
+  // Find kid-friendly locations from the database (parks, gardens, family-friendly attractions)
+  const kidFriendlyLocations = await fetchLocationsByCategories(
+    ["park", "garden", "museum", "entertainment"],
+    {
+      city: day.cityId,
+      limit: 30,
+      excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
+      requirePlaceId: true,
+    },
   );
 
   if (kidFriendlyLocations.length === 0) {
@@ -414,4 +425,3 @@ function generateRefinementExplanation(day: TripDay, type: RefinementType): stri
       return day.explanation ?? "";
   }
 }
-
