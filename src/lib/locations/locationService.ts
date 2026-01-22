@@ -1,0 +1,262 @@
+/**
+ * Server-side location service for fetching locations from the database
+ *
+ * This service replaces the need for MOCK_LOCATIONS by providing async functions
+ * to query the real 2,586 locations stored in Supabase.
+ */
+
+import { createClient } from "@/lib/supabase/server";
+import type { Location } from "@/types/location";
+import {
+  LOCATION_ITINERARY_COLUMNS,
+  LOCATION_LISTING_COLUMNS,
+  type LocationDbRow,
+  type LocationListingDbRow,
+} from "@/lib/supabase/projections";
+
+/**
+ * Transforms a database row to a Location type
+ * Works with both full LocationDbRow and LocationListingDbRow
+ */
+export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbRow): Location {
+  // Base fields present in both types
+  const base: Location = {
+    id: row.id,
+    name: row.name,
+    region: row.region,
+    city: row.city,
+    prefecture: row.prefecture ?? undefined,
+    category: row.category,
+    image: row.image,
+    minBudget: row.min_budget ?? undefined,
+    estimatedDuration: row.estimated_duration ?? undefined,
+    shortDescription: "short_description" in row ? row.short_description ?? undefined : undefined,
+    rating: "rating" in row ? row.rating ?? undefined : undefined,
+    reviewCount: "review_count" in row ? row.review_count ?? undefined : undefined,
+    placeId: row.place_id ?? undefined,
+    primaryPhotoUrl: "primary_photo_url" in row ? row.primary_photo_url ?? undefined : undefined,
+  };
+
+  // Extended fields only present in full LocationDbRow
+  if ("operating_hours" in row) {
+    const fullRow = row as LocationDbRow;
+    return {
+      ...base,
+      operatingHours: fullRow.operating_hours ?? undefined,
+      recommendedVisit: fullRow.recommended_visit ?? undefined,
+      preferredTransitModes: fullRow.preferred_transit_modes ?? undefined,
+      coordinates: fullRow.coordinates ?? undefined,
+      timezone: fullRow.timezone ?? undefined,
+    };
+  }
+
+  return base;
+}
+
+/**
+ * Fetches a single location by ID
+ *
+ * @param id - The location ID
+ * @returns The location or null if not found
+ */
+export async function fetchLocationById(id: string): Promise<Location | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("locations")
+    .select(LOCATION_ITINERARY_COLUMNS)
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return transformDbRowToLocation(data as unknown as LocationDbRow);
+}
+
+/**
+ * Fetches multiple locations by their IDs
+ *
+ * @param ids - Array of location IDs
+ * @returns Array of locations (may be fewer than requested if some IDs not found)
+ */
+export async function fetchLocationsByIds(ids: string[]): Promise<Location[]> {
+  if (ids.length === 0) {
+    return [];
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("locations")
+    .select(LOCATION_ITINERARY_COLUMNS)
+    .in("id", ids);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+}
+
+/**
+ * Fetches a single location by name (case-insensitive)
+ *
+ * @param name - The location name to search for
+ * @returns The location or null if not found
+ */
+export async function fetchLocationByName(name: string): Promise<Location | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("locations")
+    .select(LOCATION_ITINERARY_COLUMNS)
+    .ilike("name", name)
+    .limit(1)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return transformDbRowToLocation(data as unknown as LocationDbRow);
+}
+
+/**
+ * Options for filtering locations by city
+ */
+export interface FetchByCityOptions {
+  /** Limit the number of results */
+  limit?: number;
+  /** Exclude specific location IDs */
+  excludeIds?: string[];
+  /** Only include locations with valid place_id */
+  requirePlaceId?: boolean;
+}
+
+/**
+ * Fetches locations by city
+ *
+ * @param city - The city name to filter by
+ * @param options - Additional filtering options
+ * @returns Array of matching locations
+ */
+export async function fetchLocationsByCity(
+  city: string,
+  options: FetchByCityOptions = {},
+): Promise<Location[]> {
+  const { limit = 100, excludeIds = [], requirePlaceId = true } = options;
+
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("locations")
+    .select(LOCATION_ITINERARY_COLUMNS)
+    .ilike("city", city);
+
+  if (requirePlaceId) {
+    query = query.not("place_id", "is", null).neq("place_id", "");
+  }
+
+  if (excludeIds.length > 0) {
+    // Use .not('id', 'in', excludeIds) to exclude specific IDs
+    for (const id of excludeIds) {
+      query = query.neq("id", id);
+    }
+  }
+
+  const { data, error } = await query.limit(limit);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+}
+
+/**
+ * Options for filtering locations by categories
+ */
+export interface FetchByCategoriesOptions {
+  /** Limit the number of results */
+  limit?: number;
+  /** Filter by city (optional) */
+  city?: string;
+  /** Exclude specific location IDs */
+  excludeIds?: string[];
+  /** Only include locations with valid place_id */
+  requirePlaceId?: boolean;
+}
+
+/**
+ * Fetches locations by categories
+ *
+ * @param categories - Array of category names to filter by
+ * @param options - Additional filtering options
+ * @returns Array of matching locations
+ */
+export async function fetchLocationsByCategories(
+  categories: string[],
+  options: FetchByCategoriesOptions = {},
+): Promise<Location[]> {
+  if (categories.length === 0) {
+    return [];
+  }
+
+  const { limit = 100, city, excludeIds = [], requirePlaceId = true } = options;
+
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("locations")
+    .select(LOCATION_ITINERARY_COLUMNS)
+    .in("category", categories);
+
+  if (city) {
+    query = query.ilike("city", city);
+  }
+
+  if (requirePlaceId) {
+    query = query.not("place_id", "is", null).neq("place_id", "");
+  }
+
+  if (excludeIds.length > 0) {
+    for (const id of excludeIds) {
+      query = query.neq("id", id);
+    }
+  }
+
+  const { data, error } = await query.limit(limit);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+}
+
+/**
+ * Fetches locations for batch API endpoint (listing columns only)
+ *
+ * @param ids - Array of location IDs
+ * @returns Array of locations with listing columns
+ */
+export async function fetchLocationsByIdsForListing(ids: string[]): Promise<Location[]> {
+  if (ids.length === 0) {
+    return [];
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("locations")
+    .select(LOCATION_LISTING_COLUMNS)
+    .in("id", ids);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
+}
