@@ -1,7 +1,8 @@
 import { logger } from "./logger";
 
 // DEBUG: Log Mapbox token status at build time (remove after debugging)
-console.log("[ENV DEBUG] NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:", process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ? `present (${process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN.substring(0, 10)}...)` : "MISSING");
+const _debugToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+console.log("[ENV DEBUG] NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:", _debugToken ? `present (${_debugToken.substring(0, 10)}...)` : "MISSING");
 
 /**
  * Environment variable validation and type-safe access
@@ -149,6 +150,8 @@ let envConfig: EnvConfig;
 
 try {
   envConfig = validateEnv();
+  // DEBUG: Log envConfig mapbox token after creation
+  console.log("[ENV DEBUG] envConfig.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN:", envConfig.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN ? `present (${envConfig.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN.substring(0, 10)}...)` : "MISSING");
 } catch (error) {
   logger.error(
     "Environment validation error. Set VALIDATE_ENV=false to bypass temporarily.",

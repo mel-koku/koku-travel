@@ -208,12 +208,7 @@ export function TripMap() {
     );
 
     if (!bounds.isEmpty()) {
-      const paddedBounds = (
-        bounds as InstanceType<MapboxModule["LngLatBounds"]> & {
-          pad: (padding: number) => InstanceType<MapboxModule["LngLatBounds"]>;
-        }
-      ).pad(0.3);
-      map.fitBounds(paddedBounds, { maxZoom: 10, duration: 300 });
+      map.fitBounds(bounds, { maxZoom: 10, duration: 300, padding: 40 });
     }
   }, [cityCoordinates, mapReady]);
 
