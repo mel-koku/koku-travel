@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Image from "next/image";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
-import type { ReplacementCandidate } from "@/lib/activityReplacement";
+import type { ReplacementCandidate } from "@/hooks/useReplacementCandidates";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { numberFormatter } from "./activityUtils";
 

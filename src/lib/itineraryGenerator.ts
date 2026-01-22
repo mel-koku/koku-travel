@@ -1,4 +1,3 @@
-import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { getRegionForCity, REGIONS } from "@/data/regions";
 import type { Itinerary, ItineraryTravelMode } from "@/types/itinerary";
 import type { Location } from "@/types/location";
@@ -40,7 +39,7 @@ const TRAVEL_TIME_BY_PACE = {
   fast: 15, // Quick transitions
 } as const;
 
-type LocationCategory = (typeof MOCK_LOCATIONS)[number]["category"];
+type LocationCategory = Location["category"];
 
 type CityInfo = {
   key: string;
@@ -67,8 +66,6 @@ REGIONS.forEach((region) => {
  * @param cities - Optional array of city names to filter by (reduces memory usage)
  */
 async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
-  const isDevelopment = process.env.NODE_ENV === "development";
-
   try {
     const supabase = await createClient();
     const allLocations: Location[] = [];
@@ -91,13 +88,8 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
 
       if (error) {
         const errorMessage = `Failed to fetch locations from database: ${error.message}`;
-        if (isDevelopment) {
-          logger.warn(errorMessage + " Falling back to mock data.", { error: error.message, page });
-          return [...MOCK_LOCATIONS];
-        } else {
-          logger.error(errorMessage, { error: error.message, page });
-          throw new Error(errorMessage);
-        }
+        logger.error(errorMessage, { error: error.message, page });
+        throw new Error(errorMessage);
       }
 
       if (!data || data.length === 0) {
@@ -141,33 +133,20 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
 
     if (allLocations.length === 0) {
       const errorMessage = "No locations found in database. Please ensure locations are seeded.";
-      if (isDevelopment) {
-        logger.warn(errorMessage + " Falling back to mock data.");
-        return [...MOCK_LOCATIONS];
-      } else {
-        logger.error(errorMessage);
-        throw new Error(errorMessage);
-      }
+      logger.error(errorMessage);
+      throw new Error(errorMessage);
     }
 
     logger.info(`Fetched ${allLocations.length} locations from database`);
     return allLocations;
   } catch (error) {
     // If it's already our custom error, re-throw it
-    if (error instanceof Error && !isDevelopment) {
+    if (error instanceof Error) {
       throw error;
     }
 
-    // In development, fall back to mock data
-    if (isDevelopment) {
-      logger.warn("Error fetching locations from database, falling back to mock data", {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return [...MOCK_LOCATIONS];
-    }
-
-    // In production, fail loudly
-    const errorMessage = `Failed to fetch locations from database: ${error instanceof Error ? error.message : String(error)}`;
+    // Unknown error - fail loudly
+    const errorMessage = `Failed to fetch locations from database: ${String(error)}`;
     logger.error(errorMessage, { error });
     throw new Error(errorMessage);
   }

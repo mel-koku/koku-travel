@@ -1,9 +1,9 @@
 import type { Location } from "@/types/location";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
-import { MOCK_LOCATIONS } from "@/data/mocks/mockLocations";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { detectMealGap, type MealType } from "@/data/mealCategories";
 import type { InterestId, TripBuilderData } from "@/types/trip";
+import { findLocationsForActivities } from "@/lib/itineraryLocations";
 
 /**
  * Find restaurants that match dietary restrictions
@@ -138,15 +138,21 @@ export function detectMealGapsInDay(
 }
 
 /**
- * Insert meal activities into a day's itinerary
+ * Insert meal activities into a day's itinerary.
+ * Now async because it needs to fetch location data from the database.
  */
-export function insertMealActivities(
+export async function insertMealActivities(
   day: ItineraryDay,
   builderData: TripBuilderData,
   availableRestaurants: Location[],
-): ItineraryDay {
+): Promise<ItineraryDay> {
   const gaps = detectMealGapsInDay(day);
   const newActivities: ItineraryActivity[] = [...day.activities];
+
+  // Pre-fetch all locations for activities to get coordinates
+  const placeActivities = newActivities
+    .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place");
+  const locationsMap = await findLocationsForActivities(placeActivities);
 
   // Process gaps in reverse order to maintain indices
   for (let gapIndex = gaps.length - 1; gapIndex >= 0; gapIndex--) {
@@ -155,6 +161,16 @@ export function insertMealActivities(
 
     // Find restaurant recommendation
     const travelerProfile = builderData.travelerProfile;
+
+    // Get previous activity location for distance calculation
+    const prevActivity = newActivities[gap.index - 1];
+    let currentLocation: { lat: number; lng: number } | undefined;
+
+    if (prevActivity?.kind === "place") {
+      const prevLocation = locationsMap.get(prevActivity.id);
+      currentLocation = prevLocation?.coordinates;
+    }
+
     const recommendation = findMealRecommendation(
       availableRestaurants,
       gap.mealType,
@@ -165,12 +181,7 @@ export function insertMealActivities(
         budgetTotal: travelerProfile?.budget.total,
         budgetPerDay: travelerProfile?.budget.perDay,
         dietaryRestrictions: builderData.accessibility?.dietary ?? [],
-        // Use previous activity location if available
-        currentLocation: newActivities[gap.index - 1]?.kind === "place"
-          ? MOCK_LOCATIONS.find(
-              (loc) => loc.name === (newActivities[gap.index - 1] as Extract<ItineraryActivity, { kind: "place" }>).title,
-            )?.coordinates
-          : undefined,
+        currentLocation,
       },
     );
 
@@ -204,4 +215,3 @@ export function insertMealActivities(
     activities: newActivities,
   };
 }
-
