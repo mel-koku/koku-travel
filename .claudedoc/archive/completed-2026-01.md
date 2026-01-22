@@ -20,7 +20,8 @@ This archive contains documentation for all features completed in January 2026.
 14. [Category Miscategorization Fix](#category-miscategorization-fix)
 15. [Google Places Full Enrichment](#google-places-full-enrichment)
 16. [Explore Page Filter/Search UX Overhaul](#filter-search-ux-overhaul)
-17. [Key Files Modified](#key-files-modified)
+17. [Trip Builder V2 Redesign](#trip-builder-v2-redesign)
+18. [Key Files Modified](#key-files-modified)
 
 ---
 
@@ -816,6 +817,79 @@ export function getSubTypeById(subTypeId: string): SubType | undefined
 1. First checks `location.googlePrimaryType` against sub-type's `googleTypes` array
 2. Falls back to name pattern matching using sub-type's `patterns` array
 3. Enables accurate filtering even for locations without Google Places data
+
+---
+
+## Trip Builder V2 Redesign
+
+**Date:** January 2026
+
+### Problem
+
+The original trip builder had 5 separate steps, which felt long and tedious. Users had to commit to selections without seeing what they would get. City selection from a full list was cumbersome, and there was no flexibility for users who know what they want vs. those who want guidance.
+
+### Solution
+
+Redesigned the trip builder from 5 steps to 2 steps with a split-screen live preview:
+
+**Step 1: Plan Your Trip**
+- Essentials form (duration, dates, entry point, budget)
+- Interest chips for selecting travel preferences (max 5)
+- Interactive map OR searchable list for city selection
+- Cities highlighted by relevance based on selected interests
+
+**Step 2: Review & Customize**
+- Review all selections from Step 1
+- New preference cards for group composition, accommodation, transportation, and dietary needs
+- Final preview before generating itinerary
+
+### Technical Implementation
+
+**City-Interest Mapping:**
+- Created build script `scripts/generate-city-interests.ts` to pre-compute city-interest data
+- Generated `src/data/cityInterests.json` with 837 cities and 8 interest categories
+- Fixed Supabase pagination issue (1000 row limit) by implementing batch fetching
+
+**City Relevance Calculation:**
+- New utilities in `src/lib/tripBuilder/cityRelevance.ts`
+- Relevance = percentage of user's selected interests that have at least 1 location in that city
+- Cities sorted and color-coded by relevance score
+
+**New Components:**
+- `TripBuilderV2.tsx` - Main orchestrator with responsive layout
+- `PlanStep.tsx` - Step 1 container with map/list toggle
+- `EssentialsForm.tsx` - Duration, dates, entry point, budget
+- `InterestChips.tsx` - Interest selection (max 5)
+- `CityMap.tsx` - Mapbox map with relevance-highlighted markers
+- `CityList.tsx` - Searchable city list with region grouping
+- `ReviewStep.tsx` - Step 2 container
+- `SelectionReview.tsx` - Summary of Step 1 selections
+- `PreferenceCards.tsx` - New preferences (group, accommodation, transport, dietary)
+- `LivePreview.tsx` - Preview panel container
+- `ItineraryPreview.tsx` - Day-by-day preview cards
+- `TripMap.tsx` - Map showing selected cities with route lines
+- `MobileBottomSheet.tsx` - Swipeable bottom sheet for mobile
+
+**New Types:**
+- `AccommodationStyle`: ryokan, budget, midrange, luxury
+- `TransportMode`: walk, train, bus, taxi, car
+- `TransportPreferences`: walking tolerance, preferred modes, rental car flag
+
+### Responsive Design
+
+- **Desktop**: Split-screen layout (inputs left, preview right)
+- **Mobile**: Stacked layout with swipeable bottom sheet preview
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `scripts/generate-city-interests.ts` | Build script for city-interest mapping |
+| `src/data/cityInterests.json` | Pre-computed city data (837 cities, 8 interests) |
+| `src/lib/tripBuilder/cityRelevance.ts` | City relevance calculation utilities |
+| `src/components/features/trip-builder-v2/` | All V2 components (15 files) |
+| `src/app/trip-builder-v2/page.tsx` | New route at /trip-builder-v2 |
+| `src/components/Header.tsx` | Added Trip Builder V2 to navigation |
 
 ---
 
