@@ -1,22 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { FormField } from "@/components/ui/FormField";
 import { Input } from "@/components/ui/Input";
 import { DatePicker } from "@/components/ui/DatePicker";
-import { Select } from "@/components/ui/Select";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { EntryPointSelector } from "./EntryPointSelector";
+import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import type { EntryPoint } from "@/types/trip";
 
 type EssentialsFormValues = {
   duration?: number;
   start?: string;
-  budgetTotal?: number;
-  budgetPerDay?: number;
-  budgetLevel?: "budget" | "moderate" | "luxury" | "";
 };
 
 export type EssentialsFormProps = {
@@ -33,18 +30,34 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     () => ({
       duration: data.duration ?? undefined,
       start: data.dates.start ?? "",
-      budgetTotal: data.budget?.total ?? undefined,
-      budgetPerDay: data.budget?.perDay ?? undefined,
-      budgetLevel: data.budget?.level ?? "",
     }),
-    [
-      data.duration,
-      data.dates.start,
-      data.budget?.total,
-      data.budget?.perDay,
-      data.budget?.level,
-    ]
+    [data.duration, data.dates.start]
   );
+
+  // Budget mode is tracked locally (UI state), while values are stored in context
+  const [budgetMode, setBudgetMode] = useState<BudgetMode>("perDay");
+
+  // Budget state (managed separately from react-hook-form)
+  const budgetValue = useMemo<BudgetValue | undefined>(() => {
+    const perDay = data.budget?.perDay;
+    const total = data.budget?.total;
+
+    // Return the appropriate amount based on current mode
+    if (budgetMode === "perDay" && perDay !== undefined) {
+      return { amount: perDay, mode: "perDay" };
+    }
+    if (budgetMode === "total" && total !== undefined) {
+      return { amount: total, mode: "total" };
+    }
+    // Fallback: if we have either value, show something
+    if (perDay !== undefined) {
+      return { amount: perDay, mode: "perDay" };
+    }
+    if (total !== undefined) {
+      return { amount: total, mode: "total" };
+    }
+    return undefined;
+  }, [data.budget?.perDay, data.budget?.total, budgetMode]);
 
   const {
     control,
@@ -62,9 +75,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
 
   const startValue = useWatch({ control, name: "start" });
   const durationValue = useWatch({ control, name: "duration" });
-  const budgetTotal = useWatch({ control, name: "budgetTotal" });
-  const budgetPerDay = useWatch({ control, name: "budgetPerDay" });
-  const budgetLevel = useWatch({ control, name: "budgetLevel" });
 
   // Calculate end date from start date and duration
   const calculatedEndDate = useMemo(() => {
@@ -97,6 +107,21 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     [setData]
   );
 
+  // Handle budget change from BudgetInput
+  const handleBudgetChange = useCallback(
+    (budget: { total?: number; perDay?: number }) => {
+      setData((prev) => ({
+        ...prev,
+        budget: {
+          ...prev.budget,
+          total: budget.total,
+          perDay: budget.perDay,
+        },
+      }));
+    },
+    [setData]
+  );
+
   // Sync form values to context on change
   useEffect(() => {
     let endDate = "";
@@ -119,20 +144,8 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
         start: startValue,
         end: endDate,
       },
-      budget: {
-        total: budgetTotal,
-        perDay: budgetPerDay,
-        level: budgetLevel ? (budgetLevel as "budget" | "moderate" | "luxury") : undefined,
-      },
     }));
-  }, [
-    durationValue,
-    startValue,
-    budgetTotal,
-    budgetPerDay,
-    budgetLevel,
-    setData,
-  ]);
+  }, [durationValue, startValue, setData]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -216,59 +229,14 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
 
       <div>
         <h4 className="text-sm font-medium text-gray-900">Budget (Optional)</h4>
-        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <FormField id="budget-level" label="Level" error={errors.budgetLevel?.message}>
-            <Controller
-              control={control}
-              name="budgetLevel"
-              render={({ field }) => (
-                <Select
-                  id="budget-level"
-                  placeholder="Select"
-                  options={[
-                    { label: "Budget", value: "budget" },
-                    { label: "Moderate", value: "moderate" },
-                    { label: "Luxury", value: "luxury" },
-                  ]}
-                  value={field.value ?? ""}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    field.onChange(val === "" ? undefined : val);
-                  }}
-                />
-              )}
-            />
-          </FormField>
-
-          <FormField id="budget-total" label="Total (¥)" error={errors.budgetTotal?.message}>
-            <Input
-              id="budget-total"
-              type="number"
-              min={0}
-              inputMode="numeric"
-              placeholder="50000"
-              className="min-h-[44px]"
-              {...register("budgetTotal", {
-                valueAsNumber: true,
-                min: { value: 0, message: "Cannot be negative" },
-              })}
-            />
-          </FormField>
-
-          <FormField id="budget-per-day" label="Per Day (¥)" error={errors.budgetPerDay?.message}>
-            <Input
-              id="budget-per-day"
-              type="number"
-              min={0}
-              inputMode="numeric"
-              placeholder="5000"
-              className="min-h-[44px]"
-              {...register("budgetPerDay", {
-                valueAsNumber: true,
-                min: { value: 0, message: "Cannot be negative" },
-              })}
-            />
-          </FormField>
+        <div className="mt-3">
+          <BudgetInput
+            id="budget"
+            duration={durationValue}
+            value={budgetValue}
+            onChange={handleBudgetChange}
+            onModeChange={setBudgetMode}
+          />
         </div>
       </div>
     </div>
