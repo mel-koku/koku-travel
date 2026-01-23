@@ -17,6 +17,7 @@
 | Rate Limiting | @upstash/ratelimit + @upstash/redis |
 | HTTP Client | Axios |
 | Web Scraping | Cheerio |
+| Secret Scanning | Gitleaks (pre-commit hook) |
 
 ## Project Structure
 
@@ -63,6 +64,7 @@ npm run build        # Production build
 npm run lint         # Run ESLint
 npm test             # Run all tests
 npm test -- tests/services/trip/  # Run specific tests
+gitleaks git --no-banner          # Scan repo for secrets
 ```
 
 ## Database
