@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requestRoute } from "@/lib/routing";
 import type { RoutingRequest } from "@/lib/routing/types";
+import { toRoutingMode, VALID_ROUTING_MODES } from "@/lib/routing/types";
+import type { ItineraryTravelMode } from "@/types/itinerary";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
@@ -9,6 +11,15 @@ import {
   getOptionalAuth,
 } from "@/lib/api/middleware";
 import { badRequest, internalError } from "@/lib/api/errors";
+
+/**
+ * Valid internal travel modes that can be translated to routing modes.
+ */
+const VALID_INTERNAL_MODES = new Set<string>([
+  "walk", "car", "taxi", "bicycle", "train", "subway", "bus", "tram", "ferry", "transit", "rideshare",
+  // Also accept already-translated modes for flexibility
+  "driving", "walking", "cycling",
+]);
 
 /**
  * POST /api/routing/route
@@ -59,20 +70,28 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Validate mode
-  const validModes = ["driving", "walking", "transit", "cycling"];
-  if (!validModes.includes(body.mode)) {
+  // Validate and translate internal travel mode to routing mode
+  if (!VALID_INTERNAL_MODES.has(body.mode)) {
     return addRequestContextHeaders(
-      badRequest(`Invalid mode. Must be one of: ${validModes.join(", ")}`, undefined, {
+      badRequest(`Invalid mode "${body.mode}". Must be one of: ${Array.from(VALID_INTERNAL_MODES).join(", ")}`, undefined, {
         requestId: finalContext.requestId,
       }),
       finalContext,
     );
   }
-  
+
+  // Translate internal mode to routing API mode
+  const routingMode = VALID_ROUTING_MODES.has(body.mode as "driving" | "walking" | "transit" | "cycling")
+    ? body.mode as "driving" | "walking" | "transit" | "cycling"
+    : toRoutingMode(body.mode as ItineraryTravelMode);
+
   try {
-    // Request the route
-    const result = await requestRoute(body);
+    // Request the route with translated mode
+    const routingRequest: RoutingRequest = {
+      ...body,
+      mode: routingMode,
+    };
+    const result = await requestRoute(routingRequest);
     
     // Extract instructions from legs
     const instructions: string[] = [];

@@ -6,6 +6,7 @@ import { TIMEOUT_10_SECONDS } from "@/lib/constants";
 type MapboxProfile = "driving" | "driving-traffic" | "walking" | "cycling";
 
 const MODE_PROFILE_MAP: Record<string, MapboxProfile> = {
+  // Internal travel modes
   walk: "walking",
   bicycle: "cycling",
   car: "driving",
@@ -18,6 +19,10 @@ const MODE_PROFILE_MAP: Record<string, MapboxProfile> = {
   bus: "driving",
   ferry: "driving",
   subwayline: "driving",
+  // Standard routing modes (for translated API requests)
+  walking: "walking",
+  driving: "driving",
+  cycling: "cycling",
 };
 
 function resolveProfile(mode: RoutingRequest["mode"]): {

@@ -20,6 +20,7 @@ import { logger } from "./logger";
 
 import { requestRoute } from "./routing";
 import type { RoutingResult } from "./routing/types";
+import { toItineraryMode } from "./routing/types";
 
 type PlannerOptions = {
   defaultDayStart?: string;
@@ -549,7 +550,7 @@ async function planItineraryDay(
             
             // Use the fastest transit option (as per requirement: if walk > 10 min, use fastest transit)
             route = fastestTransitRoute;
-            travelMode = route.mode;
+            travelMode = toItineraryMode(route.mode);
             logger.debug("Using transit mode", { mode: travelMode, durationMinutes: transitDurationMinutes });
           } else {
             // Fallback to walk if no transit options available
@@ -565,7 +566,7 @@ async function planItineraryDay(
         }
       }
       
-      travelMode = route.mode;
+      travelMode = toItineraryMode(route.mode);
       travelDurationSeconds = route.durationSeconds;
       travelDistanceMeters = route.distanceMeters;
       travelInstructions = route.legs.flatMap((leg) =>

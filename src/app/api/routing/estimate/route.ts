@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requestRoute } from "@/lib/routing";
 import type { RoutingRequest } from "@/lib/routing/types";
+import { toRoutingMode, VALID_ROUTING_MODES } from "@/lib/routing/types";
+import type { ItineraryTravelMode } from "@/types/itinerary";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
@@ -13,7 +15,15 @@ import { badRequest, internalError } from "@/lib/api/errors";
 
 const ROUTING_RATE_LIMIT = { maxRequests: 100, windowMs: 60 * 1000 };
 const MAX_REQUEST_SIZE = 64 * 1024; // 64KB is generous for routing payloads
-const VALID_MODES = new Set(["driving", "walking", "transit", "cycling"]);
+
+/**
+ * Valid internal travel modes that can be translated to routing modes.
+ */
+const VALID_INTERNAL_MODES = new Set<string>([
+  "walk", "car", "taxi", "bicycle", "train", "subway", "bus", "tram", "ferry", "transit", "rideshare",
+  // Also accept already-translated modes for flexibility
+  "driving", "walking", "cycling",
+]);
 
 /**
  * POST /api/routing/estimate
@@ -63,17 +73,27 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  if (!VALID_MODES.has(payload.mode)) {
+  // Validate and translate internal travel mode to routing mode
+  if (!VALID_INTERNAL_MODES.has(payload.mode)) {
     return addRequestContextHeaders(
-      badRequest(`Invalid mode. Must be one of: ${Array.from(VALID_MODES).join(", ")}`, undefined, {
+      badRequest(`Invalid mode "${payload.mode}". Must be one of: ${Array.from(VALID_INTERNAL_MODES).join(", ")}`, undefined, {
         requestId: finalContext.requestId,
       }),
       finalContext,
     );
   }
 
+  // Translate internal mode to routing API mode
+  const routingMode = VALID_ROUTING_MODES.has(payload.mode as "driving" | "walking" | "transit" | "cycling")
+    ? payload.mode as "driving" | "walking" | "transit" | "cycling"
+    : toRoutingMode(payload.mode as ItineraryTravelMode);
+
   try {
-    const result = await requestRoute(payload);
+    const routingRequest: RoutingRequest = {
+      ...payload,
+      mode: routingMode,
+    };
+    const result = await requestRoute(routingRequest);
     // "mock" provider indicates heuristic estimate (not from real routing API)
     const isEstimated = result.provider === "mock";
     return addRequestContextHeaders(

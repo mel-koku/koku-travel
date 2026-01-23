@@ -142,20 +142,15 @@ const createTestItinerary = (): Itinerary => ({
 
 describe("planItinerary", () => {
   it("injects travel segments and schedules visits against opening hours", async () => {
+    // The planner now makes 2 calls per activity pair: walk check + single transit call
+    // (Previously made 6 calls: walk + 5 transit modes)
     mockRequestRoute.mockImplementation((request: RoutingRequest) => {
       switch (request.mode) {
         case "walk":
-          return Promise.resolve(buildRoute("walk", 1800));
+        case "walking":
+          return Promise.resolve(buildRoute("walk", 1800)); // 30 min walk triggers transit search
         case "transit":
-          return Promise.resolve(buildRoute("transit", 1200));
-        case "bus":
-          return Promise.resolve(buildRoute("bus", 1500));
-        case "train":
-          return Promise.resolve(buildRoute("train", 900, "Take JR Nara Line toward Kyoto Station"));
-        case "subway":
-          return Promise.resolve(buildRoute("subway", 1100));
-        case "tram":
-          return Promise.resolve(buildRoute("tram", 1300));
+          return Promise.resolve(buildRoute("transit", 1200, "Take transit toward destination"));
         default:
           return Promise.resolve(buildRoute(request.mode, 1400));
       }
@@ -168,7 +163,8 @@ describe("planItinerary", () => {
       transitionBufferMinutes: 10,
     });
 
-    expect(mockRequestRoute).toHaveBeenCalledTimes(6);
+    // 2 calls: walk check + transit
+    expect(mockRequestRoute).toHaveBeenCalledTimes(2);
     const plannedDay = result.days[0];
     const [firstActivity, secondActivity] = plannedDay.activities;
 
@@ -181,14 +177,15 @@ describe("planItinerary", () => {
 
     expect(secondActivity.kind).toBe("place");
     if (secondActivity.kind === "place") {
-      expect(secondActivity.travelFromPrevious?.mode).toBe("train");
+      // Now uses consolidated "transit" mode instead of specific transit type
+      expect(secondActivity.travelFromPrevious?.mode).toBe("transit");
       expect(secondActivity.travelFromPrevious?.departureTime).toBe("10:10");
-      expect(secondActivity.travelFromPrevious?.arrivalTime).toBe("10:25");
+      expect(secondActivity.travelFromPrevious?.arrivalTime).toBe("10:30"); // 20 min transit
       expect(secondActivity.travelFromPrevious?.instructions).toEqual([
-        "Take JR Nara Line toward Kyoto Station",
+        "Take transit toward destination",
       ]);
-      expect(secondActivity.schedule?.arrivalTime).toBe("10:25");
-      expect(secondActivity.schedule?.departureTime).toBe("11:55");
+      expect(secondActivity.schedule?.arrivalTime).toBe("10:30");
+      expect(secondActivity.schedule?.departureTime).toBe("12:00");
       expect(secondActivity.schedule?.status).toBe("tentative");
     }
   });
