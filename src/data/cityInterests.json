@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-23T06:36:52.388Z",
+  "generatedAt": "2026-01-23T06:55:18.211Z",
   "totalLocations": 2586,
-  "totalCities": 642,
+  "totalCities": 640,
   "cities": {
     "Fukuoka": {
       "culture": 68,
@@ -1243,6 +1243,16 @@
       "nightlife": 0,
       "wellness": 0
     },
+    "Suwa": {
+      "culture": 3,
+      "history": 2,
+      "photography": 1,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "wellness": 0
+    },
     "Mito": {
       "nature": 4,
       "wellness": 3,
@@ -1627,16 +1637,6 @@
       "culture": 3,
       "photography": 2,
       "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
-    "Suwa": {
-      "culture": 3,
-      "history": 2,
-      "photography": 1,
       "food": 0,
       "nature": 0,
       "shopping": 0,
@@ -2512,6 +2512,16 @@
       "shopping": 0,
       "nightlife": 0,
       "history": 0
+    },
+    "Kumano": {
+      "nature": 1,
+      "photography": 1,
+      "wellness": 1,
+      "culture": 1,
+      "history": 1,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0
     },
     "Utazu": {
       "photography": 2,
@@ -3613,16 +3623,6 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "8522 Komono": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Nankoku": {
       "culture": 1,
       "history": 1,
@@ -3721,16 +3721,6 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0,
-      "history": 0
-    },
-    "1-1 Suwa": {
-      "culture": 0,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0,
       "history": 0
     },
     "Ebino": {
@@ -3852,16 +3842,6 @@
       "photography": 0,
       "nightlife": 0,
       "wellness": 0
-    },
-    "Kumano": {
-      "nature": 1,
-      "photography": 1,
-      "wellness": 1,
-      "culture": 0,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "history": 0
     },
     "Tsubame": {
       "culture": 1,
@@ -4123,7 +4103,7 @@
       "nightlife": 0,
       "history": 0
     },
-    "33-1 Nozuki Herai Shingo": {
+    "Shingo": {
       "culture": 1,
       "photography": 1,
       "food": 0,
@@ -4522,6 +4502,16 @@
       "nightlife": 0,
       "wellness": 0,
       "history": 0
+    },
+    "Komono": {
+      "culture": 1,
+      "history": 1,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "photography": 0,
+      "nightlife": 0,
+      "wellness": 0
     },
     "Otofuke": {
       "culture": 0,
@@ -5444,16 +5434,6 @@
       "history": 0
     },
     "Tozawa": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
-    "130  Ueji Arima": {
       "culture": 1,
       "history": 1,
       "food": 0,
@@ -7417,6 +7397,14 @@
         "lng": 133.4255528
       }
     },
+    "Suwa": {
+      "locationCount": 4,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 35.9982782,
+        "lng": 138.11914819999998
+      }
+    },
     "Mito": {
       "locationCount": 4,
       "region": "Kanto",
@@ -7727,14 +7715,6 @@
       "coordinates": {
         "lat": 35.3657,
         "lng": 138.77876899999998
-      }
-    },
-    "Suwa": {
-      "locationCount": 3,
-      "region": "Chubu",
-      "coordinates": {
-        "lat": 35.9982782,
-        "lng": 138.11914819999998
       }
     },
     "Ehime": {
@@ -8431,6 +8411,14 @@
       "coordinates": {
         "lat": 39.073325499999996,
         "lng": 139.86817159999998
+      }
+    },
+    "Kumano": {
+      "locationCount": 2,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 33.890485999999996,
+        "lng": 136.1164631
       }
     },
     "Utazu": {
@@ -9313,14 +9301,6 @@
         "lng": 137.9772366
       }
     },
-    "8522 Komono": {
-      "locationCount": 1,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 35.015018,
-        "lng": 136.4476607
-      }
-    },
     "Nankoku": {
       "locationCount": 1,
       "region": "Shikoku",
@@ -9399,14 +9379,6 @@
       "coordinates": {
         "lat": 44.029014100000005,
         "lng": 145.0798633
-      }
-    },
-    "1-1 Suwa": {
-      "locationCount": 1,
-      "region": "Chubu",
-      "coordinates": {
-        "lat": 36.052172399999996,
-        "lng": 138.112981
       }
     },
     "Ebino": {
@@ -9503,14 +9475,6 @@
       "coordinates": {
         "lat": 34.826752299999995,
         "lng": 137.3757774
-      }
-    },
-    "Kumano": {
-      "locationCount": 1,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 33.890485999999996,
-        "lng": 136.1164631
       }
     },
     "Tsubame": {
@@ -9721,7 +9685,7 @@
         "lng": 139.8035566
       }
     },
-    "33-1 Nozuki Herai Shingo": {
+    "Shingo": {
       "locationCount": 1,
       "region": "Tohoku",
       "coordinates": {
@@ -10039,6 +10003,14 @@
       "coordinates": {
         "lat": 26.283500699999998,
         "lng": 127.79967080000002
+      }
+    },
+    "Komono": {
+      "locationCount": 1,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 35.015018,
+        "lng": 136.4476607
       }
     },
     "Otofuke": {
@@ -10783,14 +10755,6 @@
       "coordinates": {
         "lat": 38.737622699999996,
         "lng": 140.143702
-      }
-    },
-    "130  Ueji Arima": {
-      "locationCount": 1,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 33.8799852,
-        "lng": 136.0935406
       }
     },
     "Hidaka": {
