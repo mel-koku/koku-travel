@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchPlaceCoordinates } from "@/lib/googlePlaces";
+import { fetchPlaceDetailsByPlaceId } from "@/lib/googlePlaces";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
@@ -9,8 +9,6 @@ import {
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
-import { createApiResponse } from "@/lib/api/pagination";
-import type { Location } from "@/types/location";
 import { googlePlacesLimiter } from "@/lib/cost/googlePlacesLimiter";
 import { featureFlags } from "@/lib/env/featureFlags";
 
@@ -99,12 +97,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const place = await fetchPlaceCoordinates(validatedPlaceId);
+    // Fetch full place details including category, description, photos, etc.
+    const result = await fetchPlaceDetailsByPlaceId(validatedPlaceId, name ?? undefined);
 
     // Record the API call
     googlePlacesLimiter.recordCall(tripId);
 
-    if (!place) {
+    if (!result) {
       return addRequestContextHeaders(
         badRequest(`Place not found for placeId: ${validatedPlaceId}`, undefined, {
           requestId: finalContext.requestId,
@@ -113,28 +112,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Create Location object from place data
-    const location: Location = {
-      id: validatedPlaceId,
-      name: name || place.displayName || "",
-      region: place.formattedAddress?.split(",").pop()?.trim() || "",
-      city: place.formattedAddress?.split(",")[0]?.trim() || "",
-      category: "point_of_interest",
-      image: "",
-      coordinates: {
-        lat: place.location.latitude,
-        lng: place.location.longitude,
-      },
-      placeId: place.placeId,
-    };
-
-    // Use standardized response format: { data: {...}, meta: { ... } }
-    const response = createApiResponse(location, {
-      requestId: finalContext.requestId,
-    });
-
+    // Return in format expected by useEntryPointLocation: { location, details }
     return addRequestContextHeaders(
-      NextResponse.json(response, {
+      NextResponse.json({
+        location: result.location,
+        details: result.details,
+        meta: {
+          requestId: finalContext.requestId,
+        },
+      }, {
         headers: {
           "Cache-Control": "public, max-age=86400, s-maxage=86400", // Cache for 24 hours
         },

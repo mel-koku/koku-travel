@@ -739,3 +739,255 @@ export async function fetchPlaceCoordinates(
   };
 }
 
+/**
+ * Extended payload type that includes all fields from DETAILS_FIELD_MASK
+ */
+type FullPlaceDetailsPayload = PlaceDetailsPayload & {
+  location?: {
+    latitude?: number;
+    longitude?: number;
+  };
+  primaryType?: string;
+  types?: string[];
+  businessStatus?: string;
+  priceLevel?: string;
+  accessibilityOptions?: {
+    wheelchairAccessibleEntrance?: boolean;
+    wheelchairAccessibleParking?: boolean;
+    wheelchairAccessibleRestroom?: boolean;
+    wheelchairAccessibleSeating?: boolean;
+  };
+  servesVegetarianFood?: boolean;
+  dineIn?: boolean;
+  takeout?: boolean;
+  delivery?: boolean;
+  servesBreakfast?: boolean;
+  servesBrunch?: boolean;
+  servesLunch?: boolean;
+  servesDinner?: boolean;
+};
+
+/**
+ * Maps Google Places primaryType to our internal category system.
+ * Returns a tuple of [category, subType] where subType is optional.
+ */
+function mapGoogleTypeToCategory(primaryType?: string, types?: string[]): { category: string; subType?: string } {
+  if (!primaryType) {
+    return { category: "point_of_interest" };
+  }
+
+  const type = primaryType.toLowerCase();
+
+  // Accommodation
+  if (type === "lodging" || type === "hotel" || type === "motel" || type === "resort_hotel" ||
+      type === "extended_stay_hotel" || type === "bed_and_breakfast" || type === "hostel" ||
+      type === "guest_house" || type === "ryokan" || type === "capsule_hotel") {
+    return { category: "hotel", subType: "hotel" };
+  }
+
+  // Transportation
+  if (type === "airport" || type === "international_airport" || type === "domestic_airport") {
+    return { category: "transport", subType: "airport" };
+  }
+  if (type === "train_station" || type === "transit_station" || type === "subway_station" ||
+      type === "light_rail_station" || type === "bus_station") {
+    return { category: "transport", subType: "station" };
+  }
+
+  // Culture - Shrines & Temples
+  if (type === "shinto_shrine" || type.includes("shrine")) {
+    return { category: "culture", subType: "shrine" };
+  }
+  if (type === "buddhist_temple" || type === "hindu_temple" || type.includes("temple")) {
+    return { category: "culture", subType: "temple" };
+  }
+
+  // Culture - Museums & Landmarks
+  if (type === "museum" || type === "art_gallery") {
+    return { category: "culture", subType: "museum" };
+  }
+  if (type === "castle" || type === "historical_landmark" || type === "monument" || type === "palace") {
+    return { category: "culture", subType: "landmark" };
+  }
+  if (type === "performing_arts_theater" || type === "concert_hall" || type === "cultural_center") {
+    return { category: "culture", subType: "performing_arts" };
+  }
+  if (type === "place_of_worship" || type === "church" || type === "mosque" || type === "synagogue") {
+    return { category: "culture" };
+  }
+
+  // Food & Drink
+  if (type === "restaurant" || type === "japanese_restaurant" || type === "sushi_restaurant" ||
+      type === "ramen_restaurant" || type === "italian_restaurant" || type === "chinese_restaurant" ||
+      type === "korean_restaurant" || type === "thai_restaurant" || type === "indian_restaurant" ||
+      type === "american_restaurant" || type === "french_restaurant" || type === "seafood_restaurant" ||
+      type === "steak_house" || type === "barbecue_restaurant" || type === "pizza_restaurant" ||
+      type === "fast_food_restaurant" || type === "meal_takeaway" || type === "meal_delivery") {
+    return { category: "food", subType: "restaurant" };
+  }
+  if (type === "cafe" || type === "coffee_shop" || type === "bakery" || type === "ice_cream_shop") {
+    return { category: "food", subType: "cafe" };
+  }
+  if (type === "bar" || type === "night_club" || type === "wine_bar" || type === "cocktail_bar") {
+    return { category: "food", subType: "bar" };
+  }
+  if (type === "market" || type === "supermarket" || type === "grocery_store" || type === "food_store") {
+    return { category: "food", subType: "market" };
+  }
+
+  // Nature
+  if (type === "park" || type === "city_park" || type === "dog_park" || type === "playground" ||
+      type === "national_park" || type === "state_park") {
+    return { category: "nature", subType: "park" };
+  }
+  if (type === "botanical_garden") {
+    return { category: "nature", subType: "garden" };
+  }
+  if (type === "beach") {
+    return { category: "nature", subType: "beach" };
+  }
+  if (type === "hiking_area" || type === "campground") {
+    return { category: "nature", subType: "mountain" };
+  }
+  if (type === "spa" || type === "hot_spring") {
+    return { category: "nature", subType: "onsen" };
+  }
+
+  // Shopping
+  if (type === "shopping_mall" || type === "department_store") {
+    return { category: "shopping", subType: "mall" };
+  }
+  if (type === "store" || type === "gift_shop" || type === "clothing_store" || type === "jewelry_store" ||
+      type === "electronics_store" || type === "book_store" || type === "convenience_store") {
+    return { category: "shopping", subType: "specialty" };
+  }
+
+  // Views & Attractions
+  if (type === "tourist_attraction" || type === "scenic_spot" || type === "observation_deck") {
+    return { category: "view", subType: "viewpoint" };
+  }
+  if (type === "tower") {
+    return { category: "view", subType: "tower" };
+  }
+
+  // Entertainment
+  if (type === "amusement_park" || type === "theme_park" || type === "aquarium" || type === "zoo" ||
+      type === "bowling_alley" || type === "movie_theater" || type === "casino") {
+    return { category: "entertainment" };
+  }
+
+  // Check types array for fallback matching
+  if (types && types.length > 0) {
+    for (const t of types) {
+      if (t === "lodging") return { category: "hotel", subType: "hotel" };
+      if (t === "restaurant" || t === "food") return { category: "food", subType: "restaurant" };
+      if (t === "tourist_attraction") return { category: "view" };
+      if (t === "park") return { category: "nature", subType: "park" };
+      if (t === "store" || t === "shopping_mall") return { category: "shopping" };
+    }
+  }
+
+  return { category: "point_of_interest" };
+}
+
+export type PlaceDetailsWithLocation = {
+  location: Location;
+  details: LocationDetails;
+};
+
+/**
+ * Fetch full place details by Google Place ID.
+ * Returns both a Location object (for display) and LocationDetails (for additional info).
+ * This is used for entry points and custom locations not in the database.
+ */
+export async function fetchPlaceDetailsByPlaceId(
+  placeId: string,
+  fallbackName?: string,
+): Promise<PlaceDetailsWithLocation | null> {
+  const apiKey = getApiKey();
+
+  const response = await fetchWithTimeout(
+    `${PLACES_API_BASE_URL}/places/${placeId}?languageCode=en`,
+    {
+      headers: {
+        "X-Goog-Api-Key": apiKey,
+        "X-Goog-FieldMask": DETAILS_FIELD_MASK,
+      },
+      cache: "no-store",
+    },
+    TIMEOUT_10_SECONDS,
+  );
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    logger.error("Failed to fetch place details by placeId", new Error(errorBody), {
+      placeId,
+      status: response.status,
+    });
+    return null;
+  }
+
+  const payload = (await response.json()) as FullPlaceDetailsPayload;
+
+  if (!payload.id) {
+    return null;
+  }
+
+  // Transform to LocationDetails
+  const details = transformPlaceDetails(payload, placeId);
+
+  // Map Google type to our category
+  const { category } = mapGoogleTypeToCategory(payload.primaryType, payload.types);
+
+  // Extract city from formatted address (typically first part before comma)
+  const addressParts = payload.formattedAddress?.split(",") ?? [];
+  const city = addressParts.length > 1 ? addressParts[addressParts.length - 2]?.trim() : addressParts[0]?.trim() ?? "";
+  const region = addressParts.length > 0 ? addressParts[addressParts.length - 1]?.trim() : "";
+
+  // Get first photo URL if available
+  let primaryPhotoUrl: string | undefined;
+  if (details.photos.length > 0 && details.photos[0]) {
+    primaryPhotoUrl = details.photos[0].proxyUrl;
+  }
+
+  // Build Location object
+  const location: Location = {
+    id: placeId,
+    name: payload.displayName?.text ?? fallbackName ?? "",
+    region: region || "Japan",
+    city: city || "Japan",
+    category,
+    image: primaryPhotoUrl ?? "",
+    coordinates: payload.location ? {
+      lat: payload.location.latitude ?? 0,
+      lng: payload.location.longitude ?? 0,
+    } : undefined,
+    placeId,
+    rating: payload.rating,
+    reviewCount: payload.userRatingCount,
+    shortDescription: payload.editorialSummary?.text,
+    googlePrimaryType: payload.primaryType,
+    googleTypes: payload.types,
+    businessStatus: payload.businessStatus as Location["businessStatus"],
+    primaryPhotoUrl,
+    accessibilityOptions: payload.accessibilityOptions,
+    dietaryOptions: payload.servesVegetarianFood !== undefined ? {
+      servesVegetarianFood: payload.servesVegetarianFood,
+    } : undefined,
+    serviceOptions: (payload.dineIn !== undefined || payload.takeout !== undefined || payload.delivery !== undefined) ? {
+      dineIn: payload.dineIn,
+      takeout: payload.takeout,
+      delivery: payload.delivery,
+    } : undefined,
+    mealOptions: (payload.servesBreakfast !== undefined || payload.servesBrunch !== undefined ||
+                  payload.servesLunch !== undefined || payload.servesDinner !== undefined) ? {
+      servesBreakfast: payload.servesBreakfast,
+      servesBrunch: payload.servesBrunch,
+      servesLunch: payload.servesLunch,
+      servesDinner: payload.servesDinner,
+    } : undefined,
+  };
+
+  return { location, details };
+}
+
