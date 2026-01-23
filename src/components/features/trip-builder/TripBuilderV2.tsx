@@ -16,17 +16,16 @@ export type TripBuilderV2Props = {
 type Step = 1 | 2;
 
 export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
-  const { data, reset } = useTripBuilder();
+  const { reset } = useTripBuilder();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [step1Valid, setStep1Valid] = useState(false);
   const [step2Valid, setStep2Valid] = useState(true);
   const [mobilePreviewOpen, setMobilePreviewOpen] = useState(false);
 
   const handleStep1ValidityChange = useCallback((isValid: boolean) => {
-    // Step 1 is valid if essentials are filled and at least one city is selected
-    const hasCities = (data.cities?.length ?? 0) > 0;
-    setStep1Valid(isValid && hasCities);
-  }, [data.cities?.length]);
+    // PlanStep already handles the combined validation (essentials + cities)
+    setStep1Valid(isValid);
+  }, []);
 
   const handleStep2ValidityChange = useCallback((isValid: boolean) => {
     setStep2Valid(isValid);

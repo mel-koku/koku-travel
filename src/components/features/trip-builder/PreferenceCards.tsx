@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -141,7 +141,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
   }, [formValues, setData]);
 
   // Sync on form value changes
-  useMemo(() => {
+  useEffect(() => {
     syncToContext();
     onValidityChange?.(true); // Step 2 is always valid (preferences are optional)
   }, [syncToContext, onValidityChange]);
