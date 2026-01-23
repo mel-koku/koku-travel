@@ -160,9 +160,8 @@ export function ItineraryMap({
     const bounds = new mapboxModule.LngLatBounds();
     activityPoints.forEach((point) => bounds.extend([point.coordinates.lng, point.coordinates.lat]));
     if (!bounds.isEmpty()) {
-      // LngLatBounds.pad() extends the bounds by a percentage - type exists but not fully exposed
-      const paddedBounds = (bounds as InstanceType<MapboxModule["LngLatBounds"]> & { pad: (padding: number) => InstanceType<MapboxModule["LngLatBounds"]> }).pad(0.3);
-      map.fitBounds(paddedBounds, { maxZoom: 16, duration: 400 });
+      // Use fitBounds with padding option instead of bounds.pad() which doesn't exist
+      map.fitBounds(bounds, { maxZoom: 16, duration: 400, padding: 50 });
     }
   }, [activityPoints, mapReady]);
 
