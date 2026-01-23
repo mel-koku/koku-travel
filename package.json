@@ -51,6 +51,7 @@
     "axios": "^1.13.2",
     "cheerio": "^1.1.2",
     "dotenv": "^17.2.3",
+    "framer-motion": "^12.29.0",
     "mapbox-gl": "^3.16.0",
     "next": "^16.1.2",
     "react": "^19.2.1",
