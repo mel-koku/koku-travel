@@ -8,6 +8,8 @@ export { PlanStep } from "./PlanStep";
 export { EssentialsForm } from "./EssentialsForm";
 export { EntryPointSelector } from "./EntryPointSelector";
 export type { EntryPointSelectorProps } from "./EntryPointSelector";
+export { BudgetInput } from "./BudgetInput";
+export type { BudgetInputProps, BudgetMode, BudgetValue } from "./BudgetInput";
 export { InterestChips } from "./InterestChips";
 export { CityMap } from "./CityMap";
 export { CityList } from "./CityList";
