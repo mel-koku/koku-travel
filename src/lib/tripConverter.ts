@@ -15,6 +15,7 @@ export function convertTripToItinerary(trip: Trip): Itinerary {
       neighborhood: activity.location?.city ?? day.cityId,
       tags: activity.location?.category ? [activity.location.category] : [],
       locationId: activity.locationId,
+      coordinates: activity.location?.coordinates,
       schedule: activity.startTime && activity.endTime
         ? {
             arrivalTime: activity.startTime,

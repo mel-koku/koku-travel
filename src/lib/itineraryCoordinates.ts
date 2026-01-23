@@ -11,15 +11,20 @@ export function getActivityCoordinates(
   if (activity.kind !== "place") {
     return null;
   }
-  
-  // Try to get coordinates from locationId first
+
+  // First check if activity has embedded coordinates (entry points, external places)
+  if (activity.coordinates) {
+    return activity.coordinates;
+  }
+
+  // Try to get coordinates from locationId
   if (activity.locationId) {
     const coords = getCoordinatesForLocationId(activity.locationId);
     if (coords) {
       return coords;
     }
   }
-  
+
   // Fallback to name-based lookup
   if (activity.title) {
     const coords = getCoordinatesForName(activity.title);
@@ -27,7 +32,7 @@ export function getActivityCoordinates(
       return coords;
     }
   }
-  
+
   return null;
 }
 
