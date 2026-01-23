@@ -203,6 +203,7 @@ export async function insertMealActivities(
         neighborhood: recommendation.city,
         tags: ["dining", gap.mealType],
         locationId: recommendation.id,
+        coordinates: recommendation.coordinates,
         notes: `${gap.mealType.charAt(0).toUpperCase() + gap.mealType.slice(1)} recommendation`,
       };
 

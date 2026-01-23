@@ -105,6 +105,10 @@ export type ItineraryActivity =
        */
       locationId?: string;
       /**
+       * Optional embedded coordinates (for entry points or external places).
+       */
+      coordinates?: { lat: number; lng: number };
+      /**
        * Meal type if this is a meal activity (breakfast, lunch, dinner)
        */
       mealType?: "breakfast" | "lunch" | "dinner";
