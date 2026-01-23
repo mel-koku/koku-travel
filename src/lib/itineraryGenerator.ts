@@ -59,11 +59,11 @@ REGIONS.forEach((region) => {
 });
 
 /**
- * Fetches locations from Supabase database, optionally filtered by cities.
+ * Fetches locations from Supabase database.
  * In production, throws errors if database is unavailable.
- * In development, falls back to mock data for easier local development.
  *
- * @param cities - Optional array of city names to filter by (reduces memory usage)
+ * City filtering is enabled after ward consolidation (e.g., "Sakyo Ward" → "Kyoto").
+ * The database now uses normalized city names that match trip builder city IDs.
  */
 async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
   try {
@@ -79,9 +79,13 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
         .select(LOCATION_ITINERARY_COLUMNS)
         .order("name", { ascending: true });
 
-      // Filter by cities if provided to reduce memory usage
+      // Apply city filter if cities are specified
       if (cities && cities.length > 0) {
-        query = query.in("city", cities);
+        // Capitalize city names to match database format (e.g., "kyoto" → "Kyoto")
+        const normalizedCities = cities.map(
+          (c) => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase()
+        );
+        query = query.in("city", normalizedCities);
       }
 
       const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
@@ -250,10 +254,8 @@ export async function generateItinerary(
   if (options?.locations && options.locations.length > 0) {
     allLocations = options.locations;
   } else {
-    // Determine cities to filter by for optimized database queries
-    // If user selected specific cities, filter at DB level to reduce memory usage
-    const selectedCities = data.cities && data.cities.length > 0 ? data.cities : undefined;
-    allLocations = await fetchAllLocations(selectedCities);
+    // Fetch locations filtered by selected cities (after ward consolidation)
+    allLocations = await fetchAllLocations(data.cities);
   }
   const { locationsByCityKey, locationsByRegionId } = buildLocationMaps(allLocations);
 

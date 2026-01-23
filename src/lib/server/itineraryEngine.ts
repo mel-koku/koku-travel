@@ -11,9 +11,10 @@ import { logger } from "@/lib/logger";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
 
 /**
- * Fetches locations from Supabase database, optionally filtered by cities.
+ * Fetches locations from Supabase database.
  *
- * @param cities - Optional array of city names to filter by (reduces memory usage)
+ * City filtering is enabled after ward consolidation (e.g., "Sakyo Ward" → "Kyoto").
+ * The database now uses normalized city names that match trip builder city IDs.
  */
 async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
   const supabase = await createClient();
@@ -28,9 +29,13 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
       .select(LOCATION_ITINERARY_COLUMNS)
       .order("name", { ascending: true });
 
-    // Filter by cities if provided to reduce memory usage
+    // Apply city filter if cities are specified
     if (cities && cities.length > 0) {
-      query = query.in("city", cities);
+      // Capitalize city names to match database format (e.g., "kyoto" → "Kyoto")
+      const normalizedCities = cities.map(
+        (c) => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase()
+      );
+      query = query.in("city", normalizedCities);
     }
 
     const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
@@ -181,18 +186,23 @@ function generateDayExplanation(
 }
 
 /**
+ * Result from generating a trip, including both domain model and storage format
+ */
+export type GeneratedTripResult = {
+  trip: Trip;
+  itinerary: Itinerary;
+};
+
+/**
  * Generates an itinerary from TripBuilderData
- * Returns a Trip domain model
+ * Returns both a Trip domain model and the raw Itinerary for storage
  */
 export async function generateTripFromBuilderData(
   builderData: TripBuilderData,
   tripId: string,
-): Promise<Trip> {
-  // Determine cities to filter by for optimized database queries
-  const selectedCities = builderData.cities && builderData.cities.length > 0 ? builderData.cities : undefined;
-
-  // Fetch locations from database (with fallback to mock data)
-  const allLocations = await fetchAllLocations(selectedCities);
+): Promise<GeneratedTripResult> {
+  // Fetch locations filtered by selected cities (after ward consolidation)
+  const allLocations = await fetchAllLocations(builderData.cities);
 
   // Generate itinerary using existing generator
   let itinerary = await generateItinerary(builderData);
@@ -257,7 +267,7 @@ export async function generateTripFromBuilderData(
   // Convert to Trip domain model
   const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);
 
-  return trip;
+  return { trip, itinerary };
 }
 
 /**

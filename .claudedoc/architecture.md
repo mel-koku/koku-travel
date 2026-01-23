@@ -255,6 +255,15 @@ Located in `src/lib/server/`. Server-only utilities for heavy computation.
 
 These modules run exclusively on the server to leverage database access and avoid exposing business logic to the client.
 
+### City Filtering
+
+The itinerary generator filters locations by selected cities. City names in the database are normalized:
+- Ward names consolidated to parent cities (e.g., "Sakyo Ward" → "Kyoto", "Minato City" → "Tokyo")
+- Japanese suffixes removed (e.g., "Fukuoka-shi" → "Fukuoka")
+- Ambiguous wards disambiguated using Google Places `prefecture` data
+
+This enables accurate filtering when users select cities in the trip builder.
+
 ## Mapbox Integration
 
 ### Service (`src/lib/mapbox/mapService.ts`)
