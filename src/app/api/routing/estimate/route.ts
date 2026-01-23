@@ -74,12 +74,15 @@ export async function POST(request: NextRequest) {
 
   try {
     const result = await requestRoute(payload);
+    // "mock" provider indicates heuristic estimate (not from real routing API)
+    const isEstimated = result.provider === "mock";
     return addRequestContextHeaders(
       NextResponse.json(
         {
           mode: result.mode,
           durationMinutes: Math.round(result.durationSeconds / 60),
           distanceMeters: result.distanceMeters,
+          isEstimated,
         },
         {
           headers: {

@@ -293,3 +293,68 @@ constructor() {
 | `ENABLE_MAPBOX` | Feature flag | Both |
 
 **Note:** `NEXT_PUBLIC_*` variables are embedded at build time. After adding/changing them in Vercel, you must redeploy (without build cache) for changes to take effect.
+
+## Routing System
+
+### Provider Chain (`src/lib/routing/provider.ts`)
+
+The routing system uses a fallback chain to ensure travel times are always available:
+
+1. **Cache check** - Returns cached route if available
+2. **Cheap mode** - If `CHEAP_MODE=true`, uses heuristic directly (no API calls)
+3. **Provider resolution** - Finds first enabled provider (Mapbox → Google)
+4. **Heuristic fallback** - If no provider or API error, falls back to heuristic
+
+```typescript
+// Fallback chain in requestRoute()
+1. getCachedRoute(request)  // Check cache first
+2. if (env.isCheapMode) → estimateHeuristicRoute()
+3. resolveProvider() → mapbox | google | null
+4. if (!provider) → estimateHeuristicRoute()
+5. try { provider.handler() } catch { estimateHeuristicRoute() }
+```
+
+### Heuristic Estimates
+
+When real routing APIs aren't available, the system uses Haversine distance with average speeds:
+
+| Mode | Speed (km/h) |
+|------|--------------|
+| walk | 4.5 |
+| bicycle | 15 |
+| car/taxi | 35 |
+| train | 45 |
+| subway | 32 |
+| transit | 28 |
+
+Heuristic results are marked with `provider: "mock"` and `isEstimated: true` in the API response.
+
+### Route Optimization (`src/lib/routeOptimizer.ts`)
+
+Nearest-neighbor algorithm for optimizing activity order:
+
+```typescript
+type OptimizeRouteResult = {
+  order: string[];        // Activity IDs in optimized order
+  optimizedCount: number; // Activities with coordinates
+  skippedCount: number;   // Activities missing coordinates
+  orderChanged: boolean;  // Whether order actually changed
+};
+```
+
+### Travel Segment Display
+
+Travel segments include an `isEstimated` flag to distinguish real vs. heuristic times:
+
+```typescript
+type ItineraryTravelSegment = {
+  mode: ItineraryTravelMode;
+  durationMinutes: number;
+  isEstimated?: boolean;  // True if heuristic estimate
+  // ...
+};
+```
+
+The UI shows:
+- Loading spinner when `durationMinutes === 0` (calculating)
+- "~est" badge when `isEstimated === true`
