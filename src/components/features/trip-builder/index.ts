@@ -1,4 +1,4 @@
-// Trip Builder V2 - Redesigned 2-step flow with live preview
+// Trip Builder - 2-step flow with live preview
 
 export { TripBuilderV2 } from "./TripBuilderV2";
 export type { TripBuilderV2Props } from "./TripBuilderV2";
@@ -6,6 +6,8 @@ export type { TripBuilderV2Props } from "./TripBuilderV2";
 // Step 1 components
 export { PlanStep } from "./PlanStep";
 export { EssentialsForm } from "./EssentialsForm";
+export { EntryPointSelector } from "./EntryPointSelector";
+export type { EntryPointSelectorProps } from "./EntryPointSelector";
 export { InterestChips } from "./InterestChips";
 export { CityMap } from "./CityMap";
 export { CityList } from "./CityList";
