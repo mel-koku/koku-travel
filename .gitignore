@@ -164,3 +164,7 @@ docs/BRANCH_QUICK_START.md
 
 # Scraped data (temporary)
 tmp/
+
+# Migration logs
+scripts/*-log-*.json
+scripts/*.db
