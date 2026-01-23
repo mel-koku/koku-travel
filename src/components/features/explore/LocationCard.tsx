@@ -5,7 +5,7 @@ import { memo, useRef } from "react";
 
 import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
-import { useLocationEditorialSummary, useLocationDisplayName } from "@/state/locationDetailsStore";
+import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import type { Location } from "@/types/location";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 
@@ -17,10 +17,9 @@ type LocationCardProps = {
 export const LocationCard = memo(function LocationCard({ location, onSelect }: LocationCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const active = isInWishlist(location.id);
-  const cachedEditorialSummary = useLocationEditorialSummary(location.id);
-  const cachedDisplayName = useLocationDisplayName(location.id);
-  const displayName = getLocationDisplayName(cachedDisplayName, location);
-  const summary = getShortOverview(location, cachedEditorialSummary);
+  const { details } = useLocationDetailsQuery(location.id);
+  const displayName = getLocationDisplayName(details?.displayName ?? null, location);
+  const summary = getShortOverview(location, details?.editorialSummary ?? null);
   const estimatedDuration = location.estimatedDuration?.trim();
   const rating = getLocationRating(location);
   const reviewCount = getLocationReviewCount(location);

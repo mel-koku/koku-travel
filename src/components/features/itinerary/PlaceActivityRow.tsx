@@ -9,7 +9,7 @@ const LocationDetailsModal = dynamic(
   () => import("@/components/features/explore/LocationDetailsModal").then((m) => ({ default: m.LocationDetailsModal })),
   { ssr: false }
 );
-import { useLocationEditorialSummary } from "@/state/locationDetailsStore";
+import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { useActivityLocation } from "@/hooks/useActivityLocations";
@@ -213,7 +213,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       }
       return fetchedLocation ?? buildFallbackLocation(activity);
     }, [activity, isEntryPoint, entryPointLocation, fetchedLocation]);
-    const cachedEditorialSummary = useLocationEditorialSummary(placeLocation?.id);
+    const { details: locationDetails } = useLocationDetailsQuery(placeLocation?.id ?? null);
 
     // Check availability when location is available
     useEffect(() => {
@@ -270,7 +270,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     }, [activity, placeLocation, allActivities]);
 
     const summary = placeLocation
-      ? getShortOverview(placeLocation, cachedEditorialSummary)
+      ? getShortOverview(placeLocation, locationDetails?.editorialSummary ?? null)
       : null;
     const rating = placeLocation ? getLocationRating(placeLocation) : null;
     const reviewCount = placeLocation
