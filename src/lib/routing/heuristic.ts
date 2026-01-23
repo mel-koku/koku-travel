@@ -1,6 +1,7 @@
 import type { RoutingRequest, RoutingResult } from "./types";
 
 const AVERAGE_SPEED_KMH: Record<string, number> = {
+  // Internal travel modes
   walk: 4.5,
   bicycle: 15,
   bus: 20,
@@ -12,6 +13,10 @@ const AVERAGE_SPEED_KMH: Record<string, number> = {
   taxi: 35,
   rideshare: 35,
   ferry: 25,
+  // Standard routing modes (for translated API requests)
+  walking: 4.5,
+  driving: 35,
+  cycling: 15,
 };
 
 function toRadians(deg: number) {

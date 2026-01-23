@@ -80,7 +80,11 @@ describe("POST /api/itinerary/plan", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     // Default mock implementations
-    mockGenerateTripFromBuilderData.mockResolvedValue(createMockTrip("trip-123"));
+    // API expects { trip, itinerary } structure
+    mockGenerateTripFromBuilderData.mockResolvedValue({
+      trip: createMockTrip("trip-123"),
+      itinerary: { days: [] },
+    });
     mockValidateTripConstraints.mockReturnValue({ valid: true, issues: [] });
   });
 
@@ -231,7 +235,10 @@ describe("POST /api/itinerary/plan", () => {
 
     it("should use provided tripId when specified", async () => {
       const customTripId = "custom-trip-id";
-      mockGenerateTripFromBuilderData.mockResolvedValue(createMockTrip(customTripId));
+      mockGenerateTripFromBuilderData.mockResolvedValue({
+        trip: createMockTrip(customTripId),
+        itinerary: { days: [] },
+      });
 
       const request = createMockRequest("https://example.com/api/itinerary/plan", {
         method: "POST",

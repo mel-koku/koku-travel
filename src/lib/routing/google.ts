@@ -1,6 +1,7 @@
 import type { ItineraryTravelMode } from "@/types/itinerary";
 
-import type { RoutingRequest, RoutingResult, RoutingLeg, RoutingLegStep } from "./types";
+import type { RoutingRequest, RoutingResult, RoutingLeg, RoutingLegStep, TravelMode } from "./types";
+import { toItineraryMode } from "./types";
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { TIMEOUT_10_SECONDS } from "@/lib/constants";
 
@@ -55,7 +56,8 @@ type DirectionsResponse = {
   routes?: DirectionsRoute[];
 };
 
-const MODE_PARAM_MAP: Partial<Record<ItineraryTravelMode, string>> = {
+const MODE_PARAM_MAP: Record<string, string> = {
+  // Internal travel modes
   walk: "walking",
   bicycle: "bicycling",
   car: "driving",
@@ -67,6 +69,10 @@ const MODE_PARAM_MAP: Partial<Record<ItineraryTravelMode, string>> = {
   tram: "transit",
   bus: "transit",
   ferry: "transit",
+  // Standard routing modes (for translated API requests)
+  walking: "walking",
+  driving: "driving",
+  cycling: "bicycling",
 };
 
 const TRANSIT_MODE_MAP: Partial<Record<ItineraryTravelMode, string>> = {
@@ -253,12 +259,12 @@ function mergeStepGeometries(steps?: RoutingLegStep[]): RoutingLegStep["geometry
   return coordinates.length > 0 ? coordinates : undefined;
 }
 
-function resolveModeParam(mode: ItineraryTravelMode): string {
+function resolveModeParam(mode: TravelMode): string {
   return MODE_PARAM_MAP[mode] ?? "transit";
 }
 
-function resolveTransitModeParam(mode: ItineraryTravelMode): string | undefined {
-  return TRANSIT_MODE_MAP[mode];
+function resolveTransitModeParam(mode: TravelMode): string | undefined {
+  return TRANSIT_MODE_MAP[mode as ItineraryTravelMode];
 }
 
 function resolveDepartureTime(value?: string, timezone?: string): string | null {
@@ -291,10 +297,12 @@ function resolveDepartureTime(value?: string, timezone?: string): string | null 
 
 function buildLeg(
   leg: DirectionsLeg,
-  fallbackMode: ItineraryTravelMode,
+  fallbackMode: TravelMode,
   summary?: string,
 ): RoutingLeg {
-  const steps = mapSteps(leg.steps, fallbackMode);
+  // Convert to ItineraryTravelMode for internal step processing
+  const internalMode = toItineraryMode(fallbackMode);
+  const steps = mapSteps(leg.steps, internalMode);
   const geometry = mergeStepGeometries(steps);
 
   return {
