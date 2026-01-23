@@ -106,50 +106,33 @@ async function findFastestTransitRoute(
     return null;
   }
 
-  const transitModes: ItineraryTravelMode[] = ["transit", "bus", "train", "subway", "tram"];
-
-  const routePromises = transitModes.map(async (mode) => {
-    try {
-      return await requestRoute({
-        origin,
-        destination,
-        mode,
-        departureTime,
-        timezone,
-      });
-    } catch (error) {
-      logger.debug(`Failed to get route for mode ${mode}`, {
-        error: error instanceof Error ? error.message : String(error),
-      });
-      return null;
-    }
-  });
-
-  const routeResults = await Promise.all(routePromises);
-  const validRoutes = routeResults.filter((route): route is RoutingResult => Boolean(route));
-
-  if (validRoutes.length === 0) {
-    logger.warn("No transit routes found for any mode", {
+  // Only try "transit" mode which covers all public transit - reduces API calls significantly
+  try {
+    const route = await requestRoute({
       origin,
       destination,
-      transitModes,
+      mode: "transit",
+      departureTime,
+      timezone,
+    });
+    logger.debug("Transit route found", {
+      mode: route.mode,
+      durationSeconds: route.durationSeconds,
+    });
+    return route;
+  } catch (error) {
+    logger.debug("Failed to get transit route", {
+      error: error instanceof Error ? error.message : String(error),
     });
     return null;
   }
-
-  validRoutes.sort((a, b) => a.durationSeconds - b.durationSeconds);
-  const fastestRoute = validRoutes[0];
-
-  logger.debug("Fastest transit mode found", {
-    mode: fastestRoute?.mode,
-    durationSeconds: fastestRoute?.durationSeconds,
-    totalOptions: validRoutes.length,
-  });
-
-  return fastestRoute ?? null;
 }
 
 function lookupCoordinates(activity: Extract<ItineraryActivity, { kind: "place" }>, location: Location | null): Coordinates {
+  // First check if activity has embedded coordinates (entry points, external places)
+  if (activity.coordinates) {
+    return activity.coordinates;
+  }
   if (location?.coordinates) {
     return location.coordinates;
   }

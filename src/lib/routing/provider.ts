@@ -37,6 +37,24 @@ function resolveProvider(): ProviderConfig | null {
   return PROVIDERS.find((provider) => provider.isEnabled()) ?? null;
 }
 
+// Timeout wrapper for routing requests (5 seconds max)
+const ROUTING_TIMEOUT_MS = 5000;
+
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: () => T): Promise<T> {
+  let timeoutId: NodeJS.Timeout;
+  const timeoutPromise = new Promise<T>((resolve) => {
+    timeoutId = setTimeout(() => resolve(fallback()), timeoutMs);
+  });
+  try {
+    const result = await Promise.race([promise, timeoutPromise]);
+    clearTimeout(timeoutId!);
+    return result;
+  } catch (error) {
+    clearTimeout(timeoutId!);
+    throw error;
+  }
+}
+
 export async function requestRoute(request: RoutingRequest): Promise<RoutingResult> {
   const cached = getCachedRoute(request);
   if (cached) {
@@ -58,7 +76,19 @@ export async function requestRoute(request: RoutingRequest): Promise<RoutingResu
   }
 
   try {
-    const result = await provider.handler(request);
+    // Add timeout to prevent hanging on slow API responses
+    const result = await withTimeout(
+      provider.handler(request),
+      ROUTING_TIMEOUT_MS,
+      () => {
+        const fallback = estimateHeuristicRoute(request);
+        fallback.warnings = [
+          ...(fallback.warnings ?? []),
+          `Routing timed out after ${ROUTING_TIMEOUT_MS}ms, using heuristic estimate`,
+        ];
+        return fallback;
+      },
+    );
     setCachedRoute(request, result);
     return result;
   } catch (error) {
