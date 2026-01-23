@@ -15,6 +15,7 @@ import type { Coordinate } from "@/lib/routing/types";
 
 type TravelSegmentWrapperProps = {
   activity: Extract<ItineraryActivity, { kind: "place" }>;
+  previousActivity: Extract<ItineraryActivity, { kind: "place" }>;
   travelFromPrevious: NonNullable<Extract<ItineraryActivity, { kind: "place" }>["travelFromPrevious"]>;
   originCoordinates: Coordinate;
   destinationCoordinates: Coordinate;
@@ -24,6 +25,7 @@ type TravelSegmentWrapperProps = {
 
 function TravelSegmentWrapper({
   activity,
+  previousActivity,
   travelFromPrevious,
   originCoordinates,
   destinationCoordinates,
@@ -77,6 +79,7 @@ function TravelSegmentWrapper({
           path: routeData.path ?? travelFromPrevious.path,
           instructions: routeData.instructions ?? travelFromPrevious.instructions,
           arrivalTime: routeData.arrivalTime ?? travelFromPrevious.arrivalTime,
+          isEstimated: routeData.isEstimated ?? false,
         },
       });
     } catch (_error) {
@@ -98,6 +101,8 @@ function TravelSegmentWrapper({
       segment={travelFromPrevious}
       origin={originCoordinates}
       destination={destinationCoordinates}
+      originName={previousActivity.title}
+      destinationName={activity.title}
       timezone={dayTimezone}
       onModeChange={handleModeChange}
       isRecalculating={isRecalculatingRoute}
@@ -204,10 +209,13 @@ export function TimelineSection({
                   {travelFromPrevious &&
                     originCoordinates &&
                     destinationCoordinates &&
-                    activity.kind === "place" && (
+                    activity.kind === "place" &&
+                    previousActivity &&
+                    previousActivity.kind === "place" && (
                       <div className="mb-3">
                         <TravelSegmentWrapper
                           activity={activity}
+                          previousActivity={previousActivity}
                           travelFromPrevious={travelFromPrevious}
                           originCoordinates={originCoordinates}
                           destinationCoordinates={destinationCoordinates}
