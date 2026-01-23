@@ -28,7 +28,7 @@ src/
 ├── app/api/           # API endpoints
 ├── components/        # React components (features/, ui/)
 ├── hooks/             # React Query hooks (central exports in index.ts)
-├── lib/               # Utilities (supabase/, routing/, locations/)
+├── lib/               # Utilities (supabase/, routing/, locations/, scoring/, server/)
 ├── services/          # Domain services (sync/, trip/)
 └── types/             # TypeScript definitions
 ```
@@ -49,5 +49,5 @@ src/
 ## Current Stats
 
 - **Locations**: 2,586 (enriched with Google Places data)
-- **API Tests**: 149 tests across 11 files
+- **Tests**: 491 total across 38 files (135 API tests)
 - **Explore Page Load**: ~500ms (94% faster after optimization)
