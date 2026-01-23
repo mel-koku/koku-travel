@@ -80,12 +80,11 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
         .order("name", { ascending: true });
 
       // Apply city filter if cities are specified
+      // Use case-insensitive matching to handle multi-word cities like "Mount Yoshino"
       if (cities && cities.length > 0) {
-        // Capitalize city names to match database format (e.g., "kyoto" → "Kyoto")
-        const normalizedCities = cities.map(
-          (c) => c.charAt(0).toUpperCase() + c.slice(1).toLowerCase()
-        );
-        query = query.in("city", normalizedCities);
+        // Build OR condition for case-insensitive city matching
+        const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
+        query = query.or(cityFilters);
       }
 
       const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
