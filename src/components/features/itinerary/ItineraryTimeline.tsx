@@ -21,6 +21,7 @@ import {
   type Dispatch,
   type SetStateAction,
 } from "react";
+import { flushSync } from "react-dom";
 import {
   type Itinerary,
   type ItineraryActivity,
@@ -286,9 +287,11 @@ export const ItineraryTimeline = ({
       let movedActivity: ItineraryActivity | null = null as ItineraryActivity | null;
 
       // First, update the model with the new order
+      // Use flushSync to ensure state update completes synchronously before proceeding
       let activityIdsForReorder: string[] | null = null;
-      
-      setModel((current) => {
+
+      flushSync(() => {
+        setModel((current) => {
         let hasChanged = false;
 
         const nextDays = current.days.map((entry, index) => {
@@ -339,23 +342,20 @@ export const ItineraryTimeline = ({
         });
 
         return hasChanged ? { ...current, days: nextDays } : current;
-      });
+        });
+      }); // End flushSync - state update is now complete
 
-      // Call AppState reorder after state update completes (outside of setState)
+      // Call AppState reorder after state update - flushSync ensures state is updated
       if (activityIdsForReorder && tripId && day.id && onReorder) {
-        // Use setTimeout to defer to next tick, ensuring state update completes first
-        setTimeout(() => {
-          onReorder(day.id, activityIdsForReorder!);
-        }, 0);
+        onReorder(day.id, activityIdsForReorder);
       }
 
       // After model update, recalculate affected travel segments
+      // flushSync above ensures the model state is already updated
       if (movedActivity && movedActivity.kind === "place" && oldIndex !== -1 && newIndex !== -1) {
         const capturedActivity = movedActivity as Extract<ItineraryActivity, { kind: "place" }>;
-        // Use setTimeout to ensure state has updated, then recalculate
-        setTimeout(() => {
-          // Get current state to find affected activities
-          setModel((current) => {
+        // Get current state to find affected activities
+        setModel((current) => {
             const day = current.days[dayIndex];
             if (!day) return current;
 
@@ -485,14 +485,14 @@ export const ItineraryTimeline = ({
                     });
                   }
                 }),
-              ).catch(() => {
-                // Silently fail - segments will be recalculated on next plan
+              ).catch((error) => {
+                // Log warning for debugging - segments will be recalculated on next plan
+                console.warn("[ItineraryTimeline] Failed to recalculate travel segments after reorder:", error);
               });
             }
 
             return current;
           });
-        }, 0);
       }
     },
     [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, extendedActivities, isEntryPoint, day],
@@ -865,8 +865,9 @@ function TravelSegmentWrapper({
       destinationCoordinates
     ) {
       setHasAutoFetched(true);
-      handleModeChange(travelFromPrevious.mode).catch(() => {
-        // Silently fail - planning system will handle it
+      handleModeChange(travelFromPrevious.mode).catch((error) => {
+        // Log warning for debugging - planning system will recalculate on refresh
+        console.warn("[TravelSegmentWrapper] Failed to auto-fetch route:", error);
       });
     }
   }, [hasAutoFetched, isRecalculatingRoute, travelFromPrevious.durationMinutes, travelFromPrevious.mode, originCoordinates, destinationCoordinates, handleModeChange]);
