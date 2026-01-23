@@ -23,23 +23,40 @@ function haversineDistance(
   return R * c;
 }
 
+export type OptimizeRouteResult = {
+  /** Activity IDs in optimized order */
+  order: string[];
+  /** Number of activities that were optimized (had coordinates) */
+  optimizedCount: number;
+  /** Number of activities skipped due to missing coordinates */
+  skippedCount: number;
+  /** Whether the order changed from the original */
+  orderChanged: boolean;
+};
+
 /**
  * Optimize the route order of activities using nearest neighbor algorithm
  * with start and end point constraints.
- * 
+ *
  * @param activities - Array of activities to optimize
  * @param startPoint - Optional start point (must be provided)
  * @param endPoint - Optional end point
- * @returns Array of activity IDs in optimized order
+ * @returns Optimization result with order and statistics
  */
 export function optimizeRouteOrder(
   activities: ItineraryActivity[],
   startPoint?: EntryPoint,
   endPoint?: EntryPoint,
-): string[] {
+): OptimizeRouteResult {
+  const originalOrder = activities.map((a) => a.id);
   if (!startPoint) {
     // If no start point, return original order
-    return activities.map((a) => a.id);
+    return {
+      order: originalOrder,
+      optimizedCount: 0,
+      skippedCount: 0,
+      orderChanged: false,
+    };
   }
 
   // Separate place activities from notes
@@ -51,7 +68,12 @@ export function optimizeRouteOrder(
 
   if (placeActivities.length === 0) {
     // No place activities to optimize, return original order
-    return activities.map((a) => a.id);
+    return {
+      order: originalOrder,
+      optimizedCount: 0,
+      skippedCount: 0,
+      orderChanged: false,
+    };
   }
 
   // Get coordinates for all place activities
@@ -66,7 +88,12 @@ export function optimizeRouteOrder(
 
   if (activitiesWithCoords.length === 0) {
     // No activities with coordinates, return original order
-    return activities.map((a) => a.id);
+    return {
+      order: originalOrder,
+      optimizedCount: 0,
+      skippedCount: placeActivities.length,
+      orderChanged: false,
+    };
   }
 
   const startCoords = startPoint.coordinates;
@@ -182,6 +209,15 @@ export function optimizeRouteOrder(
     nextPlaceActivity = placeActivityIterator.next();
   }
 
-  return finalOrder;
+  // Check if order actually changed
+  const orderChanged = !originalOrder.every((id, i) => finalOrder[i] === id);
+  const skippedCount = placeActivities.filter((a) => activityCoords.get(a.id) === null).length;
+
+  return {
+    order: finalOrder,
+    optimizedCount: activitiesWithCoords.length,
+    skippedCount,
+    orderChanged,
+  };
 }
 
