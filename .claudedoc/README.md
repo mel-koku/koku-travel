@@ -49,5 +49,5 @@ src/
 ## Current Stats
 
 - **Locations**: 2,586 (enriched with Google Places data)
-- **Tests**: 491 total across 38 files (135 API tests)
+- **Tests**: 479 total across 36 files (shared utilities in `tests/utils/`)
 - **Explore Page Load**: ~500ms (94% faster after optimization)

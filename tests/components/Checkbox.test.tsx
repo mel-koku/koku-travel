@@ -2,7 +2,24 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Checkbox, CheckboxGroup } from "@/components/ui/Checkbox";
+import { generateAccessibilityTests } from "../utils/componentTestFactory";
 
+// Configure shared tests - checkbox has different patterns than text inputs
+const checkboxConfig = {
+  name: "Checkbox",
+  renderDefault: () => <Checkbox label="Test checkbox" />,
+  renderWithProps: (props: Partial<React.ComponentProps<typeof Checkbox>>) => (
+    <Checkbox label="Test checkbox" {...props} />
+  ),
+  role: "checkbox" as const,
+  supportsError: false,
+  supportsDisabled: true,
+};
+
+// Generate common accessibility tests
+generateAccessibilityTests(checkboxConfig);
+
+// Checkbox-specific tests
 describe("Checkbox", () => {
   describe("Rendering", () => {
     it("should render with label", () => {
@@ -28,12 +45,6 @@ describe("Checkbox", () => {
       render(<Checkbox label="Test checkbox" description="Description" />);
       const checkbox = screen.getByRole("checkbox");
       expect(checkbox).toHaveAttribute("aria-describedby");
-    });
-
-    it("should be disabled when disabled prop is true", () => {
-      render(<Checkbox label="Disabled checkbox" disabled />);
-      const checkbox = screen.getByRole("checkbox");
-      expect(checkbox).toBeDisabled();
     });
   });
 
@@ -108,4 +119,3 @@ describe("CheckboxGroup", () => {
     expect(screen.getByText("Choose all that apply")).toBeInTheDocument();
   });
 });
-

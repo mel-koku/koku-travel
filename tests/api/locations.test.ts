@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { NextResponse } from "next/server";
 import { GET } from "@/app/api/locations/route";
 import { createMockRequest } from "../utils/mocks";
+import {
+  generateRateLimitTests,
+  generateCacheHeaderTests,
+  expectPaginatedResponse,
+} from "../utils/apiTestHelpers";
 
 // Mock dependencies
 vi.mock("@/lib/api/rateLimit", () => ({
@@ -24,7 +28,6 @@ vi.mock("@/lib/api/middleware", () => ({
 let mockSupabaseCountResponse: { count: number | null; error: unknown } = { count: 100, error: null };
 let mockSupabaseDataResponse: { data: unknown[]; error: unknown } = { data: [], error: null };
 
-// Create a thenable object that acts like a Supabase query builder but resolves to the mock response
 function createCountQueryBuilder(getResponse: () => { count: number | null; error: unknown }) {
   const builder = {
     eq: () => builder,
@@ -55,14 +58,12 @@ vi.mock("@/lib/supabase/server", () => ({
     from: () => ({
       select: (_columns: string, options?: { count?: string; head?: boolean }) => {
         if (options?.head) {
-          // Count query - returns thenable builder
           return {
             not: () => ({
               neq: () => createCountQueryBuilder(() => mockSupabaseCountResponse),
             }),
           };
         }
-        // Data query - returns thenable builder
         return {
           not: () => ({
             neq: () => createDataQueryBuilder(() => mockSupabaseDataResponse),
@@ -93,48 +94,36 @@ function createMockLocations(count: number) {
   }));
 }
 
+const apiConfig = {
+  baseUrl: "https://example.com/api/locations",
+  handler: GET,
+  rateLimit: 100,
+  cacheMaxAge: 300,
+};
+
 describe("GET /api/locations", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Default mock implementations
     mockSupabaseCountResponse = { count: 100, error: null };
     mockSupabaseDataResponse = { data: createMockLocations(20), error: null };
   });
 
-  describe("Rate limiting", () => {
-    it("should enforce rate limit of 100 requests per minute", async () => {
-      const { checkRateLimit } = await import("@/lib/api/rateLimit");
-      vi.mocked(checkRateLimit).mockResolvedValueOnce(
-        NextResponse.json({ error: "Too many requests", code: "RATE_LIMIT_EXCEEDED" }, {
-          status: 429,
-        }),
-      );
-
-      const request = createMockRequest("https://example.com/api/locations");
-      const response = await GET(request);
-
-      expect(response.status).toBe(429);
-      const data = await response.json();
-      expect(data.code).toBe("RATE_LIMIT_EXCEEDED");
-    });
-  });
+  // Use shared test generators
+  generateRateLimitTests(apiConfig);
+  generateCacheHeaderTests(apiConfig);
 
   describe("Pagination", () => {
     it("should return paginated results with default limit", async () => {
-      const request = createMockRequest("https://example.com/api/locations");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
       const data = await response.json();
-      expect(data.data).toBeDefined();
-      expect(data.pagination).toBeDefined();
-      expect(data.pagination.page).toBe(1);
-      expect(data.pagination.limit).toBe(20);
-      expect(data.pagination.total).toBe(100);
+      expectPaginatedResponse(data, { page: 1, limit: 20, total: 100 });
     });
 
     it("should respect page parameter", async () => {
-      const request = createMockRequest("https://example.com/api/locations?page=2");
+      const request = createMockRequest(`${apiConfig.baseUrl}?page=2`);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -143,7 +132,7 @@ describe("GET /api/locations", () => {
     });
 
     it("should respect limit parameter", async () => {
-      const request = createMockRequest("https://example.com/api/locations?limit=50");
+      const request = createMockRequest(`${apiConfig.baseUrl}?limit=50`);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -152,7 +141,7 @@ describe("GET /api/locations", () => {
     });
 
     it("should cap limit at 100", async () => {
-      const request = createMockRequest("https://example.com/api/locations?limit=500");
+      const request = createMockRequest(`${apiConfig.baseUrl}?limit=500`);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -163,42 +152,37 @@ describe("GET /api/locations", () => {
     it("should include hasNext and hasPrev pagination info", async () => {
       mockSupabaseCountResponse = { count: 50, error: null };
 
-      const request = createMockRequest("https://example.com/api/locations?page=2&limit=20");
+      const request = createMockRequest(`${apiConfig.baseUrl}?page=2&limit=20`);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
       const data = await response.json();
-      expect(data.pagination.hasPrev).toBe(true);
-      expect(data.pagination.hasNext).toBe(true);
+      expectPaginatedResponse(data, { hasPrev: true, hasNext: true });
     });
   });
 
   describe("Filtering", () => {
     it("should filter by region", async () => {
-      const request = createMockRequest("https://example.com/api/locations?region=Kansai");
+      const request = createMockRequest(`${apiConfig.baseUrl}?region=Kansai`);
       const response = await GET(request);
-
       expect(response.status).toBe(200);
     });
 
     it("should filter by category", async () => {
-      const request = createMockRequest("https://example.com/api/locations?category=food");
+      const request = createMockRequest(`${apiConfig.baseUrl}?category=food`);
       const response = await GET(request);
-
       expect(response.status).toBe(200);
     });
 
     it("should filter by search term", async () => {
-      const request = createMockRequest("https://example.com/api/locations?search=temple");
+      const request = createMockRequest(`${apiConfig.baseUrl}?search=temple`);
       const response = await GET(request);
-
       expect(response.status).toBe(200);
     });
 
     it("should combine multiple filters", async () => {
-      const request = createMockRequest("https://example.com/api/locations?region=Kansai&category=attraction&search=temple");
+      const request = createMockRequest(`${apiConfig.baseUrl}?region=Kansai&category=attraction&search=temple`);
       const response = await GET(request);
-
       expect(response.status).toBe(200);
     });
   });
@@ -208,7 +192,7 @@ describe("GET /api/locations", () => {
       mockSupabaseCountResponse = { count: 0, error: null };
       mockSupabaseDataResponse = { data: [], error: null };
 
-      const request = createMockRequest("https://example.com/api/locations?search=nonexistent");
+      const request = createMockRequest(`${apiConfig.baseUrl}?search=nonexistent`);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -220,7 +204,7 @@ describe("GET /api/locations", () => {
 
   describe("Response transformation", () => {
     it("should transform database fields to camelCase", async () => {
-      const request = createMockRequest("https://example.com/api/locations");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -243,17 +227,16 @@ describe("GET /api/locations", () => {
       ];
       mockSupabaseDataResponse = { data: locationsWithMissingPlaceId, error: null };
 
-      const request = createMockRequest("https://example.com/api/locations");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
       const data = await response.json();
-      // Should only have 5 locations (2 without place_id filtered out)
       expect(data.data.length).toBe(5);
     });
 
     it("should include prefecture field in response", async () => {
-      const request = createMockRequest("https://example.com/api/locations");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -263,22 +246,11 @@ describe("GET /api/locations", () => {
     });
   });
 
-  describe("Cache headers", () => {
-    it("should set cache headers on successful response", async () => {
-      const request = createMockRequest("https://example.com/api/locations");
-      const response = await GET(request);
-
-      expect(response.status).toBe(200);
-      expect(response.headers.get("Cache-Control")).toContain("public");
-      expect(response.headers.get("Cache-Control")).toContain("max-age=300");
-    });
-  });
-
   describe("Error handling", () => {
     it("should return 500 on count query database error", async () => {
       mockSupabaseCountResponse = { count: null, error: { message: "Database connection failed" } };
 
-      const request = createMockRequest("https://example.com/api/locations");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(500);
@@ -289,7 +261,7 @@ describe("GET /api/locations", () => {
     it("should return 500 on data query database error", async () => {
       mockSupabaseDataResponse = { data: [], error: { message: "Query timeout" } };
 
-      const request = createMockRequest("https://example.com/api/locations");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(500);
