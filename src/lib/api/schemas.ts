@@ -238,9 +238,10 @@ const groupTypeSchema = z.enum(["solo", "couple", "family", "friends", "business
 
 /**
  * Schema for group information
+ * Uses nullish() to accept both null and undefined (UI may send null for unset values)
  */
 const groupSchema = z.object({
-  size: z.number().int().positive().max(100).optional(),
+  size: z.number().int().positive().max(100).nullish().transform(v => v ?? undefined),
   type: groupTypeSchema,
   childrenAges: z.array(z.number().int().min(0).max(18)).max(20).optional(),
 }).strict().optional();
@@ -276,11 +277,12 @@ const transportModeSchema = z.enum(["walk", "train", "bus", "taxi", "car"]);
 
 /**
  * Schema for transport preferences
+ * Uses nullish() to accept both null and undefined (UI may send null for unset values)
  */
 const transportPreferencesSchema = z.object({
-  walkingTolerance: z.number().min(0).max(50000).optional(),
+  walkingTolerance: z.number().min(0).max(50000).nullish().transform(v => v ?? undefined),
   preferredModes: z.array(transportModeSchema).max(5).optional(),
-  hasRentalCar: z.boolean().optional(),
+  hasRentalCar: z.boolean().nullish().transform(v => v ?? undefined),
 }).strict().optional();
 
 /**
