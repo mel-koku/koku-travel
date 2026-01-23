@@ -383,6 +383,10 @@ function resolveCoordinates(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
   resolvedLocation: Location | null,
 ): Coordinates | null {
+  // First check if activity has embedded coordinates (entry points, external places)
+  if (activity.coordinates) {
+    return activity.coordinates;
+  }
   const fromLocation = resolvedLocation?.coordinates ?? null;
   const fallbackId = resolvedLocation?.id ? getCoordinatesForLocationId(resolvedLocation.id) : null;
   const matchByName = resolvedLocation?.name ? getCoordinatesForName(resolvedLocation.name) : null;
