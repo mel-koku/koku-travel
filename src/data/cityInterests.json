@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-23T06:12:42.978Z",
+  "generatedAt": "2026-01-23T06:31:26.843Z",
   "totalLocations": 2586,
-  "totalCities": 670,
+  "totalCities": 660,
   "cities": {
     "Fukuoka": {
       "culture": 68,
@@ -273,6 +273,16 @@
       "nature": 3,
       "wellness": 3
     },
+    "Takamatsu": {
+      "shopping": 2,
+      "culture": 9,
+      "photography": 7,
+      "nature": 4,
+      "wellness": 4,
+      "history": 6,
+      "food": 3,
+      "nightlife": 0
+    },
     "Sapporo": {
       "culture": 14,
       "photography": 12,
@@ -302,16 +312,6 @@
       "nightlife": 1,
       "food": 0,
       "shopping": 0
-    },
-    "Takamatsu": {
-      "shopping": 2,
-      "culture": 7,
-      "photography": 6,
-      "nature": 4,
-      "wellness": 4,
-      "history": 5,
-      "food": 3,
-      "nightlife": 0
     },
     "Imabari": {
       "culture": 11,
@@ -373,6 +373,16 @@
       "food": 0,
       "nightlife": 0
     },
+    "Kochi": {
+      "culture": 10,
+      "photography": 5,
+      "history": 7,
+      "nature": 2,
+      "wellness": 2,
+      "food": 1,
+      "shopping": 1,
+      "nightlife": 0
+    },
     "Nagasaki": {
       "culture": 10,
       "history": 8,
@@ -381,16 +391,6 @@
       "wellness": 2,
       "food": 0,
       "shopping": 0,
-      "nightlife": 0
-    },
-    "Kochi": {
-      "culture": 9,
-      "photography": 5,
-      "history": 6,
-      "nature": 2,
-      "wellness": 2,
-      "food": 1,
-      "shopping": 1,
       "nightlife": 0
     },
     "Matsue": {
@@ -493,6 +493,16 @@
       "nightlife": 1,
       "food": 0
     },
+    "Naruto": {
+      "culture": 7,
+      "photography": 2,
+      "history": 5,
+      "shopping": 1,
+      "food": 0,
+      "nature": 0,
+      "nightlife": 0,
+      "wellness": 0
+    },
     "Kurashiki": {
       "food": 1,
       "shopping": 2,
@@ -509,6 +519,16 @@
       "wellness": 4,
       "culture": 4,
       "history": 3,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0
+    },
+    "Mitoyo": {
+      "culture": 5,
+      "history": 4,
+      "nature": 1,
+      "photography": 2,
+      "wellness": 1,
       "food": 0,
       "shopping": 0,
       "nightlife": 0
@@ -603,6 +623,16 @@
       "shopping": 1,
       "nightlife": 0
     },
+    "Kumakogen": {
+      "nature": 5,
+      "photography": 5,
+      "wellness": 4,
+      "culture": 2,
+      "history": 2,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0
+    },
     "Uchiko": {
       "nightlife": 1,
       "culture": 5,
@@ -628,16 +658,6 @@
       "history": 3,
       "nature": 1,
       "photography": 3,
-      "wellness": 1,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0
-    },
-    "Mitoyo": {
-      "culture": 4,
-      "history": 3,
-      "nature": 1,
-      "photography": 2,
       "wellness": 1,
       "food": 0,
       "shopping": 0,
@@ -690,16 +710,6 @@
       "food": 0,
       "nature": 0,
       "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
-    "Naruto": {
-      "culture": 5,
-      "photography": 2,
-      "shopping": 1,
-      "history": 3,
-      "food": 0,
-      "nature": 0,
       "nightlife": 0,
       "wellness": 0
     },
@@ -793,16 +803,6 @@
       "shopping": 0,
       "nightlife": 0
     },
-    "Kumakogen": {
-      "nature": 5,
-      "photography": 5,
-      "wellness": 4,
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0
-    },
     "Muroto": {
       "nature": 2,
       "photography": 3,
@@ -812,6 +812,16 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0
+    },
+    "Saijo": {
+      "culture": 6,
+      "history": 5,
+      "photography": 1,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "wellness": 0
     },
     "Tanabe": {
       "culture": 6,
@@ -932,16 +942,6 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0
-    },
-    "Saijo": {
-      "culture": 5,
-      "history": 4,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0
     },
     "Yoshinogawa": {
       "nature": 1,
@@ -1203,6 +1203,16 @@
       "nightlife": 0,
       "wellness": 0
     },
+    "Oshima": {
+      "nature": 3,
+      "photography": 3,
+      "wellness": 3,
+      "culture": 1,
+      "history": 1,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0
+    },
     "Tosa": {
       "shopping": 1,
       "culture": 2,
@@ -1293,16 +1303,6 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "Bizen": {
-      "culture": 4,
-      "history": 2,
-      "photography": 2,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Hyuga": {
       "culture": 2,
       "history": 2,
@@ -1312,6 +1312,16 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0
+    },
+    "Bizen": {
+      "culture": 4,
+      "history": 2,
+      "photography": 2,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "wellness": 0
     },
     "Ueda": {
       "culture": 3,
@@ -1392,6 +1402,16 @@
       "photography": 0,
       "nightlife": 0,
       "wellness": 0
+    },
+    "Awa": {
+      "culture": 2,
+      "history": 2,
+      "nature": 2,
+      "wellness": 2,
+      "photography": 2,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0
     },
     "Itoshima": {
       "food": 1,
@@ -1497,16 +1517,6 @@
       "culture": 3,
       "photography": 1,
       "history": 2,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
-    "Hita": {
-      "culture": 3,
-      "photography": 2,
-      "history": 1,
       "food": 0,
       "nature": 0,
       "shopping": 0,
@@ -1622,16 +1632,6 @@
       "shopping": 0,
       "nightlife": 0,
       "wellness": 0
-    },
-    "Oshima": {
-      "nature": 2,
-      "photography": 2,
-      "wellness": 2,
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0
     },
     "Suwa": {
       "culture": 3,
@@ -1857,6 +1857,16 @@
       "culture": 3,
       "history": 2,
       "photography": 1,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "wellness": 0
+    },
+    "Hita": {
+      "culture": 3,
+      "history": 1,
+      "photography": 2,
       "food": 0,
       "nature": 0,
       "shopping": 0,
@@ -2123,16 +2133,6 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "Awa": {
-      "nature": 2,
-      "wellness": 2,
-      "photography": 2,
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0
-    },
     "Niyodogawa": {
       "nature": 1,
       "wellness": 1,
@@ -2383,16 +2383,6 @@
       "nightlife": 0,
       "history": 0
     },
-    "左京区": {
-      "culture": 2,
-      "history": 2,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Uonuma": {
       "nature": 1,
       "photography": 1,
@@ -2402,6 +2392,16 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0
+    },
+    "左京区": {
+      "culture": 2,
+      "history": 2,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "photography": 0,
+      "nightlife": 0,
+      "wellness": 0
     },
     "Tenri": {
       "culture": 2,
@@ -2492,16 +2492,6 @@
       "shopping": 0,
       "nightlife": 0,
       "history": 0
-    },
-    "屋島": {
-      "culture": 2,
-      "photography": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0
     },
     "Tonosho": {
       "nature": 2,
@@ -2760,6 +2750,16 @@
       "nature": 0,
       "shopping": 0,
       "photography": 0,
+      "nightlife": 0,
+      "wellness": 0
+    },
+    "Shikokuchuo": {
+      "culture": 2,
+      "history": 1,
+      "photography": 1,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
       "nightlife": 0,
       "wellness": 0
     },
@@ -3463,16 +3463,6 @@
       "wellness": 0,
       "history": 0
     },
-    "渋谷区": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Kikuchi-shi and Yamaga": {
       "culture": 1,
       "history": 1,
@@ -3544,16 +3534,6 @@
       "wellness": 0
     },
     "Ama": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
-    "Agatsuma": {
       "culture": 1,
       "photography": 1,
       "food": 0,
@@ -3653,16 +3633,6 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "土成町": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "8522 Komono": {
       "culture": 1,
       "history": 1,
@@ -3674,16 +3644,6 @@
       "wellness": 0
     },
     "Nankoku": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
-    "大麻町": {
       "culture": 1,
       "history": 1,
       "food": 0,
@@ -3743,16 +3703,6 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "千代田区": {
-      "nature": 1,
-      "wellness": 1,
-      "photography": 1,
-      "culture": 0,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "history": 0
-    },
     "Gose": {
       "nature": 1,
       "photography": 1,
@@ -3792,16 +3742,6 @@
       "shopping": 0,
       "nightlife": 0,
       "history": 0
-    },
-    "Tendo": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
     },
     "1-1 Suwa": {
       "culture": 0,
@@ -4063,27 +4003,7 @@
       "wellness": 0,
       "history": 0
     },
-    "Odate": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Ushiku": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
-    "金田町": {
       "culture": 1,
       "history": 1,
       "food": 0,
@@ -4223,16 +4143,6 @@
       "nightlife": 0,
       "history": 0
     },
-    "春野町": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Sotogahama": {
       "culture": 1,
       "photography": 1,
@@ -4282,16 +4192,6 @@
       "shopping": 0,
       "nightlife": 0,
       "history": 0
-    },
-    "豊中町": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
     },
     "33-1 Nozuki Herai Shingo": {
       "culture": 1,
@@ -4433,6 +4333,16 @@
       "wellness": 0,
       "history": 0
     },
+    "千代田区": {
+      "nature": 1,
+      "wellness": 1,
+      "photography": 1,
+      "culture": 0,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "history": 0
+    },
     "Miyako": {
       "culture": 0,
       "food": 0,
@@ -4473,7 +4383,7 @@
       "wellness": 0,
       "history": 0
     },
-    "Obihiro": {
+    "Seiyo": {
       "culture": 1,
       "photography": 1,
       "food": 0,
@@ -4483,7 +4393,7 @@
       "wellness": 0,
       "history": 0
     },
-    "Seiyo": {
+    "Obihiro": {
       "culture": 1,
       "photography": 1,
       "food": 0,
@@ -4513,14 +4423,14 @@
       "nightlife": 0,
       "history": 0
     },
-    "南区": {
-      "nature": 1,
-      "wellness": 1,
+    "Soja": {
+      "culture": 1,
       "photography": 1,
-      "culture": 0,
       "food": 0,
+      "nature": 0,
       "shopping": 0,
       "nightlife": 0,
+      "wellness": 0,
       "history": 0
     },
     "Kasugabe": {
@@ -4532,6 +4442,16 @@
       "nightlife": 0,
       "wellness": 0,
       "history": 0
+    },
+    "Odate": {
+      "culture": 1,
+      "history": 1,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "photography": 0,
+      "nightlife": 0,
+      "wellness": 0
     },
     "Ochi": {
       "culture": 1,
@@ -4563,6 +4483,36 @@
       "wellness": 0,
       "history": 0
     },
+    "Agatsuma": {
+      "culture": 1,
+      "photography": 1,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "wellness": 0,
+      "history": 0
+    },
+    "南区": {
+      "nature": 1,
+      "wellness": 1,
+      "photography": 1,
+      "culture": 0,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "history": 0
+    },
+    "Tendo": {
+      "culture": 1,
+      "history": 1,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "photography": 0,
+      "nightlife": 0,
+      "wellness": 0
+    },
     "Kamijima": {
       "photography": 1,
       "nature": 1,
@@ -4583,7 +4533,7 @@
       "wellness": 0,
       "history": 0
     },
-    "小松町": {
+    "Shibuya": {
       "culture": 1,
       "history": 1,
       "food": 0,
@@ -4674,16 +4624,6 @@
       "history": 0
     },
     "Anan": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
-    "久万高原町": {
       "culture": 1,
       "history": 1,
       "food": 0,
@@ -4963,16 +4903,6 @@
       "nightlife": 0,
       "history": 0
     },
-    "大島町": {
-      "nature": 1,
-      "photography": 1,
-      "wellness": 1,
-      "culture": 0,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "history": 0
-    },
     "Tamura": {
       "culture": 1,
       "photography": 1,
@@ -5152,16 +5082,6 @@
       "shopping": 0,
       "nightlife": 0,
       "history": 0
-    },
-    "鳴門町": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
     },
     "Saihaku": {
       "nature": 1,
@@ -5513,7 +5433,7 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "清里町": {
+    "Kiyosato": {
       "culture": 1,
       "photography": 1,
       "food": 0,
@@ -6493,26 +6413,6 @@
       "nightlife": 0,
       "history": 0
     },
-    "Shikokuchuo": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
-    "Soja": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
     "Kiyosu": {
       "culture": 1,
       "photography": 1,
@@ -6921,6 +6821,14 @@
         "lng": 136.12580699999998
       }
     },
+    "Takamatsu": {
+      "locationCount": 19,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.351365,
+        "lng": 134.0466678
+      }
+    },
     "Sapporo": {
       "locationCount": 18,
       "region": "Hokkaido",
@@ -6943,14 +6851,6 @@
       "coordinates": {
         "lat": 33.8819126,
         "lng": 133.9285136
-      }
-    },
-    "Takamatsu": {
-      "locationCount": 17,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.351365,
-        "lng": 134.0466678
       }
     },
     "Imabari": {
@@ -7001,20 +6901,20 @@
         "lng": 134.53748729999998
       }
     },
+    "Kochi": {
+      "locationCount": 13,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.5608125,
+        "lng": 133.53148439999998
+      }
+    },
     "Nagasaki": {
       "locationCount": 13,
       "region": "Kyushu",
       "coordinates": {
         "lat": 32.7379381,
         "lng": 129.8732092
-      }
-    },
-    "Kochi": {
-      "locationCount": 12,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.5608125,
-        "lng": 133.53148439999998
       }
     },
     "Matsue": {
@@ -7097,6 +6997,14 @@
         "lng": 136.251846
       }
     },
+    "Naruto": {
+      "locationCount": 8,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.23617,
+        "lng": 134.6419817
+      }
+    },
     "Kurashiki": {
       "locationCount": 8,
       "region": "Chugoku",
@@ -7111,6 +7019,14 @@
       "coordinates": {
         "lat": 34.892542999999996,
         "lng": 134.6565904
+      }
+    },
+    "Mitoyo": {
+      "locationCount": 8,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.229981599999995,
+        "lng": 133.72434289999998
       }
     },
     "Onna": {
@@ -7185,6 +7101,14 @@
         "lng": 130.9291376
       }
     },
+    "Kumakogen": {
+      "locationCount": 7,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.7682517,
+        "lng": 133.11429540000003
+      }
+    },
     "Uchiko": {
       "locationCount": 7,
       "region": "Shikoku",
@@ -7207,14 +7131,6 @@
       "coordinates": {
         "lat": 34.2861245,
         "lng": 133.7684689
-      }
-    },
-    "Mitoyo": {
-      "locationCount": 7,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.229981599999995,
-        "lng": 133.72434289999998
       }
     },
     "Uruma": {
@@ -7255,14 +7171,6 @@
       "coordinates": {
         "lat": 33.2453424,
         "lng": 130.3025805
-      }
-    },
-    "Naruto": {
-      "locationCount": 6,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.23617,
-        "lng": 134.6419817
       }
     },
     "Oita": {
@@ -7337,20 +7245,20 @@
         "lng": 135.6866543
       }
     },
-    "Kumakogen": {
-      "locationCount": 6,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.7682517,
-        "lng": 133.11429540000003
-      }
-    },
     "Muroto": {
       "locationCount": 6,
       "region": "Shikoku",
       "coordinates": {
         "lat": 33.2432991,
         "lng": 134.1764781
+      }
+    },
+    "Saijo": {
+      "locationCount": 6,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.896117,
+        "lng": 133.129196
       }
     },
     "Tanabe": {
@@ -7447,14 +7355,6 @@
       "coordinates": {
         "lat": 37.1734714,
         "lng": 138.233013
-      }
-    },
-    "Saijo": {
-      "locationCount": 5,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.896117,
-        "lng": 133.129196
       }
     },
     "Yoshinogawa": {
@@ -7665,6 +7565,14 @@
         "lng": 134.3637559
       }
     },
+    "Oshima": {
+      "locationCount": 4,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 27.042603999999997,
+        "lng": 128.43240699999998
+      }
+    },
     "Tosa": {
       "locationCount": 4,
       "region": "Shikoku",
@@ -7737,20 +7645,20 @@
         "lng": 138.4330411
       }
     },
-    "Bizen": {
-      "locationCount": 4,
-      "region": "Chugoku",
-      "coordinates": {
-        "lat": 34.7390372,
-        "lng": 134.1613015
-      }
-    },
     "Hyuga": {
       "locationCount": 4,
       "region": "Kyushu",
       "coordinates": {
         "lat": 32.3382625,
         "lng": 131.6113509
+      }
+    },
+    "Bizen": {
+      "locationCount": 4,
+      "region": "Chugoku",
+      "coordinates": {
+        "lat": 34.7390372,
+        "lng": 134.1613015
       }
     },
     "Ueda": {
@@ -7815,6 +7723,14 @@
       "coordinates": {
         "lat": 34.2229812,
         "lng": 135.60572249999998
+      }
+    },
+    "Awa": {
+      "locationCount": 4,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.120753199999996,
+        "lng": 134.3780229
       }
     },
     "Itoshima": {
@@ -7905,14 +7821,6 @@
         "lng": 138.0142119
       }
     },
-    "Hita": {
-      "locationCount": 3,
-      "region": "Kyushu",
-      "coordinates": {
-        "lat": 33.3170211,
-        "lng": 130.9387325
-      }
-    },
     "Misasa": {
       "locationCount": 3,
       "region": "Chugoku",
@@ -7999,14 +7907,6 @@
       "coordinates": {
         "lat": 35.3657,
         "lng": 138.77876899999998
-      }
-    },
-    "Oshima": {
-      "locationCount": 3,
-      "region": "Kyushu",
-      "coordinates": {
-        "lat": 27.042603999999997,
-        "lng": 128.43240699999998
       }
     },
     "Suwa": {
@@ -8191,6 +8091,14 @@
       "coordinates": {
         "lat": 34.188351,
         "lng": 132.68399399999998
+      }
+    },
+    "Hita": {
+      "locationCount": 3,
+      "region": "Kyushu",
+      "coordinates": {
+        "lat": 33.3272617,
+        "lng": 130.9365976
       }
     },
     "Hamada": {
@@ -8401,14 +8309,6 @@
         "lng": 130.0215646
       }
     },
-    "Awa": {
-      "locationCount": 3,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.13378180000001,
-        "lng": 134.349793
-      }
-    },
     "Niyodogawa": {
       "locationCount": 2,
       "region": "Shikoku",
@@ -8609,20 +8509,20 @@
         "lng": 131.23125489999998
       }
     },
-    "左京区": {
-      "locationCount": 2,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 35.0389778,
-        "lng": 135.7730068
-      }
-    },
     "Uonuma": {
       "locationCount": 2,
       "region": "Chubu",
       "coordinates": {
         "lat": 37.1360563,
         "lng": 139.16994499999998
+      }
+    },
+    "左京区": {
+      "locationCount": 2,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 35.0389778,
+        "lng": 135.7730068
       }
     },
     "Tenri": {
@@ -8695,14 +8595,6 @@
       "coordinates": {
         "lat": 39.073325499999996,
         "lng": 139.86817159999998
-      }
-    },
-    "屋島": {
-      "locationCount": 2,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.3582697,
-        "lng": 134.0990064
       }
     },
     "Tonosho": {
@@ -8911,6 +8803,14 @@
       "coordinates": {
         "lat": 34.523310699999996,
         "lng": 135.695017
+      }
+    },
+    "Shikokuchuo": {
+      "locationCount": 2,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.9675831,
+        "lng": 133.586606
       }
     },
     "Kagawa": {
@@ -9473,14 +9373,6 @@
         "lng": 138.73279560000003
       }
     },
-    "渋谷区": {
-      "locationCount": 1,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 35.6872699,
-        "lng": 139.6851336
-      }
-    },
     "Kikuchi-shi and Yamaga": {
       "locationCount": 1,
       "region": "Kyushu",
@@ -9543,14 +9435,6 @@
       "coordinates": {
         "lat": 36.1103095,
         "lng": 133.1290905
-      }
-    },
-    "Agatsuma": {
-      "locationCount": 1,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 36.66514,
-        "lng": 138.79343
       }
     },
     "Ichikawamisato": {
@@ -9625,14 +9509,6 @@
         "lng": 137.9772366
       }
     },
-    "土成町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.120753199999996,
-        "lng": 134.3780229
-      }
-    },
     "8522 Komono": {
       "locationCount": 1,
       "region": "Kansai",
@@ -9647,14 +9523,6 @@
       "coordinates": {
         "lat": 33.526902,
         "lng": 133.6115671
-      }
-    },
-    "大麻町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.170951099999996,
-        "lng": 134.5026182
       }
     },
     "Yoron": {
@@ -9697,14 +9565,6 @@
         "lng": 139.7974529
       }
     },
-    "千代田区": {
-      "locationCount": 1,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 35.6861597,
-        "lng": 139.7449906
-      }
-    },
     "Gose": {
       "locationCount": 1,
       "region": "Kansai",
@@ -9735,14 +9595,6 @@
       "coordinates": {
         "lat": 44.029014100000005,
         "lng": 145.0798633
-      }
-    },
-    "Tendo": {
-      "locationCount": 1,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 38.35094170000001,
-        "lng": 140.37896659999998
       }
     },
     "1-1 Suwa": {
@@ -9953,28 +9805,12 @@
         "lng": 141.87519369999998
       }
     },
-    "Odate": {
-      "locationCount": 1,
-      "region": "Tohoku",
-      "coordinates": {
-        "lat": 40.2707188,
-        "lng": 140.5572621
-      }
-    },
     "Ushiku": {
       "locationCount": 1,
       "region": "Kanto",
       "coordinates": {
         "lat": 35.9826885,
         "lng": 140.2202548
-      }
-    },
-    "金田町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.9675831,
-        "lng": 133.586606
       }
     },
     "Munakata": {
@@ -10081,14 +9917,6 @@
         "lng": 135.87061699999998
       }
     },
-    "春野町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.4917316,
-        "lng": 133.4875907
-      }
-    },
     "Sotogahama": {
       "locationCount": 1,
       "region": "Tohoku",
@@ -10127,14 +9955,6 @@
       "coordinates": {
         "lat": 33.1030212,
         "lng": 139.8035566
-      }
-    },
-    "豊中町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.139629899999996,
-        "lng": 133.69404
       }
     },
     "33-1 Nozuki Herai Shingo": {
@@ -10249,6 +10069,14 @@
         "lng": 142.4280407
       }
     },
+    "千代田区": {
+      "locationCount": 1,
+      "region": "Kanto",
+      "coordinates": {
+        "lat": 35.6861597,
+        "lng": 139.7449906
+      }
+    },
     "Miyako": {
       "locationCount": 1,
       "region": "Kyushu",
@@ -10281,20 +10109,20 @@
         "lng": 137.8145375
       }
     },
-    "Obihiro": {
-      "locationCount": 1,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 42.7312734,
-        "lng": 143.217776
-      }
-    },
     "Seiyo": {
       "locationCount": 1,
       "region": "Shikoku",
       "coordinates": {
         "lat": 33.3637552,
         "lng": 132.5135283
+      }
+    },
+    "Obihiro": {
+      "locationCount": 1,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 42.7312734,
+        "lng": 143.217776
       }
     },
     "Asahikawa": {
@@ -10313,12 +10141,12 @@
         "lng": 133.88038659999998
       }
     },
-    "南区": {
+    "Soja": {
       "locationCount": 1,
-      "region": "Hokkaido",
+      "region": "Chugoku",
       "coordinates": {
-        "lat": 42.9420205,
-        "lng": 141.3423619
+        "lat": 34.6666066,
+        "lng": 133.7827117
       }
     },
     "Kasugabe": {
@@ -10327,6 +10155,14 @@
       "coordinates": {
         "lat": 35.977336699999995,
         "lng": 139.7553744
+      }
+    },
+    "Odate": {
+      "locationCount": 1,
+      "region": "Tohoku",
+      "coordinates": {
+        "lat": 40.2707188,
+        "lng": 140.5572621
       }
     },
     "Ochi": {
@@ -10353,6 +10189,30 @@
         "lng": 130.53179939999998
       }
     },
+    "Agatsuma": {
+      "locationCount": 1,
+      "region": "Kanto",
+      "coordinates": {
+        "lat": 36.66514,
+        "lng": 138.79343
+      }
+    },
+    "南区": {
+      "locationCount": 1,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 42.9420205,
+        "lng": 141.3423619
+      }
+    },
+    "Tendo": {
+      "locationCount": 1,
+      "region": "Tohoku",
+      "coordinates": {
+        "lat": 38.35094170000001,
+        "lng": 140.37896659999998
+      }
+    },
     "Kamijima": {
       "locationCount": 1,
       "region": "Shikoku",
@@ -10369,12 +10229,12 @@
         "lng": 130.98725439999998
       }
     },
-    "小松町": {
+    "Shibuya": {
       "locationCount": 1,
-      "region": "Shikoku",
+      "region": "Kanto",
       "coordinates": {
-        "lat": 33.8376667,
-        "lng": 133.1110441
+        "lat": 35.6872699,
+        "lng": 139.6851336
       }
     },
     "Hinoemata": {
@@ -10447,14 +10307,6 @@
       "coordinates": {
         "lat": 33.882509,
         "lng": 134.5217357
-      }
-    },
-    "久万高原町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.6611323,
-        "lng": 132.91147909999998
       }
     },
     "Rishiri": {
@@ -10673,14 +10525,6 @@
         "lng": 140.8356401
       }
     },
-    "大島町": {
-      "locationCount": 1,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 34.7305043,
-        "lng": 139.4066569
-      }
-    },
     "Tamura": {
       "locationCount": 1,
       "region": "Tohoku",
@@ -10823,14 +10667,6 @@
       "coordinates": {
         "lat": 34.4086733,
         "lng": 131.1954609
-      }
-    },
-    "鳴門町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.2348747,
-        "lng": 134.6401672
       }
     },
     "Saihaku": {
@@ -11113,7 +10949,7 @@
         "lng": 138.9165884
       }
     },
-    "清里町": {
+    "Kiyosato": {
       "locationCount": 1,
       "region": "Hokkaido",
       "coordinates": {
@@ -11895,22 +11731,6 @@
       "coordinates": {
         "lat": 35.1453734,
         "lng": 137.0421499
-      }
-    },
-    "Shikokuchuo": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.0129951,
-        "lng": 133.56754999999998
-      }
-    },
-    "Soja": {
-      "locationCount": 1,
-      "region": "Chugoku",
-      "coordinates": {
-        "lat": 34.6666066,
-        "lng": 133.7827117
       }
     },
     "Kiyosu": {
