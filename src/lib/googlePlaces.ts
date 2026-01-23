@@ -562,6 +562,12 @@ type AutocompleteOptions = {
       radius: number; // in meters
     };
   };
+  locationRestriction?: {
+    rectangle?: {
+      low: { latitude: number; longitude: number };  // Southwest corner
+      high: { latitude: number; longitude: number }; // Northeast corner
+    };
+  };
 };
 
 /**
@@ -579,6 +585,7 @@ export async function autocompletePlaces(
     regionCode = "JP",
     includedPrimaryTypes,
     locationBias,
+    locationRestriction,
   } = options;
 
   // Build text query with type filters if provided
@@ -596,7 +603,13 @@ export async function autocompletePlaces(
     pageSize: 10,
   };
 
-  if (locationBias?.circle) {
+  // locationRestriction strictly limits results to the area (use for Japan-only results)
+  // locationBias only biases results toward the area
+  if (locationRestriction?.rectangle) {
+    requestBody.locationRestriction = {
+      rectangle: locationRestriction.rectangle,
+    };
+  } else if (locationBias?.circle) {
     requestBody.locationBias = {
       circle: locationBias.circle,
     };

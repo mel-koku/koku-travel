@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { FormField } from "@/components/ui/FormField";
@@ -8,14 +8,12 @@ import { Input } from "@/components/ui/Input";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { Select } from "@/components/ui/Select";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { getAllEntryPoints, getEntryPointsByType } from "@/data/entryPoints";
-import type { EntryPointType } from "@/types/trip";
+import { EntryPointSelector } from "./EntryPointSelector";
+import type { EntryPoint } from "@/types/trip";
 
 type EssentialsFormValues = {
   duration?: number;
   start?: string;
-  entryPointType?: EntryPointType | "";
-  entryPointId?: string;
   budgetTotal?: number;
   budgetPerDay?: number;
   budgetLevel?: "budget" | "moderate" | "luxury" | "";
@@ -35,8 +33,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     () => ({
       duration: data.duration ?? undefined,
       start: data.dates.start ?? "",
-      entryPointType: data.entryPoint?.type ?? "",
-      entryPointId: data.entryPoint?.id ?? "",
       budgetTotal: data.budget?.total ?? undefined,
       budgetPerDay: data.budget?.perDay ?? undefined,
       budgetLevel: data.budget?.level ?? "",
@@ -44,8 +40,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     [
       data.duration,
       data.dates.start,
-      data.entryPoint?.type,
-      data.entryPoint?.id,
       data.budget?.total,
       data.budget?.perDay,
       data.budget?.level,
@@ -55,7 +49,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   const {
     control,
     register,
-    setValue,
     formState: { errors, isValid },
   } = useForm<EssentialsFormValues>({
     values: formValues,
@@ -69,8 +62,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
 
   const startValue = useWatch({ control, name: "start" });
   const durationValue = useWatch({ control, name: "duration" });
-  const entryPointType = useWatch({ control, name: "entryPointType" });
-  const entryPointId = useWatch({ control, name: "entryPointId" });
   const budgetTotal = useWatch({ control, name: "budgetTotal" });
   const budgetPerDay = useWatch({ control, name: "budgetPerDay" });
   const budgetLevel = useWatch({ control, name: "budgetLevel" });
@@ -95,14 +86,19 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     return formatter.format(date);
   }, [calculatedEndDate]);
 
+  // Handle entry point change from EntryPointSelector
+  const handleEntryPointChange = useCallback(
+    (entryPoint: EntryPoint | undefined) => {
+      setData((prev) => ({
+        ...prev,
+        entryPoint,
+      }));
+    },
+    [setData]
+  );
+
   // Sync form values to context on change
   useEffect(() => {
-    let entryPoint = undefined;
-    if (entryPointType && entryPointId) {
-      const allPoints = getAllEntryPoints();
-      entryPoint = allPoints.find((ep) => ep.id === entryPointId);
-    }
-
     let endDate = "";
     if (startValue && durationValue && durationValue >= 1) {
       const duration = Math.floor(durationValue);
@@ -123,7 +119,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
         start: startValue,
         end: endDate,
       },
-      entryPoint,
       budget: {
         total: budgetTotal,
         perDay: budgetPerDay,
@@ -133,44 +128,11 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   }, [
     durationValue,
     startValue,
-    entryPointType,
-    entryPointId,
     budgetTotal,
     budgetPerDay,
     budgetLevel,
     setData,
   ]);
-
-  const entryPointOptions = useMemo(() => {
-    if (!entryPointType) {
-      return [];
-    }
-    const isValidType = (val: string | undefined): val is EntryPointType => {
-      return val === "airport" || val === "city" || val === "hotel" || val === "station";
-    };
-    if (!isValidType(entryPointType)) {
-      return [];
-    }
-    try {
-      const points = getEntryPointsByType(entryPointType);
-      return points.map((ep) => ({
-        label: ep.name,
-        value: ep.id,
-      }));
-    } catch {
-      return [];
-    }
-  }, [entryPointType]);
-
-  const entryPointTypeOptions = useMemo(
-    () => [
-      { label: "Airport", value: "airport" },
-      { label: "Train Station", value: "station" },
-      { label: "City", value: "city" },
-      { label: "Hotel", value: "hotel" },
-    ],
-    []
-  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -241,49 +203,14 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Controller
-          control={control}
-          name="entryPointType"
-          render={({ field }) => (
-            <FormField id="entry-point-type" label="Entry Point Type">
-              <Select
-                id="entry-point-type"
-                placeholder="Select type"
-                options={entryPointTypeOptions}
-                value={field.value ?? ""}
-                onChange={(e) => {
-                  const newValue = e.target.value || undefined;
-                  field.onChange(newValue);
-                  setValue("entryPointId", undefined);
-                }}
-              />
-            </FormField>
-          )}
-        />
-
-        <Controller
-          control={control}
-          name="entryPointId"
-          render={({ field }) => (
-            <FormField
-              id="entry-point"
-              label="Entry Point"
-              help={entryPointType ? undefined : "Select type first"}
-            >
-              <Select
-                id="entry-point"
-                placeholder={entryPointType ? "Select entry point" : "Select type first"}
-                options={entryPointOptions}
-                value={field.value ?? ""}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  field.onChange(val === "" ? undefined : val);
-                }}
-                disabled={!entryPointType}
-              />
-            </FormField>
-          )}
+      <div>
+        <h4 className="text-sm font-medium text-gray-900">Entry Point (Optional)</h4>
+        <p className="mt-1 mb-3 text-xs text-gray-500">
+          Where will you start your trip? Search for airports, train stations, cities, or hotels.
+        </p>
+        <EntryPointSelector
+          value={data.entryPoint}
+          onChange={handleEntryPointChange}
         />
       </div>
 
