@@ -32,6 +32,6 @@ Detailed documentation in `.claudedoc/`:
 
 ## Current Stats
 
-- **2,586 locations** enriched with Google Places data
+- **2,586 locations** enriched with Google Places data and AI-generated descriptions
 - **479 tests** across 36 test files (shared utilities in `tests/utils/`)
 - **~500ms** explore page load (94% faster after optimization)
