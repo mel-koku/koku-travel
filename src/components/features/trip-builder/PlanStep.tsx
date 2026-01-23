@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { EssentialsForm } from "./EssentialsForm";
 import { InterestChips } from "./InterestChips";
@@ -21,14 +21,16 @@ export function PlanStep({ onValidityChange }: PlanStepProps) {
   const handleEssentialsValidityChange = useCallback(
     (isValid: boolean) => {
       setEssentialsValid(isValid);
-      // Step 1 is valid if essentials are filled and at least one city is selected
-      const citiesSelected = (data.cities?.length ?? 0) > 0;
-      onValidityChange?.(isValid && citiesSelected);
     },
-    [data.cities?.length, onValidityChange]
+    []
   );
 
   const hasSelectedCities = (data.cities?.length ?? 0) > 0;
+
+  // Re-evaluate overall validity whenever essentials or cities change
+  useEffect(() => {
+    onValidityChange?.(essentialsValid && hasSelectedCities);
+  }, [essentialsValid, hasSelectedCities, onValidityChange]);
   const hasSelectedInterests = (data.interests?.length ?? 0) > 0;
 
   return (
