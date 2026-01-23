@@ -375,7 +375,7 @@ export const ItineraryMapPanel = ({
           });
         });
 
-        if (hasBounds) {
+        if (hasBounds && bounds.isValid()) {
           mapRef.current.fitBounds(bounds.pad(0.2), { maxZoom: 16 });
         } else {
           mapRef.current.setView([DEFAULT_CENTER.lat, DEFAULT_CENTER.lng], DEFAULT_ZOOM);
