@@ -199,9 +199,11 @@ const entryPointSchema = z.object({
 const regionIdSchema = z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/);
 
 /**
- * Schema for city ID (allows any string but validates format)
+ * Schema for city ID (allows city names with spaces, hyphens, and common characters)
+ * City names come from the database and may include spaces (e.g., "Mount Yoshino", "Minami Aizu")
+ * Also allows special characters like en-dash (−) and other unicode characters
  */
-const cityIdSchema = z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/);
+const cityIdSchema = z.string().min(1).max(255);
 
 /**
  * Schema for interest ID (must be valid interest from INTEREST_CATEGORIES)
@@ -263,6 +265,25 @@ const weatherPreferencesSchema = z.object({
 }).strict().optional();
 
 /**
+ * Schema for accommodation style
+ */
+const accommodationStyleSchema = z.enum(["ryokan", "budget", "midrange", "luxury"]).optional();
+
+/**
+ * Schema for transport mode
+ */
+const transportModeSchema = z.enum(["walk", "train", "bus", "taxi", "car"]);
+
+/**
+ * Schema for transport preferences
+ */
+const transportPreferencesSchema = z.object({
+  walkingTolerance: z.number().min(0).max(50000).optional(),
+  preferredModes: z.array(transportModeSchema).max(5).optional(),
+  hasRentalCar: z.boolean().optional(),
+}).strict().optional();
+
+/**
  * Comprehensive schema for TripBuilderData
  * Validates all fields with proper types and constraints
  */
@@ -278,6 +299,8 @@ export const tripBuilderDataSchema = z.object({
   budget: budgetSchema,
   group: groupSchema,
   weatherPreferences: weatherPreferencesSchema,
+  accommodationStyle: accommodationStyleSchema,
+  transportPreferences: transportPreferencesSchema,
   // travelerProfile is optional and will be built from other fields if not provided
   travelerProfile: z.any().optional(),
 }).strict();
