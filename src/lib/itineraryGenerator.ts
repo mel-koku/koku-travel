@@ -427,6 +427,7 @@ export async function generateItinerary(
               id: `${location.id}-${dayIndex + 1}-${timeSlot}-${activityIndex + 1}`,
               title: location.name,
               timeOfDay: timeSlot,
+              locationId: location.id,
               neighborhood: location.city,
               tags: buildTags(interest, location.category),
               recommendationReason,
