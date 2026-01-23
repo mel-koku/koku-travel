@@ -111,7 +111,7 @@ export function getCachedRoute(
   }
   
   // Return cached result (without cachedAt timestamp)
-  const { cachedAt, ...result } = cached;
+  const { cachedAt: _cachedAt, ...result } = cached;
   return result;
 }
 

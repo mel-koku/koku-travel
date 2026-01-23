@@ -47,16 +47,13 @@ locationToDbRow()        // Convert Location to database row
 
 ## Known Issues
 
-### Pre-existing Test Failures
+### Resolved Test Failures
 
-1. **TripBuilderContext tests** - localStorage mocking issues
-2. **itineraryGenerator tests** - Require Supabase env vars
+Previous test failures have been fixed:
+- ✅ TripBuilderContext tests - Fixed with shared localStorage mocking utilities
+- ✅ itineraryGenerator tests - Fixed with optional locations parameter to bypass Supabase
 
-### Lint Warnings
-
-Some lint warnings exist in unrelated files:
-- `googlePlaces.ts`
-- `routing/cache.ts`
+All 479 tests now pass.
 
 ## Performance Guidelines
 
