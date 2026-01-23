@@ -143,11 +143,11 @@ getSubTypeById(subTypeId: string): SubType | undefined
 2. Falls back to name pattern matching using sub-type's `patterns` array
 3. Enables accurate filtering even for locations without Google Places data
 
-## Trip Builder V2
+## Trip Builder
 
-Redesigned 2-step trip builder with live preview at `/trip-builder-v2`.
+2-step trip builder with live preview at `/trip-builder`.
 
-### Components (`src/components/features/trip-builder-v2/`)
+### Components (`src/components/features/trip-builder/`)
 
 | Component | Description |
 |-----------|-------------|

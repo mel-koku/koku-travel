@@ -52,6 +52,12 @@ export async function POST(request: NextRequest) {
         radius: number;
       };
     };
+    locationRestriction?: {
+      rectangle?: {
+        low: { latitude: number; longitude: number };
+        high: { latitude: number; longitude: number };
+      };
+    };
   };
 
   try {
@@ -65,7 +71,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { input, languageCode, regionCode, includedPrimaryTypes, locationBias } = body;
+  const { input, languageCode, regionCode, includedPrimaryTypes, locationBias, locationRestriction } = body;
 
   if (!input || typeof input !== "string" || input.trim().length === 0) {
     return addRequestContextHeaders(
@@ -126,6 +132,28 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Validate locationRestriction if provided
+  if (locationRestriction?.rectangle) {
+    const { low, high } = locationRestriction.rectangle;
+    if (
+      typeof low?.latitude !== "number" ||
+      typeof low?.longitude !== "number" ||
+      typeof high?.latitude !== "number" ||
+      typeof high?.longitude !== "number" ||
+      low.latitude < -90 || low.latitude > 90 ||
+      high.latitude < -90 || high.latitude > 90 ||
+      low.longitude < -180 || low.longitude > 180 ||
+      high.longitude < -180 || high.longitude > 180
+    ) {
+      return addRequestContextHeaders(
+        badRequest("Invalid 'locationRestriction.rectangle'. Must have valid low and high coordinates.", undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
+    }
+  }
+
   try {
     const places = await autocompletePlaces({
       input: input.trim(),
@@ -133,6 +161,7 @@ export async function POST(request: NextRequest) {
       regionCode,
       includedPrimaryTypes,
       locationBias,
+      locationRestriction,
     });
 
     return addRequestContextHeaders(
