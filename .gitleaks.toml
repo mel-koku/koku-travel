@@ -1,0 +1,53 @@
+# Gitleaks configuration for Koku Travel
+# https://github.com/gitleaks/gitleaks
+
+title = "Koku Travel Secret Detection"
+
+[extend]
+# Use the default gitleaks rules as a base
+useDefault = true
+
+# Paths to ignore (already in .gitignore but explicit here)
+[allowlist]
+paths = [
+    '''\.env\.example$''',
+    '''\.env\.local\.example$''',
+    '''docs/.*\.md$''',
+    '''tests/.*''',
+    '''\.claudedoc/.*''',
+]
+
+# Ignore test fixtures and mock data
+regexTarget = "match"
+regexes = [
+    '''test.*fixture''',
+    '''mock.*data''',
+    '''placeholder''',
+    '''your-.*-here''',
+    '''example\.com''',
+]
+
+# Custom rules for this project
+[[rules]]
+id = "supabase-service-role"
+description = "Supabase Service Role Key"
+regex = '''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+'''
+keywords = ["supabase", "service_role", "SUPABASE_SERVICE_ROLE"]
+
+[[rules]]
+id = "google-api-key"
+description = "Google API Key"
+regex = '''AIzaSy[A-Za-z0-9_-]{33}'''
+keywords = ["google", "api_key", "GOOGLE_"]
+
+[[rules]]
+id = "mapbox-token"
+description = "Mapbox Access Token"
+regex = '''(pk|sk)\.[A-Za-z0-9]{60,}'''
+keywords = ["mapbox", "MAPBOX_"]
+
+[[rules]]
+id = "upstash-redis-token"
+description = "Upstash Redis Token"
+regex = '''AX[A-Za-z0-9_-]{40,}'''
+keywords = ["upstash", "redis", "UPSTASH_"]
