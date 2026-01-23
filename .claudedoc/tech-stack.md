@@ -104,5 +104,6 @@ Utility scripts in `scripts/` directory:
 | `enrich-google-places-full.ts` | Comprehensive Google Places data enrichment |
 | `cleanup-data-quality.ts` | Data cleanup (services, duplicates, incomplete names) |
 | `cleanup-geography-inconsistencies.ts` | Geographic inconsistency cleanup |
+| `consolidate-city-wards.ts` | Consolidate wards into parent cities (e.g., "Sakyo Ward" → "Kyoto") |
 | `audit-category-mismatches.ts` | Audit category mismatches |
 | `fix-category-mismatches.ts` | Fix category corrections |

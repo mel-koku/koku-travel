@@ -21,6 +21,7 @@ export type LocationDbRow = {
   name: string;
   region: string;
   city: string;
+  city_original: string | null;
   prefecture: string | null;
   category: string;
   image: string;
