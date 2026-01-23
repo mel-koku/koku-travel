@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-01-23T06:31:26.843Z",
+  "generatedAt": "2026-01-23T06:36:52.388Z",
   "totalLocations": 2586,
-  "totalCities": 660,
+  "totalCities": 642,
   "cities": {
     "Fukuoka": {
       "culture": 68,
@@ -16,19 +16,19 @@
     "Tokyo": {
       "culture": 79,
       "history": 59,
-      "nature": 18,
-      "wellness": 16,
-      "photography": 38,
+      "nature": 19,
+      "wellness": 17,
+      "photography": 39,
       "shopping": 5,
       "food": 2,
       "nightlife": 5
     },
     "Kyoto": {
-      "culture": 75,
+      "culture": 80,
       "photography": 25,
       "shopping": 4,
-      "history": 55,
-      "food": 6,
+      "history": 60,
+      "food": 7,
       "nature": 5,
       "wellness": 5,
       "nightlife": 4
@@ -253,6 +253,26 @@
       "photography": 6,
       "nightlife": 0
     },
+    "Sapporo": {
+      "culture": 14,
+      "photography": 14,
+      "nature": 5,
+      "wellness": 5,
+      "shopping": 1,
+      "history": 5,
+      "food": 0,
+      "nightlife": 0
+    },
+    "Takamatsu": {
+      "shopping": 2,
+      "culture": 9,
+      "photography": 7,
+      "nature": 4,
+      "wellness": 4,
+      "history": 6,
+      "food": 4,
+      "nightlife": 0
+    },
     "Shizuoka": {
       "culture": 8,
       "photography": 6,
@@ -272,26 +292,6 @@
       "nightlife": 1,
       "nature": 3,
       "wellness": 3
-    },
-    "Takamatsu": {
-      "shopping": 2,
-      "culture": 9,
-      "photography": 7,
-      "nature": 4,
-      "wellness": 4,
-      "history": 6,
-      "food": 3,
-      "nightlife": 0
-    },
-    "Sapporo": {
-      "culture": 14,
-      "photography": 12,
-      "nature": 3,
-      "wellness": 3,
-      "shopping": 1,
-      "history": 5,
-      "food": 0,
-      "nightlife": 0
     },
     "Nikko": {
       "nature": 6,
@@ -343,6 +343,16 @@
       "shopping": 0,
       "nightlife": 0
     },
+    "Tokushima": {
+      "nature": 3,
+      "wellness": 3,
+      "photography": 8,
+      "culture": 9,
+      "history": 4,
+      "shopping": 1,
+      "food": 0,
+      "nightlife": 0
+    },
     "Nagoya": {
       "culture": 9,
       "photography": 5,
@@ -361,16 +371,6 @@
       "wellness": 1,
       "food": 0,
       "shopping": 0,
-      "nightlife": 0
-    },
-    "Tokushima": {
-      "nature": 3,
-      "wellness": 3,
-      "photography": 7,
-      "culture": 8,
-      "history": 4,
-      "shopping": 1,
-      "food": 0,
       "nightlife": 0
     },
     "Kochi": {
@@ -423,6 +423,16 @@
       "food": 0,
       "nightlife": 0
     },
+    "Naha": {
+      "shopping": 1,
+      "culture": 4,
+      "photography": 6,
+      "nature": 3,
+      "wellness": 3,
+      "history": 1,
+      "food": 0,
+      "nightlife": 0
+    },
     "Niigata": {
       "culture": 6,
       "photography": 4,
@@ -461,16 +471,6 @@
       "wellness": 1,
       "food": 0,
       "shopping": 0,
-      "nightlife": 0
-    },
-    "Naha": {
-      "shopping": 1,
-      "culture": 3,
-      "photography": 5,
-      "nature": 3,
-      "wellness": 3,
-      "history": 1,
-      "food": 0,
       "nightlife": 0
     },
     "Wakayama": {
@@ -853,6 +853,16 @@
       "shopping": 0,
       "nightlife": 0
     },
+    "Nagahama": {
+      "culture": 4,
+      "photography": 3,
+      "history": 3,
+      "nature": 2,
+      "wellness": 2,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0
+    },
     "Yokosuka": {
       "culture": 4,
       "history": 4,
@@ -922,6 +932,16 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0
+    },
+    "Ozu": {
+      "culture": 4,
+      "photography": 3,
+      "nature": 1,
+      "history": 2,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "wellness": 0
     },
     "Kamikawa": {
       "culture": 3,
@@ -1013,6 +1033,16 @@
       "nightlife": 0,
       "wellness": 0
     },
+    "Uji": {
+      "food": 1,
+      "culture": 4,
+      "history": 4,
+      "nature": 0,
+      "shopping": 0,
+      "photography": 0,
+      "nightlife": 0,
+      "wellness": 0
+    },
     "Hakodate": {
       "culture": 3,
       "photography": 3,
@@ -1083,6 +1113,16 @@
       "nightlife": 0,
       "wellness": 0
     },
+    "Kushiro": {
+      "nature": 2,
+      "photography": 2,
+      "wellness": 1,
+      "culture": 2,
+      "history": 2,
+      "shopping": 1,
+      "food": 0,
+      "nightlife": 0
+    },
     "Morioka": {
       "culture": 5,
       "photography": 3,
@@ -1112,16 +1152,6 @@
       "shopping": 0,
       "nightlife": 0,
       "history": 0
-    },
-    "Nagahama": {
-      "culture": 3,
-      "history": 3,
-      "nature": 2,
-      "photography": 2,
-      "wellness": 2,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0
     },
     "Aizuwakamatsu": {
       "shopping": 1,
@@ -1172,16 +1202,6 @@
       "shopping": 0,
       "nightlife": 0,
       "history": 0
-    },
-    "Ozu": {
-      "culture": 3,
-      "photography": 3,
-      "nature": 1,
-      "history": 1,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0
     },
     "Shodoshima": {
       "nature": 1,
@@ -1273,16 +1293,6 @@
       "shopping": 0,
       "nightlife": 0
     },
-    "Uji": {
-      "food": 1,
-      "culture": 3,
-      "history": 3,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Annaka": {
       "culture": 1,
       "photography": 4,
@@ -1332,16 +1342,6 @@
       "shopping": 0,
       "nightlife": 0,
       "wellness": 0
-    },
-    "Kushiro": {
-      "nature": 2,
-      "photography": 2,
-      "wellness": 1,
-      "culture": 2,
-      "history": 2,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0
     },
     "Yaeyama": {
       "nature": 3,
@@ -1813,6 +1813,16 @@
       "shopping": 0,
       "nightlife": 0
     },
+    "Kaiyo": {
+      "culture": 2,
+      "history": 1,
+      "nature": 1,
+      "photography": 2,
+      "wellness": 1,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0
+    },
     "Tonami": {
       "culture": 2,
       "photography": 2,
@@ -1902,6 +1912,16 @@
       "shopping": 0,
       "nightlife": 0,
       "wellness": 0
+    },
+    "Biei": {
+      "food": 1,
+      "photography": 2,
+      "nature": 1,
+      "culture": 1,
+      "shopping": 0,
+      "nightlife": 0,
+      "wellness": 0,
+      "history": 0
     },
     "Toyohashi": {
       "culture": 2,
@@ -2082,6 +2102,16 @@
       "shopping": 0,
       "nightlife": 0,
       "wellness": 0
+    },
+    "Nakijin": {
+      "culture": 2,
+      "photography": 3,
+      "nature": 1,
+      "wellness": 1,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "history": 0
     },
     "Hatsukaichi": {
       "culture": 1,
@@ -2393,16 +2423,6 @@
       "shopping": 0,
       "nightlife": 0
     },
-    "左京区": {
-      "culture": 2,
-      "history": 2,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Tenri": {
       "culture": 2,
       "photography": 1,
@@ -2493,6 +2513,16 @@
       "nightlife": 0,
       "history": 0
     },
+    "Utazu": {
+      "photography": 2,
+      "nature": 2,
+      "wellness": 1,
+      "culture": 0,
+      "food": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "history": 0
+    },
     "Tonosho": {
       "nature": 2,
       "wellness": 2,
@@ -2519,16 +2549,6 @@
       "photography": 1,
       "culture": 1,
       "history": 1,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0
-    },
-    "Kaiyo": {
-      "culture": 1,
-      "history": 1,
-      "nature": 1,
-      "photography": 1,
-      "wellness": 1,
       "food": 0,
       "shopping": 0,
       "nightlife": 0
@@ -2773,16 +2793,6 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "Biei": {
-      "photography": 2,
-      "nature": 1,
-      "culture": 1,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
     "Minamikoma": {
       "nature": 2,
       "photography": 2,
@@ -2933,6 +2943,16 @@
       "nightlife": 0,
       "wellness": 0
     },
+    "Ikeda": {
+      "culture": 2,
+      "photography": 2,
+      "food": 0,
+      "nature": 0,
+      "shopping": 0,
+      "nightlife": 0,
+      "wellness": 0,
+      "history": 0
+    },
     "Shiraoi": {
       "food": 1,
       "nature": 1,
@@ -2993,26 +3013,6 @@
       "wellness": 0,
       "history": 0
     },
-    "西京区": {
-      "culture": 2,
-      "history": 2,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
-    "右京区": {
-      "culture": 1,
-      "history": 1,
-      "food": 1,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Goshogawara": {
       "culture": 1,
       "history": 1,
@@ -3052,16 +3052,6 @@
       "photography": 0,
       "nightlife": 0,
       "wellness": 0
-    },
-    "Nakijin": {
-      "culture": 1,
-      "photography": 2,
-      "nature": 1,
-      "wellness": 1,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "history": 0
     },
     "Nabari": {
       "culture": 1,
@@ -3394,16 +3384,6 @@
       "wellness": 0
     },
     "Tomogashima": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
-    "海陽町": {
       "culture": 1,
       "photography": 1,
       "food": 0,
@@ -3783,16 +3763,6 @@
       "nightlife": 0,
       "history": 0
     },
-    "中央区": {
-      "nature": 1,
-      "wellness": 1,
-      "photography": 1,
-      "culture": 0,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "history": 0
-    },
     "Kimitsu": {
       "nature": 1,
       "photography": 1,
@@ -3801,16 +3771,6 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0,
-      "history": 0
-    },
-    "那覇市": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
       "history": 0
     },
     "Oi": {
@@ -3913,16 +3873,6 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "Utazu": {
-      "photography": 1,
-      "nature": 1,
-      "culture": 0,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
     "Urahoro": {
       "culture": 1,
       "history": 1,
@@ -3951,16 +3901,6 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0,
-      "history": 0
-    },
-    "高松市": {
-      "food": 1,
-      "culture": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0,
       "history": 0
     },
     "Suzu": {
@@ -4153,16 +4093,6 @@
       "wellness": 0,
       "history": 0
     },
-    "美瑛町": {
-      "food": 1,
-      "culture": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
     "Kamiita": {
       "culture": 1,
       "history": 1,
@@ -4333,16 +4263,6 @@
       "wellness": 0,
       "history": 0
     },
-    "千代田区": {
-      "nature": 1,
-      "wellness": 1,
-      "photography": 1,
-      "culture": 0,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "history": 0
-    },
     "Miyako": {
       "culture": 0,
       "food": 0,
@@ -4493,16 +4413,6 @@
       "wellness": 0,
       "history": 0
     },
-    "南区": {
-      "nature": 1,
-      "wellness": 1,
-      "photography": 1,
-      "culture": 0,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "history": 0
-    },
     "Tendo": {
       "culture": 1,
       "history": 1,
@@ -4641,26 +4551,6 @@
       "food": 0,
       "shopping": 0,
       "nightlife": 0,
-      "history": 0
-    },
-    "Ikeda": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
-    "湖北町": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
       "history": 0
     },
     "Setouchi": {
@@ -4823,16 +4713,6 @@
       "nightlife": 0,
       "history": 0
     },
-    "池田町": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
     "Sasayama": {
       "culture": 1,
       "history": 1,
@@ -4933,16 +4813,6 @@
       "nightlife": 0,
       "history": 0
     },
-    "釧路市": {
-      "shopping": 1,
-      "culture": 0,
-      "food": 0,
-      "nature": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
     "Shimukappu": {
       "photography": 1,
       "nature": 1,
@@ -4982,16 +4852,6 @@
       "shopping": 0,
       "nightlife": 0,
       "history": 0
-    },
-    "宇治市": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
     },
     "Nanae": {
       "nature": 1,
@@ -5623,26 +5483,6 @@
       "nightlife": 0,
       "wellness": 0
     },
-    "今帰仁村": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
-    },
-    "大洲市": {
-      "culture": 1,
-      "history": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "photography": 0,
-      "nightlife": 0,
-      "wellness": 0
-    },
     "Kitagawa": {
       "nature": 1,
       "wellness": 1,
@@ -5743,7 +5583,7 @@
       "nightlife": 0,
       "history": 0
     },
-    "大月町": {
+    "Otsuki": {
       "culture": 0,
       "food": 0,
       "nature": 0,
@@ -5812,16 +5652,6 @@
       "photography": 0,
       "nightlife": 0,
       "wellness": 0
-    },
-    "徳島市": {
-      "culture": 1,
-      "photography": 1,
-      "food": 0,
-      "nature": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "wellness": 0,
-      "history": 0
     },
     "Iwafune": {
       "culture": 0,
@@ -6202,16 +6032,6 @@
       "photography": 0,
       "nightlife": 0,
       "wellness": 0
-    },
-    "宇多津町": {
-      "nature": 1,
-      "photography": 1,
-      "wellness": 1,
-      "culture": 0,
-      "food": 0,
-      "shopping": 0,
-      "nightlife": 0,
-      "history": 0
     },
     "Hakui": {
       "culture": 1,
@@ -6614,7 +6434,7 @@
       }
     },
     "Tokyo": {
-      "locationCount": 108,
+      "locationCount": 109,
       "region": "Kanto",
       "coordinates": {
         "lat": 35.749871999999996,
@@ -6622,7 +6442,7 @@
       }
     },
     "Kyoto": {
-      "locationCount": 97,
+      "locationCount": 103,
       "region": "Kansai",
       "coordinates": {
         "lat": 35.0039339,
@@ -6805,6 +6625,22 @@
         "lng": 139.72160359999998
       }
     },
+    "Sapporo": {
+      "locationCount": 20,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 43.0722253,
+        "lng": 141.0827825
+      }
+    },
+    "Takamatsu": {
+      "locationCount": 20,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.351365,
+        "lng": 134.0466678
+      }
+    },
     "Shizuoka": {
       "locationCount": 19,
       "region": "Chubu",
@@ -6819,22 +6655,6 @@
       "coordinates": {
         "lat": 34.841235999999995,
         "lng": 136.12580699999998
-      }
-    },
-    "Takamatsu": {
-      "locationCount": 19,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.351365,
-        "lng": 134.0466678
-      }
-    },
-    "Sapporo": {
-      "locationCount": 18,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 43.0722253,
-        "lng": 141.0827825
       }
     },
     "Nikko": {
@@ -6877,6 +6697,14 @@
         "lng": 136.2242666
       }
     },
+    "Tokushima": {
+      "locationCount": 14,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.0671349,
+        "lng": 134.53748729999998
+      }
+    },
     "Nagoya": {
       "locationCount": 14,
       "region": "Chubu",
@@ -6891,14 +6719,6 @@
       "coordinates": {
         "lat": 35.3199921,
         "lng": 139.5692379
-      }
-    },
-    "Tokushima": {
-      "locationCount": 13,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.0671349,
-        "lng": 134.53748729999998
       }
     },
     "Kochi": {
@@ -6941,6 +6761,14 @@
         "lng": 132.565295
       }
     },
+    "Naha": {
+      "locationCount": 10,
+      "region": "Okinawa",
+      "coordinates": {
+        "lat": 26.2230667,
+        "lng": 127.69726659999999
+      }
+    },
     "Niigata": {
       "locationCount": 10,
       "region": "Chubu",
@@ -6971,14 +6799,6 @@
       "coordinates": {
         "lat": 35.8280752,
         "lng": 138.303616
-      }
-    },
-    "Naha": {
-      "locationCount": 9,
-      "region": "Okinawa",
-      "coordinates": {
-        "lat": 26.2230667,
-        "lng": 127.69726659999999
       }
     },
     "Wakayama": {
@@ -7285,6 +7105,14 @@
         "lng": 139.090533
       }
     },
+    "Nagahama": {
+      "locationCount": 6,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 35.459359,
+        "lng": 136.27707619999998
+      }
+    },
     "Yokosuka": {
       "locationCount": 6,
       "region": "Kanto",
@@ -7339,6 +7167,14 @@
       "coordinates": {
         "lat": 35.3643117,
         "lng": 133.7600928
+      }
+    },
+    "Ozu": {
+      "locationCount": 5,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.506314599999996,
+        "lng": 132.5500793
       }
     },
     "Kamikawa": {
@@ -7413,6 +7249,14 @@
         "lng": 131.393698
       }
     },
+    "Uji": {
+      "locationCount": 5,
+      "region": "Kansai",
+      "coordinates": {
+        "lat": 34.8901997,
+        "lng": 135.8041126
+      }
+    },
     "Hakodate": {
       "locationCount": 5,
       "region": "Hokkaido",
@@ -7469,6 +7313,14 @@
         "lng": 137.2576478
       }
     },
+    "Kushiro": {
+      "locationCount": 5,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 43.53749750000001,
+        "lng": 144.281085
+      }
+    },
     "Morioka": {
       "locationCount": 5,
       "region": "Tohoku",
@@ -7491,14 +7343,6 @@
       "coordinates": {
         "lat": 26.1323147,
         "lng": 127.6512737
-      }
-    },
-    "Nagahama": {
-      "locationCount": 5,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 35.3806116,
-        "lng": 136.27830939999998
       }
     },
     "Aizuwakamatsu": {
@@ -7539,14 +7383,6 @@
       "coordinates": {
         "lat": 26.2265336,
         "lng": 127.29280979999999
-      }
-    },
-    "Ozu": {
-      "locationCount": 4,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.506314599999996,
-        "lng": 132.5500793
       }
     },
     "Shodoshima": {
@@ -7621,14 +7457,6 @@
         "lng": 140.5617895
       }
     },
-    "Uji": {
-      "locationCount": 4,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 34.8901997,
-        "lng": 135.8041126
-      }
-    },
     "Annaka": {
       "locationCount": 4,
       "region": "Kanto",
@@ -7667,14 +7495,6 @@
       "coordinates": {
         "lat": 36.401912599999996,
         "lng": 138.249075
-      }
-    },
-    "Kushiro": {
-      "locationCount": 4,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 43.53749750000001,
-        "lng": 144.281085
       }
     },
     "Yaeyama": {
@@ -8053,6 +7873,14 @@
         "lng": 130.28469809999999
       }
     },
+    "Kaiyo": {
+      "locationCount": 3,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 33.5432687,
+        "lng": 134.3177417
+      }
+    },
     "Tonami": {
       "locationCount": 3,
       "region": "Chubu",
@@ -8123,6 +7951,14 @@
       "coordinates": {
         "lat": 31.3619812,
         "lng": 131.3424286
+      }
+    },
+    "Biei": {
+      "locationCount": 3,
+      "region": "Hokkaido",
+      "coordinates": {
+        "lat": 43.6052536,
+        "lng": 142.4397085
       }
     },
     "Toyohashi": {
@@ -8267,6 +8103,14 @@
       "coordinates": {
         "lat": 43.6482336,
         "lng": 144.24872710000002
+      }
+    },
+    "Nakijin": {
+      "locationCount": 3,
+      "region": "Okinawa",
+      "coordinates": {
+        "lat": 26.691279299999998,
+        "lng": 127.9290226
       }
     },
     "Hatsukaichi": {
@@ -8517,14 +8361,6 @@
         "lng": 139.16994499999998
       }
     },
-    "左京区": {
-      "locationCount": 2,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 35.0389778,
-        "lng": 135.7730068
-      }
-    },
     "Tenri": {
       "locationCount": 2,
       "region": "Kansai",
@@ -8597,6 +8433,14 @@
         "lng": 139.86817159999998
       }
     },
+    "Utazu": {
+      "locationCount": 2,
+      "region": "Shikoku",
+      "coordinates": {
+        "lat": 34.3117352,
+        "lng": 133.80876659999998
+      }
+    },
     "Tonosho": {
       "locationCount": 2,
       "region": "Shikoku",
@@ -8619,14 +8463,6 @@
       "coordinates": {
         "lat": 35.387898899999996,
         "lng": 136.9422453
-      }
-    },
-    "Kaiyo": {
-      "locationCount": 2,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.5432687,
-        "lng": 134.3177417
       }
     },
     "Wakasa": {
@@ -8821,14 +8657,6 @@
         "lng": 133.8241242
       }
     },
-    "Biei": {
-      "locationCount": 2,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 43.4458432,
-        "lng": 142.65019719999998
-      }
-    },
     "Minamikoma": {
       "locationCount": 2,
       "region": "Chubu",
@@ -8949,6 +8777,14 @@
         "lng": 140.4892783
       }
     },
+    "Ikeda": {
+      "locationCount": 2,
+      "region": "Chubu",
+      "coordinates": {
+        "lat": 35.4317314,
+        "lng": 136.5522825
+      }
+    },
     "Shiraoi": {
       "locationCount": 2,
       "region": "Hokkaido",
@@ -8997,22 +8833,6 @@
         "lng": 131.05082679999998
       }
     },
-    "西京区": {
-      "locationCount": 2,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 34.960336999999996,
-        "lng": 135.6723601
-      }
-    },
-    "右京区": {
-      "locationCount": 2,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 35.0158379,
-        "lng": 135.6737654
-      }
-    },
     "Goshogawara": {
       "locationCount": 2,
       "region": "Tohoku",
@@ -9043,14 +8863,6 @@
       "coordinates": {
         "lat": 38.130362,
         "lng": 140.2479804
-      }
-    },
-    "Nakijin": {
-      "locationCount": 2,
-      "region": "Okinawa",
-      "coordinates": {
-        "lat": 26.691279299999998,
-        "lng": 127.9290226
       }
     },
     "Nabari": {
@@ -9323,14 +9135,6 @@
       "coordinates": {
         "lat": 34.283291399999996,
         "lng": 135.0088085
-      }
-    },
-    "海陽町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.697317,
-        "lng": 134.2540573
       }
     },
     "Mobara": {
@@ -9629,28 +9433,12 @@
         "lng": 139.1495027
       }
     },
-    "中央区": {
-      "locationCount": 1,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 43.060752099999995,
-        "lng": 141.3544308
-      }
-    },
     "Kimitsu": {
       "locationCount": 1,
       "region": "Kanto",
       "coordinates": {
         "lat": 35.2574629,
         "lng": 139.96707139999998
-      }
-    },
-    "那覇市": {
-      "locationCount": 1,
-      "region": "Okinawa",
-      "coordinates": {
-        "lat": 26.218316899999998,
-        "lng": 127.7147476
       }
     },
     "Oi": {
@@ -9733,14 +9521,6 @@
         "lng": 138.9190966
       }
     },
-    "Utazu": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.3117352,
-        "lng": 133.80876659999998
-      }
-    },
     "Urahoro": {
       "locationCount": 1,
       "region": "Hokkaido",
@@ -9763,14 +9543,6 @@
       "coordinates": {
         "lat": 35.590433499999996,
         "lng": 134.325065
-      }
-    },
-    "高松市": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.296029499999996,
-        "lng": 134.0109353
       }
     },
     "Suzu": {
@@ -9925,14 +9697,6 @@
         "lng": 140.34234379999998
       }
     },
-    "美瑛町": {
-      "locationCount": 1,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 43.6052536,
-        "lng": 142.4397085
-      }
-    },
     "Kamiita": {
       "locationCount": 1,
       "region": "Shikoku",
@@ -10069,14 +9833,6 @@
         "lng": 142.4280407
       }
     },
-    "千代田区": {
-      "locationCount": 1,
-      "region": "Kanto",
-      "coordinates": {
-        "lat": 35.6861597,
-        "lng": 139.7449906
-      }
-    },
     "Miyako": {
       "locationCount": 1,
       "region": "Kyushu",
@@ -10197,14 +9953,6 @@
         "lng": 138.79343
       }
     },
-    "南区": {
-      "locationCount": 1,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 42.9420205,
-        "lng": 141.3423619
-      }
-    },
     "Tendo": {
       "locationCount": 1,
       "region": "Tohoku",
@@ -10315,22 +10063,6 @@
       "coordinates": {
         "lat": 45.1779533,
         "lng": 141.2415729
-      }
-    },
-    "Ikeda": {
-      "locationCount": 1,
-      "region": "Chubu",
-      "coordinates": {
-        "lat": 35.4317314,
-        "lng": 136.5522825
-      }
-    },
-    "湖北町": {
-      "locationCount": 1,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 35.459359,
-        "lng": 136.27707619999998
       }
     },
     "Setouchi": {
@@ -10461,14 +10193,6 @@
         "lng": 140.4549672
       }
     },
-    "池田町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.92355310000001,
-        "lng": 133.81845909999998
-      }
-    },
     "Sasayama": {
       "locationCount": 1,
       "region": "Kansai",
@@ -10549,14 +10273,6 @@
         "lng": 138.86741379999998
       }
     },
-    "釧路市": {
-      "locationCount": 1,
-      "region": "Hokkaido",
-      "coordinates": {
-        "lat": 42.981762599999996,
-        "lng": 144.3833396
-      }
-    },
     "Shimukappu": {
       "locationCount": 1,
       "region": "Hokkaido",
@@ -10587,14 +10303,6 @@
       "coordinates": {
         "lat": 35.4426772,
         "lng": 132.9514285
-      }
-    },
-    "宇治市": {
-      "locationCount": 1,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 34.9137675,
-        "lng": 135.8058509
       }
     },
     "Nanae": {
@@ -11101,22 +10809,6 @@
         "lng": 131.446586
       }
     },
-    "今帰仁村": {
-      "locationCount": 1,
-      "region": "Okinawa",
-      "coordinates": {
-        "lat": 26.7056875,
-        "lng": 127.94681249999998
-      }
-    },
-    "大洲市": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 33.581614099999996,
-        "lng": 132.44723729999998
-      }
-    },
     "Kitagawa": {
       "locationCount": 1,
       "region": "Shikoku",
@@ -11197,7 +10889,7 @@
         "lng": 139.2374523
       }
     },
-    "大月町": {
+    "Otsuki": {
       "locationCount": 1,
       "region": "Shikoku",
       "coordinates": {
@@ -11251,14 +10943,6 @@
       "coordinates": {
         "lat": 32.5083376,
         "lng": 130.6018162
-      }
-    },
-    "徳島市": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.0664228,
-        "lng": 134.5562114
       }
     },
     "Iwafune": {
@@ -11563,14 +11247,6 @@
       "coordinates": {
         "lat": 35.7299832,
         "lng": 138.7137974
-      }
-    },
-    "宇多津町": {
-      "locationCount": 1,
-      "region": "Shikoku",
-      "coordinates": {
-        "lat": 34.312654699999996,
-        "lng": 133.8079776
       }
     },
     "Hakui": {
