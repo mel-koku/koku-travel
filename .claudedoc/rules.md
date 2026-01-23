@@ -57,30 +57,6 @@ Some lint warnings exist in unrelated files:
 - `googlePlaces.ts`
 - `routing/cache.ts`
 
-### Schema/Logic Mismatch
-
-`itinerary/refine` route has mismatch:
-- Zod schema accepts: `["more_diverse", "more_focused", ...]`
-- `VALID_REFINEMENT_TYPES` accepts: `["too_busy", "too_light", ...]`
-
-## Deprecated Code
-
-### To Remove in v2.0
-
-| File | Reason |
-|------|--------|
-| `src/state/locationDetailsStore.ts` | Replaced by React Query hooks |
-
-### Migration Examples
-
-```typescript
-// Before (deprecated)
-import { locationDetailsStore } from '@/state/locationDetailsStore';
-
-// After (use React Query)
-import { useLocationDetailsQuery } from '@/hooks';
-```
-
 ## Performance Guidelines
 
 ### Explore Page
