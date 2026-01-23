@@ -2,7 +2,24 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Radio, RadioGroup } from "@/components/ui/Radio";
+import { generateAccessibilityTests } from "../utils/componentTestFactory";
 
+// Configure shared tests - radio has similar patterns to checkbox
+const radioConfig = {
+  name: "Radio",
+  renderDefault: () => <Radio label="Test radio" name="test" value="1" />,
+  renderWithProps: (props: Partial<React.ComponentProps<typeof Radio>>) => (
+    <Radio label="Test radio" name="test" value="1" {...props} />
+  ),
+  role: "radio" as const,
+  supportsError: false,
+  supportsDisabled: true,
+};
+
+// Generate common accessibility tests
+generateAccessibilityTests(radioConfig);
+
+// Radio-specific tests
 describe("Radio", () => {
   describe("Rendering", () => {
     it("should render with label", () => {
@@ -28,12 +45,6 @@ describe("Radio", () => {
       render(<Radio label="Test radio" description="Description" name="test" value="1" />);
       const radio = screen.getByRole("radio");
       expect(radio).toHaveAttribute("aria-describedby");
-    });
-
-    it("should be disabled when disabled prop is true", () => {
-      render(<Radio label="Disabled radio" disabled name="test" value="1" />);
-      const radio = screen.getByRole("radio");
-      expect(radio).toBeDisabled();
     });
   });
 
@@ -122,4 +133,3 @@ describe("RadioGroup", () => {
     expect(screen.getByText("Choose one option")).toBeInTheDocument();
   });
 });
-
