@@ -2,6 +2,17 @@
 
 ## Development Rules
 
+### Security
+
+1. **Secret scanning** - Gitleaks pre-commit hook scans all commits for secrets. Configuration in `.gitleaks.toml`.
+   - Automatically blocks commits containing API keys, JWT tokens, etc.
+   - To bypass (emergency only): `git commit --no-verify`
+   - Run manual scan: `gitleaks git --no-banner`
+
+2. **Environment variables** - Never commit `.env.local`. Use `.env.example` for templates.
+   - `.gitignore` excludes all `.env*` files except `.env.example`
+   - Mark sensitive vars as "Sensitive" in Vercel dashboard
+
 ### Code Patterns
 
 1. **Use column projections** - Never use `.select("*")`. Import from `src/lib/supabase/projections.ts`.
@@ -26,6 +37,35 @@ constructor() {
 getToken() {
   return env.mapboxAccessToken;
 }
+```
+
+7. **Use flushSync for synchronous state updates** - When you need to ensure a React state update completes before proceeding (e.g., before calling a callback), use `flushSync` from `react-dom` instead of `setTimeout(..., 0)`.
+
+```typescript
+// WRONG - race condition, timing unpredictable
+setModel(newState);
+setTimeout(() => {
+  onComplete(derivedValue);
+}, 0);
+
+// CORRECT - state update completes synchronously
+import { flushSync } from "react-dom";
+flushSync(() => {
+  setModel(newState);
+});
+onComplete(derivedValue);
+```
+
+8. **Log errors in catch blocks** - Don't silently swallow errors. At minimum, add `console.warn()` for debugging.
+
+```typescript
+// WRONG - errors disappear
+.catch(() => {});
+
+// CORRECT - errors are logged
+.catch((error) => {
+  console.warn("[ComponentName] Operation failed:", error);
+});
 ```
 
 ### Testing
