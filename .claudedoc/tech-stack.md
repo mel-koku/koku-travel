@@ -103,6 +103,7 @@ Utility scripts in `scripts/` directory:
 
 | Script | Purpose |
 |--------|---------|
+| `generate-ai-descriptions.ts` | Generate editorial-style descriptions via Claude Code |
 | `enrich-location-photos.ts` | Fetch and store primary photos from Google Places |
 | `enrich-location-geography.ts` | Fix city/prefecture data via Google Places API |
 | `enrich-google-places-full.ts` | Comprehensive Google Places data enrichment |
@@ -111,3 +112,25 @@ Utility scripts in `scripts/` directory:
 | `consolidate-city-wards.ts` | Consolidate wards into parent cities (e.g., "Sakyo Ward" → "Kyoto") |
 | `audit-category-mismatches.ts` | Audit category mismatches |
 | `fix-category-mismatches.ts` | Fix category corrections |
+
+### AI Description Generation
+
+Generate editorial-style descriptions for location cards using Claude Code:
+
+```bash
+# Check how many locations need descriptions
+npm run generate:descriptions -- --status
+
+# Export batch of locations to JSON
+npm run generate:descriptions -- --export --limit 50
+
+# After Claude Code generates descriptions, import them
+npm run generate:descriptions -- --import
+```
+
+**Workflow:**
+1. Export locations needing descriptions to `descriptions-todo.json`
+2. Ask Claude Code to generate descriptions from the file
+3. Import generated descriptions from `descriptions-generated.json`
+
+**Style guidelines:** Editorial travel guide style (Lonely Planet), under 160 characters, present tense, include Japanese terms naturally, no generic phrases.
