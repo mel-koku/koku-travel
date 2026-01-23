@@ -155,24 +155,17 @@ getSubTypeById(subTypeId: string): SubType | undefined
 | `PlanStep.tsx` | Step 1: Essentials + interests + city selection |
 | `ReviewStep.tsx` | Step 2: Review selections + customize preferences |
 | `LivePreview.tsx` | Right panel/bottom sheet with progressive itinerary preview |
-| `CityMap.tsx` | Interactive Mapbox map with region-based clustering |
-| `CityList.tsx` | Searchable list view with region grouping |
+| `CityList.tsx` | Searchable list view with region grouping and relevance filtering |
 | `InterestChips.tsx` | Selectable interest chips (max 5) |
 | `MobileBottomSheet.tsx` | Swipeable bottom sheet for mobile preview |
 
-### Region-Based Map Clustering
+### City Selection (CityList)
 
-The CityMap uses a two-level drill-down UX to handle 837 cities:
-
-**Region View (Initial)**
-- Shows 9 region markers (Hokkaido, Tohoku, Kanto, Chubu, Kansai, Chugoku, Shikoku, Kyushu, Okinawa)
-- Region markers show city count and are color-coded by selection/relevance state
-- Click a region to expand and see its cities
-
-**City View (Expanded)**
-- Shows individual city markers for the selected region
-- Back button returns to region view
-- Auto-switches to region view when zooming out past threshold (6.5)
+The CityList handles 837 cities with:
+- **Search**: Filter cities/regions by name
+- **Filter modes**: All / High Match (75%+) / Selected
+- **Region grouping**: Expandable region sections (Hokkaido, Tohoku, Kanto, etc.)
+- **Relevance highlighting**: Cities matching selected interests are highlighted
 
 **Region Data (`src/data/regionData.ts`)**
 ```typescript
@@ -182,16 +175,7 @@ type RegionData = {
   nameJa: string;         // '北海道', '関西'
   center: { lat, lng };   // Region center coordinates
   bounds: { north, south, east, west };  // Bounding box
-  zoomLevel: number;      // Recommended zoom for this region
 };
-```
-
-**Region Aggregation (`src/lib/tripBuilder/regionAggregation.ts`)**
-```typescript
-aggregateCitiesByRegion(interests, selectedCities)  // Group cities by region
-getCitiesForRegion(regionId, interests, selectedCities)  // Get cities for a region
-getRegionBoundsArray(regionId)  // Mapbox-compatible bounds
-getRegionCenter(regionId)       // Region center as [lng, lat]
 ```
 
 ### City Relevance Utilities (`src/lib/tripBuilder/cityRelevance.ts`)

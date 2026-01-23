@@ -11,7 +11,6 @@ export type { EntryPointSelectorProps } from "./EntryPointSelector";
 export { BudgetInput } from "./BudgetInput";
 export type { BudgetInputProps, BudgetMode, BudgetValue } from "./BudgetInput";
 export { InterestChips } from "./InterestChips";
-export { CityMap } from "./CityMap";
 export { CityList } from "./CityList";
 
 // Step 2 components
