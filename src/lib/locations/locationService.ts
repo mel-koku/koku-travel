@@ -260,3 +260,49 @@ export async function fetchLocationsByIdsForListing(ids: string[]): Promise<Loca
 
   return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
 }
+
+/**
+ * Options for fetching top-rated locations
+ */
+export interface FetchTopRatedOptions {
+  /** Maximum number of locations to return (default: 8) */
+  limit?: number;
+  /** Minimum rating threshold (default: 4.0) */
+  minRating?: number;
+  /** Minimum number of reviews required (default: 10) */
+  minReviewCount?: number;
+}
+
+/**
+ * Fetches top-rated locations for featured display
+ *
+ * @param options - Filtering options
+ * @returns Array of top-rated locations sorted by rating descending
+ */
+export async function fetchTopRatedLocations(
+  options: FetchTopRatedOptions = {},
+): Promise<Location[]> {
+  const { limit = 8, minRating = 4.0, minReviewCount = 10 } = options;
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("locations")
+    .select(LOCATION_LISTING_COLUMNS)
+    .not("place_id", "is", null)
+    .neq("place_id", "")
+    .not("rating", "is", null)
+    .gte("rating", minRating)
+    .not("review_count", "is", null)
+    .gte("review_count", minReviewCount)
+    .not("primary_photo_url", "is", null)
+    .order("rating", { ascending: false })
+    .order("review_count", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
+}
