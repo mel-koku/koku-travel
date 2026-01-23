@@ -6,16 +6,15 @@
  * Descriptions are stored in the `short_description` database column for display
  * on explore cards and itinerary cards.
  *
- * Usage (Claude Code workflow):
+ * Usage:
  *   npm run generate:descriptions -- --status              # Show how many need descriptions
  *   npm run generate:descriptions -- --export --limit 50   # Export 50 locations to JSON
  *   npm run generate:descriptions -- --import              # Import generated descriptions
  *
- * Legacy usage (Anthropic API):
- *   npm run generate:descriptions -- --dry-run             # Preview prompts without calling API
- *   npm run generate:descriptions -- --test                # Process only 10 locations
- *   npm run generate:descriptions -- --limit 100           # Process 100 locations
- *   npm run generate:descriptions -- --skip-enriched       # Skip locations with descriptions
+ * Workflow:
+ *   1. Run --export to create descriptions-todo.json
+ *   2. Ask Claude Code to generate descriptions from the file
+ *   3. Run --import to update the database from descriptions-generated.json
  */
 
 // Load environment variables FIRST before any other imports
@@ -32,20 +31,8 @@ const args = process.argv.slice(2);
 const isExportMode = args.includes("--export");
 const isImportMode = args.includes("--import");
 const isStatusMode = args.includes("--status");
-const isDryRun = args.includes("--dry-run");
-const isLegacyMode = !isExportMode && !isImportMode && !isStatusMode;
 
 // Verify required environment variables
-if (!process.env.ANTHROPIC_API_KEY && isLegacyMode && !isDryRun) {
-  console.error(
-    "Error: ANTHROPIC_API_KEY must be configured in .env.local for legacy mode"
-  );
-  console.error(
-    "Tip: Use --export/--import workflow with Claude Code instead (no API key required)"
-  );
-  process.exit(1);
-}
-
 if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
   console.error(
     "Error: NEXT_PUBLIC_SUPABASE_URL must be configured in .env.local"
@@ -53,7 +40,6 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
   process.exit(1);
 }
 
-import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@supabase/supabase-js";
 import * as fs from "fs";
 import * as path from "path";
@@ -61,29 +47,6 @@ import * as path from "path";
 // File paths for export/import workflow
 const EXPORT_FILE = path.join(process.cwd(), "descriptions-todo.json");
 const IMPORT_FILE = path.join(process.cwd(), "descriptions-generated.json");
-
-// Rate limiting configuration
-const RATE_LIMIT_MS = 200; // 200ms between requests (5 req/sec)
-
-// Claude configuration
-const MODEL = "claude-3-5-haiku-20241022";
-const MAX_TOKENS = 100;
-
-interface LocationRow {
-  id: string;
-  name: string;
-  category: string;
-  city: string;
-  prefecture: string | null;
-  rating: number | null;
-  review_count: number | null;
-  estimated_duration: string | null;
-  min_budget: string | null;
-  price_level: number | null;
-  google_primary_type: string | null;
-  google_types: string[] | null;
-  short_description: string | null;
-}
 
 interface ExportLocation {
   id: string;
@@ -100,74 +63,6 @@ interface ExportLocation {
 interface ImportDescription {
   id: string;
   description: string;
-}
-
-interface GenerationResult {
-  id: string;
-  name: string;
-  success: boolean;
-  description?: string;
-  prompt?: string;
-  error?: string;
-}
-
-interface GenerationLog {
-  timestamp: string;
-  totalProcessed: number;
-  successful: number;
-  failed: number;
-  skipped: number;
-  results: GenerationResult[];
-}
-
-async function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-/**
- * Format price level as dollar signs
- */
-function formatPriceLevel(priceLevel: number | null): string {
-  if (priceLevel === null || priceLevel === 0) return "";
-  return "$".repeat(Math.min(priceLevel, 4));
-}
-
-/**
- * Build the prompt for generating a description
- */
-function buildPrompt(location: LocationRow): string {
-  const type = location.google_primary_type || location.category;
-  const rating = location.rating
-    ? `${location.rating.toFixed(1)}/5 (${location.review_count?.toLocaleString() || "N/A"} reviews)`
-    : "N/A";
-  const duration = location.estimated_duration || "N/A";
-  const price = formatPriceLevel(location.price_level);
-
-  let prompt = `Write a 1-2 sentence description for this Japan travel destination in an editorial travel guide style.
-
-Location: ${location.name}
-Type: ${type}
-City: ${location.city}${location.prefecture ? `, ${location.prefecture}` : ""}
-Rating: ${rating}
-Duration: ${duration}`;
-
-  if (price) {
-    prompt += `\nPrice: ${price}`;
-  }
-
-  prompt += `
-
-Guidelines:
-- Write like Lonely Planet or a professional travel guide
-- Be specific about what makes this place notable
-- Include Japanese terms naturally where appropriate (e.g., "torii gates", "matcha")
-- Keep under 160 characters
-- Use present tense, active voice
-- No generic phrases like "must-visit" or "hidden gem"
-
-Respond with ONLY the description, no quotes or additional text.`;
-
-  return prompt;
 }
 
 /**
@@ -405,248 +300,12 @@ async function importDescriptions(): Promise<void> {
   console.log("Check status: npm run generate:descriptions -- --status");
 }
 
-/**
- * Generate a description using Claude API (legacy mode)
- */
-async function generateDescription(
-  client: Anthropic,
-  location: LocationRow
-): Promise<string | null> {
-  const prompt = buildPrompt(location);
-
-  try {
-    const response = await client.messages.create({
-      model: MODEL,
-      max_tokens: MAX_TOKENS,
-      messages: [{ role: "user", content: prompt }],
-    });
-
-    // Extract text from response
-    const content = response.content[0];
-    if (content.type === "text") {
-      // Clean up the response - remove quotes if present
-      let description = content.text.trim();
-      if (
-        (description.startsWith('"') && description.endsWith('"')) ||
-        (description.startsWith("'") && description.endsWith("'"))
-      ) {
-        description = description.slice(1, -1);
-      }
-      return description;
-    }
-
-    return null;
-  } catch (error) {
-    console.error(`API error for ${location.name}:`, error);
-    return null;
-  }
-}
-
-/**
- * Main generation function (legacy mode with Anthropic API)
- */
-async function generateDescriptions(options: {
-  dryRun: boolean;
-  limit?: number;
-  skipEnriched: boolean;
-}): Promise<void> {
-  const { dryRun, limit, skipEnriched } = options;
-
-  console.log("\n=== AI Description Generator (Legacy Mode) ===");
-  console.log(`Mode: ${dryRun ? "DRY RUN (no API calls or changes)" : "LIVE"}`);
-  console.log(`Skip already enriched: ${skipEnriched}`);
-  if (limit) console.log(`Limit: ${limit} locations`);
-  console.log(`Model: ${MODEL}`);
-  console.log("");
-
-  // Initialize clients
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
-  // Only initialize Anthropic client if not in dry-run mode
-  const anthropic = dryRun
-    ? null
-    : new Anthropic({
-        apiKey: process.env.ANTHROPIC_API_KEY!,
-      });
-
-  // Fetch locations that need descriptions
-  let query = supabase
-    .from("locations")
-    .select(
-      "id, name, category, city, prefecture, rating, review_count, estimated_duration, min_budget, price_level, google_primary_type, google_types, short_description"
-    )
-    .order("review_count", { ascending: false, nullsFirst: false });
-
-  if (skipEnriched) {
-    query = query.is("short_description", null);
-  }
-
-  if (limit) {
-    query = query.limit(limit);
-  }
-
-  const { data: locations, error } = await query;
-
-  if (error) {
-    console.error("Failed to fetch locations:", error);
-    process.exit(1);
-  }
-
-  if (!locations || locations.length === 0) {
-    console.log("No locations to process.");
-    return;
-  }
-
-  console.log(`Found ${locations.length} locations to process`);
-  console.log("");
-
-  const results: GenerationResult[] = [];
-  let successful = 0;
-  let failed = 0;
-  let skipped = 0;
-
-  for (let i = 0; i < locations.length; i++) {
-    const location = locations[i] as LocationRow;
-
-    // Progress indicator
-    if ((i + 1) % 50 === 0 || i === 0) {
-      const percent = Math.round(((i + 1) / locations.length) * 100);
-      console.log(`Progress: ${i + 1}/${locations.length} (${percent}%)`);
-    }
-
-    // Skip if already has description and skipEnriched is true
-    if (skipEnriched && location.short_description) {
-      results.push({
-        id: location.id,
-        name: location.name,
-        success: true,
-        description: location.short_description,
-        error: "Skipped - already has description",
-      });
-      skipped++;
-      continue;
-    }
-
-    // Build prompt
-    const prompt = buildPrompt(location);
-
-    // In dry run mode, just show the prompt for first few
-    if (dryRun) {
-      if (i < 5) {
-        console.log(`\n--- ${location.name} ---`);
-        console.log(prompt);
-        console.log("---");
-      }
-      results.push({
-        id: location.id,
-        name: location.name,
-        success: true,
-        prompt,
-      });
-      successful++;
-      continue;
-    }
-
-    // Rate limiting
-    if (i > 0) {
-      await delay(RATE_LIMIT_MS);
-    }
-
-    // Generate description (anthropic client is guaranteed to be non-null here since we're not in dry-run)
-    const description = await generateDescription(anthropic!, location);
-
-    if (!description) {
-      results.push({
-        id: location.id,
-        name: location.name,
-        success: false,
-        error: "API call failed or empty response",
-      });
-      failed++;
-      continue;
-    }
-
-    // Update database
-    const { error: updateError } = await supabase
-      .from("locations")
-      .update({ short_description: description })
-      .eq("id", location.id);
-
-    if (updateError) {
-      results.push({
-        id: location.id,
-        name: location.name,
-        success: false,
-        description,
-        error: updateError.message,
-      });
-      failed++;
-      continue;
-    }
-
-    // Log success
-    results.push({
-      id: location.id,
-      name: location.name,
-      success: true,
-      description,
-    });
-    successful++;
-
-    // Log some examples
-    if (i < 10 || i % 100 === 0) {
-      console.log(`  ✓ ${location.name}: "${description.slice(0, 80)}..."`);
-    }
-  }
-
-  // Summary
-  console.log("\n=== Generation Summary ===");
-  console.log(`Total processed: ${results.length}`);
-  console.log(`Successful: ${successful}`);
-  console.log(`Failed: ${failed}`);
-  console.log(`Skipped: ${skipped}`);
-
-  // Write log file
-  const logFile: GenerationLog = {
-    timestamp: new Date().toISOString(),
-    totalProcessed: results.length,
-    successful,
-    failed,
-    skipped,
-    results,
-  };
-
-  const logPath = path.join(
-    process.cwd(),
-    "scripts",
-    `ai-descriptions-log-${new Date().toISOString().split("T")[0]}.json`
-  );
-  fs.writeFileSync(logPath, JSON.stringify(logFile, null, 2));
-  console.log(`\nLog written to: ${logPath}`);
-
-  if (dryRun) {
-    console.log(
-      "\n[DRY RUN] No API calls were made and no changes applied. Run without --dry-run to generate descriptions."
-    );
-  }
-}
-
-// Parse command line arguments
-const testMode = args.includes("--test");
-const skipEnriched = args.includes("--skip-enriched");
-
+// Parse limit argument
 let limit: number | undefined;
-if (testMode) {
-  limit = 10;
-} else {
-  const limitArg = args.find((arg) => arg.startsWith("--limit"));
-  if (limitArg) {
-    const limitValue = args[args.indexOf(limitArg) + 1];
-    limit = limitValue ? parseInt(limitValue, 10) : undefined;
-  }
+const limitArg = args.find((arg) => arg.startsWith("--limit"));
+if (limitArg) {
+  const limitValue = args[args.indexOf(limitArg) + 1];
+  limit = limitValue ? parseInt(limitValue, 10) : undefined;
 }
 
 // Run appropriate mode
@@ -658,8 +317,10 @@ async function main(): Promise<void> {
   } else if (isImportMode) {
     await importDescriptions();
   } else {
-    // Legacy mode - direct API generation
-    await generateDescriptions({ dryRun: isDryRun, limit, skipEnriched });
+    console.log("Usage:");
+    console.log("  npm run generate:descriptions -- --status              # Show status");
+    console.log("  npm run generate:descriptions -- --export --limit 50   # Export locations");
+    console.log("  npm run generate:descriptions -- --import              # Import descriptions");
   }
 }
 
