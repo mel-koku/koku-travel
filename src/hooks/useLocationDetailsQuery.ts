@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { cacheLocationDetails } from "@/state/locationDetailsStore";
 import type { LocationDetails } from "@/types/location";
 import { logger } from "@/lib/logger";
 
@@ -47,8 +45,6 @@ async function fetchLocationDetails(locationId: string): Promise<LocationDetails
  * Features:
  * - Automatic caching with TTL (5 min stale, 30 min garbage collection)
  * - Automatic retry on failure
- * - Updates legacy locationDetailsStore for backwards compatibility
- * - Same interface as the original useLocationDetails hook
  *
  * @param locationId - The location ID to fetch details for
  * @returns Object with status, details, errorMessage, and retry function
@@ -69,15 +65,6 @@ export function useLocationDetailsQuery(locationId: string | null) {
     // Don't refetch on window focus for this data
     refetchOnWindowFocus: false,
   });
-
-  // Update legacy store for backwards compatibility with other components
-  // that still use useLocationEditorialSummary/useLocationDisplayName
-  // Use useEffect to avoid setState during render
-  useEffect(() => {
-    if (data && locationId) {
-      cacheLocationDetails(locationId, data);
-    }
-  }, [data, locationId]);
 
   // Map React Query status to the original hook's status format
   const mappedStatus = locationId

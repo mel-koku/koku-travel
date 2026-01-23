@@ -3,21 +3,6 @@ import { NextResponse } from "next/server";
 import { POST } from "@/app/api/itinerary/refine/route";
 import { createMockRequest } from "../utils/mocks";
 
-/**
- * NOTE: The refine route has an inconsistency between the zod schema validation
- * and the VALID_REFINEMENT_TYPES constant. The schema only accepts:
- * ["more_diverse", "more_focused", "more_adventurous", "more_relaxed", "more_budget_friendly", "more_luxury"]
- *
- * But the VALID_REFINEMENT_TYPES constant (used after schema validation) only accepts:
- * ["too_busy", "too_light", "more_food", "more_culture", "more_kid_friendly", "more_rest"]
- *
- * This means:
- * - Schema-valid types pass schema but fail VALID_REFINEMENT_TYPES check
- * - Legacy types (too_busy, etc.) fail schema validation
- *
- * These tests focus on request validation and error handling, skipping the broken refinement type tests.
- */
-
 // Mock dependencies
 vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
