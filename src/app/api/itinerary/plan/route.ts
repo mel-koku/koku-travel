@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
       builderData.travelerProfile = buildTravelerProfile(builderData);
     }
 
-    // Generate trip
-    const trip = await generateTripFromBuilderData(builderData, finalTripId);
+    // Generate trip (returns both domain model and raw itinerary)
+    const { trip, itinerary } = await generateTripFromBuilderData(builderData, finalTripId);
 
     // Validate constraints
     const tripValidation = validateTripConstraints(trip);
@@ -79,6 +79,7 @@ export async function POST(request: NextRequest) {
     return addRequestContextHeaders(
       NextResponse.json({
         trip,
+        itinerary,
         validation: tripValidation,
       }, {
         headers: {
