@@ -838,6 +838,7 @@ function TravelSegmentWrapper({
           path: routeData.path ?? travelFromPrevious.path,
           instructions: routeData.instructions ?? travelFromPrevious.instructions,
           arrivalTime: routeData.arrivalTime ?? travelFromPrevious.arrivalTime,
+          isEstimated: routeData.isEstimated ?? false,
         },
       });
     } catch (_error) {

@@ -21,7 +21,8 @@ This archive contains documentation for all features completed in January 2026.
 15. [Google Places Full Enrichment](#google-places-full-enrichment)
 16. [Explore Page Filter/Search UX Overhaul](#filter-search-ux-overhaul)
 17. [Trip Builder V2 Redesign](#trip-builder-v2-redesign)
-18. [Key Files Modified](#key-files-modified)
+18. [Itinerary Feature Audit Fixes](#itinerary-feature-audit-fixes)
+19. [Key Files Modified](#key-files-modified)
 
 ---
 
@@ -890,6 +891,76 @@ Redesigned the trip builder from 5 steps to 2 steps with a split-screen live pre
 | `src/components/features/trip-builder-v2/` | All V2 components (15 files) |
 | `src/app/trip-builder-v2/page.tsx` | New route at /trip-builder-v2 |
 | `src/components/Header.tsx` | Added Trip Builder V2 to navigation |
+
+---
+
+## Itinerary Feature Audit Fixes
+
+**Date:** January 23, 2026
+
+Addressed multiple issues discovered during itinerary feature audit:
+
+### Issue 1: Map Not Working
+
+**Problem:** Map showed generic error message referencing wrong environment variable.
+
+**Fix:**
+- Updated `ItineraryMap.tsx` to reference correct env var (`NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN`)
+- Added `tokenStatus` check to distinguish between disabled vs. missing token
+- Clearer user feedback for different error states
+
+### Issue 2: Route Optimization Feedback
+
+**Problem:** No feedback when optimizing route - users couldn't tell if it worked.
+
+**Fix:**
+- Changed `optimizeRouteOrder()` return type from `string[]` to `OptimizeRouteResult`:
+  ```typescript
+  type OptimizeRouteResult = {
+    order: string[];        // Activity IDs in optimized order
+    optimizedCount: number; // Activities with coordinates
+    skippedCount: number;   // Activities missing coordinates
+    orderChanged: boolean;  // Whether order actually changed
+  };
+  ```
+- Added feedback UI in `DayEntryPointEditor.tsx`:
+  - Success message: "Route optimized! X activities reordered"
+  - Info when route already optimal
+  - Warning when activities lack coordinates
+
+### Issue 3: Travel Segment Display
+
+**Problem:** Travel segments showed "0 min" while calculating, no indication of estimated times.
+
+**Fix:**
+- Added `isEstimated?: boolean` to `ItineraryTravelSegment` type
+- Updated routing APIs (`/api/routing/estimate`, `/api/routing/route`) to include `isEstimated` flag
+- Updated `TravelSegment.tsx`:
+  - Loading spinner when `durationMinutes === 0`
+  - "~est" badge for heuristic/estimated times
+- Passed `originName`/`destinationName` for better Google Maps directions
+
+### Issue 4: Routing Fallback Chain
+
+**Verified:** Routing fallback chain works correctly:
+1. Cache check → Cheap mode → Provider → Heuristic fallback
+2. All provider errors caught and fall back to heuristic
+3. Heuristic always available as last resort
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `src/components/features/itinerary/ItineraryMap.tsx` | Token validation, correct error messages |
+| `src/components/features/itinerary/TravelSegment.tsx` | Loading state, estimated badge |
+| `src/components/features/itinerary/DayEntryPointEditor.tsx` | Optimization feedback UI |
+| `src/components/features/itinerary/TimelineSection.tsx` | Pass isEstimated, activity names |
+| `src/components/features/itinerary/ItineraryTimeline.tsx` | Pass isEstimated through updates |
+| `src/lib/routeOptimizer.ts` | New OptimizeRouteResult return type |
+| `src/types/itinerary.ts` | Added isEstimated to ItineraryTravelSegment |
+| `src/app/api/routing/estimate/route.ts` | Include isEstimated in response |
+| `src/app/api/routing/route/route.ts` | Include isEstimated in response |
+| `.claudedoc/architecture.md` | Documented routing system |
 
 ---
 

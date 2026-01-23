@@ -6,7 +6,7 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { EntryPointSearchInput } from "./EntryPointSearchInput";
-import { optimizeRouteOrder } from "@/lib/routeOptimizer";
+import { optimizeRouteOrder, type OptimizeRouteResult } from "@/lib/routeOptimizer";
 import { logger } from "@/lib/logger";
 
 type DayEntryPointEditorProps = {
@@ -32,6 +32,7 @@ export function DayEntryPointEditor({
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [editingType, setEditingType] = useState<EntryPointType>("hotel");
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [optimizeResult, setOptimizeResult] = useState<OptimizeRouteResult | null>(null);
 
   const handleStartPointSelect = (entryPoint: EntryPoint) => {
     onSetStartPoint(entryPoint);
@@ -64,11 +65,15 @@ export function DayEntryPointEditor({
 
   const handleOptimizeRoute = () => {
     if (!startPoint) return;
-    
+
     setIsOptimizing(true);
+    setOptimizeResult(null);
     try {
-      const optimizedOrder = optimizeRouteOrder(activities, startPoint, endPoint);
-      onOptimizeRoute(optimizedOrder);
+      const result = optimizeRouteOrder(activities, startPoint, endPoint);
+      onOptimizeRoute(result.order);
+      setOptimizeResult(result);
+      // Clear feedback after 5 seconds
+      setTimeout(() => setOptimizeResult(null), 5000);
     } catch (error) {
       logger.error("Failed to optimize route", error instanceof Error ? error : new Error(String(error)));
     } finally {
@@ -202,6 +207,29 @@ export function DayEntryPointEditor({
             >
               {isOptimizing ? "Optimizing..." : "Optimize Route"}
             </Button>
+            {optimizeResult && (
+              <div className="mt-2 text-xs">
+                {optimizeResult.orderChanged ? (
+                  <p className="text-green-600">
+                    Route optimized! {optimizeResult.optimizedCount} activities reordered.
+                    {optimizeResult.skippedCount > 0 && (
+                      <span className="text-amber-600 ml-1">
+                        ({optimizeResult.skippedCount} skipped - missing coordinates)
+                      </span>
+                    )}
+                  </p>
+                ) : (
+                  <p className="text-gray-600">
+                    Route is already optimal.
+                    {optimizeResult.skippedCount > 0 && (
+                      <span className="text-amber-600 ml-1">
+                        ({optimizeResult.skippedCount} activities lack coordinates)
+                      </span>
+                    )}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

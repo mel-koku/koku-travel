@@ -75,6 +75,8 @@ export type ItineraryTravelSegment = {
   instructions?: string[];
   notes?: string;
   path?: Array<{ lat: number; lng: number }>;
+  /** True if this is a heuristic estimate (not from real routing API) */
+  isEstimated?: boolean;
 };
 
 export type ItineraryCityTransition = {

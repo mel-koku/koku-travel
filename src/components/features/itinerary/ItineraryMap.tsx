@@ -58,6 +58,18 @@ export function ItineraryMap({
   const layerIdsRef = useRef<string[]>([]);
 
   const mapboxEnabled = useMemo(() => featureFlags.enableMapbox && mapboxService.isEnabled(), []);
+  const accessToken = useMemo(() => mapboxService.getAccessToken(), []);
+
+  // Determine the specific error state for better user feedback
+  const tokenStatus = useMemo(() => {
+    if (!featureFlags.enableMapbox) {
+      return { available: false, reason: "disabled" as const };
+    }
+    if (!accessToken) {
+      return { available: false, reason: "missing" as const };
+    }
+    return { available: true, reason: null };
+  }, [accessToken]);
 
   const placeActivities = useMemo(
     () => activities.filter(
@@ -87,7 +99,7 @@ export function ItineraryMap({
 
   useEffect(() => {
     if (!mapboxEnabled) {
-      setMapError("Mapbox is not configured. Set ROUTING_MAPBOX_ACCESS_TOKEN to enable the map.");
+      // Don't set error here - we handle this case separately in the render
       return;
     }
 
@@ -309,11 +321,23 @@ export function ItineraryMap({
     });
   }, [routeSegments, mapReady, selectedActivityId]);
 
-  if (!mapboxEnabled || !mapboxService.isEnabled()) {
+  if (!tokenStatus.available) {
+    const errorMessage = tokenStatus.reason === "disabled"
+      ? "Mapbox has been disabled via ENABLE_MAPBOX=false."
+      : (
+        <>
+          Map requires a Mapbox token. Set{" "}
+          <code className="rounded bg-gray-100 px-1 py-0.5 text-xs font-mono">
+            NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
+          </code>{" "}
+          in your environment variables.
+        </>
+      );
+
     return (
       <div className="flex h-full w-full items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-4">
         <p className="text-center text-sm text-gray-600">
-          Enable Mapbox by setting <code className="rounded bg-gray-100 px-1 py-0.5 text-xs font-mono">ROUTING_MAPBOX_ACCESS_TOKEN</code>.
+          {errorMessage}
         </p>
       </div>
     );

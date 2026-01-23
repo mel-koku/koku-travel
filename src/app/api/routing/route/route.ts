@@ -94,6 +94,9 @@ export async function POST(request: NextRequest) {
       }
     }
     
+    // "mock" provider indicates heuristic estimate (not from real routing API)
+    const isEstimated = result.provider === "mock";
+
     // Return full route response
     return addRequestContextHeaders(
       NextResponse.json({
@@ -104,6 +107,7 @@ export async function POST(request: NextRequest) {
         instructions: instructions.length > 0 ? instructions : undefined,
         arrivalTime,
         departureTime: body.departureTime,
+        isEstimated,
       }),
       finalContext,
     );
