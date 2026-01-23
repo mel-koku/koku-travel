@@ -258,7 +258,7 @@ export async function canResolvePlaceId(location: Location): Promise<boolean> {
     }
 
     return false;
-  } catch (error) {
+  } catch (_error) {
     return false;
   }
 }
