@@ -32,8 +32,8 @@ getToken() {
 
 - Run tests: `npm test`
 - Run specific tests: `npm test -- tests/services/trip/`
-- **491 total tests** across 38 test files
-- API tests in `tests/api/` (135 tests across 11 files)
+- **479 total tests** across 36 test files
+- Shared test utilities in `tests/utils/` (component factory, API helpers, context helpers)
 - Test fixtures in `tests/fixtures/locations.ts`
 
 ### Test Fixtures

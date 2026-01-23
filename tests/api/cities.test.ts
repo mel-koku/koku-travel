@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { NextResponse } from "next/server";
 import { GET } from "@/app/api/cities/route";
 import { createMockRequest } from "../utils/mocks";
+import {
+  generateRateLimitTests,
+  generateCacheHeaderTests,
+  expectMetaResponse,
+} from "../utils/apiTestHelpers";
 
 // Mock dependencies
 vi.mock("@/lib/api/rateLimit", () => ({
@@ -36,64 +40,22 @@ vi.mock("@/lib/supabase/server", () => ({
 // Helper to create mock location data for city aggregation
 function createMockLocationData() {
   return [
-    {
-      id: "kyoto-kinkakuji",
-      city: "Kyoto",
-      region: "Kansai",
-      place_id: "ChIJ-place-1",
-      image: "https://example.com/kinkakuji.jpg",
-      rating: 4.8,
-    },
-    {
-      id: "kyoto-fushimi",
-      city: "Kyoto",
-      region: "Kansai",
-      place_id: "ChIJ-place-2",
-      image: "https://example.com/fushimi.jpg",
-      rating: 4.7,
-    },
-    {
-      id: "kyoto-temple",
-      city: "Kyoto",
-      region: "Kansai",
-      place_id: "ChIJ-place-3",
-      image: "https://example.com/temple.jpg",
-      rating: 4.6,
-    },
-    {
-      id: "kyoto-garden",
-      city: "Kyoto",
-      region: "Kansai",
-      place_id: "ChIJ-place-4",
-      image: null,
-      rating: 4.5,
-    },
-    {
-      id: "osaka-castle",
-      city: "Osaka",
-      region: "Kansai",
-      place_id: "ChIJ-place-5",
-      image: "https://example.com/osaka-castle.jpg",
-      rating: 4.6,
-    },
-    {
-      id: "osaka-dotonbori",
-      city: "Osaka",
-      region: "Kansai",
-      place_id: "ChIJ-place-6",
-      image: "https://example.com/dotonbori.jpg",
-      rating: 4.5,
-    },
-    {
-      id: "tokyo-senso",
-      city: "Tokyo",
-      region: "Kanto",
-      place_id: "ChIJ-place-7",
-      image: "https://example.com/senso.jpg",
-      rating: 4.7,
-    },
+    { id: "kyoto-kinkakuji", city: "Kyoto", region: "Kansai", place_id: "ChIJ-place-1", image: "https://example.com/kinkakuji.jpg", rating: 4.8 },
+    { id: "kyoto-fushimi", city: "Kyoto", region: "Kansai", place_id: "ChIJ-place-2", image: "https://example.com/fushimi.jpg", rating: 4.7 },
+    { id: "kyoto-temple", city: "Kyoto", region: "Kansai", place_id: "ChIJ-place-3", image: "https://example.com/temple.jpg", rating: 4.6 },
+    { id: "kyoto-garden", city: "Kyoto", region: "Kansai", place_id: "ChIJ-place-4", image: null, rating: 4.5 },
+    { id: "osaka-castle", city: "Osaka", region: "Kansai", place_id: "ChIJ-place-5", image: "https://example.com/osaka-castle.jpg", rating: 4.6 },
+    { id: "osaka-dotonbori", city: "Osaka", region: "Kansai", place_id: "ChIJ-place-6", image: "https://example.com/dotonbori.jpg", rating: 4.5 },
+    { id: "tokyo-senso", city: "Tokyo", region: "Kanto", place_id: "ChIJ-place-7", image: "https://example.com/senso.jpg", rating: 4.7 },
   ];
 }
+
+const apiConfig = {
+  baseUrl: "https://example.com/api/cities",
+  handler: GET,
+  rateLimit: 100,
+  cacheMaxAge: 300,
+};
 
 describe("GET /api/cities", () => {
   beforeEach(() => {
@@ -101,27 +63,13 @@ describe("GET /api/cities", () => {
     mockSupabaseResponse = { data: createMockLocationData(), error: null };
   });
 
-  describe("Rate limiting", () => {
-    it("should enforce rate limit of 100 requests per minute", async () => {
-      const { checkRateLimit } = await import("@/lib/api/rateLimit");
-      vi.mocked(checkRateLimit).mockResolvedValueOnce(
-        NextResponse.json({ error: "Too many requests", code: "RATE_LIMIT_EXCEEDED" }, {
-          status: 429,
-        }),
-      );
-
-      const request = createMockRequest("https://example.com/api/cities");
-      const response = await GET(request);
-
-      expect(response.status).toBe(429);
-      const data = await response.json();
-      expect(data.code).toBe("RATE_LIMIT_EXCEEDED");
-    });
-  });
+  // Use shared test generators
+  generateRateLimitTests(apiConfig);
+  generateCacheHeaderTests(apiConfig);
 
   describe("City aggregation", () => {
     it("should return cities with location counts", async () => {
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -144,7 +92,7 @@ describe("GET /api/cities", () => {
     });
 
     it("should include region for each city", async () => {
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -158,7 +106,7 @@ describe("GET /api/cities", () => {
     });
 
     it("should generate id from city name", async () => {
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -174,7 +122,7 @@ describe("GET /api/cities", () => {
 
   describe("Preview images", () => {
     it("should include up to 3 preview images for each city", async () => {
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -187,34 +135,23 @@ describe("GET /api/cities", () => {
     });
 
     it("should use image field when available", async () => {
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
       const data = await response.json();
 
       const kyoto = data.data.find((c: { name: string }) => c.name === "Kyoto");
-      // First 3 locations have images
       expect(kyoto.previewImages).toContain("https://example.com/kinkakuji.jpg");
     });
 
     it("should fallback to primary-photo API when no image", async () => {
-      // Mock data where some locations have no image
       mockSupabaseResponse = {
-        data: [
-          {
-            id: "nara-park",
-            city: "Nara",
-            region: "Kansai",
-            place_id: "ChIJ-place-nara",
-            image: null,
-            rating: 4.5,
-          },
-        ],
+        data: [{ id: "nara-park", city: "Nara", region: "Kansai", place_id: "ChIJ-place-nara", image: null, rating: 4.5 }],
         error: null,
       };
 
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -227,7 +164,7 @@ describe("GET /api/cities", () => {
 
   describe("Sorting by count", () => {
     it("should sort cities by location count in descending order", async () => {
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -241,30 +178,12 @@ describe("GET /api/cities", () => {
 
   describe("Response format", () => {
     it("should return data in standardized API response format", async () => {
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
       const data = await response.json();
-
-      // Should have data array
-      expect(data.data).toBeDefined();
-      expect(Array.isArray(data.data)).toBe(true);
-
-      // Should have meta object
-      expect(data.meta).toBeDefined();
-      expect(data.meta.total).toBe(3); // 3 unique cities
-    });
-  });
-
-  describe("Cache headers", () => {
-    it("should set cache headers on successful response", async () => {
-      const request = createMockRequest("https://example.com/api/cities");
-      const response = await GET(request);
-
-      expect(response.status).toBe(200);
-      expect(response.headers.get("Cache-Control")).toContain("public");
-      expect(response.headers.get("Cache-Control")).toContain("max-age=300");
+      expectMetaResponse(data, { total: 3 });
     });
   });
 
@@ -272,7 +191,7 @@ describe("GET /api/cities", () => {
     it("should return 500 on database error", async () => {
       mockSupabaseResponse = { data: [], error: { message: "Database connection failed" } };
 
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(500);
@@ -283,7 +202,7 @@ describe("GET /api/cities", () => {
     it("should handle empty database gracefully", async () => {
       mockSupabaseResponse = { data: [], error: null };
 
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
@@ -295,40 +214,18 @@ describe("GET /api/cities", () => {
     it("should skip locations without city or region", async () => {
       mockSupabaseResponse = {
         data: [
-          {
-            id: "location-1",
-            city: null,
-            region: "Kansai",
-            place_id: "ChIJ-place-1",
-            image: null,
-            rating: 4.5,
-          },
-          {
-            id: "location-2",
-            city: "Kyoto",
-            region: null,
-            place_id: "ChIJ-place-2",
-            image: null,
-            rating: 4.5,
-          },
-          {
-            id: "location-3",
-            city: "Osaka",
-            region: "Kansai",
-            place_id: "ChIJ-place-3",
-            image: null,
-            rating: 4.5,
-          },
+          { id: "location-1", city: null, region: "Kansai", place_id: "ChIJ-place-1", image: null, rating: 4.5 },
+          { id: "location-2", city: "Kyoto", region: null, place_id: "ChIJ-place-2", image: null, rating: 4.5 },
+          { id: "location-3", city: "Osaka", region: "Kansai", place_id: "ChIJ-place-3", image: null, rating: 4.5 },
         ],
         error: null,
       };
 
-      const request = createMockRequest("https://example.com/api/cities");
+      const request = createMockRequest(apiConfig.baseUrl);
       const response = await GET(request);
 
       expect(response.status).toBe(200);
       const data = await response.json();
-      // Should only have Osaka (location-3 is the only one with both city and region)
       expect(data.data.length).toBe(1);
       expect(data.data[0].name).toBe("Osaka");
     });
