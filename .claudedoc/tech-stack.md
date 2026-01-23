@@ -14,6 +14,7 @@
 | Caching | React Query (@tanstack/react-query) |
 | Forms | React Hook Form + Zod (validation) |
 | Drag & Drop | @dnd-kit |
+| Animations | Framer Motion |
 | Rate Limiting | @upstash/ratelimit + @upstash/redis |
 | HTTP Client | Axios |
 | Web Scraping | Cheerio |
@@ -28,6 +29,7 @@ src/
 │   └── (pages)/           # Page components
 ├── components/            # React components
 │   ├── features/          # Feature-specific components
+│   ├── landing/           # Landing page components
 │   └── ui/                # Reusable UI components
 ├── context/               # React contexts
 ├── data/                  # Static data (interests, entry points, categoryHierarchy)

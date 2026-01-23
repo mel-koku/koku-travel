@@ -26,7 +26,10 @@ npm test             # Run all tests
 ```
 src/
 ├── app/api/           # API endpoints
-├── components/        # React components (features/, ui/)
+├── components/
+│   ├── features/      # Feature-specific components
+│   ├── landing/       # Landing page components (hero, features, testimonials)
+│   └── ui/            # Reusable UI components
 ├── hooks/             # React Query hooks (central exports in index.ts)
 ├── lib/               # Utilities (supabase/, routing/, locations/, scoring/, server/)
 ├── services/          # Domain services (sync/, trip/)
@@ -45,6 +48,13 @@ src/
 | `src/data/regionData.ts` | Japan's 9 regions with coordinates and bounds |
 | `src/lib/tripBuilder/cityRelevance.ts` | City relevance calculation utilities |
 | `src/lib/tripBuilder/regionAggregation.ts` | Region aggregation for map clustering |
+| `src/components/landing/` | Landing page components with Framer Motion animations |
+
+## Design System
+
+- **Colors**: Earthy palette (cream, charcoal, sage, terracotta, stone)
+- **Typography**: Playfair Display (serif headlines), Geist Sans (body)
+- **Animations**: Framer Motion for scroll-triggered animations
 
 ## Current Stats
 
