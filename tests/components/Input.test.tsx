@@ -2,7 +2,40 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Input } from "@/components/ui/Input";
+import {
+  generateAccessibilityTests,
+  generateDisabledStateTests,
+  generateErrorStateTests,
+  generateInputInteractionTests,
+  generateControlledTests,
+} from "../utils/componentTestFactory";
 
+// Configure shared tests
+const inputConfig = {
+  name: "Input",
+  renderDefault: () => <Input placeholder="Enter text" />,
+  renderWithProps: (props: Partial<React.ComponentProps<typeof Input>>) => (
+    <Input placeholder="Test input" {...props} />
+  ),
+  role: "textbox" as const,
+  supportsError: true,
+  supportsDisabled: true,
+  disabledClasses: ["cursor-not-allowed", "bg-gray-100"],
+  errorClasses: ["border-red-500"],
+};
+
+// Generate common tests from factory
+generateAccessibilityTests(inputConfig);
+generateDisabledStateTests(inputConfig);
+generateErrorStateTests(inputConfig);
+generateInputInteractionTests(inputConfig);
+generateControlledTests(inputConfig, {
+  controlledValue: "test",
+  uncontrolledValue: "initial",
+  typeValue: " updated",
+});
+
+// Input-specific tests
 describe("Input", () => {
   describe("Rendering", () => {
     it("should render with default props", () => {
@@ -37,15 +70,7 @@ describe("Input", () => {
     });
   });
 
-  describe("Accessibility", () => {
-    it("should have proper ARIA attributes when error is present", () => {
-      render(<Input id="test-input" error="This field is required" />);
-      const input = screen.getByRole("textbox");
-      expect(input).toHaveAttribute("aria-invalid", "true");
-      expect(input).toHaveAttribute("aria-describedby", "test-input-error");
-      expect(screen.getByText("This field is required")).toBeInTheDocument();
-    });
-
+  describe("Accessibility - Custom", () => {
     it("should support custom aria-describedby", () => {
       render(<Input aria-describedby="custom-help" />);
       const input = screen.getByRole("textbox");
@@ -64,30 +89,10 @@ describe("Input", () => {
     });
   });
 
-  describe("Error states", () => {
+  describe("Error display", () => {
     it("should display error message when error prop is provided", () => {
       render(<Input id="test-input" error="This field is required" />);
       expect(screen.getByText("This field is required")).toBeInTheDocument();
-    });
-
-    it("should apply error styling when error is present", () => {
-      render(<Input id="test-input" error="Error" />);
-      const input = screen.getByRole("textbox");
-      expect(input).toHaveClass("border-red-500");
-    });
-  });
-
-  describe("Disabled states", () => {
-    it("should be disabled when disabled prop is true", () => {
-      render(<Input disabled placeholder="Disabled" />);
-      const input = screen.getByPlaceholderText("Disabled");
-      expect(input).toBeDisabled();
-    });
-
-    it("should apply disabled styling", () => {
-      render(<Input disabled placeholder="Disabled" />);
-      const input = screen.getByPlaceholderText("Disabled");
-      expect(input).toHaveClass("cursor-not-allowed", "bg-gray-100");
     });
   });
 
@@ -102,37 +107,9 @@ describe("Input", () => {
       rerender(<Input type="number" placeholder="Number" />);
       expect(screen.getByPlaceholderText("Number")).toHaveAttribute("type", "number");
     });
-
-    it("should support controlled input", async () => {
-      const user = userEvent.setup();
-      const handleChange = vi.fn();
-      render(<Input value="test" onChange={handleChange} />);
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-      expect(input.value).toBe("test");
-      await user.type(input, " new");
-      expect(handleChange).toHaveBeenCalled();
-    });
-
-    it("should support uncontrolled input", async () => {
-      const user = userEvent.setup();
-      render(<Input defaultValue="initial" />);
-      const input = screen.getByRole("textbox") as HTMLInputElement;
-      expect(input.value).toBe("initial");
-      await user.type(input, " updated");
-      expect(input.value).toBe("initial updated");
-    });
   });
 
   describe("User interaction", () => {
-    it("should call onChange handler when typing", async () => {
-      const user = userEvent.setup();
-      const handleChange = vi.fn();
-      render(<Input onChange={handleChange} />);
-      const input = screen.getByRole("textbox");
-      await user.type(input, "test");
-      expect(handleChange).toHaveBeenCalled();
-    });
-
     it("should call onFocus handler when focused", async () => {
       const user = userEvent.setup();
       const handleFocus = vi.fn();
@@ -143,4 +120,3 @@ describe("Input", () => {
     });
   });
 });
-
