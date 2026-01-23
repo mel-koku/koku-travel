@@ -4,7 +4,7 @@
 
 | Category | Technology |
 |----------|------------|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Language | TypeScript |
 | Database | Supabase (PostgreSQL) |
 | Styling | Tailwind CSS |
@@ -12,6 +12,11 @@
 | Maps | Mapbox GL |
 | Testing | Vitest |
 | Caching | React Query (@tanstack/react-query) |
+| Forms | React Hook Form + Zod (validation) |
+| Drag & Drop | @dnd-kit |
+| Rate Limiting | @upstash/ratelimit + @upstash/redis |
+| HTTP Client | Axios |
+| Web Scraping | Cheerio |
 
 ## Project Structure
 
@@ -35,7 +40,12 @@ src/
 │   ├── api/               # API utilities (middleware, rate limiting, pagination)
 │   ├── supabase/          # Supabase client + column projections
 │   ├── routing/           # Route calculation utilities
-│   └── locations/         # Location service (server-side fetching)
+│   ├── locations/         # Location service (server-side fetching)
+│   ├── scoring/           # Location scoring, diversity rules, time optimization
+│   ├── server/            # Server-side operations (itinerary engine)
+│   ├── tripBuilder/       # Trip builder utilities (region aggregation, city relevance)
+│   ├── mapbox/            # Mapbox service for maps and routing
+│   └── ...                # Additional: auth, cache, cost, weather, tips, utils
 ├── providers/             # React providers
 │   └── QueryProvider.tsx  # React Query provider
 ├── services/              # Domain services
