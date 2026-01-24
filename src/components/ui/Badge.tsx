@@ -1,115 +1,137 @@
-import { ComponentPropsWithoutRef, ElementRef, ReactNode, forwardRef } from "react";
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils"
 
-export type BadgeVariant = "solid" | "soft" | "outline";
-export type BadgeTone = "brand" | "secondary" | "success" | "warning" | "error" | "neutral";
-
-type BadgeProps = {
-  /**
-   * Visual weight of the badge.
-   */
-  variant?: BadgeVariant;
-  /**
-   * Color tone applied to the badge.
-   */
-  tone?: BadgeTone;
-} & ComponentPropsWithoutRef<"span">;
+export type BadgeVariant = "solid" | "soft" | "outline" | "default" | "secondary" | "destructive"
+export type BadgeTone = "brand" | "secondary" | "success" | "warning" | "error" | "neutral"
 
 const toneStyles: Record<
   BadgeTone,
   {
-    solid: string;
-    soft: string;
-    outline: string;
+    solid: string
+    soft: string
+    outline: string
   }
 > = {
   brand: {
-    solid: "bg-brand-primary text-white",
-    soft: "bg-brand-primary/10 text-brand-primary ring-1 ring-inset ring-brand-primary/20",
-    outline: "text-brand-primary ring-1 ring-inset ring-brand-primary/30",
+    solid: "bg-primary text-primary-foreground",
+    soft: "bg-primary/10 text-primary ring-1 ring-inset ring-primary/20",
+    outline: "text-primary ring-1 ring-inset ring-primary/30 bg-background",
   },
   secondary: {
-    solid: "bg-brand-secondary text-white",
-    soft: "bg-brand-secondary/10 text-brand-secondary ring-1 ring-inset ring-brand-secondary/20",
-    outline: "text-brand-secondary ring-1 ring-inset ring-brand-secondary/30",
+    solid: "bg-terracotta text-white",
+    soft: "bg-terracotta/10 text-terracotta ring-1 ring-inset ring-terracotta/20",
+    outline: "text-terracotta ring-1 ring-inset ring-terracotta/30 bg-background",
   },
   success: {
-    solid: "bg-semantic-success text-white",
-    soft: "bg-semantic-success/10 text-semantic-success ring-1 ring-inset ring-semantic-success/20",
-    outline: "text-semantic-success ring-1 ring-inset ring-semantic-success/30",
+    solid: "bg-success text-white",
+    soft: "bg-success/10 text-success ring-1 ring-inset ring-success/20",
+    outline: "text-success ring-1 ring-inset ring-success/30 bg-background",
   },
   warning: {
-    solid: "bg-semantic-warning text-white",
-    soft: "bg-semantic-warning/10 text-semantic-warning ring-1 ring-inset ring-semantic-warning/20",
-    outline: "text-semantic-warning ring-1 ring-inset ring-semantic-warning/30",
+    solid: "bg-warning text-white",
+    soft: "bg-warning/10 text-warning ring-1 ring-inset ring-warning/20",
+    outline: "text-warning ring-1 ring-inset ring-warning/30 bg-background",
   },
   error: {
-    solid: "bg-semantic-error text-white",
-    soft: "bg-semantic-error/10 text-semantic-error ring-1 ring-inset ring-semantic-error/20",
-    outline: "text-semantic-error ring-1 ring-inset ring-semantic-error/30",
+    solid: "bg-destructive text-destructive-foreground",
+    soft: "bg-destructive/10 text-destructive ring-1 ring-inset ring-destructive/20",
+    outline: "text-destructive ring-1 ring-inset ring-destructive/30 bg-background",
   },
   neutral: {
-    solid: "bg-neutral-border text-neutral-textPrimary",
-    soft: "bg-neutral-surface text-neutral-textPrimary ring-1 ring-inset ring-neutral-border",
-    outline: "text-neutral-textSecondary ring-1 ring-inset ring-neutral-border",
+    solid: "bg-muted text-muted-foreground",
+    soft: "bg-muted text-muted-foreground ring-1 ring-inset ring-border",
+    outline: "text-muted-foreground ring-1 ring-inset ring-border bg-background",
   },
-};
+}
 
-export const Badge = forwardRef<ElementRef<"span">, BadgeProps>((props, ref) => {
-  const { variant = "soft", tone = "brand", className, ...rest } = props;
+const badgeVariants = cva(
+  "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  {
+    variants: {
+      variant: {
+        default:
+          "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
+        secondary:
+          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        destructive:
+          "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
+        outline: "text-foreground border border-input",
+        // These are handled specially via tone
+        solid: "",
+        soft: "",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
 
+export interface BadgeProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof badgeVariants> {
+  tone?: BadgeTone
+}
+
+function Badge({ className, variant = "soft", tone = "brand", ...props }: BadgeProps) {
+  // If using tone-based variants (solid, soft, outline)
+  if (tone && (variant === "solid" || variant === "soft" || variant === "outline")) {
+    return (
+      <div
+        className={cn(
+          "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors",
+          toneStyles[tone][variant],
+          className
+        )}
+        {...props}
+      />
+    )
+  }
+
+  // Otherwise use default shadcn variants
   return (
-    <span
-      ref={ref}
-      className={cn(
-        "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide",
-        toneStyles[tone][variant],
-        variant === "outline" && "bg-neutral-surface",
-        className,
-      )}
-      {...rest}
-    />
-  );
-});
+    <div className={cn(badgeVariants({ variant }), className)} {...props} />
+  )
+}
 
-Badge.displayName = "Badge";
-
-type TagProps = {
-  tone?: BadgeTone;
-  icon?: ReactNode;
-} & ComponentPropsWithoutRef<"span">;
+// Tag component (from legacy Badge.tsx)
+interface TagProps extends React.HTMLAttributes<HTMLSpanElement> {
+  tone?: BadgeTone
+  icon?: React.ReactNode
+}
 
 const tagToneClasses: Record<BadgeTone, string> = {
   brand:
-    "bg-brand-primary/10 text-brand-primary border-transparent ring-1 ring-inset ring-brand-primary/20",
+    "bg-primary/10 text-primary border-transparent ring-1 ring-inset ring-primary/20",
   secondary:
-    "bg-brand-secondary/10 text-brand-secondary border-transparent ring-1 ring-inset ring-brand-secondary/20",
+    "bg-terracotta/10 text-terracotta border-transparent ring-1 ring-inset ring-terracotta/20",
   success:
-    "bg-semantic-success/10 text-semantic-success border-transparent ring-1 ring-inset ring-semantic-success/20",
+    "bg-success/10 text-success border-transparent ring-1 ring-inset ring-success/20",
   warning:
-    "bg-semantic-warning/10 text-semantic-warning border-transparent ring-1 ring-inset ring-semantic-warning/20",
+    "bg-warning/10 text-warning border-transparent ring-1 ring-inset ring-warning/20",
   error:
-    "bg-semantic-error/10 text-semantic-error border-transparent ring-1 ring-inset ring-semantic-error/20",
-  neutral: "bg-neutral-surface text-neutral-textSecondary border-neutral-border",
-};
+    "bg-destructive/10 text-destructive border-transparent ring-1 ring-inset ring-destructive/20",
+  neutral: "bg-muted text-muted-foreground border-border",
+}
 
-export const Tag = forwardRef<ElementRef<"span">, TagProps>(
+const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
   ({ tone = "neutral", icon, className, children, ...rest }, ref) => (
     <span
       ref={ref}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
         tagToneClasses[tone],
-        className,
+        className
       )}
       {...rest}
     >
       {icon}
       {children}
     </span>
-  ),
-);
+  )
+)
+Tag.displayName = "Tag"
 
-Tag.displayName = "Tag";
-
+export { Badge, Tag, badgeVariants }

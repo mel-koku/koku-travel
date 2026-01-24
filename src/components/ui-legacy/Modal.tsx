@@ -3,7 +3,7 @@
 import { MutableRefObject, ReactNode, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 const FOCUSABLE_SELECTORS = [
   "a[href]",

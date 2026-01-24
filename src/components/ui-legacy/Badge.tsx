@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, ElementRef, ReactNode, forwardRef } from "react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 export type BadgeVariant = "solid" | "soft" | "outline";
 export type BadgeTone = "brand" | "secondary" | "success" | "warning" | "error" | "neutral";
