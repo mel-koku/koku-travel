@@ -35,6 +35,8 @@ export function findMealRecommendation(
     budgetPerDay?: number;
     dietaryRestrictions: string[];
     currentLocation?: { lat: number; lng: number };
+    usedLocationIds?: Set<string>;
+    usedLocationNames?: Set<string>;
   },
 ): Location | null {
   if (availableRestaurants.length === 0) {
@@ -42,7 +44,20 @@ export function findMealRecommendation(
   }
 
   // Filter by dietary restrictions
-  const filtered = filterRestaurantsByDietary(availableRestaurants, criteria.dietaryRestrictions);
+  let filtered = filterRestaurantsByDietary(availableRestaurants, criteria.dietaryRestrictions);
+
+  // Filter out already-used locations by ID
+  if (criteria.usedLocationIds && criteria.usedLocationIds.size > 0) {
+    filtered = filtered.filter((r) => !criteria.usedLocationIds!.has(r.id));
+  }
+
+  // Filter out already-used locations by name (prevents same restaurant appearing multiple times)
+  if (criteria.usedLocationNames && criteria.usedLocationNames.size > 0) {
+    filtered = filtered.filter((r) => {
+      const normalizedName = r.name.toLowerCase().trim();
+      return !criteria.usedLocationNames!.has(normalizedName);
+    });
+  }
 
   if (filtered.length === 0) {
     return null;
@@ -140,11 +155,16 @@ export function detectMealGapsInDay(
 /**
  * Insert meal activities into a day's itinerary.
  * Now async because it needs to fetch location data from the database.
+ *
+ * @param usedLocationIds - Set of location IDs already used in the itinerary (mutated as meals are added)
+ * @param usedLocationNames - Set of location names already used (mutated as meals are added)
  */
 export async function insertMealActivities(
   day: ItineraryDay,
   builderData: TripBuilderData,
   availableRestaurants: Location[],
+  usedLocationIds: Set<string> = new Set(),
+  usedLocationNames: Set<string> = new Set(),
 ): Promise<ItineraryDay> {
   const gaps = detectMealGapsInDay(day);
   const newActivities: ItineraryActivity[] = [...day.activities];
@@ -182,10 +202,15 @@ export async function insertMealActivities(
         budgetPerDay: travelerProfile?.budget.perDay,
         dietaryRestrictions: builderData.accessibility?.dietary ?? [],
         currentLocation,
+        usedLocationIds,
+        usedLocationNames,
       },
     );
 
     if (recommendation) {
+      // Track this meal location to prevent duplicates
+      usedLocationIds.add(recommendation.id);
+      usedLocationNames.add(recommendation.name.toLowerCase().trim());
       // Determine time slot based on meal type
       const timeSlot: "morning" | "afternoon" | "evening" =
         gap.mealType === "breakfast"
