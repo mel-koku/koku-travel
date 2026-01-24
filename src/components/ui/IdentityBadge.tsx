@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger";
 
 function circle(initial: string) {
   return (
-    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-700 text-sm font-semibold">
+    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-sage/10 text-sage text-sm font-semibold">
       {initial.toUpperCase()}
     </span>
   );
@@ -53,12 +53,12 @@ export default function IdentityBadge({
   const initial = (label?.[0] ?? "G").toUpperCase();
 
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-sm ${className}`}>
+    <span className={`inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 ${className}`}>
       {circle(initial)}
-      <span className="text-sm font-semibold text-gray-800">{label}</span>
+      <span className="text-sm font-medium text-charcoal">{label}</span>
       {showChevron && (
         <svg
-          className={`h-4 w-4 text-gray-800 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-warm-gray transform transition-transform ${isOpen ? "rotate-180" : ""}`}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 20 20"

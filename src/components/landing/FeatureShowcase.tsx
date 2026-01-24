@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export function FeatureShowcase() {
   return (
-    <section className="bg-earthy-cream">
+    <section className="bg-cream">
       {/* Feature 1: Full-width image with text overlay */}
       <div className="relative min-h-[80vh]">
         <Image
@@ -29,12 +29,12 @@ export function FeatureShowcase() {
               <p className="text-sm font-medium uppercase tracking-widest text-white/70">
                 Explore
               </p>
-              <h2 className="mt-4 font-serif text-4xl font-medium sm:text-5xl">
+              <h2 className="mt-4 font-serif text-2xl font-medium sm:text-3xl">
                 The places guidebooks
                 <br />
                 <span className="italic">don&apos;t know about</span>
               </h2>
-              <p className="mt-6 text-lg leading-relaxed text-white/80">
+              <p className="mt-6 text-base leading-relaxed text-white/80">
                 Every spot in our collection has been personally visited and approved by
                 locals who know the difference between tourist-trap and treasure.
               </p>
@@ -44,7 +44,7 @@ export function FeatureShowcase() {
       </div>
 
       {/* Feature 2: Split layout */}
-      <div className="mx-auto grid max-w-7xl lg:grid-cols-2">
+      <div className="mx-auto grid max-w-7xl lg:grid-cols-2 lg:min-h-[70vh]">
         <div className="flex items-center px-6 py-20 lg:py-32 lg:pr-16">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -52,15 +52,15 @@ export function FeatureShowcase() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-sm font-medium uppercase tracking-widest text-earthy-sage">
+            <p className="text-sm font-medium uppercase tracking-widest text-sage">
               Plan
             </p>
-            <h2 className="mt-4 font-serif text-4xl font-medium text-earthy-charcoal sm:text-5xl">
+            <h2 className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl">
               Drag, drop,
               <br />
               <span className="italic">done</span>
             </h2>
-            <p className="mt-6 text-lg leading-relaxed text-earthy-warmGray">
+            <p className="mt-6 text-base leading-relaxed text-warm-gray">
               Building your itinerary should feel like play, not homework.
               Our editor lets you arrange your days effortlessly, with smart
               suggestions and real-time travel times.
@@ -79,7 +79,7 @@ export function FeatureShowcase() {
       </div>
 
       {/* Feature 3: Split layout reversed */}
-      <div className="mx-auto grid max-w-7xl lg:grid-cols-2">
+      <div className="mx-auto grid max-w-7xl lg:grid-cols-2 lg:min-h-[70vh]">
         <div className="relative aspect-square lg:aspect-auto lg:order-1">
           <Image
             src="https://images.unsplash.com/photo-1551641506-ee5bf4cb45f1?w=800&q=80"
@@ -96,15 +96,15 @@ export function FeatureShowcase() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-sm font-medium uppercase tracking-widest text-earthy-sage">
+            <p className="text-sm font-medium uppercase tracking-widest text-sage">
               Access
             </p>
-            <h2 className="mt-4 font-serif text-4xl font-medium text-earthy-charcoal sm:text-5xl">
+            <h2 className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl">
               Your trip,
               <br />
               <span className="italic">everywhere</span>
             </h2>
-            <p className="mt-6 text-lg leading-relaxed text-earthy-warmGray">
+            <p className="mt-6 text-base leading-relaxed text-warm-gray">
               Start planning on your laptop, check it on the train, share it
               with friends. Your itinerary lives in the cloud, ready whenever you are.
             </p>
