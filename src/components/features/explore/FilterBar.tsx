@@ -55,7 +55,7 @@ export function FilterBar({
     >
       <div
         className={cn(
-          "w-full rounded-xl border border-gray-200 bg-white/90 backdrop-blur shadow-md transition-all duration-300 ease-out hover:shadow-lg sm:rounded-2xl",
+          "w-full rounded-2xl border border-border bg-background/90 backdrop-blur shadow-md transition-all duration-300 ease-out hover:shadow-lg",
           isVertical
             ? "space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-8 lg:max-h-[calc(100vh-var(--sticky-offset)-1rem)] lg:max-w-xs lg:overflow-y-auto lg:pr-4"
             : "mx-auto max-w-5xl space-y-3 px-4 py-3 sm:space-y-4 sm:px-6 sm:py-4"
@@ -134,11 +134,11 @@ function FilterSelect({
   placeholder,
 }: FilterSelectProps) {
   return (
-    <label className="flex flex-col gap-1 text-sm text-gray-700 sm:gap-2">
+    <label className="flex flex-col gap-1 text-sm text-warm-gray sm:gap-2">
       <span className="font-medium sm:text-base">{label}</span>
       <div className="relative">
         <select
-          className="min-h-[44px] w-full appearance-none rounded-xl border border-gray-200 bg-white py-2.5 pl-4 pr-11 text-sm text-gray-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 sm:py-3 sm:text-base"
+          className="min-h-[44px] w-full appearance-none rounded-full border border-border bg-background py-2.5 pl-4 pr-11 text-sm text-charcoal shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 sm:py-3 sm:text-base"
           value={value}
           onChange={(event) => onChange(event.target.value)}
         >
@@ -149,7 +149,7 @@ function FilterSelect({
             </option>
           ))}
         </select>
-        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-stone">
           <svg
             className="h-4 w-4"
             xmlns="http://www.w3.org/2000/svg"
