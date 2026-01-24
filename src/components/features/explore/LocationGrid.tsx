@@ -34,13 +34,13 @@ export function LocationGrid({
       <section aria-live="polite">
         {locations.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 px-4">
-            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-              <svg className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface">
+              <svg className="h-8 w-8 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <p className="text-base font-medium text-gray-900 mb-1">No places found</p>
-            <p className="text-sm text-gray-500 text-center max-w-sm">
+            <p className="text-base font-medium text-charcoal mb-1">No places found</p>
+            <p className="text-sm text-stone text-center max-w-sm">
               Try adjusting your filters or search to find what you&apos;re looking for.
             </p>
           </div>
@@ -67,7 +67,7 @@ export function LocationGrid({
                 <button
                   type="button"
                   onClick={onLoadMore}
-                  className="rounded-xl bg-gray-900 px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+                  className="rounded-full bg-brand-primary px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                 >
                   Show more
                 </button>

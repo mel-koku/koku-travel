@@ -17,7 +17,7 @@ export function ActiveFilterChips({
 }: ActiveFilterChipsProps) {
   if (filters.length === 0) {
     return (
-      <p className="text-sm text-gray-600 text-center">
+      <p className="text-sm text-foreground-secondary text-center">
         {resultsCount.toLocaleString()} places to explore
       </p>
     );
@@ -25,19 +25,19 @@ export function ActiveFilterChips({
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-2">
-      <span className="text-sm text-gray-600 mr-1">
+      <span className="text-sm text-foreground-secondary mr-1">
         Showing {resultsCount.toLocaleString()} places
       </span>
       {filters.map((filter, index) => (
         <button
           key={`${filter.type}-${filter.value}-${index}`}
           onClick={() => onRemove(filter)}
-          className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 transition group"
+          className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5 text-sm font-medium text-warm-gray hover:bg-sand transition group"
           aria-label={`Remove ${filter.label} filter`}
         >
           <span>{filter.label}</span>
           <svg
-            className="h-3.5 w-3.5 text-gray-400 group-hover:text-gray-600 transition"
+            className="h-3.5 w-3.5 text-stone group-hover:text-warm-gray transition"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -54,7 +54,7 @@ export function ActiveFilterChips({
       {filters.length > 1 && (
         <button
           onClick={onClearAll}
-          className="text-sm font-medium text-gray-500 hover:text-gray-700 underline underline-offset-2 transition ml-1"
+          className="text-sm font-medium text-stone hover:text-warm-gray underline underline-offset-2 transition ml-1"
         >
           Clear all
         </button>

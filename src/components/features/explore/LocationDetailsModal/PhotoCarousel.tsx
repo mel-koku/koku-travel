@@ -70,9 +70,9 @@ export function PhotoCarousel({
   return (
     <div className="relative">
       {/* Image container with rounded corners */}
-      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
         {/* Main image */}
-        <div className="relative h-72 w-full overflow-hidden bg-gray-100">
+        <div className="relative h-72 w-full overflow-hidden bg-surface">
           <Image
             src={currentPhoto?.proxyUrl || FALLBACK_IMAGE_SRC}
             alt={`${imageAlt} ${currentIndex + 1}`}
@@ -88,7 +88,7 @@ export function PhotoCarousel({
               <button
                 type="button"
                 onClick={goToPrevious}
-                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-md transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-background/90 p-2 shadow-md transition hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 aria-label="Previous photo"
               >
                 <ChevronLeftIcon />
@@ -96,7 +96,7 @@ export function PhotoCarousel({
               <button
                 type="button"
                 onClick={goToNext}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-md transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-background/90 p-2 shadow-md transition hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 aria-label="Next photo"
               >
                 <ChevronRightIcon />
@@ -132,7 +132,7 @@ export function PhotoCarousel({
               onClick={() => setCurrentIndex(index)}
               className={`relative h-16 w-20 flex-shrink-0 overflow-hidden rounded-lg transition ${
                 index === currentIndex
-                  ? "ring-2 ring-indigo-500 ring-offset-2"
+                  ? "ring-2 ring-brand-primary ring-offset-2"
                   : "opacity-70 hover:opacity-100"
               }`}
               aria-label={`View photo ${index + 1}`}
@@ -168,13 +168,13 @@ function ActionBar({
   onToggleItinerary,
 }: ActionBarProps) {
   return (
-    <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
+    <div className="flex items-center justify-between border-t border-border px-4 py-3">
       <button
         type="button"
         onClick={onToggleFavorite}
         aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-        className={`rounded-md p-2 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 ${
-          isFavorite ? "text-red-500" : "text-gray-600"
+        className={`rounded-full p-2 transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal ${
+          isFavorite ? "text-red-500" : "text-foreground-secondary"
         }`}
       >
         <HeartIcon active={isFavorite} animating={heartAnimating} />
@@ -184,8 +184,8 @@ function ActionBar({
         type="button"
         onClick={onToggleItinerary}
         aria-label={isInItinerary ? "Remove from itinerary" : "Add to itinerary"}
-        className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 ${
-          isInItinerary ? "text-indigo-600" : "text-gray-600"
+        className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal ${
+          isInItinerary ? "text-sage" : "text-foreground-secondary"
         }`}
       >
         {isInItinerary ? (
@@ -207,7 +207,7 @@ function ChevronLeftIcon() {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
-      className="h-5 w-5 text-gray-700"
+      className="h-5 w-5 text-warm-gray"
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
     </svg>
@@ -222,7 +222,7 @@ function ChevronRightIcon() {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
-      className="h-5 w-5 text-gray-700"
+      className="h-5 w-5 text-warm-gray"
     >
       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
     </svg>
