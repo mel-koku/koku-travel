@@ -1,110 +1,130 @@
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from "react";
+import * as React from "react"
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils"
 
-export type CardPadding = "none" | "sm" | "md" | "lg";
-
-type CardProps = {
-  /**
-   * Controls the internal padding applied to the card surface.
-   */
-  padding?: CardPadding;
-  /**
-   * Enables the elevated hover animation and focus-within treatment.
-   */
-  interactive?: boolean;
-} & ComponentPropsWithoutRef<"div">;
+export type CardPadding = "none" | "sm" | "md" | "lg"
 
 const paddingClasses: Record<CardPadding, string> = {
   none: "",
   sm: "p-4",
   md: "p-6",
   lg: "p-8",
-};
+}
 
-export const Card = forwardRef<ElementRef<"div">, CardProps>((props, ref) => {
-  const {
-    padding = "md",
-    interactive = true,
-    className,
-    children,
-    ...rest
-  } = props;
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+  padding?: CardPadding
+  interactive?: boolean
+}
 
-  return (
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, padding = "none", interactive = false, ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-3xl border border-neutral-border bg-neutral-surface shadow-sm backdrop-blur transition-all duration-300 ease-out",
+        "rounded-xl border bg-card text-card-foreground shadow",
         interactive &&
-          "hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-brand-primary/10 focus-within:-translate-y-1 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-brand-primary/20",
+          "transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl hover:ring-1 hover:ring-primary/10 focus-within:-translate-y-1 focus-within:shadow-xl focus-within:ring-2 focus-within:ring-primary/20",
         paddingClasses[padding],
-        className,
+        className
       )}
-      {...rest}
-    >
-      {children}
-    </div>
-  );
-});
+      {...props}
+    />
+  )
+)
+Card.displayName = "Card"
 
-Card.displayName = "Card";
+const CardHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("flex flex-col space-y-1.5 p-6", className)}
+    {...props}
+  />
+))
+CardHeader.displayName = "CardHeader"
 
-type CardSectionProps = ComponentPropsWithoutRef<"div"> & {
-  /**
-   * When true, the section applies matching card padding.
-   */
-  padded?: boolean;
-  padding?: Exclude<CardPadding, "none">;
-};
+const CardTitle = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("font-semibold leading-none tracking-tight", className)}
+    {...props}
+  />
+))
+CardTitle.displayName = "CardTitle"
 
-const cardSectionBase = "flex flex-col gap-3";
+const CardDescription = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
+))
+CardDescription.displayName = "CardDescription"
 
-export const CardSection = forwardRef<ElementRef<"div">, CardSectionProps>(
-  ({ className, padded = true, padding = "md", ...rest }, ref) => (
+interface CardSectionProps extends React.HTMLAttributes<HTMLDivElement> {
+  padded?: boolean
+  padding?: Exclude<CardPadding, "none">
+}
+
+const CardSection = React.forwardRef<HTMLDivElement, CardSectionProps>(
+  ({ className, padded = true, padding = "md", ...props }, ref) => (
     <div
       ref={ref}
       className={cn(
-        cardSectionBase,
+        "flex flex-col gap-3",
         padded && paddingClasses[padding],
-        className,
+        className
       )}
-      {...rest}
+      {...props}
     />
-  ),
-);
+  )
+)
+CardSection.displayName = "CardSection"
 
-CardSection.displayName = "CardSection";
-
-export const CardHeader = forwardRef<ElementRef<"div">, CardSectionProps>(
-  ({ className, ...rest }, ref) => (
-    <CardSection
+const CardContent = React.forwardRef<HTMLDivElement, CardSectionProps>(
+  ({ className, padded = true, padding = "md", ...props }, ref) => (
+    <div
       ref={ref}
-      className={cn("border-b border-neutral-border", className)}
-      {...rest}
+      className={cn(
+        "flex flex-col gap-3",
+        padded && paddingClasses[padding],
+        className
+      )}
+      {...props}
     />
-  ),
-);
+  )
+)
+CardContent.displayName = "CardContent"
 
-CardHeader.displayName = "CardHeader";
-
-export const CardContent = forwardRef<ElementRef<"div">, CardSectionProps>(
-  ({ className, ...rest }, ref) => (
-    <CardSection ref={ref} className={cn(className)} {...rest} />
-  ),
-);
-
-CardContent.displayName = "CardContent";
-
-export const CardFooter = forwardRef<ElementRef<"div">, CardSectionProps>(
-  ({ className, ...rest }, ref) => (
-    <CardSection
+const CardFooter = React.forwardRef<HTMLDivElement, CardSectionProps>(
+  ({ className, padded = true, padding = "md", ...props }, ref) => (
+    <div
       ref={ref}
-      className={cn("border-t border-neutral-border", className)}
-      {...rest}
+      className={cn(
+        "flex items-center gap-3",
+        padded && paddingClasses[padding],
+        className
+      )}
+      {...props}
     />
-  ),
-);
+  )
+)
+CardFooter.displayName = "CardFooter"
 
-CardFooter.displayName = "CardFooter";
-
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardSection,
+}

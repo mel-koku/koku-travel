@@ -20,8 +20,8 @@ const inputConfig = {
   role: "textbox" as const,
   supportsError: true,
   supportsDisabled: true,
-  disabledClasses: ["cursor-not-allowed", "bg-gray-100"],
-  errorClasses: ["border-red-500"],
+  disabledClasses: ["disabled:cursor-not-allowed"],
+  errorClasses: ["border-destructive"],
 };
 
 // Generate common tests from factory

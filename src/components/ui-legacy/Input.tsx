@@ -1,6 +1,6 @@
 import { ComponentPropsWithoutRef, ReactNode, forwardRef } from "react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 /**
  * Input component props.

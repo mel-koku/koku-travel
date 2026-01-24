@@ -1,158 +1,219 @@
-import { ReactElement, ReactNode, useMemo, useState } from "react";
+"use client"
 
-import { cn } from "@/lib/cn";
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
 
-type AlertTone = "info" | "success" | "warning" | "error";
+import { cn } from "@/lib/utils"
 
-type AlertProps = {
-  tone?: AlertTone;
-  title?: string;
-  description?: ReactNode;
-  children?: ReactNode;
-  dismissible?: boolean;
-  onDismiss?: () => void;
-  className?: string;
-};
+export type AlertTone = "info" | "success" | "warning" | "error"
 
-const toneStyles: Record<AlertTone, { border: string; icon: ReactElement }> = {
+const toneStyles: Record<AlertTone, { border: string; iconColor: string }> = {
   info: {
-    border: "border-indigo-500/70",
-    icon: (
-      <svg
-        className="h-5 w-5 text-indigo-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        aria-hidden="true"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 7h.01M12 11v6" />
-        <circle cx="12" cy="12" r="9" />
-      </svg>
-    ),
+    border: "border-l-primary",
+    iconColor: "text-primary",
   },
   success: {
-    border: "border-emerald-500/70",
-    icon: (
-      <svg
-        className="h-5 w-5 text-emerald-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="m6 12 4 4 8-8"
-        />
-      </svg>
-    ),
+    border: "border-l-success",
+    iconColor: "text-success",
   },
   warning: {
-    border: "border-amber-500/70",
-    icon: (
-      <svg
-        className="h-5 w-5 text-amber-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        aria-hidden="true"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01" />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3l-8.47-14.14a2 2 0 0 0-3.42 0Z"
-        />
-      </svg>
-    ),
+    border: "border-l-warning",
+    iconColor: "text-warning",
   },
   error: {
-    border: "border-rose-500/70",
-    icon: (
-      <svg
-        className="h-5 w-5 text-rose-600"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        aria-hidden="true"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01" />
-        <circle cx="12" cy="12" r="9" />
-      </svg>
-    ),
+    border: "border-l-destructive",
+    iconColor: "text-destructive",
   },
-};
+}
 
-export function Alert({
-  tone = "info",
+const icons: Record<AlertTone, React.ReactElement> = {
+  info: (
+    <svg
+      className="h-5 w-5"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 7h.01M12 11v6" />
+      <circle cx="12" cy="12" r="9" />
+    </svg>
+  ),
+  success: (
+    <svg
+      className="h-5 w-5"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="m6 12 4 4 8-8" />
+    </svg>
+  ),
+  warning: (
+    <svg
+      className="h-5 w-5"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3l-8.47-14.14a2 2 0 0 0-3.42 0Z"
+      />
+    </svg>
+  ),
+  error: (
+    <svg
+      className="h-5 w-5"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v4m0 4h.01" />
+      <circle cx="12" cy="12" r="9" />
+    </svg>
+  ),
+}
+
+const alertVariants = cva(
+  "relative w-full rounded-lg border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7",
+  {
+    variants: {
+      variant: {
+        default: "bg-background text-foreground",
+        destructive:
+          "border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  }
+)
+
+interface AlertProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof alertVariants> {
+  tone?: AlertTone
+  title?: string
+  description?: React.ReactNode
+  dismissible?: boolean
+  onDismiss?: () => void
+}
+
+function Alert({
+  className,
+  variant,
+  tone,
   title,
   description,
-  children,
   dismissible = false,
   onDismiss,
-  className,
+  children,
+  ...props
 }: AlertProps) {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = React.useState(true)
 
-  const toneClassName = useMemo(() => toneStyles[tone], [tone]);
-
-  if (!visible) return null;
+  if (!visible) return null
 
   const handleDismiss = () => {
-    onDismiss?.();
-    setVisible(false);
-  };
+    onDismiss?.()
+    setVisible(false)
+  }
 
+  // If using tone-based alert (legacy API)
+  if (tone) {
+    const toneStyle = toneStyles[tone]
+    return (
+      <div
+        role="alert"
+        className={cn(
+          "relative flex w-full gap-3 rounded-2xl border-l-4 bg-card p-5 shadow-sm ring-1 ring-border",
+          toneStyle.border,
+          className
+        )}
+        {...props}
+      >
+        <span aria-hidden="true" className={cn("mt-0.5", toneStyle.iconColor)}>
+          {icons[tone]}
+        </span>
+        <div className="flex flex-1 flex-col gap-1">
+          {title && <h3 className="text-sm font-semibold">{title}</h3>}
+          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          {children}
+        </div>
+        {dismissible && (
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="rounded-full p-1.5 text-muted-foreground transition hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            aria-label="Dismiss alert"
+          >
+            <svg
+              className="h-4 w-4"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 20 20"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l8 8M6 14 14 6" />
+            </svg>
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  // Otherwise use default shadcn variant
   return (
     <div
       role="alert"
-      className={cn(
-        "relative flex w-full gap-3 rounded-2xl border-l-4 bg-white p-5 shadow-sm ring-1 ring-gray-100",
-        toneClassName.border,
-        className,
-      )}
+      className={cn(alertVariants({ variant }), className)}
+      {...props}
     >
-      <span aria-hidden="true" className="mt-0.5">
-        {toneClassName.icon}
-      </span>
-      <div className="flex flex-1 flex-col gap-1">
-        {title ? <h3 className="text-sm font-semibold text-gray-900">{title}</h3> : null}
-        {description ? <p className="text-sm text-gray-600">{description}</p> : null}
-        {children}
-      </div>
-      {dismissible ? (
-        <button
-          type="button"
-          onClick={handleDismiss}
-          className="rounded-full p-1.5 text-gray-400 transition hover:bg-gray-100 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
-          aria-label="Dismiss alert"
-        >
-          <svg
-            className="h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l8 8M6 14 14 6" />
-          </svg>
-        </button>
-      ) : null}
+      {children}
     </div>
-  );
+  )
 }
+Alert.displayName = "Alert"
 
-Alert.displayName = "Alert";
+const AlertTitle = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLHeadingElement>
+>(({ className, ...props }, ref) => (
+  <h5
+    ref={ref}
+    className={cn("mb-1 font-medium leading-none tracking-tight", className)}
+    {...props}
+  />
+))
+AlertTitle.displayName = "AlertTitle"
 
+const AlertDescription = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn("text-sm [&_p]:leading-relaxed", className)}
+    {...props}
+  />
+))
+AlertDescription.displayName = "AlertDescription"
 
+export { Alert, AlertTitle, AlertDescription }

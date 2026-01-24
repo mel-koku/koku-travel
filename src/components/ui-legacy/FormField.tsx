@@ -1,6 +1,6 @@
 import { ReactNode, cloneElement, isValidElement } from "react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 import { FormError } from "./FormError";
 import { FormLabel } from "./FormLabel";

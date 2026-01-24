@@ -1,8 +1,8 @@
 import { ComponentPropsWithoutRef } from "react";
 
-import { Badge, BadgeTone, Tag } from "@/components/ui/Badge";
-import { Card, CardContent } from "@/components/ui/Card";
-import { cn } from "@/lib/cn";
+import { Badge, BadgeTone, Tag } from "./Badge";
+import { Card, CardContent } from "./Card";
+import { cn } from "@/lib/utils";
 
 type Metric = {
   label: string;

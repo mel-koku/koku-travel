@@ -1,71 +1,42 @@
-import Link from "next/link";
-import { ComponentPropsWithoutRef, ReactNode, forwardRef } from "react";
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+import Link from "next/link"
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils"
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
-type ButtonSize = "sm" | "md" | "lg";
-
-type ButtonBaseProps = {
-  /**
-   * Visual style for the button.
-   * Defaults to the primary variant.
-   */
-  variant?: ButtonVariant;
-  /**
-   * Predefined sizing tokens for consistent spacing.
-   */
-  size?: ButtonSize;
-  /**
-   * Render a spinner and apply aria-busy while preserving layout.
-   */
-  isLoading?: boolean;
-  /**
-   * Optional icon rendered before the button label.
-   */
-  leftIcon?: ReactNode;
-  /**
-   * Optional icon rendered after the button label.
-   */
-  rightIcon?: ReactNode;
-  /**
-   * Expand to fill the full width of the parent container.
-   */
-  fullWidth?: boolean;
-};
-
-type NativeButtonProps = ButtonBaseProps &
-  ComponentPropsWithoutRef<"button"> & {
-    asChild?: false;
-  };
-
-type AnchorButtonProps = ButtonBaseProps &
-  Omit<ComponentPropsWithoutRef<typeof Link>, "href"> & {
-    /**
-     * Render the button as a Next.js Link while preserving button styles.
-     */
-    asChild: true;
-    href: string;
-  };
-
-export type ButtonProps = NativeButtonProps | AnchorButtonProps;
-
-const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    "bg-brand-primary text-white shadow-sm hover:bg-brand-primary/90 focus-visible:ring-brand-primary",
-  secondary:
-    "bg-brand-secondary text-white shadow-sm hover:bg-brand-secondary/90 focus-visible:ring-brand-secondary",
-  outline:
-    "bg-neutral-surface text-neutral-textPrimary hover:bg-neutral-surface/80 focus-visible:ring-brand-primary",
-  ghost:
-    "bg-transparent text-neutral-textPrimary hover:bg-neutral-surface/70 focus-visible:ring-brand-primary",
-};
-
-const sizeClasses: Record<ButtonSize, string> = {
-  sm: "min-h-[44px] h-9 px-3 text-sm",
-  md: "min-h-[44px] h-10 px-4 text-base",
-  lg: "min-h-[44px] h-12 px-5 text-base",
-};
+const buttonVariants = cva(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  {
+    variants: {
+      variant: {
+        default:
+          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+        primary:
+          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+        destructive:
+          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+        outline:
+          "border border-input bg-background shadow-sm hover:bg-secondary hover:text-secondary-foreground",
+        secondary:
+          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "hover:bg-secondary hover:text-secondary-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "min-h-[44px] h-10 px-4 py-2",
+        sm: "min-h-[44px] h-9 rounded-xl px-3 text-sm",
+        md: "min-h-[44px] h-10 px-4 py-2",
+        lg: "min-h-[44px] h-12 rounded-xl px-6",
+        icon: "h-9 w-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
 
 const Spinner = () => (
   <svg
@@ -89,99 +60,102 @@ const Spinner = () => (
       d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
     />
   </svg>
-);
+)
 
-export const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>(
-  (props, ref) => {
-    const {
-      variant = "primary",
-      size = "md",
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+  isLoading?: boolean
+  leftIcon?: React.ReactNode
+  rightIcon?: React.ReactNode
+  fullWidth?: boolean
+  href?: string
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
       isLoading = false,
       leftIcon,
       rightIcon,
       fullWidth,
-      className,
+      href,
       children,
-      asChild,
-      ...rest
-    } = props;
-
-    const baseClasses = cn(
-      "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60",
-      variantClasses[variant],
-      sizeClasses[size],
+      disabled,
+      ...props
+    },
+    ref
+  ) => {
+    const classes = cn(
+      buttonVariants({ variant, size }),
       fullWidth && "w-full",
       isLoading && "pointer-events-none",
-      className,
-    );
+      className
+    )
 
     const content = (
-      <span className="flex w-full items-center justify-center gap-2">
+      <>
         {(isLoading || leftIcon) && (
-          <span
-            className={cn(
-              "inline-flex h-5 w-5 items-center justify-center",
-              isLoading ? "" : "text-current",
-            )}
-            aria-hidden={isLoading}
-          >
+          <span className="inline-flex h-5 w-5 items-center justify-center">
             {isLoading ? <Spinner /> : leftIcon}
           </span>
         )}
         <span className="truncate">{children}</span>
         {rightIcon && !isLoading && (
-          <span className="inline-flex h-5 w-5 items-center justify-center">{rightIcon}</span>
+          <span className="inline-flex h-5 w-5 items-center justify-center">
+            {rightIcon}
+          </span>
         )}
-      </span>
-    );
+      </>
+    )
 
-    if (asChild) {
-      const { href, prefetch, replace, scroll, shallow, locale, ...anchorProps } =
-        rest as AnchorButtonProps;
-      const ariaDisabledRaw = anchorProps["aria-disabled"];
-      const anchorDisabled =
-        typeof ariaDisabledRaw === "boolean"
-          ? ariaDisabledRaw
-          : ariaDisabledRaw === "false"
-            ? false
-            : Boolean(ariaDisabledRaw);
-
+    // Handle asChild with href (Link)
+    if (asChild && href) {
       return (
         <Link
-          ref={ref as never}
           href={href}
-          prefetch={prefetch}
-          replace={replace}
-          scroll={scroll}
-          shallow={shallow}
-          locale={locale}
-          className={cn(baseClasses, (anchorDisabled || isLoading) && "pointer-events-none")}
+          className={classes}
           aria-busy={isLoading}
-          aria-disabled={anchorDisabled || isLoading}
-          {...anchorProps}
+          aria-disabled={disabled || isLoading}
         >
           {content}
         </Link>
-      );
+      )
     }
 
-    const { disabled, type = "button", ...buttonProps } = rest as NativeButtonProps;
+    // Handle regular asChild (Slot)
+    if (asChild) {
+      return (
+        <Slot
+          className={classes}
+          ref={ref as React.Ref<HTMLElement>}
+          {...props}
+        >
+          {children}
+        </Slot>
+      )
+    }
 
     return (
       <button
-        ref={ref as never}
-        type={type}
+        type={props.type || "button"}
+        className={classes}
+        ref={ref}
         disabled={disabled || isLoading}
         aria-busy={isLoading}
         aria-disabled={disabled || isLoading}
-        className={baseClasses}
-        {...buttonProps}
+        {...props}
       >
         {content}
       </button>
-    );
-  },
-);
+    )
+  }
+)
+Button.displayName = "Button"
 
-Button.displayName = "Button";
-
+export { Button, buttonVariants }
