@@ -261,6 +261,57 @@ export function locationMatchesSubTypes(
 }
 
 /**
+ * Maps database category values to their parent category ID.
+ * Database stores: "shrine", "temple", "restaurant", etc.
+ * Parent categories: "culture", "food", "nature", etc.
+ */
+const DATABASE_CATEGORY_TO_PARENT: Record<string, string> = {
+  // Culture
+  shrine: "culture",
+  temple: "culture",
+  museum: "culture",
+  landmark: "culture",
+  culture: "culture",
+  performing_arts: "culture",
+  // Food
+  restaurant: "food",
+  cafe: "food",
+  bar: "food",
+  market: "food",
+  food: "food",
+  // Nature
+  park: "nature",
+  garden: "nature",
+  beach: "nature",
+  mountain: "nature",
+  onsen: "nature",
+  nature: "nature",
+  wellness: "nature",
+  // Shopping
+  mall: "shopping",
+  street: "shopping",
+  specialty: "shopping",
+  shopping: "shopping",
+  // View
+  viewpoint: "view",
+  tower: "view",
+  view: "view",
+  // Entertainment
+  entertainment: "entertainment",
+  // Accommodation
+  accommodation: "accommodation",
+};
+
+/**
+ * Get the parent category ID for a database category value.
+ * Database stores subtype-level values like "shrine", "temple", etc.
+ * This maps them to parent categories like "culture", "food", etc.
+ */
+export function getParentCategoryForDatabaseCategory(dbCategory: string): string | null {
+  return DATABASE_CATEGORY_TO_PARENT[dbCategory.toLowerCase()] ?? null;
+}
+
+/**
  * Get all category IDs.
  */
 export function getAllCategoryIds(): string[] {
