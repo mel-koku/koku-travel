@@ -464,12 +464,12 @@ export function ExploreShell() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-background">
         {/* Skeleton header - centered button */}
-        <div className="bg-white">
+        <div className="bg-background">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-center">
-              <div className="h-10 w-40 rounded-full bg-gray-200 animate-pulse" />
+              <div className="h-10 w-40 rounded-full bg-surface animate-pulse" />
             </div>
           </div>
         </div>
@@ -478,9 +478,9 @@ export function ExploreShell() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="space-y-3">
-                <div className="aspect-square rounded-xl bg-gray-200 animate-pulse" />
-                <div className="h-4 w-3/4 rounded bg-gray-200 animate-pulse" />
-                <div className="h-3 w-1/2 rounded bg-gray-200 animate-pulse" />
+                <div className="aspect-square rounded-xl bg-surface animate-pulse" />
+                <div className="h-4 w-3/4 rounded bg-surface animate-pulse" />
+                <div className="h-3 w-1/2 rounded bg-surface animate-pulse" />
               </div>
             ))}
           </div>
@@ -491,19 +491,19 @@ export function ExploreShell() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="mx-auto max-w-md px-4 py-12 text-center">
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-8">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
-              <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+          <div className="rounded-2xl border border-error/30 bg-error/10 p-8">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-error/20">
+              <svg className="h-6 w-6 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <p className="text-base font-semibold text-red-800 mb-2">Unable to load destinations</p>
-            <p className="text-sm text-red-600 mb-6">{error}</p>
+            <p className="text-base font-semibold text-error mb-2">Unable to load destinations</p>
+            <p className="text-sm text-error/80 mb-6">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="rounded-lg bg-red-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              className="rounded-full bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
             >
               Try again
             </button>
@@ -514,7 +514,7 @@ export function ExploreShell() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Sticky Header */}
       <StickyExploreHeader
         resultsCount={filteredLocations.length}
@@ -536,7 +536,7 @@ export function ExploreShell() {
 
         {/* Featured Carousel - only show when no filters active and we have featured locations */}
         {activeFilters.length === 0 && featuredLocations.length > 0 && (
-          <section className="mb-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 bg-gradient-to-b from-gray-50 to-white border-y border-gray-100">
+          <section className="mb-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 bg-gradient-to-b from-surface to-background border-y border-border">
             <FeaturedCarousel locations={featuredLocations} />
           </section>
         )}
@@ -545,16 +545,16 @@ export function ExploreShell() {
         <div className="mb-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-charcoal">
                 {activeFilters.length > 0 ? "Search Results" : "All Destinations"}
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-stone mt-1">
                 {filteredLocations.length.toLocaleString()} places to explore
               </p>
             </div>
             <button
               onClick={() => setIsFiltersModalOpen(true)}
-              className="flex items-center gap-2 rounded-full border border-red-500 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-red-500 transition hover:bg-red-50 shrink-0"
+              className="flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary transition hover:bg-sand shrink-0"
             >
               <svg
                 className="h-4 w-4"
@@ -570,11 +570,11 @@ export function ExploreShell() {
                 />
               </svg>
               <span>Filters</span>
-              <span className="text-red-400">
+              <span className="text-brand-primary/70">
                 ({filteredLocations.length.toLocaleString()})
               </span>
               {activeFilterCount > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
                   {activeFilterCount}
                 </span>
               )}
@@ -593,10 +593,10 @@ export function ExploreShell() {
 
       {/* Background Loading Indicator */}
       {isLoadingMore && (
-        <div className="fixed bottom-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg border border-gray-200 z-50">
+        <div className="fixed bottom-4 right-4 bg-background px-4 py-2 rounded-full shadow-lg border border-border z-50">
           <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
-            <p className="text-sm text-gray-700">
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-primary" />
+            <p className="text-sm text-warm-gray">
               Loading more... {locations.length} / {total}
             </p>
           </div>

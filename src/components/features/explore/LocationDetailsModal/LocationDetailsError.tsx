@@ -11,14 +11,14 @@ export function LocationDetailsError({ errorMessage, onRetry }: LocationDetailsE
 
   return (
     <div className="space-y-4">
-      <div className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+      <div className="rounded-2xl border border-error/20 bg-error/10 p-4 text-sm text-error">
         {humanReadableError}
       </div>
       <div className="flex flex-wrap gap-3">
         <button
           type="button"
           onClick={onRetry}
-          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+          className="rounded-full bg-brand-primary px-4 py-2 text-sm font-medium text-white transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
         >
           Try again
         </button>

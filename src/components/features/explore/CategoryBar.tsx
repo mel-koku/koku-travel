@@ -89,14 +89,14 @@ export function CategoryBar({
   };
 
   return (
-    <div className="sticky top-0 z-40 bg-white border-b border-gray-200">
+    <div className="sticky top-0 z-40 bg-background border-b border-border">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 py-4">
           {/* Scroll left button */}
           {canScrollLeft && (
             <button
               onClick={() => scroll("left")}
-              className="hidden sm:flex shrink-0 h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm hover:shadow-md transition"
+              className="hidden sm:flex shrink-0 h-8 w-8 items-center justify-center rounded-full border border-border bg-background shadow-sm hover:shadow-md transition"
               aria-label="Scroll left"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -124,8 +124,8 @@ export function CategoryBar({
                     className={cn(
                       "flex flex-col items-center gap-2 pb-3 pt-1 border-b-2 transition-all min-w-[56px]",
                       isSelected
-                        ? "border-gray-900 text-gray-900"
-                        : "border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300"
+                        ? "border-charcoal text-charcoal"
+                        : "border-transparent text-stone hover:text-charcoal hover:border-border"
                     )}
                   >
                     <span className={cn(
@@ -150,7 +150,7 @@ export function CategoryBar({
           {canScrollRight && (
             <button
               onClick={() => scroll("right")}
-              className="hidden sm:flex shrink-0 h-8 w-8 items-center justify-center rounded-full border border-gray-300 bg-white shadow-sm hover:shadow-md transition"
+              className="hidden sm:flex shrink-0 h-8 w-8 items-center justify-center rounded-full border border-border bg-background shadow-sm hover:shadow-md transition"
               aria-label="Scroll right"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -163,10 +163,10 @@ export function CategoryBar({
           <button
             onClick={onFiltersClick}
             className={cn(
-              "shrink-0 flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-medium transition hover:shadow-md",
+              "shrink-0 flex items-center gap-2 rounded-full border px-4 py-3 text-sm font-medium transition hover:shadow-md",
               activeFilterCount > 0
-                ? "border-gray-900 bg-gray-900 text-white"
-                : "border-gray-300 bg-white text-gray-700 hover:border-gray-400"
+                ? "border-brand-primary bg-brand-primary text-white"
+                : "border-border bg-background text-warm-gray hover:border-charcoal"
             )}
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -174,7 +174,7 @@ export function CategoryBar({
             </svg>
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-semibold text-gray-900">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-background text-xs font-semibold text-charcoal">
                 {activeFilterCount}
               </span>
             )}

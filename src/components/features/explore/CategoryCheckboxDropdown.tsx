@@ -71,7 +71,7 @@ export function CategoryCheckboxDropdown({
         : `${selectedValues.length} selected`;
 
   return (
-    <label className="flex flex-col gap-1 text-sm text-gray-700 lg:gap-2">
+    <label className="flex flex-col gap-1 text-sm text-warm-gray lg:gap-2">
       <span className="font-medium lg:text-base">{label}</span>
       <div className="relative">
         <button
@@ -79,7 +79,7 @@ export function CategoryCheckboxDropdown({
           type="button"
           id={triggerId}
           className={cn(
-            "w-full appearance-none rounded-xl border border-gray-200 bg-white py-2 pl-4 pr-11 text-left text-sm text-gray-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 lg:py-3 lg:text-base",
+            "w-full appearance-none rounded-full border border-border bg-background py-2 pl-4 pr-11 text-left text-sm text-charcoal shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 lg:py-3 lg:text-base",
             selectedValues.length > 0 && "font-medium",
           )}
           aria-haspopup="listbox"
@@ -89,7 +89,7 @@ export function CategoryCheckboxDropdown({
         >
           {displayText}
         </button>
-        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-gray-500">
+        <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-stone">
           <svg
             className={cn("h-4 w-4 transform transition-transform", open && "rotate-180")}
             xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +107,7 @@ export function CategoryCheckboxDropdown({
             id={menuId}
             role="listbox"
             aria-labelledby={triggerId}
-            className="absolute z-50 mt-2 w-full rounded-2xl border border-gray-100 bg-white p-2 shadow-lg ring-1 ring-black/5 focus:outline-none max-h-80 overflow-y-auto"
+            className="absolute z-50 mt-2 w-full rounded-2xl border border-border bg-background p-2 shadow-lg ring-1 ring-black/5 focus:outline-none max-h-80 overflow-y-auto"
             tabIndex={-1}
           >
             <div className="py-1 space-y-1">
@@ -118,7 +118,7 @@ export function CategoryCheckboxDropdown({
                     key={option.value}
                     role="option"
                     aria-selected={isChecked}
-                    className="rounded-xl transition hover:bg-gray-50"
+                    className="rounded-xl transition hover:bg-sand"
                   >
                     <Checkbox
                       label={option.label}

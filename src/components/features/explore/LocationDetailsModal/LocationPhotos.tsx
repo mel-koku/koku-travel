@@ -18,7 +18,7 @@ export function LocationPhotos({ details, heroImageAlt }: LocationPhotosProps) {
 
   return (
     <section className="space-y-4">
-      <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">More photos</h3>
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">More photos</h3>
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         {additionalPhotos.map((photo) => (
           <figure key={photo.name} className="overflow-hidden rounded-xl">
@@ -32,7 +32,7 @@ export function LocationPhotos({ details, heroImageAlt }: LocationPhotosProps) {
               />
             </div>
             {photo.attributions.length > 0 ? (
-              <figcaption className="px-2 py-1 text-[11px] text-gray-500">
+              <figcaption className="px-2 py-1 text-[11px] text-stone">
                 Photo by{" "}
                 {photo.attributions[0]?.uri ? (
                   <a

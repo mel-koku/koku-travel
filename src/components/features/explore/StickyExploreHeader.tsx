@@ -49,11 +49,11 @@ export function StickyExploreHeader({
         />
       </svg>
       <span>Filters</span>
-      <span className="text-red-400">
+      <span className="text-brand-primary/70">
         ({resultsCount.toLocaleString()})
       </span>
       {activeFilterCount > 0 && (
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
           {activeFilterCount}
         </span>
       )}
@@ -61,7 +61,7 @@ export function StickyExploreHeader({
   );
 
   const buttonClassName = cn(
-    "flex items-center gap-2 rounded-full border border-red-500 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-red-500 transition hover:bg-red-50"
+    "flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary transition hover:bg-sand"
   );
 
   return (
@@ -78,7 +78,7 @@ export function StickyExploreHeader({
           </button>
           <Link
             href="/dashboard"
-            className="hidden sm:flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-600 transition hover:border-red-500 hover:text-red-500"
+            className="hidden sm:flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-foreground-secondary transition hover:border-brand-primary hover:text-brand-primary"
           >
             Dashboard
           </Link>
