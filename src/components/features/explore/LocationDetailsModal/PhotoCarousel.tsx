@@ -4,6 +4,9 @@ import { useState, useCallback } from "react";
 import Image from "next/image";
 import type { Location, LocationDetails } from "@/types/location";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
+import { HeartIcon } from "../LocationCard";
+import { PlusIcon } from "../PlusIcon";
+import { MinusIcon } from "../MinusIcon";
 
 const FALLBACK_IMAGE_SRC =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -11,10 +14,22 @@ const FALLBACK_IMAGE_SRC =
 type PhotoCarouselProps = {
   location: Location;
   details: LocationDetails | null;
-  favoriteButton: React.ReactNode;
+  isFavorite: boolean;
+  isInItinerary: boolean;
+  heartAnimating?: boolean;
+  onToggleFavorite: () => void;
+  onToggleItinerary: () => void;
 };
 
-export function PhotoCarousel({ location, details, favoriteButton }: PhotoCarouselProps) {
+export function PhotoCarousel({
+  location,
+  details,
+  isFavorite,
+  isInItinerary,
+  heartAnimating,
+  onToggleFavorite,
+  onToggleItinerary,
+}: PhotoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const photos = details?.photos ?? [];
@@ -39,57 +54,72 @@ export function PhotoCarousel({ location, details, favoriteButton }: PhotoCarous
   }, [allPhotos.length]);
 
   if (allPhotos.length === 0) {
-    return favoriteButton ? <div className="flex justify-end">{favoriteButton}</div> : null;
+    return (
+      <ActionBar
+        isFavorite={isFavorite}
+        isInItinerary={isInItinerary}
+        heartAnimating={heartAnimating}
+        onToggleFavorite={onToggleFavorite}
+        onToggleItinerary={onToggleItinerary}
+      />
+    );
   }
 
   const currentPhoto = allPhotos[currentIndex];
 
   return (
     <div className="relative">
-      {/* Main image */}
-      <div className="relative h-72 w-full overflow-hidden rounded-2xl bg-gray-100">
-        <Image
-          src={currentPhoto?.proxyUrl || FALLBACK_IMAGE_SRC}
-          alt={`${imageAlt} ${currentIndex + 1}`}
-          fill
-          className="object-cover"
-          sizes="(min-width:1024px) 60vw, 100vw"
-          priority={currentIndex === 0}
+      {/* Image container with rounded corners */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        {/* Main image */}
+        <div className="relative h-72 w-full overflow-hidden bg-gray-100">
+          <Image
+            src={currentPhoto?.proxyUrl || FALLBACK_IMAGE_SRC}
+            alt={`${imageAlt} ${currentIndex + 1}`}
+            fill
+            className="object-cover"
+            sizes="(min-width:1024px) 60vw, 100vw"
+            priority={currentIndex === 0}
+          />
+
+          {/* Navigation arrows - only show if more than 1 photo */}
+          {allPhotos.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={goToPrevious}
+                className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-md transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                aria-label="Previous photo"
+              >
+                <ChevronLeftIcon />
+              </button>
+              <button
+                type="button"
+                onClick={goToNext}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-md transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                aria-label="Next photo"
+              >
+                <ChevronRightIcon />
+              </button>
+            </>
+          )}
+
+          {/* Photo counter */}
+          {allPhotos.length > 1 && (
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white">
+              {currentIndex + 1} / {allPhotos.length}
+            </div>
+          )}
+        </div>
+
+        {/* Action bar below image */}
+        <ActionBar
+          isFavorite={isFavorite}
+          isInItinerary={isInItinerary}
+          heartAnimating={heartAnimating}
+          onToggleFavorite={onToggleFavorite}
+          onToggleItinerary={onToggleItinerary}
         />
-
-        {/* Favorite button */}
-        {favoriteButton ? (
-          <div className="absolute right-4 top-4 z-10">{favoriteButton}</div>
-        ) : null}
-
-        {/* Navigation arrows - only show if more than 1 photo */}
-        {allPhotos.length > 1 && (
-          <>
-            <button
-              type="button"
-              onClick={goToPrevious}
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-md transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-              aria-label="Previous photo"
-            >
-              <ChevronLeftIcon />
-            </button>
-            <button
-              type="button"
-              onClick={goToNext}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 p-2 shadow-md transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-              aria-label="Next photo"
-            >
-              <ChevronRightIcon />
-            </button>
-          </>
-        )}
-
-        {/* Photo counter */}
-        {allPhotos.length > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs font-medium text-white">
-            {currentIndex + 1} / {allPhotos.length}
-          </div>
-        )}
       </div>
 
       {/* Thumbnail strip - only show if more than 1 photo */}
@@ -118,6 +148,53 @@ export function PhotoCarousel({ location, details, favoriteButton }: PhotoCarous
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+type ActionBarProps = {
+  isFavorite: boolean;
+  isInItinerary: boolean;
+  heartAnimating?: boolean;
+  onToggleFavorite: () => void;
+  onToggleItinerary: () => void;
+};
+
+function ActionBar({
+  isFavorite,
+  isInItinerary,
+  heartAnimating,
+  onToggleFavorite,
+  onToggleItinerary,
+}: ActionBarProps) {
+  return (
+    <div className="flex items-center justify-between border-t border-gray-100 px-4 py-3">
+      <button
+        type="button"
+        onClick={onToggleFavorite}
+        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+        className={`rounded-md p-2 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 ${
+          isFavorite ? "text-red-500" : "text-gray-600"
+        }`}
+      >
+        <HeartIcon active={isFavorite} animating={heartAnimating} />
+      </button>
+
+      <button
+        type="button"
+        onClick={onToggleItinerary}
+        aria-label={isInItinerary ? "Remove from itinerary" : "Add to itinerary"}
+        className={`flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 ${
+          isInItinerary ? "text-indigo-600" : "text-gray-600"
+        }`}
+      >
+        {isInItinerary ? (
+          <MinusIcon className="h-5 w-5" />
+        ) : (
+          <PlusIcon className="h-5 w-5" />
+        )}
+        <span>{isInItinerary ? "Remove from Itinerary" : "Add to Itinerary"}</span>
+      </button>
     </div>
   );
 }

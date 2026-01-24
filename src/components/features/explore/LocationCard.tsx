@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useRef } from "react";
+import { memo, useRef, useState, useCallback, useEffect } from "react";
 
 import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
+import { useAddToItinerary } from "@/hooks/useAddToItinerary";
 import type { Location } from "@/types/location";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
+import { PlusIcon } from "./PlusIcon";
+import { MinusIcon } from "./MinusIcon";
+import { TripPickerModal } from "./TripPickerModal";
 
 type LocationCardProps = {
   location: Location;
@@ -27,43 +31,118 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
   // Use primary photo URL from database if available, otherwise fall back to image field
   const imageSrc = location.primaryPhotoUrl ?? location.image;
 
+  // Add to itinerary state
+  const { trips, needsTripPicker, isInItinerary, addToItinerary, removeFromItinerary } = useAddToItinerary();
+  const locationInItinerary = isInItinerary(location.id);
+  const [tripPickerOpen, setTripPickerOpen] = useState(false);
+  const [heartAnimating, setHeartAnimating] = useState(false);
+  const wasInWishlist = useRef(active);
+
+  // Track when location is auto-favorited to trigger animation
+  useEffect(() => {
+    if (active && !wasInWishlist.current) {
+      setHeartAnimating(true);
+      const timer = setTimeout(() => setHeartAnimating(false), 500);
+      return () => clearTimeout(timer);
+    }
+    wasInWishlist.current = active;
+  }, [active]);
+
+  const handleToggleItinerary = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation();
+      if (locationInItinerary) {
+        removeFromItinerary(location.id);
+      } else if (needsTripPicker) {
+        setTripPickerOpen(true);
+      } else {
+        addToItinerary(location.id, location);
+      }
+    },
+    [locationInItinerary, needsTripPicker, addToItinerary, removeFromItinerary, location]
+  );
+
+  const handleTripSelect = useCallback(
+    (tripId: string) => {
+      addToItinerary(location.id, location, tripId);
+    },
+    [addToItinerary, location]
+  );
+
   return (
     <article className="group relative text-gray-900">
-      {/* Wishlist button */}
-      <button
-        aria-label={active ? "Remove from Trip" : "Add to Trip"}
-        onClick={(event) => {
-          event.stopPropagation();
-          toggleWishlist(location.id);
-        }}
-        className={`absolute top-3 right-3 z-10 rounded-full p-2 transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white ${
-          active ? "text-red-500" : "text-white drop-shadow-md hover:text-red-400"
-        }`}
-      >
-        <HeartIcon active={active} />
-      </button>
+      {/* Trip picker modal */}
+      <TripPickerModal
+        isOpen={tripPickerOpen}
+        onClose={() => setTripPickerOpen(false)}
+        trips={trips}
+        onSelectTrip={handleTripSelect}
+        locationName={displayName}
+      />
 
-      {/* Main clickable area */}
+      {/* Card container with rounded corners */}
+      <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+        {/* Main clickable area for image */}
+        <button
+          type="button"
+          onClick={() => onSelect?.(location)}
+          ref={buttonRef}
+          className="block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+        >
+          {/* Image */}
+          <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
+            <Image
+              src={imageSrc || FALLBACK_IMAGE_SRC}
+              alt={displayName}
+              fill
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
+              priority={false}
+            />
+          </div>
+        </button>
+
+        {/* Action bar below image */}
+        <div className="flex items-center justify-between border-t border-gray-100 px-3 py-2">
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              toggleWishlist(location.id);
+            }}
+            aria-label={active ? "Remove from favorites" : "Add to favorites"}
+            className={`rounded-md p-1.5 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 ${
+              active ? "text-red-500" : "text-gray-600"
+            }`}
+          >
+            <HeartIcon active={active} animating={heartAnimating} />
+          </button>
+
+          <button
+            type="button"
+            onClick={handleToggleItinerary}
+            aria-label={locationInItinerary ? "Remove from itinerary" : "Add to itinerary"}
+            className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 ${
+              locationInItinerary ? "text-indigo-600" : "text-gray-600"
+            }`}
+          >
+            {locationInItinerary ? (
+              <MinusIcon className="h-5 w-5" />
+            ) : (
+              <PlusIcon className="h-5 w-5" />
+            )}
+            <span>{locationInItinerary ? "Remove from Itinerary" : "Add to Itinerary"}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Content below card */}
       <button
         type="button"
         onClick={() => onSelect?.(location)}
-        ref={buttonRef}
-        className="block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 rounded-xl"
+        className="block w-full text-left cursor-pointer focus-visible:outline-none mt-3"
       >
-        {/* Image */}
-        <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
-          <Image
-            src={imageSrc || FALLBACK_IMAGE_SRC}
-            alt={displayName}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
-            priority={false}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="mt-3 space-y-1">
+        <div className="space-y-1">
           <div className="flex items-start justify-between gap-2">
             <h3 className="font-medium text-gray-900 line-clamp-1">{displayName}</h3>
             {rating ? (
@@ -102,11 +181,23 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
   );
 });
 
-export function HeartIcon({ active }: { active: boolean }) {
+type HeartIconProps = {
+  active: boolean;
+  animating?: boolean;
+  className?: string;
+  variant?: "overlay" | "inline";
+};
+
+export function HeartIcon({ active, animating, className, variant = "inline" }: HeartIconProps) {
+  const baseClass = className ?? "h-5 w-5";
+  const colorClass = variant === "overlay"
+    ? active ? "fill-red-500 stroke-red-500" : "fill-black/50 stroke-white"
+    : active ? "fill-red-500 stroke-red-500" : "fill-none stroke-current";
+
   return (
     <svg
       aria-hidden="true"
-      className={`h-6 w-6 transition-colors ${active ? "fill-red-500 stroke-red-500" : "fill-black/50 stroke-white"}`}
+      className={`${baseClass} transition-colors ${colorClass} ${animating ? "animate-heart-pulse" : ""}`}
       viewBox="0 0 24 24"
       strokeWidth={2}
       strokeLinecap="round"
