@@ -149,26 +149,40 @@ export default function Header() {
     };
   }, [isMobileMenuOpen]);
 
+  const isLandingPage = pathname === "/";
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
+    <header className={cn(
+      "top-0 z-50",
+      isLandingPage
+        ? "absolute w-full bg-transparent"
+        : "sticky border-b border-border bg-background/90 backdrop-blur"
+    )}>
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 sm:px-6 md:px-8">
-        <Link href="/" className="flex items-center gap-2 sm:gap-3">
-          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-dashed border-brand-primary text-sm uppercase tracking-wider text-brand-primary">
-            K
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl sm:text-2xl font-semibold">Koku Travel</span>
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-stone">
-              Japan Planner
-            </span>
-          </div>
+        <Link href="/" className="flex flex-col">
+          <span className={cn(
+            "text-xl sm:text-2xl font-semibold",
+            isLandingPage ? "text-white" : "text-charcoal"
+          )}>Koku Travel</span>
+          <span className={cn(
+            "text-[10px] sm:text-xs uppercase tracking-[0.2em]",
+            isLandingPage ? "text-white/70" : "text-stone"
+          )}>
+            Japan Planner
+          </span>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-sm font-medium uppercase tracking-wide md:flex">
+        <nav className={cn(
+          "hidden items-center gap-8 text-sm font-medium uppercase tracking-wide md:flex",
+          isLandingPage && "text-white"
+        )}>
           {navItems.map((item) => (
             <Link
               key={item.label}
-              className="transition-colors hover:text-brand-primary"
+              className={cn(
+                "transition-colors",
+                isLandingPage ? "hover:text-white/70" : "hover:text-brand-primary"
+              )}
               href={item.href}
             >
               {item.label}
@@ -181,7 +195,10 @@ export default function Header() {
             <UserMenu isSignedIn={isSignedIn} supabase={supabase} router={router} />
           </div>
           <Link href="/account" className="inline-flex md:hidden">
-              <span className="rounded-full border border-brand-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary">
+              <span className={cn(
+                "rounded-full border px-5 py-2.5 text-sm font-medium",
+                isLandingPage ? "border-white text-white hover:bg-white/10" : "border-border text-warm-gray hover:bg-sand"
+              )}>
               {isSignedIn ? "Account" : "Sign in"}
             </span>
           </Link>
@@ -190,7 +207,10 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-warm-gray transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:hidden"
+            className={cn(
+              "flex h-10 w-10 items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:hidden",
+              isLandingPage ? "text-white hover:bg-white/10" : "text-warm-gray hover:bg-sand"
+            )}
             aria-label="Toggle mobile menu"
             aria-expanded={isMobileMenuOpen}
           >
@@ -238,11 +258,9 @@ export default function Header() {
         >
           <div className="flex h-full flex-col">
             <div className="flex items-center justify-between border-b border-border p-5 sm:p-6">
-              <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-brand-primary text-sm uppercase tracking-wider text-brand-primary">
-                  K
-                </div>
+              <Link href="/" className="flex flex-col" onClick={() => setIsMobileMenuOpen(false)}>
                 <span className="text-lg font-semibold text-charcoal">Koku Travel</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-stone">Japan Planner</span>
               </Link>
               <button
                 type="button"
