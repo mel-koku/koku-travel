@@ -389,6 +389,6 @@ For deployment issues:
 
 ---
 
-**Last Updated:** 2024  
+**Last Updated:** January 2025
 **Deployment Version:** 1.0
 
