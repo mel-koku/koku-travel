@@ -6489,16 +6489,16 @@
       "locationCount": 33,
       "region": "Chugoku",
       "coordinates": {
-        "lat": 34.714359699999996,
-        "lng": 135.49433779999998
+        "lat": 34.1859188,
+        "lng": 131.4706368
       }
     },
     "Osaka": {
       "locationCount": 33,
-      "region": "Okinawa",
+      "region": "Kansai",
       "coordinates": {
-        "lat": 24.7202654,
-        "lng": 125.34084670000001
+        "lat": 34.6937,
+        "lng": 135.5023
       }
     },
     "Gifu": {
@@ -6601,8 +6601,8 @@
       "locationCount": 20,
       "region": "Chubu",
       "coordinates": {
-        "lat": 35.650768299999996,
-        "lng": 139.72160359999998
+        "lat": 36.5948,
+        "lng": 136.6256
       }
     },
     "Sapporo": {
@@ -6625,8 +6625,8 @@
       "locationCount": 19,
       "region": "Chubu",
       "coordinates": {
-        "lat": 35.000225400000005,
-        "lng": 135.7545859
+        "lat": 34.9756085,
+        "lng": 138.3828912
       }
     },
     "Mie": {
@@ -8017,8 +8017,8 @@
       "locationCount": 3,
       "region": "Chugoku",
       "coordinates": {
-        "lat": 35.0268971,
-        "lng": 135.7934588
+        "lat": 34.6760937,
+        "lng": 131.8427426
       }
     },
     "Kaga": {
@@ -8063,7 +8063,7 @@
     },
     "Minoh": {
       "locationCount": 3,
-      "region": "Chubu",
+      "region": "Kansai",
       "coordinates": {
         "lat": 34.826929899999996,
         "lng": 135.47045649999998
@@ -8457,8 +8457,8 @@
       "locationCount": 2,
       "region": "Chugoku",
       "coordinates": {
-        "lat": 35.4476863,
-        "lng": 135.791317
+        "lat": 35.3316,
+        "lng": 134.0524
       }
     },
     "Shari": {
