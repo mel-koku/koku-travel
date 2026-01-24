@@ -4,30 +4,21 @@ import { ActiveFilter } from "@/types/filters";
 
 type ActiveFilterChipsProps = {
   filters: ActiveFilter[];
-  resultsCount: number;
   onRemove: (filter: ActiveFilter) => void;
   onClearAll: () => void;
 };
 
 export function ActiveFilterChips({
   filters,
-  resultsCount,
   onRemove,
   onClearAll,
 }: ActiveFilterChipsProps) {
   if (filters.length === 0) {
-    return (
-      <p className="text-sm text-foreground-secondary text-center">
-        {resultsCount.toLocaleString()} places to explore
-      </p>
-    );
+    return null;
   }
 
   return (
     <div className="flex flex-wrap items-center justify-center gap-2">
-      <span className="text-sm text-foreground-secondary mr-1">
-        Showing {resultsCount.toLocaleString()} places
-      </span>
       {filters.map((filter, index) => (
         <button
           key={`${filter.type}-${filter.value}-${index}`}
