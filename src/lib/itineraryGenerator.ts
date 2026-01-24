@@ -814,9 +814,18 @@ export async function generateItinerary(
 
 /**
  * Expand city sequence to fill the required number of days.
- * Groups cities by region and distributes days proportionally within each region
- * before moving to the next region, avoiding back-and-forth travel.
- * Preserves the optimized region order from the input sequence.
+ * Uses contiguous block allocation: all days in one city before moving to the next.
+ * This prevents back-and-forth travel between cities.
+ *
+ * Algorithm:
+ * 1. Calculate baseDaysPerCity = floor(totalDays / totalCities)
+ * 2. Calculate remainderDays = totalDays % totalCities
+ * 3. For each city in order:
+ *    - Allocate baseDaysPerCity days (plus 1 extra if remainder available)
+ *    - Add all days contiguously before moving to next city
+ *
+ * Example: 7 days, [Kyoto, Osaka] → Kyoto x4, Osaka x3
+ * Example: 5 days, [Kyoto, Osaka, Tokyo] → Kyoto x2, Osaka x2, Tokyo x1
  */
 function expandCitySequenceForDays(citySequence: CityInfo[], totalDays: number): CityInfo[] {
   if (citySequence.length === 0 || totalDays === 0) {
@@ -829,68 +838,32 @@ function expandCitySequenceForDays(citySequence: CityInfo[], totalDays: number):
   }
 
   const expanded: CityInfo[] = [];
-  
-  // Group cities by region while preserving order
-  const regionGroups: Array<{ regionId: RegionId | null; cities: CityInfo[] }> = [];
-  let currentRegion: RegionId | null = null;
-  let currentGroup: CityInfo[] = [];
-
-  for (const cityInfo of citySequence) {
-    const regionId = cityInfo.regionId ?? null;
-    
-    if (regionId !== currentRegion) {
-      // Start a new region group
-      if (currentGroup.length > 0) {
-        regionGroups.push({ regionId: currentRegion, cities: currentGroup });
-      }
-      currentRegion = regionId;
-      currentGroup = [cityInfo];
-    } else {
-      // Add to current region group
-      currentGroup.push(cityInfo);
-    }
-  }
-  
-  // Add the last group
-  if (currentGroup.length > 0) {
-    regionGroups.push({ regionId: currentRegion, cities: currentGroup });
-  }
-
-  // Calculate proportional distribution
   const totalCities = citySequence.length;
-  const daysPerCity = totalDays / totalCities;
 
-  // Expand each region group proportionally
-  for (const group of regionGroups) {
-    const regionCityCount = group.cities.length;
-    const regionDays = Math.max(1, Math.round(regionCityCount * daysPerCity));
-    
-    // Distribute days within this region, cycling through cities
-    for (let i = 0; i < regionDays && expanded.length < totalDays; i++) {
-      const cityIndex = i % regionCityCount;
-      expanded.push(group.cities[cityIndex]!);
+  // Calculate base days per city and remainder
+  const baseDaysPerCity = Math.floor(totalDays / totalCities);
+  let remainderDays = totalDays % totalCities;
+
+  // Allocate days contiguously to each city
+  for (const cityInfo of citySequence) {
+    // Each city gets at least baseDaysPerCity days
+    // Cities earlier in the sequence get +1 day if there's remainder
+    let daysForThisCity = baseDaysPerCity;
+    if (remainderDays > 0) {
+      daysForThisCity += 1;
+      remainderDays -= 1;
+    }
+
+    // Ensure at least 1 day per city
+    daysForThisCity = Math.max(1, daysForThisCity);
+
+    // Add all days for this city contiguously
+    for (let i = 0; i < daysForThisCity && expanded.length < totalDays; i++) {
+      expanded.push(cityInfo);
     }
   }
 
-  // If we still need more days (due to rounding), fill from the end of the sequence
-  let previousLength = 0;
-  while (expanded.length < totalDays && expanded.length > previousLength) {
-    previousLength = expanded.length;
-    const remainingDays = totalDays - expanded.length;
-    const startIndex = Math.max(0, citySequence.length - remainingDays);
-    for (let i = startIndex; i < citySequence.length && expanded.length < totalDays; i++) {
-      expanded.push(citySequence[i]!);
-    }
-  }
-  
-  // Final fallback: if still not enough, cycle through the sequence
-  let cycleIndex = 0;
-  while (expanded.length < totalDays) {
-    expanded.push(citySequence[cycleIndex % citySequence.length]!);
-    cycleIndex++;
-  }
-
-  // Trim to exact number of days
+  // Trim to exact number of days (handles edge cases)
   return expanded.slice(0, totalDays);
 }
 
