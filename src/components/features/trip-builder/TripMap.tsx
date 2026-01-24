@@ -214,8 +214,8 @@ export function TripMap() {
 
   if (!mapboxEnabled || cityCoordinates.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-gray-100">
-        <p className="text-xs text-gray-500">
+      <div className="flex h-full w-full items-center justify-center bg-surface">
+        <p className="text-xs text-stone">
           {cityCoordinates.length === 0
             ? "Select cities to see them on the map"
             : "Map not configured"}
@@ -225,10 +225,10 @@ export function TripMap() {
   }
 
   return (
-    <div className="relative h-full w-full bg-gray-100">
+    <div className="relative h-full w-full bg-surface">
       {!mapReady && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-xs text-gray-500">Loading map...</p>
+          <p className="text-xs text-stone">Loading map...</p>
         </div>
       )}
       <div ref={mapContainerRef} className="absolute inset-0 h-full w-full" />
@@ -239,16 +239,16 @@ export function TripMap() {
           {cityCoordinates.slice(0, 5).map((c, i) => (
             <span
               key={c.city}
-              className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-gray-700 shadow-sm"
+              className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-warm-gray shadow-sm"
             >
-              <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-indigo-600 text-[8px] text-white">
+              <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full bg-brand-primary text-[8px] text-white">
                 {i + 1}
               </span>
               {c.city}
             </span>
           ))}
           {cityCoordinates.length > 5 && (
-            <span className="inline-flex items-center rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-gray-500 shadow-sm">
+            <span className="inline-flex items-center rounded-full bg-background/90 px-2 py-0.5 text-[10px] font-medium text-stone shadow-sm">
               +{cityCoordinates.length - 5} more
             </span>
           )}

@@ -61,15 +61,15 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   const isNextDisabled = currentStep === 1 ? !step1Valid : !step2Valid;
 
   return (
-    <div className="flex h-full min-h-screen flex-col bg-gray-50">
+    <div className="flex h-full min-h-screen flex-col bg-surface">
       {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-gray-200 bg-white">
+      <header className="sticky top-0 z-20 border-b border-border bg-background">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <div>
-            <h1 className="text-lg font-bold text-gray-900 sm:text-xl">
+            <h1 className="text-lg font-bold text-charcoal sm:text-xl">
               Plan Your Trip
             </h1>
-            <p className="text-xs text-gray-500 sm:text-sm">
+            <p className="text-xs text-stone sm:text-sm">
               Step {currentStep} of 2:{" "}
               {currentStep === 1 ? "Trip Details & Cities" : "Review & Preferences"}
             </p>
@@ -79,7 +79,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             {/* Step indicators */}
             <div className="hidden items-center gap-2 sm:flex">
               <StepIndicator step={1} currentStep={currentStep} onClick={() => goToStep(1)} />
-              <div className="h-px w-6 bg-gray-300" />
+              <div className="h-px w-6 bg-border" />
               <StepIndicator
                 step={2}
                 currentStep={currentStep}
@@ -91,7 +91,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             <button
               type="button"
               onClick={handleStartOver}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-sand"
             >
               Start Over
             </button>
@@ -115,20 +115,20 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
           </div>
 
           {/* Right Panel - Preview (Desktop) */}
-          <div className="hidden w-96 shrink-0 border-l border-gray-200 bg-white lg:flex lg:flex-col xl:w-[420px]">
+          <div className="hidden w-96 shrink-0 border-l border-border bg-background lg:flex lg:flex-col xl:w-[420px]">
             <LivePreview className="h-full" />
           </div>
         </div>
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white p-4 lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background p-4 lg:hidden">
         <div className="flex items-center gap-3">
           {currentStep === 2 && (
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-warm-gray hover:bg-sand"
             >
               Back
             </button>
@@ -141,8 +141,8 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             className={cn(
               "flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition",
               isNextDisabled
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                ? "bg-surface text-stone cursor-not-allowed"
+                : "bg-brand-primary text-white hover:bg-brand-primary/90"
             )}
           >
             {currentStep === 1 ? "Continue to Review" : "Generate Itinerary"}
@@ -151,14 +151,14 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
       </div>
 
       {/* Desktop Bottom Navigation */}
-      <div className="sticky bottom-0 hidden border-t border-gray-200 bg-white lg:block">
+      <div className="sticky bottom-0 hidden border-t border-border bg-background lg:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <div>
             {currentStep === 2 && (
               <button
                 type="button"
                 onClick={handleBack}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-warm-gray hover:bg-sand"
               >
                 Back to Step 1
               </button>
@@ -172,8 +172,8 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             className={cn(
               "rounded-lg px-6 py-2.5 text-sm font-semibold transition",
               isNextDisabled
-                ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                : "bg-indigo-600 text-white hover:bg-indigo-700"
+                ? "bg-surface text-stone cursor-not-allowed"
+                : "bg-brand-primary text-white hover:bg-brand-primary/90"
             )}
           >
             {currentStep === 1 ? "Continue to Review" : "Generate Itinerary"}
@@ -217,9 +217,9 @@ function StepIndicator({ step, currentStep, onClick, disabled }: StepIndicatorPr
       disabled={disabled}
       className={cn(
         "flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition",
-        isActive && "bg-indigo-600 text-white",
-        isCompleted && "bg-indigo-100 text-indigo-600",
-        !isActive && !isCompleted && "bg-gray-200 text-gray-500",
+        isActive && "bg-brand-primary text-white",
+        isCompleted && "bg-sage/10 text-sage",
+        !isActive && !isCompleted && "bg-surface text-stone",
         isClickable && "cursor-pointer hover:opacity-80",
         disabled && "cursor-not-allowed opacity-50"
       )}

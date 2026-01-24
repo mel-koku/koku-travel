@@ -160,9 +160,9 @@ export function CityList({ onCitySelect }: CityListProps) {
   );
 
   return (
-    <div className="flex h-full flex-col rounded-xl border border-gray-200 bg-white">
+    <div className="flex h-full flex-col rounded-xl border border-border bg-background">
       {/* Search */}
-      <div className="border-b border-gray-200 p-3">
+      <div className="border-b border-border p-3">
         <Input
           id="city-search"
           type="text"
@@ -174,7 +174,7 @@ export function CityList({ onCitySelect }: CityListProps) {
       </div>
 
       {/* Filter Toggles */}
-      <div className="border-b border-gray-200 px-3 py-2">
+      <div className="border-b border-border px-3 py-2">
         <div className="flex gap-2">
           <button
             type="button"
@@ -182,8 +182,8 @@ export function CityList({ onCitySelect }: CityListProps) {
             className={cn(
               "rounded-full border px-3 py-1.5 text-sm transition",
               filterMode === "all"
-                ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                ? "border-sage/30 bg-sage/10 text-sage"
+                : "border-border text-foreground-secondary hover:bg-sand"
             )}
           >
             All
@@ -195,8 +195,8 @@ export function CityList({ onCitySelect }: CityListProps) {
             className={cn(
               "rounded-full border px-3 py-1.5 text-sm transition",
               filterMode === "highMatch"
-                ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                : "border-gray-200 text-gray-600 hover:bg-gray-50",
+                ? "border-sage/30 bg-sage/10 text-sage"
+                : "border-border text-foreground-secondary hover:bg-sand",
               !hasInterests && "cursor-not-allowed opacity-50"
             )}
             title={!hasInterests ? "Select interests first to filter by match" : undefined}
@@ -210,8 +210,8 @@ export function CityList({ onCitySelect }: CityListProps) {
             className={cn(
               "rounded-full border px-3 py-1.5 text-sm transition",
               filterMode === "selected"
-                ? "border-indigo-300 bg-indigo-50 text-indigo-700"
-                : "border-gray-200 text-gray-600 hover:bg-gray-50",
+                ? "border-sage/30 bg-sage/10 text-sage"
+                : "border-border text-foreground-secondary hover:bg-sand",
               selectedCities.size === 0 && "cursor-not-allowed opacity-50"
             )}
             title={selectedCities.size === 0 ? "No cities selected" : undefined}
@@ -223,14 +223,14 @@ export function CityList({ onCitySelect }: CityListProps) {
 
       {/* Selected cities summary */}
       {selectedCities.size > 0 && (
-        <div className="border-b border-gray-200 bg-indigo-50 px-4 py-2">
+        <div className="border-b border-border bg-sage/10 px-4 py-2">
           <div className="flex flex-wrap gap-1.5">
             {Array.from(selectedCities).map((city) => (
               <button
                 key={city}
                 type="button"
                 onClick={() => toggleCity(city)}
-                className="inline-flex items-center gap-1 rounded-full bg-indigo-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-indigo-700"
+                className="inline-flex items-center gap-1 rounded-full bg-brand-primary px-2.5 py-1 text-xs font-medium text-white hover:bg-brand-primary/90"
               >
                 {city}
                 <svg
@@ -257,7 +257,7 @@ export function CityList({ onCitySelect }: CityListProps) {
         {groupedCities.length === 0 ? (
           <div className="flex h-full items-center justify-center p-4">
             <div className="text-center">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-stone">
                 {filterMode === "highMatch"
                   ? "No cities with 75%+ match found"
                   : filterMode === "selected"
@@ -268,7 +268,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                 <button
                   type="button"
                   onClick={() => setFilterMode("all")}
-                  className="mt-2 text-sm text-indigo-600 hover:text-indigo-800"
+                  className="mt-2 text-sm text-sage hover:text-sage/80"
                 >
                   Show all cities
                 </button>
@@ -276,7 +276,7 @@ export function CityList({ onCitySelect }: CityListProps) {
             </div>
           </div>
         ) : (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border">
             {groupedCities.map(({ region, cities }) => {
               const isExpanded = isSearching || expandedRegions.has(region);
               const shouldShowAll = isSearching || showAllCities.has(region);
@@ -292,13 +292,13 @@ export function CityList({ onCitySelect }: CityListProps) {
                   <button
                     type="button"
                     onClick={() => toggleRegion(region)}
-                    className="flex w-full items-center justify-between px-4 py-2 text-left hover:bg-gray-50"
+                    className="flex w-full items-center justify-between px-4 py-2 text-left hover:bg-sand"
                   >
                     <div className="flex items-center gap-2">
                       {/* Chevron */}
                       <svg
                         className={cn(
-                          "h-4 w-4 text-gray-500 transition-transform",
+                          "h-4 w-4 text-stone transition-transform",
                           isExpanded && "rotate-90"
                         )}
                         fill="none"
@@ -312,15 +312,15 @@ export function CityList({ onCitySelect }: CityListProps) {
                           d="M9 5l7 7-7 7"
                         />
                       </svg>
-                      <span className="text-sm font-semibold text-gray-700">
+                      <span className="text-sm font-semibold text-warm-gray">
                         {region}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-stone">
                         ({cities.length} cities)
                       </span>
                     </div>
                     {selectedInRegion > 0 && (
-                      <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                      <span className="rounded-full bg-sage/10 px-2 py-0.5 text-xs font-medium text-sage">
                         {selectedInRegion} selected
                       </span>
                     )}
@@ -337,8 +337,8 @@ export function CityList({ onCitySelect }: CityListProps) {
                             type="button"
                             onClick={() => toggleCity(city.city)}
                             className={cn(
-                              "flex w-full items-center justify-between px-4 py-2.5 pl-10 text-left transition hover:bg-gray-50",
-                              isSelected && "bg-indigo-50 hover:bg-indigo-100"
+                              "flex w-full items-center justify-between px-4 py-2.5 pl-10 text-left transition hover:bg-sand",
+                              isSelected && "bg-sage/10 hover:bg-sage/20"
                             )}
                           >
                             <div className="flex items-center gap-3">
@@ -347,8 +347,8 @@ export function CityList({ onCitySelect }: CityListProps) {
                                 className={cn(
                                   "flex h-5 w-5 items-center justify-center rounded border transition",
                                   isSelected
-                                    ? "border-indigo-600 bg-indigo-600"
-                                    : "border-gray-300 bg-white"
+                                    ? "border-brand-primary bg-brand-primary"
+                                    : "border-border bg-background"
                                 )}
                               >
                                 {isSelected && (
@@ -372,12 +372,12 @@ export function CityList({ onCitySelect }: CityListProps) {
                                 <span
                                   className={cn(
                                     "font-medium",
-                                    isSelected ? "text-indigo-900" : "text-gray-900"
+                                    isSelected ? "text-charcoal" : "text-charcoal"
                                   )}
                                 >
                                   {city.city}
                                 </span>
-                                <span className="ml-2 text-xs text-gray-500">
+                                <span className="ml-2 text-xs text-stone">
                                   {city.locationCount} locations
                                 </span>
                               </div>
@@ -389,10 +389,10 @@ export function CityList({ onCitySelect }: CityListProps) {
                                 className={cn(
                                   "rounded-full px-2 py-0.5 text-xs font-medium",
                                   city.relevance >= 75
-                                    ? "bg-green-100 text-green-700"
+                                    ? "bg-success/10 text-success"
                                     : city.relevance >= 50
-                                    ? "bg-yellow-100 text-yellow-700"
-                                    : "bg-gray-100 text-gray-600"
+                                    ? "bg-warning/10 text-warning"
+                                    : "bg-surface text-foreground-secondary"
                                 )}
                               >
                                 {city.relevance}% match
@@ -407,7 +407,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                         <button
                           type="button"
                           onClick={() => expandShowAllCities(region)}
-                          className="w-full rounded-lg py-2 pl-10 text-left text-sm text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800"
+                          className="w-full rounded-lg py-2 pl-10 text-left text-sm text-sage hover:bg-sage/10 hover:text-sage/80"
                         >
                           Show {hiddenCount} more cities...
                         </button>

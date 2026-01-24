@@ -27,10 +27,10 @@ export function ReviewStep({ onBack, onValidityChange }: ReviewStepProps) {
       {/* Preference Cards */}
       <div>
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-charcoal">
             Customize Your Experience
           </h3>
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="mt-1 text-sm text-foreground-secondary">
             Fine-tune your preferences to get personalized recommendations.
           </p>
         </div>

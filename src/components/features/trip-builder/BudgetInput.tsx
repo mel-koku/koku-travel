@@ -125,7 +125,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
       <div className="flex items-center gap-2">
         {/* Amount input with ¥ prefix */}
         <div className="relative flex-1">
-          <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-gray-500 font-medium">
+          <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-stone font-medium">
             ¥
           </span>
           <input
@@ -137,9 +137,9 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
             value={value?.amount?.toLocaleString("ja-JP") ?? ""}
             onChange={handleAmountChange}
             className={cn(
-              "block w-full rounded-xl border border-gray-300 bg-white text-base text-gray-900 placeholder:text-gray-500 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+              "block w-full rounded-xl border border-border bg-background text-base text-charcoal placeholder:text-stone shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
               "h-12 pl-9 pr-4",
-              !hasDuration && "cursor-not-allowed bg-gray-100 text-gray-500 opacity-80"
+              !hasDuration && "cursor-not-allowed bg-surface text-stone opacity-80"
             )}
             aria-describedby={hasDuration ? `${id}-calculated` : `${id}-helper`}
           />
@@ -148,7 +148,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
             <button
               type="button"
               onClick={handleClear}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+              className="absolute inset-y-0 right-3 flex items-center text-stone hover:text-warm-gray transition-colors"
               aria-label="Clear budget"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,16 +165,16 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
             onChange={handleModeChange}
             disabled={!hasDuration}
             className={cn(
-              "block appearance-none rounded-xl border border-gray-300 bg-white pl-4 pr-10 text-base text-gray-900 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+              "block appearance-none rounded-xl border border-border bg-background pl-4 pr-10 text-base text-charcoal shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
               "h-12",
-              !hasDuration && "cursor-not-allowed bg-gray-100 text-gray-500 opacity-80"
+              !hasDuration && "cursor-not-allowed bg-surface text-stone opacity-80"
             )}
             aria-label="Budget calculation mode"
           >
             <option value="perDay">Per Day</option>
             <option value="total">Total Trip</option>
           </select>
-          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-stone">
             <svg
               className="h-4 w-4"
               xmlns="http://www.w3.org/2000/svg"
@@ -190,21 +190,21 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
 
       {/* Helper text when no duration */}
       {!hasDuration && (
-        <p id={`${id}-helper`} className="text-sm text-gray-500">
+        <p id={`${id}-helper`} className="text-sm text-stone">
           Set trip duration first to enable budget input
         </p>
       )}
 
       {/* Auto-calculated value display */}
       {calculatedValue && (
-        <p id={`${id}-calculated`} className="text-sm text-gray-600">
+        <p id={`${id}-calculated`} className="text-sm text-foreground-secondary">
           {calculatedValue.displayText}
         </p>
       )}
 
       {/* Low budget warning */}
       {showLowBudgetWarning && (
-        <p className="text-sm text-amber-600">
+        <p className="text-sm text-warning">
           Budget is quite low — consider increasing for a comfortable trip
         </p>
       )}

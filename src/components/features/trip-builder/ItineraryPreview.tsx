@@ -95,7 +95,7 @@ export function ItineraryPreview() {
     return (
       <div className="flex h-full items-center justify-center p-6 text-center">
         <div className="max-w-xs">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-stone">
             Set your trip duration to see daily breakdowns.
           </p>
         </div>
@@ -109,14 +109,14 @@ export function ItineraryPreview() {
   return (
     <div className="flex flex-col">
       {isLongTrip && (
-        <div className="border-b border-amber-200 bg-amber-50 px-4 py-2">
-          <p className="text-xs text-amber-700">
+        <div className="border-b border-warning/30 bg-warning/10 px-4 py-2">
+          <p className="text-xs text-warning">
             For {duration}-day trips, the preview shows a simplified view. Full details will be available in the generated itinerary.
           </p>
         </div>
       )}
 
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-border">
         {dayPreviews.map((day, index) => (
           <DayCard
             key={day.dayNumber}
@@ -131,16 +131,16 @@ export function ItineraryPreview() {
       </div>
 
       {cities.length === 0 && (
-        <div className="border-t border-gray-200 bg-gray-50 px-4 py-3">
-          <p className="text-xs text-gray-500">
+        <div className="border-t border-border bg-surface px-4 py-3">
+          <p className="text-xs text-stone">
             Select cities to see them distributed across your trip days.
           </p>
         </div>
       )}
 
       {interests.length === 0 && cities.length > 0 && (
-        <div className="border-t border-gray-200 bg-gray-50 px-4 py-3">
-          <p className="text-xs text-gray-500">
+        <div className="border-t border-border bg-surface px-4 py-3">
+          <p className="text-xs text-stone">
             Select interests to personalize activity suggestions.
           </p>
         </div>
@@ -175,28 +175,28 @@ function DayCard({
       {/* Day header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sage/10 text-xs font-semibold text-sage">
             {day.dayNumber}
           </span>
-          <span className="text-sm font-medium text-gray-900">{day.dateLabel}</span>
+          <span className="text-sm font-medium text-charcoal">{day.dateLabel}</span>
         </div>
 
         {day.city && (
-          <span className="text-sm text-gray-600">{day.city}</span>
+          <span className="text-sm text-foreground-secondary">{day.city}</span>
         )}
       </div>
 
       {/* Day content */}
       <div className="mt-2 ml-8">
         {!day.city ? (
-          <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 px-3 py-2">
-            <p className="text-xs text-gray-500">No city assigned yet</p>
+          <div className="rounded-lg border border-dashed border-border bg-surface px-3 py-2">
+            <p className="text-xs text-stone">No city assigned yet</p>
           </div>
         ) : (
           <div className="space-y-2">
             {/* Arrival indicator */}
             {(showArrival || isDifferentFromPrevious) && (
-              <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="flex items-center gap-2 text-xs text-stone">
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -208,7 +208,7 @@ function DayCard({
             )}
 
             {/* Location count */}
-            <div className="flex items-center gap-2 text-xs text-gray-600">
+            <div className="flex items-center gap-2 text-xs text-foreground-secondary">
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
@@ -221,13 +221,13 @@ function DayCard({
                 {day.matchingInterests.slice(0, 3).map((interest) => (
                   <span
                     key={interest}
-                    className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600"
+                    className="rounded-full bg-surface px-2 py-0.5 text-[10px] font-medium text-foreground-secondary"
                   >
                     {interestLabels.get(interest) ?? interest}
                   </span>
                 ))}
                 {day.matchingInterests.length > 3 && (
-                  <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                  <span className="rounded-full bg-surface px-2 py-0.5 text-[10px] font-medium text-stone">
                     +{day.matchingInterests.length - 3} more
                   </span>
                 )}
@@ -238,7 +238,7 @@ function DayCard({
 
         {/* Travel indicator to next city */}
         {showTravelIndicator && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-gray-400">
+          <div className="mt-3 flex items-center gap-2 text-xs text-stone">
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
@@ -248,7 +248,7 @@ function DayCard({
 
         {/* Departure indicator */}
         {isLast && day.city && (
-          <div className="mt-3 flex items-center gap-2 text-xs text-gray-400">
+          <div className="mt-3 flex items-center gap-2 text-xs text-stone">
             <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>

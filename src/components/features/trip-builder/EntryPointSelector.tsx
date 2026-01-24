@@ -281,7 +281,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
           {/* Airport quick picks */}
           {(!entryPointType || entryPointType === "airport") && (
             <div>
-              <p className="mb-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <p className="mb-2 text-xs font-medium text-stone uppercase tracking-wide">
                 Popular Airports
               </p>
               <div className="flex flex-wrap gap-2">
@@ -290,7 +290,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
                     key={airport.id}
                     type="button"
                     onClick={() => handleQuickPickSelect(airport, "airport")}
-                    className="rounded-full border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-indigo-500 hover:text-indigo-600 transition-colors"
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-warm-gray hover:border-brand-primary hover:text-sage transition-colors"
                   >
                     {airport.shortName}
                   </button>
@@ -301,7 +301,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
           {/* City quick picks */}
           {(!entryPointType || entryPointType === "city") && (
             <div>
-              <p className="mb-2 text-xs font-medium text-gray-500 uppercase tracking-wide">
+              <p className="mb-2 text-xs font-medium text-stone uppercase tracking-wide">
                 Popular Cities
               </p>
               <div className="flex flex-wrap gap-2">
@@ -310,7 +310,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
                     key={city.id}
                     type="button"
                     onClick={() => handleQuickPickSelect(city, "city")}
-                    className="rounded-full border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-indigo-500 hover:text-indigo-600 transition-colors"
+                    className="rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-warm-gray hover:border-brand-primary hover:text-sage transition-colors"
                   >
                     {city.shortName}
                   </button>
@@ -357,7 +357,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
               onChange={handleInputChange}
               placeholder={entryPointType ? typePlaceholders[entryPointType] : "Select type first"}
               disabled={!entryPointType}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:bg-gray-100 disabled:cursor-not-allowed min-h-[44px]"
+              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:bg-surface disabled:cursor-not-allowed min-h-[44px]"
               role="combobox"
               aria-autocomplete="list"
               aria-expanded={showSuggestions && suggestions.length > 0}
@@ -368,7 +368,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
             {(isLoading || isFetchingCoordinates) && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
                 <svg
-                  className="h-4 w-4 animate-spin text-gray-400"
+                  className="h-4 w-4 animate-spin text-stone"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -387,7 +387,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
               <button
                 type="button"
                 onClick={handleClear}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone hover:text-warm-gray"
                 aria-label="Clear selection"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -403,7 +403,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="relative z-50 rounded-lg border border-gray-200 bg-white shadow-lg max-h-60 overflow-auto"
+          className="relative z-50 rounded-lg border border-border bg-background shadow-lg max-h-60 overflow-auto"
           role="listbox"
           id={listboxId}
         >
@@ -412,13 +412,13 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
               key={place.placeId}
               type="button"
               onClick={() => handleSelectPlace(place)}
-              className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+              className="w-full px-4 py-2 text-left text-sm hover:bg-sand focus:bg-sand focus:outline-none"
               role="option"
               aria-selected="false"
             >
-              <div className="font-medium text-gray-900">{place.displayName}</div>
+              <div className="font-medium text-charcoal">{place.displayName}</div>
               {place.formattedAddress && (
-                <div className="text-xs text-gray-500">{place.formattedAddress}</div>
+                <div className="text-xs text-stone">{place.formattedAddress}</div>
               )}
             </button>
           ))}
@@ -427,23 +427,23 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
 
       {/* Selected place display */}
       {selectedPlace && (
-        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+        <div className="rounded-lg border border-success/20 bg-success/10 px-4 py-3">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                <span className="inline-flex items-center rounded-full bg-success/20 px-2 py-0.5 text-xs font-medium text-success">
                   {typeLabels[selectedPlace.type]}
                 </span>
-                <span className="font-medium text-gray-900">{selectedPlace.name}</span>
+                <span className="font-medium text-charcoal">{selectedPlace.name}</span>
               </div>
-              <div className="mt-1 text-xs text-gray-500">
+              <div className="mt-1 text-xs text-stone">
                 {selectedPlace.coordinates.lat.toFixed(4)}, {selectedPlace.coordinates.lng.toFixed(4)}
               </div>
             </div>
             <button
               type="button"
               onClick={handleClear}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-stone hover:text-warm-gray"
               aria-label="Remove entry point"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
