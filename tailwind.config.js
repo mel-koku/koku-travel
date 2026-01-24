@@ -21,6 +21,15 @@ module.exports = {
         card: "0 4px 12px rgba(0,0,0,0.05)",
         soft: "0 2px 40px rgba(0,0,0,0.08)",
       },
+      keyframes: {
+        'heart-pulse': {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.3)' },
+        },
+      },
+      animation: {
+        'heart-pulse': 'heart-pulse 0.5s ease-in-out',
+      },
       colors: {
         brand: {
           primary: "#8b7355",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 type StickyExploreHeaderProps = {
@@ -73,10 +74,16 @@ export function StickyExploreHeader({
         )}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-center">
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
             <button onClick={onFiltersClick} className={buttonClassName}>
               {buttonContent}
             </button>
+            <p className="text-xs text-gray-500">
+              Your favorites and itineraries are in the{" "}
+              <Link href="/dashboard" className="text-red-500 hover:text-red-600 underline">
+                Dashboard
+              </Link>
+            </p>
           </div>
         </div>
       </div>
@@ -89,10 +96,16 @@ export function StickyExploreHeader({
         )}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center py-3 pointer-events-auto">
+          <div className="flex items-center justify-center gap-2 py-3 pointer-events-auto">
             <button onClick={onFiltersClick} className={buttonClassName}>
               {buttonContent}
             </button>
+            <Link
+              href="/dashboard"
+              className="hidden sm:flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-600 transition hover:border-red-500 hover:text-red-500"
+            >
+              Dashboard
+            </Link>
           </div>
         </div>
       </div>
