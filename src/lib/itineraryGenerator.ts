@@ -1,4 +1,5 @@
 import { getRegionForCity, REGIONS } from "@/data/regions";
+import { shouldSuggestDayTrip, getDayTripTravelOverhead, type DayTripConfig } from "@/data/dayTrips";
 import type { Itinerary, ItineraryTravelMode } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
@@ -12,6 +13,7 @@ import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
+import { calculateDistance } from "@/lib/utils/geoUtils";
 
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
@@ -46,6 +48,159 @@ type CityInfo = {
   label: string;
   regionId?: RegionId;
 };
+
+// =============================================================================
+// GEOGRAPHIC VALIDATION CONSTANTS
+// =============================================================================
+
+/**
+ * Maximum distance (in km) from city center for a location to be considered valid.
+ * Locations beyond this distance are filtered out to prevent cross-region recommendations.
+ */
+const MAX_DISTANCE_FROM_CITY_KM = 100;
+
+/**
+ * City center coordinates for distance validation.
+ * Used to ensure locations are within reasonable distance of the selected city.
+ */
+const CITY_CENTER_COORDINATES: Record<string, { lat: number; lng: number }> = {
+  tokyo: { lat: 35.6762, lng: 139.6503 },
+  yokohama: { lat: 35.4437, lng: 139.6380 },
+  osaka: { lat: 34.6937, lng: 135.5023 },
+  kyoto: { lat: 35.0116, lng: 135.7681 },
+  nara: { lat: 34.6851, lng: 135.8048 },
+  kobe: { lat: 34.6901, lng: 135.1956 },
+  nagoya: { lat: 35.1815, lng: 136.9066 },
+  fukuoka: { lat: 33.5904, lng: 130.4017 },
+  sapporo: { lat: 43.0618, lng: 141.3545 },
+  sendai: { lat: 38.2682, lng: 140.8694 },
+  hiroshima: { lat: 34.3853, lng: 132.4553 },
+  kanazawa: { lat: 36.5613, lng: 136.6562 },
+  naha: { lat: 26.2124, lng: 127.6809 },
+};
+
+/**
+ * Expected region for each city.
+ * Used to validate that locations in a city actually belong to that city's region.
+ */
+const CITY_EXPECTED_REGION: Record<string, string> = {
+  tokyo: "Kanto",
+  yokohama: "Kanto",
+  osaka: "Kansai",
+  kyoto: "Kansai",
+  nara: "Kansai",
+  kobe: "Kansai",
+  nagoya: "Chubu",
+  fukuoka: "Kyushu",
+  sapporo: "Hokkaido",
+  sendai: "Tohoku",
+  hiroshima: "Chugoku",
+  kanazawa: "Chubu",
+  naha: "Okinawa",
+};
+
+/**
+ * Region bounding boxes for coordinate-based validation.
+ */
+const REGION_BOUNDS: Record<string, { north: number; south: number; east: number; west: number }> = {
+  Hokkaido: { north: 45.5, south: 41.4, east: 145.9, west: 139.3 },
+  Tohoku: { north: 41.5, south: 37.0, east: 142.1, west: 139.0 },
+  Kanto: { north: 37.0, south: 34.5, east: 140.9, west: 138.2 },
+  Chubu: { north: 37.5, south: 34.5, east: 139.2, west: 135.8 },
+  Kansai: { north: 36.0, south: 33.4, east: 136.8, west: 134.0 },
+  Chugoku: { north: 36.0, south: 33.5, east: 134.5, west: 130.8 },
+  Shikoku: { north: 34.5, south: 32.7, east: 134.8, west: 132.0 },
+  Kyushu: { north: 34.3, south: 31.0, east: 132.1, west: 129.5 },
+  Okinawa: { north: 27.5, south: 24.0, east: 131.5, west: 122.9 },
+};
+
+/**
+ * Check if coordinates fall within a region's bounding box.
+ */
+function isWithinRegionBounds(
+  lat: number,
+  lng: number,
+  regionName: string
+): boolean {
+  const bounds = REGION_BOUNDS[regionName];
+  if (!bounds) return true; // Allow if region not found
+  return (
+    lat >= bounds.south &&
+    lat <= bounds.north &&
+    lng >= bounds.west &&
+    lng <= bounds.east
+  );
+}
+void isWithinRegionBounds; // Reserved for future use
+
+/**
+ * Find which region contains the given coordinates.
+ */
+function findRegionByCoordinates(lat: number, lng: number): string | null {
+  for (const [region, bounds] of Object.entries(REGION_BOUNDS)) {
+    if (
+      lat >= bounds.south &&
+      lat <= bounds.north &&
+      lng >= bounds.west &&
+      lng <= bounds.east
+    ) {
+      return region;
+    }
+  }
+  return null;
+}
+
+/**
+ * Validate that a location is geographically appropriate for a city.
+ * Returns true if the location should be included, false if it should be filtered out.
+ *
+ * This prevents data corruption issues where locations like "Cape Higashi, Osaka, Okinawa"
+ * are incorrectly recommended for Osaka because the city field says "Osaka" but the
+ * coordinates are in Okinawa.
+ */
+function isLocationValidForCity(
+  location: Location,
+  cityKey: string,
+  expectedRegionId?: RegionId
+): boolean {
+  // 1. Check region consistency
+  const expectedRegion = expectedRegionId
+    ? REGIONS.find((r) => r.id === expectedRegionId)?.name
+    : CITY_EXPECTED_REGION[cityKey];
+
+  if (expectedRegion && location.region) {
+    // If location's region doesn't match expected region for this city, reject it
+    if (location.region !== expectedRegion) {
+      logger.debug(`Filtering out "${location.name}": region "${location.region}" doesn't match expected "${expectedRegion}" for city "${cityKey}"`);
+      return false;
+    }
+  }
+
+  // 2. Check coordinate-based region (more reliable than region field)
+  if (location.coordinates) {
+    const coordinateRegion = findRegionByCoordinates(
+      location.coordinates.lat,
+      location.coordinates.lng
+    );
+
+    if (coordinateRegion && expectedRegion && coordinateRegion !== expectedRegion) {
+      logger.debug(`Filtering out "${location.name}": coordinates (${location.coordinates.lat}, ${location.coordinates.lng}) are in "${coordinateRegion}", not "${expectedRegion}"`);
+      return false;
+    }
+  }
+
+  // 3. Check distance from city center
+  const cityCenter = CITY_CENTER_COORDINATES[cityKey];
+  if (cityCenter && location.coordinates) {
+    const distanceKm = calculateDistance(cityCenter, location.coordinates);
+    if (distanceKm > MAX_DISTANCE_FROM_CITY_KM) {
+      logger.debug(`Filtering out "${location.name}": ${distanceKm.toFixed(1)}km from ${cityKey} center (max ${MAX_DISTANCE_FROM_CITY_KM}km)`);
+      return false;
+    }
+  }
+
+  return true;
+}
 
 const REGION_ID_BY_LABEL = new Map<string, RegionId>();
 const CITY_INFO_BY_KEY = new Map<string, CityInfo>();
@@ -106,6 +261,7 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
         name: row.name,
         region: row.region,
         city: row.city,
+        neighborhood: row.neighborhood ?? undefined,
         category: row.category,
         image: row.image,
         minBudget: row.min_budget ?? undefined,
@@ -262,6 +418,7 @@ export async function generateItinerary(
   const expandedCitySequence = expandCitySequenceForDays(citySequence, totalDays);
   const interestSequence = resolveInterestSequence(data);
   const usedLocations = new Set<string>();
+  const usedLocationNames = new Set<string>(); // Track names to prevent same-name duplicates
   const pace = data.style ?? "balanced";
   const travelTime = getTravelTime(pace);
 
@@ -299,10 +456,61 @@ export async function generateItinerary(
 
   const days: Itinerary["days"] = [];
 
+  // Track consecutive days in each city for day trip suggestions
+  const cityDayCounter = new Map<string, number>();
+  let lastCityKey = "";
+
   for (let dayIndex = 0; dayIndex < totalDays; dayIndex += 1) {
-    const cityInfo = expandedCitySequence[dayIndex];
+    let cityInfo = expandedCitySequence[dayIndex];
     if (!cityInfo) {
       throw new Error(`City info not found for day ${dayIndex}`);
+    }
+
+    // Update city day counter for day trip logic
+    if (cityInfo.key === lastCityKey) {
+      cityDayCounter.set(cityInfo.key, (cityDayCounter.get(cityInfo.key) ?? 0) + 1);
+    } else {
+      cityDayCounter.set(cityInfo.key, 1);
+      lastCityKey = cityInfo.key;
+    }
+    const daysInCurrentCity = cityDayCounter.get(cityInfo.key) ?? 1;
+
+    // Check if we should suggest a day trip (for extended single-city stays)
+    let activeDayTrip: DayTripConfig | undefined;
+    const baseCityLocations = locationsByCityKey.get(cityInfo.key) ?? [];
+    const unusedInBaseCity = baseCityLocations.filter((loc) => !usedLocations.has(loc.id));
+
+    // Only suggest day trip if user selected a single city and we're running low on locations
+    const isSingleCityTrip = data.cities && data.cities.length === 1;
+    if (isSingleCityTrip) {
+      activeDayTrip = shouldSuggestDayTrip(
+        cityInfo.key,
+        daysInCurrentCity,
+        unusedInBaseCity.length,
+        3, // Target activities per day
+      );
+
+      // If day trip suggested and the target city has locations, switch to day trip city
+      if (activeDayTrip) {
+        const dayTripLocations = locationsByCityKey.get(activeDayTrip.cityId) ?? [];
+        const unusedInDayTripCity = dayTripLocations.filter((loc) => !usedLocations.has(loc.id));
+
+        if (unusedInDayTripCity.length >= 3) {
+          // Switch to day trip city for this day
+          const dayTripCityInfo = CITY_INFO_BY_KEY.get(activeDayTrip.cityId);
+          if (dayTripCityInfo) {
+            cityInfo = dayTripCityInfo;
+            logger.info(`Day ${dayIndex + 1}: Scheduling day trip from ${lastCityKey} to ${activeDayTrip.cityId}`, {
+              daysInBaseCity: daysInCurrentCity,
+              unusedInBaseCity: unusedInBaseCity.length,
+              unusedInDayTripCity: unusedInDayTripCity.length,
+            });
+          }
+        } else {
+          // Not enough locations in day trip city, skip
+          activeDayTrip = undefined;
+        }
+      }
     }
 
     // Get available locations for this city
@@ -311,11 +519,34 @@ export async function generateItinerary(
       ? locationsByRegionId.get(cityInfo.regionId) ?? []
       : [];
     // Use city locations if available, otherwise fall back to region locations
-    // But always filter to ensure locations match the day's city to prevent cross-city mixing
+    // Apply comprehensive geographic validation to prevent cross-region recommendations
     const rawAvailableLocations = cityLocations.length > 0 ? cityLocations : regionLocations;
+
+    // Track names seen in this day's available locations to deduplicate database entries
+    // (e.g., "Tottori Sand Dunes" may have 7 entries with different IDs but same name)
+    const seenNamesInDay = new Set<string>();
+
     const availableLocations = rawAvailableLocations.filter((loc) => {
+      // 1. Pre-filter by usedLocations (ID) to prevent duplicates across days
+      if (usedLocations.has(loc.id)) return false;
+
+      // 2. Pre-filter by usedLocationNames (name) to prevent same-name duplicates across days
+      const normalizedName = loc.name.toLowerCase().trim();
+      if (usedLocationNames.has(normalizedName)) return false;
+
+      // 3. Deduplicate within this day's available locations (handles DB duplicates)
+      // This ensures only ONE "Tottori Sand Dunes" entry makes it into availableLocations
+      if (seenNamesInDay.has(normalizedName)) return false;
+      seenNamesInDay.add(normalizedName);
+
+      // 4. Basic city name matching
       const locationCityKey = normalizeKey(loc.city);
-      return locationCityKey === cityInfo.key;
+      if (locationCityKey !== cityInfo.key) {
+        return false;
+      }
+      // 5. Geographic validation: ensure location is actually in the correct region
+      // This catches data corruption where city="Osaka" but coordinates are in Okinawa
+      return isLocationValidForCity(loc, cityInfo.key, cityInfo.regionId);
     });
 
     const dayActivities: Itinerary["days"][number]["activities"] = [];
@@ -328,13 +559,35 @@ export async function generateItinerary(
     // Track interest cycling across the entire day (not per time slot)
     let interestIndex = 0;
 
-    // Track categories for diversity and last location for distance
+    // Track categories and neighborhoods for diversity, and last location for distance
     const dayCategories: string[] = [];
+    const dayNeighborhoods: string[] = [];
     let lastLocation: Location | undefined;
+
+    // Track if we've exhausted all available locations for this day
+    let locationsExhausted = false;
+    let exhaustionAttempts = 0;
+    const maxExhaustionAttempts = 3; // Try 3 different interests before giving up
+
+    // Calculate day trip travel overhead (reduces available time in morning and evening slots)
+    const dayTripOverhead = activeDayTrip ? getDayTripTravelOverhead(activeDayTrip) : 0;
+    void dayTripOverhead; // Used via activeDayTrip.travelMinutes in slot adjustments
 
     // Fill each time slot intelligently
     for (const timeSlot of TIME_OF_DAY_SEQUENCE) {
-      const availableMinutes = getAvailableTimeForSlot(timeSlot, pace);
+      let availableMinutes = getAvailableTimeForSlot(timeSlot, pace);
+
+      // Adjust for day trip travel time
+      if (activeDayTrip) {
+        if (timeSlot === "morning") {
+          // Deduct outbound travel from morning
+          availableMinutes = Math.max(60, availableMinutes - activeDayTrip.travelMinutes);
+        } else if (timeSlot === "evening") {
+          // Deduct return travel from evening
+          availableMinutes = Math.max(60, availableMinutes - activeDayTrip.travelMinutes);
+        }
+      }
+
       let remainingTime = availableMinutes;
       let activityIndex = 0;
 
@@ -380,6 +633,8 @@ export async function generateItinerary(
           timeSlot, // Pass time slot for time optimization
           dayDate, // Pass date for weekday calculation
           data.group, // Pass group information
+          dayNeighborhoods, // Pass recent neighborhoods for geographic diversity
+          usedLocationNames, // Pass used names to prevent same-name duplicates
         );
         
         const location = locationResult && "_scoringReasoning" in locationResult 
@@ -391,14 +646,48 @@ export async function generateItinerary(
         } : null;
 
         if (!location) {
-          // If no location fits, try next interest
+          // If no location fits, check if we've exhausted available locations
+          exhaustionAttempts++;
           interestIndex++;
+
+          if (exhaustionAttempts >= maxExhaustionAttempts) {
+            // All available locations exhausted - stop adding activities to this slot
+            locationsExhausted = true;
+            logger.warn(`Day ${dayIndex + 1}: Locations exhausted for ${cityInfo.key}`, {
+              timeSlot,
+              usedLocationsCount: usedLocations.size,
+              availableLocationsCount: availableLocations.length,
+              activityIndex,
+            });
+            break;
+          }
+
           if (interestIndex >= interestSequence.length * 2) {
             // Prevent infinite loop
             break;
           }
           continue;
         }
+
+        // SAFEGUARD: Double-check location isn't already used (should never happen,
+        // but prevents duplicates if there's a bug in pickLocationForTimeSlot)
+        if (usedLocations.has(location.id)) {
+          logger.warn(`Duplicate location ID detected: "${location.name}" (${location.id}) - skipping`);
+          interestIndex++;
+          continue;
+        }
+
+        // Also check for same-name duplicates (different IDs but same restaurant/place name)
+        // This prevents recommending multiple branches of the same establishment
+        const normalizedName = location.name.toLowerCase().trim();
+        if (usedLocationNames.has(normalizedName)) {
+          logger.warn(`Duplicate location name detected: "${location.name}" - skipping (different ID but same name)`);
+          interestIndex++;
+          continue;
+        }
+
+        // Reset exhaustion counter on successful selection
+        exhaustionAttempts = 0;
 
         const locationDuration = getLocationDurationMinutes(location);
         const timeNeeded = locationDuration + (activityIndex === 0 ? 0 : travelTime);
@@ -427,6 +716,7 @@ export async function generateItinerary(
               id: `${location.id}-${dayIndex + 1}-${timeSlot}-${activityIndex + 1}`,
               title: location.name,
               timeOfDay: timeSlot,
+              durationMin: locationDuration,
               locationId: location.id,
               coordinates: location.coordinates,
               neighborhood: location.city,
@@ -434,12 +724,18 @@ export async function generateItinerary(
               recommendationReason,
             });
             usedLocations.add(location.id);
+            usedLocationNames.add(normalizedName);
             remainingTime -= timeNeeded;
             timeSlotUsage.set(timeSlot, (timeSlotUsage.get(timeSlot) ?? 0) + timeNeeded);
             
-            // Track category and location for diversity and distance
+            // Track category, neighborhood, and location for diversity and distance
             if (location.category) {
               dayCategories.push(location.category);
+            }
+            // Track neighborhood for geographic diversity (fall back to city if no neighborhood)
+            const locationNeighborhood = location.neighborhood ?? location.city;
+            if (locationNeighborhood) {
+              dayNeighborhoods.push(locationNeighborhood);
             }
             lastLocation = location;
             
@@ -465,6 +761,11 @@ export async function generateItinerary(
           break;
         }
       }
+
+      // If locations exhausted, don't continue to more time slots
+      if (locationsExhausted) {
+        break;
+      }
     }
 
     const previousDay = dayIndex > 0 ? days[dayIndex - 1] : undefined;
@@ -487,11 +788,24 @@ export async function generateItinerary(
       : Math.random().toString(36).slice(2, 10);
     const dayId = `day-${dayIndex + 1}-${randomSuffix}`;
     
+    // Build day label - include day trip indicator if applicable
+    let dateLabel = buildDayTitle(dayIndex, cityInfo.key);
+    if (activeDayTrip) {
+      const baseCityLabel = CITY_INFO_BY_KEY.get(lastCityKey)?.label ?? capitalize(lastCityKey);
+      dateLabel = `Day ${dayIndex + 1} (Day Trip: ${baseCityLabel} → ${cityInfo.label})`;
+    }
+
     days.push({
       id: dayId,
-      dateLabel: buildDayTitle(dayIndex, cityInfo.key),
+      dateLabel,
       cityId: dayCityId,
       activities: dayActivities,
+      // Add metadata about day trip if applicable
+      ...(activeDayTrip && {
+        isDayTrip: true,
+        baseCityId: lastCityKey as CityId,
+        dayTripTravelMinutes: activeDayTrip.travelMinutes,
+      }),
     });
   }
 
@@ -888,8 +1202,10 @@ function pickFromList(
   const preferredCategories = categoryMap[interest] ?? [];
   const unused = list.filter((loc) => !usedLocations.has(loc.id));
 
+  // CRITICAL FIX: Return undefined when all locations are exhausted
+  // instead of returning a duplicate from the full list
   if (unused.length === 0) {
-    return list[Math.floor(Math.random() * list.length)];
+    return undefined;
   }
 
   const preferred = unused.filter((loc) => preferredCategories.includes(loc.category));
@@ -937,11 +1253,21 @@ function pickLocationForTimeSlot(
     type?: "solo" | "couple" | "family" | "friends" | "business";
     childrenAges?: number[];
   },
-): (Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown }) | undefined {
-  const unused = list.filter((loc) => !usedLocations.has(loc.id));
+  recentNeighborhoods: string[] = [],
+  usedLocationNames: Set<string> = new Set(),
+): (Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown; _isReturnVisit?: boolean }) | undefined {
+  // Filter by both ID and name to prevent duplicates (including same-name different branches)
+  const unused = list.filter((loc) => {
+    if (usedLocations.has(loc.id)) return false;
+    const normalizedName = loc.name.toLowerCase().trim();
+    if (usedLocationNames.has(normalizedName)) return false;
+    return true;
+  });
 
+  // CRITICAL FIX: Return undefined when all locations are exhausted
+  // The caller should handle this by suggesting day trips or reducing activities
   if (unused.length === 0) {
-    return list[Math.floor(Math.random() * list.length)];
+    return undefined;
   }
 
   // Pre-filter by hard constraints (opening hours)
@@ -975,6 +1301,7 @@ function pickLocationForTimeSlot(
     currentLocation,
     availableMinutes: availableMinutes - travelTime, // Subtract travel time from available
     recentCategories,
+    recentNeighborhoods,
     weatherForecast,
     weatherPreferences,
     timeSlot,
@@ -982,7 +1309,11 @@ function pickLocationForTimeSlot(
     group,
   };
 
-  const scored = candidates.map((loc) => scoreLocation(loc, criteria));
+  const scored = candidates
+    .map((loc) => scoreLocation(loc, criteria))
+    // Filter out locations with very negative scores (e.g., -100 for >50km distance)
+    // These are effectively "invalid" for this query
+    .filter((locScore) => locScore.score >= -50);
 
   // Apply diversity filter
   const diversityContext: DiversityContext = {
@@ -1000,8 +1331,18 @@ function pickLocationForTimeSlot(
   // Pick from top 5 with some randomness to avoid identical itineraries
   const topCandidates = filtered.slice(0, Math.min(5, filtered.length));
   if (topCandidates.length === 0) {
-    // Fallback if all filtered out
-    return candidates[Math.floor(Math.random() * candidates.length)];
+    // Fallback if all filtered out - still respect usedLocations AND usedLocationNames
+    const fallbackCandidates = candidates.filter((loc) => {
+      if (usedLocations.has(loc.id)) return false;
+      const normalizedName = loc.name.toLowerCase().trim();
+      if (usedLocationNames.has(normalizedName)) return false;
+      return true;
+    });
+    if (fallbackCandidates.length === 0) {
+      return undefined; // No valid locations left
+    }
+    const fallback = fallbackCandidates[Math.floor(Math.random() * fallbackCandidates.length)];
+    return fallback ? { ...fallback } : undefined;
   }
 
   const selected = topCandidates[Math.floor(Math.random() * topCandidates.length)];
