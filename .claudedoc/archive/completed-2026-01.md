@@ -23,7 +23,9 @@ This archive contains documentation for all features completed in January 2026.
 17. [Trip Builder V2 Redesign](#trip-builder-v2-redesign)
 18. [Itinerary Feature Audit Fixes](#itinerary-feature-audit-fixes)
 19. [Sort Options & Featured Carousel](#sort-options-featured-carousel)
-20. [Key Files Modified](#key-files-modified)
+20. [Entry Point Feature Enhancements](#entry-point-feature-enhancements)
+21. [Landing Page Style Guide Compliance](#landing-page-style-guide-compliance)
+22. [Key Files Modified](#key-files-modified)
 
 ---
 
@@ -1203,3 +1205,83 @@ Created validation script to detect and fix coordinate/region assignment issues 
 | `src/components/features/explore/StickyExploreHeader.tsx` | Simplified - removed category bar (385 → 243 lines) |
 | `src/components/features/explore/FiltersModal.tsx` | Complete redesign with grouped sections |
 | `src/components/features/explore/ExploreShell.tsx` | Updated state management for new filter system |
+
+---
+
+## Landing Page Style Guide Compliance
+
+**Date:** January 24, 2026
+
+### Problem
+
+The landing page had several visual inconsistencies:
+1. Paragraph text too large (`text-lg` instead of `text-base`)
+2. Section spacing was unbalanced (too tight or too loose)
+3. Color tokens using old naming convention (`text-earthy-charcoal` vs `text-charcoal`)
+4. Typography not following the augmented fourth scale
+5. Header not transparent on landing page
+6. K logo in header was redundant
+
+### Solution
+
+Comprehensive landing page style audit and updates to match the design system.
+
+### Typography Updates
+
+Applied augmented fourth type scale consistently:
+
+| Element | Before | After |
+|---------|--------|-------|
+| Hero H1 | `text-5xl sm:text-6xl md:text-7xl lg:text-8xl` | `text-3xl sm:text-4xl lg:text-display` |
+| Section H2s | `text-4xl sm:text-5xl` | `text-2xl sm:text-3xl` |
+| Step H3s | `text-3xl` | `text-xl` |
+| Body paragraphs | `text-lg` | `text-base` |
+| Testimonial quotes | `text-xl sm:text-2xl` | `text-lg sm:text-xl` |
+| Stats values | `text-5xl sm:text-6xl` | `text-3xl sm:text-4xl` |
+
+### Color Token Migration
+
+Updated to semantic token naming:
+
+| Before | After |
+|--------|-------|
+| `text-earthy-charcoal` | `text-charcoal` |
+| `text-earthy-warmGray` | `text-warm-gray` |
+| `text-earthy-sage` | `text-sage` |
+| `text-earthy-stone` | `text-stone` |
+| `bg-neutral-surface` | `bg-surface` |
+| `bg-earthy-cream` | `bg-cream` |
+
+### Spacing Adjustments
+
+Found middle ground between original (too loose) and initial changes (too tight):
+
+| Section | Padding |
+|---------|---------|
+| HowItWorks | `py-20 sm:py-28` |
+| FeatureShowcase splits | `py-20 lg:py-32`, `min-h-[70vh]` |
+| TestimonialSection | `py-20 sm:py-28` |
+| FinalCTA | `min-h-[80vh]`, `py-20` |
+| ValuePropositionBar | `py-16 sm:py-20` |
+
+### Visual Enhancements
+
+1. **Header transparency**: Header is transparent with white text on landing page only, absolute positioned to overlap hero
+2. **Logo simplification**: Removed K circle, kept wordmark "Koku Travel" + "Japan Planner" tagline
+3. **Pill buttons**: All CTA buttons use `rounded-full`
+4. **Dark overlays**: Added/adjusted overlays for text contrast on image backgrounds
+5. **Background images**: Updated TestimonialSection (bamboo forest) and FinalCTA (floating torii gate)
+6. **IdentityBadge**: Updated to use style guide colors (`bg-sage/10`, `text-charcoal`)
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `src/components/landing/LandingHero.tsx` | Typography, paragraph sizing, overlay opacity |
+| `src/components/landing/HowItWorks.tsx` | Typography, spacing, color tokens |
+| `src/components/landing/FeatureShowcase.tsx` | Typography, spacing, color tokens, min-height |
+| `src/components/landing/TestimonialSection.tsx` | Typography, new background image, overlay, removed frosted glass |
+| `src/components/landing/FinalCTA.tsx` | Typography, spacing, new background image, overlay |
+| `src/components/landing/ValuePropositionBar.tsx` | Typography, dark background |
+| `src/components/Header.tsx` | Transparent on landing, white text, removed K logo |
+| `src/components/ui/IdentityBadge.tsx` | Updated to style guide colors |
