@@ -69,6 +69,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     city: row.city,
     category: row.category,
     image: row.image,
+    description: row.description ?? undefined,
     minBudget: row.min_budget ?? undefined,
     estimatedDuration: row.estimated_duration ?? undefined,
     operatingHours: row.operating_hours ?? undefined,
@@ -92,6 +93,12 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   try {
     const details = await fetchLocationDetails(location);
+
+    // Use database descriptions as fallback if Google Places editorialSummary is missing
+    // Fallback chain: Google editorialSummary > short_description (Claude-generated) > description
+    if (!details.editorialSummary) {
+      details.editorialSummary = location.shortDescription || location.description;
+    }
 
     return NextResponse.json(
       {
