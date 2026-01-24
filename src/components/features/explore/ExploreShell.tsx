@@ -541,14 +541,45 @@ export function ExploreShell() {
           </section>
         )}
 
-        {/* Section Header for Main Grid */}
+        {/* Section Header for Main Grid with Inline Filter Button */}
         <div className="mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {activeFilters.length > 0 ? "Search Results" : "All Destinations"}
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            {filteredLocations.length.toLocaleString()} places to explore
-          </p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-900">
+                {activeFilters.length > 0 ? "Search Results" : "All Destinations"}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {filteredLocations.length.toLocaleString()} places to explore
+              </p>
+            </div>
+            <button
+              onClick={() => setIsFiltersModalOpen(true)}
+              className="flex items-center gap-2 rounded-full border border-red-500 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-red-500 transition hover:bg-red-50 shrink-0"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <span>Filters</span>
+              <span className="text-red-400">
+                ({filteredLocations.length.toLocaleString()})
+              </span>
+              {activeFilterCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Location Grid */}
