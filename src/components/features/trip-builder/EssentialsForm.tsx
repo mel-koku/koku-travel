@@ -150,8 +150,8 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900">Trip Essentials</h3>
-        <p className="mt-1 text-sm text-gray-600">
+        <h3 className="text-lg font-semibold text-charcoal">Trip Essentials</h3>
+        <p className="mt-1 text-sm text-foreground-secondary">
           Set the basics for your Japan adventure.
         </p>
       </div>
@@ -208,17 +208,17 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
       </div>
 
       {calculatedEndDate && formattedEndDate && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
-          <p className="text-sm text-gray-600">
-            <span className="font-medium text-gray-900">End date:</span> {formattedEndDate} (
+        <div className="rounded-lg border border-border bg-surface px-4 py-3">
+          <p className="text-sm text-foreground-secondary">
+            <span className="font-medium text-charcoal">End date:</span> {formattedEndDate} (
             {Math.floor(durationValue || 0)} day{durationValue === 1 ? "" : "s"})
           </p>
         </div>
       )}
 
       <div>
-        <h4 className="text-sm font-medium text-gray-900">Entry Point (Optional)</h4>
-        <p className="mt-1 mb-3 text-xs text-gray-500">
+        <h4 className="text-sm font-medium text-charcoal">Entry Point (Optional)</h4>
+        <p className="mt-1 mb-3 text-xs text-stone">
           Where will you start your trip? Search for airports, train stations, cities, or hotels.
         </p>
         <EntryPointSelector
@@ -228,7 +228,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
       </div>
 
       <div>
-        <h4 className="text-sm font-medium text-gray-900">Budget (Optional)</h4>
+        <h4 className="text-sm font-medium text-charcoal">Budget (Optional)</h4>
         <div className="mt-3">
           <BudgetInput
             id="budget"
