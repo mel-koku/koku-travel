@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ComponentPropsWithoutRef, ReactNode, forwardRef } from "react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";

@@ -5,7 +5,7 @@ import {
   useId,
 } from "react";
 
-import { cn } from "@/lib/cn";
+import { cn } from "@/lib/utils";
 
 export type RadioProps = Omit<ComponentPropsWithoutRef<"input">, "type"> & {
   /**

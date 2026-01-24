@@ -1,127 +1,77 @@
-import {
-  Children,
-  ReactElement,
-  ReactNode,
-  cloneElement,
-  isValidElement,
-  useEffect,
-  useId,
-  useRef,
-  useState,
-} from "react";
+"use client"
 
-import { cn } from "@/lib/cn";
+import * as React from "react"
+import * as TooltipPrimitive from "@radix-ui/react-tooltip"
 
-type TooltipProps = {
-  content: ReactNode;
-  children: ReactElement;
-  delay?: number;
-  side?: "top" | "bottom" | "left" | "right";
-  className?: string;
-};
+import { cn } from "@/lib/utils"
 
-export function Tooltip({ content, children, delay = 150, side = "top", className }: TooltipProps) {
-  const [open, setOpen] = useState(false);
-  const showTimeoutRef = useRef<number | undefined>(undefined);
-  const hideTimeoutRef = useRef<number | undefined>(undefined);
-  const id = useId();
+const TooltipProvider = TooltipPrimitive.Provider
 
-  const clearTimers = () => {
-    if (showTimeoutRef.current) {
-      window.clearTimeout(showTimeoutRef.current);
-      showTimeoutRef.current = undefined;
-    }
-    if (hideTimeoutRef.current) {
-      window.clearTimeout(hideTimeoutRef.current);
-      hideTimeoutRef.current = undefined;
-    }
-  };
+const TooltipRoot = TooltipPrimitive.Root
 
-  const scheduleShow = () => {
-    clearTimers();
-    showTimeoutRef.current = window.setTimeout(() => {
-      setOpen(true);
-      showTimeoutRef.current = undefined;
-    }, delay);
-  };
+const TooltipTrigger = TooltipPrimitive.Trigger
 
-  const scheduleHide = () => {
-    clearTimers();
-    hideTimeoutRef.current = window.setTimeout(() => {
-      setOpen(false);
-      hideTimeoutRef.current = undefined;
-    }, 60);
-  };
+const TooltipContent = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
+>(({ className, sideOffset = 4, ...props }, ref) => (
+  <TooltipPrimitive.Portal>
+    <TooltipPrimitive.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      className={cn(
+        "z-50 overflow-hidden rounded-md bg-foreground px-3 py-1.5 text-xs text-background animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-tooltip-content-transform-origin]",
+        className
+      )}
+      {...props}
+    />
+  </TooltipPrimitive.Portal>
+))
+TooltipContent.displayName = TooltipPrimitive.Content.displayName
 
-  useEffect(() => () => clearTimers(), []);
-
-  if (!isValidElement(children) || Children.count(children) !== 1) {
-    throw new Error("Tooltip expects a single React element as its child.");
-  }
-
-  const trigger = cloneElement(children, {
-    "aria-describedby": open ? id : undefined,
-  } as Record<string, unknown>);
-
-  const sideClasses: Record<"top" | "bottom" | "left" | "right", string> = {
-    top: "bottom-full left-1/2 -translate-x-1/2 -translate-y-2",
-    bottom: "top-full left-1/2 -translate-x-1/2 translate-y-2",
-    left: "right-full top-1/2 -translate-y-1/2 -translate-x-2",
-    right: "left-full top-1/2 -translate-y-1/2 translate-x-2",
-  };
-
-  const handleMouseEnter = () => {
-    scheduleShow();
-  };
-
-  const handleMouseLeave = () => {
-    scheduleHide();
-  };
-
-  const handleFocus = () => {
-    scheduleShow();
-  };
-
-  const handleBlur = () => {
-    scheduleHide();
-  };
-
-  return (
-    <span
-      className="relative inline-flex"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onFocus={handleFocus}
-      onBlur={handleBlur}
-    >
-      {trigger}
-      <span
-        id={id}
-        role="tooltip"
-        aria-hidden={!open}
-        className={cn(
-          "pointer-events-none absolute z-20 max-w-xs rounded-lg bg-gray-900 px-3 py-2 text-sm text-gray-100 opacity-0 shadow-lg ring-1 ring-black/5 transition-opacity duration-150",
-          open && "opacity-100",
-          sideClasses[side],
-          className,
-        )}
-      >
-        {content}
-        <span
-          className={cn(
-            "absolute h-2 w-2 rotate-45 bg-gray-900",
-            side === "top" && "left-1/2 top-full -translate-x-1/2",
-            side === "bottom" && "left-1/2 bottom-full -translate-x-1/2",
-            side === "left" && "left-full top-1/2 -translate-y-1/2",
-            side === "right" && "right-full top-1/2 -translate-y-1/2",
-          )}
-          aria-hidden="true"
-        />
-      </span>
-    </span>
-  );
+// Simple Tooltip (legacy API)
+interface SimpleTooltipProps {
+  content: React.ReactNode
+  children: React.ReactElement
+  delay?: number
+  side?: "top" | "bottom" | "left" | "right"
+  className?: string
 }
 
-Tooltip.displayName = "Tooltip";
+function Tooltip({
+  content,
+  children,
+  delay = 150,
+  side = "top",
+  className,
+}: SimpleTooltipProps) {
+  return (
+    <TooltipPrimitive.Provider delayDuration={delay}>
+      <TooltipPrimitive.Root>
+        <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
+        <TooltipPrimitive.Portal>
+          <TooltipPrimitive.Content
+            side={side}
+            sideOffset={4}
+            className={cn(
+              "z-50 max-w-xs overflow-hidden rounded-lg bg-foreground px-3 py-2 text-sm text-background shadow-lg animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+              className
+            )}
+          >
+            {content}
+            <TooltipPrimitive.Arrow className="fill-foreground" />
+          </TooltipPrimitive.Content>
+        </TooltipPrimitive.Portal>
+      </TooltipPrimitive.Root>
+    </TooltipPrimitive.Provider>
+  )
+}
+Tooltip.displayName = "Tooltip"
 
-
+export {
+  Tooltip,
+  TooltipRoot,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+}
