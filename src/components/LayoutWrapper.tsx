@@ -3,6 +3,7 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { ToastProvider } from "@/context/ToastContext";
 import { AppStateProvider } from "@/state/AppState";
 import { QueryProvider } from "@/providers/QueryProvider";
 
@@ -14,13 +15,15 @@ export function LayoutWrapper({
   return (
     <QueryProvider>
       <AppStateProvider>
-        <WishlistProvider>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </WishlistProvider>
+        <ToastProvider>
+          <WishlistProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </WishlistProvider>
+        </ToastProvider>
       </AppStateProvider>
     </QueryProvider>
   );
