@@ -116,7 +116,12 @@ function generateFallbackReviewCount(locationId: string): number {
   return 50 + (hash % 450); // 50-500 range
 }
 
-export function ExploreShell() {
+type ExploreShellProps = {
+  /** Server-side pre-fetched featured locations for instant carousel display */
+  initialFeaturedLocations?: Location[];
+};
+
+export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProps) {
   // Use React Query hooks for data fetching
   const {
     locations,
@@ -299,10 +304,14 @@ export function ExploreShell() {
     }
   }, [filteredLocations, selectedSort]);
 
-  // Featured locations: top 12 locations by popularity score
-  // Sorted by Bayesian weighted average (rating + review count)
-  // All locations have rating/reviewCount (real or deterministic fallback)
+  // Featured locations: use server-side pre-fetched data for instant display
+  // Falls back to client-computed data if server data unavailable
   const featuredLocations = useMemo(() => {
+    // Prefer server-side data for instant display (no hydration wait)
+    if (initialFeaturedLocations.length > 0) {
+      return initialFeaturedLocations;
+    }
+    // Fallback: compute client-side (same Bayesian scoring as server)
     return [...enhancedLocations]
       .sort((a, b) => {
         const scoreA = calculatePopularityScore(a.ratingValue, a.reviewCount);
@@ -310,7 +319,7 @@ export function ExploreShell() {
         return scoreB - scoreA;
       })
       .slice(0, 12);
-  }, [enhancedLocations]);
+  }, [initialFeaturedLocations, enhancedLocations]);
 
   const visibleLocations = useMemo(
     () => sortedLocations.slice(0, page * PAGE_SIZE),
@@ -537,7 +546,7 @@ export function ExploreShell() {
 
         {/* Featured Carousel - only show when no filters active and we have featured locations */}
         {activeFilters.length === 0 && featuredLocations.length > 0 && (
-          <section className="mb-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 bg-gradient-to-b from-surface to-background border-y border-border">
+          <section className="mb-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 bg-gradient-to-b from-surface to-background">
             <FeaturedCarousel locations={featuredLocations} />
           </section>
         )}

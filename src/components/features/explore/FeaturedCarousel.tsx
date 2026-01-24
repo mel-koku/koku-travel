@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRef, useState, useCallback, useEffect, useMemo, forwardRef } from "react";
+import { useRef, useState, useCallback, useEffect, useLayoutEffect, useMemo, forwardRef } from "react";
 import type { Location } from "@/types/location";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
@@ -35,12 +35,21 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isHoveringSpotlight, setIsHoveringSpotlight] = useState(false);
   const [autoScrollStopped, setAutoScrollStopped] = useState(false);
-  const [spotlightIndex, setSpotlightIndex] = useState(0);
+  // Initialize spotlight to first card of middle set (locations are tripled for infinite scroll)
+  const [spotlightIndex, setSpotlightIndex] = useState(() => locations.length);
   const [cardWidth, setCardWidth] = useState(280);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isScrollReady, setIsScrollReady] = useState(false);
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  // Update card dimensions on resize
+  // Track client-side mount to avoid hydration issues
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Update card dimensions on resize
+  // useLayoutEffect for initial measurement to prevent layout flash
+  useLayoutEffect(() => {
     const updateDimensions = () => {
       if (!containerRef.current) return;
       const containerWidth = containerRef.current.offsetWidth;
@@ -109,7 +118,8 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
   }, [locations.length, cardWidth, updateSpotlight]);
 
   // Initialize scroll position to the middle set, centered on first card
-  useEffect(() => {
+  // useLayoutEffect runs synchronously before paint, preventing flash of unpositioned content
+  useLayoutEffect(() => {
     if (!scrollRef.current || !containerRef.current || locations.length === 0) return;
 
     const oneSetWidth = locations.length * (cardWidth + GAP);
@@ -120,9 +130,9 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
     const centerOffset = (containerWidth - cardWidth) / 2;
     scrollRef.current.scrollLeft = oneSetWidth - centerOffset;
 
-    // Small delay to let the scroll position settle before updating spotlight
-    setTimeout(updateSpotlight, 50);
-  }, [locations.length, cardWidth, updateSpotlight]);
+    // Mark as ready after scroll position is set
+    setIsScrollReady(true);
+  }, [locations.length, cardWidth]);
 
   useEffect(() => {
     const scrollEl = scrollRef.current;
@@ -206,23 +216,49 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
         className="relative"
         style={{ height: `${Math.ceil(cardWidth / CARD_ASPECT_RATIO * 1.55) + 20}px` }} // Card height + extra for 150% spotlight scale
       >
-        <div
-          ref={scrollRef}
-          className="flex overflow-x-auto scrollbar-hide absolute inset-0 items-center"
-          style={{ gap: `${GAP}px` }}
-        >
-          {extendedLocations.map((location, index) => (
+        {/* Static preview - shows until carousel is ready (SSR-safe, no hydration mismatch) */}
+        {locations[0] && (
+          <div
+            className="absolute inset-0 flex items-center justify-center transition-opacity duration-500 ease-out"
+            style={{
+              opacity: isScrollReady ? 0 : 1,
+              pointerEvents: isScrollReady ? 'none' : 'auto',
+            }}
+          >
             <FeaturedCard
-              key={`${location.id}-${index}`}
-              ref={(el) => { cardRefs.current[index] = el; }}
-              location={location}
+              location={locations[0]}
               onSelect={setSelectedLocation}
-              isSpotlight={index === spotlightIndex}
+              isSpotlight={true}
               cardWidth={cardWidth}
-              onHoverChange={index === spotlightIndex ? handleSpotlightHover : undefined}
+              isReady={true}
             />
-          ))}
-        </div>
+          </div>
+        )}
+        {/* Full scrolling carousel - only render on client after mount */}
+        {isMounted && (
+          <div
+            ref={scrollRef}
+            className="flex overflow-x-auto scrollbar-hide absolute inset-0 items-center transition-opacity duration-500 ease-out"
+            style={{
+              gap: `${GAP}px`,
+              opacity: isScrollReady ? 1 : 0,
+              pointerEvents: isScrollReady ? 'auto' : 'none',
+            }}
+          >
+            {extendedLocations.map((location, index) => (
+              <FeaturedCard
+                key={`${location.id}-${index}`}
+                ref={(el) => { cardRefs.current[index] = el; }}
+                location={location}
+                onSelect={setSelectedLocation}
+                isSpotlight={index === spotlightIndex}
+                cardWidth={cardWidth}
+                onHoverChange={index === spotlightIndex ? handleSpotlightHover : undefined}
+                isReady={isScrollReady}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Location Details Modal */}
@@ -240,10 +276,11 @@ type FeaturedCardProps = {
   isSpotlight?: boolean;
   cardWidth: number;
   onHoverChange?: (isHovering: boolean) => void;
+  isReady?: boolean;
 };
 
 const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
-  function FeaturedCard({ location, onSelect, isSpotlight = false, cardWidth, onHoverChange }, ref) {
+  function FeaturedCard({ location, onSelect, isSpotlight = false, cardWidth, onHoverChange, isReady = false }, ref) {
     const { details } = useLocationDetailsQuery(location.id);
     const displayName = getLocationDisplayName(details?.displayName ?? null, location);
     const imageSrc = location.primaryPhotoUrl ?? location.image;
@@ -271,9 +308,11 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
           text-left cursor-pointer
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal
           transition-all duration-500 ease-out
-          ${isSpotlight
-            ? "scale-150 z-10 shadow-2xl ring-2 ring-white/30 hover:ring-white/50"
-            : "scale-[0.7] opacity-40 hover:opacity-60"
+          ${!isReady
+            ? "scale-150 z-10 shadow-soft ring-2 ring-white/30"
+            : isSpotlight
+              ? "scale-150 z-10 shadow-soft ring-2 ring-white/30 hover:ring-white/50"
+              : "scale-[0.7] opacity-40 hover:opacity-60"
           }
         `}
       >
@@ -302,13 +341,13 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
         {/* Content - Text on Image */}
         {/* Typography: Augmented Fourth scale (1.414 ratio), base 16px */}
         {/* Scale: 8px, 11px, 16px, 23px, 32px, 45px */}
-        <div className={`absolute inset-x-0 bottom-0 ${isSpotlight ? "p-3" : "p-2"}`}>
+        <div className={`absolute inset-x-0 bottom-0 ${!isReady || isSpotlight ? "p-3" : "p-2"}`}>
           <h3
             className={`
               font-semibold text-white line-clamp-1
               drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]
               transition-all duration-500
-              ${isSpotlight ? "text-[16px] leading-tight" : "text-[11px]"}
+              ${!isReady || isSpotlight ? "text-[16px] leading-tight" : "text-[11px]"}
             `}
           >
             {displayName}
@@ -318,13 +357,13 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
               text-white/80 line-clamp-1 mt-0.5
               drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]
               transition-all duration-500
-              ${isSpotlight ? "text-[11px]" : "text-[8px] opacity-80"}
+              ${!isReady || isSpotlight ? "text-[11px]" : "text-[8px] opacity-80"}
             `}
           >
             {location.city}, {location.region}
           </p>
-          {/* Description - only show for spotlight card */}
-          {isSpotlight && description && (
+          {/* Description - only show for spotlight card when ready */}
+          {isReady && isSpotlight && description && (
             <p
               className="
                 text-white/70 text-[11px] leading-snug line-clamp-3 mt-1.5
