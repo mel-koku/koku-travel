@@ -156,7 +156,15 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Local-only documentation (personal notes, checklists, deployment notes)
+# Local-only documentation (Claude & internal dev notes)
+CLAUDE.md
+.claudedoc/
+.clauderules.md
+BRANCH_REVIEW.md
+DEPLOYMENT_CHECKLIST.md
+PERFORMANCE_IMPLEMENTATION.md
+PRD.md
+PRODUCTION_CODE_REVIEW.md
 docs/VERCEL_DEPLOYMENT_CHECKLIST.md
 docs/DEPLOYMENT_QUICK_START.md
 docs/ENV_VARIABLES_REFERENCE.md
