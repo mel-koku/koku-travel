@@ -48,10 +48,10 @@ type FiltersModalProps = {
   // Search
   query: string;
   onQueryChange: (value: string) => void;
-  // Prefecture filter
+  // Prefecture filter (multi-select)
   prefectureOptions: readonly { value: string; label: string }[];
-  selectedPrefecture: string | null;
-  onPrefectureChange: (prefecture: string | null) => void;
+  selectedPrefectures: string[];
+  onPrefecturesChange: (prefectures: string[]) => void;
   // Category filter
   selectedCategories: string[];
   onCategoriesChange: (categories: string[]) => void;
@@ -96,8 +96,8 @@ export function FiltersModal({
   query,
   onQueryChange,
   prefectureOptions,
-  selectedPrefecture,
-  onPrefectureChange,
+  selectedPrefectures,
+  onPrefecturesChange,
   selectedCategories,
   onCategoriesChange,
   selectedSubTypes,
@@ -175,7 +175,7 @@ export function FiltersModal({
 
   const hasActiveFilters =
     query ||
-    selectedPrefecture ||
+    selectedPrefectures.length > 0 ||
     selectedCategories.length > 0 ||
     selectedSubTypes.length > 0 ||
     selectedPriceLevel !== null ||
@@ -183,6 +183,15 @@ export function FiltersModal({
     wheelchairAccessible ||
     vegetarianFriendly ||
     selectedSort !== "recommended";
+
+  // Toggle prefecture selection
+  const togglePrefecture = (prefectureValue: string) => {
+    if (selectedPrefectures.includes(prefectureValue)) {
+      onPrefecturesChange(selectedPrefectures.filter((p) => p !== prefectureValue));
+    } else {
+      onPrefecturesChange([...selectedPrefectures, prefectureValue]);
+    }
+  };
 
   // Count of more filters that are active
   const moreFiltersActiveCount = [
@@ -284,21 +293,26 @@ export function FiltersModal({
             </div>
           </div>
 
-          {/* WHERE Section */}
+          {/* WHERE Section (Multi-select) */}
           <div>
-            <h3 className="text-xs font-semibold text-stone uppercase tracking-wider mb-3">Where</h3>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-xs font-semibold text-stone uppercase tracking-wider">Where</h3>
+              {selectedPrefectures.length > 0 && (
+                <button
+                  onClick={() => onPrefecturesChange([])}
+                  className="text-xs text-stone hover:text-charcoal underline underline-offset-2"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
             <div className="flex flex-wrap gap-2">
-              <FilterChip
-                label="All"
-                isSelected={!selectedPrefecture}
-                onClick={() => onPrefectureChange(null)}
-              />
               {prefectureOptions.map((option) => (
                 <FilterChip
                   key={option.value}
                   label={option.label}
-                  isSelected={selectedPrefecture === option.value}
-                  onClick={() => onPrefectureChange(selectedPrefecture === option.value ? null : option.value)}
+                  isSelected={selectedPrefectures.includes(option.value)}
+                  onClick={() => togglePrefecture(option.value)}
                 />
               ))}
             </div>
