@@ -15,31 +15,6 @@ import { StickyExploreHeader } from "./StickyExploreHeader";
 import { ActiveFilterChips } from "./ActiveFilterChips";
 import { useAggregatedLocations, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 
-const ENTRY_FEE_FILTERS = [
-  {
-    id: "free",
-    label: "Free",
-    predicate: (value: number | null) => value === 0,
-  },
-  {
-    id: "under-1000",
-    label: "Under ¥1,000",
-    predicate: (value: number | null) =>
-      value !== null && value > 0 && value < 1000,
-  },
-  {
-    id: "1000-3000",
-    label: "¥1,000–¥3,000",
-    predicate: (value: number | null) =>
-      value !== null && value >= 1000 && value < 3000,
-  },
-  {
-    id: "over-3000",
-    label: "¥3,000+",
-    predicate: (value: number | null) => value !== null && value >= 3000,
-  },
-] as const;
-
 const DURATION_FILTERS = [
   {
     id: "short",
@@ -63,19 +38,9 @@ const PAGE_SIZE = 24;
 type SortOptionId = "relevance" | "popular";
 
 type EnhancedLocation = Location & {
-  budgetValue: number | null;
   durationMinutes: number | null;
   ratingValue: number | null;
 };
-
-function parseBudget(value?: string): number | null {
-  if (!value) return null;
-  const normalized = value.trim().toLowerCase();
-  if (normalized === "free") return 0;
-  const numeric = normalized.replace(/[¥,\s]/g, "");
-  const parsed = Number.parseInt(numeric, 10);
-  return Number.isNaN(parsed) ? null : parsed;
-}
 
 function parseDuration(value?: string): number | null {
   if (!value) return null;
@@ -114,7 +79,6 @@ export function ExploreShell() {
 
   const [query, setQuery] = useState("");
   const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null);
-  const [selectedEntryFee, setSelectedEntryFee] = useState<string | null>(null);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -130,7 +94,6 @@ export function ExploreShell() {
   }, [
     query,
     selectedPrefecture,
-    selectedEntryFee,
     selectedPriceLevel,
     selectedDuration,
     selectedCategories,
@@ -143,7 +106,6 @@ export function ExploreShell() {
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
     return locations.map((location) => ({
       ...location,
-      budgetValue: parseBudget(location.minBudget),
       durationMinutes: parseDuration(location.estimatedDuration),
       ratingValue:
         typeof location.rating === "number" && Number.isFinite(location.rating)
@@ -159,9 +121,6 @@ export function ExploreShell() {
 
   const filteredLocations = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    const entryFeeFilter = selectedEntryFee
-      ? ENTRY_FEE_FILTERS.find((filter) => filter.id === selectedEntryFee) ?? null
-      : null;
     const durationFilter = selectedDuration
       ? DURATION_FILTERS.find((filter) => filter.id === selectedDuration) ?? null
       : null;
@@ -184,14 +143,12 @@ export function ExploreShell() {
         ? normalizePrefecture(location.prefecture) === selectedPrefecture
         : true;
 
-      const matchesEntryFee = entryFeeFilter
-        ? entryFeeFilter.predicate(location.budgetValue)
-        : true;
-
-      // Price level filter (Google Places based)
+      // Price filter: "Free" (0) matches locations with priceLevel 0 or no priceLevel
       const matchesPriceLevel = selectedPriceLevel === null
         ? true
-        : location.priceLevel === selectedPriceLevel;
+        : selectedPriceLevel === 0
+          ? (location.priceLevel === 0 || location.priceLevel == null)
+          : location.priceLevel === selectedPriceLevel;
 
       const matchesDuration = durationFilter
         ? durationFilter.predicate(location.durationMinutes)
@@ -219,7 +176,6 @@ export function ExploreShell() {
       return (
         matchesQuery &&
         matchesPrefecture &&
-        matchesEntryFee &&
         matchesPriceLevel &&
         matchesDuration &&
         matchesCategory &&
@@ -228,7 +184,7 @@ export function ExploreShell() {
         matchesVegetarian
       );
     });
-  }, [enhancedLocations, query, selectedPrefecture, selectedEntryFee, selectedPriceLevel, selectedDuration, selectedCategories, selectedSubTypes, wheelchairAccessible, vegetarianFriendly]);
+  }, [enhancedLocations, query, selectedPrefecture, selectedPriceLevel, selectedDuration, selectedCategories, selectedSubTypes, wheelchairAccessible, vegetarianFriendly]);
 
   const sortedLocations = useMemo(() => {
     if (selectedSort === "popular") {
@@ -301,19 +257,8 @@ export function ExploreShell() {
       }
     }
 
-    if (selectedEntryFee) {
-      const feeOption = ENTRY_FEE_FILTERS.find((f) => f.id === selectedEntryFee);
-      if (feeOption) {
-        filters.push({
-          type: "entryFee",
-          value: selectedEntryFee,
-          label: feeOption.label,
-        });
-      }
-    }
-
     if (selectedPriceLevel !== null) {
-      const priceLabels: Record<number, string> = { 1: "$", 2: "$$", 3: "$$$", 4: "$$$$" };
+      const priceLabels: Record<number, string> = { 0: "Free", 1: "$", 2: "$$", 3: "$$$", 4: "$$$$" };
       filters.push({
         type: "priceLevel",
         value: String(selectedPriceLevel),
@@ -345,7 +290,6 @@ export function ExploreShell() {
     selectedCategories,
     selectedSubTypes,
     selectedDuration,
-    selectedEntryFee,
     selectedPriceLevel,
     wheelchairAccessible,
     vegetarianFriendly,
@@ -372,9 +316,6 @@ export function ExploreShell() {
       case "duration":
         setSelectedDuration(null);
         break;
-      case "entryFee":
-        setSelectedEntryFee(null);
-        break;
       case "priceLevel":
         setSelectedPriceLevel(null);
         break;
@@ -390,7 +331,6 @@ export function ExploreShell() {
   const clearAllFilters = useCallback(() => {
     setQuery("");
     setSelectedPrefecture(null);
-    setSelectedEntryFee(null);
     setSelectedPriceLevel(null);
     setSelectedDuration(null);
     setSelectedCategories([]);
@@ -516,12 +456,6 @@ export function ExploreShell() {
         onCategoriesChange={setSelectedCategories}
         selectedSubTypes={selectedSubTypes}
         onSubTypesChange={setSelectedSubTypes}
-        entryFeeOptions={ENTRY_FEE_FILTERS.map(({ id, label }) => ({
-          value: id,
-          label,
-        }))}
-        selectedEntryFee={selectedEntryFee}
-        onEntryFeeChange={setSelectedEntryFee}
         selectedPriceLevel={selectedPriceLevel}
         onPriceLevelChange={setSelectedPriceLevel}
         durationOptions={DURATION_FILTERS.map(({ id, label }) => ({
