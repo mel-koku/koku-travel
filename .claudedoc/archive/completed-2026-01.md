@@ -22,7 +22,8 @@ This archive contains documentation for all features completed in January 2026.
 16. [Explore Page Filter/Search UX Overhaul](#filter-search-ux-overhaul)
 17. [Trip Builder V2 Redesign](#trip-builder-v2-redesign)
 18. [Itinerary Feature Audit Fixes](#itinerary-feature-audit-fixes)
-19. [Key Files Modified](#key-files-modified)
+19. [Sort Options & Featured Carousel](#sort-options-featured-carousel)
+20. [Key Files Modified](#key-files-modified)
 
 ---
 
@@ -961,6 +962,92 @@ Addressed multiple issues discovered during itinerary feature audit:
 | `src/app/api/routing/estimate/route.ts` | Include isEstimated in response |
 | `src/app/api/routing/route/route.ts` | Include isEstimated in response |
 | `.claudedoc/architecture.md` | Documented routing system |
+
+---
+
+## Sort Options & Featured Carousel
+
+**Date:** January 24, 2026
+
+### Problem
+
+The explore page lacked meaningful sorting options and had no way to highlight top destinations. Locations were sorted alphabetically by default, which didn't surface the best places to visit.
+
+### Solution
+
+Implemented a comprehensive sorting system with a popularity score algorithm and a featured destinations carousel.
+
+### Popularity Score Algorithm
+
+Uses Bayesian weighted average to balance rating quality with review quantity:
+
+```typescript
+function calculatePopularityScore(rating: number, reviewCount: number): number {
+  const m = 50;   // minimum reviews threshold (smoothing)
+  const C = 4.2;  // global average rating
+
+  // Bayesian weighted average + log boost for volume
+  const score = (v / (v + m)) * r + (m / (v + m)) * C;
+  const reviewBoost = Math.log10(v + 1) / 10;
+
+  return score + reviewBoost;
+}
+```
+
+**Why Bayesian?** A 4.8-star location with 500 reviews ranks higher than a 5.0-star with 3 reviews.
+
+### Sort Options
+
+| ID | Label | Sort Logic |
+|----|-------|------------|
+| `recommended` | Recommended | Popularity score (default) |
+| `highest_rated` | Highest Rated | rating DESC, name ASC |
+| `most_reviews` | Most Reviews | reviewCount DESC, name ASC |
+| `price_low` | Price (Low to High) | priceLevel ASC, name ASC |
+| `duration_short` | Duration (Short to Long) | durationMinutes ASC, name ASC |
+
+### Featured Destinations Carousel
+
+- Horizontal scroll carousel at top of explore page
+- Shows top 12 locations by popularity score
+- Cards: 260px wide, 4:3 aspect ratio with rating badge
+- Scroll snap for smooth navigation with arrow controls
+- Only visible when no filters are active
+- Subtle gradient background for visual separation from main grid
+
+### Fallback Ratings
+
+Since database lacks real Google Places rating data, deterministic fallback values are generated from location IDs:
+- Rating: 3.9–4.8 range (seeded by location ID hash)
+- Review count: 50–500 range (seeded by location ID + "-reviews" hash)
+
+This matches the existing pattern in `LocationCard.tsx` for consistent display.
+
+### Future Enhancement: Manual Curation
+
+Database migration prepared for future manual curation:
+- `is_featured` boolean column (migration: `20260124_add_is_featured_column.sql`)
+- Instructions in roadmap.md for enabling manual curation
+- Currently auto-populated; can switch to editor-selected featured locations
+
+### Files Created
+
+| File | Description |
+|------|-------------|
+| `src/components/features/explore/FeaturedCarousel.tsx` | Featured destinations carousel component |
+| `supabase/migrations/20260124_add_is_featured_column.sql` | Migration for manual curation (future) |
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `src/components/features/explore/ExploreShell.tsx` | Sort options, popularity score, featured locations, fallback ratings |
+| `src/components/features/explore/FiltersModal.tsx` | Sort by section with FilterChip buttons |
+| `src/app/globals.css` | Added `.scrollbar-hide` utility |
+| `src/lib/supabase/projections.ts` | Added `is_featured` to types (prepared for migration) |
+| `src/types/location.ts` | Added `isFeatured?: boolean` field |
+| `src/app/api/locations/route.ts` | Prepared `isFeatured` mapping (commented until migration) |
+| `.claudedoc/roadmap.md` | Added manual curation instructions |
 
 ---
 
