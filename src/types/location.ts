@@ -180,10 +180,10 @@ export type Location = {
   businessStatus?: 'OPERATIONAL' | 'TEMPORARILY_CLOSED' | 'PERMANENTLY_CLOSED';
 
   /**
-   * Price level from Google Places API (1-4)
-   * 1 = Inexpensive ($), 2 = Moderate ($$), 3 = Expensive ($$$), 4 = Very Expensive ($$$$)
+   * Price level from Google Places API (0-4)
+   * 0 = Free, 1 = Inexpensive ($), 2 = Moderate ($$), 3 = Expensive ($$$), 4 = Very Expensive ($$$$)
    */
-  priceLevel?: 1 | 2 | 3 | 4;
+  priceLevel?: 0 | 1 | 2 | 3 | 4;
 
   /**
    * Accessibility options from Google Places API
