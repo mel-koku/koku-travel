@@ -555,11 +555,11 @@ export const ItineraryTimeline = ({
 
         {/* City Transition Display */}
         {day.cityTransition && (
-          <div className="rounded-xl border-2 border-dashed border-indigo-300 bg-indigo-50/50 p-4">
+          <div className="rounded-xl border-2 border-dashed border-sage/30 bg-sage/10 p-4">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-5 w-5 text-indigo-600"
+                  className="h-5 w-5 text-sage"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -574,11 +574,11 @@ export const ItineraryTimeline = ({
                 </svg>
               </div>
               <div className="flex-1">
-                <h4 className="text-sm font-semibold text-indigo-900">
+                <h4 className="text-sm font-semibold text-charcoal">
                   Traveling from {formatCityName(day.cityTransition.fromCityId)} to{" "}
                   {formatCityName(day.cityTransition.toCityId)}
                 </h4>
-                <div className="mt-1 space-y-1 text-sm text-indigo-700">
+                <div className="mt-1 space-y-1 text-sm text-foreground-secondary">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">Mode:</span>
                     <span className="capitalize">{day.cityTransition.mode}</span>
@@ -599,7 +599,7 @@ export const ItineraryTimeline = ({
                     </div>
                   )}
                   {day.cityTransition.notes && (
-                    <p className="text-xs text-indigo-600">{day.cityTransition.notes}</p>
+                    <p className="text-xs text-sage">{day.cityTransition.notes}</p>
                   )}
                 </div>
               </div>
@@ -754,12 +754,12 @@ export const ItineraryTimeline = ({
             </ul>
           </SortableContext>
         ) : (
-          <div className="rounded-xl border-2 border-dashed border-gray-300 p-6 text-center text-gray-500">
+          <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-stone">
             <p className="text-sm">No activities yet for this day.</p>
             <button
               type="button"
               onClick={handleAddNote}
-              className="mt-3 text-sm font-medium text-indigo-600 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+              className="mt-3 text-sm font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
               + Add note
             </button>

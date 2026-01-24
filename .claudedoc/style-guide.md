@@ -103,23 +103,31 @@ Based on ratio **1.414** (√2) for harmonious typography.
 ### Buttons
 
 ```jsx
-// Primary button
-<button className="rounded-lg bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:bg-brand-primary/90">
+// Primary action button (pill shape)
+<button className="rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-primary/90">
 
-// Secondary/outline button
-<button className="rounded-lg border border-border bg-background px-4 py-2 text-sm text-warm-gray hover:bg-sand">
+// Secondary/outline button (pill shape)
+<button className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-warm-gray hover:bg-sand">
 
 // Destructive button
-<button className="rounded-lg border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20">
+<button className="rounded-full border border-error/30 bg-error/10 px-4 py-2 text-sm text-error hover:bg-error/20">
 
 // Link-style button
 <button className="text-sage hover:text-sage/80">
+
+// Small/inline buttons (use rounded-lg)
+<button className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-warm-gray hover:bg-sand">
 ```
 
 ### Form Inputs
 ```jsx
+// Text input
 <input className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary" />
 
+// Select dropdown
+<select className="h-10 w-full rounded-lg border border-border bg-background px-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary">
+
+// Label
 <label className="text-sm text-warm-gray">
 ```
 

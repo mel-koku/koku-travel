@@ -217,14 +217,14 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
   }, [totalDuration]);
 
   return (
-    <div className="mb-6 rounded-xl border border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50 p-4 sm:p-5">
+    <div className="mb-6 rounded-xl border border-border bg-surface p-4 sm:p-5">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold text-gray-900 sm:text-2xl">
+          <h2 className="text-xl font-semibold text-charcoal sm:text-2xl">
             {dateLabel.dayName ? (
               <>
                 {dateLabel.dayName}
-                <span className="ml-2 text-lg font-normal text-gray-600 sm:text-xl">
+                <span className="ml-2 text-lg font-normal text-foreground-secondary sm:text-xl">
                   {dateLabel.date}
                 </span>
               </>
@@ -233,15 +233,15 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
             )}
           </h2>
           {day.cityId && (
-            <p className="text-sm font-medium text-gray-600 capitalize">
+            <p className="text-sm font-medium text-foreground-secondary capitalize">
               {day.cityId}
             </p>
           )}
         </div>
         <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-sm text-gray-700 sm:text-base">
+          <div className="flex items-center gap-2 text-sm text-warm-gray sm:text-base">
             <svg
-              className="h-5 w-5 text-indigo-600"
+              className="h-5 w-5 text-sage"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -255,10 +255,10 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
               />
             </svg>
             <span className="font-medium">Expected duration:</span>
-            <span className="font-semibold text-indigo-700">{durationLabel}</span>
+            <span className="font-semibold text-sage">{durationLabel}</span>
           </div>
           {totalDuration > 0 && (
-            <p className="ml-7 text-xs text-gray-600 sm:text-sm">
+            <p className="ml-7 text-xs text-foreground-secondary sm:text-sm">
               Based on average time at locations and travel between stops
             </p>
           )}
@@ -277,8 +277,8 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
             onOptimizeRoute={handleOptimizeRoute}
           />
           {onRefineDay && (
-            <div className="border-t border-gray-200 pt-4">
-              <p className="mb-2 text-sm font-medium text-gray-700">Refine this day:</p>
+            <div className="border-t border-border pt-4">
+              <p className="mb-2 text-sm font-medium text-warm-gray">Refine this day:</p>
               <DayRefinementButtons
                 dayIndex={dayIndex}
                 tripId={tripId}

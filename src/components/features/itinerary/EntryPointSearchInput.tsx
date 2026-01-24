@@ -230,7 +230,7 @@ export function EntryPointSearchInput({
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="relative">
-        <label htmlFor="entry-point-search" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="entry-point-search" className="block text-sm font-medium text-warm-gray mb-1">
           {typeLabels[type]} Name
         </label>
         <div className="relative">
@@ -241,7 +241,7 @@ export function EntryPointSearchInput({
             value={searchInput}
             onChange={handleInputChange}
             placeholder={placeholder ?? `Search for ${typeLabels[type].toLowerCase()}...`}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
             aria-invalid={errors.name ? "true" : "false"}
             aria-describedby={errors.name ? "name-error" : undefined}
             role="combobox"
@@ -253,7 +253,7 @@ export function EntryPointSearchInput({
           {isLoading && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               <svg
-                className="h-4 w-4 animate-spin text-gray-400"
+                className="h-4 w-4 animate-spin text-stone"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -276,7 +276,7 @@ export function EntryPointSearchInput({
           )}
         </div>
         {errors.name && (
-          <p id="name-error" className="mt-1 text-sm text-red-600">
+          <p id="name-error" className="mt-1 text-sm text-error">
             {errors.name}
           </p>
         )}
@@ -285,7 +285,7 @@ export function EntryPointSearchInput({
         {showSuggestions && suggestions.length > 0 && (
           <div
             ref={suggestionsRef}
-            className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg max-h-60 overflow-auto"
+            className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-background shadow-lg max-h-60 overflow-auto"
             role="listbox"
             id={listboxId}
           >
@@ -294,13 +294,13 @@ export function EntryPointSearchInput({
                 key={place.placeId}
                 type="button"
                 onClick={() => handleSelectPlace(place)}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+                className="w-full px-4 py-2 text-left text-sm hover:bg-sand focus:bg-sand focus:outline-none"
                 role="option"
                 aria-selected="false"
               >
-                <div className="font-medium text-gray-900">{place.displayName}</div>
+                <div className="font-medium text-charcoal">{place.displayName}</div>
                 {place.formattedAddress && (
-                  <div className="text-xs text-gray-500">{place.formattedAddress}</div>
+                  <div className="text-xs text-stone">{place.formattedAddress}</div>
                 )}
               </button>
             ))}
@@ -309,12 +309,12 @@ export function EntryPointSearchInput({
 
         {/* Selected place info */}
         {selectedPlace && (
-          <div className="mt-2 rounded-lg bg-gray-50 p-2 text-sm">
-            <div className="font-medium text-gray-900">{selectedPlace.displayName}</div>
+          <div className="mt-2 rounded-lg bg-surface p-2 text-sm">
+            <div className="font-medium text-charcoal">{selectedPlace.displayName}</div>
             {selectedPlace.formattedAddress && (
-              <div className="text-xs text-gray-600">{selectedPlace.formattedAddress}</div>
+              <div className="text-xs text-foreground-secondary">{selectedPlace.formattedAddress}</div>
             )}
-            <div className="mt-1 text-xs text-gray-500">
+            <div className="mt-1 text-xs text-stone">
               Coordinates: {selectedPlace.location.latitude.toFixed(4)},{" "}
               {selectedPlace.location.longitude.toFixed(4)}
             </div>
@@ -322,23 +322,23 @@ export function EntryPointSearchInput({
         )}
 
         {isFetchingCoordinates && (
-          <div className="mt-2 text-sm text-gray-500">Fetching location...</div>
+          <div className="mt-2 text-sm text-stone">Fetching location...</div>
         )}
 
         {errors.coordinates && (
-          <p className="mt-1 text-sm text-red-600">{errors.coordinates}</p>
+          <p className="mt-1 text-sm text-error">{errors.coordinates}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="entry-point-city" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="entry-point-city" className="block text-sm font-medium text-warm-gray mb-1">
           City (Optional)
         </label>
         <select
           id="entry-point-city"
           value={cityId ?? ""}
           onChange={(e) => setCityId((e.target.value || undefined) as EntryPoint["cityId"])}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
         >
           <option value="">None</option>
           <option value="kyoto">Kyoto</option>
