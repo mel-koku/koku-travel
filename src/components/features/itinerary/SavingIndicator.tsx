@@ -22,9 +22,9 @@ export function SavingIndicator({ isSaving, lastSaved }: SavingIndicatorProps) {
 
   if (isSaving) {
     return (
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 text-sm text-foreground-secondary">
         <svg
-          className="h-4 w-4 animate-spin text-indigo-600"
+          className="h-4 w-4 animate-spin text-sage"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -50,7 +50,7 @@ export function SavingIndicator({ isSaving, lastSaved }: SavingIndicatorProps) {
 
   if (showSaved && lastSaved) {
     return (
-      <div className="flex items-center gap-2 text-sm text-emerald-600">
+      <div className="flex items-center gap-2 text-sm text-success">
         <svg
           className="h-4 w-4"
           xmlns="http://www.w3.org/2000/svg"

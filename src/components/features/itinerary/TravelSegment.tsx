@@ -82,9 +82,9 @@ export function TravelSegment({
   return (
     <>
       <div className="flex items-center justify-center py-1">
-        <div className="flex items-center gap-1.5 text-sm text-gray-600">
+        <div className="flex items-center gap-1.5 text-sm text-foreground-secondary">
           {isLoading && (
-            <span className="flex items-center gap-1 text-xs text-gray-500">
+            <span className="flex items-center gap-1 text-xs text-stone">
               <svg
                 className="h-3 w-3 animate-spin"
                 xmlns="http://www.w3.org/2000/svg"
@@ -122,7 +122,7 @@ export function TravelSegment({
           )}
           {showEstimatedBadge && (
             <span
-              className="text-xs text-amber-600"
+              className="text-xs text-warning"
               title="Estimated travel time (actual may vary)"
             >
               ~est
@@ -130,14 +130,14 @@ export function TravelSegment({
           )}
           {segment.distanceMeters && (
             <>
-              <span className="text-gray-400">•</span>
-              <span className="text-sm text-gray-600">{formatDistance(segment.distanceMeters)}</span>
+              <span className="text-stone">•</span>
+              <span className="text-sm text-foreground-secondary">{formatDistance(segment.distanceMeters)}</span>
             </>
           )}
-          <span className="text-gray-400">•</span>
+          <span className="text-stone">•</span>
           <button
             type="button"
-            className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+            className="text-sm text-sage hover:text-sage/80 font-medium"
             onClick={openGoogleMapsDirections}
             title={`View directions from ${originName || "origin"} to ${destinationName || "destination"} in Google Maps`}
           >
@@ -145,10 +145,10 @@ export function TravelSegment({
           </button>
           {hasDirections && (
             <>
-              <span className="text-gray-400">•</span>
+              <span className="text-stone">•</span>
               <button
                 type="button"
-                className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                className="text-sm text-sage hover:text-sage/80 font-medium"
                 onClick={() => setDirectionsOpen(true)}
               >
                 Directions
@@ -168,18 +168,18 @@ export function TravelSegment({
             <ol className="space-y-2">
               {segment.instructions?.map((instruction, index) => (
                 <li key={index} className="flex gap-3 text-sm">
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sage/10 text-xs font-semibold text-sage">
                     {index + 1}
                   </span>
-                  <span className="flex-1 pt-0.5 text-gray-700">{instruction}</span>
+                  <span className="flex-1 pt-0.5 text-warm-gray">{instruction}</span>
                 </li>
               ))}
             </ol>
-            <div className="pt-2 border-t border-gray-200">
+            <div className="pt-2 border-t border-border">
               <button
                 type="button"
                 onClick={() => setDirectionsOpen(false)}
-                className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+                className="w-full rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
               >
                 Close
               </button>

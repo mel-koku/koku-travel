@@ -128,7 +128,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-warm-gray hover:bg-sand"
+              className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-warm-gray hover:bg-sand"
             >
               Back
             </button>
@@ -139,7 +139,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             onClick={handleNext}
             disabled={isNextDisabled}
             className={cn(
-              "flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition",
+              "flex-1 rounded-full px-6 py-2.5 text-sm font-semibold transition",
               isNextDisabled
                 ? "bg-surface text-stone cursor-not-allowed"
                 : "bg-brand-primary text-white hover:bg-brand-primary/90"
@@ -158,7 +158,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
               <button
                 type="button"
                 onClick={handleBack}
-                className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-warm-gray hover:bg-sand"
+                className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-warm-gray hover:bg-sand"
               >
                 Back to Step 1
               </button>
@@ -170,7 +170,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             onClick={handleNext}
             disabled={isNextDisabled}
             className={cn(
-              "rounded-lg px-6 py-2.5 text-sm font-semibold transition",
+              "rounded-full px-6 py-2.5 text-sm font-semibold transition",
               isNextDisabled
                 ? "bg-surface text-stone cursor-not-allowed"
                 : "bg-brand-primary text-white hover:bg-brand-primary/90"

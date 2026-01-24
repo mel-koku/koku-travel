@@ -32,11 +32,11 @@ export function DragHandle({
   listeners,
 }: DragHandleProps) {
   const baseClasses =
-    "flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold shadow-sm transition cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 data-[dragging=true]:cursor-grabbing";
+    "flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold shadow-sm transition cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing";
   const placeClasses =
-    "border-indigo-200 bg-white/95 text-indigo-600 hover:bg-indigo-50";
+    "border-sage/30 bg-background/95 text-sage hover:bg-sage/10";
   const noteClasses =
-    "border-indigo-200 bg-indigo-100 text-indigo-700 hover:bg-indigo-200";
+    "border-sage/30 bg-sage/10 text-sage hover:bg-sage/20";
 
   const dragAttributeProps = (attributes ?? {}) as Record<string, unknown>;
   const dragHandleListeners = (() => {

@@ -82,20 +82,20 @@ export function DayEntryPointEditor({
   };
 
   return (
-    <div className="space-y-3 rounded-lg border border-gray-200 bg-white p-4">
-      <h3 className="text-sm font-semibold text-gray-900">Day Entry Points</h3>
-      
+    <div className="space-y-3 rounded-lg border border-border bg-background p-4">
+      <h3 className="text-sm font-semibold text-charcoal">Day Entry Points</h3>
+
       <div className="space-y-2">
         {/* Start Point */}
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-warm-gray mb-1">
               Start Point
             </label>
             {startPoint ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-900">{startPoint.name}</span>
-                <span className="text-xs text-gray-500">
+                <span className="text-sm text-charcoal">{startPoint.name}</span>
+                <span className="text-xs text-stone">
                   ({startPoint.coordinates.lat.toFixed(4)}, {startPoint.coordinates.lng.toFixed(4)})
                 </span>
                 <Button
@@ -108,7 +108,7 @@ export function DayEntryPointEditor({
                 </Button>
               </div>
             ) : (
-              <p className="text-sm text-gray-500">Not set</p>
+              <p className="text-sm text-stone">Not set</p>
             )}
           </div>
           <div className="ml-4">
@@ -119,8 +119,8 @@ export function DayEntryPointEditor({
                 { id: "station", label: "Station", onSelect: () => { setEditingType("station"); setIsStartModalOpen(true); } },
                 { id: "airport", label: "Airport", onSelect: () => { setEditingType("airport"); setIsStartModalOpen(true); } },
               ]}
-              triggerClassName="bg-gray-50 border border-gray-200 hover:bg-gray-100"
-              menuClassName="border border-gray-200 shadow-md"
+              triggerClassName="bg-surface border border-border hover:bg-sand"
+              menuClassName="border border-border shadow-md"
             />
           </div>
         </div>
@@ -128,13 +128,13 @@ export function DayEntryPointEditor({
         {/* End Point */}
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-warm-gray mb-1">
               End Point
             </label>
             {endPoint ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-900">{endPoint.name}</span>
-                <span className="text-xs text-gray-500">
+                <span className="text-sm text-charcoal">{endPoint.name}</span>
+                <span className="text-xs text-stone">
                   ({endPoint.coordinates.lat.toFixed(4)}, {endPoint.coordinates.lng.toFixed(4)})
                 </span>
                 <Button
@@ -147,7 +147,7 @@ export function DayEntryPointEditor({
                 </Button>
               </div>
             ) : (
-              <p className="text-sm text-gray-500">Not set</p>
+              <p className="text-sm text-stone">Not set</p>
             )}
           </div>
           <div className="ml-4">
@@ -168,16 +168,16 @@ export function DayEntryPointEditor({
                 { id: "station", label: "Station", onSelect: () => { setEditingType("station"); setIsEndModalOpen(true); } },
                 { id: "airport", label: "Airport", onSelect: () => { setEditingType("airport"); setIsEndModalOpen(true); } },
               ]}
-              triggerClassName="bg-gray-50 border border-gray-200 hover:bg-gray-100"
-              menuClassName="border border-gray-200 shadow-md"
+              triggerClassName="bg-surface border border-border hover:bg-sand"
+              menuClassName="border border-border shadow-md"
             />
           </div>
         </div>
 
         {/* Optimize Route Button */}
-        <div className="pt-2 border-t border-gray-200">
+        <div className="pt-2 border-t border-border">
           <div className="flex flex-col gap-2">
-            <p className="text-xs text-gray-600">
+            <p className="text-xs text-foreground-secondary">
               {startPoint
                 ? "Rearrange activities to minimize travel time based on your start point."
                 : "Set a start point to enable route optimization."}
@@ -187,7 +187,7 @@ export function DayEntryPointEditor({
               size="sm"
               onClick={handleOptimizeRoute}
               disabled={!startPoint || isOptimizing || activities.length === 0}
-              className="w-full sm:w-auto bg-gray-50 border border-gray-200 hover:bg-gray-100"
+              className="w-full sm:w-auto bg-surface border border-border hover:bg-sand"
               leftIcon={
                 <svg
                   className="h-4 w-4"
@@ -210,19 +210,19 @@ export function DayEntryPointEditor({
             {optimizeResult && (
               <div className="mt-2 text-xs">
                 {optimizeResult.orderChanged ? (
-                  <p className="text-green-600">
+                  <p className="text-success">
                     Route optimized! {optimizeResult.optimizedCount} activities reordered.
                     {optimizeResult.skippedCount > 0 && (
-                      <span className="text-amber-600 ml-1">
+                      <span className="text-warning ml-1">
                         ({optimizeResult.skippedCount} skipped - missing coordinates)
                       </span>
                     )}
                   </p>
                 ) : (
-                  <p className="text-gray-600">
+                  <p className="text-foreground-secondary">
                     Route is already optimal.
                     {optimizeResult.skippedCount > 0 && (
-                      <span className="text-amber-600 ml-1">
+                      <span className="text-warning ml-1">
                         ({optimizeResult.skippedCount} activities lack coordinates)
                       </span>
                     )}
@@ -285,7 +285,7 @@ function Dropdown({
         variant="outline"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className={triggerClassName || "bg-gray-50 border border-gray-200 hover:bg-gray-100"}
+        className={triggerClassName || "bg-surface border border-border hover:bg-sand"}
         rightIcon={
           <svg
             className={`h-4 w-4 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
@@ -304,21 +304,21 @@ function Dropdown({
       {isOpen && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-          <div className={`absolute right-0 z-20 mt-2 w-56 rounded-lg bg-white ${menuClassName || "border border-gray-200 shadow-md"}`}>
+          <div className={`absolute right-0 z-20 mt-2 w-56 rounded-lg bg-background ${menuClassName || "border border-border shadow-md"}`}>
             {items.map((item, index) => (
               <div key={item.id}>
                 {item.separator && index > 0 && (
-                  <div className="border-t border-gray-200/60 my-1" />
+                  <div className="border-t border-border/60 my-1" />
                 )}
                 <button
                   onClick={() => {
                     item.onSelect();
                     setIsOpen(false);
                   }}
-                  className={`w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 ${
+                  className={`w-full px-4 py-2 text-left text-sm text-warm-gray hover:bg-sand ${
                     index === 0 ? "rounded-t-lg" : ""
                   } ${index === items.length - 1 ? "rounded-b-lg" : ""} ${
-                    item.id === "same-as-start" ? "font-medium text-indigo-600" : ""
+                    item.id === "same-as-start" ? "font-medium text-sage" : ""
                   }`}
                 >
                   {item.label}
