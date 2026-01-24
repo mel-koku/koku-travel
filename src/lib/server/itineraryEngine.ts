@@ -254,10 +254,35 @@ export async function generateTripFromBuilderData(
     }
   );
 
-  // Insert meal activities into each day
-  const daysWithMeals = await Promise.all(
-    itinerary.days.map((day) => insertMealActivities(day, builderData, restaurants)),
-  );
+  // Build sets of already-used locations from the itinerary
+  // This prevents meal recommendations from duplicating existing activities
+  const usedLocationIds = new Set<string>();
+  const usedLocationNames = new Set<string>();
+
+  for (const day of itinerary.days) {
+    for (const activity of day.activities) {
+      if (activity.kind === "place" && activity.locationId) {
+        usedLocationIds.add(activity.locationId);
+      }
+      if (activity.kind === "place" && activity.title) {
+        usedLocationNames.add(activity.title.toLowerCase().trim());
+      }
+    }
+  }
+
+  // Insert meal activities into each day (sequentially to track used locations across days)
+  const daysWithMeals: typeof itinerary.days = [];
+  for (const day of itinerary.days) {
+    const dayWithMeals = await insertMealActivities(
+      day,
+      builderData,
+      restaurants,
+      usedLocationIds,
+      usedLocationNames,
+    );
+    daysWithMeals.push(dayWithMeals);
+  }
+
   itinerary = {
     ...itinerary,
     days: daysWithMeals,
