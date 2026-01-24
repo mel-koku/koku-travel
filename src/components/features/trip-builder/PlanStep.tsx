@@ -33,23 +33,23 @@ export function PlanStep({ onValidityChange }: PlanStepProps) {
   return (
     <div className="flex h-full flex-col gap-6">
       {/* Essentials Form */}
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
+      <div className="rounded-xl border border-border bg-background p-5">
         <EssentialsForm onValidityChange={handleEssentialsValidityChange} />
       </div>
 
       {/* Interests + City Selection */}
       <div className="flex flex-1 flex-col gap-4">
         {/* Interest Chips */}
-        <div className="rounded-xl border border-gray-200 bg-white p-4">
+        <div className="rounded-xl border border-border bg-background p-4">
           <InterestChips />
         </div>
 
         {/* City Selection Header */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">
+          <h3 className="text-lg font-semibold text-charcoal">
             Select Cities
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-foreground-secondary">
             {hasSelectedInterests
               ? "Cities are highlighted based on your interests."
               : "Choose which cities to visit on your trip."}
@@ -63,8 +63,8 @@ export function PlanStep({ onValidityChange }: PlanStepProps) {
 
         {/* Validation Message */}
         {!hasSelectedCities && essentialsValid && (
-          <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
-            <p className="text-sm text-amber-700">
+          <div className="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
+            <p className="text-sm text-warning">
               Select at least one city to continue to the next step.
             </p>
           </div>
