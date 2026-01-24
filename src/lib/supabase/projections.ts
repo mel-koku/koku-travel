@@ -25,6 +25,7 @@ export type LocationDbRow = {
   prefecture: string | null;
   category: string;
   image: string;
+  description: string | null;
   min_budget: string | null;
   estimated_duration: string | null;
   operating_hours: LocationOperatingHours | null;
@@ -94,7 +95,7 @@ export const LOCATION_LISTING_COLUMNS = `
 `.replace(/\s+/g, "");
 
 /**
- * Columns needed for location detail views (17 columns)
+ * Columns needed for location detail views (18 columns)
  * Used by: LocationDetailsModal, /api/locations/[id]
  */
 export const LOCATION_DETAIL_COLUMNS = `
@@ -104,6 +105,7 @@ export const LOCATION_DETAIL_COLUMNS = `
   city,
   category,
   image,
+  description,
   short_description,
   rating,
   review_count,
