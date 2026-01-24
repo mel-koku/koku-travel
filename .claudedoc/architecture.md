@@ -9,7 +9,7 @@ Located in `src/lib/supabase/projections.ts`.
 | Projection | Columns | Use Case |
 |------------|---------|----------|
 | `LOCATION_LISTING_COLUMNS` | 21 | Grids/lists (includes prefecture + enrichment) |
-| `LOCATION_DETAIL_COLUMNS` | 17 | Detail views |
+| `LOCATION_DETAIL_COLUMNS` | 18 | Detail views (includes description for overview fallback) |
 | `LOCATION_ITINERARY_COLUMNS` | 21 | Itinerary generation (includes enrichment for meal planning) |
 | `LOCATION_PHOTO_COLUMNS` | 8 | Photo endpoint |
 
@@ -342,3 +342,33 @@ type ItineraryTravelSegment = {
 The UI shows:
 - Loading spinner when `durationMinutes === 0` (calculating)
 - "~est" badge when `isEstimated === true`
+
+## Location Details Modal
+
+Located in `src/components/features/explore/LocationDetailsModal/`.
+
+### Components
+
+| Component | Purpose |
+|-----------|---------|
+| `LocationDetailsModal.tsx` | Main modal wrapper |
+| `PhotoCarousel.tsx` | Photo carousel with thumbnails and navigation |
+| `LocationDetailsSections.tsx` | Overview, address, hours, reviews |
+| `useLocationDetails.ts` | React Query hook for fetching details |
+
+### Photo Carousel
+
+The `PhotoCarousel` component displays all location photos at the top of the modal:
+- Main image with left/right navigation arrows
+- Photo counter (e.g., "3 / 8")
+- Thumbnail strip for quick navigation
+- Falls back to `location.image` if no Google Photos available
+
+### Overview Fallback Chain
+
+The API (`/api/locations/[id]`) provides a fallback chain for `editorialSummary`:
+1. Google Places `editorialSummary` (if available)
+2. Database `short_description` (Claude-generated editorial content)
+3. Database `description` (basic label)
+
+This ensures 100% of locations display an overview when their modal is opened.

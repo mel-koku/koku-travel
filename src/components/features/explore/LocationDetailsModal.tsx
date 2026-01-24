@@ -9,9 +9,8 @@ import { HeartIcon } from "./LocationCard";
 import { useLocationDetails } from "./LocationDetailsModal/useLocationDetails";
 import { LocationDetailsLoading } from "./LocationDetailsModal/LocationDetailsLoading";
 import { LocationDetailsError } from "./LocationDetailsModal/LocationDetailsError";
-import { LocationHeroImage } from "./LocationDetailsModal/LocationHeroImage";
+import { PhotoCarousel } from "./LocationDetailsModal/PhotoCarousel";
 import { LocationDetailsSections } from "./LocationDetailsModal/LocationDetailsSections";
-import { LocationPhotos } from "./LocationDetailsModal/LocationPhotos";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 
 type LocationDetailsModalProps = {
@@ -50,11 +49,6 @@ export function LocationDetailsModal({ location, onClose }: LocationDetailsModal
     return getLocationDisplayName(details?.displayName, location);
   }, [location, details]);
 
-  const heroImageAlt = useMemo(
-    () => (displayName ? `${displayName} hero photo` : "Location photo"),
-    [displayName],
-  );
-
   if (!location) {
     return null;
   }
@@ -75,15 +69,13 @@ export function LocationDetailsModal({ location, onClose }: LocationDetailsModal
 
       {status === "success" && details && (
         <div className="space-y-8">
-          <LocationHeroImage
+          <PhotoCarousel
             location={location}
             details={details}
             favoriteButton={favoriteButton}
           />
 
           <LocationDetailsSections location={location} details={details} />
-
-          <LocationPhotos details={details} heroImageAlt={heroImageAlt} />
         </div>
       )}
     </Modal>
