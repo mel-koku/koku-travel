@@ -121,7 +121,6 @@ export function ExploreShell() {
   const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>([]);
   const [wheelchairAccessible, setWheelchairAccessible] = useState(false);
   const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
-  const [hideClosedLocations, setHideClosedLocations] = useState(false);
   const [page, setPage] = useState(1);
   const [selectedSort] = useState<SortOptionId>("relevance");
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
@@ -138,7 +137,6 @@ export function ExploreShell() {
     selectedSubTypes,
     wheelchairAccessible,
     vegetarianFriendly,
-    hideClosedLocations,
     selectedSort,
   ]);
 
@@ -218,11 +216,6 @@ export function ExploreShell() {
         ? true
         : location.dietaryOptions?.servesVegetarianFood === true;
 
-      // Hide closed locations filter
-      const matchesStatus = !hideClosedLocations
-        ? true
-        : location.businessStatus !== 'PERMANENTLY_CLOSED';
-
       return (
         matchesQuery &&
         matchesPrefecture &&
@@ -232,11 +225,10 @@ export function ExploreShell() {
         matchesCategory &&
         matchesSubType &&
         matchesWheelchair &&
-        matchesVegetarian &&
-        matchesStatus
+        matchesVegetarian
       );
     });
-  }, [enhancedLocations, query, selectedPrefecture, selectedEntryFee, selectedPriceLevel, selectedDuration, selectedCategories, selectedSubTypes, wheelchairAccessible, vegetarianFriendly, hideClosedLocations]);
+  }, [enhancedLocations, query, selectedPrefecture, selectedEntryFee, selectedPriceLevel, selectedDuration, selectedCategories, selectedSubTypes, wheelchairAccessible, vegetarianFriendly]);
 
   const sortedLocations = useMemo(() => {
     if (selectedSort === "popular") {
@@ -345,14 +337,6 @@ export function ExploreShell() {
       });
     }
 
-    if (hideClosedLocations) {
-      filters.push({
-        type: "hideClosed",
-        value: "true",
-        label: "Hide closed",
-      });
-    }
-
     return filters;
   }, [
     query,
@@ -365,7 +349,6 @@ export function ExploreShell() {
     selectedPriceLevel,
     wheelchairAccessible,
     vegetarianFriendly,
-    hideClosedLocations,
   ]);
 
   // Count active filters for badge (excluding search)
@@ -401,9 +384,6 @@ export function ExploreShell() {
       case "vegetarian":
         setVegetarianFriendly(false);
         break;
-      case "hideClosed":
-        setHideClosedLocations(false);
-        break;
     }
   }, []);
 
@@ -417,7 +397,6 @@ export function ExploreShell() {
     setSelectedSubTypes([]);
     setWheelchairAccessible(false);
     setVegetarianFriendly(false);
-    setHideClosedLocations(false);
   }, []);
 
   // Background prefetching: Auto-fetch remaining pages after initial render
@@ -555,8 +534,6 @@ export function ExploreShell() {
         onWheelchairAccessibleChange={setWheelchairAccessible}
         vegetarianFriendly={vegetarianFriendly}
         onVegetarianFriendlyChange={setVegetarianFriendly}
-        hideClosedLocations={hideClosedLocations}
-        onHideClosedLocationsChange={setHideClosedLocations}
         resultsCount={filteredLocations.length}
         onClearAll={clearAllFilters}
       />
