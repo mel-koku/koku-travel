@@ -183,8 +183,9 @@ export function getEntryPointsByType(type: EntryPointType): EntryPoint[] {
 
 /**
  * Calculate distance between two coordinates using Haversine formula
+ * Returns distance in meters
  */
-function calculateDistance(
+export function calculateDistance(
   coord1: { lat: number; lng: number },
   coord2: { lat: number; lng: number },
 ): number {

@@ -1053,6 +1053,68 @@ Database migration prepared for future manual curation:
 
 ---
 
+## Entry Point Feature Enhancements
+
+**Date:** January 24, 2026
+
+### Problem
+
+The Entry Point feature (arrival airport/station) was not integrated with the city selection step. Users had to manually find cities near their entry point, and there was no automatic connection between where they arrive and their Day 1 start location.
+
+### Solution
+
+Enhanced the Entry Point feature with full city selection integration and automatic Day 1 sync.
+
+### City Selection Integration
+
+**"Near entry point" badges:**
+- Cities near the entry point (same region or <100km) show a badge
+- Helps users quickly identify convenient first destinations
+
+**Auto-expand entry point's region:**
+- The region containing the entry point is automatically expanded in the city list
+- No need to scroll/search for the relevant region
+
+**Smart sorting:**
+- Cities within each region are sorted by distance from entry point
+- Entry point's region appears first in the region list
+- Nearest cities appear at the top of each region
+
+### Auto-sync to Day 1
+
+When the itinerary is generated:
+- Entry Point is automatically set as Day 1's start location
+- Enables routing from arrival point to first activity
+- No manual configuration required
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `src/components/features/trip-builder/CityList.tsx` | Added "Near entry point" badge, region auto-expand, distance-based sorting, `isNearEntryPoint()` helper, `entryPointRegionName` detection |
+| `src/app/trip-builder/page.tsx` | Auto-sync Entry Point to Day 1 start via `setDayEntryPoint()` |
+| `src/data/entryPoints.ts` | Exported `calculateDistance()` function for reuse |
+
+### City Coordinate Validation
+
+Created validation script to detect and fix coordinate/region assignment issues in `cityInterests.json`:
+
+| File | Purpose |
+|------|---------|
+| `scripts/validate-city-coordinates.ts` | Validates city coordinates against region bounds |
+
+**Issues fixed:**
+- Osaka: region "Okinawa" → "Kansai", corrected coordinates
+- Ishikawa: coordinates at Tokyo → corrected to Kanazawa
+
+**Validation features:**
+- Detects coordinates outside region bounds
+- Detects coordinates closer to wrong region center
+- Identifies duplicate coordinates (variant city names)
+- Documents 22 administrative quirks (correct but geographically edge cases)
+
+---
+
 ## Key Files Modified
 
 | File | Changes |
