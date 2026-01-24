@@ -9,13 +9,13 @@ export function FinalCTA() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1480796927426-f609979314bd?w=1920&q=80"
-          alt="Tokyo street at night"
+          src="https://images.unsplash.com/photo-1718166130977-41caff62724e?w=1920&q=80"
+          alt="Floating torii gate over water"
           fill
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-earthy-charcoal/95 via-earthy-charcoal/80 to-earthy-charcoal/60" />
+        <div className="absolute inset-0" style={{ backgroundColor: "rgba(45, 42, 38, 0.6)" }} />
       </div>
 
       {/* Content */}
@@ -27,12 +27,12 @@ export function FinalCTA() {
           transition={{ duration: 0.7 }}
           className="max-w-2xl"
         >
-          <h2 className="font-serif text-4xl font-medium text-white sm:text-5xl lg:text-6xl">
+          <h2 className="font-serif text-2xl font-medium text-white sm:text-3xl lg:text-4xl">
             Your Japan story
             <br />
             <span className="italic">starts here</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-lg text-white/80">
+          <p className="mx-auto mt-6 max-w-md text-base text-white/80">
             Join thousands of travelers who discovered the Japan that
             locals actually experience.
           </p>
@@ -40,13 +40,13 @@ export function FinalCTA() {
           <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
               href="/trip-builder"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-8 text-base font-semibold text-earthy-charcoal shadow-sm transition-all hover:bg-white/90 hover:shadow-md"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-semibold text-charcoal shadow-sm transition-all hover:bg-white/90 hover:shadow-md"
             >
               Start Planning
             </a>
             <a
               href="/explore"
-              className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 bg-transparent px-8 text-base font-semibold text-white transition-all hover:bg-white/10"
+              className="inline-flex h-12 items-center justify-center rounded-full border border-white/30 bg-transparent px-8 text-sm font-semibold text-white transition-all hover:bg-white/10"
             >
               Browse Locations
             </a>
