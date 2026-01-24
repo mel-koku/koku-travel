@@ -9,6 +9,7 @@ import { TripBuilderV2 } from "@/components/features/trip-builder";
 import { useAppState } from "@/state/AppState";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
+import { getEntryPointById } from "@/data/entryPoints";
 
 type PlanApiResponse = {
   trip: { id: string };
@@ -19,7 +20,7 @@ type PlanApiResponse = {
 function TripBuilderV2Content() {
   const router = useRouter();
   const { data, reset } = useTripBuilder();
-  const { createTrip } = useAppState();
+  const { createTrip, setDayEntryPoint } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,6 +61,15 @@ function TripBuilderV2Content() {
         builderData: data as TripBuilderData,
       });
 
+      // Auto-sync Entry Point to Day 1 start
+      if (data.entryPoint?.id && result.itinerary.days.length > 0) {
+        const entryPoint = getEntryPointById(data.entryPoint.id);
+        const day1 = result.itinerary.days[0];
+        if (entryPoint && day1?.id) {
+          setDayEntryPoint(tripId, day1.id, "start", entryPoint);
+        }
+      }
+
       // Reset the builder state
       reset();
 
@@ -69,7 +79,7 @@ function TripBuilderV2Content() {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setIsGenerating(false);
     }
-  }, [data, createTrip, reset, router]);
+  }, [data, createTrip, setDayEntryPoint, reset, router]);
 
   return (
     <>
