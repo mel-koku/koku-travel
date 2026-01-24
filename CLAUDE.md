@@ -19,6 +19,7 @@ Detailed documentation in `.claudedoc/`:
 | [README.md](.claudedoc/README.md) | Master index and quick reference |
 | [tech-stack.md](.claudedoc/tech-stack.md) | Tech stack, project structure, commands, database |
 | [architecture.md](.claudedoc/architecture.md) | React Query, column projections, location service |
+| [style-guide.md](.claudedoc/style-guide.md) | Design system: colors, typography, patterns |
 | [rules.md](.claudedoc/rules.md) | Development rules, known issues, testing |
 | [roadmap.md](.claudedoc/roadmap.md) | Pending features |
 | [archive/](.claudedoc/archive/) | Completed feature history |

@@ -10,6 +10,17 @@ module.exports = {
       fontFamily: {
         serif: ["var(--font-playfair)", "Georgia", "serif"],
       },
+      fontSize: {
+        'caption': ['0.5rem', { lineHeight: '1.4' }],     // 8px - Legal, fine print
+        'small': ['0.707rem', { lineHeight: '1.4' }],    // 11px - Labels, metadata
+        'base': ['1rem', { lineHeight: '1.6' }],         // 16px - Body text
+        'lg': ['1.414rem', { lineHeight: '1.5' }],       // 23px - Lead paragraphs
+        'xl': ['2rem', { lineHeight: '1.3' }],           // 32px - H4, subheadings
+        '2xl': ['2.828rem', { lineHeight: '1.2' }],      // 45px - H3
+        '3xl': ['4rem', { lineHeight: '1.1' }],          // 64px - H2
+        '4xl': ['5.657rem', { lineHeight: '1.05' }],     // 90px - H1
+        'display': ['8rem', { lineHeight: '1' }],        // 128px - Hero headlines
+      },
       zIndex: {
         '60': '60',
         '70': '70',

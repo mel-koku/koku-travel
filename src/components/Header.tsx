@@ -150,15 +150,15 @@ export default function Header() {
   }, [isMobileMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/90 backdrop-blur dark:border-zinc-800 dark:bg-black/80">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 sm:px-6 md:px-8">
         <Link href="/" className="flex items-center gap-2 sm:gap-3">
-          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-dashed border-red-500 text-sm uppercase tracking-wider text-red-500">
+          <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full border border-dashed border-brand-primary text-sm uppercase tracking-wider text-brand-primary">
             K
           </div>
           <div className="flex flex-col">
             <span className="text-xl sm:text-2xl font-semibold">Koku Travel</span>
-            <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-zinc-500">
+            <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-stone">
               Japan Planner
             </span>
           </div>
@@ -168,7 +168,7 @@ export default function Header() {
           {navItems.map((item) => (
             <Link
               key={item.label}
-              className="transition-colors hover:text-red-500"
+              className="transition-colors hover:text-brand-primary"
               href={item.href}
             >
               {item.label}
@@ -181,7 +181,7 @@ export default function Header() {
             <UserMenu isSignedIn={isSignedIn} supabase={supabase} router={router} />
           </div>
           <Link href="/account" className="inline-flex md:hidden">
-              <span className="rounded-full border border-red-500 px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold uppercase tracking-wide text-red-500">
+              <span className="rounded-full border border-brand-primary px-3 py-1.5 sm:px-4 sm:py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary">
               {isSignedIn ? "Account" : "Sign in"}
             </span>
           </Link>
@@ -190,7 +190,7 @@ export default function Header() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-zinc-700 transition-colors hover:bg-zinc-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-lg text-warm-gray transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary md:hidden"
             aria-label="Toggle mobile menu"
             aria-expanded={isMobileMenuOpen}
           >
@@ -231,23 +231,23 @@ export default function Header() {
         />
         <nav
           className={cn(
-            "fixed inset-y-0 right-0 z-[9999] w-full max-w-xs sm:max-w-sm bg-white shadow-xl transition-transform duration-300 ease-out md:hidden overflow-y-auto scroll-smooth",
+            "fixed inset-y-0 right-0 z-[9999] w-full max-w-xs sm:max-w-sm bg-background shadow-xl transition-transform duration-300 ease-out md:hidden overflow-y-auto scroll-smooth",
             isMobileMenuOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
           )}
           aria-label="Mobile navigation"
         >
           <div className="flex h-full flex-col">
-            <div className="flex items-center justify-between border-b border-zinc-200 p-5 sm:p-6">
+            <div className="flex items-center justify-between border-b border-border p-5 sm:p-6">
               <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-red-500 text-sm uppercase tracking-wider text-red-500">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-brand-primary text-sm uppercase tracking-wider text-brand-primary">
                   K
                 </div>
-                <span className="text-lg font-semibold text-gray-900">Koku Travel</span>
+                <span className="text-lg font-semibold text-charcoal">Koku Travel</span>
               </Link>
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-700 transition-colors hover:bg-zinc-100"
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-warm-gray transition-colors hover:bg-sand"
                 aria-label="Close menu"
               >
                 <svg
@@ -269,8 +269,8 @@ export default function Header() {
                     key={item.label}
                     href={item.href}
                     className={cn(
-                      "rounded-lg px-4 py-4 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100",
-                      pathname === item.href && "bg-red-50 text-red-600"
+                      "rounded-lg px-4 py-4 text-base font-medium text-charcoal transition-colors hover:bg-sand",
+                      pathname === item.href && "bg-surface text-brand-primary"
                     )}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
@@ -279,10 +279,10 @@ export default function Header() {
                 ))}
               </div>
 
-                <div className="mt-6 border-t border-zinc-200 pt-6">
+                <div className="mt-6 border-t border-border pt-6">
                   <Link
                     href="/dashboard"
-                    className="block rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100"
+                    className="block rounded-lg px-4 py-3 text-base font-medium text-charcoal transition-colors hover:bg-sand"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dashboard
@@ -290,7 +290,7 @@ export default function Header() {
                   {!isSignedIn && (
                     <Link
                       href="/account"
-                      className="mt-2 block rounded-lg px-4 py-3 text-base font-medium text-gray-900 transition-colors hover:bg-zinc-100"
+                      className="mt-2 block rounded-lg px-4 py-3 text-base font-medium text-charcoal transition-colors hover:bg-sand"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Sign in

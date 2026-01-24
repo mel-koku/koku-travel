@@ -7,12 +7,12 @@ export const metadata = {
 
 export default function GuidesPage() {
   return (
-    <div className="min-h-screen bg-gray-50 pt-8 pb-16">
+    <div className="min-h-screen bg-surface pt-8 pb-16">
       <div className="mx-auto max-w-2xl px-4 text-center">
-        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm sm:p-12">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100">
+        <div className="rounded-2xl border border-border bg-background p-8 shadow-sm sm:p-12">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-sage/10">
             <svg
-              className="h-8 w-8 text-indigo-600"
+              className="h-8 w-8 text-sage"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -25,17 +25,17 @@ export default function GuidesPage() {
               />
             </svg>
           </div>
-          <h1 className="mb-4 text-3xl font-bold text-gray-900">
+          <h1 className="mb-4 text-3xl font-bold text-charcoal">
             Travel Guides Coming Soon
           </h1>
-          <p className="mb-8 text-lg text-gray-600">
+          <p className="mb-8 text-lg text-foreground-secondary">
             We&apos;re working on curated travel guides from local experts to help you
             discover the best of Japan. Check back soon for insider tips, hidden gems,
             and authentic experiences.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="inline-flex items-center justify-center rounded-lg bg-brand-primary px-6 py-3 text-base font-medium text-white shadow-sm transition hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2"
           >
             Start Planning Your Trip
           </Link>

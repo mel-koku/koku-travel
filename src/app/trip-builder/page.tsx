@@ -77,12 +77,12 @@ function TripBuilderV2Content() {
       {/* Loading overlay */}
       {isGenerating && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="rounded-lg bg-white p-6 shadow-xl">
+          <div className="rounded-lg bg-background p-6 shadow-xl">
             <div className="flex items-center gap-3">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
-              <span className="text-lg font-medium text-gray-900">Generating your itinerary...</span>
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
+              <span className="text-lg font-medium text-charcoal">Generating your itinerary...</span>
             </div>
-            <p className="mt-2 text-sm text-gray-500">This may take a moment</p>
+            <p className="mt-2 text-sm text-stone">This may take a moment</p>
           </div>
         </div>
       )}
