@@ -10,20 +10,20 @@ type StickyExploreHeaderProps = {
   activeFilterCount: number;
 };
 
-const SCROLL_THRESHOLD = 80;
+const SCROLL_THRESHOLD = 300;
 
 export function StickyExploreHeader({
   resultsCount,
   onFiltersClick,
   activeFilterCount,
 }: StickyExploreHeaderProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
-  // Track scroll position to collapse/expand header
+  // Track scroll position to show/hide sticky header
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      setIsCollapsed(scrollY > SCROLL_THRESHOLD);
+      setIsVisible(scrollY > SCROLL_THRESHOLD);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -65,50 +65,25 @@ export function StickyExploreHeader({
   );
 
   return (
-    <>
-      {/* Expanded header - shows when at top of page */}
-      <div
-        className={cn(
-          "bg-white transition-all duration-300",
-          isCollapsed ? "h-0 overflow-hidden opacity-0" : "h-auto opacity-100"
-        )}
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-4">
-            <button onClick={onFiltersClick} className={buttonClassName}>
-              {buttonContent}
-            </button>
-            <p className="text-xs text-gray-500">
-              Your favorites and itineraries are in the{" "}
-              <Link href="/dashboard" className="text-red-500 hover:text-red-600 underline">
-                Dashboard
-              </Link>
-            </p>
-          </div>
+    <div
+      className={cn(
+        "sticky top-20 z-40 transition-all duration-300 pointer-events-none",
+        isVisible ? "h-auto opacity-100" : "h-0 overflow-hidden opacity-0"
+      )}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-center gap-2 py-3 pointer-events-auto">
+          <button onClick={onFiltersClick} className={buttonClassName}>
+            {buttonContent}
+          </button>
+          <Link
+            href="/dashboard"
+            className="hidden sm:flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-600 transition hover:border-red-500 hover:text-red-500"
+          >
+            Dashboard
+          </Link>
         </div>
       </div>
-
-      {/* Sticky collapsed header - shows when scrolled */}
-      <div
-        className={cn(
-          "sticky top-20 z-40 transition-all duration-300 pointer-events-none",
-          isCollapsed ? "h-auto opacity-100" : "h-0 overflow-hidden opacity-0"
-        )}
-      >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-2 py-3 pointer-events-auto">
-            <button onClick={onFiltersClick} className={buttonClassName}>
-              {buttonContent}
-            </button>
-            <Link
-              href="/dashboard"
-              className="hidden sm:flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-600 transition hover:border-red-500 hover:text-red-500"
-            >
-              Dashboard
-            </Link>
-          </div>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
