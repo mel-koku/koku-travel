@@ -65,8 +65,8 @@ export function InterestChips({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-gray-900">Interests</h4>
-        <span className="text-xs text-gray-500">
+        <h4 className="text-sm font-medium text-charcoal">Interests</h4>
+        <span className="text-xs text-stone">
           {selectedInterests.length}/{maxSelection}
         </span>
       </div>
@@ -85,11 +85,11 @@ export function InterestChips({
               aria-disabled={isDisabled}
               className={cn(
                 "rounded-full border px-3 py-1.5 text-sm font-medium transition",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
                 isSelected
-                  ? "border-indigo-600 bg-indigo-600 text-white hover:bg-indigo-700"
-                  : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
-                isDisabled && "cursor-not-allowed opacity-50 hover:bg-white"
+                  ? "border-brand-primary bg-brand-primary text-white hover:bg-brand-primary/90"
+                  : "border-border bg-background text-warm-gray hover:bg-sand",
+                isDisabled && "cursor-not-allowed opacity-50 hover:bg-background"
               )}
             >
               {category.name}
@@ -99,13 +99,13 @@ export function InterestChips({
       </div>
 
       {selectedInterests.length === 0 && (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-stone">
           Select interests to see matching cities highlighted on the map.
         </p>
       )}
 
       {isMaxSelected && (
-        <p className="text-xs text-amber-600">
+        <p className="text-xs text-warning">
           Maximum {maxSelection} interests. Deselect one to choose another.
         </p>
       )}

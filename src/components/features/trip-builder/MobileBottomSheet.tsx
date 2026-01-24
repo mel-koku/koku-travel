@@ -149,7 +149,7 @@ export function MobileBottomSheet({
       <div
         ref={sheetRef}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-2xl bg-white shadow-xl transition-transform lg:hidden",
+          "fixed inset-x-0 bottom-0 z-50 flex flex-col rounded-t-2xl bg-background shadow-xl transition-transform lg:hidden",
           isDragging && "transition-none"
         )}
         style={{
@@ -165,18 +165,18 @@ export function MobileBottomSheet({
           className="flex h-6 cursor-grab items-center justify-center active:cursor-grabbing"
           onMouseDown={handleMouseDown}
         >
-          <div className="h-1 w-10 rounded-full bg-gray-300" />
+          <div className="h-1 w-10 rounded-full bg-border" />
         </div>
 
         {/* Header */}
         <div
-          className="flex items-center justify-between border-b border-gray-200 px-4 pb-2"
+          className="flex items-center justify-between border-b border-border px-4 pb-2"
           onClick={handleToggle}
         >
           <div className="flex items-center gap-2">
             <svg
               className={cn(
-                "h-5 w-5 text-gray-500 transition-transform",
+                "h-5 w-5 text-stone transition-transform",
                 isOpen && "rotate-180"
               )}
               fill="none"
@@ -190,7 +190,7 @@ export function MobileBottomSheet({
                 d="M5 15l7-7 7 7"
               />
             </svg>
-            <span className="text-sm font-semibold text-gray-900">
+            <span className="text-sm font-semibold text-charcoal">
               {isOpen ? "Preview" : "Show Preview"}
             </span>
           </div>
@@ -219,7 +219,7 @@ export function PreviewToggleButton({ onClick, isOpen }: PreviewToggleButtonProp
     <button
       type="button"
       onClick={onClick}
-      className="fixed bottom-20 right-4 z-30 flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-lg transition hover:bg-indigo-700 active:scale-95 lg:hidden"
+      className="fixed bottom-20 right-4 z-30 flex items-center gap-2 rounded-full bg-brand-primary px-4 py-2.5 text-sm font-medium text-white shadow-lg transition hover:bg-brand-primary/90 active:scale-95 lg:hidden"
     >
       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path
