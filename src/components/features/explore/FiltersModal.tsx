@@ -35,6 +35,13 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
+type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
+
+type SortOption = {
+  id: SortOptionId;
+  label: string;
+};
+
 type FiltersModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -68,6 +75,10 @@ type FiltersModalProps = {
   resultsCount: number;
   // Clear all
   onClearAll: () => void;
+  // Sort options
+  sortOptions: readonly SortOption[];
+  selectedSort: SortOptionId;
+  onSortChange: (sort: SortOptionId) => void;
 };
 
 // Price options (0 = Free, 1-4 = $ to $$$$)
@@ -102,6 +113,9 @@ export function FiltersModal({
   onVegetarianFriendlyChange,
   resultsCount,
   onClearAll,
+  sortOptions,
+  selectedSort,
+  onSortChange,
 }: FiltersModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const [isMoreFiltersExpanded, setIsMoreFiltersExpanded] = useState(false);
@@ -167,7 +181,8 @@ export function FiltersModal({
     selectedPriceLevel !== null ||
     selectedDuration ||
     wheelchairAccessible ||
-    vegetarianFriendly;
+    vegetarianFriendly ||
+    selectedSort !== "recommended";
 
   // Count of more filters that are active
   const moreFiltersActiveCount = [
@@ -252,6 +267,21 @@ export function FiltersModal({
                 </>
               )}
             </p>
+          </div>
+
+          {/* SORT BY Section */}
+          <div>
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Sort by</h3>
+            <div className="flex flex-wrap gap-2">
+              {sortOptions.map((option) => (
+                <FilterChip
+                  key={option.id}
+                  label={option.label}
+                  isSelected={selectedSort === option.id}
+                  onClick={() => onSortChange(option.id)}
+                />
+              ))}
+            </div>
           </div>
 
           {/* WHERE Section */}
