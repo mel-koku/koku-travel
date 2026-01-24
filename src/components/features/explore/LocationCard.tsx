@@ -70,7 +70,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
   );
 
   return (
-    <article className="group relative text-gray-900">
+    <article className="group relative text-charcoal">
       {/* Trip picker modal */}
       <TripPickerModal
         isOpen={tripPickerOpen}
@@ -81,16 +81,16 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
       />
 
       {/* Card container with rounded corners */}
-      <div className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
         {/* Main clickable area for image */}
         <button
           type="button"
           onClick={() => onSelect?.(location)}
           ref={buttonRef}
-          className="block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2"
+          className="block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
         >
           {/* Image */}
-          <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
+          <div className="relative aspect-square w-full overflow-hidden bg-surface">
             <Image
               src={imageSrc || FALLBACK_IMAGE_SRC}
               alt={displayName}
@@ -103,7 +103,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
         </button>
 
         {/* Action bar below image */}
-        <div className="flex items-center justify-between border-t border-gray-100 px-3 py-2">
+        <div className="flex items-center justify-between border-t border-border px-3 py-2">
           <button
             type="button"
             onClick={(event) => {
@@ -111,8 +111,8 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
               toggleWishlist(location.id);
             }}
             aria-label={active ? "Remove from favorites" : "Add to favorites"}
-            className={`rounded-md p-1.5 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 ${
-              active ? "text-red-500" : "text-gray-600"
+            className={`rounded-full p-1.5 transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
+              active ? "text-error" : "text-foreground-secondary"
             }`}
           >
             <HeartIcon active={active} animating={heartAnimating} />
@@ -122,8 +122,8 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
             type="button"
             onClick={handleToggleItinerary}
             aria-label={locationInItinerary ? "Remove from itinerary" : "Add to itinerary"}
-            className={`flex items-center gap-1.5 rounded-md px-2 py-1 text-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 ${
-              locationInItinerary ? "text-indigo-600" : "text-gray-600"
+            className={`flex items-center gap-1.5 rounded-full px-2 py-1 text-sm transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
+              locationInItinerary ? "text-sage" : "text-foreground-secondary"
             }`}
           >
             {locationInItinerary ? (
@@ -144,32 +144,32 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
       >
         <div className="space-y-1">
           <div className="flex items-start justify-between gap-2">
-            <h3 className="font-medium text-gray-900 line-clamp-1">{displayName}</h3>
+            <h3 className="font-medium text-charcoal line-clamp-1">{displayName}</h3>
             {rating ? (
               <div className="flex shrink-0 items-center gap-1 text-sm">
                 <StarIcon />
-                <span className="text-gray-900">{rating.toFixed(1)}</span>
+                <span className="text-charcoal">{rating.toFixed(1)}</span>
                 {reviewCount ? (
-                  <span className="text-gray-500">({formatReviewCount(reviewCount)})</span>
+                  <span className="text-stone">({formatReviewCount(reviewCount)})</span>
                 ) : null}
               </div>
             ) : null}
           </div>
 
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-stone">
             {location.city}, {location.region}
           </p>
 
-          <p className="text-sm text-gray-500 line-clamp-2">{summary}</p>
+          <p className="text-sm text-stone line-clamp-2">{summary}</p>
 
           <div className="flex items-center gap-2 pt-1">
-            <span className="text-sm text-gray-900 font-medium capitalize">
+            <span className="text-sm text-charcoal font-medium capitalize">
               {location.category}
             </span>
             {estimatedDuration ? (
               <>
-                <span className="text-gray-300">·</span>
-                <span className="text-sm text-gray-500">
+                <span className="text-border">·</span>
+                <span className="text-sm text-stone">
                   {estimatedDuration}
                 </span>
               </>
@@ -191,8 +191,8 @@ type HeartIconProps = {
 export function HeartIcon({ active, animating, className, variant = "inline" }: HeartIconProps) {
   const baseClass = className ?? "h-5 w-5";
   const colorClass = variant === "overlay"
-    ? active ? "fill-red-500 stroke-red-500" : "fill-black/50 stroke-white"
-    : active ? "fill-red-500 stroke-red-500" : "fill-none stroke-current";
+    ? active ? "fill-error stroke-error" : "fill-black/50 stroke-white"
+    : active ? "fill-error stroke-error" : "fill-none stroke-current";
 
   return (
     <svg

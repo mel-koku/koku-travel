@@ -199,16 +199,16 @@ export function FiltersModal({
     >
       <div
         ref={modalRef}
-        className="w-full max-w-2xl max-h-[90vh] bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col animate-in slide-in-from-bottom-4 duration-300"
+        className="w-full max-w-2xl max-h-[90vh] bg-background rounded-t-3xl sm:rounded-3xl shadow-2xl flex flex-col animate-in slide-in-from-bottom-4 duration-300"
         role="dialog"
         aria-modal="true"
         aria-labelledby="filters-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-gray-100 transition"
+            className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-sand transition"
             aria-label="Close filters"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -226,7 +226,7 @@ export function FiltersModal({
           {/* Search */}
           <div className="relative">
             <svg
-              className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"
+              className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-stone"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -239,15 +239,15 @@ export function FiltersModal({
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search destinations..."
-              className="w-full rounded-xl border border-gray-300 bg-white py-3 pl-12 pr-4 text-base placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+              className="w-full rounded-full border border-border bg-background py-3 pl-12 pr-4 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
             />
             {query && (
               <button
                 onClick={() => onQueryChange("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-sand"
                 aria-label="Clear search"
               >
-                <svg className="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg className="h-4 w-4 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -256,14 +256,14 @@ export function FiltersModal({
 
           {/* Results summary */}
           <div className="flex justify-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-foreground-secondary">
               {query ? (
                 <>
-                  Showing <span className="font-semibold text-gray-900">{resultsCount.toLocaleString()}</span> places for &ldquo;<span className="font-medium">{query}</span>&rdquo;
+                  Showing <span className="font-semibold text-charcoal">{resultsCount.toLocaleString()}</span> places for &ldquo;<span className="font-medium">{query}</span>&rdquo;
                 </>
               ) : (
                 <>
-                  <span className="font-semibold text-gray-900">{resultsCount.toLocaleString()}</span> places to explore
+                  <span className="font-semibold text-charcoal">{resultsCount.toLocaleString()}</span> places to explore
                 </>
               )}
             </p>
@@ -271,7 +271,7 @@ export function FiltersModal({
 
           {/* SORT BY Section */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Sort by</h3>
+            <h3 className="text-xs font-semibold text-stone uppercase tracking-wider mb-3">Sort by</h3>
             <div className="flex flex-wrap gap-2">
               {sortOptions.map((option) => (
                 <FilterChip
@@ -286,7 +286,7 @@ export function FiltersModal({
 
           {/* WHERE Section */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Where</h3>
+            <h3 className="text-xs font-semibold text-stone uppercase tracking-wider mb-3">Where</h3>
             <div className="flex flex-wrap gap-2">
               <FilterChip
                 label="All"
@@ -306,7 +306,7 @@ export function FiltersModal({
 
           {/* WHAT TYPE Section */}
           <div>
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">What type</h3>
+            <h3 className="text-xs font-semibold text-stone uppercase tracking-wider mb-3">What type</h3>
 
             {/* Category buttons */}
             <div className="flex flex-wrap gap-2 mb-3">
@@ -321,11 +321,11 @@ export function FiltersModal({
                     className={cn(
                       "flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition",
                       isSelected
-                        ? "border-gray-900 bg-gray-900 text-white"
-                        : "border-gray-300 bg-white text-gray-700 hover:border-gray-900"
+                        ? "border-brand-primary bg-brand-primary text-white"
+                        : "border-border bg-background text-warm-gray hover:border-brand-primary"
                     )}
                   >
-                    <span className={cn(isSelected ? "text-white" : "text-gray-500")}>
+                    <span className={cn(isSelected ? "text-white" : "text-stone")}>
                       {icon}
                     </span>
                     <span>{category.label}</span>
@@ -336,8 +336,8 @@ export function FiltersModal({
 
             {/* Sub-types - shown when categories are selected */}
             {availableSubTypes.length > 0 && (
-              <div className="pl-4 border-l-2 border-gray-200">
-                <p className="text-xs text-gray-500 mb-2">Narrow down by type:</p>
+              <div className="pl-4 border-l-2 border-border">
+                <p className="text-xs text-stone mb-2">Narrow down by type:</p>
                 <div className="flex flex-wrap gap-2">
                   {availableSubTypes.map((subType) => (
                     <FilterChip
@@ -354,24 +354,24 @@ export function FiltersModal({
           </div>
 
           {/* MORE FILTERS Section (Collapsible) */}
-          <div className="border-t border-gray-200 pt-4">
+          <div className="border-t border-border pt-4">
             <button
               onClick={() => setIsMoreFiltersExpanded(!isMoreFiltersExpanded)}
               className="flex items-center justify-between w-full text-left"
             >
               <div className="flex items-center gap-2">
-                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <h3 className="text-xs font-semibold text-stone uppercase tracking-wider">
                   More filters
                 </h3>
                 {moreFiltersActiveCount > 0 && (
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-900 text-xs font-semibold text-white">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
                     {moreFiltersActiveCount}
                   </span>
                 )}
               </div>
               <svg
                 className={cn(
-                  "h-5 w-5 text-gray-400 transition-transform",
+                  "h-5 w-5 text-stone transition-transform",
                   isMoreFiltersExpanded && "rotate-180"
                 )}
                 fill="none"
@@ -387,7 +387,7 @@ export function FiltersModal({
               <div className="mt-4 space-y-6">
                 {/* Duration */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Duration</h4>
+                  <h4 className="text-sm font-medium text-charcoal mb-2">Duration</h4>
                   <div className="flex flex-wrap gap-2">
                     <FilterChip
                       label="Any"
@@ -409,7 +409,7 @@ export function FiltersModal({
 
                 {/* Price */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Price</h4>
+                  <h4 className="text-sm font-medium text-charcoal mb-2">Price</h4>
                   <div className="flex flex-wrap gap-2">
                     <FilterChip
                       label="Any"
@@ -456,14 +456,14 @@ export function FiltersModal({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div className="border-t border-border px-6 py-4 flex items-center justify-between">
           <button
             onClick={onClearAll}
             className={cn(
               "text-sm font-medium underline underline-offset-2 transition",
               hasActiveFilters
-                ? "text-gray-900 hover:text-gray-600"
-                : "text-gray-400 cursor-not-allowed"
+                ? "text-charcoal hover:text-warm-gray"
+                : "text-stone cursor-not-allowed"
             )}
             disabled={!hasActiveFilters}
           >
@@ -471,7 +471,7 @@ export function FiltersModal({
           </button>
           <button
             onClick={onClose}
-            className="rounded-lg bg-gray-900 px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800 transition"
+            className="rounded-full bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 transition"
           >
             Show {resultsCount.toLocaleString()} places
           </button>
@@ -496,8 +496,8 @@ function FilterChip({ label, isSelected, onClick, size = "default" }: FilterChip
         "rounded-full border font-medium transition",
         size === "small" ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm",
         isSelected
-          ? "border-gray-900 bg-gray-900 text-white"
-          : "border-gray-300 bg-white text-gray-700 hover:border-gray-900"
+          ? "border-brand-primary bg-brand-primary text-white"
+          : "border-border bg-background text-warm-gray hover:border-brand-primary"
       )}
     >
       {label}
@@ -524,17 +524,17 @@ function ToggleOption({ label, description, checked, onChange }: ToggleOptionPro
         />
         <div className={cn(
           "w-10 h-6 rounded-full transition-colors",
-          checked ? "bg-gray-900" : "bg-gray-200 group-hover:bg-gray-300"
+          checked ? "bg-brand-primary" : "bg-sand group-hover:bg-border"
         )}>
           <div className={cn(
-            "absolute top-1 w-4 h-4 bg-white rounded-full transition-transform shadow-sm",
+            "absolute top-1 w-4 h-4 bg-background rounded-full transition-transform shadow-sm",
             checked ? "translate-x-5" : "translate-x-1"
           )} />
         </div>
       </div>
       <div className="flex-1">
-        <span className="text-sm font-medium text-gray-900">{label}</span>
-        <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+        <span className="text-sm font-medium text-charcoal">{label}</span>
+        <p className="text-xs text-stone mt-0.5">{description}</p>
       </div>
     </label>
   );

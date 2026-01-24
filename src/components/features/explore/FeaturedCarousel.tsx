@@ -175,13 +175,13 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
       {/* Header - Augmented Fourth scale: 32px title, 16px subtitle */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-[32px] font-bold text-gray-900 leading-tight">Featured Destinations</h2>
-          <p className="text-[16px] text-gray-500 mt-1">Discover Japan's most loved places</p>
+          <h2 className="text-[32px] font-bold text-charcoal leading-tight">Featured Destinations</h2>
+          <p className="text-[16px] text-stone mt-1">Discover Japan's most loved places</p>
         </div>
         <div className="hidden sm:flex items-center gap-2">
           <button
             onClick={() => scroll("left")}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 transition hover:border-gray-400 hover:bg-gray-50 shadow-sm"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground-secondary transition hover:border-charcoal hover:bg-sand shadow-sm"
             aria-label="Scroll left"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -190,7 +190,7 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
           </button>
           <button
             onClick={() => scroll("right")}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 transition hover:border-gray-400 hover:bg-gray-50 shadow-sm"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground-secondary transition hover:border-charcoal hover:bg-sand shadow-sm"
             aria-label="Scroll right"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -269,7 +269,7 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
         className={`
           flex-none rounded-2xl overflow-hidden relative group
           text-left cursor-pointer
-          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900
+          focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal
           transition-all duration-500 ease-out
           ${isSpotlight
             ? "scale-150 z-10 shadow-2xl ring-2 ring-white/30 hover:ring-white/50"
@@ -278,7 +278,7 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
         `}
       >
         {/* Background Image */}
-        <div className="absolute inset-0 bg-gray-900">
+        <div className="absolute inset-0 bg-charcoal">
           <Image
             src={imageSrc || FALLBACK_IMAGE}
             alt={displayName}
@@ -293,9 +293,9 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
 
         {/* Rating Badge - Glass-morphism */}
         {rating > 0 && (
-          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-2.5 py-1.5 rounded-lg shadow-lg">
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm px-2.5 py-1.5 rounded-lg shadow-lg">
             <StarIcon />
-            <span className="text-sm font-semibold text-gray-900">{rating.toFixed(1)}</span>
+            <span className="text-sm font-semibold text-charcoal">{rating.toFixed(1)}</span>
           </div>
         )}
 

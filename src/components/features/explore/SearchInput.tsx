@@ -16,13 +16,13 @@ export function SearchInput({
       <label htmlFor="explore-search" className="sr-only">
         Search locations
       </label>
-      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gray-400">
+      <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone">
         <MagnifyingGlassIcon className="h-4 w-4" aria-hidden="true" />
       </span>
       <input
         id="explore-search"
         type="text"
-        className="w-full h-10 rounded-2xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 pl-9 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full h-10 rounded-full border border-border bg-surface text-charcoal placeholder-stone pl-9 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -31,7 +31,7 @@ export function SearchInput({
         <button
           type="button"
           onClick={() => onChange("")}
-          className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-2xl p-1"
+          className="absolute inset-y-0 right-2 flex items-center text-stone hover:text-warm-gray focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-full p-1"
           aria-label="Clear search"
         >
           <svg

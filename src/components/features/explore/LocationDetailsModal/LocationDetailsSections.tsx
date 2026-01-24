@@ -10,15 +10,15 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-indigo-600">
+        <span className="rounded-full bg-sage/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sage">
           {location.category}
         </span>
         {details.rating ? (
-          <span className="flex items-center gap-1 text-sm font-medium text-gray-700">
+          <span className="flex items-center gap-1 text-sm font-medium text-warm-gray">
             <StarIcon />
             {details.rating.toFixed(1)}
             {details.userRatingCount ? (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-stone">
                 ({details.userRatingCount.toLocaleString()} reviews)
               </span>
             ) : null}
@@ -30,28 +30,28 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
         <div className="space-y-6">
           {details.editorialSummary ? (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
                 Overview
               </h3>
-              <p className="text-sm text-gray-700 leading-relaxed">{details.editorialSummary}</p>
+              <p className="text-sm text-warm-gray leading-relaxed">{details.editorialSummary}</p>
             </section>
           ) : null}
 
           {details.formattedAddress ? (
             <section className="space-y-1">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
                 Address
               </h3>
-              <p className="text-sm text-gray-700">{details.formattedAddress}</p>
+              <p className="text-sm text-warm-gray">{details.formattedAddress}</p>
             </section>
           ) : null}
 
           {details.websiteUri || details.internationalPhoneNumber || details.googleMapsUri ? (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
                 Details
               </h3>
-              <ul className="space-y-1 text-sm text-indigo-600">
+              <ul className="space-y-1 text-sm text-sage">
                 {details.websiteUri ? (
                   <li>
                     <a
@@ -65,7 +65,7 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
                   </li>
                 ) : null}
                 {details.internationalPhoneNumber ? (
-                  <li className="text-gray-700">{details.internationalPhoneNumber}</li>
+                  <li className="text-warm-gray">{details.internationalPhoneNumber}</li>
                 ) : null}
                 {details.googleMapsUri ? (
                   <li>
@@ -86,10 +86,10 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
           {(details.currentOpeningHours?.length ?? 0) > 0 ||
           (details.regularOpeningHours?.length ?? 0) > 0 ? (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
                 Opening hours
               </h3>
-              <ul className="space-y-1 text-sm text-gray-700">
+              <ul className="space-y-1 text-sm text-warm-gray">
                 {(details.currentOpeningHours ?? details.regularOpeningHours ?? []).map(
                   (entry) => (
                     <li key={entry}>{entry}</li>
@@ -110,9 +110,9 @@ function LocationReviewsSection({ details }: { details: LocationDetails }) {
   return (
     <div className="space-y-4">
       <div className="space-y-1">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-500">Reviews</h3>
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">Reviews</h3>
         {details.fetchedAt ? (
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-stone">
             Updated {new Date(details.fetchedAt).toLocaleString()}
           </p>
         ) : null}
@@ -120,31 +120,31 @@ function LocationReviewsSection({ details }: { details: LocationDetails }) {
 
       <div className="max-h-64 space-y-3 overflow-y-auto pr-1">
         {details.reviews.length === 0 ? (
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-stone">
             Google hasn&apos;t published public review snippets for this location yet.
           </p>
         ) : (
           details.reviews.map((review, index) => (
             <article
               key={`${review.authorName}-${review.publishTime ?? index}`}
-              className="rounded-2xl border border-gray-100 bg-gray-50 p-4"
+              className="rounded-2xl border border-border bg-surface p-4"
             >
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">{review.authorName}</p>
+                  <p className="text-sm font-semibold text-charcoal">{review.authorName}</p>
                   {review.relativePublishTimeDescription ? (
-                    <p className="text-xs text-gray-500">{review.relativePublishTimeDescription}</p>
+                    <p className="text-xs text-stone">{review.relativePublishTimeDescription}</p>
                   ) : null}
                 </div>
                 {review.rating ? (
-                  <span className="flex items-center gap-1 text-xs font-medium text-gray-700">
+                  <span className="flex items-center gap-1 text-xs font-medium text-warm-gray">
                     <StarIcon />
                     {review.rating.toFixed(1)}
                   </span>
                 ) : null}
               </div>
               {review.text ? (
-                <p className="mt-2 text-sm leading-relaxed text-gray-700">{review.text}</p>
+                <p className="mt-2 text-sm leading-relaxed text-warm-gray">{review.text}</p>
               ) : null}
             </article>
           ))
