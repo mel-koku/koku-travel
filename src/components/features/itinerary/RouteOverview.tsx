@@ -38,7 +38,7 @@ export function RouteOverview({
 }: RouteOverviewProps) {
   if (placeActivities.length === 0) {
     return (
-      <p className="mt-2 text-sm text-gray-500">
+      <p className="mt-2 text-sm text-stone">
         Add another stop to see door-to-door travel time estimates.
       </p>
     );
@@ -60,15 +60,15 @@ export function RouteOverview({
         return (
           <li
             key={activity.id}
-            className="rounded-lg border border-indigo-100 bg-indigo-50/60 p-3 text-sm text-indigo-900"
+            className="rounded-lg border border-sage/20 bg-sage/10 p-3 text-sm text-charcoal"
           >
             <div className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
                 {placeNumber}
               </div>
-              <div className="flex-1 space-y-1 text-indigo-900">
+              <div className="flex-1 space-y-1 text-charcoal">
                 <p className="font-semibold">{activity.title}</p>
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-indigo-700">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-sage">
                   <span>{TIME_OF_DAY_LABEL[activity.timeOfDay]}</span>
                   {activity.schedule?.arrivalTime ? (
                     <span>
@@ -83,43 +83,43 @@ export function RouteOverview({
                   ) : null}
                 </div>
                 {activity.notes ? (
-                  <p className="text-xs text-indigo-600 line-clamp-2">{activity.notes}</p>
+                  <p className="text-xs text-sage line-clamp-2">{activity.notes}</p>
                 ) : null}
                 {activity.tags && activity.tags.length > 0 ? (
                   <div className="mt-1 flex flex-wrap gap-1 text-[11px]">
                     {activity.tags.slice(0, 3).map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full bg-white/60 px-2 py-0.5 font-semibold text-indigo-700"
+                        className="rounded-full bg-background/60 px-2 py-0.5 font-semibold text-sage"
                       >
                         {tag}
                       </span>
                     ))}
                     {activity.tags.length > 3 ? (
-                      <span className="rounded-full bg-white/60 px-2 py-0.5 font-medium text-indigo-700">
+                      <span className="rounded-full bg-background/60 px-2 py-0.5 font-medium text-sage">
                         +{activity.tags.length - 3} more
                       </span>
                     ) : null}
                   </div>
                 ) : null}
                 {index === 0 ? (
-                  <p className="text-xs font-medium text-indigo-700">Day kickoff</p>
+                  <p className="text-xs font-medium text-sage">Day kickoff</p>
                 ) : null}
               </div>
               <div className="mt-0.5 shrink-0">
                 {point ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
                     On map
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
                     Location unknown
                   </span>
                 )}
               </div>
             </div>
             {index > 0 ? (
-              <div className="mt-3 rounded-lg border border-indigo-100 bg-white/70 p-3 text-xs text-indigo-800">
+              <div className="mt-3 rounded-lg border border-sage/20 bg-background/70 p-3 text-xs text-foreground-secondary">
                 <p className="font-semibold">
                   Travel from Stop {previousNumber} ·{" "}
                   {previousActivity?.title ?? "Previous stop"}
@@ -132,18 +132,18 @@ export function RouteOverview({
                         .join(" · ") || "Travel details unavailable"}
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-sage/10 px-2 py-0.5 text-[11px] font-semibold text-sage">
                         {formatModeLabel(travelSegment.mode as ItineraryTravelMode)}
                       </span>
                       {travelSegment.isFallback ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning">
                           Estimated
                         </span>
                       ) : null}
                     </div>
                   </>
                 ) : (
-                  <p className="mt-0.5 text-indigo-700">
+                  <p className="mt-0.5 text-sage">
                     Travel estimate unavailable for this leg. We&apos;ll keep your place on
                     the map once we can locate it.
                   </p>

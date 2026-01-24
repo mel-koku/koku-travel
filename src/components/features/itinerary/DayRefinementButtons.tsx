@@ -115,7 +115,7 @@ export function DayRefinementButtons({
             type="button"
             onClick={() => handleRefine(option.type)}
             disabled={isRefining}
-            className="flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-warm-gray transition hover:border-sage/30 hover:bg-sage/10 hover:text-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
             title={option.description}
           >
             <span>{option.icon}</span>
@@ -124,10 +124,10 @@ export function DayRefinementButtons({
         ))}
       </div>
       {refinementError && (
-        <p className="text-xs text-red-600">{refinementError}</p>
+        <p className="text-xs text-error">{refinementError}</p>
       )}
       {isRefining && (
-        <p className="text-xs text-gray-500">Refining day...</p>
+        <p className="text-xs text-stone">Refining day...</p>
       )}
     </div>
   );

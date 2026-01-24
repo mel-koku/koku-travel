@@ -66,8 +66,8 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
       <div
         ref={ref}
         style={dragStyles}
-        className={`rounded-2xl border border-dashed border-indigo-200 bg-indigo-50/80 p-4 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 ${
-          isDragging ? "ring-2 ring-indigo-300 shadow-md" : ""
+        className={`rounded-2xl border border-dashed border-sage/30 bg-sage/10 p-4 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
+          isDragging ? "ring-2 ring-sage/30 shadow-md" : ""
         }`}
         data-kind="note"
         data-activity-id={activity.id}
@@ -81,7 +81,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
               attributes={attributes}
               listeners={listeners}
             />
-            <span className="text-sm font-semibold text-indigo-700">
+            <span className="text-sm font-semibold text-sage">
               {activity.title ?? "Note"}
             </span>
           </div>
@@ -92,7 +92,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
               event.stopPropagation();
               onDelete();
             }}
-            className="text-sm font-semibold text-red-600 hover:text-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+            className="text-sm font-semibold text-error hover:text-error/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
             aria-label={`Delete note for ${TIME_OF_DAY_LABEL[activity.timeOfDay]}`}
           >
             Delete
@@ -100,17 +100,17 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
-          <div className="flex flex-col gap-2 rounded-xl bg-white/60 p-3 shadow-sm">
-            <span className="text-sm font-medium text-gray-700">Time (optional)</span>
+          <div className="flex flex-col gap-2 rounded-xl bg-background/60 p-3 shadow-sm">
+            <span className="text-sm font-medium text-warm-gray">Time (optional)</span>
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex flex-col gap-1">
-                <label htmlFor={noteStartId} className="text-xs font-medium text-gray-600">
+                <label htmlFor={noteStartId} className="text-xs font-medium text-foreground-secondary">
                   Start time
                 </label>
                 <input
                   id={noteStartId}
                   type="time"
-                  className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   value={noteStartTime}
                   onChange={(event) => {
                     const value = event.target.value;
@@ -122,15 +122,15 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
                   aria-describedby={timeInvalid ? timeErrorId : undefined}
                 />
               </div>
-              <span className="text-sm text-gray-500">to</span>
+              <span className="text-sm text-stone">to</span>
               <div className="flex flex-col gap-1">
-                <label htmlFor={noteEndId} className="text-xs font-medium text-gray-600">
+                <label htmlFor={noteEndId} className="text-xs font-medium text-foreground-secondary">
                   End time
                 </label>
                 <input
                   id={noteEndId}
                   type="time"
-                  className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   value={noteEndTime}
                   onChange={(event) => {
                     const value = event.target.value;
@@ -144,24 +144,24 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
               </div>
             </div>
             {timeInvalid ? (
-              <p id={timeErrorId} className="text-sm text-red-600">
+              <p id={timeErrorId} className="text-sm text-error">
                 End time must be after start time.
               </p>
             ) : null}
             {noteStartTime && noteEndTime ? (
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-foreground-secondary">
                 {`${noteStartTime} – ${noteEndTime}`}
               </p>
             ) : null}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor={notesId} className="text-sm font-semibold text-gray-700">
+            <label htmlFor={notesId} className="text-sm font-semibold text-warm-gray">
               {noteLabel}
             </label>
             <textarea
               id={notesId}
-              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-xl border border-border px-3 py-2 text-sm text-warm-gray shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
               rows={3}
               value={notesValue}
               onChange={handleNotesChange}

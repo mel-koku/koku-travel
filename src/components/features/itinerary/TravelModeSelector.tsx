@@ -200,13 +200,13 @@ export function TravelModeSelector({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-1.5 text-sm text-gray-700 hover:text-gray-900 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+        className="inline-flex items-center gap-1.5 text-sm text-warm-gray hover:text-charcoal transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
         <span>{formatDurationWithMode(durationMinutes, currentMode)}</span>
         <svg
-          className={cn("h-4 w-4 transition-transform text-gray-500", isOpen && "rotate-180")}
+          className={cn("h-4 w-4 transition-transform text-stone", isOpen && "rotate-180")}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -216,7 +216,7 @@ export function TravelModeSelector({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-gray-200 bg-white shadow-lg ring-1 ring-black/5">
+        <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-border bg-background shadow-lg ring-1 ring-black/5">
           <div className="p-1">
             {TRAVEL_MODES.map((option) => {
               const estimate = getEstimate(option.mode);
@@ -238,7 +238,7 @@ export function TravelModeSelector({
                     "w-full flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-xs transition",
                     isCurrentMode
                       ? `${option.bgColor} ${option.color} font-semibold`
-                      : "text-gray-700 hover:bg-gray-50",
+                      : "text-warm-gray hover:bg-sand",
                   )}
                 >
                   <div className="flex items-center gap-2 min-w-0">
@@ -246,7 +246,7 @@ export function TravelModeSelector({
                     <span className="capitalize flex-shrink-0">{option.label}</span>
                     {isEstimateLoading && (
                       <svg
-                        className="h-3 w-3 animate-spin text-gray-400"
+                        className="h-3 w-3 animate-spin text-stone"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -269,7 +269,7 @@ export function TravelModeSelector({
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     {hasEstimate && (
-                      <span className={cn("text-[11px] font-medium", isCurrentMode ? option.color : "text-gray-500")}>
+                      <span className={cn("text-[11px] font-medium", isCurrentMode ? option.color : "text-stone")}>
                         {formatDuration(estimateDuration)}
                       </span>
                     )}
@@ -287,7 +287,7 @@ export function TravelModeSelector({
               );
             })}
             {isLoadingAll && (
-              <div className="px-2 py-1.5 text-[11px] text-gray-500 text-center">
+              <div className="px-2 py-1.5 text-[11px] text-stone text-center">
                 Loading route estimates...
               </div>
             )}
