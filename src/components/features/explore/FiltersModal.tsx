@@ -68,9 +68,6 @@ type FiltersModalProps = {
   // Dietary filter
   vegetarianFriendly: boolean;
   onVegetarianFriendlyChange: (value: boolean) => void;
-  // Status filter
-  hideClosedLocations: boolean;
-  onHideClosedLocationsChange: (value: boolean) => void;
   // Results count
   resultsCount: number;
   // Clear all
@@ -109,8 +106,6 @@ export function FiltersModal({
   onWheelchairAccessibleChange,
   vegetarianFriendly,
   onVegetarianFriendlyChange,
-  hideClosedLocations,
-  onHideClosedLocationsChange,
   resultsCount,
   onClearAll,
 }: FiltersModalProps) {
@@ -179,8 +174,7 @@ export function FiltersModal({
     selectedPriceLevel ||
     selectedDuration ||
     wheelchairAccessible ||
-    vegetarianFriendly ||
-    hideClosedLocations;
+    vegetarianFriendly;
 
   // Count of more filters that are active
   const moreFiltersActiveCount = [
@@ -189,7 +183,6 @@ export function FiltersModal({
     selectedPriceLevel,
     wheelchairAccessible,
     vegetarianFriendly,
-    hideClosedLocations,
   ].filter(Boolean).length;
 
   return (
@@ -462,16 +455,6 @@ export function FiltersModal({
                     />
                   </div>
                 )}
-
-                {/* Hide Closed */}
-                <div>
-                  <ToggleOption
-                    label="Hide closed locations"
-                    description="Hide permanently closed locations"
-                    checked={hideClosedLocations}
-                    onChange={onHideClosedLocationsChange}
-                  />
-                </div>
               </div>
             )}
           </div>

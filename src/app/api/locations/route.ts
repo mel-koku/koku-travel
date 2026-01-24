@@ -57,11 +57,13 @@ export async function GET(request: NextRequest) {
 
     // Get total count for pagination metadata (with filters)
     // Only count locations with valid place_id to match filtered results
+    // Exclude permanently closed locations at the database level
     let countQuery = supabase
       .from("locations")
       .select("*", { count: "exact", head: true })
       .not("place_id", "is", null)
-      .neq("place_id", "");
+      .neq("place_id", "")
+      .neq("business_status", "PERMANENTLY_CLOSED");
     if (region) countQuery = countQuery.eq("region", region);
     if (category) countQuery = countQuery.eq("category", category);
     if (search) countQuery = countQuery.ilike("name", `%${search}%`);
@@ -84,11 +86,13 @@ export async function GET(request: NextRequest) {
 
     // Fetch paginated locations (with filters)
     // Only fetch locations with valid place_id to prevent errors
+    // Exclude permanently closed locations at the database level
     let dataQuery = supabase
       .from("locations")
       .select(LOCATION_LISTING_COLUMNS)
       .not("place_id", "is", null)
-      .neq("place_id", "");
+      .neq("place_id", "")
+      .neq("business_status", "PERMANENTLY_CLOSED");
     if (region) dataQuery = dataQuery.eq("region", region);
     if (category) dataQuery = dataQuery.eq("category", category);
     if (search) dataQuery = dataQuery.ilike("name", `%${search}%`);
