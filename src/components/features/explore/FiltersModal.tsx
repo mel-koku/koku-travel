@@ -157,6 +157,10 @@ export function FiltersModal({
       const categorySubTypes = CATEGORY_HIERARCHY.find((c) => c.id === categoryId)?.subTypes || [];
       const subTypeIds = categorySubTypes.map((st) => st.id);
       onSubTypesChange(selectedSubTypes.filter((st) => !subTypeIds.includes(st)));
+      // Clear vegetarian filter when Food category is deselected (since it's hidden)
+      if (categoryId === "food") {
+        onVegetarianFriendlyChange(false);
+      }
     } else {
       onCategoriesChange([...selectedCategories, categoryId]);
     }

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Location } from "@/types/location";
 import { ActiveFilter } from "@/types/filters";
-import { locationMatchesSubTypes, getCategoryById, getSubTypeById } from "@/data/categoryHierarchy";
+import { locationMatchesSubTypes, getCategoryById, getSubTypeById, getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
 
 const FiltersModal = dynamic(
   () => import("./FiltersModal").then((m) => ({ default: m.FiltersModal })),
@@ -223,7 +223,10 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
 
       const matchesCategory = selectedCategories.length === 0
         ? true
-        : selectedCategories.includes(location.category);
+        : (() => {
+            const parentCategory = getParentCategoryForDatabaseCategory(location.category);
+            return parentCategory !== null && selectedCategories.includes(parentCategory);
+          })();
 
       // Sub-type matching using the helper from categoryHierarchy
       const matchesSubType = selectedSubTypes.length === 0
