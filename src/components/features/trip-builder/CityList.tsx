@@ -1,12 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getCitiesByRelevance, getAllCities } from "@/lib/tripBuilder/cityRelevance";
 import { cn } from "@/lib/cn";
 import type { InterestId } from "@/types/trip";
 import { Input } from "@/components/ui/Input";
+import { calculateDistance } from "@/data/entryPoints";
 
 type CityWithRelevance = {
   city: string;
@@ -21,6 +22,7 @@ type FilterMode = "all" | "highMatch" | "selected";
 
 const CITIES_PER_REGION = 8;
 const HIGH_MATCH_THRESHOLD = 75;
+const NEAR_ARRIVAL_THRESHOLD_KM = 100;
 
 export type CityListProps = {
   onCitySelect?: (city: string) => void;
@@ -45,7 +47,10 @@ export function CityList({ onCitySelect }: CityListProps) {
 
   const hasInterests = selectedInterests.length > 0;
 
-  // Get cities with relevance data
+  // Get entry point directly from builder data (works for both predefined and custom entry points)
+  const entryPoint = data.entryPoint;
+
+  // Get cities with relevance data - moved up so we can use it for region detection
   const allCities = useMemo<CityWithRelevance[]>(() => {
     if (hasInterests) {
       return getCitiesByRelevance(selectedInterests);
@@ -59,6 +64,56 @@ export function CityList({ onCitySelect }: CityListProps) {
       interestCounts: {} as Record<string, number>,
     }));
   }, [selectedInterests, hasInterests]);
+
+  // Find the entry point's region by finding the nearest city from our city data
+  const entryPointRegionName = useMemo(() => {
+    if (!entryPoint?.coordinates) return undefined;
+
+    let nearestCity: CityWithRelevance | undefined;
+    let minDistance = Infinity;
+
+    for (const city of allCities) {
+      if (!city.coordinates) continue;
+      const distance = calculateDistance(entryPoint.coordinates, city.coordinates);
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestCity = city;
+      }
+    }
+
+    return nearestCity?.region;
+  }, [entryPoint, allCities]);
+
+  // Helper to check if a city is near the entry point
+  const isNearEntryPoint = useCallback(
+    (cityCoordinates: { lat: number; lng: number } | undefined, cityRegion: string | undefined): boolean => {
+      if (!entryPoint) return false;
+
+      // Check if same region
+      if (entryPointRegionName && cityRegion === entryPointRegionName) {
+        return true;
+      }
+
+      // Check distance threshold
+      if (cityCoordinates) {
+        const distanceMeters = calculateDistance(entryPoint.coordinates, cityCoordinates);
+        return distanceMeters <= NEAR_ARRIVAL_THRESHOLD_KM * 1000;
+      }
+
+      return false;
+    },
+    [entryPoint, entryPointRegionName]
+  );
+
+  // Auto-expand entry point's region
+  useEffect(() => {
+    if (entryPointRegionName) {
+      setExpandedRegions((prev) => {
+        if (prev.has(entryPointRegionName)) return prev;
+        return new Set([...prev, entryPointRegionName]);
+      });
+    }
+  }, [entryPointRegionName]);
 
   // Filter cities based on filter mode and search query
   const filteredCities = useMemo(() => {
@@ -95,8 +150,33 @@ export function CityList({ onCitySelect }: CityListProps) {
       groups[region].push(city);
     }
 
-    // Sort regions by total relevance/location count
+    // Sort cities within each region by distance from entry point (if available)
+    if (entryPoint) {
+      for (const region of Object.keys(groups)) {
+        groups[region]?.sort((a, b) => {
+          // If only one has coordinates, prefer the one with coordinates
+          if (a.coordinates && !b.coordinates) return -1;
+          if (!a.coordinates && b.coordinates) return 1;
+          if (!a.coordinates || !b.coordinates) {
+            // Fall back to location count
+            return b.locationCount - a.locationCount;
+          }
+
+          const distA = calculateDistance(entryPoint.coordinates, a.coordinates);
+          const distB = calculateDistance(entryPoint.coordinates, b.coordinates);
+          return distA - distB;
+        });
+      }
+    }
+
+    // Sort regions: entry point region first, then by total location count
     const sortedRegions = Object.keys(groups).sort((a, b) => {
+      // Entry point region comes first
+      if (entryPointRegionName) {
+        if (a === entryPointRegionName && b !== entryPointRegionName) return -1;
+        if (b === entryPointRegionName && a !== entryPointRegionName) return 1;
+      }
+
       const aTotal = (groups[a] ?? []).reduce((sum, c) => sum + c.locationCount, 0);
       const bTotal = (groups[b] ?? []).reduce((sum, c) => sum + c.locationCount, 0);
       return bTotal - aTotal;
@@ -106,7 +186,7 @@ export function CityList({ onCitySelect }: CityListProps) {
       region,
       cities: groups[region] ?? [],
     }));
-  }, [filteredCities]);
+  }, [filteredCities, entryPoint, entryPointRegionName]);
 
   // Count selected cities per region (from all cities, not filtered)
   const selectedByRegion = useMemo(() => {
@@ -368,7 +448,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                                 )}
                               </div>
 
-                              <div>
+                              <div className="flex flex-wrap items-center gap-2">
                                 <span
                                   className={cn(
                                     "font-medium",
@@ -377,9 +457,14 @@ export function CityList({ onCitySelect }: CityListProps) {
                                 >
                                   {city.city}
                                 </span>
-                                <span className="ml-2 text-xs text-stone">
+                                <span className="text-xs text-stone">
                                   {city.locationCount} locations
                                 </span>
+                                {isNearEntryPoint(city.coordinates, city.region) && (
+                                  <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
+                                    Near entry point
+                                  </span>
+                                )}
                               </div>
                             </div>
 
