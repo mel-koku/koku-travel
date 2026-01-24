@@ -130,7 +130,7 @@ export function ExploreShell() {
   const { data: filterMetadata } = useFilterMetadataQuery();
 
   const [query, setQuery] = useState("");
-  const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null);
+  const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -145,7 +145,7 @@ export function ExploreShell() {
     setPage(1);
   }, [
     query,
-    selectedPrefecture,
+    selectedPrefectures,
     selectedPriceLevel,
     selectedDuration,
     selectedCategories,
@@ -201,9 +201,9 @@ export function ExploreShell() {
         location.prefecture?.toLowerCase().includes(normalizedQuery) ||
         location.region.toLowerCase().includes(normalizedQuery);
 
-      const matchesPrefecture = selectedPrefecture
-        ? normalizePrefecture(location.prefecture) === selectedPrefecture
-        : true;
+      const matchesPrefecture = selectedPrefectures.length === 0
+        ? true
+        : selectedPrefectures.includes(normalizePrefecture(location.prefecture));
 
       // Price filter: "Free" (0) matches locations with priceLevel 0 or no priceLevel
       const matchesPriceLevel = selectedPriceLevel === null
@@ -246,7 +246,7 @@ export function ExploreShell() {
         matchesVegetarian
       );
     });
-  }, [enhancedLocations, query, selectedPrefecture, selectedPriceLevel, selectedDuration, selectedCategories, selectedSubTypes, wheelchairAccessible, vegetarianFriendly]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedCategories, selectedSubTypes, wheelchairAccessible, vegetarianFriendly]);
 
   const sortedLocations = useMemo(() => {
     const sorted = [...filteredLocations];
@@ -327,12 +327,12 @@ export function ExploreShell() {
       filters.push({ type: "search", value: query, label: `"${query}"` });
     }
 
-    if (selectedPrefecture) {
-      const prefOption = prefectureOptions.find((p) => p.value === selectedPrefecture);
+    for (const prefectureValue of selectedPrefectures) {
+      const prefOption = prefectureOptions.find((p) => p.value === prefectureValue);
       filters.push({
         type: "prefecture",
-        value: selectedPrefecture,
-        label: prefOption?.label || selectedPrefecture,
+        value: prefectureValue,
+        label: prefOption?.label || prefectureValue,
       });
     }
 
@@ -397,7 +397,7 @@ export function ExploreShell() {
     return filters;
   }, [
     query,
-    selectedPrefecture,
+    selectedPrefectures,
     prefectureOptions,
     selectedCategories,
     selectedSubTypes,
@@ -417,7 +417,7 @@ export function ExploreShell() {
         setQuery("");
         break;
       case "prefecture":
-        setSelectedPrefecture(null);
+        setSelectedPrefectures((prev) => prev.filter((p) => p !== filter.value));
         break;
       case "category":
         setSelectedCategories((prev) => prev.filter((c) => c !== filter.value));
@@ -442,7 +442,7 @@ export function ExploreShell() {
 
   const clearAllFilters = useCallback(() => {
     setQuery("");
-    setSelectedPrefecture(null);
+    setSelectedPrefectures([]);
     setSelectedPriceLevel(null);
     setSelectedDuration(null);
     setSelectedCategories([]);
@@ -525,14 +525,15 @@ export function ExploreShell() {
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         {/* Active filter chips */}
-        <div className="mb-6">
-          <ActiveFilterChips
-            filters={activeFilters}
-            resultsCount={filteredLocations.length}
-            onRemove={removeFilter}
-            onClearAll={clearAllFilters}
-          />
-        </div>
+        {activeFilters.length > 0 && (
+          <div className="mb-6">
+            <ActiveFilterChips
+              filters={activeFilters}
+              onRemove={removeFilter}
+              onClearAll={clearAllFilters}
+            />
+          </div>
+        )}
 
         {/* Featured Carousel - only show when no filters active and we have featured locations */}
         {activeFilters.length === 0 && featuredLocations.length > 0 && (
@@ -610,8 +611,8 @@ export function ExploreShell() {
         query={query}
         onQueryChange={setQuery}
         prefectureOptions={prefectureOptions}
-        selectedPrefecture={selectedPrefecture}
-        onPrefectureChange={setSelectedPrefecture}
+        selectedPrefectures={selectedPrefectures}
+        onPrefecturesChange={setSelectedPrefectures}
         selectedCategories={selectedCategories}
         onCategoriesChange={setSelectedCategories}
         selectedSubTypes={selectedSubTypes}
