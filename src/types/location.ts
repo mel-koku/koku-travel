@@ -79,6 +79,11 @@ export type Location = {
   prefecture?: string;
   category: string;
   image: string;
+  /**
+   * AI-generated editorial description of the location.
+   * Used as fallback when Google Places editorialSummary is not available.
+   */
+  description?: string;
   minBudget?: string;
   estimatedDuration?: string;
   /**
