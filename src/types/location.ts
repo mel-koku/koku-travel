@@ -220,6 +220,12 @@ export type Location = {
     servesLunch?: boolean;
     servesDinner?: boolean;
   };
+
+  /**
+   * Manually curated flag to mark locations for featured carousel display
+   * Used for editor-selected featured destinations
+   */
+  isFeatured?: boolean;
 };
 
 export type LocationReview = {

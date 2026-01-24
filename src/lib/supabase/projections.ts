@@ -63,6 +63,7 @@ export type LocationDbRow = {
     servesLunch?: boolean;
     servesDinner?: boolean;
   } | null;
+  is_featured: boolean | null;
 };
 
 /**
@@ -70,6 +71,8 @@ export type LocationDbRow = {
  * Used by: ExploreShell, LocationGrid, search results
  * Includes Google Places enrichment fields for filtering
  */
+// Note: is_featured column requires migration 20260124_add_is_featured_column.sql
+// Once migration is run, add is_featured to this list to enable manual curation
 export const LOCATION_LISTING_COLUMNS = `
   id,
   name,
@@ -172,6 +175,7 @@ export type LocationPhotoDbRow = Pick<LocationDbRow, "id" | "name" | "place_id" 
  * Subset of LocationDbRow for listing endpoint
  * Includes Google Places enrichment fields for filtering
  */
+// Note: Add "is_featured" once migration 20260124_add_is_featured_column.sql is run
 export type LocationListingDbRow = Pick<LocationDbRow,
   | "id"
   | "name"
