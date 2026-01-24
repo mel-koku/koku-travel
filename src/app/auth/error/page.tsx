@@ -66,14 +66,14 @@ function AuthErrorContent() {
   const error = ERROR_MESSAGES[errorMessage] || DEFAULT_ERROR;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-background p-8 shadow-md">
         <div className="text-center">
-          <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border-4 border-dashed border-red-500 text-2xl font-bold text-red-500">
+          <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border-4 border-dashed border-error text-2xl font-bold text-error">
             !
           </div>
-          <h1 className="mb-4 text-3xl font-bold text-gray-900">{error.title}</h1>
-          <p className="mb-8 text-gray-600">{error.description}</p>
+          <h1 className="mb-4 text-3xl font-bold text-charcoal">{error.title}</h1>
+          <p className="mb-8 text-foreground-secondary">{error.description}</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button asChild variant="primary" href="/">
               <Link href="/">Go home</Link>
@@ -93,10 +93,10 @@ function AuthErrorContent() {
 export default function AuthErrorPage() {
   return (
     <Suspense fallback={
-      <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4">
-        <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-md">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-background p-8 shadow-md">
           <div className="text-center">
-            <p className="text-gray-600">Loading...</p>
+            <p className="text-foreground-secondary">Loading...</p>
           </div>
         </div>
       </div>

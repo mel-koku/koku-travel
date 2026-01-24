@@ -129,19 +129,19 @@ export default function AccountPage() {
 
   if (isLoadingAuth) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+      <div className="flex min-h-screen items-center justify-center bg-surface">
         <div className="text-center">
-          <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-indigo-600 border-r-transparent"></div>
-          <p className="text-sm text-gray-600">Loading account...</p>
+          <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-primary border-r-transparent"></div>
+          <p className="text-sm text-foreground-secondary">Loading account...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24">
+    <div className="min-h-screen bg-surface pb-24">
       <section className="max-w-3xl mx-auto px-8 pt-8">
-        <div className="rounded-2xl border border-gray-200 bg-white shadow-md p-6 space-y-6">
+        <div className="rounded-2xl border border-border bg-background shadow-md p-6 space-y-6">
           {supabaseUnavailable && (
             <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
               Cloud sync is disabled because Supabase credentials are not configured. Set
@@ -154,11 +154,11 @@ export default function AccountPage() {
             </div>
           )}
           <div className="flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-gray-900">Account</h1>
+            <h1 className="text-xl font-semibold text-charcoal">Account</h1>
             {signedIn && supabase && (
               <button
                 onClick={() => supabase.auth.signOut()}
-                className="h-10 rounded-lg border border-gray-300 bg-white px-4 text-sm text-gray-700 hover:bg-gray-50"
+                className="h-10 rounded-lg border border-border bg-background px-4 text-sm text-warm-gray hover:bg-sand"
               >
                 Sign out
               </button>
@@ -168,20 +168,20 @@ export default function AccountPage() {
           {signedIn ? (
             <>
               <IdentityBadge />
-              <label className="text-sm text-gray-700 block">
+              <label className="text-sm text-warm-gray block">
                 Display name
                 <input
-                  className="mt-1 w-full h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   value={user.displayName}
                   onChange={(e) => onNameChange(e.target.value)}
                 />
               </label>
 
               <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-500">
+                <div className="text-xs text-stone">
                   {isLoadingProfile || isLoadingRefresh ? (
                     <span className="flex items-center gap-2">
-                      <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-indigo-600 border-r-transparent"></span>
+                      <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-brand-primary border-r-transparent"></span>
                       {status || "Loading..."}
                     </span>
                   ) : (
@@ -191,7 +191,7 @@ export default function AccountPage() {
                 <button
                   onClick={clearAllLocalData}
                   disabled={isLoadingProfile || isLoadingRefresh}
-                  className="h-10 rounded-lg border border-red-200 bg-red-50 px-4 text-sm text-red-700 hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="h-10 rounded-lg border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Clear local data
                 </button>
@@ -246,13 +246,13 @@ function EmailForm() {
 
   return (
     <form className="grid grid-cols-1 gap-4" onSubmit={sendMagicLink}>
-    <label className="text-sm text-gray-700">
+    <label className="text-sm text-warm-gray">
       Email for magic link
       <input
         type="email"
         required
         disabled={supabaseUnavailable}
-        className="mt-1 w-full h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
         placeholder="name@example.com"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -261,11 +261,11 @@ function EmailForm() {
     <button
       type="submit"
       disabled={supabaseUnavailable}
-      className="h-10 rounded-lg bg-indigo-600 px-4 text-sm font-medium text-white hover:bg-indigo-700"
+      className="h-10 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
     >
       Send sign-in link
     </button>
-    <div className="text-xs text-gray-500">{status}</div>
+    <div className="text-xs text-stone">{status}</div>
   </form>
   );
 }
