@@ -48,7 +48,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
         type="button"
         onClick={() => onSelect?.(location)}
         ref={buttonRef}
-        className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 rounded-xl"
+        className="block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 rounded-xl"
       >
         {/* Image */}
         <div className="relative aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
