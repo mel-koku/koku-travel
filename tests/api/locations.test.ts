@@ -58,15 +58,21 @@ vi.mock("@/lib/supabase/server", () => ({
     from: () => ({
       select: (_columns: string, options?: { count?: string; head?: boolean }) => {
         if (options?.head) {
+          const countBuilder = createCountQueryBuilder(() => mockSupabaseCountResponse);
           return {
             not: () => ({
-              neq: () => createCountQueryBuilder(() => mockSupabaseCountResponse),
+              neq: () => ({
+                neq: () => countBuilder,
+              }),
             }),
           };
         }
+        const dataBuilder = createDataQueryBuilder(() => mockSupabaseDataResponse);
         return {
           not: () => ({
-            neq: () => createDataQueryBuilder(() => mockSupabaseDataResponse),
+            neq: () => ({
+              neq: () => dataBuilder,
+            }),
           }),
         };
       },
