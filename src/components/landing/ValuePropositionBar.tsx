@@ -10,7 +10,7 @@ const stats = [
 
 export function ValuePropositionBar() {
   return (
-    <section className="bg-earthy-cream py-20 sm:py-24">
+    <section className="py-16 sm:py-20" style={{ backgroundColor: "#2d2a26" }}>
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -21,10 +21,10 @@ export function ValuePropositionBar() {
         >
           {stats.map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="font-serif text-5xl font-medium text-earthy-charcoal sm:text-6xl">
+              <p className="font-serif text-3xl font-medium text-white sm:text-4xl">
                 {stat.value}
               </p>
-              <p className="mt-3 text-sm uppercase tracking-widest text-earthy-warmGray">
+              <p className="mt-3 text-sm uppercase tracking-widest text-white/70">
                 {stat.label}
               </p>
             </div>

@@ -29,7 +29,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="bg-neutral-surface py-24 sm:py-32">
+    <section id="how-it-works" className="bg-surface py-20 sm:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <motion.div
@@ -37,12 +37,12 @@ export function HowItWorks() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="mb-20 max-w-2xl"
+          className="mb-12 max-w-2xl sm:mb-16"
         >
-          <p className="text-sm font-medium uppercase tracking-widest text-earthy-sage">
+          <p className="text-sm font-medium uppercase tracking-widest text-sage">
             How It Works
           </p>
-          <h2 className="mt-4 font-serif text-4xl font-medium text-earthy-charcoal sm:text-5xl">
+          <h2 className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl">
             Three steps to your
             <br />
             <span className="italic">perfect trip</span>
@@ -50,7 +50,7 @@ export function HowItWorks() {
         </motion.div>
 
         {/* Steps */}
-        <div className="space-y-24 sm:space-y-32">
+        <div className="space-y-20 sm:space-y-24">
           {steps.map((step, index) => (
             <motion.div
               key={step.number}
@@ -77,13 +77,13 @@ export function HowItWorks() {
 
               {/* Content */}
               <div className="flex-1 lg:max-w-md">
-                <span className="font-serif text-6xl font-light text-earthy-stone/50">
+                <span className="font-serif text-4xl font-light text-stone/50">
                   {step.number}
                 </span>
-                <h3 className="mt-4 font-serif text-3xl font-medium text-earthy-charcoal">
+                <h3 className="mt-4 font-serif text-xl font-medium text-charcoal">
                   {step.title}
                 </h3>
-                <p className="mt-4 text-lg leading-relaxed text-earthy-warmGray">
+                <p className="mt-4 text-base leading-relaxed text-warm-gray">
                   {step.description}
                 </p>
               </div>

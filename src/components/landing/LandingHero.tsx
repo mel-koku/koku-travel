@@ -21,7 +21,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           sizes="100vw"
         />
         {/* Overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/70" />
       </div>
 
       {/* Content */}
@@ -38,14 +38,14 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           </p>
 
           {/* Main Headline - Serif */}
-          <h1 className="font-serif text-5xl font-medium leading-[1.1] text-white sm:text-6xl md:text-7xl lg:text-8xl">
+          <h1 className="font-serif text-3xl font-medium leading-[1.1] text-white sm:text-4xl lg:text-display">
             Discover Japan
             <br />
             <span className="italic">like a local</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="mx-auto mt-8 max-w-xl text-lg text-white/90 sm:text-xl">
+          <p className="mx-auto mt-8 max-w-xl text-base text-white/90 sm:text-lg">
             Every place handpicked by people who call Japan home.
             No tourist traps. Just the real thing.
           </p>
@@ -54,7 +54,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           <div className="mt-12">
             <a
               href="/trip-builder"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-8 text-base font-semibold text-earthy-charcoal shadow-sm transition-all hover:bg-white/90 hover:shadow-md"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-semibold text-charcoal shadow-sm transition-all hover:bg-white/90 hover:shadow-md"
             >
               Start Planning
             </a>
