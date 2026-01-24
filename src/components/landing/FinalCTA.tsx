@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 export function FinalCTA() {
   return (
-    <section className="relative min-h-[70vh] overflow-hidden">
+    <section className="relative min-h-[80vh] overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
@@ -19,7 +19,7 @@ export function FinalCTA() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[70vh] items-center justify-center px-6 text-center">
+      <div className="relative z-10 flex min-h-[80vh] items-center justify-center px-6 py-20 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -32,12 +32,12 @@ export function FinalCTA() {
             <br />
             <span className="italic">starts here</span>
           </h2>
-          <p className="mx-auto mt-6 max-w-md text-base text-white/80">
+          <p className="mx-auto mt-8 max-w-md text-base text-white/80">
             Join thousands of travelers who discovered the Japan that
             locals actually experience.
           </p>
 
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
               href="/trip-builder"
               className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-semibold text-charcoal shadow-sm transition-all hover:bg-white/90 hover:shadow-md"
@@ -52,7 +52,7 @@ export function FinalCTA() {
             </a>
           </div>
 
-          <p className="mt-8 text-sm text-white/50">
+          <p className="mt-10 text-sm text-white/50">
             Free to use. No account required.
           </p>
         </motion.div>

@@ -45,7 +45,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           </h1>
 
           {/* Subheadline */}
-          <p className="mx-auto mt-8 max-w-xl text-base text-white/90 sm:text-lg">
+          <p className="mx-auto mt-8 max-w-xl text-base text-white/90">
             Every place handpicked by people who call Japan home.
             No tourist traps. Just the real thing.
           </p>
