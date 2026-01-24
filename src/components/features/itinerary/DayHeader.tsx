@@ -102,8 +102,8 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
   // Fetch location data from database
   const { locationsMap } = useActivityLocations(placeActivities);
 
-  // Calculate total duration
-  // Uses durationMin (displayed as "Plan for X hours") + travel times
+  // Calculate total duration (time at locations only, excluding travel)
+  // Uses durationMin (displayed as "Plan for X hours")
   // Falls back to calculating from schedule times if durationMin is not set
   const totalDuration = useMemo(() => {
     if (placeActivities.length === 0) {
@@ -120,7 +120,6 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
       return hours * 60 + minutes;
     };
 
-    let totalMinutes = 0;
     let visitDurations = 0;
     let travelTimes = 0;
 
@@ -162,26 +161,21 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
 
       if (activityDuration !== null && activityDuration > 0) {
         visitDurations += activityDuration;
-        totalMinutes += activityDuration;
       }
     }
 
-    // Sum all travel times between activities
+    // Debug logging (travel times tracked but not added to total)
     for (const activity of placeActivities) {
       if (activity.travelFromPrevious?.durationMinutes) {
-        const travelTime = activity.travelFromPrevious.durationMinutes;
-        travelTimes += travelTime;
-        totalMinutes += travelTime;
+        travelTimes += activity.travelFromPrevious.durationMinutes;
       }
     }
 
-    // Debug logging
     logger.debug("[DayHeader] Duration calculation", {
       placeActivitiesCount: placeActivities.length,
       visitDurations,
-      travelTimes,
+      travelTimes, // Logged but not included in total
       cityTransition: day.cityTransition?.durationMinutes ?? 0,
-      totalMinutes,
       activities: placeActivities.map((a) => ({
         title: a.title,
         durationMin: a.durationMin,
@@ -190,13 +184,9 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
       })),
     });
 
-    // Add city transition time if present
-    if (day.cityTransition?.durationMinutes) {
-      totalMinutes += day.cityTransition.durationMinutes;
-    }
-
-    return totalMinutes;
-  }, [placeActivities, locationsMap, day.cityTransition]);
+    // Return only visit durations (travel time excluded - varies by transport mode)
+    return visitDurations;
+  }, [placeActivities, locationsMap]);
 
   // Format duration
   const durationLabel = useMemo(() => {
@@ -259,7 +249,7 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
           </div>
           {totalDuration > 0 && (
             <p className="ml-7 text-xs text-foreground-secondary sm:text-sm">
-              Based on average time at locations and travel between stops
+              Time at locations only. Travel time varies based on selected transport mode
             </p>
           )}
         </div>
