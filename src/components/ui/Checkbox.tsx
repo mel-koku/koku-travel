@@ -1,96 +1,98 @@
-import {
-  ComponentPropsWithoutRef,
-  ReactNode,
-  forwardRef,
-  useId,
-} from "react";
+"use client"
 
-import { cn } from "@/lib/cn";
+import * as React from "react"
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
+import { Check } from "lucide-react"
 
-export type CheckboxProps = Omit<ComponentPropsWithoutRef<"input">, "type"> & {
-  /**
-   * Visible label next to the checkbox control.
-   */
-  label: ReactNode;
-  /**
-   * Optional helper text rendered under the label.
-   */
-  description?: ReactNode;
-  /**
-   * Classes applied to the outer clickable label.
-   */
-  containerClassName?: string;
-};
+import { cn } from "@/lib/utils"
 
-export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ label, description, className, containerClassName, disabled, id, ...rest }, ref) => {
-    const fallbackId = useId();
-    const inputId = id ?? fallbackId;
-    const descriptionId = description ? `${inputId}-description` : undefined;
+const CheckboxRoot = React.forwardRef<
+  React.ElementRef<typeof CheckboxPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <CheckboxPrimitive.Root
+    ref={ref}
+    className={cn(
+      "peer h-5 w-5 shrink-0 rounded-md border border-input shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+      className
+    )}
+    {...props}
+  >
+    <CheckboxPrimitive.Indicator className={cn("flex items-center justify-center text-current")}>
+      <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
+    </CheckboxPrimitive.Indicator>
+  </CheckboxPrimitive.Root>
+))
+CheckboxRoot.displayName = CheckboxPrimitive.Root.displayName
 
-    return (
-      <label
-        htmlFor={inputId}
-        className={cn(
-          "group flex min-h-10 cursor-pointer items-start gap-3 rounded-xl border border-transparent px-4 py-3 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2",
-          disabled ? "cursor-not-allowed bg-gray-50 opacity-70" : "hover:bg-gray-50",
-          containerClassName,
-        )}
-      >
-        <span className="flex h-5 w-5 flex-none items-center justify-center pt-0.5">
-          <input
-            ref={ref}
-            id={inputId}
-            type="checkbox"
-            className={cn(
-              "peer sr-only",
-              className,
-            )}
-            disabled={disabled}
-            aria-describedby={descriptionId}
-            {...rest}
-          />
-          <span
-            aria-hidden="true"
-            className="flex h-5 w-5 items-center justify-center rounded-md border border-gray-300 bg-white text-white transition peer-checked:border-indigo-600 peer-checked:bg-indigo-600 peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2 peer-disabled:border-gray-200 peer-disabled:bg-gray-100 peer-disabled:text-gray-300"
-          >
-            <svg
-              className="h-3.5 w-3.5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-            >
-              <path
-                d="M5 11l3 3 7-7"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+// Labeled Checkbox (legacy API)
+interface LabeledCheckboxProps extends Omit<React.ComponentPropsWithoutRef<"input">, "type"> {
+  label: React.ReactNode
+  description?: React.ReactNode
+  containerClassName?: string
+}
+
+function Checkbox({ label, description, className, containerClassName, disabled, id, checked, defaultChecked, onChange }: LabeledCheckboxProps) {
+  const fallbackId = React.useId()
+  const inputId = id ?? fallbackId
+  const descriptionId = description ? `${inputId}-description` : undefined
+
+  // Handle native input for form compatibility
+  const [internalChecked, setInternalChecked] = React.useState(defaultChecked ?? false)
+  const isControlled = checked !== undefined
+  const isChecked = isControlled ? checked : internalChecked
+
+  const handleCheckedChange = (newChecked: boolean | "indeterminate") => {
+    if (typeof newChecked === "boolean") {
+      if (!isControlled) {
+        setInternalChecked(newChecked)
+      }
+      // Create a synthetic change event
+      const syntheticEvent = {
+        target: { checked: newChecked, id: inputId },
+        currentTarget: { checked: newChecked, id: inputId },
+      } as React.ChangeEvent<HTMLInputElement>
+      onChange?.(syntheticEvent)
+    }
+  }
+
+  return (
+    <label
+      htmlFor={inputId}
+      className={cn(
+        "group flex min-h-10 cursor-pointer items-start gap-3 rounded-xl border border-transparent px-4 py-3 transition",
+        disabled ? "cursor-not-allowed opacity-50" : "hover:bg-secondary",
+        containerClassName
+      )}
+    >
+      <CheckboxRoot
+        id={inputId}
+        checked={isChecked}
+        onCheckedChange={handleCheckedChange}
+        disabled={disabled}
+        aria-describedby={descriptionId}
+        className={className}
+      />
+      <span className="flex flex-1 flex-col gap-1">
+        <span className="text-sm font-medium">{label}</span>
+        {description && (
+          <span id={descriptionId} className="text-sm text-muted-foreground">
+            {description}
           </span>
-        </span>
-        <span className="flex flex-1 flex-col gap-1">
-          <span className="text-sm font-medium text-gray-900">{label}</span>
-          {description && (
-            <span id={descriptionId} className="text-sm text-gray-500">
-              {description}
-            </span>
-          )}
-        </span>
-      </label>
-    );
-  },
-);
+        )}
+      </span>
+    </label>
+  )
+}
+Checkbox.displayName = "Checkbox"
 
-Checkbox.displayName = "Checkbox";
+// Checkbox Group
+interface CheckboxGroupProps extends React.ComponentPropsWithoutRef<"fieldset"> {
+  legend?: React.ReactNode
+  helpText?: React.ReactNode
+}
 
-export type CheckboxGroupProps = ComponentPropsWithoutRef<"fieldset"> & {
-  legend?: ReactNode;
-  helpText?: ReactNode;
-};
-
-export const CheckboxGroup = ({
+const CheckboxGroup = ({
   legend,
   helpText,
   className,
@@ -99,12 +101,12 @@ export const CheckboxGroup = ({
 }: CheckboxGroupProps) => (
   <fieldset className={cn("space-y-2", className)} {...rest}>
     {legend && (
-      <legend className="mb-2 text-sm font-semibold text-gray-900">{legend}</legend>
+      <legend className="mb-2 text-sm font-semibold">{legend}</legend>
     )}
-    {helpText && <p className="mb-2 text-sm text-gray-500">{helpText}</p>}
+    {helpText && <p className="mb-2 text-sm text-muted-foreground">{helpText}</p>}
     <div className="flex flex-col gap-2">{children}</div>
   </fieldset>
-);
+)
+CheckboxGroup.displayName = "CheckboxGroup"
 
-CheckboxGroup.displayName = "CheckboxGroup";
-
+export { Checkbox, CheckboxRoot, CheckboxGroup }
