@@ -185,6 +185,7 @@ After: Hybrid Progressive (500ms to interactive)
 - Prefecture is the standard administrative division users understand
 - City remains searchable via text input
 - Better UX with manageable number of filter options
+- Multi-select enabled: users can filter by multiple prefectures simultaneously
 
 **Implementation Status:**
 - ✅ Added `prefecture` field to database column projections
@@ -201,10 +202,11 @@ After: Hybrid Progressive (500ms to interactive)
 - Column projections updated to include `prefecture` in `LOCATION_LISTING_COLUMNS`
 
 **UX Changes:**
-- Filters Modal: "City" section replaced with "Prefecture" section
+- Filters Modal: "City" section replaced with "Prefecture" section (multi-select)
 - Search box: Updated placeholder to "Search by name, city, or prefecture..."
 - Filter chips: Shows ~47 prefecture options instead of 257 cities
 - City filtering: Still available via text search (no dropdown needed)
+- Location count removed from top of page (shown only under "All Destinations" heading)
 
 **Data Coverage:**
 - ~99% of locations (2,906/2,916) have prefecture data after enrichment
