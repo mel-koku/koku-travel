@@ -1,9 +1,9 @@
 import { ComponentPropsWithoutRef } from "react";
 
-import { Badge, BadgeTone, Tag } from "@/components/ui/Badge";
-import { Card, CardContent, CardFooter } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
-import { cn } from "@/lib/cn";
+import { Badge, BadgeTone, Tag } from "./Badge";
+import { Card, CardContent, CardFooter } from "./Card";
+import { Button } from "./Button";
+import { cn } from "@/lib/utils";
 
 type CollectionCardProps = {
   title: string;
