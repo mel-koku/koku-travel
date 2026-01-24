@@ -348,7 +348,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       <div
         ref={ref}
         style={dragStyles}
-        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         data-kind="place"
         data-selected={isSelected || undefined}
         tabIndex={0}
@@ -364,12 +364,12 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         data-activity-id={activity.id}
       >
         <div
-          className={`group relative overflow-hidden rounded-lg border bg-white transition duration-200 ${
+          className={`group relative overflow-hidden rounded-lg border bg-background transition duration-200 ${
             isDragging
-              ? "border-indigo-300 ring-2 ring-indigo-300 shadow-lg"
+              ? "border-sage/30 ring-2 ring-sage/30 shadow-lg"
               : isSelected
-                ? "border-indigo-400 ring-2 ring-indigo-400 shadow-lg"
-                : "border-gray-200 shadow-sm hover:border-indigo-200 hover:shadow-lg"
+                ? "border-brand-primary ring-2 ring-brand-primary shadow-lg"
+                : "border-border shadow-sm hover:border-sage/20 hover:shadow-lg"
           }`}
         >
           <div className="p-3 space-y-1.5">
@@ -384,26 +384,26 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   listeners={listeners}
                 />
                 {placeNumber !== undefined ? (
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white shadow-sm ring-2 ring-white">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white shadow-sm ring-2 ring-background">
                     {placeNumber}
                   </div>
                 ) : null}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900">
+                  <p className="text-sm font-semibold text-charcoal">
                     {placeLocation.name}
                   </p>
                   <div className="flex flex-wrap items-center gap-1.5">
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-foreground-secondary">
                       {placeLocation.city}
                       {placeLocation.city && placeLocation.region ? ", " : ""}
                       {placeLocation.region}
                     </p>
                     {rating ? (
-                      <div className="flex shrink-0 items-center gap-1 rounded-full bg-white/90 px-2 py-0.5 text-[11px] font-semibold text-gray-800 shadow-sm ring-1 ring-gray-200">
+                      <div className="flex shrink-0 items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-semibold text-charcoal shadow-sm ring-1 ring-border">
                         <StarIcon />
                         <span>{rating.toFixed(1)}</span>
                         {reviewCount ? (
-                          <span className="text-[10px] font-normal text-gray-500">
+                          <span className="text-[10px] font-normal text-stone">
                             ({numberFormatter.format(reviewCount)})
                           </span>
                         ) : null}
@@ -417,7 +417,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    className="rounded-full bg-white/95 p-1.5 text-gray-600 shadow-sm ring-1 ring-gray-200 transition hover:bg-green-50 hover:text-green-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-400"
+                    className="rounded-full bg-background/95 p-1.5 text-foreground-secondary shadow-sm ring-1 ring-border transition hover:bg-success/10 hover:text-success focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -432,7 +432,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   </button>
                   <button
                     type="button"
-                    className="rounded-full bg-white/95 p-1.5 text-gray-600 shadow-sm ring-1 ring-gray-200 transition hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                    className="rounded-full bg-background/95 p-1.5 text-foreground-secondary shadow-sm ring-1 ring-border transition hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -458,7 +458,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 ) : (
                   <button
                     type="button"
-                    className="rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-semibold text-red-600 shadow-sm ring-1 ring-red-200 transition hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                    className="rounded-full bg-background/95 px-2 py-0.5 text-[11px] font-semibold text-error shadow-sm ring-1 ring-error/30 transition hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -484,10 +484,10 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                       setShowTimePicker(!showTimePicker);
                       setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
                     }}
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold transition hover:ring-2 hover:ring-indigo-300 ${
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold transition hover:ring-2 hover:ring-sage/30 ${
                       hasManualTime
-                        ? "bg-indigo-100 text-indigo-700"
-                        : "bg-emerald-50 text-emerald-600"
+                        ? "bg-sage/10 text-sage"
+                        : "bg-success/10 text-success"
                     }`}
                     title={hasManualTime ? "Manual time set - click to edit" : "Click to set manual time"}
                   >
@@ -501,21 +501,21 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   {/* Time picker popover */}
                   {showTimePicker && (
                     <div
-                      className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-gray-200 bg-white p-3 shadow-lg"
+                      className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-3 shadow-lg"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <p className="mb-2 text-xs font-medium text-gray-700">Set arrival time</p>
+                      <p className="mb-2 text-xs font-medium text-warm-gray">Set arrival time</p>
                       <div className="flex items-center gap-2">
                         <input
                           type="time"
                           value={tempManualTime}
                           onChange={(e) => setTempManualTime(e.target.value)}
-                          className="rounded border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                          className="rounded border border-border px-2 py-1 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                         />
                         <button
                           type="button"
                           onClick={handleSetManualTime}
-                          className="rounded bg-indigo-600 px-2 py-1 text-xs font-medium text-white hover:bg-indigo-700"
+                          className="rounded bg-brand-primary px-2 py-1 text-xs font-medium text-white hover:bg-brand-primary/90"
                         >
                           Set
                         </button>
@@ -524,7 +524,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                         <button
                           type="button"
                           onClick={handleClearManualTime}
-                          className="mt-2 text-xs text-gray-500 hover:text-red-600"
+                          className="mt-2 text-xs text-stone hover:text-error"
                         >
                           Reset to auto
                         </button>
@@ -533,50 +533,50 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   )}
                 </div>
 
-                <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 text-[11px] font-semibold text-sky-600">
+                <span className="inline-flex items-center gap-1 rounded-full bg-sage/10 px-2 py-0.5 text-[11px] font-semibold text-sage">
                   Depart {schedule?.departureTime ?? "—"}
                 </span>
                 {waitLabel ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
                     {waitLabel}
                   </span>
                 ) : null}
                 {schedule?.operatingWindow?.status === "outside" || isOutOfHours ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2 py-0.5 text-[11px] font-semibold text-rose-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
                     Outside hours
                   </span>
                 ) : null}
               </div>
             ) : null}
             {schedule?.operatingWindow?.note ? (
-              <p className="text-[11px] text-gray-500">{schedule.operatingWindow.note}</p>
+              <p className="text-[11px] text-stone">{schedule.operatingWindow.note}</p>
             ) : null}
             {availabilityStatus && availabilityStatus.status !== "open" && availabilityStatus.status !== "unknown" ? (
               <div className="flex flex-wrap items-center gap-1.5">
                 {availabilityStatus.status === "closed" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
                     ⚠️ Closed
                   </span>
                 ) : availabilityStatus.status === "busy" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
                     ⚠️ Busy
                   </span>
                 ) : availabilityStatus.status === "requires_reservation" || availabilityStatus.reservationRequired ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 text-[11px] font-semibold text-orange-600">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
                     📞 Reservation recommended
                   </span>
                 ) : null}
                 {availabilityStatus.message ? (
-                  <p className="text-[11px] text-gray-600">{availabilityStatus.message}</p>
+                  <p className="text-[11px] text-foreground-secondary">{availabilityStatus.message}</p>
                 ) : null}
               </div>
             ) : null}
 
             {tips.length > 0 ? (
-              <div className="space-y-1.5 rounded-lg bg-blue-50/50 p-2">
-                <p className="text-xs font-semibold text-blue-900">💡 Tips:</p>
+              <div className="space-y-1.5 rounded-lg bg-sage/5 p-2">
+                <p className="text-xs font-semibold text-charcoal">💡 Tips:</p>
                 {tips.map((tip, index) => (
-                  <div key={index} className="flex items-start gap-2 text-xs text-blue-800">
+                  <div key={index} className="flex items-start gap-2 text-xs text-foreground-secondary">
                     <span className="mt-0.5">{tip.icon ?? "•"}</span>
                     <div className="flex-1">
                       <span className="font-medium">{tip.title}:</span>{" "}
@@ -588,10 +588,10 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             ) : null}
 
             {summary ? (
-              <p className="text-xs leading-relaxed text-gray-700 line-clamp-2">{summary}</p>
+              <p className="text-xs leading-relaxed text-warm-gray line-clamp-2">{summary}</p>
             ) : null}
             {activity.recommendationReason ? (
-              <div className="border-t border-gray-100 pt-2 mt-2">
+              <div className="border-t border-border/50 pt-2 mt-2">
                 <button
                   type="button"
                   onClick={(event) => {
@@ -599,28 +599,28 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     event.stopPropagation();
                     setReasoningOpen((prev) => !prev);
                   }}
-                  className="flex w-full items-center justify-between text-left text-xs font-medium text-indigo-600 hover:text-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                  className="flex w-full items-center justify-between text-left text-xs font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                 >
                   <span>Why this recommendation?</span>
-                  <span className="text-gray-400">{reasoningOpen ? "−" : "+"}</span>
+                  <span className="text-stone">{reasoningOpen ? "−" : "+"}</span>
                 </button>
                 {reasoningOpen ? (
-                  <div className="mt-2 space-y-2 text-xs text-gray-700">
+                  <div className="mt-2 space-y-2 text-xs text-warm-gray">
                     <p className="font-medium">{activity.recommendationReason.primaryReason}</p>
                     {activity.recommendationReason.factors && activity.recommendationReason.factors.length > 0 ? (
                       <div className="space-y-1">
-                        <p className="font-semibold text-gray-900">Scoring breakdown:</p>
+                        <p className="font-semibold text-charcoal">Scoring breakdown:</p>
                         <ul className="space-y-1 pl-2">
                           {activity.recommendationReason.factors.map((factor, idx) => (
                             <li key={idx} className="flex items-start gap-2">
-                              <span className="text-gray-500">•</span>
+                              <span className="text-stone">•</span>
                               <span>
                                 <span className="font-medium">{factor.factor}</span>
                                 {factor.score !== undefined && (
-                                  <span className="text-gray-500"> ({factor.score} pts)</span>
+                                  <span className="text-stone"> ({factor.score} pts)</span>
                                 )}
                                 {factor.reasoning && (
-                                  <span className="text-gray-600">: {factor.reasoning}</span>
+                                  <span className="text-foreground-secondary">: {factor.reasoning}</span>
                                 )}
                               </span>
                             </li>
@@ -634,27 +634,27 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             ) : null}
             <div className="flex flex-wrap items-center gap-1.5">
               {placeLocation.category ? (
-                <span className="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-[11px] text-gray-700">
+                <span className="inline-block rounded-full bg-surface px-2 py-0.5 text-[11px] text-warm-gray">
                   {placeLocation.category}
                 </span>
               ) : null}
               {durationLabel ? (
-                <span className="inline-block rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-600">
+                <span className="inline-block rounded-full bg-sage/10 px-2 py-0.5 text-[11px] font-semibold text-sage">
                   Est. {durationLabel.replace("~", "")}
                 </span>
               ) : null}
               <button
                 type="button"
                 onClick={handleMoreInfo}
-                className="inline-flex items-center rounded-full border border-indigo-200 px-2 py-0.5 text-[11px] font-semibold text-indigo-600 shadow-sm transition hover:bg-indigo-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                className="inline-flex items-center rounded-full border border-sage/30 px-2 py-0.5 text-[11px] font-semibold text-sage shadow-sm transition hover:bg-sage/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
               >
                 More info
               </button>
             </div>
           </div>
-          <div className="border-t border-gray-100 bg-white p-3">
+          <div className="border-t border-border/50 bg-background p-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-gray-900">Notes</p>
+              <p className="text-xs font-semibold text-charcoal">Notes</p>
               <button
                 type="button"
                 onClick={(event) => {
@@ -662,19 +662,19 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   event.stopPropagation();
                   handleToggleNotes();
                 }}
-                className="text-xs font-medium text-indigo-600 hover:text-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                className="text-xs font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
               >
                 {notesOpen ? "Hide note" : "Add note"}
               </button>
             </div>
             {notesOpen ? (
               <div className="mt-2 space-y-1.5">
-                <label htmlFor={notesId} className="text-xs font-medium text-gray-700">
+                <label htmlFor={notesId} className="text-xs font-medium text-warm-gray">
                   {noteLabel}
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-lg border border-gray-300 px-2.5 py-1.5 text-xs text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-border px-2.5 py-1.5 text-xs text-warm-gray shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                   rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}

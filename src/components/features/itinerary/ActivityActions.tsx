@@ -111,7 +111,7 @@ export function ActivityActions({
     <Dropdown
       label={
         <svg
-          className="h-5 w-5 text-gray-500"
+          className="h-5 w-5 text-stone"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -129,7 +129,7 @@ export function ActivityActions({
       items={items}
       align="end"
       className="inline-flex"
-      triggerClassName="p-1.5 hover:bg-gray-100 rounded-lg transition"
+      triggerClassName="p-1.5 hover:bg-sand rounded-lg transition"
       menuClassName="w-56"
       hideChevron
     />

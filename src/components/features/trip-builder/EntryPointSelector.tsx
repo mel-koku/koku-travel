@@ -357,7 +357,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
               onChange={handleInputChange}
               placeholder={entryPointType ? typePlaceholders[entryPointType] : "Select type first"}
               disabled={!entryPointType}
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:bg-surface disabled:cursor-not-allowed min-h-[44px]"
+              className="h-10 w-full rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:bg-surface disabled:cursor-not-allowed"
               role="combobox"
               aria-autocomplete="list"
               aria-expanded={showSuggestions && suggestions.length > 0}
