@@ -291,6 +291,6 @@ For issues or questions about the API:
 
 ---
 
-**Last Updated:** 2024  
+**Last Updated:** January 2025
 **API Version:** 1.0
 
