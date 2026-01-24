@@ -17,6 +17,7 @@ npm test             # Run all tests
 |------|-------------|
 | [tech-stack.md](./tech-stack.md) | Tech stack, project structure, commands, database |
 | [architecture.md](./architecture.md) | React Query setup, column projections, location service patterns |
+| [style-guide.md](./style-guide.md) | Design system: colors, typography, component patterns |
 | [rules.md](./rules.md) | Development rules, known issues, testing patterns |
 | [roadmap.md](./roadmap.md) | Pending features and future work |
 | [archive/](./archive/) | Historical documentation of completed work |
@@ -52,6 +53,9 @@ src/
 
 ## Design System
 
+See [style-guide.md](./style-guide.md) for complete reference.
+
+- **Type Scale**: Augmented fourth (ratio 1.414) from 8px to 128px
 - **Colors**: Earthy palette (cream, charcoal, sage, terracotta, stone)
 - **Typography**: Playfair Display (serif headlines), Geist Sans (body)
 - **Animations**: Framer Motion for scroll-triggered animations

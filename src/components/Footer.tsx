@@ -15,9 +15,9 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-black/70">
+    <footer className="border-t border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-10 text-sm sm:px-6 md:flex-row md:items-center md:justify-between md:gap-0 md:px-10">
-        <div className="flex flex-col gap-2 text-xs uppercase tracking-[0.3em] text-zinc-500">
+        <div className="flex flex-col gap-2 text-xs uppercase tracking-[0.3em] text-stone">
           <span>Koku Travel</span>
           <span className="tracking-[0.2em]">Japan Planner</span>
           <span className="text-[10px] tracking-[0.3em]">
@@ -25,11 +25,11 @@ export default function Footer() {
           </span>
         </div>
 
-        <nav className="flex flex-wrap items-center gap-5 text-xs font-semibold uppercase tracking-[0.3em] text-zinc-700 dark:text-zinc-300">
+        <nav className="flex flex-wrap items-center gap-5 text-xs font-semibold uppercase tracking-[0.3em] text-warm-gray">
           {footerLinks.map((link) => (
             <a
               key={link.label}
-              className="transition-colors hover:text-red-500"
+              className="transition-colors hover:text-brand-primary"
               href={link.href}
             >
               {link.label}
@@ -41,7 +41,7 @@ export default function Footer() {
           {socialIcons.map((icon) => (
             <a
               key={icon.label}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-zinc-300 text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500 transition-colors hover:border-red-500 hover:text-red-500 dark:border-zinc-700 dark:text-zinc-300"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-stone text-xs font-semibold uppercase tracking-[0.3em] text-stone transition-colors hover:border-brand-primary hover:text-brand-primary"
               href={icon.href}
               aria-label={icon.label}
             >

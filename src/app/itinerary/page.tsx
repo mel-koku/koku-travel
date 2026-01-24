@@ -113,7 +113,7 @@ function ItineraryPageContent() {
   // AppState loads from localStorage which is only available on client
   if (!isMounted) {
     return (
-      <div className="p-16 text-center text-gray-600">
+      <div className="p-16 text-center text-foreground-secondary">
         <p>Loading...</p>
       </div>
     );
@@ -121,9 +121,9 @@ function ItineraryPageContent() {
 
   if (!activeItinerary) {
     return (
-      <div className="p-16 text-center text-gray-600">
+      <div className="p-16 text-center text-foreground-secondary">
         <p>No saved itineraries yet. Confirm a trip in the builder to see it here.</p>
-        <Link href="/trip-builder" className="text-indigo-600 underline">
+        <Link href="/trip-builder" className="text-sage underline">
           Go to Trip Builder
         </Link>
       </div>
@@ -131,7 +131,7 @@ function ItineraryPageContent() {
   }
 
   return (
-    <div className="bg-slate-50 py-6 sm:py-8 md:py-10">
+    <div className="bg-surface py-6 sm:py-8 md:py-10">
       <ErrorBoundary>
         <ItineraryShell
           key={selectedTrip?.id ?? "mock-itinerary"}
@@ -157,7 +157,7 @@ function ItineraryPageContent() {
 export default function ItineraryPage() {
   return (
     <Suspense fallback={
-      <div className="p-16 text-center text-gray-600">
+      <div className="p-16 text-center text-foreground-secondary">
         <p>Loading...</p>
       </div>
     }>
