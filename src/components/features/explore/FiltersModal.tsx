@@ -51,11 +51,7 @@ type FiltersModalProps = {
   // Sub-type filter
   selectedSubTypes: string[];
   onSubTypesChange: (subTypes: string[]) => void;
-  // Entry Fee filter (renamed from Budget)
-  entryFeeOptions: readonly { value: string; label: string }[];
-  selectedEntryFee: string | null;
-  onEntryFeeChange: (entryFee: string | null) => void;
-  // Price Level filter (Google Places based: $ to $$$$)
+  // Price filter (Google Places based: Free, $ to $$$$)
   selectedPriceLevel: number | null;
   onPriceLevelChange: (priceLevel: number | null) => void;
   // Duration filter
@@ -74,8 +70,9 @@ type FiltersModalProps = {
   onClearAll: () => void;
 };
 
-// Price level options for Google Places data
-const PRICE_LEVEL_OPTIONS = [
+// Price options (0 = Free, 1-4 = $ to $$$$)
+const PRICE_OPTIONS = [
+  { value: 0, label: "Free" },
   { value: 1, label: "$" },
   { value: 2, label: "$$" },
   { value: 3, label: "$$$" },
@@ -94,9 +91,6 @@ export function FiltersModal({
   onCategoriesChange,
   selectedSubTypes,
   onSubTypesChange,
-  entryFeeOptions,
-  selectedEntryFee,
-  onEntryFeeChange,
   selectedPriceLevel,
   onPriceLevelChange,
   durationOptions,
@@ -170,8 +164,7 @@ export function FiltersModal({
     selectedPrefecture ||
     selectedCategories.length > 0 ||
     selectedSubTypes.length > 0 ||
-    selectedEntryFee ||
-    selectedPriceLevel ||
+    selectedPriceLevel !== null ||
     selectedDuration ||
     wheelchairAccessible ||
     vegetarianFriendly;
@@ -179,8 +172,7 @@ export function FiltersModal({
   // Count of more filters that are active
   const moreFiltersActiveCount = [
     selectedDuration,
-    selectedEntryFee,
-    selectedPriceLevel,
+    selectedPriceLevel !== null,
     wheelchairAccessible,
     vegetarianFriendly,
   ].filter(Boolean).length;
@@ -385,54 +377,27 @@ export function FiltersModal({
                   </div>
                 </div>
 
-                {/* Entry Fee (renamed from Budget) */}
+                {/* Price */}
                 <div>
-                  <h4 className="text-sm font-medium text-gray-900 mb-2">Entry Fee</h4>
+                  <h4 className="text-sm font-medium text-gray-900 mb-2">Price</h4>
                   <div className="flex flex-wrap gap-2">
                     <FilterChip
                       label="Any"
-                      isSelected={!selectedEntryFee}
-                      onClick={() => onEntryFeeChange(null)}
+                      isSelected={selectedPriceLevel === null}
+                      onClick={() => onPriceLevelChange(null)}
                       size="small"
                     />
-                    {entryFeeOptions.map((option) => (
+                    {PRICE_OPTIONS.map((option) => (
                       <FilterChip
                         key={option.value}
                         label={option.label}
-                        isSelected={selectedEntryFee === option.value}
-                        onClick={() => onEntryFeeChange(selectedEntryFee === option.value ? null : option.value)}
+                        isSelected={selectedPriceLevel === option.value}
+                        onClick={() => onPriceLevelChange(selectedPriceLevel === option.value ? null : option.value)}
                         size="small"
                       />
                     ))}
                   </div>
                 </div>
-
-                {/* Price Range - Only shown when Food category is selected */}
-                {isFoodCategorySelected && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-900 mb-2">
-                      Price Range
-                      <span className="ml-2 text-xs font-normal text-gray-500">for restaurants</span>
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      <FilterChip
-                        label="Any"
-                        isSelected={selectedPriceLevel === null}
-                        onClick={() => onPriceLevelChange(null)}
-                        size="small"
-                      />
-                      {PRICE_LEVEL_OPTIONS.map((option) => (
-                        <FilterChip
-                          key={option.value}
-                          label={option.label}
-                          isSelected={selectedPriceLevel === option.value}
-                          onClick={() => onPriceLevelChange(selectedPriceLevel === option.value ? null : option.value)}
-                          size="small"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Accessibility */}
                 <div>
