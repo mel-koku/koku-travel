@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -8,6 +8,7 @@ import { FormField } from "@/components/ui/FormField";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
+import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import type { AccommodationStyle, TripStyle, TransportMode } from "@/types/trip";
 
 type PreferenceFormValues = {
@@ -28,8 +29,6 @@ type PreferenceFormValues = {
   mobilityAssistance?: boolean;
   dietary?: string[];
   dietaryOther?: string;
-  // Weather
-  preferIndoorOnRain?: boolean;
   // Notes
   additionalNotes?: string;
 };
@@ -72,6 +71,31 @@ export type PreferenceCardsProps = {
 export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
   const { data, setData } = useTripBuilder();
 
+  // Budget mode is tracked locally (UI state), while values are stored in context
+  const [budgetMode, setBudgetMode] = useState<BudgetMode>("perDay");
+
+  // Budget state (managed separately from react-hook-form)
+  const budgetValue = useMemo<BudgetValue | undefined>(() => {
+    const perDay = data.budget?.perDay;
+    const total = data.budget?.total;
+
+    // Return the appropriate amount based on current mode
+    if (budgetMode === "perDay" && perDay !== undefined) {
+      return { amount: perDay, mode: "perDay" };
+    }
+    if (budgetMode === "total" && total !== undefined) {
+      return { amount: total, mode: "total" };
+    }
+    // Fallback: if we have either value, show something
+    if (perDay !== undefined) {
+      return { amount: perDay, mode: "perDay" };
+    }
+    if (total !== undefined) {
+      return { amount: total, mode: "total" };
+    }
+    return undefined;
+  }, [data.budget?.perDay, data.budget?.total, budgetMode]);
+
   const defaultValues = useMemo<PreferenceFormValues>(
     () => ({
       groupSize: data.group?.size,
@@ -86,7 +110,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
       mobilityAssistance: data.accessibility?.mobility,
       dietary: data.accessibility?.dietary ?? [],
       dietaryOther: data.accessibility?.dietaryOther ?? "",
-      preferIndoorOnRain: data.weatherPreferences?.preferIndoorOnRain,
       additionalNotes: data.accessibility?.notes ?? "",
     }),
     [data]
@@ -99,6 +122,21 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
 
   // Watch all form values for real-time sync
   const formValues = useWatch({ control });
+
+  // Handle budget change from BudgetInput
+  const handleBudgetChange = useCallback(
+    (budget: { total?: number; perDay?: number }) => {
+      setData((prev) => ({
+        ...prev,
+        budget: {
+          ...prev.budget,
+          total: budget.total,
+          perDay: budget.perDay,
+        },
+      }));
+    },
+    [setData]
+  );
 
   // Sync form values to context
   const syncToContext = useCallback(() => {
@@ -133,10 +171,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
         dietaryOther: formValues.dietaryOther,
         notes: formValues.additionalNotes,
       },
-      weatherPreferences: {
-        ...prev.weatherPreferences,
-        preferIndoorOnRain: formValues.preferIndoorOnRain,
-      },
     }));
   }, [formValues, setData]);
 
@@ -148,6 +182,17 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Budget */}
+      <PreferenceCard title="Budget" description="Set your travel budget (optional)">
+        <BudgetInput
+          id="budget"
+          duration={data.duration}
+          value={budgetValue}
+          onChange={handleBudgetChange}
+          onModeChange={setBudgetMode}
+        />
+      </PreferenceCard>
+
       {/* Travel Pace */}
       <PreferenceCard title="Travel Pace" description="How do you like to travel?">
         <Controller
@@ -369,23 +414,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
             />
           </FormField>
         )}
-      </PreferenceCard>
-
-      {/* Weather Preferences */}
-      <PreferenceCard
-        title="Weather Preferences"
-        description="How should we plan around weather?"
-      >
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-            {...register("preferIndoorOnRain")}
-          />
-          <span className="text-sm text-warm-gray">
-            Prefer indoor activities on rainy days
-          </span>
-        </label>
       </PreferenceCard>
 
       {/* Additional Notes */}

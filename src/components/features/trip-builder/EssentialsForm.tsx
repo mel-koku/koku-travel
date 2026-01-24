@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
 import { FormField } from "@/components/ui/FormField";
@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/Input";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { EntryPointSelector } from "./EntryPointSelector";
-import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import type { EntryPoint } from "@/types/trip";
 
 type EssentialsFormValues = {
@@ -33,31 +32,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     }),
     [data.duration, data.dates.start]
   );
-
-  // Budget mode is tracked locally (UI state), while values are stored in context
-  const [budgetMode, setBudgetMode] = useState<BudgetMode>("perDay");
-
-  // Budget state (managed separately from react-hook-form)
-  const budgetValue = useMemo<BudgetValue | undefined>(() => {
-    const perDay = data.budget?.perDay;
-    const total = data.budget?.total;
-
-    // Return the appropriate amount based on current mode
-    if (budgetMode === "perDay" && perDay !== undefined) {
-      return { amount: perDay, mode: "perDay" };
-    }
-    if (budgetMode === "total" && total !== undefined) {
-      return { amount: total, mode: "total" };
-    }
-    // Fallback: if we have either value, show something
-    if (perDay !== undefined) {
-      return { amount: perDay, mode: "perDay" };
-    }
-    if (total !== undefined) {
-      return { amount: total, mode: "total" };
-    }
-    return undefined;
-  }, [data.budget?.perDay, data.budget?.total, budgetMode]);
 
   const {
     control,
@@ -102,21 +76,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
       setData((prev) => ({
         ...prev,
         entryPoint,
-      }));
-    },
-    [setData]
-  );
-
-  // Handle budget change from BudgetInput
-  const handleBudgetChange = useCallback(
-    (budget: { total?: number; perDay?: number }) => {
-      setData((prev) => ({
-        ...prev,
-        budget: {
-          ...prev.budget,
-          total: budget.total,
-          perDay: budget.perDay,
-        },
       }));
     },
     [setData]
@@ -225,19 +184,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
           value={data.entryPoint}
           onChange={handleEntryPointChange}
         />
-      </div>
-
-      <div>
-        <h4 className="text-sm font-medium text-charcoal">Budget (Optional)</h4>
-        <div className="mt-3">
-          <BudgetInput
-            id="budget"
-            duration={durationValue}
-            value={budgetValue}
-            onChange={handleBudgetChange}
-            onModeChange={setBudgetMode}
-          />
-        </div>
       </div>
     </div>
   );
