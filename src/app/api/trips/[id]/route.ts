@@ -19,13 +19,145 @@ import type { StoredTrip } from "@/services/trip/types";
 const uuidSchema = z.string().uuid("Invalid trip ID format");
 
 /**
+ * Schema for recommendation reason
+ */
+const recommendationReasonSchema = z.object({
+  primaryReason: z.string(),
+  factors: z.array(z.object({
+    factor: z.string(),
+    score: z.number(),
+    reasoning: z.string(),
+  })).optional(),
+  alternativesConsidered: z.array(z.string()).optional(),
+}).passthrough();
+
+/**
+ * Schema for operating window
+ */
+const operatingWindowSchema = z.object({
+  opensAt: z.string(),
+  closesAt: z.string(),
+  note: z.string().optional(),
+  status: z.enum(["within", "outside", "unknown"]).optional(),
+});
+
+/**
+ * Schema for scheduled visit
+ */
+const scheduledVisitSchema = z.object({
+  arrivalTime: z.string(),
+  departureTime: z.string(),
+  arrivalBufferMinutes: z.number().optional(),
+  departureBufferMinutes: z.number().optional(),
+  operatingWindow: operatingWindowSchema.optional(),
+  status: z.enum(["scheduled", "tentative", "out-of-hours"]).optional(),
+});
+
+/**
+ * Schema for travel segment
+ */
+const travelSegmentSchema = z.object({
+  mode: z.enum(["walking", "driving", "cycling", "transit", "rideshare"]),
+  durationMinutes: z.number(),
+  distanceMeters: z.number().optional(),
+  departureTime: z.string().optional(),
+  arrivalTime: z.string().optional(),
+  instructions: z.array(z.string()).optional(),
+  notes: z.string().optional(),
+  path: z.array(z.object({ lat: z.number(), lng: z.number() })).optional(),
+  isEstimated: z.boolean().optional(),
+});
+
+/**
+ * Schema for city transition
+ */
+const cityTransitionSchema = z.object({
+  fromCityId: z.string(),
+  toCityId: z.string(),
+  mode: z.enum(["walking", "driving", "cycling", "transit", "rideshare"]),
+  durationMinutes: z.number(),
+  distanceMeters: z.number().optional(),
+  departureTime: z.string().optional(),
+  arrivalTime: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+/**
+ * Schema for itinerary activity
+ */
+const itineraryActivitySchema = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("place"),
+    id: z.string(),
+    title: z.string().max(500),
+    timeOfDay: z.enum(["morning", "afternoon", "evening"]),
+    durationMin: z.number().optional(),
+    neighborhood: z.string().max(200).optional(),
+    tags: z.array(z.string().max(100)).optional(),
+    notes: z.string().max(2000).optional(),
+    locationId: z.string().optional(),
+    coordinates: z.object({ lat: z.number(), lng: z.number() }).optional(),
+    mealType: z.enum(["breakfast", "lunch", "dinner"]).optional(),
+    recommendationReason: recommendationReasonSchema.optional(),
+    schedule: scheduledVisitSchema.optional(),
+    travelFromPrevious: travelSegmentSchema.optional(),
+    travelToNext: travelSegmentSchema.optional(),
+    operatingWindow: operatingWindowSchema.optional(),
+    availabilityStatus: z.enum(["available", "limited", "unavailable", "unknown"]).optional(),
+    availabilityMessage: z.string().optional(),
+    manualStartTime: z.string().optional(),
+  }).passthrough(),
+  z.object({
+    kind: z.literal("note"),
+    id: z.string(),
+    title: z.literal("Note"),
+    timeOfDay: z.enum(["morning", "afternoon", "evening"]),
+    notes: z.string().max(5000),
+    startTime: z.string().optional(),
+    endTime: z.string().optional(),
+  }).passthrough(),
+]);
+
+/**
+ * Schema for itinerary time bounds
+ */
+const itineraryTimeSchema = z.object({
+  startTime: z.string().optional(),
+  endTime: z.string().optional(),
+  timezone: z.string().optional(),
+});
+
+/**
+ * Schema for itinerary day
+ */
+const itineraryDaySchema = z.object({
+  id: z.string(),
+  dateLabel: z.string().optional(),
+  timezone: z.string().optional(),
+  bounds: itineraryTimeSchema.optional(),
+  weekday: z.enum(["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]).optional(),
+  cityId: z.string().optional(),
+  cityTransition: cityTransitionSchema.optional(),
+  activities: z.array(itineraryActivitySchema).max(50),
+  isDayTrip: z.boolean().optional(),
+  baseCityId: z.string().optional(),
+  dayTripTravelMinutes: z.number().optional(),
+}).passthrough();
+
+/**
+ * Schema for itinerary
+ */
+const itinerarySchema = z.object({
+  days: z.array(itineraryDaySchema).max(30),
+  timezone: z.string().optional(),
+}).passthrough();
+
+/**
  * Schema for updating a trip (partial update)
  */
 const updateTripSchema = z.object({
   name: z.string().min(1).max(500).optional(),
-  itinerary: z.object({
-    days: z.array(z.any()),
-  }).passthrough().optional(),
+  itinerary: itinerarySchema.optional(),
   builderData: z.record(z.any()).optional(),
 });
 

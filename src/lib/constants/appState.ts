@@ -19,3 +19,13 @@ export const MAX_EDIT_HISTORY_ENTRIES = 50;
  * Real ID will be generated on client after hydration
  */
 export const STABLE_DEFAULT_USER_ID = "default-user-id";
+
+/**
+ * Duration for toast notifications in milliseconds
+ */
+export const TOAST_DURATION_MS = 8000;
+
+/**
+ * Maximum display name length for user profiles
+ */
+export const MAX_DISPLAY_NAME_LENGTH = 100;
