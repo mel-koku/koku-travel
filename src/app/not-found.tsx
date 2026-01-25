@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 
 export default function NotFound() {
@@ -13,11 +12,11 @@ export default function NotFound() {
           The page you&apos;re looking for doesn&apos;t exist or has been moved. Let&apos;s get you back on track.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button asChild variant="primary" href="/">
-            <Link href="/">Go home</Link>
+          <Button variant="primary" href="/">
+            Go home
           </Button>
-          <Button asChild variant="outline" href="/explore">
-            <Link href="/explore">Explore places</Link>
+          <Button variant="outline" href="/explore">
+            Explore places
           </Button>
         </div>
       </div>
