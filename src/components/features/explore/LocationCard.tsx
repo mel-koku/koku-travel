@@ -26,7 +26,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
   const estimatedDuration = location.estimatedDuration?.trim();
   const rating = getLocationRating(location);
   const reviewCount = getLocationReviewCount(location);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const buttonRef = useRef<HTMLDivElement | null>(null);
   // Use primary photo URL from database if available, otherwise fall back to image field
   const imageSrc = location.primaryPhotoUrl ?? location.image;
 
@@ -79,103 +79,117 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
         locationName={displayName}
       />
 
-      {/* Card container with rounded corners */}
-      <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
-        {/* Main clickable area for image */}
+      {/* Unified Card Container */}
+      <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm transition-all duration-300 group-hover:shadow-depth group-hover:-translate-y-1 group-hover:border-sand">
+        {/* Image Area */}
+        <div className="relative">
+          {/* Clickable image area */}
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => onSelect?.(location)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect?.(location); }}
+            ref={buttonRef}
+            className="relative block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-inset"
+          >
+            {/* Image - 4:3 aspect ratio for landscape feel */}
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface">
+              <Image
+                src={imageSrc || FALLBACK_IMAGE_SRC}
+                alt={displayName}
+                fill
+                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
+                priority={false}
+              />
+              {/* Hover gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-300" />
+            </div>
+          </div>
+
+          {/* Overlay Actions - Positioned outside the clickable div to avoid nesting */}
+          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 sm:transition-all sm:duration-300 pointer-events-none">
+            {/* Heart Button */}
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleWishlist(location.id);
+              }}
+              aria-label={active ? "Remove from favorites" : "Add to favorites"}
+              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-lg transition-all hover:bg-white hover:scale-105 active:scale-95"
+            >
+              <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
+            </button>
+
+            {/* Itinerary Button */}
+            <button
+              type="button"
+              onClick={handleToggleItinerary}
+              aria-label={locationInItinerary ? "Remove from itinerary" : "Add to itinerary"}
+              className={`pointer-events-auto flex h-10 items-center gap-1.5 rounded-full px-3 backdrop-blur-sm shadow-lg transition-all hover:scale-105 active:scale-95 ${
+                locationInItinerary
+                  ? "bg-sage/90 text-white hover:bg-sage"
+                  : "bg-white/90 text-charcoal hover:bg-white"
+              }`}
+            >
+              {locationInItinerary ? (
+                <MinusIcon className="h-4 w-4" />
+              ) : (
+                <PlusIcon className="h-4 w-4" />
+              )}
+              <span className="text-xs font-medium">
+                {locationInItinerary ? "Added" : "Add"}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Content Inside Card */}
         <button
           type="button"
           onClick={() => onSelect?.(location)}
-          ref={buttonRef}
-          className="block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+          className="block w-full text-left cursor-pointer focus-visible:outline-none p-4"
         >
-          {/* Image */}
-          <div className="relative aspect-square w-full overflow-hidden bg-surface">
-            <Image
-              src={imageSrc || FALLBACK_IMAGE_SRC}
-              alt={displayName}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
-              priority={false}
-            />
+          <div className="space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="font-medium text-charcoal line-clamp-1 transition-colors duration-200 group-hover:text-brand-primary">
+                {displayName}
+              </h3>
+              {rating ? (
+                <div className="flex shrink-0 items-center gap-1 text-sm">
+                  <StarIcon />
+                  <span className="text-charcoal">{rating.toFixed(1)}</span>
+                  {reviewCount ? (
+                    <span className="text-stone">({formatReviewCount(reviewCount)})</span>
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+
+            <p className="text-sm text-stone">
+              {location.city}, {location.region}
+            </p>
+
+            <p className="text-sm text-stone line-clamp-2">{summary}</p>
+
+            {/* Category Pill and Duration */}
+            <div className="flex items-center gap-2 pt-1">
+              <span className="text-xs font-medium capitalize bg-surface text-warm-gray px-2.5 py-1 rounded-full">
+                {location.category}
+              </span>
+              {estimatedDuration ? (
+                <>
+                  <span className="text-border">·</span>
+                  <span className="text-sm text-stone">
+                    {estimatedDuration}
+                  </span>
+                </>
+              ) : null}
+            </div>
           </div>
         </button>
-
-        {/* Action bar below image */}
-        <div className="flex items-center justify-between border-t border-border px-3 py-2">
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              toggleWishlist(location.id);
-            }}
-            aria-label={active ? "Remove from favorites" : "Add to favorites"}
-            className={`rounded-full p-1.5 transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
-              active ? "text-error" : "text-foreground-secondary"
-            }`}
-          >
-            <HeartIcon active={active} animating={heartAnimating} />
-          </button>
-
-          <button
-            type="button"
-            onClick={handleToggleItinerary}
-            aria-label={locationInItinerary ? "Remove from itinerary" : "Add to itinerary"}
-            className={`flex items-center gap-1.5 rounded-full px-2 py-1 text-sm transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
-              locationInItinerary ? "text-sage" : "text-foreground-secondary"
-            }`}
-          >
-            {locationInItinerary ? (
-              <MinusIcon className="h-5 w-5" />
-            ) : (
-              <PlusIcon className="h-5 w-5" />
-            )}
-            <span>{locationInItinerary ? "Remove from Itinerary" : "Add to Itinerary"}</span>
-          </button>
-        </div>
       </div>
-
-      {/* Content below card */}
-      <button
-        type="button"
-        onClick={() => onSelect?.(location)}
-        className="block w-full text-left cursor-pointer focus-visible:outline-none mt-3"
-      >
-        <div className="space-y-1">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="font-medium text-charcoal line-clamp-1">{displayName}</h3>
-            {rating ? (
-              <div className="flex shrink-0 items-center gap-1 text-sm">
-                <StarIcon />
-                <span className="text-charcoal">{rating.toFixed(1)}</span>
-                {reviewCount ? (
-                  <span className="text-stone">({formatReviewCount(reviewCount)})</span>
-                ) : null}
-              </div>
-            ) : null}
-          </div>
-
-          <p className="text-sm text-stone">
-            {location.city}, {location.region}
-          </p>
-
-          <p className="text-sm text-stone line-clamp-2">{summary}</p>
-
-          <div className="flex items-center gap-2 pt-1">
-            <span className="text-sm text-charcoal font-medium capitalize">
-              {location.category}
-            </span>
-            {estimatedDuration ? (
-              <>
-                <span className="text-border">·</span>
-                <span className="text-sm text-stone">
-                  {estimatedDuration}
-                </span>
-              </>
-            ) : null}
-          </div>
-        </div>
-      </button>
     </article>
   );
 });
@@ -190,7 +204,7 @@ type HeartIconProps = {
 export function HeartIcon({ active, animating, className, variant = "inline" }: HeartIconProps) {
   const baseClass = className ?? "h-5 w-5";
   const colorClass = variant === "overlay"
-    ? active ? "fill-error stroke-error" : "fill-black/50 stroke-white"
+    ? active ? "fill-error stroke-error" : "fill-black/30 stroke-charcoal"
     : active ? "fill-error stroke-error" : "fill-none stroke-current";
 
   return (
@@ -303,5 +317,3 @@ function StarIcon() {
     </svg>
   );
 }
-
-

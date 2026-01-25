@@ -47,7 +47,7 @@ export function LocationGrid({
         ) : (
           <>
             <div
-              className={`grid gap-x-6 gap-y-10 ${
+              className={`grid gap-x-5 gap-y-8 sm:gap-x-6 sm:gap-y-10 ${
                 layout === "sidebar"
                   ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -67,9 +67,18 @@ export function LocationGrid({
                 <button
                   type="button"
                   onClick={onLoadMore}
-                  className="rounded-full bg-brand-primary px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                  className="group/btn flex items-center gap-2 rounded-full bg-brand-primary px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-brand-primary/90 hover:shadow-md hover:px-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 active:scale-[0.98]"
                 >
-                  Show more
+                  <span>Show more</span>
+                  <svg
+                    className="h-4 w-4 transition-transform duration-300 group-hover/btn:translate-y-0.5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
                 </button>
               </div>
             )}
