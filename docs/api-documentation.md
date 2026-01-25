@@ -15,7 +15,9 @@ All API routes are prefixed with `/api`:
 
 ## Authentication
 
-Most API routes do not require authentication. However, some routes may implement rate limiting based on IP address.
+Most public API routes do not require authentication. However, user-specific routes (like trips) require authentication via Supabase Auth.
+
+**Authenticated endpoints** return `401 Unauthorized` if no valid session is present.
 
 ---
 
@@ -25,6 +27,13 @@ API routes implement rate limiting to prevent abuse:
 
 - **Location endpoints**: 100 requests per minute per IP
 - **Photo endpoints**: 200 requests per minute per IP
+- **Trips endpoints**:
+  - GET /api/trips: 100 requests per minute
+  - POST /api/trips: 30 requests per minute
+  - GET /api/trips/[id]: 100 requests per minute
+  - PATCH /api/trips/[id]: 60 requests per minute
+  - DELETE /api/trips/[id]: 30 requests per minute
+- **Itinerary endpoints**: 20-30 requests per minute
 
 When rate limit is exceeded, the API returns:
 - **Status Code**: `429 Too Many Requests`
@@ -226,6 +235,247 @@ curl "https://your-domain.com/api/places/photo?photoName=photo-reference-123&max
 
 ---
 
+### 4. List User Trips
+
+**Endpoint:** `GET /api/trips`
+
+**Description:** Retrieves all trips for the authenticated user.
+
+**Authentication:** Required (Supabase Auth)
+
+**Rate Limit:** 100 requests/minute per user
+
+**Request Example:**
+
+```bash
+curl https://your-domain.com/api/trips \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response Example:**
+
+```json
+{
+  "trips": [
+    {
+      "id": "3621634c-b128-4e8d-b944-ccc33628c3fe",
+      "name": "Kobe & Osaka Trip - Jan 26",
+      "createdAt": "2026-01-25T06:52:06.935Z",
+      "updatedAt": "2026-01-25T06:52:11.656Z",
+      "itinerary": { "days": [...] },
+      "builderData": { ... }
+    }
+  ],
+  "count": 1
+}
+```
+
+**Error Responses:**
+
+- `401 Unauthorized` - Authentication required
+- `429 Too Many Requests` - Rate limit exceeded
+- `500 Internal Server Error` - Server error
+
+---
+
+### 5. Create Trip
+
+**Endpoint:** `POST /api/trips`
+
+**Description:** Creates a new trip for the authenticated user.
+
+**Authentication:** Required (Supabase Auth)
+
+**Rate Limit:** 30 requests/minute per user
+
+**Request Body:**
+
+| Field        | Type   | Required | Description                     |
+|--------------|--------|----------|---------------------------------|
+| `id`         | string | No       | UUID (auto-generated if omitted)|
+| `name`       | string | No       | Trip name (default: "Untitled itinerary") |
+| `itinerary`  | object | No       | Itinerary data (default: `{days: []}`) |
+| `builderData`| object | No       | Builder configuration (default: `{}`) |
+
+**Request Example:**
+
+```bash
+curl -X POST https://your-domain.com/api/trips \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "My Japan Trip", "itinerary": {"days": []}, "builderData": {}}'
+```
+
+**Response Example:**
+
+```json
+{
+  "trip": {
+    "id": "3621634c-b128-4e8d-b944-ccc33628c3fe",
+    "name": "My Japan Trip",
+    "createdAt": "2026-01-25T06:52:06.935Z",
+    "updatedAt": "2026-01-25T06:52:06.935Z",
+    "itinerary": { "days": [] },
+    "builderData": {}
+  }
+}
+```
+
+**Error Responses:**
+
+- `400 Bad Request` - Invalid request body
+- `401 Unauthorized` - Authentication required
+- `429 Too Many Requests` - Rate limit exceeded
+- `500 Internal Server Error` - Server error
+
+---
+
+### 6. Get Trip by ID
+
+**Endpoint:** `GET /api/trips/[id]`
+
+**Description:** Retrieves a specific trip by ID for the authenticated user.
+
+**Authentication:** Required (Supabase Auth)
+
+**Rate Limit:** 100 requests/minute per user
+
+**Parameters:**
+
+| Parameter | Type   | Location | Required | Description |
+|-----------|--------|----------|----------|-------------|
+| `id`      | string | Path     | Yes      | Trip UUID   |
+
+**Request Example:**
+
+```bash
+curl https://your-domain.com/api/trips/3621634c-b128-4e8d-b944-ccc33628c3fe \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response Example:**
+
+```json
+{
+  "trip": {
+    "id": "3621634c-b128-4e8d-b944-ccc33628c3fe",
+    "name": "Kobe & Osaka Trip - Jan 26",
+    "createdAt": "2026-01-25T06:52:06.935Z",
+    "updatedAt": "2026-01-25T06:52:11.656Z",
+    "itinerary": { "days": [...] },
+    "builderData": { ... }
+  }
+}
+```
+
+**Error Responses:**
+
+- `400 Bad Request` - Invalid trip ID format
+- `401 Unauthorized` - Authentication required
+- `404 Not Found` - Trip not found
+- `429 Too Many Requests` - Rate limit exceeded
+- `500 Internal Server Error` - Server error
+
+---
+
+### 7. Update Trip
+
+**Endpoint:** `PATCH /api/trips/[id]`
+
+**Description:** Updates a trip for the authenticated user.
+
+**Authentication:** Required (Supabase Auth)
+
+**Rate Limit:** 60 requests/minute per user
+
+**Parameters:**
+
+| Parameter | Type   | Location | Required | Description |
+|-----------|--------|----------|----------|-------------|
+| `id`      | string | Path     | Yes      | Trip UUID   |
+
+**Request Body (all fields optional):**
+
+| Field        | Type   | Description                     |
+|--------------|--------|---------------------------------|
+| `name`       | string | Updated trip name               |
+| `itinerary`  | object | Updated itinerary data          |
+| `builderData`| object | Updated builder configuration   |
+
+**Request Example:**
+
+```bash
+curl -X PATCH https://your-domain.com/api/trips/3621634c-b128-4e8d-b944-ccc33628c3fe \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Updated Trip Name"}'
+```
+
+**Response Example:**
+
+```json
+{
+  "trip": {
+    "id": "3621634c-b128-4e8d-b944-ccc33628c3fe",
+    "name": "Updated Trip Name",
+    "createdAt": "2026-01-25T06:52:06.935Z",
+    "updatedAt": "2026-01-25T07:30:00.000Z",
+    "itinerary": { "days": [...] },
+    "builderData": { ... }
+  }
+}
+```
+
+**Error Responses:**
+
+- `400 Bad Request` - Invalid request body or no updates provided
+- `401 Unauthorized` - Authentication required
+- `404 Not Found` - Trip not found
+- `429 Too Many Requests` - Rate limit exceeded
+- `500 Internal Server Error` - Server error
+
+---
+
+### 8. Delete Trip
+
+**Endpoint:** `DELETE /api/trips/[id]`
+
+**Description:** Soft deletes a trip for the authenticated user. Sets `deleted_at` timestamp rather than permanently removing.
+
+**Authentication:** Required (Supabase Auth)
+
+**Rate Limit:** 30 requests/minute per user
+
+**Parameters:**
+
+| Parameter | Type   | Location | Required | Description |
+|-----------|--------|----------|----------|-------------|
+| `id`      | string | Path     | Yes      | Trip UUID   |
+
+**Request Example:**
+
+```bash
+curl -X DELETE https://your-domain.com/api/trips/3621634c-b128-4e8d-b944-ccc33628c3fe \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+**Response Example:**
+
+```json
+{
+  "success": true
+}
+```
+
+**Error Responses:**
+
+- `400 Bad Request` - Invalid trip ID format
+- `401 Unauthorized` - Authentication required
+- `429 Too Many Requests` - Rate limit exceeded
+- `500 Internal Server Error` - Server error
+
+---
+
 ## Data Models
 
 ### Location Object
@@ -264,6 +514,39 @@ curl "https://your-domain.com/api/places/photo?photoName=photo-reference-123&max
 }
 ```
 
+### StoredTrip Object
+
+```typescript
+{
+  id: string;           // UUID
+  name: string;         // Trip name
+  createdAt: string;    // ISO 8601 timestamp
+  updatedAt: string;    // ISO 8601 timestamp
+  itinerary: {
+    days: Array<{
+      id: string;
+      date: string;
+      activities: Array<{
+        id: string;
+        locationId: string;
+        startTime: string;
+        endTime: string;
+        // ... activity details
+      }>;
+    }>;
+  };
+  builderData: {
+    duration?: number;
+    dates?: { start?: string; end?: string };
+    regions?: string[];
+    cities?: string[];
+    interests?: string[];
+    style?: "relaxed" | "balanced" | "fast";
+    // ... other builder configuration
+  };
+}
+```
+
 ---
 
 ## Best Practices
@@ -291,6 +574,6 @@ For issues or questions about the API:
 
 ---
 
-**Last Updated:** January 2025
-**API Version:** 1.0
+**Last Updated:** January 2026
+**API Version:** 1.1
 
