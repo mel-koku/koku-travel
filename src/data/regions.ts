@@ -9,6 +9,16 @@ export type Region = {
   }[];
 };
 
+/**
+ * Japan's 9 main regions with their major cities.
+ *
+ * This list is used for:
+ * 1. Itinerary generation - grouping cities by region for efficient travel
+ * 2. City-region validation - ensuring locations are in the correct region
+ * 3. Trip builder UI - showing regional groupings
+ *
+ * Note: The region names here should match the "region" field in the locations table.
+ */
 export const REGIONS: readonly Region[] = [
   {
     id: "kansai",
@@ -17,6 +27,7 @@ export const REGIONS: readonly Region[] = [
       { id: "kyoto", name: "Kyoto" },
       { id: "osaka", name: "Osaka" },
       { id: "nara", name: "Nara" },
+      { id: "kobe", name: "Kobe" },
     ],
   },
   {
@@ -25,6 +36,59 @@ export const REGIONS: readonly Region[] = [
     cities: [
       { id: "tokyo", name: "Tokyo" },
       { id: "yokohama", name: "Yokohama" },
+    ],
+  },
+  {
+    id: "chubu",
+    name: "Chubu",
+    cities: [
+      { id: "nagoya", name: "Nagoya" },
+      { id: "kanazawa", name: "Kanazawa" },
+    ],
+  },
+  {
+    id: "kyushu",
+    name: "Kyushu",
+    cities: [
+      { id: "fukuoka", name: "Fukuoka" },
+      { id: "nagasaki", name: "Nagasaki" },
+    ],
+  },
+  {
+    id: "hokkaido",
+    name: "Hokkaido",
+    cities: [
+      { id: "sapporo", name: "Sapporo" },
+      { id: "hakodate", name: "Hakodate" },
+    ],
+  },
+  {
+    id: "tohoku",
+    name: "Tohoku",
+    cities: [
+      { id: "sendai", name: "Sendai" },
+    ],
+  },
+  {
+    id: "chugoku",
+    name: "Chugoku",
+    cities: [
+      { id: "hiroshima", name: "Hiroshima" },
+    ],
+  },
+  {
+    id: "shikoku",
+    name: "Shikoku",
+    cities: [
+      { id: "matsuyama", name: "Matsuyama" },
+      { id: "takamatsu", name: "Takamatsu" },
+    ],
+  },
+  {
+    id: "okinawa",
+    name: "Okinawa",
+    cities: [
+      { id: "naha", name: "Naha" },
     ],
   },
 ] as const;

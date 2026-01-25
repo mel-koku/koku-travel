@@ -23,7 +23,16 @@ export type InterestId = (typeof INTEREST_CATEGORIES)[number]["id"];
  * Known city IDs for static references. Dynamic cities from database
  * may have additional IDs not in this union.
  */
-export type KnownCityId = "kyoto" | "osaka" | "nara" | "tokyo" | "yokohama";
+export type KnownCityId =
+  | "kyoto" | "osaka" | "nara" | "kobe"  // Kansai
+  | "tokyo" | "yokohama"                  // Kanto
+  | "nagoya" | "kanazawa"                 // Chubu
+  | "fukuoka" | "nagasaki"                // Kyushu
+  | "sapporo" | "hakodate"                // Hokkaido
+  | "sendai"                              // Tohoku
+  | "hiroshima"                           // Chugoku
+  | "matsuyama" | "takamatsu"             // Shikoku
+  | "naha";                               // Okinawa
 
 /**
  * City ID type that accepts both known static cities and dynamic database cities.
@@ -32,10 +41,19 @@ export type KnownCityId = "kyoto" | "osaka" | "nara" | "tokyo" | "yokohama";
 export type CityId = string;
 
 /**
- * Known region IDs for static references. Dynamic regions from database
- * may have additional IDs not in this union.
+ * Known region IDs for static references.
+ * Japan is divided into 9 main regions.
  */
-export type KnownRegionId = "kansai" | "kanto";
+export type KnownRegionId =
+  | "kansai"    // Osaka, Kyoto, Nara, Kobe, etc.
+  | "kanto"     // Tokyo, Yokohama, etc.
+  | "chubu"     // Nagoya, Kanazawa, etc.
+  | "kyushu"    // Fukuoka, Nagasaki, etc.
+  | "hokkaido"  // Sapporo, Hakodate, etc.
+  | "tohoku"    // Sendai, Aomori, etc.
+  | "chugoku"   // Hiroshima, Okayama, etc.
+  | "shikoku"   // Matsuyama, Takamatsu, etc.
+  | "okinawa";  // Naha, Miyakojima, etc.
 
 /**
  * Region ID type that accepts both known static regions and dynamic database regions.
