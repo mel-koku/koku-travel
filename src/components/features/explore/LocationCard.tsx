@@ -5,10 +5,8 @@ import { memo, useRef, useState, useCallback, useEffect } from "react";
 
 import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
-import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import { useAddToItinerary } from "@/hooks/useAddToItinerary";
 import type { Location } from "@/types/location";
-import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { PlusIcon } from "./PlusIcon";
 import { MinusIcon } from "./MinusIcon";
 import { TripPickerModal } from "./TripPickerModal";
@@ -21,9 +19,10 @@ type LocationCardProps = {
 export const LocationCard = memo(function LocationCard({ location, onSelect }: LocationCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const active = isInWishlist(location.id);
-  const { details } = useLocationDetailsQuery(location.id);
-  const displayName = getLocationDisplayName(details?.displayName ?? null, location);
-  const summary = getShortOverview(location, details?.editorialSummary ?? null);
+  // Use location name directly - no need to fetch details just for display name
+  const displayName = location.name;
+  // Use local data for summary - details are fetched when modal opens
+  const summary = getShortOverview(location, null);
   const estimatedDuration = location.estimatedDuration?.trim();
   const rating = getLocationRating(location);
   const reviewCount = getLocationReviewCount(location);
