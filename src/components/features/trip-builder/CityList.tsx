@@ -12,6 +12,7 @@ import { calculateDistance } from "@/data/entryPoints";
 type CityWithRelevance = {
   city: string;
   relevance: number;
+  matchingLocationCount: number;
   locationCount: number;
   coordinates?: { lat: number; lng: number };
   region?: string;
@@ -58,6 +59,7 @@ export function CityList({ onCitySelect }: CityListProps) {
     return getAllCities().map((c) => ({
       city: c.city,
       relevance: 0,
+      matchingLocationCount: 0,
       locationCount: c.locationCount,
       coordinates: c.coordinates,
       region: c.region,
@@ -150,23 +152,28 @@ export function CityList({ onCitySelect }: CityListProps) {
       groups[region].push(city);
     }
 
-    // Sort cities within each region by distance from entry point (if available)
-    if (entryPoint) {
-      for (const region of Object.keys(groups)) {
-        groups[region]?.sort((a, b) => {
-          // If only one has coordinates, prefer the one with coordinates
-          if (a.coordinates && !b.coordinates) return -1;
-          if (!a.coordinates && b.coordinates) return 1;
-          if (!a.coordinates || !b.coordinates) {
-            // Fall back to location count
-            return b.locationCount - a.locationCount;
-          }
+    // Sort cities within each region by matching location count (primary), then distance (tiebreaker)
+    for (const region of Object.keys(groups)) {
+      groups[region]?.sort((a, b) => {
+        // Primary sort: by matching location count (descending)
+        if (b.matchingLocationCount !== a.matchingLocationCount) {
+          return b.matchingLocationCount - a.matchingLocationCount;
+        }
 
+        // Secondary sort: by total location count (descending)
+        if (b.locationCount !== a.locationCount) {
+          return b.locationCount - a.locationCount;
+        }
+
+        // Tertiary sort: by distance from entry point (if available)
+        if (entryPoint && a.coordinates && b.coordinates) {
           const distA = calculateDistance(entryPoint.coordinates, a.coordinates);
           const distB = calculateDistance(entryPoint.coordinates, b.coordinates);
           return distA - distB;
-        });
-      }
+        }
+
+        return 0;
+      });
     }
 
     // Sort regions: entry point region first, then by total location count

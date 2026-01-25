@@ -194,6 +194,48 @@ Extract to constants when:
 5. **Organization**: Group related code together
 6. **DRY Principle**: Don't Repeat Yourself, but don't over-abstract
 
+## Algorithm Documentation
+
+### City Relevance Scoring (`src/lib/tripBuilder/cityRelevance.ts`)
+
+The city relevance algorithm determines how well each city matches a user's selected interests in the Trip Builder.
+
+**Calculation Method:**
+
+1. **Matching Location Count**: For each city, sum the total number of locations that match any of the user's selected interests.
+   ```
+   matchingLocationCount = Σ (locations per selected interest)
+   ```
+   Example: If user selects Culture + History, and Kyoto has 80 culture + 60 history locations = 140 matching locations.
+
+2. **Relative Relevance**: Calculate relevance as a percentage relative to the city with the most matching locations.
+   ```
+   relevance = (city's matchingLocationCount / maxMatchingCount) × 100
+   ```
+   The city with the highest count gets 100%, others are scaled proportionally.
+
+3. **Sorting Priority**:
+   - Primary: `matchingLocationCount` (descending) - cities with most matching locations first
+   - Secondary: `locationCount` (descending) - tiebreaker by total locations
+   - Tertiary: Distance from entry point (if selected)
+
+**Key Functions:**
+
+- `calculateTotalMatchingLocations(city, interests)` - Returns total matching location count
+- `getCitiesByRelevance(interests)` - Returns all cities sorted by matching count with relevance percentages
+
+**UI Relevance Badge Colors:**
+- 75%+ match: Green (high match)
+- 50-74% match: Orange (medium match)
+- Below 50%: Gray (low match)
+
+**Edge Cases:**
+- No interests selected: All cities get `relevance: 0`, sorted by total location count
+- Unknown city: Returns 0 for matching count
+- All cities have 0 matches: All get `relevance: 0`
+
+---
+
 ## Migration Notes
 
 ### Storage Keys Migration
