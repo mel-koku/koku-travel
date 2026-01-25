@@ -6,6 +6,7 @@ import type { LocationScore } from "./locationScoring";
  */
 export interface DiversityContext {
   recentCategories: string[];
+  recentNeighborhoods?: string[];
   visitedLocationIds: Set<string>;
   currentDay: number;
   energyLevel: number; // 0-100, decreases as day progresses
@@ -151,13 +152,74 @@ export function detectCategoryStreak(
 export function wouldViolateDiversityRules(
   location: Location,
   recentCategories: string[],
+  recentNeighborhoods?: string[],
 ): boolean {
   const category = location.category;
-  if (!category) {
-    return false; // No category means no violation
+  if (category) {
+    const categoryStreak = countCategoryStreak(recentCategories, category);
+    if (categoryStreak >= 2) {
+      return true; // Violates if would create category streak of 3+
+    }
   }
 
-  const streakCount = countCategoryStreak(recentCategories, category);
-  return streakCount >= 2; // Violates if would create streak of 2+
+  // Check neighborhood diversity (max 2 consecutive same neighborhood)
+  if (recentNeighborhoods && recentNeighborhoods.length > 0) {
+    const neighborhood = location.neighborhood ?? location.city;
+    if (neighborhood) {
+      const neighborhoodStreak = countNeighborhoodStreak(recentNeighborhoods, neighborhood);
+      if (neighborhoodStreak >= 2) {
+        return true; // Violates if would create neighborhood streak of 3+
+      }
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Count consecutive occurrences of a neighborhood at the end of recent neighborhoods.
+ */
+function countNeighborhoodStreak(recentNeighborhoods: string[], neighborhood: string): number {
+  let count = 0;
+  for (let i = recentNeighborhoods.length - 1; i >= 0; i--) {
+    if (recentNeighborhoods[i] === neighborhood) {
+      count++;
+    } else {
+      break;
+    }
+  }
+  return count;
+}
+
+/**
+ * Detect the longest neighborhood streak in a list.
+ */
+export function detectNeighborhoodStreak(
+  neighborhoods: string[],
+): { neighborhood: string; count: number } {
+  if (neighborhoods.length === 0) {
+    return { neighborhood: "", count: 0 };
+  }
+
+  let maxStreak = 1;
+  let maxNeighborhood = neighborhoods[0] ?? "";
+  let currentStreak = 1;
+  let currentNeighborhood = neighborhoods[0] ?? "";
+
+  for (let i = 1; i < neighborhoods.length; i++) {
+    const neighborhood = neighborhoods[i];
+    if (neighborhood === currentNeighborhood) {
+      currentStreak++;
+      if (currentStreak > maxStreak) {
+        maxStreak = currentStreak;
+        maxNeighborhood = currentNeighborhood;
+      }
+    } else {
+      currentStreak = 1;
+      currentNeighborhood = neighborhood ?? "";
+    }
+  }
+
+  return { neighborhood: maxNeighborhood, count: maxStreak };
 }
 

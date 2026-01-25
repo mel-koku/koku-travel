@@ -24,6 +24,10 @@ export interface LocationScoringCriteria {
   availableMinutes: number;
   recentCategories: string[];
   /**
+   * Recent neighborhoods visited (for geographic diversity scoring)
+   */
+  recentNeighborhoods?: string[];
+  /**
    * Weather forecast for the date/location being scored
    */
   weatherForecast?: WeatherForecast;
@@ -63,6 +67,7 @@ export interface ScoreBreakdown {
   budgetFit: number;
   accessibilityFit: number;
   diversityBonus: number;
+  neighborhoodDiversity: number;
   weatherFit: number;
   timeOptimization: number;
   groupFit: number;
@@ -216,7 +221,11 @@ function scoreRatingQuality(location: Location): { score: number; reasoning: str
 
 /**
  * Score logistical fit (distance, duration, time slot).
- * Range: 0-20 points
+ * Range: -100 to 20 points
+ *
+ * IMPORTANT: Locations >50km away receive a hard penalty of -100 to effectively
+ * exclude them from selection. This prevents cross-region recommendations where
+ * a location's city field may be incorrect (e.g., "Osaka" location actually in Okinawa).
  */
 function scoreLogisticalFit(
   location: Location,
@@ -225,13 +234,23 @@ function scoreLogisticalFit(
   let score = 10; // Base score
   const reasons: string[] = [];
 
-  // Distance scoring (0-8 points)
+  // Distance scoring with hard cutoffs and stronger penalties
   if (criteria.currentLocation && location.coordinates) {
     const distanceKm = calculateDistance(criteria.currentLocation, location.coordinates);
     const travelTime = estimateTravelTime(distanceKm, "walk");
     void travelTime; // Intentionally unused - kept for future use
 
-    // Prefer nearby locations
+    // CRITICAL: Hard cutoff for locations way too far away
+    // This catches data corruption where locations have wrong city assignments
+    if (distanceKm > 50) {
+      // Return immediately with hard penalty - this location should not be selected
+      return {
+        score: -100,
+        reasoning: `Location is ${distanceKm.toFixed(1)}km away - outside acceptable range (max 50km). May indicate incorrect city assignment.`,
+      };
+    }
+
+    // Graduated distance scoring with stronger penalties for far locations
     if (distanceKm < 1) {
       score += 8;
       reasons.push("Very close (<1km)");
@@ -242,11 +261,14 @@ function scoreLogisticalFit(
       score += 4;
       reasons.push("Moderate distance (3-5km)");
     } else if (distanceKm < 10) {
-      score += 2;
+      score += 1;
       reasons.push("Far (5-10km)");
-    } else {
-      score -= 2;
-      reasons.push("Very far (>10km)");
+    } else if (distanceKm < 20) {
+      score -= 5;
+      reasons.push(`Far away (${distanceKm.toFixed(1)}km) - consider closer options`);
+    } else if (distanceKm < 50) {
+      score -= 15;
+      reasons.push(`Very far (${distanceKm.toFixed(1)}km) - significant travel required`);
     }
   } else {
     reasons.push("No distance data available");
@@ -279,8 +301,8 @@ function scoreLogisticalFit(
     reasons.push("Short duration for relaxed pace");
   }
 
-  // Clamp score to 0-20 range
-  score = Math.max(0, Math.min(20, score));
+  // Clamp score to -100 to 20 range (negative values for hard penalties)
+  score = Math.max(-100, Math.min(20, score));
 
   return {
     score,
@@ -555,6 +577,52 @@ function scoreDiversity(
 }
 
 /**
+ * Score neighborhood diversity (penalize clustering in same area).
+ * Range: -5 to +5 points
+ */
+function scoreNeighborhoodDiversity(
+  location: Location,
+  recentNeighborhoods: string[],
+): { score: number; reasoning: string } {
+  const locationNeighborhood = location.neighborhood ?? location.city;
+  if (!locationNeighborhood) {
+    return { score: 0, reasoning: "No neighborhood information" };
+  }
+
+  // Count consecutive occurrences of this neighborhood at the end
+  let streakCount = 0;
+  for (let i = recentNeighborhoods.length - 1; i >= 0; i--) {
+    if (recentNeighborhoods[i] === locationNeighborhood) {
+      streakCount++;
+    } else {
+      break;
+    }
+  }
+
+  if (streakCount === 0) {
+    return {
+      score: 5,
+      reasoning: `New area "${locationNeighborhood}" adds geographic variety`,
+    };
+  } else if (streakCount === 1) {
+    return {
+      score: 2,
+      reasoning: `Second consecutive visit to "${locationNeighborhood}", acceptable`,
+    };
+  } else if (streakCount === 2) {
+    return {
+      score: -3,
+      reasoning: `Third consecutive visit to "${locationNeighborhood}", consider exploring other areas`,
+    };
+  } else {
+    return {
+      score: -5,
+      reasoning: `${streakCount + 1}th consecutive visit to "${locationNeighborhood}", strong clustering penalty`,
+    };
+  }
+}
+
+/**
  * Get location duration in minutes.
  * Reuses logic from itineraryGenerator.ts
  */
@@ -599,6 +667,7 @@ export function scoreLocation(
   });
   const accessibilityResult = scoreAccessibilityFit(location, criteria.accessibility);
   const diversityResult = scoreDiversity(location, criteria.recentCategories);
+  const neighborhoodResult = scoreNeighborhoodDiversity(location, criteria.recentNeighborhoods ?? []);
   const weatherResult = scoreWeatherFit(location, criteria.weatherForecast, criteria.weatherPreferences);
   
   // Time-of-day optimization scoring
@@ -626,6 +695,7 @@ export function scoreLocation(
     budgetFit: budgetResult.score,
     accessibilityFit: accessibilityResult.score,
     diversityBonus: diversityResult.score,
+    neighborhoodDiversity: neighborhoodResult.score,
     weatherFit: weatherResult.scoreAdjustment,
     timeOptimization: finalTimeScore,
     groupFit: groupResult.scoreAdjustment,
@@ -638,6 +708,7 @@ export function scoreLocation(
     breakdown.budgetFit +
     breakdown.accessibilityFit +
     breakdown.diversityBonus +
+    breakdown.neighborhoodDiversity +
     breakdown.weatherFit +
     breakdown.timeOptimization +
     breakdown.groupFit;
@@ -649,6 +720,7 @@ export function scoreLocation(
     budgetResult.reasoning,
     accessibilityResult.reasoning,
     diversityResult.reasoning,
+    neighborhoodResult.reasoning,
     weatherResult.reasoning,
     timeOptimizationResult.reasoning,
     openingHoursResult.reasoning,
