@@ -15,6 +15,31 @@ import {
 } from "@/lib/supabase/projections";
 
 /**
+ * Fetches the total count of explorable locations in the database
+ *
+ * Only counts locations that have a valid place_id and are not permanently closed,
+ * matching the filtering logic used by the /api/locations endpoint.
+ *
+ * @returns The total number of explorable locations
+ */
+export async function getLocationCount(): Promise<number> {
+  const supabase = await createClient();
+
+  const { count, error } = await supabase
+    .from("locations")
+    .select("*", { count: "exact", head: true })
+    .not("place_id", "is", null)
+    .neq("place_id", "")
+    .neq("business_status", "PERMANENTLY_CLOSED");
+
+  if (error || count === null) {
+    return 0;
+  }
+
+  return count;
+}
+
+/**
  * Transforms a database row to a Location type
  * Works with both full LocationDbRow and LocationListingDbRow
  */
