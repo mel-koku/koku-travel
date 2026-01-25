@@ -330,9 +330,9 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
 
         {/* Rating Badge - Glass-morphism */}
         {rating > 0 && (
-          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-background/90 backdrop-blur-sm px-2.5 py-1.5 rounded-lg shadow-lg">
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-background/90 backdrop-blur-sm px-1.5 py-0.5 rounded-md shadow-lg">
             <StarIcon />
-            <span className="text-sm font-semibold text-charcoal">{rating.toFixed(1)}</span>
+            <span className="text-[10px] font-semibold text-charcoal">{rating.toFixed(1)}</span>
           </div>
         )}
 
@@ -385,7 +385,7 @@ function StarIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-4 w-4 text-amber-500"
+      className="h-3 w-3 text-amber-500"
       viewBox="0 0 24 24"
       fill="currentColor"
     >
