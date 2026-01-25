@@ -1,7 +1,6 @@
 "use client";
 
 import { Suspense } from "react";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 
@@ -75,12 +74,12 @@ function AuthErrorContent() {
           <h1 className="mb-4 text-3xl font-bold text-charcoal">{error.title}</h1>
           <p className="mb-8 text-foreground-secondary">{error.description}</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-            <Button asChild variant="primary" href="/">
-              <Link href="/">Go home</Link>
+            <Button variant="primary" href="/">
+              Go home
             </Button>
             {error.action && (
-              <Button asChild variant="secondary" href="/dashboard">
-                <Link href="/dashboard">{error.action}</Link>
+              <Button variant="secondary" href="/dashboard">
+                {error.action}
               </Button>
             )}
           </div>
