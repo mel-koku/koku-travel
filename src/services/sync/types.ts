@@ -10,6 +10,7 @@ export type SyncResult<T> = {
 
 export type FavoriteRow = {
   place_id: string;
+  location_id?: string;
 };
 
 export type GuideBookmarkRow = {

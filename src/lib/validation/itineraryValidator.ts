@@ -1,5 +1,7 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import { detectCategoryStreak, detectNeighborhoodStreak } from "@/lib/scoring/diversityRules";
+import { logger } from "@/lib/logger";
 
 /**
  * Validation issue severity levels
@@ -376,4 +378,109 @@ export function getDuplicateLocationIds(itinerary: Itinerary): string[] {
   });
 
   return duplicates;
+}
+
+/**
+ * Extracts all unique locationIds from an itinerary
+ */
+function extractLocationIds(itinerary: Itinerary): Set<string> {
+  const locationIds = new Set<string>();
+
+  for (const day of itinerary.days) {
+    for (const activity of day.activities) {
+      if (activity.kind === "place" && activity.locationId) {
+        locationIds.add(activity.locationId);
+      }
+    }
+  }
+
+  return locationIds;
+}
+
+/**
+ * Validates that all locationIds in the itinerary exist in the locations table.
+ * This is a soft validation - it returns warnings for missing locations
+ * rather than blocking the save, since locations might be deleted.
+ *
+ * @param supabase - Supabase client
+ * @param itinerary - The itinerary to validate
+ * @returns Object with valid flag and array of missing locationIds
+ */
+export async function validateLocationIdsExist(
+  supabase: SupabaseClient,
+  itinerary: Itinerary,
+): Promise<{ valid: boolean; missingIds: string[] }> {
+  const locationIds = extractLocationIds(itinerary);
+
+  if (locationIds.size === 0) {
+    return { valid: true, missingIds: [] };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("locations")
+      .select("id")
+      .in("id", Array.from(locationIds));
+
+    if (error) {
+      logger.warn("Failed to validate locationIds", { error: error.message });
+      // Don't block save on validation errors
+      return { valid: true, missingIds: [] };
+    }
+
+    const foundIds = new Set((data ?? []).map((row) => row.id as string));
+    const missingIds = Array.from(locationIds).filter((id) => !foundIds.has(id));
+
+    if (missingIds.length > 0) {
+      logger.warn("Itinerary contains missing locationIds", {
+        missingCount: missingIds.length,
+        missingIds: missingIds.slice(0, 10), // Log first 10
+      });
+    }
+
+    return {
+      valid: missingIds.length === 0,
+      missingIds,
+    };
+  } catch (error) {
+    logger.warn("Error validating locationIds", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    // Don't block save on validation errors
+    return { valid: true, missingIds: [] };
+  }
+}
+
+/**
+ * Full validation of an itinerary including structure and database checks.
+ * Combines the synchronous structure validation with async database validation.
+ *
+ * @param supabase - Supabase client for database validation
+ * @param itinerary - The itinerary to validate
+ * @returns Combined validation result
+ */
+export async function validateItineraryWithDatabase(
+  supabase: SupabaseClient,
+  itinerary: Itinerary,
+): Promise<ItineraryValidationResult> {
+  // First run structure validation
+  const structureResult = validateItinerary(itinerary);
+
+  // Then check locationIds exist in database
+  const locationIdResult = await validateLocationIdsExist(supabase, itinerary);
+
+  // Add warnings for missing locationIds (not errors - don't block save)
+  if (!locationIdResult.valid) {
+    for (const missingId of locationIdResult.missingIds) {
+      structureResult.issues.push({
+        severity: "warning",
+        code: "ORPHANED_LOCATION_ID",
+        message: `Location with id "${missingId}" not found in database`,
+        locationId: missingId,
+      });
+    }
+    structureResult.summary.warningCount += locationIdResult.missingIds.length;
+  }
+
+  return structureResult;
 }

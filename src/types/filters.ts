@@ -28,6 +28,7 @@ export type FilterMetadata = {
   categories: FilterOption[];
   regions: FilterOption[];
   prefectures: FilterOption[];
+  neighborhoods?: FilterOption[];
 };
 
 /**

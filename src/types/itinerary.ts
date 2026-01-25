@@ -109,9 +109,9 @@ export type ItineraryActivity =
        */
       coordinates?: { lat: number; lng: number };
       /**
-       * Meal type if this is a meal activity (breakfast, lunch, dinner)
+       * Meal type if this is a meal activity (breakfast, lunch, dinner, snack)
        */
-      mealType?: "breakfast" | "lunch" | "dinner";
+      mealType?: "breakfast" | "lunch" | "dinner" | "snack";
       /**
        * Recommendation reason explaining why this location was selected
        */

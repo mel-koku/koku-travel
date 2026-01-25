@@ -10,7 +10,16 @@ import { logger } from "@/lib/logger";
 import type { SyncResult, FavoriteRow } from "./types";
 
 /**
+ * Extended favorite data including location_id for direct location joins
+ */
+export type FavoriteData = {
+  placeId: string;
+  locationId?: string;
+};
+
+/**
  * Fetches all favorites for a user from Supabase
+ * Returns both place_id and location_id for better location resolution
  */
 export async function fetchFavorites(
   supabase: SupabaseClient,
@@ -19,7 +28,7 @@ export async function fetchFavorites(
   try {
     const { data, error } = await supabase
       .from("favorites")
-      .select("place_id")
+      .select("place_id, location_id")
       .eq("user_id", userId);
 
     if (error) {
@@ -37,17 +46,90 @@ export async function fetchFavorites(
 }
 
 /**
+ * Fetches favorites with full data including location_id
+ */
+export async function fetchFavoritesWithLocationId(
+  supabase: SupabaseClient,
+  userId: string,
+): Promise<SyncResult<FavoriteData[]>> {
+  try {
+    const { data, error } = await supabase
+      .from("favorites")
+      .select("place_id, location_id")
+      .eq("user_id", userId);
+
+    if (error) {
+      logger.warn("Failed to load favorites with location_id", { error });
+      return { success: false, error: error.message };
+    }
+
+    const rows = (data ?? []) as FavoriteRow[];
+    return {
+      success: true,
+      data: rows.map((row) => ({
+        placeId: row.place_id,
+        locationId: row.location_id,
+      })),
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    logger.error("Error fetching favorites with location_id", new Error(message));
+    return { success: false, error: message };
+  }
+}
+
+/**
+ * Looks up the internal location_id from the locations table by place_id
+ */
+async function lookupLocationId(
+  supabase: SupabaseClient,
+  placeId: string,
+): Promise<string | undefined> {
+  try {
+    const { data, error } = await supabase
+      .from("locations")
+      .select("id")
+      .eq("place_id", placeId)
+      .limit(1)
+      .single();
+
+    if (error || !data) {
+      return undefined;
+    }
+
+    return data.id as string;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
  * Adds a favorite to Supabase
+ * Automatically looks up and stores the location_id for direct joins
  */
 export async function addFavorite(
   supabase: SupabaseClient,
   userId: string,
   placeId: string,
+  locationId?: string,
 ): Promise<SyncResult<void>> {
   try {
+    // If locationId not provided, try to look it up from the locations table
+    let resolvedLocationId = locationId;
+    if (!resolvedLocationId) {
+      resolvedLocationId = await lookupLocationId(supabase, placeId);
+    }
+
     const { error } = await supabase
       .from("favorites")
-      .upsert({ user_id: userId, place_id: placeId }, { onConflict: "user_id,place_id" });
+      .upsert(
+        {
+          user_id: userId,
+          place_id: placeId,
+          location_id: resolvedLocationId,
+        },
+        { onConflict: "user_id,place_id" }
+      );
 
     if (error) {
       throw error;

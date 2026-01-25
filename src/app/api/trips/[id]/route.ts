@@ -12,6 +12,7 @@ import { validateRequestBody } from "@/lib/api/schemas";
 import { badRequest, notFound, internalError } from "@/lib/api/errors";
 import { fetchTripById, saveTrip, deleteTrip } from "@/services/sync/tripSync";
 import type { StoredTrip } from "@/services/trip/types";
+import { validateItineraryWithDatabase } from "@/lib/validation/itineraryValidator";
 
 /**
  * UUID validation schema
@@ -97,7 +98,7 @@ const itineraryActivitySchema = z.discriminatedUnion("kind", [
     notes: z.string().max(2000).optional(),
     locationId: z.string().optional(),
     coordinates: z.object({ lat: z.number(), lng: z.number() }).optional(),
-    mealType: z.enum(["breakfast", "lunch", "dinner"]).optional(),
+    mealType: z.enum(["breakfast", "lunch", "dinner", "snack"]).optional(),
     recommendationReason: recommendationReasonSchema.optional(),
     schedule: scheduledVisitSchema.optional(),
     travelFromPrevious: travelSegmentSchema.optional(),
@@ -354,6 +355,27 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       builderData: updates.builderData ?? existingResult.data.builderData,
       updatedAt: new Date().toISOString(),
     };
+
+    // Validate itinerary data integrity (async, non-blocking)
+    if (updatedTrip.itinerary) {
+      const validationResult = await validateItineraryWithDatabase(supabase, updatedTrip.itinerary);
+      if (!validationResult.valid) {
+        logger.warn("Itinerary validation errors detected", {
+          requestId: finalContext.requestId,
+          tripId,
+          errorCount: validationResult.summary.errorCount,
+          errors: validationResult.issues.filter((i) => i.severity === "error"),
+        });
+      }
+      if (validationResult.summary.warningCount > 0) {
+        logger.info("Itinerary validation warnings", {
+          requestId: finalContext.requestId,
+          tripId,
+          warningCount: validationResult.summary.warningCount,
+          warnings: validationResult.issues.filter((i) => i.severity === "warning").slice(0, 5),
+        });
+      }
+    }
 
     const saveResult = await saveTrip(supabase, user.id, updatedTrip);
 
