@@ -33,7 +33,8 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = useMemo(() => createClient(), []);
   const [status, setStatus] = useState<string>("");
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  // Only show loading if we don't have initial auth data from server
+  const [isLoadingAuth, setIsLoadingAuth] = useState(!initialAuthUser);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [showAccountSection, setShowAccountSection] = useState(false);
 
@@ -44,20 +45,24 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
       return;
     }
     let isActive = true;
-    (async () => {
-      try {
-        const { data } = await supabase.auth.getUser();
-        if (isActive) {
-          setSessionUserId(data.user?.id ?? null);
-          setIsLoadingAuth(false);
+
+    // Only fetch auth if we don't have initial data from server
+    if (!initialAuthUser) {
+      (async () => {
+        try {
+          const { data } = await supabase.auth.getUser();
+          if (isActive) {
+            setSessionUserId(data.user?.id ?? null);
+            setIsLoadingAuth(false);
+          }
+        } catch (error) {
+          logger.warn("Failed to read Supabase session", { error });
+          if (isActive) {
+            setIsLoadingAuth(false);
+          }
         }
-      } catch (error) {
-        logger.warn("Failed to read Supabase session", { error });
-        if (isActive) {
-          setIsLoadingAuth(false);
-        }
-      }
-    })();
+      })();
+    }
 
     const { data: sub } = supabase.auth.onAuthStateChange(
       (_event: AuthChangeEvent, session: Session | null) => {
@@ -71,7 +76,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
       isActive = false;
       sub.subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, [supabase, initialAuthUser]);
 
   // load profile from Supabase when signed in
   useEffect(() => {
