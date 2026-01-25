@@ -12,11 +12,13 @@ const LocationDetailsModal = dynamic(
 
 type FeaturedCarouselProps = {
   locations: Location[];
+  totalLocations?: number;
 };
 
-const AUTO_SCROLL_DELAY = 3300; // 3.3 seconds
+const AUTO_SCROLL_DELAY = 4000; // 4 seconds for better viewing
 const GAP = 8; // Gap between cards (appears larger due to non-spotlight scale)
 const CARD_ASPECT_RATIO = 16 / 9; // Horizontal 16:9 aspect ratio for all cards
+const SPOTLIGHT_SCALE = 1.7; // Larger spotlight for hero treatment
 
 // Always show 3 columns for true center spotlight
 const VISIBLE_CARDS = 3;
@@ -27,7 +29,7 @@ function getCardWidth(containerWidth: number): number {
   return Math.floor((containerWidth - totalGap) / VISIBLE_CARDS);
 }
 
-export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
+export function FeaturedCarousel({ locations, totalLocations }: FeaturedCarouselProps) {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -39,10 +41,26 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
   const [isMounted, setIsMounted] = useState(false);
   const [isScrollReady, setIsScrollReady] = useState(false);
   const cardRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  // Auto-play progress tracking
+  const [autoPlayProgress, setAutoPlayProgress] = useState(0);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Track page scroll to hide scroll indicator
+  const [hasScrolledDown, setHasScrolledDown] = useState(false);
 
   // Track client-side mount to avoid hydration issues
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  // Hide scroll indicator once user scrolls down
+  useEffect(() => {
+    const handlePageScroll = () => {
+      if (window.scrollY > 100) {
+        setHasScrolledDown(true);
+      }
+    };
+    window.addEventListener("scroll", handlePageScroll);
+    return () => window.removeEventListener("scroll", handlePageScroll);
   }, []);
 
   // Update card dimensions on resize
@@ -149,12 +167,40 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
   const scroll = useCallback((direction: "left" | "right") => {
     if (!scrollRef.current) return;
     setAutoScrollStopped(true); // Permanently stop auto-scroll
+    setAutoPlayProgress(0);
     const scrollAmount = cardWidth + GAP;
     scrollRef.current.scrollBy({
       left: direction === "left" ? -scrollAmount : scrollAmount,
       behavior: "smooth",
     });
   }, [cardWidth]);
+
+  // Auto-play progress indicator
+  useEffect(() => {
+    if (isHoveringSpotlight || autoScrollStopped || locations.length <= 1) {
+      setAutoPlayProgress(0);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      return;
+    }
+
+    // Update progress every 50ms for smooth animation
+    const progressStep = 50 / AUTO_SCROLL_DELAY * 100;
+    progressIntervalRef.current = setInterval(() => {
+      setAutoPlayProgress(prev => {
+        if (prev >= 100) return 0;
+        return prev + progressStep;
+      });
+    }, 50);
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
+    };
+  }, [isHoveringSpotlight, autoScrollStopped, locations.length]);
 
   // Auto-scroll functionality - stops when hovering spotlight or permanently stopped
   useEffect(() => {
@@ -166,6 +212,7 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
     const interval = setInterval(() => {
       // Always scroll forward - infinite loop handles wrapping
       scrollEl.scrollBy({ left: cardWidth + GAP, behavior: "smooth" });
+      setAutoPlayProgress(0);
     }, AUTO_SCROLL_DELAY);
 
     return () => clearInterval(interval);
@@ -178,41 +225,52 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
 
   if (locations.length === 0) return null;
 
+  // Calculate container height based on spotlight scale
+  const baseCardHeight = cardWidth / CARD_ASPECT_RATIO;
+  const containerHeight = Math.ceil(baseCardHeight * SPOTLIGHT_SCALE) + 40;
+
   return (
     <section aria-label="Featured destinations">
-      {/* Header - Augmented Fourth scale: 32px title, 16px subtitle */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-[32px] font-bold text-charcoal leading-tight">Featured Destinations</h2>
-          <p className="text-[16px] text-stone mt-1">Discover Japan's most loved places</p>
-        </div>
-        <div className="hidden sm:flex items-center gap-2">
-          <button
-            onClick={() => scroll("left")}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground-secondary transition hover:border-charcoal hover:bg-sand shadow-sm"
-            aria-label="Scroll left"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button
-            onClick={() => scroll("right")}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background text-foreground-secondary transition hover:border-charcoal hover:bg-sand shadow-sm"
-            aria-label="Scroll right"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
+      {/* Hero Header - Serif typography with tagline */}
+      <div className="text-center mb-5">
+        <span className="text-[10px] sm:text-xs font-medium uppercase tracking-[0.2em] text-brand-primary mb-1 block">
+          Local&apos;s Choice
+        </span>
+        <h1 className="font-serif text-xl sm:text-2xl lg:text-3xl text-charcoal leading-tight mb-1.5">
+          Featured Destinations
+        </h1>
+        <p className="text-xs sm:text-sm text-stone max-w-lg mx-auto">
+          Handpicked from {totalLocations?.toLocaleString() ?? "hundreds of"} places across Japan
+        </p>
+      </div>
+
+      {/* Navigation Arrows - Desktop */}
+      <div className="hidden sm:flex justify-center gap-3 mb-4">
+        <button
+          onClick={() => scroll("left")}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-foreground-secondary transition-all hover:border-charcoal hover:bg-sand hover:scale-105 active:scale-95 shadow-sm"
+          aria-label="Previous destination"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={() => scroll("right")}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-background text-foreground-secondary transition-all hover:border-charcoal hover:bg-sand hover:scale-105 active:scale-95 shadow-sm"
+          aria-label="Next destination"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
 
       {/* Carousel Container - Fixed height to prevent layout shifts */}
       <div
         ref={containerRef}
         className="relative"
-        style={{ height: `${Math.ceil(cardWidth / CARD_ASPECT_RATIO * 1.55) + 20}px` }} // Card height + extra for 150% spotlight scale
+        style={{ height: `${containerHeight}px` }}
       >
         {/* Static preview - shows until carousel is ready (SSR-safe, no hydration mismatch) */}
         {locations[0] && (
@@ -258,6 +316,72 @@ export function FeaturedCarousel({ locations }: FeaturedCarouselProps) {
           </div>
         )}
       </div>
+
+      {/* Progress Dots with Auto-play Indicator */}
+      {isMounted && isScrollReady && locations.length > 1 && (
+        <div className="flex flex-col items-center gap-3 mt-6">
+          {/* Auto-play progress bar */}
+          {!autoScrollStopped && (
+            <div className="w-32 h-1 bg-sand/60 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-brand-primary/60 transition-all duration-75 ease-linear"
+                style={{ width: `${autoPlayProgress}%` }}
+              />
+            </div>
+          )}
+
+          {/* Navigation dots */}
+          <div className="flex justify-center gap-2">
+            {locations.map((location, index) => {
+              // Calculate which original location is currently in spotlight
+              const currentIndex = spotlightIndex % locations.length;
+              const isActive = index === currentIndex;
+              return (
+                <button
+                  key={location.id}
+                  onClick={() => {
+                    if (!scrollRef.current || !containerRef.current) return;
+                    setAutoScrollStopped(true);
+                    setAutoPlayProgress(0);
+                    const oneSetWidth = locations.length * (cardWidth + GAP);
+                    const containerWidth = containerRef.current.offsetWidth;
+                    const centerOffset = (containerWidth - cardWidth) / 2;
+                    // Scroll to the corresponding card in the middle set
+                    const targetScroll = oneSetWidth + index * (cardWidth + GAP) - centerOffset;
+                    scrollRef.current.scrollTo({ left: targetScroll, behavior: 'smooth' });
+                  }}
+                  className={`rounded-full transition-all duration-300 ${
+                    isActive
+                      ? "w-8 h-2.5 bg-brand-primary"
+                      : "w-2.5 h-2.5 bg-stone/30 hover:bg-stone/50"
+                  }`}
+                  aria-label={`Go to ${location.name}`}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Swipe Hint */}
+      <div className="sm:hidden flex justify-center mt-3">
+        <p className="text-[10px] text-stone flex items-center gap-1">
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+          </svg>
+          Swipe to explore
+        </p>
+      </div>
+
+      {/* Scroll Down Indicator - Fixed to lower right, hides after scrolling */}
+      {!hasScrolledDown && (
+        <div className="fixed bottom-8 right-10 sm:bottom-12 sm:right-16 z-50 transition-opacity duration-500">
+          <div className="flex flex-col items-center gap-1.5 text-stone animate-bounce">
+            <span className="text-[9px] sm:text-[10px] uppercase tracking-widest whitespace-nowrap">Explore all locations</span>
+            <div className="h-6 w-px bg-gradient-to-b from-stone/60 to-transparent" />
+          </div>
+        </div>
+      )}
 
       {/* Location Details Modal */}
       <LocationDetailsModal
@@ -307,10 +431,10 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal
           transition-all duration-500 ease-out
           ${!isReady
-            ? "scale-150 z-10 shadow-soft ring-2 ring-white/30"
+            ? "scale-[1.7] z-10 shadow-depth ring-2 ring-white/40"
             : isSpotlight
-              ? "scale-150 z-10 shadow-soft ring-2 ring-white/30 hover:ring-white/50"
-              : "scale-[0.7] opacity-40 hover:opacity-60"
+              ? "scale-[1.7] z-10 shadow-depth ring-2 ring-white/40 hover:ring-white/60"
+              : "scale-[0.7] opacity-50 grayscale-[40%] hover:opacity-70 hover:grayscale-[20%]"
           }
         `}
       >
@@ -320,53 +444,72 @@ const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
             src={imageSrc || FALLBACK_IMAGE}
             alt={displayName}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
             sizes={`${cardWidth}px`}
+            priority={isSpotlight}
           />
         </div>
 
-        {/* Gradient Overlay - stronger for description readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+        {/* Gradient Overlay - stronger for spotlight readability */}
+        <div className={`absolute inset-0 transition-opacity duration-500 ${
+          isSpotlight
+            ? "bg-gradient-to-t from-black/90 via-black/30 to-black/10"
+            : "bg-gradient-to-t from-black/80 via-black/30 to-transparent"
+        }`} />
 
         {/* Rating Badge - Glass-morphism */}
         {rating > 0 && (
-          <div className="absolute top-2 left-2 flex items-center gap-1 bg-background/90 backdrop-blur-sm px-1.5 py-0.5 rounded-md shadow-lg">
+          <div className={`absolute top-2 left-2 flex items-center gap-0.5 h-5 bg-white/95 backdrop-blur-sm px-1.5 rounded-md shadow-lg transition-all duration-500 ${
+            isSpotlight ? "opacity-100" : "opacity-0"
+          }`}>
             <StarIcon />
             <span className="text-[10px] font-semibold text-charcoal">{rating.toFixed(1)}</span>
           </div>
         )}
 
-        {/* Content - Text on Image */}
-        {/* Typography: Augmented Fourth scale (1.414 ratio), base 16px */}
-        {/* Scale: 8px, 11px, 16px, 23px, 32px, 45px */}
-        <div className={`absolute inset-x-0 bottom-0 ${!isReady || isSpotlight ? "p-3" : "p-2"}`}>
+        {/* Category Badge - Spotlight only */}
+        {isSpotlight && isReady && (
+          <div className="absolute top-2 right-2 flex items-center h-5 bg-brand-primary/90 backdrop-blur-sm px-1.5 rounded-md shadow-lg">
+            <span className="text-[10px] font-medium text-white capitalize">{location.category}</span>
+          </div>
+        )}
+
+        {/* Content - Compact for spotlight */}
+        <div className={`absolute inset-x-0 bottom-0 transition-all duration-500 ${
+          !isReady || isSpotlight ? "p-2.5 sm:p-3" : "p-1.5"
+        }`}>
           <h3
             className={`
-              font-semibold text-white line-clamp-1
+              font-semibold text-white
               drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]
               transition-all duration-500
-              ${!isReady || isSpotlight ? "text-[16px] leading-tight" : "text-[11px]"}
+              ${!isReady || isSpotlight
+                ? "text-xs sm:text-sm leading-tight line-clamp-1"
+                : "text-[9px] line-clamp-1"
+              }
             `}
           >
             {displayName}
           </h3>
+
           <p
             className={`
-              text-white/80 line-clamp-1 mt-0.5
+              text-white/80 mt-0.5
               drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]
               transition-all duration-500
-              ${!isReady || isSpotlight ? "text-[11px]" : "text-[8px] opacity-80"}
+              ${!isReady || isSpotlight ? "text-[10px] sm:text-xs" : "text-[7px] opacity-70"}
             `}
           >
             {location.city}, {location.region}
           </p>
-          {/* Description - only show for spotlight card when ready */}
+
+          {/* Description - only show for spotlight card */}
           {isReady && isSpotlight && description && (
             <p
               className="
-                text-white/70 text-[11px] leading-snug line-clamp-3 mt-1.5
+                text-white/70 text-[10px] sm:text-xs leading-snug line-clamp-2 mt-1
                 drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]
-                transition-all duration-500
+                hidden sm:block
               "
             >
               {description}
@@ -385,7 +528,7 @@ function StarIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-3 w-3 text-amber-500"
+      className="h-2.5 w-2.5 text-amber-500"
       viewBox="0 0 24 24"
       fill="currentColor"
     >

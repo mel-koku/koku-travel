@@ -31,15 +31,21 @@ module.exports = {
       boxShadow: {
         card: "0 4px 12px rgba(0,0,0,0.05)",
         soft: "0 2px 40px rgba(0,0,0,0.08)",
+        depth: "0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.08), 0 20px 25px -5px rgba(0,0,0,0.05)",
       },
       keyframes: {
         'heart-pulse': {
           '0%, 100%': { transform: 'scale(1)' },
           '50%': { transform: 'scale(1.3)' },
         },
+        'shimmer': {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
       },
       animation: {
         'heart-pulse': 'heart-pulse 0.5s ease-in-out',
+        'shimmer': 'shimmer 2s ease-in-out infinite',
       },
       colors: {
         brand: {
