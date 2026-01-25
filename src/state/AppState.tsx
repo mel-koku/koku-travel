@@ -13,6 +13,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { logger } from "@/lib/logger";
@@ -49,6 +50,10 @@ import {
   syncBookmarkToggle,
   fetchFavorites,
   fetchGuideBookmarks,
+  fetchTrips,
+  syncTripSave,
+  syncTripDelete,
+  mergeTrips,
 } from "@/services/sync";
 
 // Re-export types for consumers
@@ -170,6 +175,9 @@ const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): Us
   };
 };
 
+// Debounce delay for trip sync (2 seconds)
+const TRIP_SYNC_DEBOUNCE_MS = 2000;
+
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const supabase = useMemo(() => createClient(), []);
   const [state, setState] = useState<InternalState>({
@@ -183,6 +191,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     editHistory: {},
     currentHistoryIndex: {},
   });
+
+  // Ref to track pending trip sync timeouts by trip ID
+  const tripSyncTimeouts = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -262,18 +273,27 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const [favoritesResult, bookmarksResult] = await Promise.all([
+      const [favoritesResult, bookmarksResult, tripsResult] = await Promise.all([
         fetchFavorites(supabase, user.id),
         fetchGuideBookmarks(supabase, user.id),
+        fetchTrips(supabase, user.id),
       ]);
 
-      setState((s) => ({
-        ...s,
-        user: buildProfileFromSupabase(user, s.user),
-        favorites: favoritesResult.success ? (favoritesResult.data ?? []) : s.favorites,
-        guideBookmarks: bookmarksResult.success ? (bookmarksResult.data ?? []) : s.guideBookmarks,
-        isLoadingRefresh: false,
-      }));
+      setState((s) => {
+        // Merge local and remote trips, resolving conflicts by timestamp
+        const mergedTrips = tripsResult.success && tripsResult.data
+          ? mergeTrips(s.trips, tripsResult.data)
+          : s.trips;
+
+        return {
+          ...s,
+          user: buildProfileFromSupabase(user, s.user),
+          favorites: favoritesResult.success ? (favoritesResult.data ?? []) : s.favorites,
+          guideBookmarks: bookmarksResult.success ? (bookmarksResult.data ?? []) : s.guideBookmarks,
+          trips: mergedTrips,
+          isLoadingRefresh: false,
+        };
+      });
     } catch (error) {
       logger.error("refreshFromSupabase failed", error);
       setState((s) => ({ ...s, isLoadingRefresh: false }));
@@ -326,6 +346,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     return () => clearTimeout(timeoutId);
   }, [state.user, state.favorites, state.guideBookmarks, state.trips, state.dayEntryPoints, state.editHistory, state.currentHistoryIndex]);
 
+  // Cleanup pending trip sync timeouts on unmount
+  useEffect(() => {
+    return () => {
+      tripSyncTimeouts.current.forEach((timeout) => clearTimeout(timeout));
+      tripSyncTimeouts.current.clear();
+    };
+  }, []);
+
   // User actions
   const setUser = useCallback(
     (patch: Partial<UserProfile>) =>
@@ -338,38 +366,100 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     (input: CreateTripInput) => {
       const record = createTripRecord(input);
       setState((s) => ({ ...s, trips: [...s.trips, record] }));
+
+      // Sync to Supabase
+      if (supabase) {
+        void syncTripSave(supabase, record);
+      }
+
       return record.id;
     },
-    [],
+    [supabase],
   );
 
   const updateTripItinerary = useCallback((tripId: string, itinerary: Itinerary) => {
     setState((s) => {
       const nextTrips = updateTripItineraryOp(s.trips, tripId, itinerary);
-      return nextTrips ? { ...s, trips: nextTrips } : s;
+      if (!nextTrips) return s;
+
+      // Schedule debounced sync
+      if (supabase) {
+        // Clear any existing timeout for this trip
+        const existingTimeout = tripSyncTimeouts.current.get(tripId);
+        if (existingTimeout) {
+          clearTimeout(existingTimeout);
+        }
+
+        // Schedule new sync after debounce delay
+        const timeout = setTimeout(() => {
+          const trip = nextTrips.find((t) => t.id === tripId);
+          if (trip) {
+            void syncTripSave(supabase, trip);
+          }
+          tripSyncTimeouts.current.delete(tripId);
+        }, TRIP_SYNC_DEBOUNCE_MS);
+
+        tripSyncTimeouts.current.set(tripId, timeout);
+      }
+
+      return { ...s, trips: nextTrips };
     });
-  }, []);
+  }, [supabase]);
 
   const renameTrip = useCallback((tripId: string, name: string) => {
     setState((s) => {
       const nextTrips = renameTripOp(s.trips, tripId, name);
-      return nextTrips ? { ...s, trips: nextTrips } : s;
+      if (!nextTrips) return s;
+
+      // Sync to Supabase
+      if (supabase) {
+        const trip = nextTrips.find((t) => t.id === tripId);
+        if (trip) {
+          void syncTripSave(supabase, trip);
+        }
+      }
+
+      return { ...s, trips: nextTrips };
     });
-  }, []);
+  }, [supabase]);
 
   const deleteTrip = useCallback((tripId: string) => {
     setState((s) => {
       const nextTrips = deleteTripOp(s.trips, tripId);
-      return nextTrips ? { ...s, trips: nextTrips } : s;
+      if (!nextTrips) return s;
+
+      // Clear any pending sync timeout for this trip
+      const existingTimeout = tripSyncTimeouts.current.get(tripId);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
+        tripSyncTimeouts.current.delete(tripId);
+      }
+
+      // Sync deletion to Supabase
+      if (supabase) {
+        void syncTripDelete(supabase, tripId);
+      }
+
+      return { ...s, trips: nextTrips };
     });
-  }, []);
+  }, [supabase]);
 
   const restoreTrip = useCallback((trip: StoredTrip) => {
     setState((s) => {
       const nextTrips = restoreTripOp(s.trips, trip);
-      return nextTrips ? { ...s, trips: nextTrips } : s;
+      if (!nextTrips) return s;
+
+      // Sync to Supabase (re-save with current timestamp)
+      if (supabase) {
+        const restoredTrip = nextTrips.find((t) => t.id === trip.id);
+        if (restoredTrip) {
+          void syncTripSave(supabase, restoredTrip);
+        }
+      }
+
+      return { ...s, trips: nextTrips };
     });
-  }, []);
+  }, [supabase]);
 
   // Favorites actions
   const toggleFavorite = useCallback(
@@ -492,6 +582,26 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
             : t,
         );
 
+        // Schedule debounced sync for activity changes
+        if (supabase) {
+          // Clear any existing timeout for this trip
+          const existingTimeout = tripSyncTimeouts.current.get(tripId);
+          if (existingTimeout) {
+            clearTimeout(existingTimeout);
+          }
+
+          // Schedule new sync after debounce delay
+          const timeout = setTimeout(() => {
+            const updatedTrip = updatedTrips.find((t) => t.id === tripId);
+            if (updatedTrip) {
+              void syncTripSave(supabase, updatedTrip);
+            }
+            tripSyncTimeouts.current.delete(tripId);
+          }, TRIP_SYNC_DEBOUNCE_MS);
+
+          tripSyncTimeouts.current.set(tripId, timeout);
+        }
+
         return {
           ...s,
           trips: updatedTrips,
@@ -500,7 +610,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         };
       });
     },
-    [],
+    [supabase],
   );
 
   // Activity actions
