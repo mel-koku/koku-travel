@@ -7,6 +7,52 @@ export type Weekday =
   | "saturday"
   | "sunday";
 
+/**
+ * Type of availability rule for seasonal locations.
+ * - 'fixed_annual': Specific date each year (e.g., Oct 22 for Jidai Matsuri)
+ * - 'floating_annual': Relative date (e.g., 3rd Saturday of March)
+ * - 'date_range': Range of dates (with optional year for temporary events)
+ */
+export type AvailabilityType = "fixed_annual" | "floating_annual" | "date_range";
+
+/**
+ * Type of seasonal location.
+ * - 'festival': Annual festivals or events
+ * - 'seasonal_attraction': Cherry blossoms, autumn leaves, etc.
+ * - 'winter_closure': Locations closed during certain seasons
+ */
+export type SeasonalType = "festival" | "seasonal_attraction" | "winter_closure";
+
+/**
+ * Availability rule for a seasonal location.
+ * Defines when a location is available or unavailable.
+ */
+export type LocationAvailability = {
+  id: string;
+  locationId: string;
+  availabilityType: AvailabilityType;
+  /** Month when availability period starts (1-12) */
+  monthStart?: number;
+  /** Day when availability period starts (1-31) */
+  dayStart?: number;
+  /** Month when availability period ends (1-12) */
+  monthEnd?: number;
+  /** Day when availability period ends (1-31) */
+  dayEnd?: number;
+  /** Week ordinal for floating dates (1-5, where 5 means "last") */
+  weekOrdinal?: number;
+  /** Day of week for floating dates (0=Sunday, 6=Saturday) */
+  dayOfWeek?: number;
+  /** Start year for temporary events/closures */
+  yearStart?: number;
+  /** End year for temporary events/closures */
+  yearEnd?: number;
+  /** True if location IS available during this period, false if closed */
+  isAvailable: boolean;
+  /** Human-readable description of the availability rule */
+  description?: string;
+};
+
 export type LocationOperatingPeriod = {
   day: Weekday;
   /**
@@ -256,6 +302,28 @@ export type Location = {
    * Used for editor-selected featured destinations
    */
   isFeatured?: boolean;
+
+  // ============================================
+  // Seasonal Availability Fields
+  // ============================================
+
+  /**
+   * Whether this location has seasonal or date-dependent availability.
+   * When true, the location should be filtered based on trip dates.
+   */
+  isSeasonal?: boolean;
+
+  /**
+   * Type of seasonal location (festival, seasonal_attraction, winter_closure).
+   * Only set when isSeasonal is true.
+   */
+  seasonalType?: SeasonalType;
+
+  /**
+   * Availability rules for this location.
+   * Loaded from location_availability table when needed.
+   */
+  availability?: LocationAvailability[];
 };
 
 export type LocationReview = {

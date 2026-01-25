@@ -10,6 +10,7 @@ import type {
   LocationOperatingHours,
   LocationVisitRecommendation,
   LocationTransitMode,
+  SeasonalType,
 } from "@/types/location";
 
 /**
@@ -71,6 +72,9 @@ export type LocationDbRow = {
   outdoor_seating: boolean | null;
   reservable: boolean | null;
   editorial_summary: string | null;
+  // Seasonal availability fields
+  is_seasonal: boolean | null;
+  seasonal_type: SeasonalType | null;
 };
 
 /**
@@ -161,7 +165,9 @@ export const LOCATION_ITINERARY_COLUMNS = `
   good_for_groups,
   outdoor_seating,
   reservable,
-  editorial_summary
+  editorial_summary,
+  is_seasonal,
+  seasonal_type
 `.replace(/\s+/g, "");
 
 /**
