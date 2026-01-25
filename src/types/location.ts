@@ -73,6 +73,11 @@ export type Location = {
   region: string;
   city: string;
   /**
+   * Neighborhood or district within the city (e.g., "Gion", "Arashiyama", "Higashiyama").
+   * Used for geographic diversity scoring in itinerary generation.
+   */
+  neighborhood?: string;
+  /**
    * Prefecture (administrative division) where the location is situated.
    * Used for geographic filtering in the explore page.
    */

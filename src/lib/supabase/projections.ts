@@ -22,6 +22,7 @@ export type LocationDbRow = {
   region: string;
   city: string;
   city_original: string | null;
+  neighborhood: string | null;
   prefecture: string | null;
   category: string;
   image: string;
@@ -132,6 +133,7 @@ export const LOCATION_ITINERARY_COLUMNS = `
   name,
   region,
   city,
+  neighborhood,
   category,
   image,
   coordinates,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateTripFromBuilderData, validateTripConstraints } from "@/lib/server/itineraryEngine";
 import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
+import { validateItinerary } from "@/lib/validation/itineraryValidator";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
@@ -13,21 +14,33 @@ import { badRequest, internalError } from "@/lib/api/errors";
 
 /**
  * POST /api/itinerary/plan
- * 
+ *
  * Generates an itinerary from TripBuilderData and returns a Trip domain model.
- * 
+ *
  * Request body:
  * {
  *   builderData: TripBuilderData,
  *   tripId?: string (optional, will be generated if not provided)
  * }
- * 
+ *
  * Response:
  * {
  *   trip: Trip,
- *   validation: { valid: boolean, issues: string[] }
+ *   itinerary: Itinerary,
+ *   validation: { valid: boolean, issues: string[] },
+ *   itineraryValidation: {
+ *     valid: boolean,
+ *     issues: ValidationIssue[],
+ *     summary: { errorCount, warningCount, duplicateLocations, ... }
+ *   }
  * }
- * 
+ *
+ * Validation checks:
+ * - Duplicate locations (error)
+ * - Minimum 2 activities per day (warning)
+ * - Category diversity (warning if >50% same category)
+ * - Neighborhood clustering (warning if >3 consecutive same area)
+ *
  * @throws Returns 400 if request body is invalid
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
@@ -73,14 +86,33 @@ export async function POST(request: NextRequest) {
     // Generate trip (returns both domain model and raw itinerary)
     const { trip, itinerary } = await generateTripFromBuilderData(builderData, finalTripId);
 
-    // Validate constraints
+    // Validate trip constraints (domain-level validation)
     const tripValidation = validateTripConstraints(trip);
+
+    // Validate itinerary quality (post-generation validation)
+    const itineraryValidation = validateItinerary(itinerary);
+
+    // Log any validation issues for monitoring
+    if (!itineraryValidation.valid || itineraryValidation.issues.length > 0) {
+      logger.warn("Itinerary validation issues detected", {
+        requestId: finalContext.requestId,
+        valid: itineraryValidation.valid,
+        errorCount: itineraryValidation.summary.errorCount,
+        warningCount: itineraryValidation.summary.warningCount,
+        duplicateLocations: itineraryValidation.summary.duplicateLocations,
+      });
+    }
 
     return addRequestContextHeaders(
       NextResponse.json({
         trip,
         itinerary,
         validation: tripValidation,
+        itineraryValidation: {
+          valid: itineraryValidation.valid,
+          issues: itineraryValidation.issues,
+          summary: itineraryValidation.summary,
+        },
       }, {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate",

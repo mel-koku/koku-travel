@@ -183,6 +183,18 @@ export type ItineraryDay = {
    */
   cityTransition?: ItineraryCityTransition;
   activities: ItineraryActivity[];
+  /**
+   * Whether this day is a day trip from the base city.
+   */
+  isDayTrip?: boolean;
+  /**
+   * The base city ID if this is a day trip.
+   */
+  baseCityId?: import("./trip").CityId;
+  /**
+   * One-way travel time in minutes for day trips.
+   */
+  dayTripTravelMinutes?: number;
 };
 
 export type Itinerary = {
