@@ -27,6 +27,7 @@ import {
   locationToActivity,
   type ReplacementCandidate,
 } from "@/hooks/useReplacementCandidates";
+import { REGIONS } from "@/data/regions";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -123,6 +124,25 @@ export const ItineraryShell = ({
   const currentTrip = useMemo(() => {
     return tripId && !isUsingMock ? getTripById(tripId) : null;
   }, [tripId, isUsingMock, getTripById]);
+
+  // Build a map of city IDs to display names
+  const cityIdToName = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const region of REGIONS) {
+      for (const city of region.cities) {
+        map[city.id] = city.name;
+      }
+    }
+    return map;
+  }, []);
+
+  // Get selected city names for display
+  const selectedCityNames = useMemo(() => {
+    if (!tripBuilderData?.cities?.length) return [];
+    return tripBuilderData.cities
+      .map((cityId) => cityIdToName[cityId] ?? cityId)
+      .filter(Boolean);
+  }, [tripBuilderData?.cities, cityIdToName]);
 
   const buildDayEntryPointsMap = useCallback(
     (target: Itinerary) => {
@@ -592,6 +612,19 @@ export const ItineraryShell = ({
                   ) : null}
                 </>
               ) : null}
+              {selectedCityNames.length > 0 && (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <span className="text-xs font-medium text-stone">Cities:</span>
+                  {selectedCityNames.map((cityName) => (
+                    <span
+                      key={cityName}
+                      className="inline-flex items-center rounded-full bg-sage/15 px-2.5 py-0.5 text-xs font-medium text-sage"
+                    >
+                      {cityName}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
             <DaySelector
               totalDays={days.length}
