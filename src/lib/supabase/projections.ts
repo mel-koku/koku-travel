@@ -65,6 +65,12 @@ export type LocationDbRow = {
     servesDinner?: boolean;
   } | null;
   is_featured: boolean | null;
+  // Enhanced enrichment fields
+  good_for_children: boolean | null;
+  good_for_groups: boolean | null;
+  outdoor_seating: boolean | null;
+  reservable: boolean | null;
+  editorial_summary: string | null;
 };
 
 /**
@@ -150,7 +156,12 @@ export const LOCATION_ITINERARY_COLUMNS = `
   google_primary_type,
   google_types,
   business_status,
-  meal_options
+  meal_options,
+  good_for_children,
+  good_for_groups,
+  outdoor_seating,
+  reservable,
+  editorial_summary
 `.replace(/\s+/g, "");
 
 /**
