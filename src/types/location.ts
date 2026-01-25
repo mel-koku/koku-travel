@@ -227,6 +227,31 @@ export type Location = {
   };
 
   /**
+   * Whether the location is suitable for children/families
+   */
+  goodForChildren?: boolean;
+
+  /**
+   * Whether the location is suitable for groups
+   */
+  goodForGroups?: boolean;
+
+  /**
+   * Whether outdoor seating is available
+   */
+  outdoorSeating?: boolean;
+
+  /**
+   * Whether the location accepts reservations
+   */
+  reservable?: boolean;
+
+  /**
+   * Google's editorial summary of the location
+   */
+  editorialSummary?: string;
+
+  /**
    * Manually curated flag to mark locations for featured carousel display
    * Used for editor-selected featured destinations
    */
