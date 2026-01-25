@@ -16,18 +16,25 @@ export const favoriteKeys = {
 
 type FavoriteRow = {
   place_id: string;
+  location_id?: string;
+};
+
+type FavoriteData = {
+  placeId: string;
+  locationId?: string;
 };
 
 /**
  * Fetches favorites from Supabase for a given user
+ * Returns both place_id and location_id for flexible lookup
  */
 async function fetchFavorites(
   supabase: SupabaseClient,
   userId: string,
-): Promise<string[]> {
+): Promise<FavoriteData[]> {
   const { data, error } = await supabase
     .from("favorites")
-    .select("place_id")
+    .select("place_id, location_id")
     .eq("user_id", userId);
 
   if (error) {
@@ -36,20 +43,63 @@ async function fetchFavorites(
   }
 
   const rows = (data ?? []) as FavoriteRow[];
-  return rows.map((row) => row.place_id);
+  return rows.map((row) => ({
+    placeId: row.place_id,
+    locationId: row.location_id,
+  }));
+}
+
+/**
+ * Looks up the internal location_id from the locations table by place_id
+ */
+async function lookupLocationId(
+  supabase: SupabaseClient,
+  placeId: string,
+): Promise<string | undefined> {
+  try {
+    const { data, error } = await supabase
+      .from("locations")
+      .select("id")
+      .eq("place_id", placeId)
+      .limit(1)
+      .single();
+
+    if (error || !data) {
+      return undefined;
+    }
+
+    return data.id as string;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
  * Adds a favorite to Supabase
+ * Automatically looks up and stores the location_id for direct joins
  */
 async function addFavorite(
   supabase: SupabaseClient,
   userId: string,
   placeId: string,
+  locationId?: string,
 ): Promise<void> {
+  // If locationId not provided, try to look it up from the locations table
+  let resolvedLocationId = locationId;
+  if (!resolvedLocationId) {
+    resolvedLocationId = await lookupLocationId(supabase, placeId);
+  }
+
   const { error } = await supabase
     .from("favorites")
-    .upsert({ user_id: userId, place_id: placeId }, { onConflict: "user_id,place_id" });
+    .upsert(
+      {
+        user_id: userId,
+        place_id: placeId,
+        location_id: resolvedLocationId,
+      },
+      { onConflict: "user_id,place_id" }
+    );
 
   if (error) {
     logger.error("Failed to add favorite", { error });
@@ -84,16 +134,17 @@ async function removeFavorite(
  * - Automatic caching and background updates
  * - Optimistic updates support
  * - Only enabled when userId is provided
+ * - Returns both placeId and locationId for flexible lookups
  *
  * @param userId - The authenticated user's ID (optional)
- * @returns Query result with favorites array
+ * @returns Query result with favorites array containing placeId and locationId
  */
 export function useFavoritesQuery(userId: string | undefined) {
   const supabase = createClient();
 
   return useQuery({
     queryKey: userId ? favoriteKeys.user(userId) : favoriteKeys.all,
-    queryFn: async () => {
+    queryFn: async (): Promise<FavoriteData[]> => {
       if (!userId) return [];
       return fetchFavorites(supabase, userId);
     },
@@ -106,14 +157,15 @@ export function useFavoritesQuery(userId: string | undefined) {
     // Don't refetch on window focus for this data
     refetchOnWindowFocus: false,
     // Return empty array initially
-    initialData: [],
+    initialData: [] as FavoriteData[],
   });
 }
 
 type ToggleFavoriteParams = {
   placeId: string;
+  locationId?: string;
   userId: string;
-  currentFavorites: string[];
+  currentFavorites: FavoriteData[];
 };
 
 /**
@@ -123,6 +175,7 @@ type ToggleFavoriteParams = {
  * - Optimistic updates for instant UI feedback
  * - Automatic rollback on error
  * - Cache invalidation on success
+ * - Supports locationId for direct location joins
  *
  * @returns Mutation for toggling a favorite
  */
@@ -131,34 +184,34 @@ export function useToggleFavoriteMutation() {
   const supabase = createClient();
 
   return useMutation({
-    mutationFn: async ({ placeId, userId, currentFavorites }: ToggleFavoriteParams) => {
-      const isFavorited = currentFavorites.includes(placeId);
+    mutationFn: async ({ placeId, locationId, userId, currentFavorites }: ToggleFavoriteParams) => {
+      const isFavorited = currentFavorites.some((f) => f.placeId === placeId);
 
       if (isFavorited) {
         await removeFavorite(supabase, userId, placeId);
         return { placeId, action: "removed" as const };
       } else {
-        await addFavorite(supabase, userId, placeId);
+        await addFavorite(supabase, userId, placeId, locationId);
         return { placeId, action: "added" as const };
       }
     },
     // Optimistic update - update cache immediately before API call
-    onMutate: async ({ placeId, userId, currentFavorites }) => {
+    onMutate: async ({ placeId, locationId, userId, currentFavorites }) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: favoriteKeys.user(userId) });
 
       // Snapshot the previous value
-      const previousFavorites = queryClient.getQueryData<string[]>(
+      const previousFavorites = queryClient.getQueryData<FavoriteData[]>(
         favoriteKeys.user(userId),
       );
 
       // Optimistically update to the new value
-      const isFavorited = currentFavorites.includes(placeId);
-      const newFavorites = isFavorited
-        ? currentFavorites.filter((id) => id !== placeId)
-        : [...currentFavorites, placeId];
+      const isFavorited = currentFavorites.some((f) => f.placeId === placeId);
+      const newFavorites: FavoriteData[] = isFavorited
+        ? currentFavorites.filter((f) => f.placeId !== placeId)
+        : [...currentFavorites, { placeId, locationId }];
 
-      queryClient.setQueryData<string[]>(favoriteKeys.user(userId), newFavorites);
+      queryClient.setQueryData<FavoriteData[]>(favoriteKeys.user(userId), newFavorites);
 
       // Return a context object with the snapshot
       return { previousFavorites, userId };
@@ -166,7 +219,7 @@ export function useToggleFavoriteMutation() {
     // If mutation fails, roll back to the previous value
     onError: (_error, _variables, context) => {
       if (context?.previousFavorites !== undefined && context?.userId) {
-        queryClient.setQueryData<string[]>(
+        queryClient.setQueryData<FavoriteData[]>(
           favoriteKeys.user(context.userId),
           context.previousFavorites,
         );
@@ -185,9 +238,9 @@ export function useToggleFavoriteMutation() {
  *
  * Usage:
  * ```tsx
- * const { favorites, isFavorite, toggleFavorite, isLoading } = useFavorites(userId);
+ * const { favorites, isFavorite, isFavoriteByLocationId, toggleFavorite, isLoading } = useFavorites(userId);
  *
- * <button onClick={() => toggleFavorite("place-123")}>
+ * <button onClick={() => toggleFavorite("place-123", "location-456")}>
  *   {isFavorite("place-123") ? "Remove" : "Add"} to Favorites
  * </button>
  * ```
@@ -196,11 +249,26 @@ export function useFavorites(userId: string | undefined) {
   const { data: favorites = [], isLoading, error } = useFavoritesQuery(userId);
   const toggleMutation = useToggleFavoriteMutation();
 
+  /**
+   * Check if a place is favorited by its place_id
+   */
   const isFavorite = (placeId: string): boolean => {
-    return favorites.includes(placeId);
+    return favorites.some((f) => f.placeId === placeId);
   };
 
-  const toggleFavorite = (placeId: string) => {
+  /**
+   * Check if a location is favorited by its internal location_id
+   */
+  const isFavoriteByLocationId = (locationId: string): boolean => {
+    return favorites.some((f) => f.locationId === locationId);
+  };
+
+  /**
+   * Toggle favorite status for a place
+   * @param placeId - The Google place_id
+   * @param locationId - Optional internal location_id for direct joins
+   */
+  const toggleFavorite = (placeId: string, locationId?: string) => {
     if (!userId) {
       logger.warn("Cannot toggle favorite: no user ID");
       return;
@@ -208,14 +276,22 @@ export function useFavorites(userId: string | undefined) {
 
     toggleMutation.mutate({
       placeId,
+      locationId,
       userId,
       currentFavorites: favorites,
     });
   };
 
+  /**
+   * Get all place_ids for backwards compatibility
+   */
+  const favoritePlaceIds = favorites.map((f) => f.placeId);
+
   return {
     favorites,
+    favoritePlaceIds,
     isFavorite,
+    isFavoriteByLocationId,
     toggleFavorite,
     isLoading,
     isToggling: toggleMutation.isPending,

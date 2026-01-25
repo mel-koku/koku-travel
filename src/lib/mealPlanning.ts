@@ -6,6 +6,16 @@ import type { InterestId, TripBuilderData } from "@/types/trip";
 import { findLocationsForActivities } from "@/lib/itineraryLocations";
 
 /**
+ * Default durations for different meal types in minutes
+ */
+const MEAL_DURATIONS: Record<MealType, number> = {
+  breakfast: 45,
+  lunch: 60,
+  dinner: 90,
+  snack: 30,
+};
+
+/**
  * Find restaurants that match dietary restrictions
  */
 function filterRestaurantsByDietary(
@@ -22,11 +32,29 @@ function filterRestaurantsByDietary(
 }
 
 /**
+ * Normalize a restaurant name for comparison
+ * Handles case, whitespace, and common variations
+ */
+function normalizeRestaurantName(name: string): string {
+  return name
+    .toLowerCase()
+    .trim()
+    // Normalize whitespace
+    .replace(/\s+/g, " ")
+    // Remove common suffixes that might vary
+    .replace(/\s+(restaurant|cafe|café|bar|bistro|kitchen|eatery)$/i, "")
+    // Remove branch indicators
+    .replace(/\s*\([^)]*\)\s*$/, "")
+    .replace(/\s*-\s*(main|branch|station|central).*$/i, "")
+    .trim();
+}
+
+/**
  * Find a restaurant for a meal slot
  */
 export function findMealRecommendation(
   availableRestaurants: Location[],
-  _mealType: MealType,
+  mealType: MealType,
   criteria: {
     interests: InterestId[];
     travelStyle: "relaxed" | "balanced" | "fast";
@@ -51,10 +79,11 @@ export function findMealRecommendation(
     filtered = filtered.filter((r) => !criteria.usedLocationIds!.has(r.id));
   }
 
-  // Filter out already-used locations by name (prevents same restaurant appearing multiple times)
+  // Filter out already-used locations by normalized name
+  // This prevents same restaurant appearing multiple times even with slight name variations
   if (criteria.usedLocationNames && criteria.usedLocationNames.size > 0) {
     filtered = filtered.filter((r) => {
-      const normalizedName = r.name.toLowerCase().trim();
+      const normalizedName = normalizeRestaurantName(r.name);
       return !criteria.usedLocationNames!.has(normalizedName);
     });
   }
@@ -62,6 +91,9 @@ export function findMealRecommendation(
   if (filtered.length === 0) {
     return null;
   }
+
+  // Get meal-specific duration
+  const mealDuration = MEAL_DURATIONS[mealType];
 
   // Score restaurants
   const scoringCriteria: LocationScoringCriteria = {
@@ -71,7 +103,7 @@ export function findMealRecommendation(
     budgetTotal: criteria.budgetTotal,
     budgetPerDay: criteria.budgetPerDay,
     currentLocation: criteria.currentLocation,
-    availableMinutes: 60, // Typical meal duration
+    availableMinutes: mealDuration,
     recentCategories: ["restaurant"], // Avoid too many restaurants in a row
   };
 
@@ -208,9 +240,10 @@ export async function insertMealActivities(
     );
 
     if (recommendation) {
-      // Track this meal location to prevent duplicates
+      // Track this meal location to prevent duplicates (use normalized name for consistency)
       usedLocationIds.add(recommendation.id);
-      usedLocationNames.add(recommendation.name.toLowerCase().trim());
+      usedLocationNames.add(normalizeRestaurantName(recommendation.name));
+
       // Determine time slot based on meal type
       const timeSlot: "morning" | "afternoon" | "evening" =
         gap.mealType === "breakfast"
@@ -219,16 +252,20 @@ export async function insertMealActivities(
             ? "afternoon"
             : "evening";
 
+      // Use meal-specific duration
+      const mealDuration = MEAL_DURATIONS[gap.mealType];
+
       const mealActivity: ItineraryActivity = {
         kind: "place",
         id: `meal-${gap.mealType}-${day.id}-${gap.index}`,
         title: recommendation.name,
         timeOfDay: timeSlot,
-        durationMin: 60, // Typical meal duration
+        durationMin: mealDuration,
         neighborhood: recommendation.neighborhood ?? recommendation.city,
         tags: ["dining", gap.mealType],
         locationId: recommendation.id,
         coordinates: recommendation.coordinates,
+        mealType: gap.mealType,
         notes: `${gap.mealType.charAt(0).toUpperCase() + gap.mealType.slice(1)} recommendation`,
       };
 

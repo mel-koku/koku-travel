@@ -14,9 +14,14 @@ export type TimeSlot = "morning" | "afternoon" | "evening";
 
 /**
  * Recommendation reason explaining why an activity was selected.
- * 
- * Note: A similar RecommendationReason exists in itinerary.ts with flexible factors.
- * This version has structured scoring factors and is used in the domain model.
+ *
+ * @deprecated Prefer using RecommendationReason from @/types/itinerary instead.
+ * This structured format is maintained for backwards compatibility.
+ * Use convertTripReasonToItineraryReason() from @/lib/utils/recommendationAdapter
+ * to convert to the canonical array format.
+ *
+ * The itinerary.ts version is more flexible and is the canonical format used
+ * throughout the codebase for itinerary data storage.
  */
 export type RecommendationReason = {
   /**

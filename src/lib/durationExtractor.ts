@@ -35,6 +35,19 @@ const CATEGORY_DEFAULT_DURATIONS: Record<string, number> = {
   transportation: 0,
 };
 
+/**
+ * Default durations for different meal types in minutes.
+ * These account for the typical pace of each meal:
+ * - Breakfast: Quicker, often simpler meal (45 min)
+ * - Lunch: Mid-day meal with moderate time (60 min)
+ * - Dinner: Often more elaborate, leisurely meal (90 min)
+ */
+export const MEAL_DURATIONS: Record<string, number> = {
+  breakfast: 45,
+  lunch: 60,
+  dinner: 90,
+};
+
 const DEFAULT_DURATION = 90; // Default fallback in minutes
 
 /**
@@ -42,6 +55,15 @@ const DEFAULT_DURATION = 90; // Default fallback in minutes
  */
 export function getCategoryDefaultDuration(category: string): number {
   return CATEGORY_DEFAULT_DURATIONS[category] ?? DEFAULT_DURATION;
+}
+
+/**
+ * Returns the default duration in minutes for a meal type.
+ * @param mealType - 'breakfast', 'lunch', or 'dinner'
+ * @returns Duration in minutes (45 for breakfast, 60 for lunch, 90 for dinner)
+ */
+export function getMealDuration(mealType: string): number {
+  return MEAL_DURATIONS[mealType] ?? CATEGORY_DEFAULT_DURATIONS.restaurant ?? 60;
 }
 
 /**
