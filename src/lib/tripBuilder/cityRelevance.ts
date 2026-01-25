@@ -24,9 +24,41 @@ type CityInterestsJson = {
 };
 
 /**
+ * Calculate the total number of matching locations in a city for selected interests.
+ *
+ * @param city - The city name
+ * @param selectedInterests - Array of selected interest IDs
+ * @returns Total count of locations matching any selected interest
+ */
+export function calculateTotalMatchingLocations(
+  city: string,
+  selectedInterests: InterestId[]
+): number {
+  if (selectedInterests.length === 0) {
+    return 0;
+  }
+
+  const cityData = (cityInterestsData as CityInterestsJson).cities[city];
+  if (!cityData) {
+    return 0;
+  }
+
+  let total = 0;
+  for (const interest of selectedInterests) {
+    const count = cityData[interest as keyof typeof cityData];
+    if (count && count > 0) {
+      total += count;
+    }
+  }
+
+  return total;
+}
+
+/**
  * Calculate the relevance percentage of a city based on selected interests.
  *
- * Formula: % of user's selected interests that have at least 1 location in that city.
+ * @deprecated Use getCitiesByRelevance() which calculates relevance relative to max matching count.
+ * This function is kept for backwards compatibility but returns a simple binary relevance.
  *
  * @param city - The city name
  * @param selectedInterests - Array of selected interest IDs
@@ -56,12 +88,16 @@ export function calculateCityRelevance(city: string, selectedInterests: Interest
 /**
  * Get all cities sorted by relevance to selected interests.
  *
+ * Relevance is calculated as a percentage relative to the city with the most
+ * matching locations. The city with the highest matching location count gets 100%.
+ *
  * @param selectedInterests - Array of selected interest IDs
- * @returns Array of cities with relevance data, sorted by relevance
+ * @returns Array of cities with relevance data, sorted by matching location count
  */
 export function getCitiesByRelevance(selectedInterests: InterestId[]): Array<{
   city: string;
   relevance: number;
+  matchingLocationCount: number;
   locationCount: number;
   coordinates?: { lat: number; lng: number };
   region?: string;
@@ -70,14 +106,15 @@ export function getCitiesByRelevance(selectedInterests: InterestId[]): Array<{
   const data = cityInterestsData as CityInterestsJson;
   const cities = Object.keys(data.cities);
 
-  const citiesWithRelevance = cities.map((city) => {
-    const relevance = calculateCityRelevance(city, selectedInterests);
+  // First pass: calculate matching location counts for all cities
+  const citiesWithCounts = cities.map((city) => {
+    const matchingLocationCount = calculateTotalMatchingLocations(city, selectedInterests);
     const metadata = data.metadata[city];
     const interestCounts = data.cities[city] || {};
 
     return {
       city,
-      relevance,
+      matchingLocationCount,
       locationCount: metadata?.locationCount ?? 0,
       coordinates: metadata?.coordinates,
       region: metadata?.region,
@@ -85,10 +122,19 @@ export function getCitiesByRelevance(selectedInterests: InterestId[]): Array<{
     };
   });
 
-  // Sort by relevance (descending), then by location count (descending)
+  // Find max matching count for normalization (minimum of 1 to avoid division by zero)
+  const maxCount = Math.max(1, ...citiesWithCounts.map((c) => c.matchingLocationCount));
+
+  // Calculate relative relevance as percentage of max
+  const citiesWithRelevance = citiesWithCounts.map((c) => ({
+    ...c,
+    relevance: Math.round((c.matchingLocationCount / maxCount) * 100),
+  }));
+
+  // Sort by matching location count (descending), then by total location count (descending)
   citiesWithRelevance.sort((a, b) => {
-    if (b.relevance !== a.relevance) {
-      return b.relevance - a.relevance;
+    if (b.matchingLocationCount !== a.matchingLocationCount) {
+      return b.matchingLocationCount - a.matchingLocationCount;
     }
     return b.locationCount - a.locationCount;
   });
@@ -114,6 +160,7 @@ export function getRelevantCities(
       .map((city) => ({
         city,
         relevance: 0,
+        matchingLocationCount: 0,
         locationCount: data.metadata[city]?.locationCount ?? 0,
         coordinates: data.metadata[city]?.coordinates,
         region: data.metadata[city]?.region,
