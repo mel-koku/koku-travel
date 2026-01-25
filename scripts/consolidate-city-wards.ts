@@ -150,6 +150,9 @@ const KAWASAKI_WARDS = [
 /**
  * Ward names that are ambiguous (same name as a prefecture or major city)
  * These should ONLY be mapped when they have explicit "Ward"/"City"/"-ku" suffix
+ *
+ * CRITICAL: This list must include ward names that are also independent cities
+ * in OTHER regions to prevent cross-region data corruption.
  */
 const AMBIGUOUS_WARD_NAMES = new Set([
   // Ward names that are also prefecture names
@@ -157,6 +160,17 @@ const AMBIGUOUS_WARD_NAMES = new Set([
   // Common ward names shared across multiple cities - need prefecture context
   "Kita", "Minami", "Nishi", "Higashi", "Chuo", "Naka", "Minato",
   "Asahi", "Midori", "Aoba", "Izumi", "Sakae",
+  // CRITICAL: Ward names that are also independent cities in OTHER regions
+  // These caused data corruption in the January 2026 consolidation
+  "Miyakojima",  // Osaka ward AND Okinawa city (Miyakojima-shi)
+  "Kanazawa",    // Yokohama ward AND Ishikawa city (capital of Ishikawa prefecture)
+  "Moriyama",    // Nagoya ward AND Shiga city (Moriyama-shi in Kansai)
+  "Shiroishi",   // Sapporo ward AND Miyagi city (Shiroishi-shi in Tohoku)
+  "Konan",       // Yokohama ward AND Kochi city (Konan-shi in Shikoku)
+  "Ota",         // Tokyo ward (Ota-ku) AND Gunma city (Ota-shi)
+  "Tsurumi",     // Yokohama ward AND Osaka ward (both are wards, but in different cities)
+  "Hino",        // Tokyo city (Hino-shi) AND Shiga town (Hino-cho)
+  "Tama",        // Kawasaki ward AND Tokyo city (Tama-shi)
 ]);
 
 /**
@@ -271,6 +285,121 @@ function buildWardToCityMap(): Map<string, string> {
 
 const WARD_TO_CITY_MAP = buildWardToCityMap();
 
+// =============================================================================
+// REGION VALIDATION
+// =============================================================================
+
+/**
+ * Region bounding boxes for coordinate-based validation.
+ * Used to prevent cross-region mismatches when consolidating cities.
+ */
+const REGION_BOUNDS: Record<string, { north: number; south: number; east: number; west: number }> = {
+  Hokkaido: { north: 45.5, south: 41.4, east: 145.9, west: 139.3 },
+  Tohoku: { north: 41.5, south: 37.0, east: 142.1, west: 139.0 },
+  Kanto: { north: 37.0, south: 34.5, east: 140.9, west: 138.2 },
+  Chubu: { north: 37.5, south: 34.5, east: 139.2, west: 135.8 },
+  Kansai: { north: 36.0, south: 33.4, east: 136.8, west: 134.0 },
+  Chugoku: { north: 36.0, south: 33.5, east: 134.5, west: 130.8 },
+  Shikoku: { north: 34.5, south: 32.7, east: 134.8, west: 132.0 },
+  Kyushu: { north: 34.3, south: 31.0, east: 132.1, west: 129.5 },
+  Okinawa: { north: 27.5, south: 24.0, east: 131.5, west: 122.9 },
+};
+
+/**
+ * Expected region for each parent city (consolidated city).
+ * Used to validate that transformations don't create cross-region mismatches.
+ */
+const CITY_TO_EXPECTED_REGION: Record<string, string> = {
+  Tokyo: "Kanto",
+  Yokohama: "Kanto",
+  Kawasaki: "Kanto",
+  Osaka: "Kansai",
+  Kyoto: "Kansai",
+  Kobe: "Kansai",
+  Nagoya: "Chubu",
+  Fukuoka: "Kyushu",
+  Sapporo: "Hokkaido",
+  Sendai: "Tohoku",
+  Hiroshima: "Chugoku",
+};
+
+/**
+ * Check if coordinates fall within a region's bounds.
+ */
+function isWithinRegionBounds(
+  lat: number,
+  lng: number,
+  regionName: string
+): boolean {
+  const bounds = REGION_BOUNDS[regionName];
+  if (!bounds) return false;
+  return (
+    lat >= bounds.south &&
+    lat <= bounds.north &&
+    lng >= bounds.west &&
+    lng <= bounds.east
+  );
+}
+
+/**
+ * Find which region contains the given coordinates.
+ */
+function findRegionByCoordinates(lat: number, lng: number): string | null {
+  for (const [region, bounds] of Object.entries(REGION_BOUNDS)) {
+    if (
+      lat >= bounds.south &&
+      lat <= bounds.north &&
+      lng >= bounds.west &&
+      lng <= bounds.east
+    ) {
+      return region;
+    }
+  }
+  return null;
+}
+
+/**
+ * Validate that a city transformation is consistent with the location's region.
+ * Returns true if the transformation is valid, false if it would create a mismatch.
+ *
+ * @param newCity - The target city name (e.g., "Osaka")
+ * @param locationRegion - The location's current region (e.g., "Okinawa")
+ * @param coordinates - Optional coordinates for additional validation
+ */
+function validateCityRegionConsistency(
+  newCity: string,
+  locationRegion: string,
+  coordinates?: { lat: number; lng: number } | null
+): { valid: boolean; reason?: string } {
+  const expectedRegion = CITY_TO_EXPECTED_REGION[newCity];
+
+  // If we don't have an expected region for this city, allow the transformation
+  if (!expectedRegion) {
+    return { valid: true };
+  }
+
+  // Check if location's region matches the expected region for the target city
+  if (locationRegion && locationRegion !== expectedRegion) {
+    return {
+      valid: false,
+      reason: `Location region "${locationRegion}" doesn't match expected region "${expectedRegion}" for city "${newCity}"`,
+    };
+  }
+
+  // Additional coordinate-based validation
+  if (coordinates) {
+    const coordRegion = findRegionByCoordinates(coordinates.lat, coordinates.lng);
+    if (coordRegion && coordRegion !== expectedRegion) {
+      return {
+        valid: false,
+        reason: `Location coordinates (${coordinates.lat}, ${coordinates.lng}) are in "${coordRegion}", not in expected region "${expectedRegion}" for city "${newCity}"`,
+      };
+    }
+  }
+
+  return { valid: true };
+}
+
 /**
  * Normalize city name by removing Japanese administrative suffixes
  * and standardizing format
@@ -372,6 +501,7 @@ interface LocationRecord {
   city_original: string | null;
   region: string;
   prefecture: string | null;
+  coordinates: { lat: number; lng: number } | null;
 }
 
 interface MigrationLogEntry {
@@ -406,8 +536,8 @@ async function fetchAllLocations(hasCityOriginalColumn: boolean): Promise<Locati
   console.log("  Fetching all locations...");
 
   const columns = hasCityOriginalColumn
-    ? "id, name, city, city_original, region, prefecture"
-    : "id, name, city, region, prefecture";
+    ? "id, name, city, city_original, region, prefecture, coordinates"
+    : "id, name, city, region, prefecture, coordinates";
 
   while (true) {
     const { data, error } = await supabase
@@ -513,9 +643,10 @@ async function backupCityValues(locations: LocationRecord[], isDryRun: boolean):
 async function consolidateCities(
   locations: LocationRecord[],
   isDryRun: boolean
-): Promise<{ updated: number; entries: MigrationLogEntry[] }> {
+): Promise<{ updated: number; entries: MigrationLogEntry[]; skipped: number }> {
   const entries: MigrationLogEntry[] = [];
   const updates: { id: string; newCity: string }[] = [];
+  const skippedEntries: { name: string; city: string; newCity: string; reason: string }[] = [];
 
   console.log("\n  Analyzing city values...");
 
@@ -533,6 +664,20 @@ async function consolidateCities(
     }
 
     if (newCity !== loc.city) {
+      // CRITICAL: Validate that this transformation doesn't create a cross-region mismatch
+      const validation = validateCityRegionConsistency(newCity, loc.region, loc.coordinates);
+
+      if (!validation.valid) {
+        // Skip this transformation - it would create data corruption
+        skippedEntries.push({
+          name: loc.name,
+          city: loc.city,
+          newCity,
+          reason: validation.reason ?? "Unknown validation error",
+        });
+        continue;
+      }
+
       entries.push({
         id: loc.id,
         name: loc.name,
@@ -545,6 +690,15 @@ async function consolidateCities(
   }
 
   console.log(`  Found ${updates.length} locations to consolidate`);
+  if (skippedEntries.length > 0) {
+    console.log(`  🛡️  Skipped ${skippedEntries.length} locations due to region validation (prevented cross-region corruption)`);
+    for (const skipped of skippedEntries.slice(0, 10)) {
+      console.log(`      - "${skipped.name}": "${skipped.city}" → "${skipped.newCity}" blocked (${skipped.reason})`);
+    }
+    if (skippedEntries.length > 10) {
+      console.log(`      ... and ${skippedEntries.length - 10} more skipped`);
+    }
+  }
   if (missingPrefecture > 0) {
     console.log(`  ⚠️  ${missingPrefecture} ambiguous wards without prefecture data (may need manual review)`);
   }
@@ -569,7 +723,7 @@ async function consolidateCities(
   }
 
   if (isDryRun || updates.length === 0) {
-    return { updated: updates.length, entries };
+    return { updated: updates.length, entries, skipped: skippedEntries.length };
   }
 
   // Execute updates
@@ -596,7 +750,7 @@ async function consolidateCities(
   }
 
   console.log(`  ✓ Updated ${updated} locations`);
-  return { updated, entries };
+  return { updated, entries, skipped: skippedEntries.length };
 }
 
 /**
@@ -712,7 +866,7 @@ async function main(): Promise<void> {
   }
 
   // Step 5: Consolidate cities
-  const { updated, entries } = await consolidateCities(locations, isDryRun);
+  const { updated, entries, skipped } = await consolidateCities(locations, isDryRun);
 
   // Step 6: Get after stats (for dry run, calculate from entries)
   let afterCityCount: number;
@@ -753,11 +907,17 @@ async function main(): Promise<void> {
   if (isDryRun) {
     console.log(`\n📊 Would backup: ${backed} city values`);
     console.log(`📊 Would update: ${updated} locations`);
+    if (skipped > 0) {
+      console.log(`🛡️  Skipped: ${skipped} locations (prevented cross-region corruption)`);
+    }
     console.log(`📊 Cities: ${beforeStats.cities.size} → ${afterCityCount}`);
     console.log("\n[DRY RUN] No changes made. Remove --dry-run to execute.");
   } else {
     console.log(`\n📊 Backed up: ${backed} city values`);
     console.log(`📊 Updated: ${updated} locations`);
+    if (skipped > 0) {
+      console.log(`🛡️  Skipped: ${skipped} locations (prevented cross-region corruption)`);
+    }
     console.log(`📊 Cities: ${beforeStats.cities.size} → ${afterCityCount}`);
   }
 
