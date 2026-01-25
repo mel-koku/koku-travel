@@ -1,9 +1,7 @@
 "use client";
 
 import Link from "next/link";
-
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { FormEvent } from "react";
 
 import { useAppState } from "@/state/AppState";
 import { DashboardItineraryPreview } from "@/components/features/itinerary/DashboardItineraryPreview";
@@ -12,11 +10,13 @@ import { createClient } from "@/lib/supabase/client";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { syncLocalToCloudOnce } from "@/lib/accountSync";
 import { logger } from "@/lib/logger";
-import { env } from "@/lib/env";
+import { sanitizeString } from "@/lib/api/sanitization";
+import { debounce } from "@/lib/utils";
+import { TOAST_DURATION_MS, MAX_DISPLAY_NAME_LENGTH } from "@/lib/constants";
+import { AccountSection } from "./components/AccountSection";
+import { StatsSection } from "./components/StatsSection";
 
 type StoredTrip = ReturnType<typeof useAppState>["trips"][number];
-
-const TOAST_DURATION_MS = 8000;
 
 type DashboardClientProps = {
   initialAuthUser: {
@@ -109,7 +109,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
           });
         }
 
-        setStatus("Syncing your local data to cloud…");
+        setStatus("Syncing your local data to cloud...");
         const syncResult = await syncLocalToCloudOnce();
         if (syncResult?.ok === false) {
           setStatus("");
@@ -135,22 +135,31 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         if (!supabase) {
           return;
         }
+        // Sanitize before saving to database
+        const sanitizedName = sanitizeString(name, MAX_DISPLAY_NAME_LENGTH);
+        if (!sanitizedName) {
+          return;
+        }
         const {
           data: { user: authUser },
         } = await supabase.auth.getUser();
         if (!authUser) return;
         await supabase.from("profiles").upsert({
           id: authUser.id,
-          display_name: name,
+          display_name: sanitizedName,
         });
       }, 500),
     [supabase]
   );
 
-  function onNameChange(v: string) {
-    setUser({ displayName: v });
-    saveProfile(v);
-  }
+  const onNameChange = useCallback((v: string) => {
+    // Sanitize display name to prevent XSS attacks
+    const sanitized = v.trim() === "" ? "" : sanitizeString(v, MAX_DISPLAY_NAME_LENGTH) ?? v.substring(0, MAX_DISPLAY_NAME_LENGTH);
+    setUser({ displayName: sanitized });
+    if (sanitized.trim()) {
+      saveProfile(sanitized);
+    }
+  }, [setUser, saveProfile]);
 
   const isAuthenticated = Boolean(sessionUserId);
   const supabaseUnavailable = !supabase;
@@ -234,6 +243,8 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
     );
   }
 
+  const shouldShowAccountSection = showAccountSection || !isAuthenticated;
+
   return (
     <div className="min-h-screen bg-surface pb-16 sm:pb-20 md:pb-24">
       <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 md:px-8">
@@ -258,91 +269,27 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
           </div>
 
           {/* Two-column layout: Account on left, Stats on right */}
-          <div className={`mt-6 grid grid-cols-1 gap-4 ${(showAccountSection || !isAuthenticated) ? 'lg:grid-cols-2' : ''}`}>
+          <div className={`mt-6 grid grid-cols-1 gap-4 ${shouldShowAccountSection ? 'lg:grid-cols-2' : ''}`}>
             {/* Left Column: Account Management Section */}
-            {(showAccountSection || !isAuthenticated) && (
-              <div className="rounded-xl border border-border bg-surface p-6 space-y-6">
-                {supabaseUnavailable && (
-                  <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-                    Cloud sync is disabled because Supabase credentials are not configured. Set
-                    <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
-                    and
-                    <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">
-                      NEXT_PUBLIC_SUPABASE_ANON_KEY
-                    </code>
-                    to enable account features.
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-semibold text-charcoal">Account</h2>
-                  {isAuthenticated && supabase && (
-                    <button
-                      onClick={() => supabase.auth.signOut()}
-                      className="h-10 rounded-lg border border-border bg-background px-4 text-sm text-warm-gray hover:bg-sand"
-                    >
-                      Sign out
-                    </button>
-                  )}
-                </div>
-
-                {isAuthenticated ? (
-                  <>
-                    <IdentityBadge />
-                    <label className="text-sm text-warm-gray block">
-                      Display name
-                      <input
-                        className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                        value={user.displayName}
-                        onChange={(e) => onNameChange(e.target.value)}
-                      />
-                    </label>
-
-                    <div className="flex items-center justify-between">
-                      <div className="text-xs text-stone">
-                        {isLoadingProfile || isLoadingRefresh ? (
-                          <span className="flex items-center gap-2">
-                            <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-brand-primary border-r-transparent"></span>
-                            {status || "Loading..."}
-                          </span>
-                        ) : (
-                          status
-                        )}
-                      </div>
-                      <button
-                        onClick={clearAllLocalData}
-                        disabled={isLoadingProfile || isLoadingRefresh}
-                        className="h-10 rounded-lg border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Clear local data
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <EmailForm supabase={supabase} supabaseUnavailable={supabaseUnavailable} />
-                )}
-              </div>
+            {shouldShowAccountSection && (
+              <AccountSection
+                isAuthenticated={isAuthenticated}
+                supabase={supabase}
+                supabaseUnavailable={supabaseUnavailable}
+                displayName={user.displayName}
+                isLoadingProfile={isLoadingProfile}
+                isLoadingRefresh={isLoadingRefresh}
+                status={status}
+                onNameChange={onNameChange}
+                onClearLocalData={clearAllLocalData}
+              />
             )}
 
             {/* Right Column: Stats Cards */}
-            <div className="grid grid-cols-1 gap-3 sm:gap-4">
-              <div className="rounded-xl border border-border p-4">
-                <p className="text-xs uppercase text-stone">Favorites</p>
-                <p className="mt-1 text-xl font-semibold text-charcoal sm:text-2xl">{favorites.length}</p>
-                <Link
-                  href={favorites.length > 0 ? "/favorites" : "/explore"}
-                  className="mt-2 inline-block min-h-[44px] text-sm text-sage hover:text-sage/80"
-                >
-                  {favorites.length > 0 ? "View favorites →" : "Explore places →"}
-                </Link>
-              </div>
-              <div className="rounded-xl border border-border p-4">
-                <p className="text-xs uppercase text-stone">Bookmarked Guides</p>
-                <p className="mt-1 text-xl font-semibold text-charcoal sm:text-2xl">{guideBookmarks.length}</p>
-                <Link href="/guides/bookmarks" className="mt-2 inline-block min-h-[44px] text-sm text-sage hover:text-sage/80">
-                  View bookmarks →
-                </Link>
-              </div>
-            </div>
+            <StatsSection
+              favoritesCount={favorites.length}
+              guideBookmarksCount={guideBookmarks.length}
+            />
           </div>
         </div>
 
@@ -393,87 +340,3 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
     </div>
   );
 }
-
-type EmailFormProps = {
-  supabase: ReturnType<typeof createClient> | null;
-  supabaseUnavailable: boolean;
-};
-
-function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("");
-
-  /**
-   * Gets the redirect URL for magic link authentication.
-   * Uses NEXT_PUBLIC_SITE_URL in production, falls back to location.origin for development.
-   */
-  function getRedirectUrl(): string {
-    const siteUrl = env.siteUrl;
-    if (siteUrl) {
-      return `${siteUrl}/auth/callback`;
-    }
-    // Fallback to current origin (for development)
-    if (typeof window !== "undefined") {
-      return `${window.location.origin}/auth/callback`;
-    }
-    // Server-side fallback (shouldn't happen in client component)
-    return "/auth/callback";
-  }
-
-  async function sendMagicLink(e: FormEvent) {
-    e.preventDefault();
-    if (!supabase) {
-      setStatus("Supabase is not configured. Unable to send sign-in links.");
-      return;
-    }
-    setStatus("Sending magic link…");
-    const redirectUrl = getRedirectUrl();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectUrl },
-    });
-    setStatus(error ? `Error: ${error.message}` : "Check your email for the sign-in link.");
-  }
-
-  return (
-    <form className="grid grid-cols-1 gap-4" onSubmit={sendMagicLink}>
-      <label className="text-sm text-warm-gray">
-        Email for magic link
-        <input
-          type="email"
-          required
-          disabled={supabaseUnavailable}
-          className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
-          placeholder="name@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-      </label>
-      <button
-        type="submit"
-        disabled={supabaseUnavailable}
-        className="h-10 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
-      >
-        Send sign-in link
-      </button>
-      <div className="text-xs text-stone">{status}</div>
-    </form>
-  );
-}
-
-function debounce<TArgs extends unknown[]>(
-  fn: (...args: TArgs) => void,
-  ms = 300,
-): (...args: TArgs) => void {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  return (...args: TArgs) => {
-    if (timeoutId !== null) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
-      timeoutId = null;
-      fn(...args);
-    }, ms);
-  };
-}
-

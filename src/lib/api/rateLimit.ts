@@ -90,16 +90,23 @@ function initializeRedis(): void {
     }
   } else {
     const isProduction = process.env.NODE_ENV === "production";
-    if (isProduction) {
+    const enforceRedis = process.env.ENFORCE_REDIS_RATE_LIMIT !== "false";
+
+    if (isProduction && enforceRedis) {
       // In production, Redis is required for proper rate limiting across instances
-      logger.error(
+      const errorMessage =
         "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production. " +
-        "Rate limiting will fall back to in-memory storage which does NOT work correctly with multiple server instances. " +
-        "Please configure Upstash Redis for production deployments.",
+        "In-memory rate limiting does NOT work correctly with multiple server instances. " +
+        "Please configure Upstash Redis for production deployments. " +
+        "To temporarily bypass this check, set ENFORCE_REDIS_RATE_LIMIT=false (not recommended).";
+      logger.error(errorMessage);
+      throw new Error(errorMessage);
+    } else if (isProduction) {
+      // Production with Redis enforcement disabled
+      logger.warn(
+        "Running in production without Redis rate limiting (ENFORCE_REDIS_RATE_LIMIT=false). " +
+        "This is not recommended for multi-instance deployments. Using in-memory fallback.",
       );
-      // In production, we still allow fallback but log as error
-      // Consider throwing an error here if you want to enforce Redis requirement
-      // throw new Error("Redis configuration required in production");
     } else {
       logger.warn(
         "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN not configured. " +
