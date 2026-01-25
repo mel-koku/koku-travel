@@ -39,13 +39,13 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
 
           {/* Main Headline - Serif */}
           <h1 className="font-serif text-3xl font-medium leading-[1.1] text-white sm:text-4xl lg:text-display">
-            Discover Japan
+            Experience Japan
             <br />
             <span className="italic">like a local</span>
           </h1>
 
           {/* Subheadline */}
-          <p className="mx-auto mt-8 max-w-xl text-base text-white/90">
+          <p className="mx-auto mt-8 max-w-xl text-lg text-white/90">
             Every place handpicked by people who call Japan home.
             No tourist traps. Just the real thing.
           </p>
