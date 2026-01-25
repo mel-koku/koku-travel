@@ -9,6 +9,7 @@ import { getCategoryDefaultDuration } from "./durationExtractor";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
 import { applyDiversityFilter, type DiversityContext } from "@/lib/scoring/diversityRules";
 import { checkOpeningHoursFit } from "@/lib/scoring/timeOptimization";
+import { isLocationAvailableOnDate } from "@/lib/scoring/seasonalAvailability";
 import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
@@ -275,6 +276,8 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
         rating: row.rating ?? undefined,
         reviewCount: row.review_count ?? undefined,
         placeId: row.place_id ?? undefined,
+        isSeasonal: row.is_seasonal ?? undefined,
+        seasonalType: row.seasonal_type ?? undefined,
       }));
 
       allLocations.push(...locations);
@@ -1251,7 +1254,7 @@ function pickLocationForTimeSlot(
       const openingHoursCheck = checkOpeningHoursFit(loc, timeSlot, date);
       return openingHoursCheck.fits;
     });
-    
+
     // If all candidates filtered out, fall back to unused (better than no location)
     if (candidates.length === 0) {
       logger.warn("All locations filtered out by opening hours, using unfiltered list", {
@@ -1260,6 +1263,28 @@ function pickLocationForTimeSlot(
         unusedCount: unused.length,
       });
       candidates = unused;
+    }
+  }
+
+  // Filter seasonal locations based on date
+  if (date) {
+    const dateObj = new Date(date);
+    const beforeCount = candidates.length;
+    candidates = candidates.filter((loc) => {
+      // Non-seasonal locations always pass
+      if (!loc.isSeasonal) return true;
+
+      // Check if seasonal location is available on this date
+      const availability = isLocationAvailableOnDate(loc, dateObj, loc.availability);
+      if (!availability.available) {
+        logger.debug(`Filtering out seasonal location "${loc.name}": ${availability.reason}`);
+      }
+      return availability.available;
+    });
+
+    const filteredCount = beforeCount - candidates.length;
+    if (filteredCount > 0) {
+      logger.debug(`Filtered ${filteredCount} seasonal locations for date ${date}`);
     }
   }
 
