@@ -719,7 +719,7 @@ export async function generateItinerary(
               durationMin: locationDuration,
               locationId: location.id,
               coordinates: location.coordinates,
-              neighborhood: location.city,
+              neighborhood: location.neighborhood ?? location.city,
               tags: buildTags(interest, location.category),
               recommendationReason,
             });
