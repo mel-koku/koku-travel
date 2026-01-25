@@ -11,10 +11,11 @@ import {
 } from "@/lib/api/middleware";
 import { validateRequestBody } from "@/lib/api/schemas";
 import { z } from "zod";
-import type { Itinerary, ItineraryActivity, ItineraryDay, RecommendationReason as ItineraryRecommendationReason } from "@/types/itinerary";
+import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
-import type { Trip, TripActivity, TripDay, RecommendationReason as TripRecommendationReason } from "@/types/tripDomain";
+import type { Trip, TripActivity, TripDay } from "@/types/tripDomain";
 import type { Location } from "@/types/location";
+import { convertTripReasonToItineraryReason } from "@/lib/utils/recommendationAdapter";
 import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
@@ -112,73 +113,7 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
   return allLocations;
 }
 
-const convertRecommendationReason = (
-  reason: TripRecommendationReason | undefined,
-): ItineraryRecommendationReason | undefined => {
-  if (!reason) {
-    return undefined;
-  }
-
-  // Convert factors object to array format
-  const factorsArray: Array<{ factor: string; score: number; reasoning: string }> = [];
-  if (reason.factors) {
-    if (reason.factors.interest !== undefined) {
-      factorsArray.push({
-        factor: "Interest Match",
-        score: reason.factors.interest,
-        reasoning: `Interest match score: ${reason.factors.interest}`,
-      });
-    }
-    if (reason.factors.proximity !== undefined) {
-      factorsArray.push({
-        factor: "Proximity",
-        score: reason.factors.proximity,
-        reasoning: `Proximity score: ${reason.factors.proximity}`,
-      });
-    }
-    if (reason.factors.budget !== undefined) {
-      factorsArray.push({
-        factor: "Budget Fit",
-        score: reason.factors.budget,
-        reasoning: `Budget fit score: ${reason.factors.budget}`,
-      });
-    }
-    if (reason.factors.accessibility !== undefined) {
-      factorsArray.push({
-        factor: "Accessibility",
-        score: reason.factors.accessibility,
-        reasoning: `Accessibility score: ${reason.factors.accessibility}`,
-      });
-    }
-    if (reason.factors.time !== undefined) {
-      factorsArray.push({
-        factor: "Time Fit",
-        score: reason.factors.time,
-        reasoning: `Time fit score: ${reason.factors.time}`,
-      });
-    }
-    if (reason.factors.weather !== undefined) {
-      factorsArray.push({
-        factor: "Weather",
-        score: reason.factors.weather,
-        reasoning: `Weather score: ${reason.factors.weather}`,
-      });
-    }
-    if (reason.factors.groupFit !== undefined) {
-      factorsArray.push({
-        factor: "Group Fit",
-        score: reason.factors.groupFit,
-        reasoning: `Group fit score: ${reason.factors.groupFit}`,
-      });
-    }
-  }
-
-  return {
-    primaryReason: reason.primaryReason,
-    factors: factorsArray.length > 0 ? factorsArray : undefined,
-    alternativesConsidered: reason.alternativesConsidered,
-  };
-};
+// Conversion function moved to @/lib/utils/recommendationAdapter
 
 const mapTripActivityToItineraryActivity = (
   activity: TripActivity,
@@ -194,7 +129,7 @@ const mapTripActivityToItineraryActivity = (
     neighborhood: undefined, // Location type doesn't have neighborhood property
     tags: undefined, // Location type doesn't have tags property
     notes: activity.reasoning?.primaryReason,
-    recommendationReason: convertRecommendationReason(activity.reasoning),
+    recommendationReason: convertTripReasonToItineraryReason(activity.reasoning),
     schedule:
       activity.startTime && activity.endTime
         ? {

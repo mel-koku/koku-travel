@@ -1,5 +1,6 @@
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import { findLocationsForActivities } from "@/lib/itineraryLocations";
+import { resolveTimezone } from "@/lib/utils/timezoneUtils";
 import type {
   Itinerary,
   ItineraryActivity,
@@ -32,7 +33,7 @@ type PlannerOptions = {
 const DEFAULT_OPTIONS: Required<PlannerOptions> = {
   defaultDayStart: "09:00",
   defaultDayEnd: "21:00",
-  defaultVisitMinutes: 60,
+  defaultVisitMinutes: 90, // Matches DEFAULT_DURATION in durationExtractor.ts
   transitionBufferMinutes: 10,
 };
 
@@ -223,14 +224,10 @@ async function determineVisitDuration(
 
   // 5. Use category-based default if available
   if (location?.category) {
-    const categoryDefault = getCategoryDefaultDuration(location.category);
-    if (categoryDefault !== 90) {
-      // Only use if it's different from the global default
-      return categoryDefault;
-    }
+    return getCategoryDefaultDuration(location.category);
   }
 
-  // 6. Fall back to options default
+  // 6. Fall back to options default (90 minutes)
   return options.defaultVisitMinutes;
 }
 
@@ -455,7 +452,11 @@ async function planItineraryDay(
   startPoint?: { coordinates: { lat: number; lng: number } },
   _endPoint?: { coordinates: { lat: number; lng: number } },
 ): Promise<ItineraryDay> {
-  const dayTimezone = day.timezone ?? itinerary.timezone ?? "UTC";
+  // Resolve timezone using fallback hierarchy (day > itinerary > Japan default)
+  const dayTimezone = resolveTimezone({
+    dayTimezone: day.timezone,
+    itineraryTimezone: itinerary.timezone,
+  });
   const startMinutes =
     parseTime(day.bounds?.startTime) ?? parseTime(options.defaultDayStart) ?? parseTime("09:00") ?? 540;
   const endMinutes =

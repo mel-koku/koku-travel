@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
       .neq("place_id", "");
 
     // Fetch all locations for aggregation (use column projections for efficiency)
-    const { data, error } = await baseFilter.select("city, category, region, prefecture");
+    const { data, error } = await baseFilter.select("city, category, region, prefecture, neighborhood");
 
     if (error) {
       logger.error("Failed to fetch locations for filter metadata", {
@@ -65,6 +65,7 @@ export async function GET(request: NextRequest) {
     const categoryMap = new Map<string, number>();
     const regionMap = new Map<string, number>();
     const prefectureMap = new Map<string, number>();
+    const neighborhoodMap = new Map<string, number>();
 
     // Helper to normalize prefecture names (remove " Prefecture" suffix)
     const normalizePrefecture = (name: string): string => {
@@ -86,6 +87,9 @@ export async function GET(request: NextRequest) {
         const normalized = normalizePrefecture(location.prefecture);
         prefectureMap.set(normalized, (prefectureMap.get(normalized) || 0) + 1);
       }
+      if (location.neighborhood) {
+        neighborhoodMap.set(location.neighborhood, (neighborhoodMap.get(location.neighborhood) || 0) + 1);
+      }
     }
 
     // Convert maps to sorted arrays
@@ -105,11 +109,16 @@ export async function GET(request: NextRequest) {
       .map(([value, count]) => ({ value, label: value, count }))
       .sort((a, b) => a.label.localeCompare(b.label));
 
+    const neighborhoods: FilterOption[] = Array.from(neighborhoodMap.entries())
+      .map(([value, count]) => ({ value, label: value, count }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+
     const response: FilterMetadata = {
       cities,
       categories,
       regions,
       prefectures,
+      neighborhoods,
     };
 
     return addRequestContextHeaders(

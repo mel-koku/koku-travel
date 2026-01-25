@@ -8,6 +8,7 @@ import { badRequest, notFound, internalError, serviceUnavailable } from "@/lib/a
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { createClient } from "@/lib/supabase/server";
 import { LOCATION_DETAIL_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
+import { getBestSummary } from "@/lib/utils/editorialSummary";
 
 type RouteContext = {
   params: Promise<{
@@ -94,11 +95,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const details = await fetchLocationDetails(location);
 
-    // Use database descriptions as fallback if Google Places editorialSummary is missing
-    // Fallback chain: Google editorialSummary > short_description (Claude-generated) > description
-    if (!details.editorialSummary) {
-      details.editorialSummary = location.shortDescription || location.description;
-    }
+    // Apply editorial summary priority chain: Google > Claude > Original
+    // See @/lib/utils/editorialSummary for documentation on priority order
+    details.editorialSummary = getBestSummary(location, details.editorialSummary);
 
     return NextResponse.json(
       {
