@@ -18,6 +18,7 @@ export const TIMEOUT_5_MINUTES = 5 * MINUTE;
 
 // Cache TTLs
 export const CACHE_TTL_6_HOURS = 6 * HOUR;
+export const CACHE_TTL_7_DAYS = 7 * DAY;
 export const CACHE_TTL_30_DAYS = 30 * DAY;
 
 // Cleanup intervals

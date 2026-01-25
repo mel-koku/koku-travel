@@ -3,7 +3,7 @@ import { Location, LocationDetails, LocationPhoto, LocationReview } from "@/type
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
-import { CACHE_TTL_30_DAYS, CACHE_TTL_6_HOURS, TIMEOUT_10_SECONDS } from "@/lib/constants";
+import { CACHE_TTL_30_DAYS, CACHE_TTL_7_DAYS, TIMEOUT_10_SECONDS } from "@/lib/constants";
 
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
 const SEARCH_FIELD_MASK = ["places.id", "places.displayName", "places.formattedAddress"].join(",");
@@ -81,7 +81,8 @@ export const ENRICHMENT_FIELD_MASK = [
 const MAX_REVIEWS = 5;
 const MAX_PHOTOS = 8;
 const PLACE_ID_CACHE_TTL = CACHE_TTL_30_DAYS;
-const PLACE_DETAILS_CACHE_TTL = CACHE_TTL_6_HOURS;
+// Cache place details for 7 days - location data (address, hours, reviews) rarely changes
+const PLACE_DETAILS_CACHE_TTL = CACHE_TTL_7_DAYS;
 const PLACE_DETAILS_TABLE = "place_details";
 const SUPABASE_DETAILS_COLUMN_SET = "place_id, payload, fetched_at";
 
