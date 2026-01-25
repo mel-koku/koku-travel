@@ -9,7 +9,7 @@ export default function GuidesPage() {
   return (
     <div className="min-h-screen bg-surface pt-8 pb-16">
       <div className="mx-auto max-w-2xl px-4 text-center">
-        <div className="rounded-2xl border border-border bg-background p-8 shadow-sm sm:p-12">
+        <div className="rounded-2xl border border-border bg-background p-8 shadow-md sm:p-12">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-sage/10">
             <svg
               className="h-8 w-8 text-sage"
@@ -35,7 +35,7 @@ export default function GuidesPage() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center rounded-lg bg-brand-primary px-6 py-3 text-base font-medium text-white shadow-sm transition hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2"
+            className="inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-primary/90 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2"
           >
             Start Planning Your Trip
           </Link>
