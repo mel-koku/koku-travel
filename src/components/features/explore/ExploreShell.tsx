@@ -470,18 +470,18 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         <div className="bg-background">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-center">
-              <div className="h-10 w-40 rounded-full bg-surface animate-pulse" />
+              <div className="h-10 w-40 rounded-full shimmer" />
             </div>
           </div>
         </div>
         {/* Skeleton grid */}
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:gap-x-6 sm:gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: 8 }).map((_, index) => (
               <div key={index} className="space-y-3">
-                <div className="aspect-square rounded-xl bg-surface animate-pulse" />
-                <div className="h-4 w-3/4 rounded bg-surface animate-pulse" />
-                <div className="h-3 w-1/2 rounded bg-surface animate-pulse" />
+                <div className="aspect-[4/3] rounded-xl shimmer" />
+                <div className="h-4 w-3/4 rounded shimmer" />
+                <div className="h-3 w-1/2 rounded shimmer" />
               </div>
             ))}
           </div>
@@ -523,11 +523,22 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         activeFilterCount={activeFilterCount}
       />
 
+      {/* Featured Carousel Hero - Full width, outside max-width container */}
+      {activeFilters.length === 0 && featuredLocations.length > 0 && (
+        <section className="w-full pt-6 pb-10 sm:pt-8 sm:pb-12 bg-gradient-to-b from-surface via-surface/90 to-background relative overflow-hidden">
+          {/* Subtle radial gradient for depth */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sand/30 via-transparent to-transparent pointer-events-none" />
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <FeaturedCarousel locations={featuredLocations} totalLocations={total} />
+          </div>
+        </section>
+      )}
+
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Active filter chips */}
         {activeFilters.length > 0 && (
-          <div className="mb-6">
+          <div className="mb-6 pt-6">
             <ActiveFilterChips
               filters={activeFilters}
               onRemove={removeFilter}
@@ -536,11 +547,13 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
           </div>
         )}
 
-        {/* Featured Carousel - only show when no filters active and we have featured locations */}
-        {activeFilters.length === 0 && featuredLocations.length > 0 && (
-          <section className="mb-10 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-6 bg-gradient-to-b from-surface to-background">
-            <FeaturedCarousel locations={featuredLocations} />
-          </section>
+        {/* Decorative Section Divider - only when showing all destinations */}
+        {activeFilters.length === 0 && (
+          <div className="flex items-center gap-4 mb-8 pt-8">
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-sand to-transparent" />
+            <span className="text-xs font-medium uppercase tracking-wider text-stone">Discover</span>
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-sand to-transparent" />
+          </div>
         )}
 
         {/* Section Header for Main Grid with Inline Filter Button */}
