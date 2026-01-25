@@ -61,6 +61,7 @@ const RATE_LIMIT_MS = 200; // 200ms between requests (5 req/sec)
 
 // Field mask for enrichment - all the fields we want to fetch
 const ENRICHMENT_FIELD_MASK = [
+  // Existing fields
   "id",
   "primaryType",
   "types",
@@ -77,6 +78,21 @@ const ENRICHMENT_FIELD_MASK = [
   "servesBrunch",
   "servesLunch",
   "servesDinner",
+  // NEW: Rating data
+  "rating",
+  "userRatingCount",
+  // NEW: Address for neighborhood
+  "addressComponents",
+  // NEW: Family/group suitability
+  "goodForChildren",
+  "goodForGroups",
+  // NEW: Venue options
+  "outdoorSeating",
+  "reservable",
+  // NEW: Opening hours
+  "regularOpeningHours",
+  // NEW: Editorial summary
+  "editorialSummary",
 ].join(",");
 
 // Mapping from Google Places primaryType to our category system
@@ -209,6 +225,30 @@ interface PlaceEnrichmentData {
   servesBrunch?: boolean;
   servesLunch?: boolean;
   servesDinner?: boolean;
+  // NEW: Rating data
+  rating?: number;
+  userRatingCount?: number;
+  // NEW: Address for neighborhood
+  addressComponents?: Array<{
+    longText: string;
+    shortText: string;
+    types: string[];
+  }>;
+  // NEW: Family/group suitability
+  goodForChildren?: boolean;
+  goodForGroups?: boolean;
+  // NEW: Venue options
+  outdoorSeating?: boolean;
+  reservable?: boolean;
+  // NEW: Opening hours
+  regularOpeningHours?: {
+    periods: Array<{
+      open: { day: number; hour: number; minute: number };
+      close: { day: number; hour: number; minute: number };
+    }>;
+  };
+  // NEW: Editorial summary
+  editorialSummary?: { text: string };
 }
 
 interface EnrichmentResult {
@@ -223,6 +263,13 @@ interface EnrichmentResult {
   priceLevel?: number;
   hasAccessibility?: boolean;
   hasVegetarian?: boolean;
+  // NEW tracking fields
+  hasRating?: boolean;
+  hasNeighborhood?: boolean;
+  hasGoodForChildren?: boolean;
+  hasGoodForGroups?: boolean;
+  hasEditorialSummary?: boolean;
+  hasOpeningHours?: boolean;
   error?: string;
 }
 
@@ -254,6 +301,86 @@ function parsePriceLevel(priceLevel?: string): number | null {
   };
 
   return mapping[priceLevel] ?? null;
+}
+
+/**
+ * Extract neighborhood from Google Places addressComponents
+ */
+function extractNeighborhood(
+  addressComponents?: PlaceEnrichmentData["addressComponents"]
+): string | null {
+  if (!addressComponents) return null;
+
+  const neighborhoodTypes = [
+    "neighborhood",
+    "sublocality_level_1",
+    "sublocality",
+    "sublocality_level_2",
+  ];
+
+  for (const type of neighborhoodTypes) {
+    const component = addressComponents.find((c) => c.types?.includes(type));
+    if (component) return component.longText;
+  }
+  return null;
+}
+
+import type {
+  LocationOperatingHours,
+  LocationOperatingPeriod,
+  Weekday,
+} from "../src/types/location";
+
+/**
+ * Convert Google Places regularOpeningHours to our LocationOperatingHours format
+ */
+function convertOpeningHours(
+  regularOpeningHours?: PlaceEnrichmentData["regularOpeningHours"]
+): LocationOperatingHours | null {
+  if (!regularOpeningHours?.periods || regularOpeningHours.periods.length === 0) {
+    return null;
+  }
+
+  const dayNames: Weekday[] = [
+    "sunday",
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+  ];
+
+  const periods: LocationOperatingPeriod[] = [];
+
+  for (const p of regularOpeningHours.periods) {
+    // Skip periods without proper open/close data
+    if (!p.open || p.open.hour === undefined || p.open.minute === undefined) {
+      continue;
+    }
+
+    // Handle 24-hour periods (no close time means open 24 hours)
+    if (!p.close || p.close.hour === undefined) {
+      periods.push({
+        day: dayNames[p.open.day],
+        open: "00:00",
+        close: "23:59",
+        isOvernight: false,
+      });
+      continue;
+    }
+
+    periods.push({
+      day: dayNames[p.open.day],
+      open: `${String(p.open.hour).padStart(2, "0")}:${String(p.open.minute).padStart(2, "0")}`,
+      close: `${String(p.close.hour).padStart(2, "0")}:${String(p.close.minute).padStart(2, "0")}`,
+      isOvernight: p.close.day !== p.open.day,
+    });
+  }
+
+  if (periods.length === 0) return null;
+
+  return { timezone: "Asia/Tokyo", periods };
 }
 
 /**
@@ -335,18 +462,19 @@ async function enrichLocations(options: {
   );
 
   // Fetch locations that need enrichment
+  // Use rating as the indicator for enrichment since some places don't have primaryType
   let query = supabase
     .from("locations")
     .select("id, name, category, place_id, google_primary_type")
     .not("place_id", "is", null);
 
   if (skipEnriched) {
-    query = query.is("google_primary_type", null);
+    // Check rating instead of google_primary_type since some places don't return primaryType
+    query = query.is("rating", null);
   }
 
-  if (limit) {
-    query = query.limit(limit);
-  }
+  // Apply limit - use explicit limit to override Supabase's default 1000
+  query = query.limit(limit || 3000);
 
   const { data: locations, error } = await query;
 
@@ -414,6 +542,14 @@ async function enrichLocations(options: {
     // Parse price level
     const priceLevel = parsePriceLevel(enrichmentData.priceLevel);
 
+    // Extract neighborhood from addressComponents
+    const extractedNeighborhood = extractNeighborhood(
+      enrichmentData.addressComponents
+    );
+
+    // Convert opening hours (keep existing if Google doesn't have them)
+    const convertedHours = convertOpeningHours(enrichmentData.regularOpeningHours);
+
     // Build update object
     const updateData: Record<string, unknown> = {
       google_primary_type: enrichmentData.primaryType || null,
@@ -451,7 +587,25 @@ async function enrichLocations(options: {
               servesDinner: enrichmentData.servesDinner,
             }
           : null,
+      // NEW fields
+      rating: enrichmentData.rating ?? null,
+      review_count: enrichmentData.userRatingCount ?? null,
+      good_for_children: enrichmentData.goodForChildren ?? null,
+      good_for_groups: enrichmentData.goodForGroups ?? null,
+      outdoor_seating: enrichmentData.outdoorSeating ?? null,
+      reservable: enrichmentData.reservable ?? null,
+      editorial_summary: enrichmentData.editorialSummary?.text ?? null,
     };
+
+    // Only update neighborhood if we extracted one (don't overwrite existing)
+    if (extractedNeighborhood) {
+      updateData.neighborhood = extractedNeighborhood;
+    }
+
+    // Only update operating_hours if we converted them (don't overwrite existing)
+    if (convertedHours) {
+      updateData.operating_hours = convertedHours;
+    }
 
     // Update category if changed
     if (categoryChanged) {
@@ -495,6 +649,13 @@ async function enrichLocations(options: {
       priceLevel: priceLevel ?? undefined,
       hasAccessibility: hasAccessibility ?? false,
       hasVegetarian: enrichmentData.servesVegetarianFood ?? false,
+      // NEW tracking fields
+      hasRating: enrichmentData.rating !== undefined,
+      hasNeighborhood: extractedNeighborhood !== null,
+      hasGoodForChildren: enrichmentData.goodForChildren !== undefined,
+      hasGoodForGroups: enrichmentData.goodForGroups !== undefined,
+      hasEditorialSummary: enrichmentData.editorialSummary?.text !== undefined,
+      hasOpeningHours: convertedHours !== null,
     });
     successful++;
 
@@ -522,12 +683,26 @@ async function enrichLocations(options: {
       r.businessStatus === "CLOSED_TEMPORARILY" ||
       r.businessStatus === "CLOSED_PERMANENTLY"
   ).length;
+  // NEW data coverage tracking
+  const withRating = results.filter((r) => r.hasRating).length;
+  const withNeighborhood = results.filter((r) => r.hasNeighborhood).length;
+  const withGoodForChildren = results.filter((r) => r.hasGoodForChildren).length;
+  const withGoodForGroups = results.filter((r) => r.hasGoodForGroups).length;
+  const withEditorialSummary = results.filter((r) => r.hasEditorialSummary).length;
+  const withOpeningHours = results.filter((r) => r.hasOpeningHours).length;
 
   console.log(`\nData coverage:`);
   console.log(`  - With price level: ${withPriceLevel}`);
   console.log(`  - With accessibility: ${withAccessibility}`);
   console.log(`  - Vegetarian friendly: ${withVegetarian}`);
   console.log(`  - Closed locations: ${closedCount}`);
+  console.log(`\nNEW data coverage:`);
+  console.log(`  - With rating: ${withRating}`);
+  console.log(`  - With neighborhood: ${withNeighborhood}`);
+  console.log(`  - With goodForChildren: ${withGoodForChildren}`);
+  console.log(`  - With goodForGroups: ${withGoodForGroups}`);
+  console.log(`  - With editorial summary: ${withEditorialSummary}`);
+  console.log(`  - With opening hours: ${withOpeningHours}`);
 
   // Write log file
   const logFile: EnrichmentLog = {
