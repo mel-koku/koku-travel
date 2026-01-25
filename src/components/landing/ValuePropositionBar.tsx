@@ -2,13 +2,17 @@
 
 import { motion } from "framer-motion";
 
-const stats = [
-  { value: "2,586", label: "Curated Locations" },
-  { value: "47", label: "Prefectures Covered" },
-  { value: "100%", label: "Local Verified" },
-];
+type ValuePropositionBarProps = {
+  locationCount: number;
+};
 
-export function ValuePropositionBar() {
+export function ValuePropositionBar({ locationCount }: ValuePropositionBarProps) {
+  const stats = [
+    { value: locationCount.toLocaleString(), label: "Curated Locations" },
+    { value: "47", label: "Prefectures Covered" },
+    { value: "100%", label: "Local Verified" },
+  ];
+
   return (
     <section className="py-16 sm:py-20" style={{ backgroundColor: "#2d2a26" }}>
       <div className="mx-auto max-w-6xl px-6">
