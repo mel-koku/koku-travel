@@ -182,7 +182,7 @@ export function locationToActivity(
     title: location.name,
     timeOfDay,
     durationMin: duration,
-    neighborhood: location.city,
+    neighborhood: location.neighborhood ?? location.city,
     tags,
     locationId: location.id,
     notes: originalActivity.notes, // Preserve notes

@@ -225,7 +225,7 @@ export async function insertMealActivities(
         title: recommendation.name,
         timeOfDay: timeSlot,
         durationMin: 60, // Typical meal duration
-        neighborhood: recommendation.city,
+        neighborhood: recommendation.neighborhood ?? recommendation.city,
         tags: ["dining", gap.mealType],
         locationId: recommendation.id,
         coordinates: recommendation.coordinates,
