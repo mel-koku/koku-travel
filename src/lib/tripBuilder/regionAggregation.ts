@@ -17,6 +17,7 @@ import type { InterestId } from "@/types/trip";
 export type CityData = {
   city: string;
   relevance: number;
+  matchingLocationCount?: number;
   locationCount: number;
   coordinates?: { lat: number; lng: number };
   region?: string;
@@ -96,6 +97,8 @@ export function aggregateCitiesByRegion(
     agg.cities.push({
       city: city.city,
       relevance: city.relevance,
+      matchingLocationCount:
+        "matchingLocationCount" in city ? (city.matchingLocationCount as number) : 0,
       locationCount: city.locationCount,
       coordinates: city.coordinates,
       region: city.region,
@@ -109,9 +112,11 @@ export function aggregateCitiesByRegion(
       agg.averageRelevance = Math.round(totalRelevance / agg.cities.length);
     }
 
-    // Sort cities by relevance then location count
+    // Sort cities by matching location count then total location count
     agg.cities.sort((a, b) => {
-      if (b.relevance !== a.relevance) return b.relevance - a.relevance;
+      const aCount = a.matchingLocationCount ?? 0;
+      const bCount = b.matchingLocationCount ?? 0;
+      if (bCount !== aCount) return bCount - aCount;
       return b.locationCount - a.locationCount;
     });
   }
@@ -151,6 +156,8 @@ export function getCitiesForRegion(
     .map((c) => ({
       city: c.city,
       relevance: c.relevance,
+      matchingLocationCount:
+        "matchingLocationCount" in c ? (c.matchingLocationCount as number) : 0,
       locationCount: c.locationCount,
       coordinates: c.coordinates,
       region: c.region,
