@@ -7,19 +7,19 @@ import {
   TestimonialSection,
   FinalCTA,
 } from "@/components/landing";
-import { fetchTopRatedLocations } from "@/lib/locations/locationService";
-
-// Location count based on CLAUDE.md stats
-const LOCATION_COUNT = 2586;
+import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locationService";
 
 export default async function Home() {
-  // Fetch featured locations server-side
-  const featuredLocations = await fetchTopRatedLocations({ limit: 8 });
+  // Fetch featured locations and location count server-side
+  const [featuredLocations, locationCount] = await Promise.all([
+    fetchTopRatedLocations({ limit: 8 }),
+    getLocationCount(),
+  ]);
 
   return (
     <main className="flex flex-col">
-      <LandingHero locationCount={LOCATION_COUNT} />
-      <ValuePropositionBar />
+      <LandingHero locationCount={locationCount} />
+      <ValuePropositionBar locationCount={locationCount} />
       <HowItWorks />
       <FeatureShowcase />
       <FeaturedLocations locations={featuredLocations} />
