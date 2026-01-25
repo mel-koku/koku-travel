@@ -27,7 +27,7 @@ const selectConfig = {
   supportsError: true,
   supportsDisabled: true,
   disabledClasses: ["cursor-not-allowed"],
-  errorClasses: ["border-destructive"],
+  errorClasses: ["border-error"],
 };
 
 // Generate common tests from factory
