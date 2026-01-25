@@ -90,25 +90,28 @@ export function convertItineraryToTrip(
 
   const startDate = builderData.dates.start ?? new Date().toISOString().split("T")[0] ?? "";
   const duration = builderData.duration ?? itinerary.days.length;
-  
+
   if (!startDate) {
     throw new Error("Start date is required");
   }
-  
+
   const startDateObj = new Date(startDate);
   if (Number.isNaN(startDateObj.getTime())) {
     throw new Error(`Invalid start date: ${startDate}`);
   }
-  
+
   const endDateObj = new Date(startDateObj);
   endDateObj.setDate(startDateObj.getDate() + duration - 1);
   const endDate = endDateObj.toISOString().split("T")[0] ?? "";
+
+  // Build a Map for O(1) location lookups by name (instead of O(n×m) using .find())
+  const locationByName = new Map(allLocations.map((loc) => [loc.name, loc]));
 
   const days: TripDay[] = itinerary.days.map((day, index) => {
     const dayDate = new Date(startDateObj);
     dayDate.setDate(startDateObj.getDate() + index);
     const dateStr = dayDate.toISOString().split("T")[0] ?? "";
-    
+
     if (!dateStr) {
       throw new Error(`Failed to generate date string for day ${index}`);
     }
@@ -116,7 +119,7 @@ export function convertItineraryToTrip(
     const activities: TripActivity[] = day.activities
       .filter((activity): activity is Extract<ItineraryActivity, { kind: "place" }> => activity.kind === "place")
       .map((activity) => {
-        const location = allLocations.find((loc) => loc.name === activity.title);
+        const location = locationByName.get(activity.title);
         return {
           id: activity.id,
           locationId: activity.locationId ?? location?.id ?? `unknown-${activity.id}`,
