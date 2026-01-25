@@ -176,3 +176,6 @@ tmp/
 # Migration logs
 scripts/*-log-*.json
 scripts/*.db
+
+# Script output (internal audit reports, generated SQL, etc.)
+scripts/output/
