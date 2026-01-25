@@ -1,18 +1,34 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 import type { Location } from "@/types/location";
+
+const LocationDetailsModal = dynamic(
+  () =>
+    import("@/components/features/explore/LocationDetailsModal").then((m) => ({
+      default: m.LocationDetailsModal,
+    })),
+  { ssr: false }
+);
 
 type FeaturedLocationsProps = {
   locations: Location[];
 };
 
 export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const handleClose = () => setSelectedLocation(null);
+
   if (locations.length === 0) {
     return null;
   }
 
   return (
+    <>
     <section className="bg-neutral-surface py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
@@ -43,27 +59,34 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
               key={location.id}
               location={location}
               featured={index === 0 || index === 5}
+              onSelect={setSelectedLocation}
             />
           ))}
         </div>
       </div>
     </section>
+
+    <LocationDetailsModal location={selectedLocation} onClose={handleClose} />
+    </>
   );
 }
 
 function FeaturedLocationCard({
   location,
   featured = false,
+  onSelect,
 }: {
   location: Location;
   featured?: boolean;
+  onSelect: (location: Location) => void;
 }) {
   const imageSrc = location.primaryPhotoUrl ?? location.image;
 
   return (
-    <Link
-      href={`/explore?location=${location.id}`}
-      className={`group relative block overflow-hidden rounded-xl ${
+    <button
+      type="button"
+      onClick={() => onSelect(location)}
+      className={`group relative block overflow-hidden rounded-xl text-left ${
         featured ? "sm:col-span-2 sm:row-span-2" : ""
       }`}
     >
@@ -94,7 +117,7 @@ function FeaturedLocationCard({
           )}
         </div>
       </div>
-    </Link>
+    </button>
   );
 }
 
