@@ -4,8 +4,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useRef, useState, useCallback, useEffect, useLayoutEffect, useMemo, forwardRef } from "react";
 import type { Location } from "@/types/location";
-import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
-import { getLocationDisplayName } from "@/lib/locationNameUtils";
 
 const LocationDetailsModal = dynamic(
   () => import("./LocationDetailsModal").then((m) => ({ default: m.LocationDetailsModal })),
@@ -281,11 +279,11 @@ type FeaturedCardProps = {
 
 const FeaturedCard = forwardRef<HTMLButtonElement, FeaturedCardProps>(
   function FeaturedCard({ location, onSelect, isSpotlight = false, cardWidth, onHoverChange, isReady = false }, ref) {
-    const { details } = useLocationDetailsQuery(location.id);
-    const displayName = getLocationDisplayName(details?.displayName ?? null, location);
+    // Use location data directly - no need to fetch details just for card display
+    const displayName = location.name;
     const imageSrc = location.primaryPhotoUrl ?? location.image;
     const rating = location.rating ?? 0;
-    const description = location.description || details?.editorialSummary || "";
+    const description = location.description || location.shortDescription || "";
 
     // All cards have same base dimensions for consistent scrolling
     // Spotlight effect is achieved via CSS transform scale
