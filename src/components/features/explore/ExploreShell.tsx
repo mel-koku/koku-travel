@@ -129,6 +129,8 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
     isLoading,
     isLoadingMore,
     error,
+    hasNextPage,
+    fetchNextPage,
   } = useAggregatedLocations();
   const { data: filterMetadata } = useFilterMetadataQuery();
 
@@ -516,7 +518,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
     <div className="min-h-screen bg-background">
       {/* Sticky Header */}
       <StickyExploreHeader
-        resultsCount={filteredLocations.length}
+        resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
         onFiltersClick={() => setIsFiltersModalOpen(true)}
         activeFilterCount={activeFilterCount}
       />
@@ -549,8 +551,20 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
                 {activeFilters.length > 0 ? "Search Results" : "All Destinations"}
               </h2>
               <p className="text-sm text-stone mt-1">
-                {filteredLocations.length.toLocaleString()} places to explore
+                {(activeFilters.length === 0 ? total : filteredLocations.length).toLocaleString()} places to explore
               </p>
+              {activeFilters.length > 0 && hasNextPage && (
+                <p className="text-xs text-warm-gray mt-1">
+                  Searching {locations.length.toLocaleString()} of {total.toLocaleString()} locations{" "}
+                  <button
+                    onClick={() => fetchNextPage()}
+                    disabled={isLoadingMore}
+                    className="text-brand-primary hover:underline disabled:opacity-50"
+                  >
+                    {isLoadingMore ? "Loading..." : "Load more"}
+                  </button>
+                </p>
+              )}
             </div>
             <button
               onClick={() => setIsFiltersModalOpen(true)}
@@ -571,7 +585,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
               </svg>
               <span>Filters</span>
               <span className="text-brand-primary/70">
-                ({filteredLocations.length.toLocaleString()})
+                ({(activeFilters.length === 0 ? total : filteredLocations.length).toLocaleString()})
               </span>
               {activeFilterCount > 0 && (
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
@@ -628,7 +642,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         onWheelchairAccessibleChange={setWheelchairAccessible}
         vegetarianFriendly={vegetarianFriendly}
         onVegetarianFriendlyChange={setVegetarianFriendly}
-        resultsCount={filteredLocations.length}
+        resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
         onClearAll={clearAllFilters}
         sortOptions={SORT_OPTIONS}
         selectedSort={selectedSort}
