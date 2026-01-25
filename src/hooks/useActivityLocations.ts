@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { logger } from "@/lib/logger";
+import { LOCATION_STALE_TIME, LOCATION_GC_TIME } from "@/lib/constants/time";
 
 /**
  * Query key factory for activity locations
@@ -109,8 +110,8 @@ export function useActivityLocations(
     queryKey: activityLocationsKeys.byIds(locationIds),
     queryFn: () => fetchLocationsByIds(locationIds),
     enabled: locationIds.length > 0,
-    staleTime: 10 * 60 * 1000, // 10 minutes
-    gcTime: 30 * 60 * 1000, // 30 minutes
+    staleTime: LOCATION_STALE_TIME,
+    gcTime: LOCATION_GC_TIME,
     retry: 2,
     refetchOnWindowFocus: false,
   });

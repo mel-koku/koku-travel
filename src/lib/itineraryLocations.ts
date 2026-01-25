@@ -4,6 +4,7 @@ import {
   fetchLocationById,
   fetchLocationByName,
   fetchLocationsByIds,
+  fetchLocationsByNames,
 } from "@/lib/locations/locationService";
 
 const ACTIVITY_ID_PATTERN = /^(.*)-\d+-\d+$/;
@@ -112,11 +113,14 @@ export async function findLocationsForActivities(
     activityToIds.set(activity.id, possibleIds);
   }
 
-  // Batch fetch all locations
+  // Batch fetch all locations by ID
   const locations = await fetchLocationsByIds(Array.from(idsToFetch));
   const locationMap = new Map(locations.map((loc) => [loc.id, loc]));
 
-  // Map activities to locations
+  // First pass: match by ID and collect names for batch fallback lookup
+  const namesToFetch = new Set<string>();
+  const activitiesNeedingNameLookup: Extract<ItineraryActivity, { kind: "place" }>[] = [];
+
   for (const activity of activities) {
     // Skip if already set (entry point)
     if (result.has(activity.id)) {
@@ -134,12 +138,28 @@ export async function findLocationsForActivities(
       }
     }
 
-    // If not found by ID, try by name (this is slower but needed for fallback)
-    if (!found) {
-      found = await fetchLocationByName(activity.title);
+    if (found) {
+      result.set(activity.id, found);
+    } else {
+      // Collect name for batch lookup
+      namesToFetch.add(activity.title);
+      activitiesNeedingNameLookup.push(activity);
     }
+  }
 
-    result.set(activity.id, found);
+  // Batch fetch locations by name (single query instead of N queries)
+  if (namesToFetch.size > 0) {
+    const locationsByName = await fetchLocationsByNames(Array.from(namesToFetch));
+    const nameMap = new Map(
+      locationsByName.map((loc) => [loc.name.toLowerCase().trim(), loc]),
+    );
+
+    // Second pass: match remaining activities by name
+    for (const activity of activitiesNeedingNameLookup) {
+      const normalizedTitle = activity.title.toLowerCase().trim();
+      const found = nameMap.get(normalizedTitle) ?? null;
+      result.set(activity.id, found);
+    }
   }
 
   return result;

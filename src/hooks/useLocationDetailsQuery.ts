@@ -3,6 +3,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { LocationDetails } from "@/types/location";
 import { logger } from "@/lib/logger";
+import { LOCATION_STALE_TIME, LOCATION_GC_TIME } from "@/lib/constants/time";
 
 /**
  * Query key factory for location details
@@ -119,13 +120,9 @@ export function useLocationDetailsQuery(locationId: string | null) {
     queryKey: locationDetailsKeys.detail(locationId ?? ""),
     queryFn: () => fetchLocationDetails(locationId!),
     enabled: !!locationId,
-    // Data is considered fresh for 5 minutes
-    staleTime: 5 * 60 * 1000,
-    // Keep in cache for 30 minutes after last use
-    gcTime: 30 * 60 * 1000,
-    // Retry up to 2 times on failure
+    staleTime: LOCATION_STALE_TIME,
+    gcTime: LOCATION_GC_TIME,
     retry: 2,
-    // Don't refetch on window focus for this data
     refetchOnWindowFocus: false,
   });
 
@@ -166,6 +163,6 @@ export function prefetchLocationDetails(
   return queryClient.prefetchQuery({
     queryKey: locationDetailsKeys.detail(locationId),
     queryFn: () => fetchLocationDetails(locationId),
-    staleTime: 5 * 60 * 1000,
+    staleTime: LOCATION_STALE_TIME,
   });
 }

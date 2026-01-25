@@ -6,6 +6,63 @@ import type { Location } from "@/types/location";
 import type { PaginatedResponse } from "@/lib/api/pagination";
 import type { FilterMetadata } from "@/types/filters";
 import { logger } from "@/lib/logger";
+import {
+  LOCATION_STALE_TIME,
+  LOCATION_GC_TIME,
+  FILTER_METADATA_STALE_TIME,
+  FILTER_METADATA_GC_TIME,
+  DAY,
+} from "@/lib/constants/time";
+
+// localStorage key and TTL for filter metadata persistence
+const FILTER_METADATA_STORAGE_KEY = "koku:filter-metadata:v3";
+const FILTER_METADATA_STORAGE_TTL = DAY; // 24 hours
+
+type StoredFilterMetadata = {
+  data: FilterMetadata;
+  cachedAt: number;
+};
+
+/**
+ * Gets filter metadata from localStorage if available and not expired
+ */
+function getFilterMetadataFromStorage(): FilterMetadata | null {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const stored = localStorage.getItem(FILTER_METADATA_STORAGE_KEY);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored) as StoredFilterMetadata;
+    const age = Date.now() - parsed.cachedAt;
+
+    if (age > FILTER_METADATA_STORAGE_TTL) {
+      localStorage.removeItem(FILTER_METADATA_STORAGE_KEY);
+      return null;
+    }
+
+    return parsed.data;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Saves filter metadata to localStorage
+ */
+function setFilterMetadataToStorage(data: FilterMetadata): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    const stored: StoredFilterMetadata = {
+      data,
+      cachedAt: Date.now(),
+    };
+    localStorage.setItem(FILTER_METADATA_STORAGE_KEY, JSON.stringify(stored));
+  } catch {
+    // Ignore storage errors (quota exceeded, etc.)
+  }
+}
 
 /**
  * Query key factory for locations
@@ -46,10 +103,17 @@ async function fetchLocationsPage(
 }
 
 /**
- * Fetches filter metadata from the API
+ * Fetches filter metadata from localStorage or API
+ * Persists to localStorage after successful fetch for 24-hour caching
  */
 async function fetchFilterMetadata(): Promise<FilterMetadata> {
-  // Add version parameter to bust cache (v3 = normalized prefecture names)
+  // Check localStorage first
+  const cached = getFilterMetadataFromStorage();
+  if (cached) {
+    return cached;
+  }
+
+  // Fetch from API
   const response = await fetch("/api/locations/filter-options?v=3");
 
   if (!response.ok) {
@@ -65,7 +129,12 @@ async function fetchFilterMetadata(): Promise<FilterMetadata> {
     throw new Error(message);
   }
 
-  return (await response.json()) as FilterMetadata;
+  const data = (await response.json()) as FilterMetadata;
+
+  // Persist to localStorage for future sessions
+  setFilterMetadataToStorage(data);
+
+  return data;
 }
 
 /**
@@ -89,13 +158,9 @@ export function useAllLocationsQuery() {
         ? lastPage.pagination.page + 1
         : undefined;
     },
-    // Data is considered fresh for 10 minutes
-    staleTime: 10 * 60 * 1000,
-    // Keep in cache for 1 hour after last use
-    gcTime: 60 * 60 * 1000,
-    // Retry up to 2 times on failure
+    staleTime: LOCATION_STALE_TIME,
+    gcTime: LOCATION_GC_TIME,
     retry: 2,
-    // Don't refetch on window focus for this data
     refetchOnWindowFocus: false,
   });
 }
@@ -114,13 +179,9 @@ export function useFilterMetadataQuery() {
   return useQuery({
     queryKey: locationsKeys.filterMetadata(),
     queryFn: fetchFilterMetadata,
-    // Data is considered fresh for 1 hour (changes infrequently)
-    staleTime: 60 * 60 * 1000,
-    // Keep in cache for 2 hours after last use
-    gcTime: 2 * 60 * 60 * 1000,
-    // Retry up to 2 times on failure
+    staleTime: FILTER_METADATA_STALE_TIME,
+    gcTime: FILTER_METADATA_GC_TIME,
     retry: 2,
-    // Don't refetch on window focus for this data
     refetchOnWindowFocus: false,
   });
 }
@@ -182,7 +243,7 @@ export function prefetchAllLocations(
     queryKey: locationsKeys.list(),
     queryFn: ({ pageParam = 1 }) => fetchLocationsPage(pageParam, 100),
     initialPageParam: 1,
-    staleTime: 10 * 60 * 1000,
+    staleTime: LOCATION_STALE_TIME,
   });
 }
 
@@ -196,6 +257,6 @@ export function prefetchFilterMetadata(
   return queryClient.prefetchQuery({
     queryKey: locationsKeys.filterMetadata(),
     queryFn: fetchFilterMetadata,
-    staleTime: 60 * 60 * 1000,
+    staleTime: FILTER_METADATA_STALE_TIME,
   });
 }

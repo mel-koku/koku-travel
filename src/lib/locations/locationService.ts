@@ -124,6 +124,34 @@ export async function fetchLocationByName(name: string): Promise<Location | null
 }
 
 /**
+ * Fetches multiple locations by names in a single batch query (case-insensitive)
+ *
+ * @param names - Array of location names to search for
+ * @returns Array of matching locations
+ */
+export async function fetchLocationsByNames(names: string[]): Promise<Location[]> {
+  if (names.length === 0) {
+    return [];
+  }
+
+  const supabase = await createClient();
+
+  // Build case-insensitive OR filter for all names
+  const nameFilters = names.map((n) => `name.ilike.${n}`).join(",");
+
+  const { data, error } = await supabase
+    .from("locations")
+    .select(LOCATION_ITINERARY_COLUMNS)
+    .or(nameFilters);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+}
+
+/**
  * Options for filtering locations by city
  */
 export interface FetchByCityOptions {

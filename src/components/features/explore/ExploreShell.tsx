@@ -129,8 +129,6 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
     isLoading,
     isLoadingMore,
     error,
-    hasNextPage,
-    fetchNextPage,
   } = useAggregatedLocations();
   const { data: filterMetadata } = useFilterMetadataQuery();
 
@@ -462,17 +460,6 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
     setWheelchairAccessible(false);
     setVegetarianFriendly(false);
   }, []);
-
-  // Background prefetching: Auto-fetch remaining pages after initial render
-  // Throttled to avoid rate limits (500ms between pages)
-  useEffect(() => {
-    if (locations.length >= 100 && hasNextPage && !isLoadingMore) {
-      const timer = setTimeout(() => {
-        fetchNextPage();
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [locations.length, hasNextPage, isLoadingMore, fetchNextPage]);
 
   if (isLoading) {
     return (
