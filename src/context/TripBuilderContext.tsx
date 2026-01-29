@@ -15,7 +15,6 @@ import { getLocal, setLocal } from "@/lib/storageHelpers";
 import { TRIP_BUILDER_STORAGE_KEY, APP_STATE_DEBOUNCE_MS } from "@/lib/constants";
 import type { CityId, EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
 import { INTEREST_CATEGORIES } from "@/data/interests";
-import { getEntryPointById } from "@/data/entryPoints";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
@@ -317,18 +316,11 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
     return undefined;
   }
 
-  // Validate type
-  if (entryPoint.type !== "airport" && entryPoint.type !== "city" && entryPoint.type !== "hotel" && entryPoint.type !== "station") {
+  // Only accept airport type (city, hotel, station are no longer supported)
+  if (entryPoint.type !== "airport") {
     return undefined;
   }
 
-  // Try to get the entry point from our data to ensure it's valid
-  const validEntryPoint = getEntryPointById(entryPoint.id);
-  if (validEntryPoint) {
-    return validEntryPoint;
-  }
-
-  // If not found in our data but structure is valid, return as-is (for custom hotels, etc.)
   // Validate coordinate bounds to prevent invalid entry points
   const lat = Number(entryPoint.coordinates.lat);
   const lng = Number(entryPoint.coordinates.lng);
@@ -338,7 +330,7 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
   }
 
   return {
-    type: entryPoint.type,
+    type: "airport",
     id: String(entryPoint.id).trim(),
     name: String(entryPoint.name).trim(),
     coordinates: {
@@ -346,6 +338,7 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
       lng,
     },
     cityId: entryPoint.cityId,
+    iataCode: typeof entryPoint.iataCode === "string" ? entryPoint.iataCode.trim().toUpperCase() : undefined,
   };
 }
 
