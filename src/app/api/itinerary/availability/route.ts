@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         }
 
         try {
-          const availability = await checkAvailability(location, { useCache: true });
+          const availability = await checkAvailability(location);
           return {
             activityId: activity.id,
             status: availability.status,

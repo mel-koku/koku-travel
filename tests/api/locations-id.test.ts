@@ -1,14 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextResponse } from "next/server";
 import { GET } from "@/app/api/locations/[id]/route";
-import { fetchLocationDetails } from "@/lib/googlePlaces";
-import { createMockRequest, createMockLocationDetails } from "../utils/mocks";
+import { createMockRequest } from "../utils/mocks";
 import { TEST_LOCATIONS, locationToDbRow } from "../fixtures/locations";
-
-// Mock dependencies
-vi.mock("@/lib/googlePlaces", () => ({
-  fetchLocationDetails: vi.fn(),
-}));
 
 vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
@@ -44,7 +38,6 @@ const mockSupabaseLocation = (location: typeof TEST_LOCATIONS.kyotoTemple | null
 describe("GET /api/locations/[id]", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubEnv("GOOGLE_PLACES_API_KEY", "test-api-key");
     // Default: return first mock location
     mockSupabaseLocation(TEST_LOCATIONS.kyotoTemple);
   });
@@ -109,9 +102,6 @@ describe("GET /api/locations/[id]", () => {
     });
 
     it("should accept valid location ID", async () => {
-      const mockDetails = createMockLocationDetails();
-      vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
-
       const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
       const context = {
@@ -144,11 +134,8 @@ describe("GET /api/locations/[id]", () => {
     });
   });
 
-  describe("Google Places API integration", () => {
-    it("should return location with details when found", async () => {
-      const mockDetails = createMockLocationDetails();
-      vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
-
+  describe("Database-backed response", () => {
+    it("should return location with details from database", async () => {
       const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
       const context = {
@@ -160,58 +147,14 @@ describe("GET /api/locations/[id]", () => {
       const data = await response.json();
       expect(data.location).toBeDefined();
       expect(data.details).toBeDefined();
-      expect(data.details.placeId).toBe(mockDetails.placeId);
-      // Verify fetchLocationDetails was called with a location object
-      expect(fetchLocationDetails).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: validLocation.id,
-          name: validLocation.name,
-        }),
-      );
+      expect(data.location.id).toBe(validLocation.id);
+      expect(data.location.name).toBe(validLocation.name);
+      // Details are now built from DB data
+      expect(data.details.displayName).toBe(validLocation.name);
+      expect(data.details.rating).toBeDefined();
     });
 
-    it("should return 503 if Google Places API is not configured", async () => {
-      vi.unstubAllEnvs();
-      vi.stubEnv("GOOGLE_PLACES_API_KEY", "");
-
-      vi.mocked(fetchLocationDetails).mockRejectedValueOnce(
-        new Error("Missing Google Places API key"),
-      );
-
-      const validLocation = TEST_LOCATIONS.kyotoTemple;
-      const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
-      const context = {
-        params: Promise.resolve({ id: validLocation.id }),
-      };
-      const response = await GET(request, context);
-
-      expect(response.status).toBe(503);
-      const data = await response.json();
-      expect(data.code).toBe("SERVICE_UNAVAILABLE");
-      expect(data.error).toContain("Google Places API is not configured");
-    });
-
-    it("should return 500 for other Google Places API errors", async () => {
-      vi.mocked(fetchLocationDetails).mockRejectedValueOnce(new Error("Network error"));
-
-      const validLocation = TEST_LOCATIONS.kyotoTemple;
-      const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
-      const context = {
-        params: Promise.resolve({ id: validLocation.id }),
-      };
-      const response = await GET(request, context);
-
-      expect(response.status).toBe(500);
-      const data = await response.json();
-      expect(data.code).toBe("INTERNAL_ERROR");
-    });
-  });
-
-  describe("Response caching", () => {
-    it("should set appropriate cache headers", async () => {
-      const mockDetails = createMockLocationDetails();
-      vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
-
+    it("should include primary photo from database", async () => {
       const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
       const context = {
@@ -220,10 +163,40 @@ describe("GET /api/locations/[id]", () => {
       const response = await GET(request, context);
 
       expect(response.status).toBe(200);
+      const data = await response.json();
+      // Photos array should contain primary photo if available
+      expect(Array.isArray(data.details.photos)).toBe(true);
+    });
+
+    it("should return empty reviews array (reviews removed for cost reduction)", async () => {
+      const validLocation = TEST_LOCATIONS.kyotoTemple;
+      const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
+      const context = {
+        params: Promise.resolve({ id: validLocation.id }),
+      };
+      const response = await GET(request, context);
+
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      // Reviews should be empty (removed to reduce API costs)
+      expect(data.details.reviews).toEqual([]);
+    });
+  });
+
+  describe("Response caching", () => {
+    it("should set appropriate cache headers for DB-backed responses", async () => {
+      const validLocation = TEST_LOCATIONS.kyotoTemple;
+      const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}`);
+      const context = {
+        params: Promise.resolve({ id: validLocation.id }),
+      };
+      const response = await GET(request, context);
+
+      expect(response.status).toBe(200);
+      // Cache headers increased since data is from DB, not real-time API
       expect(response.headers.get("Cache-Control")).toBe(
-        "public, max-age=900, s-maxage=900, stale-while-revalidate=3600",
+        "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
       );
     });
   });
 });
-

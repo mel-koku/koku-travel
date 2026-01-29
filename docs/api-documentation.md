@@ -78,7 +78,7 @@ All API routes follow a consistent error response format:
 
 **Endpoint:** `GET /api/locations/[id]`
 
-**Description:** Retrieves detailed information about a specific location, including Google Places API data.
+**Description:** Retrieves detailed information about a specific location from the database. All data is pre-enriched during location ingestion, so no external API calls are made at runtime.
 
 **Authentication:** Not required
 
@@ -112,33 +112,35 @@ curl https://your-domain.com/api/locations/tokyo-1
   },
   "details": {
     "placeId": "ChIJ51cu8IcbXWARiRtXIothAS4",
+    "displayName": "Tokyo",
     "fetchedAt": "2024-01-15T10:30:00Z",
     "photos": [
       {
-        "name": "photo-reference-123",
-        "width": 4000,
-        "height": 3000
+        "name": "primary",
+        "proxyUrl": "https://..."
       }
     ],
     "rating": 4.5,
-    "userRatingsTotal": 1234,
-    "formattedAddress": "Tokyo, Japan",
-    "openingHours": {
-      "openNow": true,
-      "weekdayText": ["Monday: 9:00 AM – 5:00 PM", ...]
-    }
+    "userRatingCount": 1234,
+    "formattedAddress": "Tokyo, Kanto",
+    "editorialSummary": "Japan's bustling capital...",
+    "regularOpeningHours": ["Monday: 9:00 – 17:00", ...],
+    "reviews": []
   }
 }
 ```
+
+**Notes:**
+- `photos` contains only the primary photo (photo gallery removed for cost optimization)
+- `reviews` is always an empty array (reviews removed for cost optimization)
+- Rating and review count are cached from enrichment
 
 **Error Responses:**
 
 - `400 Bad Request` - Invalid location ID format
 - `404 Not Found` - Location not found
-- `503 Service Unavailable` - Google Places API not configured or unavailable
-- `500 Internal Server Error` - Server error
 
-**Caching:** Response is cached for 15 minutes (`max-age=900`)
+**Caching:** Response is cached for 1 hour (`max-age=3600`)
 
 ---
 
@@ -146,11 +148,11 @@ curl https://your-domain.com/api/locations/tokyo-1
 
 **Endpoint:** `GET /api/locations/[id]/primary-photo`
 
-**Description:** Retrieves the primary photo reference for a location.
+**Description:** Retrieves the primary photo for a location from the database. Uses pre-enriched `primary_photo_url` field, falling back to the location's default image if not available.
 
 **Authentication:** Not required
 
-**Rate Limit:** None (inherits from location endpoint)
+**Rate Limit:** 100 requests/minute per IP
 
 **Parameters:**
 
@@ -171,21 +173,21 @@ curl https://your-domain.com/api/locations/tokyo-1/primary-photo
   "placeId": "ChIJ51cu8IcbXWARiRtXIothAS4",
   "fetchedAt": "2024-01-15T10:30:00Z",
   "photo": {
-    "name": "photo-reference-123",
-    "width": 4000,
-    "height": 3000
-  }
+    "name": "primary",
+    "proxyUrl": "https://...",
+    "attributions": []
+  },
+  "displayName": "Tokyo",
+  "editorialSummary": "Japan's bustling capital..."
 }
 ```
 
 **Error Responses:**
 
 - `400 Bad Request` - Invalid location ID format
-- `404 Not Found` - Location not found or no photo available
-- `503 Service Unavailable` - Google Places API not configured
-- `500 Internal Server Error` - Server error
+- `404 Not Found` - Location not found
 
-**Caching:** Response is cached for 15 minutes (`max-age=900`)
+**Caching:** Response is cached for 1 hour (`max-age=3600`)
 
 ---
 
@@ -498,19 +500,22 @@ curl -X DELETE https://your-domain.com/api/trips/3621634c-b128-4e8d-b944-ccc3362
 ```typescript
 {
   placeId: string;
+  displayName?: string;
   fetchedAt: string; // ISO 8601 timestamp
-  photos?: Array<{
+  photos: Array<{        // Contains only primary photo (for cost optimization)
     name: string;
-    width: number;
-    height: number;
+    proxyUrl: string;
+    attributions: Array<{
+      displayName?: string;
+      uri?: string;
+    }>;
   }>;
   rating?: number;
-  userRatingsTotal?: number;
+  userRatingCount?: number;
   formattedAddress?: string;
-  openingHours?: {
-    openNow: boolean;
-    weekdayText?: string[];
-  };
+  editorialSummary?: string;
+  regularOpeningHours?: string[];  // Pre-formatted from database
+  reviews: [];           // Always empty (reviews removed for cost optimization)
 }
 ```
 

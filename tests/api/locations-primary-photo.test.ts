@@ -1,14 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { NextResponse } from "next/server";
 import { GET } from "@/app/api/locations/[id]/primary-photo/route";
-import { fetchLocationDetails } from "@/lib/googlePlaces";
-import { createMockRequest, createMockLocationDetails } from "../utils/mocks";
+import { createMockRequest } from "../utils/mocks";
 import { TEST_LOCATIONS, locationToDbRow } from "../fixtures/locations";
-
-// Mock dependencies
-vi.mock("@/lib/googlePlaces", () => ({
-  fetchLocationDetails: vi.fn(),
-}));
 
 vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
@@ -30,10 +24,10 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 // Helper to set up Supabase mock for a location
-const mockSupabaseLocation = (location: typeof TEST_LOCATIONS.kyotoTemple | null) => {
+const mockSupabaseLocation = (location: typeof TEST_LOCATIONS.kyotoTemple | null, overrides?: Record<string, unknown>) => {
   if (location) {
     mockSupabaseResponse = {
-      data: locationToDbRow(location),
+      data: { ...locationToDbRow(location), ...overrides },
       error: null,
     };
   } else {
@@ -44,7 +38,6 @@ const mockSupabaseLocation = (location: typeof TEST_LOCATIONS.kyotoTemple | null
 describe("GET /api/locations/[id]/primary-photo", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubEnv("GOOGLE_PLACES_API_KEY", "test-api-key");
     // Default: return first mock location
     mockSupabaseLocation(TEST_LOCATIONS.kyotoTemple);
   });
@@ -97,9 +90,6 @@ describe("GET /api/locations/[id]/primary-photo", () => {
     });
 
     it("should accept valid location ID", async () => {
-      const mockDetails = createMockLocationDetails();
-      vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
-
       const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}/primary-photo`);
       const context = {
@@ -131,21 +121,13 @@ describe("GET /api/locations/[id]/primary-photo", () => {
     });
   });
 
-  describe("Primary photo handling", () => {
-    it("should return primary photo when available", async () => {
-      const mockDetails = createMockLocationDetails();
-      mockDetails.photos = [
-        {
-          name: "places/test-place/photos/primary-photo",
-          widthPx: 1600,
-          heightPx: 1200,
-          proxyUrl: "/api/places/photo?photoName=places/test-place/photos/primary-photo",
-          attributions: [],
-        },
-      ];
-      vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
-
+  describe("Primary photo from database", () => {
+    it("should return primary_photo_url from database when available", async () => {
       const validLocation = TEST_LOCATIONS.kyotoTemple;
+      mockSupabaseLocation(validLocation, {
+        primary_photo_url: "https://example.com/photos/kiyomizu-dera.jpg",
+      });
+
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}/primary-photo`);
       const context = {
         params: Promise.resolve({ id: validLocation.id }),
@@ -155,15 +137,35 @@ describe("GET /api/locations/[id]/primary-photo", () => {
       expect(response.status).toBe(200);
       const data = await response.json();
       expect(data.photo).toBeDefined();
-      expect(data.photo.name).toBe("places/test-place/photos/primary-photo");
+      expect(data.photo.proxyUrl).toBe("https://example.com/photos/kiyomizu-dera.jpg");
     });
 
-    it("should return null photo when no photos available", async () => {
-      const mockDetails = createMockLocationDetails();
-      mockDetails.photos = [];
-      vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
-
+    it("should fall back to location image when no primary_photo_url", async () => {
       const validLocation = TEST_LOCATIONS.kyotoTemple;
+      mockSupabaseLocation(validLocation, {
+        primary_photo_url: null,
+        image: "https://example.com/fallback.jpg",
+      });
+
+      const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}/primary-photo`);
+      const context = {
+        params: Promise.resolve({ id: validLocation.id }),
+      };
+      const response = await GET(request, context);
+
+      expect(response.status).toBe(200);
+      const data = await response.json();
+      expect(data.photo).toBeDefined();
+      expect(data.photo.proxyUrl).toBe("https://example.com/fallback.jpg");
+    });
+
+    it("should return null photo when neither primary_photo_url nor image available", async () => {
+      const validLocation = TEST_LOCATIONS.kyotoTemple;
+      mockSupabaseLocation(validLocation, {
+        primary_photo_url: null,
+        image: null,
+      });
+
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}/primary-photo`);
       const context = {
         params: Promise.resolve({ id: validLocation.id }),
@@ -176,49 +178,8 @@ describe("GET /api/locations/[id]/primary-photo", () => {
     });
   });
 
-  describe("Google Places API error handling", () => {
-    it("should return 503 if Google Places API is not configured", async () => {
-      vi.unstubAllEnvs();
-      vi.stubEnv("GOOGLE_PLACES_API_KEY", "");
-
-      vi.mocked(fetchLocationDetails).mockRejectedValueOnce(
-        new Error("Missing Google Places API key"),
-      );
-
-      const validLocation = TEST_LOCATIONS.kyotoTemple;
-      const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}/primary-photo`);
-      const context = {
-        params: Promise.resolve({ id: validLocation.id }),
-      };
-      const response = await GET(request, context);
-
-      expect(response.status).toBe(503);
-      const data = await response.json();
-      expect(data.code).toBe("SERVICE_UNAVAILABLE");
-      expect(data.error).toContain("Google Places API is not configured");
-    });
-
-    it("should return 500 for other Google Places API errors", async () => {
-      vi.mocked(fetchLocationDetails).mockRejectedValueOnce(new Error("Network error"));
-
-      const validLocation = TEST_LOCATIONS.kyotoTemple;
-      const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}/primary-photo`);
-      const context = {
-        params: Promise.resolve({ id: validLocation.id }),
-      };
-      const response = await GET(request, context);
-
-      expect(response.status).toBe(500);
-      const data = await response.json();
-      expect(data.code).toBe("INTERNAL_ERROR");
-    });
-  });
-
   describe("Response caching", () => {
-    it("should set appropriate cache headers", async () => {
-      const mockDetails = createMockLocationDetails();
-      vi.mocked(fetchLocationDetails).mockResolvedValueOnce(mockDetails);
-
+    it("should set appropriate cache headers for DB-backed responses", async () => {
       const validLocation = TEST_LOCATIONS.kyotoTemple;
       const request = createMockRequest(`https://example.com/api/locations/${validLocation.id}/primary-photo`);
       const context = {
@@ -227,10 +188,10 @@ describe("GET /api/locations/[id]/primary-photo", () => {
       const response = await GET(request, context);
 
       expect(response.status).toBe(200);
+      // Cache headers increased since data is from DB, not real-time API
       expect(response.headers.get("Cache-Control")).toBe(
-        "public, max-age=900, s-maxage=900, stale-while-revalidate=3600",
+        "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
       );
     });
   });
 });
-

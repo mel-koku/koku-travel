@@ -6,6 +6,10 @@ type LocationDetailsSectionsProps = {
   details: LocationDetails;
 };
 
+/**
+ * Location details sections component.
+ * Reviews section removed to reduce Google API costs - rating/reviewCount are cached in database.
+ */
 export function LocationDetailsSections({ location, details }: LocationDetailsSectionsProps) {
   return (
     <>
@@ -26,131 +30,79 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
         ) : null}
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        <div className="space-y-6">
-          {details.editorialSummary ? (
-            <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
-                Overview
-              </h3>
-              <p className="text-sm text-warm-gray leading-relaxed">{details.editorialSummary}</p>
-            </section>
-          ) : null}
+      <div className="space-y-6">
+        {details.editorialSummary ? (
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              Overview
+            </h3>
+            <p className="text-sm text-warm-gray leading-relaxed">{details.editorialSummary}</p>
+          </section>
+        ) : null}
 
-          {details.formattedAddress ? (
-            <section className="space-y-1">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
-                Address
-              </h3>
-              <p className="text-sm text-warm-gray">{details.formattedAddress}</p>
-            </section>
-          ) : null}
+        {details.formattedAddress ? (
+          <section className="space-y-1">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              Address
+            </h3>
+            <p className="text-sm text-warm-gray">{details.formattedAddress}</p>
+          </section>
+        ) : null}
 
-          {details.websiteUri || details.internationalPhoneNumber || details.googleMapsUri ? (
-            <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
-                Details
-              </h3>
-              <ul className="space-y-1 text-sm text-sage">
-                {details.websiteUri ? (
-                  <li>
-                    <a
-                      href={details.websiteUri}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="transition hover:underline"
-                    >
-                      Official website
-                    </a>
-                  </li>
-                ) : null}
-                {details.internationalPhoneNumber ? (
-                  <li className="text-warm-gray">{details.internationalPhoneNumber}</li>
-                ) : null}
-                {details.googleMapsUri ? (
-                  <li>
-                    <a
-                      href={details.googleMapsUri}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="transition hover:underline"
-                    >
-                      View on Google Maps
-                    </a>
-                  </li>
-                ) : null}
-              </ul>
-            </section>
-          ) : null}
+        {details.websiteUri || details.internationalPhoneNumber || details.googleMapsUri ? (
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              Details
+            </h3>
+            <ul className="space-y-1 text-sm text-sage">
+              {details.websiteUri ? (
+                <li>
+                  <a
+                    href={details.websiteUri}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="transition hover:underline"
+                  >
+                    Official website
+                  </a>
+                </li>
+              ) : null}
+              {details.internationalPhoneNumber ? (
+                <li className="text-warm-gray">{details.internationalPhoneNumber}</li>
+              ) : null}
+              {details.googleMapsUri ? (
+                <li>
+                  <a
+                    href={details.googleMapsUri}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="transition hover:underline"
+                  >
+                    View on Google Maps
+                  </a>
+                </li>
+              ) : null}
+            </ul>
+          </section>
+        ) : null}
 
-          {(details.currentOpeningHours?.length ?? 0) > 0 ||
-          (details.regularOpeningHours?.length ?? 0) > 0 ? (
-            <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
-                Opening hours
-              </h3>
-              <ul className="space-y-1 text-sm text-warm-gray">
-                {(details.currentOpeningHours ?? details.regularOpeningHours ?? []).map(
-                  (entry) => (
-                    <li key={entry}>{entry}</li>
-                  ),
-                )}
-              </ul>
-            </section>
-          ) : null}
-        </div>
-
-        <LocationReviewsSection details={details} />
-      </div>
-    </>
-  );
-}
-
-function LocationReviewsSection({ details }: { details: LocationDetails }) {
-  return (
-    <div className="space-y-4">
-      <div className="space-y-1">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">Reviews</h3>
-        {details.fetchedAt ? (
-          <p className="text-xs text-stone">
-            Updated {new Date(details.fetchedAt).toLocaleString()}
-          </p>
+        {(details.currentOpeningHours?.length ?? 0) > 0 ||
+        (details.regularOpeningHours?.length ?? 0) > 0 ? (
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              Opening hours
+            </h3>
+            <ul className="space-y-1 text-sm text-warm-gray">
+              {(details.currentOpeningHours ?? details.regularOpeningHours ?? []).map(
+                (entry) => (
+                  <li key={entry}>{entry}</li>
+                ),
+              )}
+            </ul>
+          </section>
         ) : null}
       </div>
-
-      <div className="max-h-64 space-y-3 overflow-y-auto pr-1">
-        {details.reviews.length === 0 ? (
-          <p className="text-sm text-stone">
-            Google hasn&apos;t published public review snippets for this location yet.
-          </p>
-        ) : (
-          details.reviews.map((review, index) => (
-            <article
-              key={`${review.authorName}-${review.publishTime ?? index}`}
-              className="rounded-2xl border border-border bg-surface p-4"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm font-semibold text-charcoal">{review.authorName}</p>
-                  {review.relativePublishTimeDescription ? (
-                    <p className="text-xs text-stone">{review.relativePublishTimeDescription}</p>
-                  ) : null}
-                </div>
-                {review.rating ? (
-                  <span className="flex items-center gap-1 text-xs font-medium text-warm-gray">
-                    <StarIcon />
-                    {review.rating.toFixed(1)}
-                  </span>
-                ) : null}
-              </div>
-              {review.text ? (
-                <p className="mt-2 text-sm leading-relaxed text-warm-gray">{review.text}</p>
-              ) : null}
-            </article>
-          ))
-        )}
-      </div>
-    </div>
+    </>
   );
 }
 

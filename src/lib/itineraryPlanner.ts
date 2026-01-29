@@ -12,11 +12,7 @@ import type {
 import type { Location, LocationOperatingHours, LocationOperatingPeriod, Weekday } from "@/types/location";
 import type { CityId } from "@/types/trip";
 import { travelMinutes } from "./travelTime";
-import { fetchLocationDetails } from "./googlePlaces";
-import {
-  extractDurationFromGooglePlaces,
-  getCategoryDefaultDuration,
-} from "./durationExtractor";
+import { getCategoryDefaultDuration } from "./durationExtractor";
 import { logger } from "./logger";
 
 import { requestRoute } from "./routing";
@@ -177,7 +173,6 @@ async function determineVisitDuration(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
   location: Location | null,
   options: Required<PlannerOptions>,
-  useGooglePlaces: boolean = true,
 ): Promise<number> {
   // 1. Prefer explicit activity duration
   if (activity.durationMin) {
@@ -192,42 +187,23 @@ async function determineVisitDuration(
     return location.recommendedVisit.minMinutes;
   }
 
-  // 3. Parse estimatedDuration string or activity notes
+  // 3. Parse estimatedDuration string from database (pre-enriched) or activity notes
   const parsed = parseEstimatedDuration(location?.estimatedDuration ?? activity.notes);
   if (parsed) {
+    logger.debug("Using estimated duration from database", {
+      locationId: location?.id,
+      locationName: location?.name,
+      duration: parsed,
+    });
     return parsed;
   }
 
-  // 4. Try to extract from Google Places API if enabled and location exists
-  if (useGooglePlaces && location) {
-    try {
-      const details = await fetchLocationDetails(location);
-      const extracted = extractDurationFromGooglePlaces(details);
-
-      if (extracted.typicalMinutes) {
-        logger.debug("Extracted duration from Google Places", {
-          locationId: location.id,
-          locationName: location.name,
-          duration: extracted.typicalMinutes,
-          source: extracted.source,
-        });
-        return extracted.typicalMinutes;
-      }
-    } catch (error) {
-      // Fall through to defaults if Google Places fails
-      logger.debug("Failed to extract duration from Google Places", {
-        locationId: location?.id,
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-  }
-
-  // 5. Use category-based default if available
+  // 4. Use category-based default if available
   if (location?.category) {
     return getCategoryDefaultDuration(location.category);
   }
 
-  // 6. Fall back to options default (90 minutes)
+  // 5. Fall back to options default (90 minutes)
   return options.defaultVisitMinutes;
 }
 

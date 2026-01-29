@@ -1,13 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { fetchLocationDetails } from "@/lib/googlePlaces";
-import type { Location } from "@/types/location";
 import { isValidLocationId } from "@/lib/api/validation";
 import { locationIdSchema } from "@/lib/api/schemas";
-import { badRequest, notFound, internalError, serviceUnavailable } from "@/lib/api/errors";
+import { badRequest, notFound } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { createClient } from "@/lib/supabase/server";
-import { LOCATION_PHOTO_COLUMNS, type LocationPhotoDbRow } from "@/lib/supabase/projections";
+
+/**
+ * Columns needed for primary photo endpoint
+ * Uses pre-enriched primary_photo_url from database
+ */
+const LOCATION_PRIMARY_PHOTO_COLUMNS = `
+  id,
+  name,
+  place_id,
+  image,
+  primary_photo_url,
+  short_description
+`.replace(/\s+/g, "");
+
+type LocationPrimaryPhotoRow = {
+  id: string;
+  name: string;
+  place_id: string | null;
+  image: string;
+  primary_photo_url: string | null;
+  short_description: string | null;
+};
 
 type RouteContext = {
   params: Promise<{
@@ -48,11 +67,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
   const validatedId = idValidation.data;
 
-  // Fetch location from database
+  // Fetch location from database with pre-enriched primary_photo_url
   const supabase = await createClient();
   const { data: locationData, error: dbError } = await supabase
     .from("locations")
-    .select(LOCATION_PHOTO_COLUMNS)
+    .select(LOCATION_PRIMARY_PHOTO_COLUMNS)
     .eq("id", validatedId)
     .single();
 
@@ -60,48 +79,30 @@ export async function GET(request: NextRequest, context: RouteContext) {
     return notFound("Location not found");
   }
 
-  // Transform database row to Location type
-  const row = locationData as unknown as LocationPhotoDbRow;
-  const location: Location = {
-    id: row.id,
-    name: row.name,
-    region: row.region,
-    city: row.city,
-    category: row.category,
-    image: row.image,
-    placeId: row.place_id ?? undefined,
-    coordinates: row.coordinates ?? undefined,
-  };
+  const row = locationData as unknown as LocationPrimaryPhotoRow;
 
-  try {
-    const details = await fetchLocationDetails(location);
-    const [photo] = details.photos ?? [];
+  // Use pre-enriched primary_photo_url from database (no Google API call)
+  // Falls back to location.image if no primary_photo_url exists
+  const photoUrl = row.primary_photo_url ?? row.image;
 
-    return NextResponse.json(
-      {
-        placeId: details.placeId,
-        fetchedAt: details.fetchedAt,
-        photo: photo ?? null,
-        displayName: details.displayName ?? null,
-        editorialSummary: details.editorialSummary ?? null,
+  return NextResponse.json(
+    {
+      placeId: row.place_id ?? row.id,
+      fetchedAt: new Date().toISOString(),
+      photo: photoUrl
+        ? { name: "primary", proxyUrl: photoUrl, attributions: [] }
+        : null,
+      displayName: row.name,
+      editorialSummary: row.short_description ?? null,
+    },
+    {
+      status: 200,
+      headers: {
+        // Longer cache since data is from DB
+        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
       },
-      {
-        status: 200,
-        headers: {
-          "Cache-Control": "public, max-age=900, s-maxage=900, stale-while-revalidate=3600",
-        },
-      },
-    );
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load location photo.";
-    const errorMessage = error instanceof Error ? error.message : "";
-
-    if (errorMessage.includes("Missing Google Places API key")) {
-      return serviceUnavailable("Google Places API is not configured.");
-    }
-
-    return internalError(message, { locationId: validatedId });
-  }
+    },
+  );
 }
 
 
