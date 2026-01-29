@@ -9,7 +9,6 @@ import { TripBuilderV2 } from "@/components/features/trip-builder";
 import { useAppState } from "@/state/AppState";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
-import { getEntryPointById } from "@/data/entryPoints";
 
 type PlanApiResponse = {
   trip: { id: string };
@@ -62,11 +61,10 @@ function TripBuilderV2Content() {
       });
 
       // Auto-sync Entry Point to Day 1 start
-      if (data.entryPoint?.id && result.itinerary.days.length > 0) {
-        const entryPoint = getEntryPointById(data.entryPoint.id);
+      if (data.entryPoint && result.itinerary.days.length > 0) {
         const day1 = result.itinerary.days[0];
-        if (entryPoint && day1?.id) {
-          setDayEntryPoint(tripId, day1.id, "start", entryPoint);
+        if (day1?.id) {
+          setDayEntryPoint(tripId, day1.id, "start", data.entryPoint);
         }
       }
 

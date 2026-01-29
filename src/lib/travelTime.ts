@@ -69,20 +69,10 @@ export function travelTimeFromEntryPoint(
   const cityCoords = getCityCenterCoordinates(cityId);
   const distanceMeters = calculateDistanceMeters(entryPoint.coordinates, cityCoords);
 
-  // Estimate travel time based on distance and entry point type
+  // Estimate travel time based on distance
   // Airports: assume train/bus (average 60 km/h for inter-city)
-  // Cities: assume local transit (average 30 km/h)
-  // Hotels: assume local transit (average 30 km/h)
-  let averageSpeedKmh = 60; // Default for airports
-  if (entryPoint.type === "city" || entryPoint.type === "hotel") {
-    averageSpeedKmh = 30;
-  }
-
-  // For very long distances (inter-region), use faster speed
-  if (distanceMeters > 100000) {
-    // > 100km, likely shinkansen or flight
-    averageSpeedKmh = 200; // Approximate shinkansen speed
-  }
+  // For very long distances (inter-region), use faster shinkansen speed
+  const averageSpeedKmh = distanceMeters > 100000 ? 200 : 60;
 
   const distanceKm = distanceMeters / 1000;
   const hours = distanceKm / averageSpeedKmh;
@@ -100,7 +90,7 @@ export function travelTimeFromEntryPoint(
  * Get the nearest city to an entry point
  */
 export function getNearestCityToEntryPoint(entryPoint: EntryPoint): CityId | undefined {
-  return getNearestCity(entryPoint);
+  return getNearestCity(entryPoint.coordinates);
 }
 
 

@@ -73,7 +73,7 @@ export type CityOption = {
   previewImages: string[];
 };
 
-export type EntryPointType = "airport" | "city" | "hotel" | "station";
+export type EntryPointType = "airport";
 
 export type EntryPoint = {
   type: EntryPointType;
@@ -84,7 +84,7 @@ export type EntryPoint = {
     lng: number;
   };
   cityId?: CityId;
-  placeId?: string; // Google Place ID for fetching full location details
+  iataCode?: string; // 3-letter IATA airport code
 };
 
 /**

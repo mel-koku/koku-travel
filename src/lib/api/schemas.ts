@@ -169,9 +169,9 @@ const travelDatesSchema = z.object({
 );
 
 /**
- * Schema for entry point type
+ * Schema for entry point type (airports only)
  */
-const entryPointTypeSchema = z.enum(["airport", "city", "hotel", "station"]);
+const entryPointTypeSchema = z.literal("airport");
 
 /**
  * Schema for coordinates
@@ -182,7 +182,7 @@ const coordinatesSchema = z.object({
 }).strict();
 
 /**
- * Schema for entry point
+ * Schema for entry point (airports only)
  */
 const entryPointSchema = z.object({
   type: entryPointTypeSchema,
@@ -190,7 +190,7 @@ const entryPointSchema = z.object({
   name: z.string().min(1).max(500),
   coordinates: coordinatesSchema,
   cityId: z.string().max(255).optional(),
-  placeId: z.string().max(500).optional(),
+  iataCode: z.string().length(3).regex(/^[A-Z]{3}$/).optional(),
 }).strict().optional();
 
 /**

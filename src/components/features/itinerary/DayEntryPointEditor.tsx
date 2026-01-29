@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { EntryPoint, EntryPointType } from "@/types/trip";
+import type { EntryPoint } from "@/types/trip";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
@@ -30,7 +30,6 @@ export function DayEntryPointEditor({
 }: DayEntryPointEditorProps) {
   const [isStartModalOpen, setIsStartModalOpen] = useState(false);
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
-  const [editingType, setEditingType] = useState<EntryPointType>("hotel");
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizeResult, setOptimizeResult] = useState<OptimizeRouteResult | null>(null);
 
@@ -95,6 +94,11 @@ export function DayEntryPointEditor({
             {startPoint ? (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-charcoal">{startPoint.name}</span>
+                {startPoint.iataCode && (
+                  <span className="rounded bg-surface px-1.5 py-0.5 text-xs font-mono text-stone">
+                    {startPoint.iataCode}
+                  </span>
+                )}
                 <span className="text-xs text-stone">
                   ({startPoint.coordinates.lat.toFixed(4)}, {startPoint.coordinates.lng.toFixed(4)})
                 </span>
@@ -112,16 +116,14 @@ export function DayEntryPointEditor({
             )}
           </div>
           <div className="ml-4">
-            <Dropdown
-              label="Set Start Point"
-              items={[
-                { id: "hotel", label: "Hotel", onSelect: () => { setEditingType("hotel"); setIsStartModalOpen(true); } },
-                { id: "station", label: "Station", onSelect: () => { setEditingType("station"); setIsStartModalOpen(true); } },
-                { id: "airport", label: "Airport", onSelect: () => { setEditingType("airport"); setIsStartModalOpen(true); } },
-              ]}
-              triggerClassName="bg-surface border border-border hover:bg-sand"
-              menuClassName="border border-border shadow-md"
-            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsStartModalOpen(true)}
+              className="bg-surface border border-border hover:bg-sand"
+            >
+              Set Airport
+            </Button>
           </div>
         </div>
 
@@ -134,6 +136,11 @@ export function DayEntryPointEditor({
             {endPoint ? (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-charcoal">{endPoint.name}</span>
+                {endPoint.iataCode && (
+                  <span className="rounded bg-surface px-1.5 py-0.5 text-xs font-mono text-stone">
+                    {endPoint.iataCode}
+                  </span>
+                )}
                 <span className="text-xs text-stone">
                   ({endPoint.coordinates.lat.toFixed(4)}, {endPoint.coordinates.lng.toFixed(4)})
                 </span>
@@ -150,27 +157,25 @@ export function DayEntryPointEditor({
               <p className="text-sm text-stone">Not set</p>
             )}
           </div>
-          <div className="ml-4">
-            <Dropdown
-              label="Set End Point"
-              items={[
-                ...(startPoint
-                  ? [
-                      {
-                        id: "same-as-start",
-                        label: "Same as starting point",
-                        onSelect: handleSetEndPointSameAsStart,
-                        separator: false,
-                      },
-                    ]
-                  : []),
-                { id: "hotel", label: "Hotel", onSelect: () => { setEditingType("hotel"); setIsEndModalOpen(true); }, separator: !!startPoint },
-                { id: "station", label: "Station", onSelect: () => { setEditingType("station"); setIsEndModalOpen(true); } },
-                { id: "airport", label: "Airport", onSelect: () => { setEditingType("airport"); setIsEndModalOpen(true); } },
-              ]}
-              triggerClassName="bg-surface border border-border hover:bg-sand"
-              menuClassName="border border-border shadow-md"
-            />
+          <div className="ml-4 flex gap-2">
+            {startPoint && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSetEndPointSameAsStart}
+                className="bg-surface border border-border hover:bg-sand text-xs"
+              >
+                Same as Start
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsEndModalOpen(true)}
+              className="bg-surface border border-border hover:bg-sand"
+            >
+              Set Airport
+            </Button>
           </div>
         </div>
 
@@ -238,11 +243,10 @@ export function DayEntryPointEditor({
       <Modal
         isOpen={isStartModalOpen}
         onClose={() => setIsStartModalOpen(false)}
-        title={`Set Start Point (${editingType})`}
-        description="Enter the starting location for this day"
+        title="Set Start Point (Airport)"
+        description="Select an airport as the starting location for this day"
       >
         <EntryPointSearchInput
-          type={editingType}
           onSelect={handleStartPointSelect}
           initialValue={startPoint}
         />
@@ -252,11 +256,10 @@ export function DayEntryPointEditor({
       <Modal
         isOpen={isEndModalOpen}
         onClose={() => setIsEndModalOpen(false)}
-        title={`Set End Point (${editingType})`}
-        description="Enter the ending location for this day"
+        title="Set End Point (Airport)"
+        description="Select an airport as the ending location for this day"
       >
         <EntryPointSearchInput
-          type={editingType}
           onSelect={handleEndPointSelect}
           initialValue={endPoint}
         />
@@ -264,71 +267,3 @@ export function DayEntryPointEditor({
     </div>
   );
 }
-
-// Simple dropdown component for type selection
-function Dropdown({
-  label,
-  items,
-  triggerClassName,
-  menuClassName,
-}: {
-  label: string;
-  items: Array<{ id: string; label: string; onSelect: () => void; separator?: boolean }>;
-  triggerClassName?: string;
-  menuClassName?: string;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="relative">
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setIsOpen(!isOpen)}
-        className={triggerClassName || "bg-surface border border-border hover:bg-sand"}
-        rightIcon={
-          <svg
-            className={`h-4 w-4 transform transition-transform ${isOpen ? "rotate-180" : ""}`}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 20 20"
-            stroke="currentColor"
-            strokeWidth="1.5"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="m6 8 4 4 4-4" />
-          </svg>
-        }
-      >
-        {label}
-      </Button>
-      {isOpen && (
-        <>
-          <div className="fixed inset-0 z-10" onClick={() => setIsOpen(false)} />
-          <div className={`absolute right-0 z-20 mt-2 w-56 rounded-lg bg-background ${menuClassName || "border border-border shadow-md"}`}>
-            {items.map((item, index) => (
-              <div key={item.id}>
-                {item.separator && index > 0 && (
-                  <div className="border-t border-border/60 my-1" />
-                )}
-                <button
-                  onClick={() => {
-                    item.onSelect();
-                    setIsOpen(false);
-                  }}
-                  className={`w-full px-4 py-2 text-left text-sm text-warm-gray hover:bg-sand ${
-                    index === 0 ? "rounded-t-lg" : ""
-                  } ${index === items.length - 1 ? "rounded-b-lg" : ""} ${
-                    item.id === "same-as-start" ? "font-medium text-sage" : ""
-                  }`}
-                >
-                  {item.label}
-                </button>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
