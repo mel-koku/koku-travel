@@ -1,141 +1,82 @@
 "use client";
 
-import { useState, useEffect, useRef, useId } from "react";
-import type { EntryPoint, EntryPointType } from "@/types/trip";
+import { useState, useEffect, useRef, useId, useMemo, useCallback } from "react";
+import type { EntryPoint } from "@/types/trip";
+import type { Airport } from "@/app/api/airports/route";
 import { Button } from "@/components/ui/Button";
 import { logger } from "@/lib/logger";
 
-type AutocompletePlace = {
-  placeId: string;
-  displayName: string;
-  formattedAddress?: string;
-  location?: {
-    latitude: number;
-    longitude: number;
-  };
-};
-
-type PlaceWithCoordinates = {
-  placeId: string;
-  displayName: string;
-  formattedAddress?: string;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
-};
-
 type EntryPointSearchInputProps = {
-  type: EntryPointType;
   onSelect: (entryPoint: EntryPoint) => void;
   placeholder?: string;
   initialValue?: EntryPoint;
 };
 
 export function EntryPointSearchInput({
-  type,
   onSelect,
   placeholder,
   initialValue,
 }: EntryPointSearchInputProps) {
+  const [airports, setAirports] = useState<Airport[]>([]);
+  const [popularAirports, setPopularAirports] = useState<Airport[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState(initialValue?.name ?? "");
-  const [suggestions, setSuggestions] = useState<AutocompletePlace[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [selectedPlace, setSelectedPlace] = useState<PlaceWithCoordinates | null>(null);
-  const [cityId, setCityId] = useState<EntryPoint["cityId"]>(initialValue?.cityId);
-  const [errors, setErrors] = useState<{ name?: string; coordinates?: string }>({});
-  const [isFetchingCoordinates, setIsFetchingCoordinates] = useState(false);
-  
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [errors, setErrors] = useState<{ name?: string }>({});
+
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const listboxId = useId();
 
-  const typeLabels: Record<EntryPointType, string> = {
-    airport: "Airport",
-    city: "City",
-    hotel: "Hotel",
-    station: "Station",
-  };
-
-  // Map entry point types to Google Places primary types
-  const getPrimaryTypes = (entryType: EntryPointType): string[] => {
-    switch (entryType) {
-      case "hotel":
-        return ["lodging"];
-      case "airport":
-        return ["airport"];
-      case "station":
-        return ["train_station", "subway_station", "transit_station"];
-      case "city":
-        return ["locality", "administrative_area_level_1"];
-      default:
-        return [];
-    }
-  };
-
-  // Debounced autocomplete search
+  // Fetch airports on mount
   useEffect(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    if (!searchInput.trim() || selectedPlace) {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
-
-    debounceTimerRef.current = setTimeout(async () => {
-      setIsLoading(true);
+    async function fetchAirports() {
       try {
-        const response = await fetch("/api/places/autocomplete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            input: searchInput.trim(),
-            includedPrimaryTypes: getPrimaryTypes(type),
-            regionCode: "JP",
-          }),
-        });
-
+        setIsLoading(true);
+        const response = await fetch("/api/airports");
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({ error: `HTTP ${response.status}` }));
-          const errorMessage = errorData.error || errorData.message || `Failed to fetch suggestions (${response.status})`;
-          throw new Error(errorMessage);
+          throw new Error("Failed to fetch airports");
         }
-
         const data = await response.json();
-        setSuggestions(data.places || []);
-        setShowSuggestions(true);
+        const airportList: Airport[] = data.data || [];
+        setAirports(airportList);
+        setPopularAirports(airportList.filter(a => a.isPopular));
       } catch (error) {
-        logger.error("Error fetching autocomplete suggestions", error instanceof Error ? error : new Error(String(error)));
-        const errorMessage = error instanceof Error ? error.message : "Failed to fetch suggestions";
-        setErrors({ name: errorMessage });
-        setSuggestions([]);
+        logger.error("Error fetching airports", error instanceof Error ? error : new Error(String(error)));
+        setErrors({ name: "Failed to load airports. Please try again." });
       } finally {
         setIsLoading(false);
       }
-    }, 300); // 300ms debounce
+    }
+    fetchAirports();
+  }, []);
 
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
-  }, [searchInput, type, selectedPlace]);
+  // Filter airports based on search input
+  const filteredAirports = useMemo(() => {
+    if (!searchInput.trim()) {
+      return [];
+    }
+    const searchLower = searchInput.toLowerCase();
+    return airports.filter(airport =>
+      airport.name.toLowerCase().includes(searchLower) ||
+      airport.city.toLowerCase().includes(searchLower) ||
+      airport.iataCode.toLowerCase().includes(searchLower) ||
+      airport.shortName.toLowerCase().includes(searchLower)
+    ).slice(0, 10);
+  }, [airports, searchInput]);
 
-  // Handle clicking outside to close suggestions
+  // Handle clicking outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
         searchInputRef.current &&
         !searchInputRef.current.contains(event.target as Node)
       ) {
-        setShowSuggestions(false);
+        setShowDropdown(false);
       }
     };
 
@@ -143,95 +84,105 @@ export function EntryPointSearchInput({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelectPlace = async (place: AutocompletePlace) => {
-    setSearchInput(place.displayName);
-    setShowSuggestions(false);
+  const selectAirport = useCallback((airport: Airport) => {
+    setSelectedAirport(airport);
+    setSearchInput(airport.name);
+    setShowDropdown(false);
+    setHighlightedIndex(-1);
+    setErrors({});
+  }, []);
 
-    // If coordinates are already available from search, use them directly
-    if (place.location) {
-      setSelectedPlace({
-        placeId: place.placeId,
-        displayName: place.displayName,
-        formattedAddress: place.formattedAddress,
-        location: place.location,
-      });
-      setErrors({});
-      return;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchInput(e.target.value);
+    setSelectedAirport(null);
+    setShowDropdown(true);
+    setHighlightedIndex(-1);
+    setErrors({});
+  };
+
+  const handleInputFocus = () => {
+    if (searchInput.length > 0 && filteredAirports.length > 0) {
+      setShowDropdown(true);
     }
+  };
 
-    // Otherwise, fetch coordinates by place ID
-    setIsFetchingCoordinates(true);
-    try {
-      const response = await fetch(`/api/places/autocomplete?placeId=${encodeURIComponent(place.placeId)}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch place coordinates");
-      }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showDropdown || filteredAirports.length === 0) return;
 
-      const data = await response.json();
-      if (data.place && data.place.location) {
-        setSelectedPlace(data.place);
-        setErrors({});
-      } else {
-        throw new Error("Place coordinates not found");
-      }
-    } catch (error) {
-      logger.error("Error fetching place coordinates", error instanceof Error ? error : new Error(String(error)));
-      setErrors({ coordinates: "Failed to get location coordinates. Please try again." });
-    } finally {
-      setIsFetchingCoordinates(false);
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setHighlightedIndex(prev =>
+          prev < filteredAirports.length - 1 ? prev + 1 : 0
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setHighlightedIndex(prev =>
+          prev > 0 ? prev - 1 : filteredAirports.length - 1
+        );
+        break;
+      case "Enter":
+        e.preventDefault();
+        const selected = filteredAirports[highlightedIndex];
+        if (highlightedIndex >= 0 && selected) {
+          selectAirport(selected);
+        }
+        break;
+      case "Escape":
+        setShowDropdown(false);
+        setHighlightedIndex(-1);
+        break;
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newErrors: typeof errors = {};
-    if (!searchInput.trim()) {
-      newErrors.name = `${typeLabels[type]} name is required`;
-    }
-
-    if (!selectedPlace || !selectedPlace.location) {
-      newErrors.coordinates = "Please select a place from the suggestions";
-    }
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!selectedAirport) {
+      setErrors({ name: "Please select an airport from the suggestions" });
       return;
     }
 
-    const confirmedPlace = selectedPlace;
-    if (!confirmedPlace || !confirmedPlace.location) {
-      return;
-    }
-
-    // Create entry point
     const entryPoint: EntryPoint = {
-      type,
-      id: initialValue?.id ?? `ep-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      name: confirmedPlace.displayName,
-      coordinates: {
-        lat: confirmedPlace.location.latitude,
-        lng: confirmedPlace.location.longitude,
-      },
-      cityId,
-      placeId: confirmedPlace.placeId, // Store Google Place ID for fetching details
+      type: "airport",
+      id: initialValue?.id ?? selectedAirport.id,
+      name: selectedAirport.name,
+      coordinates: selectedAirport.coordinates,
+      iataCode: selectedAirport.iataCode,
     };
 
     onSelect(entryPoint);
     setErrors({});
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchInput(e.target.value);
-    setSelectedPlace(null);
-    setErrors({});
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Popular Airport Chips */}
+      {!selectedAirport && !isLoading && popularAirports.length > 0 && (
+        <div>
+          <p className="mb-2 text-xs font-medium text-warm-gray">
+            Popular Airports
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {popularAirports.map((airport) => (
+              <button
+                key={airport.id}
+                type="button"
+                onClick={() => selectAirport(airport)}
+                className="rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-warm-gray hover:border-brand-primary hover:text-sage transition-colors"
+              >
+                {airport.shortName}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Search Input */}
       <div className="relative">
         <label htmlFor="entry-point-search" className="block text-sm font-medium text-warm-gray mb-1">
-          {typeLabels[type]} Name
+          Airport
         </label>
         <div className="relative">
           <input
@@ -240,14 +191,18 @@ export function EntryPointSearchInput({
             type="text"
             value={searchInput}
             onChange={handleInputChange}
-            placeholder={placeholder ?? `Search for ${typeLabels[type].toLowerCase()}...`}
-            className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
+            onFocus={handleInputFocus}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder ?? (isLoading ? "Loading airports..." : "Search airports by name, city, or code...")}
+            disabled={isLoading}
+            className="w-full rounded-lg border border-border px-3 py-2 pr-10 text-sm focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:bg-surface disabled:cursor-not-allowed"
             aria-invalid={errors.name ? "true" : "false"}
             aria-describedby={errors.name ? "name-error" : undefined}
             role="combobox"
             aria-autocomplete="list"
-            aria-expanded={showSuggestions && suggestions.length > 0}
-            aria-controls={showSuggestions && suggestions.length > 0 ? listboxId : undefined}
+            aria-expanded={showDropdown && filteredAirports.length > 0}
+            aria-controls={showDropdown && filteredAirports.length > 0 ? listboxId : undefined}
+            aria-activedescendant={highlightedIndex >= 0 ? `airport-option-${highlightedIndex}` : undefined}
             autoComplete="off"
           />
           {isLoading && (
@@ -258,14 +213,7 @@ export function EntryPointSearchInput({
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path
                   className="opacity-75"
                   fill="currentColor"
@@ -282,79 +230,71 @@ export function EntryPointSearchInput({
         )}
 
         {/* Suggestions dropdown */}
-        {showSuggestions && suggestions.length > 0 && (
+        {showDropdown && filteredAirports.length > 0 && (
           <div
-            ref={suggestionsRef}
+            ref={dropdownRef}
             className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-background shadow-lg max-h-60 overflow-auto"
             role="listbox"
             id={listboxId}
           >
-            {suggestions.map((place) => (
+            {filteredAirports.map((airport, index) => (
               <button
-                key={place.placeId}
+                key={airport.id}
+                id={`airport-option-${index}`}
                 type="button"
-                onClick={() => handleSelectPlace(place)}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-sand focus:bg-sand focus:outline-none"
+                onClick={() => selectAirport(airport)}
+                className={`w-full px-4 py-2 text-left text-sm focus:outline-none ${
+                  index === highlightedIndex ? "bg-sand" : "hover:bg-sand"
+                }`}
                 role="option"
-                aria-selected="false"
+                aria-selected={index === highlightedIndex}
               >
-                <div className="font-medium text-charcoal">{place.displayName}</div>
-                {place.formattedAddress && (
-                  <div className="text-xs text-stone">{place.formattedAddress}</div>
-                )}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium text-charcoal">{airport.name}</div>
+                    <div className="text-xs text-stone">{airport.city}, {airport.region}</div>
+                  </div>
+                  <span className="ml-2 rounded bg-surface px-2 py-0.5 text-xs font-mono text-stone">
+                    {airport.iataCode}
+                  </span>
+                </div>
               </button>
             ))}
           </div>
         )}
 
-        {/* Selected place info */}
-        {selectedPlace && (
-          <div className="mt-2 rounded-lg bg-surface p-2 text-sm">
-            <div className="font-medium text-charcoal">{selectedPlace.displayName}</div>
-            {selectedPlace.formattedAddress && (
-              <div className="text-xs text-foreground-secondary">{selectedPlace.formattedAddress}</div>
-            )}
-            <div className="mt-1 text-xs text-stone">
-              Coordinates: {selectedPlace.location.latitude.toFixed(4)},{" "}
-              {selectedPlace.location.longitude.toFixed(4)}
-            </div>
+        {/* No Results Message */}
+        {showDropdown && searchInput.length > 0 && filteredAirports.length === 0 && !isLoading && (
+          <div className="absolute z-50 mt-1 w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-stone">
+            No airports found matching &ldquo;{searchInput}&rdquo;
           </div>
         )}
 
-        {isFetchingCoordinates && (
-          <div className="mt-2 text-sm text-stone">Fetching location...</div>
+        {/* Selected airport info */}
+        {selectedAirport && (
+          <div className="mt-2 rounded-lg bg-surface p-2 text-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-medium text-charcoal">{selectedAirport.name}</div>
+                <div className="text-xs text-foreground-secondary">{selectedAirport.city}, {selectedAirport.region}</div>
+              </div>
+              <span className="rounded bg-background px-2 py-0.5 text-xs font-mono text-stone">
+                {selectedAirport.iataCode}
+              </span>
+            </div>
+            <div className="mt-1 text-xs text-stone">
+              Coordinates: {selectedAirport.coordinates.lat.toFixed(4)},{" "}
+              {selectedAirport.coordinates.lng.toFixed(4)}
+            </div>
+          </div>
         )}
-
-        {errors.coordinates && (
-          <p className="mt-1 text-sm text-error">{errors.coordinates}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="entry-point-city" className="block text-sm font-medium text-warm-gray mb-1">
-          City (Optional)
-        </label>
-        <select
-          id="entry-point-city"
-          value={cityId ?? ""}
-          onChange={(e) => setCityId((e.target.value || undefined) as EntryPoint["cityId"])}
-          className="w-full rounded-lg border border-border px-3 py-2 text-sm focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary"
-        >
-          <option value="">None</option>
-          <option value="kyoto">Kyoto</option>
-          <option value="osaka">Osaka</option>
-          <option value="nara">Nara</option>
-          <option value="tokyo">Tokyo</option>
-          <option value="yokohama">Yokohama</option>
-        </select>
       </div>
 
       <div className="flex gap-2 justify-end">
-        <Button type="submit" variant="primary" disabled={isFetchingCoordinates}>
-          {isFetchingCoordinates ? "Loading..." : "Save Entry Point"}
+        <Button type="submit" variant="primary" disabled={isLoading || !selectedAirport}>
+          Save Entry Point
         </Button>
       </div>
     </form>
   );
 }
-
