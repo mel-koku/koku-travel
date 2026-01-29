@@ -1,0 +1,143 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import { logger } from "@/lib/logger";
+import { badRequest, internalError } from "@/lib/api/errors";
+import { checkRateLimit } from "@/lib/api/rateLimit";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+} from "@/lib/api/middleware";
+
+/**
+ * Lightweight search result for autocomplete
+ * Only includes fields needed for display and selection
+ */
+export type LocationSearchResult = {
+  id: string;
+  name: string;
+  city: string;
+  region: string;
+  category: string;
+  placeId: string;
+  image?: string;
+  rating?: number;
+};
+
+/** Maximum number of results to return */
+const MAX_RESULTS = 10;
+
+/** Minimum query length */
+const MIN_QUERY_LENGTH = 2;
+
+/**
+ * GET /api/locations/search
+ * Lightweight search endpoint for location autocomplete.
+ *
+ * Query parameters:
+ * - q: Search query (required, min 2 characters)
+ * - limit: Max results (default: 10, max: 10)
+ *
+ * Searches across: name, city, region, category
+ * Excludes: permanently closed locations, locations without place_id
+ *
+ * @returns Array of LocationSearchResult
+ */
+export async function GET(request: NextRequest) {
+  const context = createRequestContext(request);
+
+  // Rate limiting: 100 requests per minute per IP
+  const rateLimitResponse = await checkRateLimit(request, {
+    maxRequests: 100,
+    windowMs: 60 * 1000,
+  });
+  if (rateLimitResponse) {
+    return addRequestContextHeaders(rateLimitResponse, context);
+  }
+
+  try {
+    const searchParams = request.nextUrl.searchParams;
+    const query = searchParams.get("q")?.trim();
+    const limitParam = searchParams.get("limit");
+    const limit = Math.min(
+      Math.max(1, parseInt(limitParam || "", 10) || MAX_RESULTS),
+      MAX_RESULTS
+    );
+
+    // Validate query parameter
+    if (!query || query.length < MIN_QUERY_LENGTH) {
+      return addRequestContextHeaders(
+        badRequest(
+          `Query parameter 'q' is required and must be at least ${MIN_QUERY_LENGTH} characters`,
+          { requestId: context.requestId }
+        ),
+        context
+      );
+    }
+
+    const supabase = await createClient();
+
+    // Search across multiple fields using OR with ilike
+    // Order by name relevance (exact match first, then starts with, then contains)
+    const { data, error } = await supabase
+      .from("locations")
+      .select("id, name, city, region, category, place_id, image, rating")
+      .not("place_id", "is", null)
+      .neq("place_id", "")
+      .neq("business_status", "PERMANENTLY_CLOSED")
+      .or(
+        `name.ilike.%${query}%,city.ilike.%${query}%,region.ilike.%${query}%,category.ilike.%${query}%`
+      )
+      .order("name", { ascending: true })
+      .limit(limit);
+
+    if (error) {
+      logger.error("Failed to search locations", {
+        error,
+        query,
+        requestId: context.requestId,
+      });
+      return addRequestContextHeaders(
+        internalError("Failed to search locations", { error: error.message }, {
+          requestId: context.requestId,
+        }),
+        context
+      );
+    }
+
+    // Transform to LocationSearchResult
+    const results: LocationSearchResult[] = (data || [])
+      .filter((row) => row.place_id != null && row.place_id.trim() !== "")
+      .map((row) => ({
+        id: row.id,
+        name: row.name,
+        city: row.city,
+        region: row.region,
+        category: row.category,
+        placeId: row.place_id!,
+        image: row.image || undefined,
+        rating: row.rating ?? undefined,
+      }));
+
+    return addRequestContextHeaders(
+      NextResponse.json(results, {
+        status: 200,
+        headers: {
+          "Cache-Control": "public, max-age=60, s-maxage=60, stale-while-revalidate=120",
+        },
+      }),
+      context
+    );
+  } catch (error) {
+    logger.error(
+      "Unexpected error searching locations",
+      error instanceof Error ? error : new Error(String(error)),
+      { requestId: context.requestId }
+    );
+    const message =
+      error instanceof Error ? error.message : "Failed to search locations.";
+    return addRequestContextHeaders(
+      internalError(message, undefined, { requestId: context.requestId }),
+      context
+    );
+  }
+}
