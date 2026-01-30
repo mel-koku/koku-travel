@@ -64,7 +64,11 @@ export function DatePicker({
         max={max}
         disabled={disabled}
         error={error}
-        className={cn("h-12", inputClassName)}
+        className={cn(
+          "h-12",
+          "[&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-3 [&::-webkit-calendar-picker-indicator]:cursor-pointer",
+          inputClassName
+        )}
       />
     </FormField>
   );
