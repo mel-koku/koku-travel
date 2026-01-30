@@ -65,7 +65,34 @@ function buildFallbackLocation(
 }
 
 /**
- * Hook to fetch location details for entry points via Google Places API
+ * Extract city name from a formatted address string.
+ * Attempts to find the city component, falling back to the activity's neighborhood or "Japan".
+ */
+function extractCityFromAddress(
+  formattedAddress: string | undefined,
+  fallbackNeighborhood: string | undefined,
+): string {
+  const fallback = fallbackNeighborhood ?? "Japan";
+  if (!formattedAddress) {
+    return fallback;
+  }
+  // Typical format: "Street, City, Prefecture, Japan" or "Location, City, Japan"
+  // Split by comma and try to find a meaningful city component
+  const parts = formattedAddress.split(",").map((p) => p.trim());
+  // Usually city is second-to-last or third-to-last before "Japan"
+  if (parts.length >= 3) {
+    // Return the second-to-last part (typically city or prefecture)
+    return parts[parts.length - 2] ?? fallback;
+  }
+  if (parts.length >= 2) {
+    return parts[0] ?? fallback;
+  }
+  return fallback;
+}
+
+/**
+ * Hook to fetch location details for entry points via Google Places API.
+ * Uses the Basic tier endpoint (~$0.003/call) instead of Pro tier (~$0.017/call).
  */
 function useEntryPointLocation(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
@@ -81,18 +108,35 @@ function useEntryPointLocation(
       return;
     }
 
-    fetch(
-      `/api/places/details?placeId=${encodeURIComponent(placeId)}&name=${encodeURIComponent(activity.title)}`,
-    )
+    // Use Basic tier endpoint (4 fields) instead of Pro tier (35 fields)
+    fetch(`/api/places/autocomplete?placeId=${encodeURIComponent(placeId)}`)
       .then((res) => {
         if (!res.ok) {
-          throw new Error(`Failed to fetch place details: ${res.status}`);
+          throw new Error(`Failed to fetch place coordinates: ${res.status}`);
         }
         return res.json();
       })
-      .then((data) => {
-        if (data.location) {
-          setLocation(data.location);
+      .then((data: { place?: { placeId: string; displayName: string; formattedAddress?: string; location: { latitude: number; longitude: number } } }) => {
+        if (data.place) {
+          const { place } = data;
+          const city = extractCityFromAddress(place.formattedAddress, activity.neighborhood);
+          const fallbackCategory = activity.tags?.[0] ?? "transport";
+
+          // Build Location object from Basic tier response
+          const loc: Location = {
+            id: place.placeId,
+            name: place.displayName,
+            city,
+            region: city,
+            category: fallbackCategory,
+            image: FALLBACK_IMAGES[fallbackCategory] ?? DEFAULT_FALLBACK_IMAGE,
+            placeId: place.placeId,
+            coordinates: {
+              lat: place.location.latitude,
+              lng: place.location.longitude,
+            },
+          };
+          setLocation(loc);
         }
       })
       .catch((error) => {
