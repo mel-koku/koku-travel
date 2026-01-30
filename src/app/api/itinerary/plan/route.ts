@@ -11,6 +11,7 @@ import {
 } from "@/lib/api/middleware";
 import { validateRequestBody, planRequestSchema } from "@/lib/api/schemas";
 import { badRequest, internalError } from "@/lib/api/errors";
+import { getCachedItinerary, cacheItinerary } from "@/lib/cache/itineraryCache";
 
 /**
  * POST /api/itinerary/plan
@@ -75,6 +76,37 @@ export async function POST(request: NextRequest) {
   const { builderData, tripId } = validation.data;
 
   try {
+    // Check cache first (before expensive generation)
+    const cachedResult = await getCachedItinerary(builderData);
+    if (cachedResult) {
+      logger.info("Returning cached itinerary", {
+        requestId: finalContext.requestId,
+      });
+
+      // Validate cached itinerary
+      const itineraryValidation = validateItinerary(cachedResult.itinerary);
+      const tripValidation = validateTripConstraints(cachedResult.trip);
+
+      return addRequestContextHeaders(
+        NextResponse.json({
+          trip: cachedResult.trip,
+          itinerary: cachedResult.itinerary,
+          validation: tripValidation,
+          itineraryValidation: {
+            valid: itineraryValidation.valid,
+            issues: itineraryValidation.issues,
+            summary: itineraryValidation.summary,
+          },
+        }, {
+          headers: {
+            "Cache-Control": "no-store, no-cache, must-revalidate",
+            "X-Cache": "HIT",
+          },
+        }),
+        finalContext,
+      );
+    }
+
     // Generate trip ID if not provided
     const finalTripId = tripId ?? `trip-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
@@ -85,6 +117,9 @@ export async function POST(request: NextRequest) {
 
     // Generate trip (returns both domain model and raw itinerary)
     const { trip, itinerary } = await generateTripFromBuilderData(builderData, finalTripId);
+
+    // Cache the generated itinerary for future requests
+    await cacheItinerary(builderData, trip, itinerary);
 
     // Validate trip constraints (domain-level validation)
     const tripValidation = validateTripConstraints(trip);
@@ -116,6 +151,7 @@ export async function POST(request: NextRequest) {
       }, {
         headers: {
           "Cache-Control": "no-store, no-cache, must-revalidate",
+          "X-Cache": "MISS",
         },
       }),
       finalContext,

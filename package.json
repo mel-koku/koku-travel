@@ -36,7 +36,9 @@
     "supabase:db:reset": "supabase db reset",
     "supabase:db:diff": "supabase db diff",
     "supabase:migration:new": "supabase migration new",
-    "supabase:link": "supabase link"
+    "supabase:link": "supabase link",
+    "analyze": "ANALYZE=true npm run build",
+    "prepare": "husky"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -54,6 +56,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@sentry/nextjs": "^10.38.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.91.1",
     "@tanstack/react-query": "^5.90.19",
@@ -83,6 +86,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^16.1.6",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.1.0",
     "@testing-library/react": "^14.0.0",
@@ -95,10 +99,21 @@
     "@vitest/coverage-v8": "^3.2.4",
     "eslint": "^9",
     "eslint-config-next": "^16.1.4",
+    "husky": "^9.1.7",
     "jsdom": "^27.0.1",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^3.2.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
   }
 }
