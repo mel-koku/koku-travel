@@ -50,7 +50,7 @@ function getNthDayOfWeekInMonth(
   const firstDayOfWeek = firstOfMonth.getDay();
 
   // Calculate days until first occurrence
-  let daysUntilFirst = (dayOfWeek - firstDayOfWeek + 7) % 7;
+  const daysUntilFirst = (dayOfWeek - firstDayOfWeek + 7) % 7;
 
   // Calculate the date of the nth occurrence
   const targetDay = 1 + daysUntilFirst + (ordinal - 1) * 7;
