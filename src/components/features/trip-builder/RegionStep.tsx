@@ -32,10 +32,6 @@ export function RegionStep({ onValidityChange }: RegionStepProps) {
         <p className="mx-auto mt-2 max-w-2xl text-base text-warm-gray">
           Each region offers unique experiences, from ancient temples to modern cities.
         </p>
-        <p className="mx-auto mt-4 max-w-xl rounded-lg bg-sand/50 px-4 py-3 text-sm text-charcoal">
-          <span className="font-medium">Click on the regions</span> you&apos;d like to explore.
-          We&apos;ve highlighted our top picks based on your preferences.
-        </p>
       </div>
 
       {/* Region Cards */}
