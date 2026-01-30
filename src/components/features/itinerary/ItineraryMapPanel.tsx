@@ -95,18 +95,23 @@ export const ItineraryMapPanel = ({
       const resolvedLocation = locationsMap.get(activity.id) ?? null;
 
       // Check coordinates in priority order:
-      // 1. Direct coordinates on the Location object (most reliable)
-      // 2. Coordinates from locationCoordinates lookup by ID
-      // 3. Coordinates from locationCoordinates lookup by name
-      // 4. Fallback to activity title lookup
+      // 1. Direct coordinates on the activity (most reliable - set during generation)
+      // 2. Direct coordinates on the Location object
+      // 3. Coordinates from locationCoordinates lookup by locationId
+      // 4. Coordinates from locationCoordinates lookup by ID
+      // 5. Coordinates from locationCoordinates lookup by name
+      // 6. Fallback to activity title lookup
+      const coordinatesFromActivity = activity.coordinates ?? null;
       const coordinatesFromLocation = resolvedLocation?.coordinates ?? null;
+      const coordinatesFromLocationId =
+        activity.locationId != null ? getCoordinatesForLocationId(activity.locationId) : null;
       const coordinatesFromId =
         resolvedLocation?.id != null ? getCoordinatesForLocationId(resolvedLocation.id) : null;
       const lookupName = resolvedLocation?.name ?? activity.title;
       const coordinatesFromName = lookupName ? getCoordinatesForName(lookupName) : null;
       const coordinatesFromTitle = getCoordinatesForName(activity.title);
 
-      const coordinates = coordinatesFromLocation ?? coordinatesFromId ?? coordinatesFromName ?? coordinatesFromTitle;
+      const coordinates = coordinatesFromActivity ?? coordinatesFromLocation ?? coordinatesFromLocationId ?? coordinatesFromId ?? coordinatesFromName ?? coordinatesFromTitle;
       if (!coordinates) {
         return;
       }
@@ -446,7 +451,7 @@ export const ItineraryMapPanel = ({
 
   return (
     <>
-      <aside className="flex h-full flex-col rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+      <aside className="flex h-full flex-col p-4">
       <header className="mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Day {day + 1} map</h2>
         <p className="text-sm text-gray-500">
