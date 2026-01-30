@@ -26,6 +26,7 @@ jobs:
         run: npm ci
 
       - name: Validate required secrets
+        if: github.actor != 'dependabot[bot]'
         run: |
           echo "🔍 Validating required secrets..."
           if [ -z "${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}" ]; then
@@ -63,8 +64,8 @@ jobs:
       - name: Build application
         run: npm run build
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
