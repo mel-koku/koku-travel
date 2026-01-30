@@ -1,8 +1,9 @@
 /* eslint-disable no-console */
 /**
  * Centralized logging utility
- * In production, this can be extended to send logs to external services if needed
+ * In production, errors are sent to Sentry for monitoring
  */
+import * as Sentry from "@sentry/nextjs";
 
 type LogContext = {
   [key: string]: unknown;
@@ -148,22 +149,35 @@ class Logger {
 
   /**
    * Sends error to external error tracking service
-   * Supports LogRocket or custom error tracking services
+   * Uses Sentry as the primary error tracking service, with LogRocket fallback
    */
   private sendToErrorTracking(
     message: string,
     error?: Error | unknown,
     context?: LogContext,
   ): void {
-    const errorTrackingService = process.env.NEXT_PUBLIC_ERROR_TRACKING_SERVICE;
     const sanitizedContext = sanitizeContext(context || {});
+    const errorToCapture = error instanceof Error ? error : new Error(message);
 
-    // LogRocket integration
+    // Sentry integration (primary)
+    try {
+      Sentry.withScope((scope) => {
+        scope.setTag("source", "logger");
+        scope.setExtra("message", message);
+        scope.setExtra("context", sanitizedContext);
+        Sentry.captureException(errorToCapture);
+      });
+    } catch {
+      // Sentry not available, continue to fallback
+    }
+
+    // LogRocket integration (secondary)
+    const errorTrackingService = process.env.NEXT_PUBLIC_ERROR_TRACKING_SERVICE;
     if (errorTrackingService === "logrocket") {
       try {
         if (typeof window !== "undefined" && (window as { LogRocket?: { captureException?: (error: unknown, options?: unknown) => void } }).LogRocket) {
           const LogRocket = (window as unknown as { LogRocket: { captureException: (error: unknown, options?: unknown) => void } }).LogRocket;
-          LogRocket.captureException(error instanceof Error ? error : new Error(message), {
+          LogRocket.captureException(errorToCapture, {
             tags: {
               source: "logger",
             },
