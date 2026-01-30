@@ -4,6 +4,9 @@ const localPatterns = [
   {
     pathname: "/api/places/photo",
   },
+  {
+    pathname: "/images/regions/**",
+  },
 ];
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;

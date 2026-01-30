@@ -13,9 +13,9 @@ import {
 
 import { getLocal, setLocal } from "@/lib/storageHelpers";
 import { TRIP_BUILDER_STORAGE_KEY, APP_STATE_DEBOUNCE_MS } from "@/lib/constants";
-import type { CityId, EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
-import { INTEREST_CATEGORIES } from "@/data/interests";
-import { getEntryPointById } from "@/data/entryPoints";
+import type { CityId, EntryPoint, RegionId, TripBuilderData, TripStyle, VibeId } from "@/types/trip";
+import { VALID_VIBE_IDS } from "@/types/trip";
+import { vibesToInterests, MAX_VIBE_SELECTION } from "@/data/vibes";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
@@ -23,11 +23,10 @@ type TripBuilderContextValue = {
   reset: () => void;
 };
 
-const MAX_INTEREST_SELECTION = 5;
-const VALID_INTERESTS = new Set<InterestId>(INTEREST_CATEGORIES.map((category) => category.id));
 
 const createDefaultData = (): TripBuilderData => ({
   dates: {},
+  vibes: [],
   regions: [],
   cities: [],
   interests: [],
@@ -41,7 +40,9 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   if (!raw) {
     return base;
   }
-  const normalizedInterests = sanitizeInterests(raw.interests);
+  const normalizedVibes = sanitizeVibes(raw.vibes);
+  // Derive interests from vibes automatically for backward compatibility
+  const derivedInterests = vibesToInterests(normalizedVibes);
   const normalizedStyle = sanitizeStyle(raw.style);
   const normalizedAccessibility = sanitizeAccessibility(raw.accessibility);
   const normalizedEntryPoint = sanitizeEntryPoint(raw.entryPoint);
@@ -54,9 +55,10 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
       ...base.dates,
       ...raw.dates,
     },
+    vibes: normalizedVibes,
     regions: normalizedRegions,
     cities: normalizedCities,
-    interests: normalizedInterests,
+    interests: derivedInterests,
     style: normalizedStyle,
     entryPoint: normalizedEntryPoint,
     accessibility: normalizedAccessibility,
@@ -97,6 +99,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
             ...normalizedPrev.dates,
             ...normalizedStored.dates,
           },
+          vibes: normalizedStored.vibes,
           regions: normalizedStored.regions,
           cities: normalizedStored.cities,
           interests: normalizedStored.interests,
@@ -225,20 +228,20 @@ function sanitizeCities(cities?: CityId[] | string[]): CityId[] {
   return next;
 }
 
-function sanitizeInterests(interests?: InterestId[]): InterestId[] {
-  if (!interests || interests.length === 0) {
+function sanitizeVibes(vibes?: VibeId[]): VibeId[] {
+  if (!vibes || vibes.length === 0) {
     return [];
   }
-  const next: InterestId[] = [];
-  for (const interest of interests) {
-    if (!VALID_INTERESTS.has(interest)) {
+  const next: VibeId[] = [];
+  for (const vibe of vibes) {
+    if (!VALID_VIBE_IDS.has(vibe)) {
       continue;
     }
-    if (next.includes(interest)) {
+    if (next.includes(vibe)) {
       continue;
     }
-    next.push(interest);
-    if (next.length >= MAX_INTEREST_SELECTION) {
+    next.push(vibe);
+    if (next.length >= MAX_VIBE_SELECTION) {
       break;
     }
   }
@@ -317,18 +320,11 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
     return undefined;
   }
 
-  // Validate type
-  if (entryPoint.type !== "airport" && entryPoint.type !== "city" && entryPoint.type !== "hotel" && entryPoint.type !== "station") {
+  // Only accept airport type (city, hotel, station are no longer supported)
+  if (entryPoint.type !== "airport") {
     return undefined;
   }
 
-  // Try to get the entry point from our data to ensure it's valid
-  const validEntryPoint = getEntryPointById(entryPoint.id);
-  if (validEntryPoint) {
-    return validEntryPoint;
-  }
-
-  // If not found in our data but structure is valid, return as-is (for custom hotels, etc.)
   // Validate coordinate bounds to prevent invalid entry points
   const lat = Number(entryPoint.coordinates.lat);
   const lng = Number(entryPoint.coordinates.lng);
@@ -338,7 +334,7 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
   }
 
   return {
-    type: entryPoint.type,
+    type: "airport",
     id: String(entryPoint.id).trim(),
     name: String(entryPoint.name).trim(),
     coordinates: {
@@ -346,6 +342,7 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
       lng,
     },
     cityId: entryPoint.cityId,
+    iataCode: typeof entryPoint.iataCode === "string" ? entryPoint.iataCode.trim().toUpperCase() : undefined,
   };
 }
 
