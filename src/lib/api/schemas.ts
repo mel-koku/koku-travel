@@ -274,26 +274,6 @@ const weatherPreferencesSchema = z.object({
 }).strict().optional();
 
 /**
- * Schema for accommodation style
- */
-const accommodationStyleSchema = z.enum(["ryokan", "budget", "midrange", "luxury"]).optional();
-
-/**
- * Schema for transport mode
- */
-const transportModeSchema = z.enum(["walk", "train", "bus", "taxi", "car"]);
-
-/**
- * Schema for transport preferences
- * Uses nullish() to accept both null and undefined (UI may send null for unset values)
- */
-const transportPreferencesSchema = z.object({
-  walkingTolerance: z.number().min(0).max(50000).nullish().transform(v => v ?? undefined),
-  preferredModes: z.array(transportModeSchema).max(5).optional(),
-  hasRentalCar: z.boolean().nullish().transform(v => v ?? undefined),
-}).strict().optional();
-
-/**
  * Comprehensive schema for TripBuilderData
  * Validates all fields with proper types and constraints
  */
@@ -310,8 +290,6 @@ export const tripBuilderDataSchema = z.object({
   budget: budgetSchema,
   group: groupSchema,
   weatherPreferences: weatherPreferencesSchema,
-  accommodationStyle: accommodationStyleSchema,
-  transportPreferences: transportPreferencesSchema,
   // travelerProfile is optional and will be built from other fields if not provided
   travelerProfile: z.any().optional(),
 }).strict();

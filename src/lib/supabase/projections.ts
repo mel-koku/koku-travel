@@ -134,7 +134,7 @@ export const LOCATION_DETAIL_COLUMNS = `
 `.replace(/\s+/g, "");
 
 /**
- * Columns needed for itinerary generation (21 columns)
+ * Columns needed for itinerary generation (24 columns)
  * Used by: itineraryGenerator, itineraryEngine, /api/itinerary/refine
  * Includes Google Places enrichment fields for meal planning and filtering
  */
@@ -167,7 +167,10 @@ export const LOCATION_ITINERARY_COLUMNS = `
   reservable,
   editorial_summary,
   is_seasonal,
-  seasonal_type
+  seasonal_type,
+  price_level,
+  accessibility_options,
+  dietary_options
 `.replace(/\s+/g, "");
 
 /**

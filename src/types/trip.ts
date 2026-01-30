@@ -183,43 +183,7 @@ export type TripBuilderData = {
    * This allows gradual migration to the new domain model.
    */
   travelerProfile?: TravelerProfile;
-  /**
-   * Accommodation style preference
-   */
-  accommodationStyle?: AccommodationStyle;
-  /**
-   * Transportation preferences
-   */
-  transportPreferences?: TransportPreferences;
 };
-
-/**
- * Accommodation style preference for trip planning.
- */
-export type AccommodationStyle = "ryokan" | "budget" | "midrange" | "luxury";
-
-/**
- * Transportation preferences for trip planning.
- */
-export type TransportPreferences = {
-  /**
-   * Maximum walking distance in meters before preferring other transport
-   */
-  walkingTolerance?: number;
-  /**
-   * Preferred transport modes in order of preference
-   */
-  preferredModes?: TransportMode[];
-  /**
-   * Whether the traveler has a rental car
-   */
-  hasRentalCar?: boolean;
-};
-
-/**
- * Transport mode options for preferences.
- */
-export type TransportMode = "walk" | "train" | "bus" | "taxi" | "car";
 
 /**
  * City interest data structure from pre-computed JSON.
