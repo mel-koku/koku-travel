@@ -487,6 +487,7 @@ export const ItineraryTimeline = ({
                 }),
               ).catch((error) => {
                 // Log warning for debugging - segments will be recalculated on next plan
+                // eslint-disable-next-line no-console
                 console.warn("[ItineraryTimeline] Failed to recalculate travel segments after reorder:", error);
               });
             }
@@ -867,6 +868,7 @@ function TravelSegmentWrapper({
       setHasAutoFetched(true);
       handleModeChange(travelFromPrevious.mode).catch((error) => {
         // Log warning for debugging - planning system will recalculate on refresh
+        // eslint-disable-next-line no-console
         console.warn("[TravelSegmentWrapper] Failed to auto-fetch route:", error);
       });
     }

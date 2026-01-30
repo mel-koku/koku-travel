@@ -54,7 +54,7 @@ export async function middleware(request: NextRequest) {
   const startTime = Date.now();
 
   // Create response to pass through
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request: {
       headers: request.headers,
     },

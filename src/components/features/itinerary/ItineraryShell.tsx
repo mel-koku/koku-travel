@@ -142,7 +142,7 @@ export const ItineraryShell = ({
     return tripBuilderData.cities
       .map((cityId) => cityIdToName[cityId] ?? cityId)
       .filter(Boolean);
-  }, [tripBuilderData?.cities, cityIdToName]);
+  }, [tripBuilderData, cityIdToName]);
 
   const buildDayEntryPointsMap = useCallback(
     (target: Itinerary) => {

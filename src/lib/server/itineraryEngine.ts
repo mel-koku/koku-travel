@@ -208,7 +208,7 @@ export async function generateTripFromBuilderData(
   const allLocations = await fetchAllLocations(builderData.cities);
 
   // Generate itinerary using existing generator
-  let itinerary = await generateItinerary(builderData);
+  const itinerary = await generateItinerary(builderData);
 
   // Get restaurants for meal planning
   // Filter for actual dining establishments, excluding landmarks and closed locations
