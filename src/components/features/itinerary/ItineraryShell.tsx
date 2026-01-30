@@ -6,7 +6,6 @@ import {
   useRef,
   useState,
   useCallback,
-  type ChangeEvent,
   type Dispatch,
   type RefObject,
   type SetStateAction,
@@ -18,10 +17,8 @@ import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { TripSummary } from "./TripSummary";
-import { Select } from "@/components/ui/Select";
 import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { logger } from "@/lib/logger";
-import type { StoredTrip } from "@/state/AppState";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
 import {
   useReplacementCandidates,
@@ -35,12 +32,7 @@ type ItineraryShellProps = {
   tripId: string;
   itinerary: Itinerary;
   onItineraryChange?: (next: Itinerary) => void;
-  selectedTripId: string | null;
-  onTripChange: (event: ChangeEvent<HTMLSelectElement>) => void;
-  trips: StoredTrip[];
   headingRef?: RefObject<HTMLHeadingElement>;
-  headingText: string;
-  descriptionText: string;
   createdLabel: string | null;
   updatedLabel: string | null;
   isUsingMock: boolean;
@@ -101,12 +93,7 @@ export const ItineraryShell = ({
   itinerary,
   tripId,
   onItineraryChange,
-  selectedTripId,
-  onTripChange,
-  trips,
   headingRef,
-  headingText,
-  descriptionText,
   createdLabel,
   updatedLabel,
   isUsingMock,
@@ -567,67 +554,28 @@ export const ItineraryShell = ({
   return (
     <section className="mx-auto min-h-[calc(100vh-120px)] max-w-screen-2xl p-3 sm:p-4 md:p-6 md:min-h-[calc(100vh-140px)]">
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(380px,40%)_1fr] xl:gap-6">
-        {/* Map panel - full width on mobile, sidebar on desktop */}
-        <div className="order-2 xl:order-1">
-          <div className="sticky h-[400px] rounded-2xl border border-border bg-background shadow-sm sm:h-[500px] xl:h-[calc(100vh-100px)] xl:min-h-[600px]" style={{ top: 'var(--sticky-offset, calc(80px + 10px))' }}>
-            <ItineraryMapPanel
-              day={safeSelectedDay}
-              activities={currentDay?.activities ?? []}
-              selectedActivityId={selectedActivityId}
-              onSelectActivity={handleSelectActivity}
-              isPlanning={isPlanning}
-              startPoint={currentDayEntryPoints?.startPoint}
-              endPoint={currentDayEntryPoints?.endPoint}
-            />
-          </div>
-        </div>
-        {/* Timeline panel */}
-        <div className="order-1 flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-sm xl:order-2">
-          <div className="border-b border-border p-3 sm:p-4">
-            <div className="mb-4 space-y-1">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h1
-                  ref={finalHeadingRef}
-                  tabIndex={-1}
-                  className="text-2xl font-semibold text-charcoal focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:text-3xl"
-                >
-                  {headingText}
-                </h1>
-                {trips.length > 1 && (
-                  <div className="flex flex-col gap-1 sm:min-w-[200px] sm:max-w-xs">
-                    <label htmlFor="itinerary-select" className="text-xs font-medium text-warm-gray">
-                      View itinerary
-                    </label>
-                    <Select
-                      id="itinerary-select"
-                      value={selectedTripId ?? ""}
-                      onChange={onTripChange}
-                      options={trips.map((trip) => ({
-                        label: trip.name,
-                        value: trip.id,
-                      }))}
-                      placeholder="Select a trip"
-                    />
-                  </div>
-                )}
-              </div>
+        {/* Left column: Header + Map panel */}
+        <div className="order-2 flex flex-col gap-4 xl:order-1">
+          {/* Header section - moved here from timeline panel */}
+          <div className="rounded-2xl border border-border bg-background p-3 shadow-sm sm:p-4">
+            <div className="space-y-1">
+              <h1
+                ref={finalHeadingRef}
+                tabIndex={-1}
+                className="text-2xl font-semibold text-charcoal focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:text-3xl"
+              >
+                Your Itinerary
+              </h1>
               {isUsingMock ? (
                 <p className="mt-2 text-sm text-stone sm:mt-3">
                   Showing mock itinerary for development. Build a trip to see your personalized plan.
                 </p>
               ) : null}
-              {trips.length > 0 ? (
-                <>
-                  <p className="text-sm text-foreground-secondary">
-                    {descriptionText}
-                  </p>
-                  {createdLabel ? (
-                    <p className="text-xs text-stone">
-                      Saved {createdLabel}
-                      {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
-                    </p>
-                  ) : null}
-                </>
+              {createdLabel ? (
+                <p className="text-xs text-stone">
+                  Saved {createdLabel}
+                  {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
+                </p>
               ) : null}
               {selectedCityNames.length > 0 && (
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -646,13 +594,30 @@ export const ItineraryShell = ({
                 <TripSummary tripData={tripBuilderData} className="mt-4" />
               )}
             </div>
-            <DaySelector
-              totalDays={days.length}
-              selected={safeSelectedDay}
-              onChange={handleSelectDayChange}
-              labels={days.map((day) => day.dateLabel ?? "")}
+            <div className="mt-4">
+              <DaySelector
+                totalDays={days.length}
+                selected={safeSelectedDay}
+                onChange={handleSelectDayChange}
+                labels={days.map((day) => day.dateLabel ?? "")}
+              />
+            </div>
+          </div>
+          {/* Map panel */}
+          <div className="sticky h-[400px] rounded-2xl border border-border bg-background shadow-sm sm:h-[500px] xl:h-[calc(100vh-280px)] xl:min-h-[400px]" style={{ top: 'var(--sticky-offset, calc(80px + 10px))' }}>
+            <ItineraryMapPanel
+              day={safeSelectedDay}
+              activities={currentDay?.activities ?? []}
+              selectedActivityId={selectedActivityId}
+              onSelectActivity={handleSelectActivity}
+              isPlanning={isPlanning}
+              startPoint={currentDayEntryPoints?.startPoint}
+              endPoint={currentDayEntryPoints?.endPoint}
             />
           </div>
+        </div>
+        {/* Timeline panel */}
+        <div className="order-1 flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-sm xl:order-2">
           <div className="flex-1 overflow-y-auto p-3 pr-2 sm:p-4">
             {currentDay ? (
               <ItineraryTimeline
