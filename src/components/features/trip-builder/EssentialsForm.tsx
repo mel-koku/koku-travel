@@ -3,16 +3,14 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
-import { FormField } from "@/components/ui/FormField";
-import { Input } from "@/components/ui/Input";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { EntryPointSelector } from "./EntryPointSelector";
 import type { EntryPoint } from "@/types/trip";
 
 type EssentialsFormValues = {
-  duration?: number;
   start?: string;
+  end?: string;
 };
 
 export type EssentialsFormProps = {
@@ -27,15 +25,14 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
 
   const formValues = useMemo<EssentialsFormValues>(
     () => ({
-      duration: data.duration ?? undefined,
       start: data.dates.start ?? "",
+      end: data.dates.end ?? "",
     }),
-    [data.duration, data.dates.start]
+    [data.dates.start, data.dates.end]
   );
 
   const {
     control,
-    register,
     formState: { errors, isValid },
   } = useForm<EssentialsFormValues>({
     values: formValues,
@@ -48,27 +45,34 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   }, [isValid, onValidityChange]);
 
   const startValue = useWatch({ control, name: "start" });
-  const durationValue = useWatch({ control, name: "duration" });
+  const endValue = useWatch({ control, name: "end" });
 
-  // Calculate end date from start date and duration
-  const calculatedEndDate = useMemo(() => {
-    if (!startValue || !durationValue || durationValue < 1) {
+  // Calculate duration from start and end dates
+  const calculatedDuration = useMemo(() => {
+    if (!startValue || !endValue) {
       return null;
     }
-    const duration = Math.floor(durationValue);
     const startDate = new Date(startValue);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + duration - 1);
-    return endDate.toISOString().split("T")[0];
-  }, [startValue, durationValue]);
+    const endDate = new Date(endValue);
+    const diffTime = endDate.getTime() - startDate.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 for inclusive
+    return diffDays;
+  }, [startValue, endValue]);
 
-  // Format end date for display
-  const formattedEndDate = useMemo(() => {
-    if (!calculatedEndDate) return null;
-    const date = new Date(calculatedEndDate);
-    const formatter = new Intl.DateTimeFormat(undefined, { dateStyle: "medium" });
-    return formatter.format(date);
-  }, [calculatedEndDate]);
+  // Calculate minimum end date (must be same day or after start)
+  const minEndDate = useMemo(() => {
+    if (!startValue) return undefined;
+    return startValue;
+  }, [startValue]);
+
+  // Calculate maximum end date (14 days from start)
+  const maxEndDate = useMemo(() => {
+    if (!startValue) return undefined;
+    const startDate = new Date(startValue);
+    const maxDate = new Date(startDate);
+    maxDate.setDate(startDate.getDate() + MAX_DURATION - 1);
+    return maxDate.toISOString().split("T")[0];
+  }, [startValue]);
 
   // Handle entry point change from EntryPointSelector
   const handleEntryPointChange = useCallback(
@@ -83,28 +87,20 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
 
   // Sync form values to context on change
   useEffect(() => {
-    let endDate = "";
-    if (startValue && durationValue && durationValue >= 1) {
-      const duration = Math.floor(durationValue);
-      const startDate = new Date(startValue);
-      const calculatedEnd = new Date(startDate);
-      calculatedEnd.setDate(startDate.getDate() + duration - 1);
-      const [isoDate] = calculatedEnd.toISOString().split("T");
-      if (isoDate) {
-        endDate = isoDate;
-      }
-    }
+    const duration = calculatedDuration && calculatedDuration >= MIN_DURATION && calculatedDuration <= MAX_DURATION
+      ? calculatedDuration
+      : undefined;
 
     setData((prev) => ({
       ...prev,
-      duration: durationValue,
+      duration,
       dates: {
         ...prev.dates,
         start: startValue,
-        end: endDate,
+        end: endValue,
       },
     }));
-  }, [durationValue, startValue, setData]);
+  }, [calculatedDuration, startValue, endValue, setData]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -116,39 +112,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField
-          id="trip-duration"
-          label="Duration"
-          required
-          help="1-14 days"
-          error={errors.duration?.message}
-        >
-          <Input
-            id="trip-duration"
-            type="number"
-            min={MIN_DURATION}
-            max={MAX_DURATION}
-            inputMode="numeric"
-            placeholder="Days"
-            className="min-h-[44px]"
-            {...register("duration", {
-              valueAsNumber: true,
-              required: "Duration is required",
-              min: { value: MIN_DURATION, message: "Minimum 1 day" },
-              max: { value: MAX_DURATION, message: "Maximum 14 days" },
-              validate: (value) => {
-                if (value === undefined || Number.isNaN(value)) {
-                  return "Duration is required";
-                }
-                if (!Number.isInteger(value)) {
-                  return "Must be a whole number";
-                }
-                return true;
-              },
-            })}
-          />
-        </FormField>
-
         <Controller
           control={control}
           name="start"
@@ -164,13 +127,49 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
             />
           )}
         />
+
+        <Controller
+          control={control}
+          name="end"
+          rules={{
+            required: "End date is required",
+            validate: (value) => {
+              if (!value || !startValue) return true;
+              const start = new Date(startValue);
+              const end = new Date(value);
+              if (end < start) {
+                return "End date must be after start date";
+              }
+              const diffDays = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+              if (diffDays > MAX_DURATION) {
+                return `Maximum trip duration is ${MAX_DURATION} days`;
+              }
+              return true;
+            },
+          }}
+          render={({ field }) => (
+            <DatePicker
+              id="trip-end"
+              label="End Date"
+              required
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              error={errors.end?.message}
+              min={minEndDate}
+              max={maxEndDate}
+            />
+          )}
+        />
       </div>
 
-      {calculatedEndDate && formattedEndDate && (
+      {calculatedDuration !== null && calculatedDuration >= MIN_DURATION && calculatedDuration <= MAX_DURATION && (
         <div className="rounded-lg border border-border bg-surface px-4 py-3">
           <p className="text-sm text-foreground-secondary">
-            <span className="font-medium text-charcoal">End date:</span> {formattedEndDate} (
-            {Math.floor(durationValue || 0)} day{durationValue === 1 ? "" : "s"})
+            <span className="mr-2">📅</span>
+            <span className="font-medium text-charcoal">
+              {calculatedDuration}-day trip
+            </span>
+            {" "}({calculatedDuration - 1} night{calculatedDuration - 1 !== 1 ? "s" : ""})
           </p>
         </div>
       )}

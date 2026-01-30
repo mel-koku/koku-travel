@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { PlanStep } from "./PlanStep";
+import { RegionStep } from "./RegionStep";
 import { ReviewStep } from "./ReviewStep";
 import { LivePreview } from "./LivePreview";
 import { MobileBottomSheet, PreviewToggleButton } from "./MobileBottomSheet";
@@ -13,17 +14,23 @@ export type TripBuilderV2Props = {
   onComplete?: () => void;
 };
 
-type Step = 1 | 2;
+type Step = 1 | 2 | 3;
+
+const STEP_LABELS: Record<Step, string> = {
+  1: "Trip Details",
+  2: "Region Selection",
+  3: "Preferences",
+};
 
 export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   const { reset } = useTripBuilder();
   const [currentStep, setCurrentStep] = useState<Step>(1);
   const [step1Valid, setStep1Valid] = useState(false);
-  const [step2Valid, setStep2Valid] = useState(true);
+  const [step2Valid, setStep2Valid] = useState(false);
+  const [step3Valid, setStep3Valid] = useState(true);
   const [mobilePreviewOpen, setMobilePreviewOpen] = useState(false);
 
   const handleStep1ValidityChange = useCallback((isValid: boolean) => {
-    // PlanStep already handles the combined validation (essentials + cities)
     setStep1Valid(isValid);
   }, []);
 
@@ -31,9 +38,12 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
     setStep2Valid(isValid);
   }, []);
 
+  const handleStep3ValidityChange = useCallback((isValid: boolean) => {
+    setStep3Valid(isValid);
+  }, []);
+
   const goToStep = useCallback((step: Step) => {
     setCurrentStep(step);
-    // Scroll to top on step change
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
@@ -41,13 +51,17 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
     if (currentStep === 1 && step1Valid) {
       goToStep(2);
     } else if (currentStep === 2 && step2Valid) {
+      goToStep(3);
+    } else if (currentStep === 3 && step3Valid) {
       onComplete?.();
     }
-  }, [currentStep, step1Valid, step2Valid, goToStep, onComplete]);
+  }, [currentStep, step1Valid, step2Valid, step3Valid, goToStep, onComplete]);
 
   const handleBack = useCallback(() => {
     if (currentStep === 2) {
       goToStep(1);
+    } else if (currentStep === 3) {
+      goToStep(2);
     }
   }, [currentStep, goToStep]);
 
@@ -58,20 +72,44 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
     }
   }, [reset, goToStep]);
 
-  const isNextDisabled = currentStep === 1 ? !step1Valid : !step2Valid;
+  const isNextDisabled =
+    (currentStep === 1 && !step1Valid) ||
+    (currentStep === 2 && !step2Valid) ||
+    (currentStep === 3 && !step3Valid);
+
+  const getNextButtonLabel = () => {
+    switch (currentStep) {
+      case 1:
+        return "Continue to Regions";
+      case 2:
+        return "Continue to Preferences";
+      case 3:
+        return "Generate Itinerary";
+    }
+  };
+
+  const getBackButtonLabel = () => {
+    switch (currentStep) {
+      case 2:
+        return "Back to Details";
+      case 3:
+        return "Back to Regions";
+      default:
+        return "Back";
+    }
+  };
 
   return (
     <div className="flex h-full min-h-screen flex-col bg-surface">
       {/* Header */}
-      <header className="sticky top-0 z-20 border-b border-border bg-background">
+      <header className="sticky top-20 z-20 border-b border-border bg-background">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <div>
             <h1 className="text-lg font-bold text-charcoal sm:text-xl">
               Plan Your Trip
             </h1>
             <p className="text-xs text-stone sm:text-sm">
-              Step {currentStep} of 2:{" "}
-              {currentStep === 1 ? "Trip Details & Cities" : "Review & Preferences"}
+              Step {currentStep} of 3: {STEP_LABELS[currentStep]}
             </p>
           </div>
 
@@ -85,6 +123,13 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
                 currentStep={currentStep}
                 onClick={() => step1Valid ? goToStep(2) : undefined}
                 disabled={!step1Valid}
+              />
+              <div className="h-px w-6 bg-border" />
+              <StepIndicator
+                step={3}
+                currentStep={currentStep}
+                onClick={() => step1Valid && step2Valid ? goToStep(3) : undefined}
+                disabled={!step1Valid || !step2Valid}
               />
             </div>
 
@@ -101,30 +146,42 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
 
       {/* Main Content */}
       <main className="flex flex-1">
-        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col lg:flex-row">
+        <div className={cn(
+          "mx-auto flex w-full max-w-7xl flex-1 flex-col lg:flex-row",
+          currentStep !== 3 && "lg:justify-center"
+        )}>
           {/* Left Panel - Form */}
-          <div className="flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:max-w-2xl lg:pb-6">
-            {currentStep === 1 ? (
+          <div className={cn(
+            "flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:max-w-3xl lg:pb-6",
+            currentStep !== 3 && "lg:flex-initial"
+          )}>
+            {currentStep === 1 && (
               <PlanStep onValidityChange={handleStep1ValidityChange} />
-            ) : (
+            )}
+            {currentStep === 2 && (
+              <RegionStep onValidityChange={handleStep2ValidityChange} />
+            )}
+            {currentStep === 3 && (
               <ReviewStep
                 onBack={handleBack}
-                onValidityChange={handleStep2ValidityChange}
+                onValidityChange={handleStep3ValidityChange}
               />
             )}
           </div>
 
-          {/* Right Panel - Preview (Desktop) */}
-          <div className="hidden w-96 shrink-0 border-l border-border bg-background lg:flex lg:flex-col xl:w-[420px]">
-            <LivePreview className="h-full" />
-          </div>
+          {/* Right Panel - Preview (Desktop) - only show on step 3 */}
+          {currentStep === 3 && (
+            <div className="hidden w-96 shrink-0 border-l border-border bg-background lg:flex lg:flex-col xl:w-[420px]">
+              <LivePreview className="h-full" />
+            </div>
+          )}
         </div>
       </main>
 
       {/* Mobile Bottom Navigation */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background p-4 lg:hidden">
         <div className="flex items-center gap-3">
-          {currentStep === 2 && (
+          {currentStep > 1 && (
             <button
               type="button"
               onClick={handleBack}
@@ -145,7 +202,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
                 : "bg-brand-primary text-white hover:bg-brand-primary/90"
             )}
           >
-            {currentStep === 1 ? "Continue to Review" : "Generate Itinerary"}
+            {getNextButtonLabel()}
           </button>
         </div>
       </div>
@@ -154,13 +211,13 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
       <div className="sticky bottom-0 hidden border-t border-border bg-background lg:block">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <div>
-            {currentStep === 2 && (
+            {currentStep > 1 && (
               <button
                 type="button"
                 onClick={handleBack}
                 className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-warm-gray hover:bg-sand"
               >
-                Back to Step 1
+                {getBackButtonLabel()}
               </button>
             )}
           </div>
@@ -176,7 +233,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
                 : "bg-brand-primary text-white hover:bg-brand-primary/90"
             )}
           >
-            {currentStep === 1 ? "Continue to Review" : "Generate Itinerary"}
+            {getNextButtonLabel()}
           </button>
         </div>
       </div>

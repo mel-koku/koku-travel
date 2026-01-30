@@ -9,15 +9,13 @@ import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
-import type { AccommodationStyle, TripStyle, TransportMode } from "@/types/trip";
+import type { TripStyle, TransportMode } from "@/types/trip";
 
 type PreferenceFormValues = {
   // Group composition
   groupSize?: number;
   groupType?: "solo" | "couple" | "family" | "friends" | "business" | "";
   childrenAges?: string;
-  // Accommodation
-  accommodationStyle?: AccommodationStyle | "";
   // Transportation
   walkingTolerance?: number;
   preferTrain?: boolean;
@@ -49,13 +47,6 @@ const GROUP_TYPE_OPTIONS = [
   { label: "Family", value: "family" },
   { label: "Friends", value: "friends" },
   { label: "Business", value: "business" },
-];
-
-const ACCOMMODATION_OPTIONS = [
-  { label: "Ryokan (Traditional)", value: "ryokan" },
-  { label: "Budget Hotels", value: "budget" },
-  { label: "Mid-Range Hotels", value: "midrange" },
-  { label: "Luxury Hotels", value: "luxury" },
 ];
 
 const PACE_OPTIONS = [
@@ -101,7 +92,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
       groupSize: data.group?.size,
       groupType: data.group?.type ?? "",
       childrenAges: data.group?.childrenAges?.join(", ") ?? "",
-      accommodationStyle: data.accommodationStyle ?? "",
       walkingTolerance: data.transportPreferences?.walkingTolerance,
       preferTrain: data.transportPreferences?.preferredModes?.includes("train"),
       preferBus: data.transportPreferences?.preferredModes?.includes("bus"),
@@ -158,7 +148,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
         type: formValues.groupType ? (formValues.groupType as "solo" | "couple" | "family" | "friends" | "business") : undefined,
         childrenAges: childrenAges.length > 0 ? childrenAges : undefined,
       },
-      accommodationStyle: formValues.accommodationStyle ? (formValues.accommodationStyle as AccommodationStyle) : undefined,
       transportPreferences: {
         walkingTolerance: formValues.walkingTolerance,
         preferredModes: preferredModes.length > 0 ? preferredModes : undefined,
@@ -282,38 +271,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
             {...register("childrenAges")}
           />
         </FormField>
-      </PreferenceCard>
-
-      {/* Accommodation Style */}
-      <PreferenceCard
-        title="Accommodation Style"
-        description="What type of accommodation do you prefer?"
-      >
-        <Controller
-          control={control}
-          name="accommodationStyle"
-          render={({ field }) => (
-            <div className="grid grid-cols-2 gap-2">
-              {ACCOMMODATION_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() =>
-                    field.onChange(field.value === option.value ? "" : option.value)
-                  }
-                  className={cn(
-                    "rounded-lg border px-3 py-2 text-sm font-medium transition",
-                    field.value === option.value
-                      ? "border-brand-primary bg-brand-primary text-white"
-                      : "border-border text-warm-gray hover:bg-sand"
-                  )}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-        />
       </PreferenceCard>
 
       {/* Transportation Preferences */}

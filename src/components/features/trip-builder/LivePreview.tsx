@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { ItineraryPreview } from "./ItineraryPreview";
-import { TripMap } from "./TripMap";
+import { RegionMap } from "./RegionMap";
 import { cn } from "@/lib/cn";
 
 export type LivePreviewProps = {
@@ -19,10 +19,10 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
     return (
       data.duration ||
       data.dates.start ||
-      (data.cities?.length ?? 0) > 0 ||
-      (data.interests?.length ?? 0) > 0
+      (data.vibes?.length ?? 0) > 0 ||
+      (data.regions?.length ?? 0) > 0
     );
-  }, [data.duration, data.dates.start, data.cities?.length, data.interests?.length]);
+  }, [data.duration, data.dates.start, data.vibes?.length, data.regions?.length]);
 
   const tripSummary = useMemo(() => {
     const parts: string[] = [];
@@ -40,12 +40,12 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
       parts.push(formatter.format(startDate));
     }
 
-    if ((data.cities?.length ?? 0) > 0) {
-      parts.push(`${data.cities?.length} ${data.cities?.length === 1 ? "city" : "cities"}`);
+    if ((data.regions?.length ?? 0) > 0) {
+      parts.push(`${data.regions?.length} ${data.regions?.length === 1 ? "region" : "regions"}`);
     }
 
     return parts.join(" · ");
-  }, [data.duration, data.dates.start, data.cities?.length]);
+  }, [data.duration, data.dates.start, data.regions?.length]);
 
   if (!hasData) {
     return (
@@ -94,9 +94,9 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
       <div className="flex-1 overflow-hidden">
         <div className="flex h-full flex-col">
           {/* Map Section */}
-          {showMap && (data.cities?.length ?? 0) > 0 && (
+          {showMap && (data.regions?.length ?? 0) > 0 && (
             <div className="h-48 shrink-0 border-b border-border">
-              <TripMap />
+              <RegionMap />
             </div>
           )}
 

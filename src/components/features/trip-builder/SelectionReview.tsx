@@ -3,7 +3,8 @@
 import { useMemo } from "react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { INTEREST_CATEGORIES } from "@/data/interests";
+import { VIBES } from "@/data/vibes";
+import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { cn } from "@/lib/cn";
 
 export type SelectionReviewProps = {
@@ -29,10 +30,18 @@ export function SelectionReview({ onEdit }: SelectionReviewProps) {
     return `${start} - ${end}`;
   }, [data.dates.start, data.dates.end]);
 
-  const interestLabels = useMemo(() => {
+  const vibeLabels = useMemo(() => {
     const map = new Map<string, string>();
-    for (const cat of INTEREST_CATEGORIES) {
-      map.set(cat.id, cat.name);
+    for (const vibe of VIBES) {
+      map.set(vibe.id, vibe.name);
+    }
+    return map;
+  }, []);
+
+  const regionLabels = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const region of REGION_DESCRIPTIONS) {
+      map.set(region.id, region.name);
     }
     return map;
   }, []);
@@ -104,19 +113,19 @@ export function SelectionReview({ onEdit }: SelectionReviewProps) {
           isEmpty={!budgetLabel}
         />
 
-        {/* Cities */}
+        {/* Vibes */}
         <div className="px-4 py-3">
           <div className="flex items-start justify-between">
-            <span className="text-sm text-stone">Cities</span>
+            <span className="text-sm text-stone">Vibes</span>
             <div className="flex-1 ml-4 text-right">
-              {data.cities && data.cities.length > 0 ? (
+              {data.vibes && data.vibes.length > 0 ? (
                 <div className="flex flex-wrap justify-end gap-1">
-                  {data.cities.map((city) => (
+                  {data.vibes.map((vibe) => (
                     <span
-                      key={city}
-                      className="inline-block rounded-full bg-sage/10 px-2 py-0.5 text-xs font-medium text-sage"
+                      key={vibe}
+                      className="inline-block rounded-full bg-brand-primary/10 px-2 py-0.5 text-xs font-medium text-brand-primary"
                     >
-                      {city}
+                      {vibeLabels.get(vibe) ?? vibe}
                     </span>
                   ))}
                 </div>
@@ -127,19 +136,19 @@ export function SelectionReview({ onEdit }: SelectionReviewProps) {
           </div>
         </div>
 
-        {/* Interests */}
+        {/* Regions */}
         <div className="px-4 py-3">
           <div className="flex items-start justify-between">
-            <span className="text-sm text-stone">Interests</span>
+            <span className="text-sm text-stone">Regions</span>
             <div className="flex-1 ml-4 text-right">
-              {data.interests && data.interests.length > 0 ? (
+              {data.regions && data.regions.length > 0 ? (
                 <div className="flex flex-wrap justify-end gap-1">
-                  {data.interests.map((interest) => (
+                  {data.regions.map((region) => (
                     <span
-                      key={interest}
-                      className="inline-block rounded-full bg-surface px-2 py-0.5 text-xs font-medium text-warm-gray"
+                      key={region}
+                      className="inline-block rounded-full bg-sage/10 px-2 py-0.5 text-xs font-medium text-sage"
                     >
-                      {interestLabels.get(interest) ?? interest}
+                      {regionLabels.get(region) ?? region}
                     </span>
                   ))}
                 </div>
