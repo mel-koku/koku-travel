@@ -4,6 +4,7 @@
 
 import { z } from "zod";
 import { INTEREST_CATEGORIES } from "@/data/interests";
+import { VIBES } from "@/data/vibes";
 
 /**
  * Schema for location ID parameter
@@ -213,6 +214,13 @@ const interestIdSchema = z.enum(
 );
 
 /**
+ * Schema for vibe ID (must be valid vibe from VIBES)
+ */
+const vibeIdSchema = z.enum(
+  VIBES.map((v) => v.id) as [string, ...string[]]
+);
+
+/**
  * Schema for trip style
  */
 const tripStyleSchema = z.enum(["relaxed", "balanced", "fast"]).optional();
@@ -295,6 +303,7 @@ export const tripBuilderDataSchema = z.object({
   regions: z.array(regionIdSchema).max(50).optional(),
   cities: z.array(cityIdSchema).max(50).optional(),
   interests: z.array(interestIdSchema).max(20).optional(),
+  vibes: z.array(vibeIdSchema).max(5).optional(),
   style: tripStyleSchema,
   entryPoint: entryPointSchema,
   accessibility: accessibilitySchema,
