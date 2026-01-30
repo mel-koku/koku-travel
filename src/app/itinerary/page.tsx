@@ -9,11 +9,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
+import { SmartPromptsDrawer, useSmartPrompts } from "@/components/features/itinerary/SmartPromptsDrawer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useAppState } from "@/state/AppState";
 import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
 import { env } from "@/lib/env";
+import { detectGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
 
 const formatDateLabel = (iso: string | undefined) => {
   if (!iso) {
@@ -109,6 +112,67 @@ function ItineraryPageContent() {
       ? formatDateLabel(selectedTrip.updatedAt)
       : null;
 
+  // Detect gaps for smart prompts
+  const initialGaps = useMemo(() => {
+    if (!activeItinerary) return [];
+    return detectGaps(activeItinerary, {
+      includeMeals: true,
+      includeTransport: false, // Transport gaps can be noisy, disable for now
+      includeExperiences: true,
+      maxGapsPerDay: 2,
+    });
+  }, [activeItinerary]);
+
+  const smartPrompts = useSmartPrompts(initialGaps);
+
+  // Reset prompts when trip changes
+  useEffect(() => {
+    if (activeItinerary) {
+      const newGaps = detectGaps(activeItinerary, {
+        includeMeals: true,
+        includeTransport: false,
+        includeExperiences: true,
+        maxGapsPerDay: 2,
+      });
+      smartPrompts.resetPrompts(newGaps);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only reset on trip change, not on every itinerary update
+  }, [selectedTripId]);
+
+  // Helper functions for smart prompt actions
+  const getDay = useCallback((dayId: string) => {
+    return activeItinerary?.days.find((d) => d.id === dayId);
+  }, [activeItinerary]);
+
+  const getUsedLocationIds = useCallback(() => {
+    if (!activeItinerary) return [];
+    return activeItinerary.days.flatMap((day) =>
+      day.activities
+        .filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place")
+        .map((a) => a.locationId)
+        .filter((id): id is string => Boolean(id))
+    );
+  }, [activeItinerary]);
+
+  // Smart prompt actions hook
+  const smartPromptActions = useSmartPromptActions(
+    selectedTrip?.id ?? null,
+    selectedTrip?.builderData,
+    getDay,
+    getUsedLocationIds
+  );
+
+  const handleSmartPromptAccept = useCallback(async (gap: DetectedGap) => {
+    const success = await smartPromptActions.acceptGap(gap);
+    if (success) {
+      smartPrompts.handleAccept(gap);
+    }
+  }, [smartPromptActions, smartPrompts]);
+
+  const handleSmartPromptSkip = useCallback((gap: DetectedGap) => {
+    smartPrompts.handleSkip(gap);
+  }, [smartPrompts]);
+
   // Wait for mount to prevent hydration mismatch
   // AppState loads from localStorage which is only available on client
   if (!isMounted) {
@@ -150,6 +214,17 @@ function ItineraryPageContent() {
           tripBuilderData={selectedTrip?.builderData}
         />
       </ErrorBoundary>
+
+      {/* Smart Prompts Drawer */}
+      {smartPrompts.gaps.length > 0 && (
+        <SmartPromptsDrawer
+          gaps={smartPrompts.gaps}
+          onAccept={handleSmartPromptAccept}
+          onSkip={handleSmartPromptSkip}
+          onDismissAll={smartPrompts.handleDismissAll}
+          loadingGapId={smartPromptActions.loadingGapId}
+        />
+      )}
     </div>
   );
 }
