@@ -194,6 +194,25 @@ Extract to constants when:
 5. **Organization**: Group related code together
 6. **DRY Principle**: Don't Repeat Yourself, but don't over-abstract
 
+## Trip Builder Wizard Flow
+
+The trip builder (`src/components/features/trip-builder/`) implements a 4-step wizard:
+
+| Step | Component | Purpose |
+|------|-----------|---------|
+| 0 | `IntroStep` | Welcome page with feature overview |
+| 1 | `PlanStep` | Trip details (dates, entry point, travelers) |
+| 2 | `RegionStep` | Region and city selection |
+| 3 | `ReviewStep` | Preferences and final review |
+
+**Key Files:**
+- `TripBuilderV2.tsx` - Main wizard orchestrator with step navigation
+- `IntroStep.tsx` - Step 0: Landing page with animated content card
+- `PlanStep.tsx` - Step 1: Essential trip details form
+- `RegionStep.tsx` - Step 2: Interactive region/city selection
+- `ReviewStep.tsx` - Step 3: Preference cards and summary
+- `LivePreview.tsx` - Real-time itinerary preview (step 3)
+
 ## Algorithm Documentation
 
 ### City Relevance Scoring (`src/lib/tripBuilder/cityRelevance.ts`)
