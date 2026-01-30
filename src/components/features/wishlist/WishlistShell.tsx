@@ -53,7 +53,7 @@ export default function WishlistShell() {
 
       {savedLocations.length === 0 ? (
         <div className="py-32 text-center text-gray-500">
-          <p>You haven't added any favorites yet.</p>
+          <p>You have not added any favorites yet.</p>
           <Link
             href="/explore"
             className="mt-4 inline-block font-medium text-indigo-600 hover:text-indigo-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"

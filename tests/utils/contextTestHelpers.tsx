@@ -44,9 +44,11 @@ export function createContextWrapper<P extends { children: ReactNode }>(
   Provider: ComponentType<P>,
   props?: Omit<P, "children">
 ) {
-  return ({ children }: { children: ReactNode }) => (
+  const Wrapper = ({ children }: { children: ReactNode }) => (
     <Provider {...(props as P)}>{children}</Provider>
   );
+  Wrapper.displayName = `ContextWrapper(${Provider.displayName || Provider.name || "Provider"})`;
+  return Wrapper;
 }
 
 /**
