@@ -278,6 +278,15 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
         placeId: row.place_id ?? undefined,
         isSeasonal: row.is_seasonal ?? undefined,
         seasonalType: row.seasonal_type ?? undefined,
+        // Google Places enrichment fields
+        priceLevel: (row.price_level as 0 | 1 | 2 | 3 | 4 | null) ?? undefined,
+        goodForChildren: row.good_for_children ?? undefined,
+        goodForGroups: row.good_for_groups ?? undefined,
+        accessibilityOptions: row.accessibility_options ?? undefined,
+        dietaryOptions: row.dietary_options ?? undefined,
+        mealOptions: row.meal_options ?? undefined,
+        outdoorSeating: row.outdoor_seating ?? undefined,
+        reservable: row.reservable ?? undefined,
       }));
 
       allLocations.push(...locations);

@@ -35,6 +35,7 @@ const GROUP_PREFERENCES: Record<
 /**
  * Score adjustment based on group size
  * Larger groups may prefer activities that accommodate more people
+ * Uses location.goodForGroups from Google Places data when available
  */
 function scoreGroupSizeFit(
   location: Location,
@@ -44,6 +45,33 @@ function scoreGroupSizeFit(
     return { scoreAdjustment: 0, reasoning: "Solo traveler - no group size adjustment" };
   }
 
+  // Use Google Places goodForGroups data if available
+  if (location.goodForGroups !== undefined) {
+    if (groupSize >= 4) {
+      // Medium to large groups care more about this flag
+      if (location.goodForGroups) {
+        return {
+          scoreAdjustment: 6,
+          reasoning: `"${location.name}" is marked as good for groups (${groupSize} people)`,
+        };
+      } else {
+        return {
+          scoreAdjustment: -4,
+          reasoning: `"${location.name}" may not accommodate groups well (${groupSize} people)`,
+        };
+      }
+    } else if (groupSize >= 2) {
+      // Smaller groups get smaller adjustments
+      if (location.goodForGroups) {
+        return {
+          scoreAdjustment: 2,
+          reasoning: `"${location.name}" is good for groups`,
+        };
+      }
+    }
+  }
+
+  // Fall back to category heuristics if no goodForGroups data
   const category = location.category?.toLowerCase() ?? "";
 
   // Activities that work well for larger groups
@@ -113,6 +141,7 @@ function scoreGroupTypeFit(
 
 /**
  * Score adjustment based on children ages (if applicable)
+ * Uses location.goodForChildren from Google Places data when available
  */
 function scoreChildrenFit(
   location: Location,
@@ -127,6 +156,26 @@ function scoreChildrenFit(
   const hasYoungChildren = avgAge < 8;
   const hasTeenagers = avgAge >= 13;
 
+  // Use Google Places goodForChildren data if available
+  if (location.goodForChildren !== undefined) {
+    if (location.goodForChildren) {
+      // Stronger bonus for young children
+      const bonus = hasYoungChildren ? 10 : hasTeenagers ? 4 : 6;
+      return {
+        scoreAdjustment: bonus,
+        reasoning: `"${location.name}" is marked as good for children (avg age ${avgAge.toFixed(1)})`,
+      };
+    } else {
+      // Penalty is stronger for young children
+      const penalty = hasYoungChildren ? -8 : hasTeenagers ? -2 : -4;
+      return {
+        scoreAdjustment: penalty,
+        reasoning: `"${location.name}" may not be suitable for children (avg age ${avgAge.toFixed(1)})`,
+      };
+    }
+  }
+
+  // Fall back to category heuristics if no goodForChildren data
   // Activities good for children
   const childFriendly = ["park", "garden", "museum", "entertainment"];
   // Activities that may be less engaging for young children

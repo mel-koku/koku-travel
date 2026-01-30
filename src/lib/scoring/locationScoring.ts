@@ -337,8 +337,9 @@ function parsePriceLevel(minBudget?: string): { level: number; type: "numeric" |
 /**
  * Score budget fit.
  * Range: 0-10 points
- * 
- * Uses explicit budget values (total/perDay) if provided, otherwise falls back to budgetLevel.
+ *
+ * Uses Google Places priceLevel (0-4) if available, otherwise falls back to minBudget parsing.
+ * priceLevel: 0 = Free, 1 = Inexpensive, 2 = Moderate, 3 = Expensive, 4 = Very Expensive
  */
 function scoreBudgetFit(
   location: Location,
@@ -348,6 +349,45 @@ function scoreBudgetFit(
     budgetPerDay?: number;
   },
 ): { score: number; reasoning: string } {
+  // Prefer Google Places priceLevel (0-4) for more reliable scoring
+  const googlePriceLevel = location.priceLevel;
+
+  if (googlePriceLevel !== undefined && criteria.budgetLevel) {
+    // Map budget preference to expected priceLevel ranges
+    // Budget level "budget" → prefer priceLevel 0-1 (Free/Inexpensive)
+    // Budget level "moderate" → prefer priceLevel 1-2 (Inexpensive/Moderate)
+    // Budget level "luxury" → prefer priceLevel 3-4 (Expensive/Very Expensive)
+    const priceLevelRanges: Record<"budget" | "moderate" | "luxury", { preferred: number[]; acceptable: number[]; penalty: number[] }> = {
+      budget: { preferred: [0, 1], acceptable: [2], penalty: [3, 4] },
+      moderate: { preferred: [1, 2], acceptable: [0, 3], penalty: [4] },
+      luxury: { preferred: [3, 4], acceptable: [2], penalty: [0, 1] },
+    };
+
+    const range = priceLevelRanges[criteria.budgetLevel];
+    const priceLevelLabels = ["Free", "Inexpensive ($)", "Moderate ($$)", "Expensive ($$$)", "Very Expensive ($$$$)"];
+    const priceLabel = priceLevelLabels[googlePriceLevel] ?? "Unknown";
+
+    if (range.preferred.includes(googlePriceLevel)) {
+      return {
+        score: 10,
+        reasoning: `Price level "${priceLabel}" is ideal for ${criteria.budgetLevel} budget`,
+      };
+    } else if (range.acceptable.includes(googlePriceLevel)) {
+      return {
+        score: 7,
+        reasoning: `Price level "${priceLabel}" is acceptable for ${criteria.budgetLevel} budget`,
+      };
+    } else if (range.penalty.includes(googlePriceLevel)) {
+      // For luxury seeking budget options, it's less problematic than budget seeking luxury
+      const penaltyScore = criteria.budgetLevel === "luxury" ? 5 : 2;
+      return {
+        score: penaltyScore,
+        reasoning: `Price level "${priceLabel}" doesn't match ${criteria.budgetLevel} budget preference`,
+      };
+    }
+  }
+
+  // Fall back to minBudget parsing if no priceLevel available
   const priceInfo = parsePriceLevel(location.minBudget);
 
   // If explicit budget values are provided, use them for validation
@@ -355,7 +395,7 @@ function scoreBudgetFit(
     // Check if location price fits within per-day budget
     // Allow up to 30% of daily budget for a single activity
     const maxAllowedPerActivity = criteria.budgetPerDay * 0.3;
-    
+
     if (priceInfo.level <= maxAllowedPerActivity) {
       return {
         score: 10,
@@ -379,7 +419,7 @@ function scoreBudgetFit(
     // For now, use a conservative estimate: assume 20 activities total
     const estimatedActivities = 20;
     const avgBudgetPerActivity = criteria.budgetTotal / estimatedActivities;
-    
+
     if (priceInfo.level <= avgBudgetPerActivity) {
       return {
         score: 10,
@@ -467,6 +507,12 @@ function scoreBudgetFit(
 /**
  * Score accessibility fit.
  * Range: 0-10 points
+ *
+ * Uses Google Places accessibilityOptions when available:
+ * - wheelchairAccessibleEntrance
+ * - wheelchairAccessibleParking
+ * - wheelchairAccessibleRestroom
+ * - wheelchairAccessibleSeating
  */
 function scoreAccessibilityFit(
   location: Location,
@@ -476,10 +522,12 @@ function scoreAccessibilityFit(
     return { score: 5, reasoning: "No accessibility requirements specified" };
   }
 
-  const locationAccessibility = location.accessibility;
+  // Prefer Google Places accessibilityOptions data
+  const googleAccessibility = location.accessibilityOptions;
+  const legacyAccessibility = location.accessibility;
 
-  // If no accessibility data available, give neutral score
-  if (!locationAccessibility) {
+  // If no accessibility data available from either source, give neutral score
+  if (!googleAccessibility && !legacyAccessibility) {
     return {
       score: 5,
       reasoning: "Accessibility information not available for this location",
@@ -489,35 +537,63 @@ function scoreAccessibilityFit(
   let score = 0;
   const reasons: string[] = [];
 
-  // Check wheelchair accessibility requirement
-  if (accessibility.wheelchairAccessible) {
-    if (locationAccessibility.wheelchairAccessible) {
-      score += 5;
-      reasons.push("Wheelchair accessible");
-    } else {
-      score -= 3;
-      reasons.push("Not wheelchair accessible");
-    }
-  }
+  // Use Google Places data if available (more reliable)
+  if (googleAccessibility) {
+    if (accessibility.wheelchairAccessible) {
+      // Check wheelchair accessible entrance (most important)
+      if (googleAccessibility.wheelchairAccessibleEntrance) {
+        score += 4;
+        reasons.push("Wheelchair accessible entrance");
+      } else {
+        score -= 4;
+        reasons.push("No wheelchair accessible entrance");
+      }
 
-  // Check elevator requirement
-  if (accessibility.elevatorRequired) {
-    if (locationAccessibility.elevatorRequired) {
-      score += 3;
-      reasons.push("Elevator available");
-    } else if (locationAccessibility.stepFreeAccess) {
+      // Check additional wheelchair features for bonus points
+      if (googleAccessibility.wheelchairAccessibleParking) {
+        score += 2;
+        reasons.push("Wheelchair accessible parking");
+      }
+      if (googleAccessibility.wheelchairAccessibleRestroom) {
+        score += 2;
+        reasons.push("Wheelchair accessible restroom");
+      }
+      if (googleAccessibility.wheelchairAccessibleSeating) {
+        score += 2;
+        reasons.push("Wheelchair accessible seating");
+      }
+    }
+  } else if (legacyAccessibility) {
+    // Fall back to legacy accessibility data
+    if (accessibility.wheelchairAccessible) {
+      if (legacyAccessibility.wheelchairAccessible) {
+        score += 5;
+        reasons.push("Wheelchair accessible");
+      } else {
+        score -= 3;
+        reasons.push("Not wheelchair accessible");
+      }
+    }
+
+    // Check elevator requirement
+    if (accessibility.elevatorRequired) {
+      if (legacyAccessibility.elevatorRequired) {
+        score += 3;
+        reasons.push("Elevator available");
+      } else if (legacyAccessibility.stepFreeAccess) {
+        score += 2;
+        reasons.push("Step-free access available (no elevator needed)");
+      } else {
+        score -= 2;
+        reasons.push("Elevator not available");
+      }
+    }
+
+    // Bonus for step-free access if wheelchair accessible is required
+    if (accessibility.wheelchairAccessible && legacyAccessibility.stepFreeAccess) {
       score += 2;
-      reasons.push("Step-free access available (no elevator needed)");
-    } else {
-      score -= 2;
-      reasons.push("Elevator not available");
+      reasons.push("Step-free access confirmed");
     }
-  }
-
-  // Bonus for step-free access if wheelchair accessible is required
-  if (accessibility.wheelchairAccessible && locationAccessibility.stepFreeAccess) {
-    score += 2;
-    reasons.push("Step-free access confirmed");
   }
 
   // Clamp score to 0-10 range

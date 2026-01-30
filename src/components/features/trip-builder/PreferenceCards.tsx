@@ -9,18 +9,13 @@ import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
-import type { TripStyle, TransportMode } from "@/types/trip";
+import type { TripStyle } from "@/types/trip";
 
 type PreferenceFormValues = {
   // Group composition
   groupSize?: number;
   groupType?: "solo" | "couple" | "family" | "friends" | "business" | "";
   childrenAges?: string;
-  // Transportation
-  walkingTolerance?: number;
-  preferTrain?: boolean;
-  preferBus?: boolean;
-  hasRentalCar?: boolean;
   // Travel pace
   travelStyle?: TripStyle | "";
   // Accessibility & Dietary
@@ -92,10 +87,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
       groupSize: data.group?.size,
       groupType: data.group?.type ?? "",
       childrenAges: data.group?.childrenAges?.join(", ") ?? "",
-      walkingTolerance: data.transportPreferences?.walkingTolerance,
-      preferTrain: data.transportPreferences?.preferredModes?.includes("train"),
-      preferBus: data.transportPreferences?.preferredModes?.includes("bus"),
-      hasRentalCar: data.transportPreferences?.hasRentalCar,
       travelStyle: data.style ?? "",
       mobilityAssistance: data.accessibility?.mobility,
       dietary: data.accessibility?.dietary ?? [],
@@ -130,11 +121,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
 
   // Sync form values to context
   const syncToContext = useCallback(() => {
-    const preferredModes: TransportMode[] = [];
-    if (formValues.preferTrain) preferredModes.push("train");
-    if (formValues.preferBus) preferredModes.push("bus");
-    if (formValues.hasRentalCar) preferredModes.push("car");
-
     // Parse children ages
     const childrenAges = formValues.childrenAges
       ?.split(",")
@@ -147,11 +133,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
         size: formValues.groupSize,
         type: formValues.groupType ? (formValues.groupType as "solo" | "couple" | "family" | "friends" | "business") : undefined,
         childrenAges: childrenAges.length > 0 ? childrenAges : undefined,
-      },
-      transportPreferences: {
-        walkingTolerance: formValues.walkingTolerance,
-        preferredModes: preferredModes.length > 0 ? preferredModes : undefined,
-        hasRentalCar: formValues.hasRentalCar,
       },
       style: formValues.travelStyle ? (formValues.travelStyle as TripStyle) : undefined,
       accessibility: {
@@ -271,58 +252,6 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
             {...register("childrenAges")}
           />
         </FormField>
-      </PreferenceCard>
-
-      {/* Transportation Preferences */}
-      <PreferenceCard
-        title="Transportation"
-        description="How do you prefer to get around?"
-      >
-        <FormField
-          id="walking-tolerance"
-          label="Walking Tolerance (meters)"
-          help="Maximum comfortable walking distance"
-        >
-          <Input
-            id="walking-tolerance"
-            type="number"
-            min={0}
-            max={10000}
-            step={100}
-            placeholder="e.g., 1000"
-            className="min-h-[40px]"
-            {...register("walkingTolerance", { valueAsNumber: true })}
-          />
-        </FormField>
-
-        <div className="flex flex-col gap-2">
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-              {...register("preferTrain")}
-            />
-            <span className="text-sm text-warm-gray">Prefer trains</span>
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-              {...register("preferBus")}
-            />
-            <span className="text-sm text-warm-gray">Prefer buses</span>
-          </label>
-
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-              {...register("hasRentalCar")}
-            />
-            <span className="text-sm text-warm-gray">I have a rental car</span>
-          </label>
-        </div>
       </PreferenceCard>
 
       {/* Accessibility & Dietary */}

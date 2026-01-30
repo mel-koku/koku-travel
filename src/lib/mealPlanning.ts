@@ -17,6 +17,7 @@ const MEAL_DURATIONS: Record<MealType, number> = {
 
 /**
  * Find restaurants that match dietary restrictions
+ * Uses Google Places dietaryOptions when available
  */
 function filterRestaurantsByDietary(
   restaurants: Location[],
@@ -26,8 +27,35 @@ function filterRestaurantsByDietary(
     return restaurants;
   }
 
-  // For now, we'll return all restaurants since we don't have dietary metadata
-  // In the future, this would filter based on restaurant metadata
+  // Normalize dietary restrictions to lowercase for comparison
+  const normalizedRestrictions = dietaryRestrictions.map((r) => r.toLowerCase());
+
+  // Check for vegetarian/vegan requirements
+  const requiresVegetarian = normalizedRestrictions.includes("vegetarian") || normalizedRestrictions.includes("vegan");
+
+  // If vegetarian/vegan is required, filter based on dietaryOptions
+  if (requiresVegetarian) {
+    const filteredByVegetarian = restaurants.filter((restaurant) => {
+      // If we have dietary data, check servesVegetarianFood
+      if (restaurant.dietaryOptions?.servesVegetarianFood !== undefined) {
+        return restaurant.dietaryOptions.servesVegetarianFood;
+      }
+      // If no dietary data, include restaurant (don't exclude based on missing data)
+      // But restaurants with explicit data will be prioritized
+      return true;
+    });
+
+    // If we filtered too aggressively (< 3 options), relax the filter
+    // This prevents empty results when few restaurants have dietary metadata
+    if (filteredByVegetarian.length < 3) {
+      return restaurants;
+    }
+    return filteredByVegetarian;
+  }
+
+  // For other dietary restrictions (halal, kosher, gluten-free, dairy-free)
+  // we don't have Google Places data, so return all restaurants
+  // These could be enhanced in the future with additional data sources
   return restaurants;
 }
 
