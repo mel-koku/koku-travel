@@ -4,7 +4,8 @@ import type { Trip, TripDay, TripActivity } from "@/types/tripDomain";
 import type { TripBuilderData } from "@/types/trip";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
-import { insertMealActivities } from "@/lib/mealPlanning";
+// Note: insertMealActivities is disabled in favor of post-generation smart prompts
+// import { insertMealActivities } from "@/lib/mealPlanning";
 import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { logger } from "@/lib/logger";
@@ -273,23 +274,29 @@ export async function generateTripFromBuilderData(
     }
   }
 
-  // Insert meal activities into each day (sequentially to track used locations across days)
-  const daysWithMeals: typeof itinerary.days = [];
-  for (const day of itinerary.days) {
-    const dayWithMeals = await insertMealActivities(
-      day,
-      builderData,
-      restaurants,
-      usedLocationIds,
-      usedLocationNames,
-    );
-    daysWithMeals.push(dayWithMeals);
-  }
-
-  itinerary = {
-    ...itinerary,
-    days: daysWithMeals,
-  };
+  // Auto-meal insertion is disabled in favor of post-generation smart prompts.
+  // Users can now choose to add meals via the SmartPromptsDrawer after viewing
+  // their generated itinerary. This provides more control and transparency.
+  //
+  // To re-enable auto-meal insertion, uncomment the following code:
+  //
+  // const daysWithMeals: typeof itinerary.days = [];
+  // for (const day of itinerary.days) {
+  //   const dayWithMeals = await insertMealActivities(
+  //     day,
+  //     builderData,
+  //     restaurants,
+  //     usedLocationIds,
+  //     usedLocationNames,
+  //   );
+  //   daysWithMeals.push(dayWithMeals);
+  // }
+  //
+  // itinerary = {
+  //   ...itinerary,
+  //   days: daysWithMeals,
+  // };
+  void restaurants; // Silence unused variable warning
 
   // Convert to Trip domain model
   const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);
