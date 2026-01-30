@@ -165,8 +165,9 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
         )}>
           {/* Left Panel - Form */}
           <div className={cn(
-            "flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:max-w-3xl lg:pb-6",
-            currentStep !== 3 && "lg:flex-initial"
+            "flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:pb-6",
+            currentStep === 1 && "lg:max-w-3xl lg:flex-initial",
+            currentStep === 3 && "lg:max-w-3xl"
           )}>
             {currentStep === 1 && (
               <PlanStep onValidityChange={handleStep1ValidityChange} />
