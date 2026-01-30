@@ -66,3 +66,11 @@ export {
   type PlannerOptions,
   type DayEntryPoints,
 } from "./usePlanItinerary";
+
+// Location search hook (database-backed)
+export {
+  locationSearchKeys,
+  useLocationSearch,
+  type LocationSearchOptions,
+  type LocationSearchResult,
+} from "./useLocationSearch";

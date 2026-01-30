@@ -241,9 +241,9 @@ describe("TripBuilderContext", () => {
         result.current.setData((prev) => ({
           ...prev,
           entryPoint: {
-            type: "hotel",
-            id: "custom-hotel",
-            name: "Test Hotel",
+            type: "airport",
+            id: "NRT",
+            name: "Narita International Airport",
             coordinates: { lat: 35.6762, lng: 139.6503 },
           },
         }));

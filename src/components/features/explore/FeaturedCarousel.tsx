@@ -377,7 +377,7 @@ export function FeaturedCarousel({ locations, totalLocations }: FeaturedCarousel
       {!hasScrolledDown && (
         <div className="fixed bottom-8 right-10 sm:bottom-12 sm:right-16 z-50 transition-opacity duration-500">
           <div className="flex flex-col items-center gap-1.5 text-stone animate-bounce">
-            <span className="text-[9px] sm:text-[10px] uppercase tracking-widest whitespace-nowrap">Explore all locations</span>
+            <span className="text-[9px] sm:text-[10px] uppercase tracking-widest whitespace-nowrap">Scroll</span>
             <div className="h-6 w-px bg-gradient-to-b from-stone/60 to-transparent" />
           </div>
         </div>
