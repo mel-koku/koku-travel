@@ -56,10 +56,17 @@ export function SmartPromptsDrawer({
       >
         <div className="rounded-t-2xl border-t border-x border-border bg-background shadow-lg">
           {/* Handle */}
-          <button
-            type="button"
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => setIsExpanded(!isExpanded)}
-            className="flex w-full items-center justify-between px-4 py-3"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                setIsExpanded(!isExpanded);
+              }
+            }}
+            className="flex w-full cursor-pointer items-center justify-between px-4 py-3"
           >
             <div className="flex items-center gap-2">
               <Lightbulb className="h-5 w-5 text-brand-primary" />
@@ -84,7 +91,7 @@ export function SmartPromptsDrawer({
                 <ChevronUp className="h-5 w-5 text-stone" />
               )}
             </div>
-          </button>
+          </div>
 
           {/* Content */}
           {isExpanded && (
