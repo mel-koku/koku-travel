@@ -1,7 +1,10 @@
-// Trip Builder - 2-step flow with live preview
+// Trip Builder - 4-step flow with live preview
 
 export { TripBuilderV2 } from "./TripBuilderV2";
 export type { TripBuilderV2Props } from "./TripBuilderV2";
+
+// Intro step
+export { IntroStep } from "./IntroStep";
 
 // Step 1 components
 export { PlanStep } from "./PlanStep";
