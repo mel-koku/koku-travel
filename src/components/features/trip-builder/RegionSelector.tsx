@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
+import { Info } from "lucide-react";
 
+import { cn } from "@/lib/cn";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { RegionCard } from "./RegionCard";
 import {
@@ -66,8 +68,41 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
     [setData, onSelectionChange]
   );
 
+  const hasSelection = selectedRegions.length > 0;
+
   return (
     <div className="flex flex-col gap-6">
+      {/* Combined instruction and selection status */}
+      <div
+        className={cn(
+          "mx-auto flex max-w-2xl items-center gap-3 rounded-xl px-5 py-4 text-center transition-colors",
+          hasSelection
+            ? "bg-brand-primary/5 border border-brand-primary/20"
+            : "bg-sand/50"
+        )}
+      >
+        <Info className={cn(
+          "h-5 w-5 shrink-0",
+          hasSelection ? "text-brand-primary" : "text-warm-gray"
+        )} />
+        <p className="text-sm text-charcoal">
+          {hasSelection ? (
+            <>
+              <span className="font-semibold text-brand-primary">{selectedRegions.length}</span>{" "}
+              {selectedRegions.length === 1 ? "region" : "regions"} selected.{" "}
+              <span className="text-warm-gray">
+                Click to add more or remove. Cities will be auto-selected based on your trip duration.
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="font-medium">Click on the regions</span> you&apos;d like to explore.
+              We&apos;ve highlighted our top picks based on your preferences.
+            </>
+          )}
+        </p>
+      </div>
+
       {/* Region Grid - 1 column mobile, 2 columns tablet, 3 columns desktop */}
       <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {scoredRegions.map((scored) => (
@@ -82,20 +117,8 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
         ))}
       </div>
 
-      {/* Selection Summary */}
-      {selectedRegions.length > 0 && (
-        <div className="rounded-xl bg-brand-primary/5 border border-brand-primary/20 px-5 py-4 text-center">
-          <p className="text-sm text-charcoal">
-            <span className="font-semibold text-brand-primary">{selectedRegions.length}</span>{" "}
-            {selectedRegions.length === 1 ? "region" : "regions"} selected
-            <span className="mx-2 text-stone">·</span>
-            <span className="text-stone">Cities will be auto-selected based on your trip duration</span>
-          </p>
-        </div>
-      )}
-
-      {/* Validation Message */}
-      {selectedRegions.length === 0 && (
+      {/* Validation Message - only show when no selection */}
+      {!hasSelection && (
         <div className="rounded-xl border border-warning/30 bg-warning/10 px-5 py-4 text-center">
           <p className="text-sm text-warning">
             Select at least one region to continue

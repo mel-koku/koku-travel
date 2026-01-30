@@ -2,18 +2,16 @@
 
 import { useCallback } from "react";
 
-import { SelectionReview } from "./SelectionReview";
 import { PreferenceCards } from "./PreferenceCards";
 
 export type ReviewStepProps = {
-  onBack?: () => void;
   onValidityChange?: (isValid: boolean) => void;
 };
 
-export function ReviewStep({ onBack, onValidityChange }: ReviewStepProps) {
+export function ReviewStep({ onValidityChange }: ReviewStepProps) {
   const handlePreferenceValidityChange = useCallback(
     (_isValid: boolean) => {
-      // Step 2 is always considered valid since preferences are optional
+      // Step 3 is always considered valid since preferences are optional
       onValidityChange?.(true);
     },
     [onValidityChange]
@@ -21,22 +19,18 @@ export function ReviewStep({ onBack, onValidityChange }: ReviewStepProps) {
 
   return (
     <div className="flex h-full flex-col gap-6">
-      {/* Selection Review */}
-      <SelectionReview onEdit={onBack} />
+      {/* Header */}
+      <div className="text-center">
+        <h2 className="font-serif text-2xl font-bold text-charcoal sm:text-3xl">
+          Customize Your Experience
+        </h2>
+        <p className="mx-auto mt-2 max-w-2xl text-base text-warm-gray">
+          All fields are optional. Add details to get more personalized recommendations, or skip ahead to generate your itinerary.
+        </p>
+      </div>
 
       {/* Preference Cards */}
-      <div>
-        <div className="mb-4">
-          <h3 className="text-lg font-semibold text-charcoal">
-            Customize Your Experience
-          </h3>
-          <p className="mt-1 text-sm text-foreground-secondary">
-            Fine-tune your preferences to get personalized recommendations.
-          </p>
-        </div>
-
-        <PreferenceCards onValidityChange={handlePreferenceValidityChange} />
-      </div>
+      <PreferenceCards onValidityChange={handlePreferenceValidityChange} />
     </div>
   );
 }

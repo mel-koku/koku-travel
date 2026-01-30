@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
-import { SmartPromptsDrawer, useSmartPrompts } from "@/components/features/itinerary/SmartPromptsDrawer";
+import { useSmartPrompts } from "@/components/features/itinerary/SmartPromptsDrawer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useAppState } from "@/state/AppState";
 import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
@@ -212,19 +212,12 @@ function ItineraryPageContent() {
           isUsingMock={isUsingMock}
           tripStartDate={selectedTrip?.builderData?.dates?.start}
           tripBuilderData={selectedTrip?.builderData}
+          suggestions={smartPrompts.gaps}
+          onAcceptSuggestion={handleSmartPromptAccept}
+          onSkipSuggestion={handleSmartPromptSkip}
+          loadingSuggestionId={smartPromptActions.loadingGapId}
         />
       </ErrorBoundary>
-
-      {/* Smart Prompts Drawer */}
-      {smartPrompts.gaps.length > 0 && (
-        <SmartPromptsDrawer
-          gaps={smartPrompts.gaps}
-          onAccept={handleSmartPromptAccept}
-          onSkip={handleSmartPromptSkip}
-          onDismissAll={smartPrompts.handleDismissAll}
-          loadingGapId={smartPromptActions.loadingGapId}
-        />
-      )}
     </div>
   );
 }
