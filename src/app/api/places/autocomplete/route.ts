@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { autocompletePlaces, fetchPlaceCoordinates } from "@/lib/googlePlaces";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
+import { featureFlags } from "@/lib/env/featureFlags";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
   createRequestContext,
@@ -154,6 +155,16 @@ export async function POST(request: NextRequest) {
     }
   }
 
+  // Check if Google Places API is enabled
+  if (!featureFlags.enableGooglePlaces) {
+    return addRequestContextHeaders(
+      serviceUnavailable("Google Places API calls are disabled.", {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
+  }
+
   try {
     const places = await autocompletePlaces({
       input: input.trim(),
@@ -249,6 +260,16 @@ export async function GET(request: NextRequest) {
   }
 
   const validatedPlaceId = placeIdValidation.data;
+
+  // Check if Google Places API is enabled
+  if (!featureFlags.enableGooglePlaces) {
+    return addRequestContextHeaders(
+      serviceUnavailable("Google Places API calls are disabled.", {
+        requestId: finalContext.requestId,
+      }),
+      finalContext,
+    );
+  }
 
   try {
     const place = await fetchPlaceCoordinates(validatedPlaceId);
