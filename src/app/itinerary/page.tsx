@@ -2,8 +2,8 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
-import { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 // Force dynamic rendering since we use useSearchParams()
 export const dynamic = "force-dynamic";
@@ -30,12 +30,9 @@ const formatDateLabel = (iso: string | undefined) => {
 };
 
 function ItineraryPageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const searchParamsString = searchParams.toString();
   const requestedTripId = searchParams.get("trip");
   const { trips, updateTripItinerary } = useAppState();
-  const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
 
   // Track mount state to prevent hydration mismatch
@@ -49,40 +46,15 @@ function ItineraryPageContent() {
       return null;
     }
     if (
-      userSelectedTripId &&
-      trips.some((trip) => trip.id === userSelectedTripId)
-    ) {
-      return userSelectedTripId;
-    }
-    if (
       requestedTripId &&
       trips.some((trip) => trip.id === requestedTripId)
     ) {
       return requestedTripId;
     }
     return trips[0]?.id ?? null;
-  }, [requestedTripId, trips, userSelectedTripId]);
+  }, [requestedTripId, trips]);
 
   const isUsingMock = trips.length === 0 && env.useMockItinerary;
-
-  const handleTripChange = useCallback(
-    (event: ChangeEvent<HTMLSelectElement>) => {
-      const nextId = event.target.value || null;
-      setUserSelectedTripId(nextId);
-
-      const params = new URLSearchParams(searchParamsString);
-      if (nextId) {
-        params.set("trip", nextId);
-      } else {
-        params.delete("trip");
-      }
-      const query = params.toString();
-      router.replace(query.length > 0 ? `/itinerary?${query}` : "/itinerary", {
-        scroll: false,
-      });
-    },
-    [router, searchParamsString],
-  );
 
   const handleItineraryChange = useCallback(
     (next: Itinerary) => {
@@ -202,11 +174,6 @@ function ItineraryPageContent() {
           itinerary={activeItinerary}
           tripId={selectedTrip?.id ?? "mock"}
           onItineraryChange={selectedTrip ? handleItineraryChange : undefined}
-          selectedTripId={selectedTripId}
-          onTripChange={handleTripChange}
-          trips={trips}
-          headingText={trips.length > 1 ? "Your Itineraries" : "Your Itinerary"}
-          descriptionText="Choose a saved trip to review or continue planning."
           createdLabel={createdLabel}
           updatedLabel={updatedLabel}
           isUsingMock={isUsingMock}
