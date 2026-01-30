@@ -91,6 +91,7 @@ function initializeRedis(): void {
   } else {
     const isProduction = process.env.NODE_ENV === "production";
     const enforceRedis = process.env.ENFORCE_REDIS_RATE_LIMIT !== "false";
+    const isVercelProduction = process.env.VERCEL_ENV === "production";
 
     if (isProduction && enforceRedis) {
       // In production, Redis is required for proper rate limiting across instances
@@ -101,11 +102,20 @@ function initializeRedis(): void {
         "To temporarily bypass this check, set ENFORCE_REDIS_RATE_LIMIT=false (not recommended).";
       logger.error(errorMessage);
       throw new Error(errorMessage);
+    } else if (isVercelProduction) {
+      // Vercel production with bypass - critical warning
+      logger.error(
+        "CRITICAL: Running Vercel production without Redis rate limiting. " +
+        "This MUST be resolved. Configure Upstash Redis and set ENFORCE_REDIS_RATE_LIMIT=true.",
+        new Error("Rate limit bypass in Vercel production"),
+        { environment: "production", vercelEnv: process.env.VERCEL_ENV },
+      );
     } else if (isProduction) {
-      // Production with Redis enforcement disabled
+      // Preview/staging with bypass - warning only
       logger.warn(
         "Running in production without Redis rate limiting (ENFORCE_REDIS_RATE_LIMIT=false). " +
-        "This is not recommended for multi-instance deployments. Using in-memory fallback.",
+        "Acceptable for preview/staging, not for production.",
+        { vercelEnv: process.env.VERCEL_ENV || "unknown" },
       );
     } else {
       logger.warn(

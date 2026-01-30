@@ -101,6 +101,7 @@ function createLenientConfig(): EnvConfig {
  */
 function validateEnv(): EnvConfig {
   const isProduction = process.env.NODE_ENV === "production";
+  const isVercelProduction = process.env.VERCEL_ENV === "production";
   const isClientSide = isBrowser();
 
   // On client-side, NEXT_PUBLIC_* variables are embedded at build time
@@ -110,10 +111,26 @@ function validateEnv(): EnvConfig {
     return createLenientConfig();
   }
 
+  const validateEnvFlag = process.env.VALIDATE_ENV;
+
+  // Block VALIDATE_ENV=false in Vercel production
+  if (isVercelProduction && validateEnvFlag === "false") {
+    throw new Error(
+      "VALIDATE_ENV=false is not allowed in Vercel production. " +
+      "Configure all required environment variables properly.",
+    );
+  }
+
   // Server-side: validate strictly in production (unless explicitly disabled)
-  const shouldValidateStrictly = isProduction && process.env.VALIDATE_ENV !== "false";
+  const shouldValidateStrictly = isProduction && validateEnvFlag !== "false";
 
   if (!shouldValidateStrictly) {
+    if (isProduction && validateEnvFlag === "false") {
+      logger.warn(
+        "Environment validation disabled. Only acceptable for preview/staging.",
+        { vercelEnv: process.env.VERCEL_ENV || "unknown" },
+      );
+    }
     // Development or validation disabled: use lenient mode
     return createLenientConfig();
   }

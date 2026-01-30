@@ -1,4 +1,10 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
+import bundleAnalyzer from "@next/bundle-analyzer";
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const localPatterns = [
   {
@@ -138,4 +144,29 @@ const nextConfig: NextConfig = {
   // Default limit is 1MB, but individual routes can set stricter limits
 };
 
-export default nextConfig;
+// Compose config wrappers: bundle analyzer -> sentry
+const configWithAnalyzer = withBundleAnalyzer(nextConfig);
+
+export default withSentryConfig(configWithAnalyzer, {
+  // For all available options, see:
+  // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+
+  // Only upload source maps in production
+  silent: process.env.NODE_ENV !== "production",
+
+  // Configure source maps settings
+  sourcemaps: {
+    // Hides source maps from generated client bundles
+    deleteSourcemapsAfterUpload: true,
+  },
+
+  // Webpack-specific options (not supported with Turbopack)
+  webpack: {
+    // Automatically tree-shake Sentry logger statements
+    treeshake: {
+      removeDebugLogging: true,
+    },
+    // Automatically instrument Next.js data fetching methods
+    automaticVercelMonitors: true,
+  },
+});
