@@ -2,7 +2,18 @@
  * Defines the start and end ISO date strings used throughout the trip builder.
  */
 import { INTEREST_CATEGORIES } from "@/data/interests";
+import { VIBES, type VibeId as VibeIdFromData } from "@/data/vibes";
 import type { TravelerProfile } from "./traveler";
+
+/**
+ * Re-export VibeId from vibes.ts for convenience.
+ */
+export type VibeId = VibeIdFromData;
+
+/**
+ * Valid vibe IDs set for validation.
+ */
+export const VALID_VIBE_IDS = new Set<VibeId>(VIBES.map((v) => v.id));
 
 export type TravelDates = {
   start?: string;
@@ -104,9 +115,10 @@ export type DayEntryPoint = {
 export type TripBuilderData = {
   duration?: number; // 1-14
   dates: TravelDates; // ISO yyyy-mm-dd
+  vibes?: VibeId[]; // aspirational vibe selections
   regions?: RegionId[];
   cities?: CityId[];
-  interests?: InterestId[]; // later steps
+  interests?: InterestId[]; // derived from vibes for backward compatibility
   style?: TripStyle; // later steps
   entryPoint?: EntryPoint;
   accessibility?: {

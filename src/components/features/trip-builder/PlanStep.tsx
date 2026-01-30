@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import { EssentialsForm } from "./EssentialsForm";
-import { InterestChips } from "./InterestChips";
-import { CityList } from "./CityList";
+import { VibeSelector } from "./VibeSelector";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 
 export type PlanStepProps = {
@@ -22,13 +21,12 @@ export function PlanStep({ onValidityChange }: PlanStepProps) {
     []
   );
 
-  const hasSelectedCities = (data.cities?.length ?? 0) > 0;
+  const hasSelectedVibes = (data.vibes?.length ?? 0) > 0;
 
-  // Re-evaluate overall validity whenever essentials or cities change
+  // Re-evaluate overall validity whenever essentials or vibes change
   useEffect(() => {
-    onValidityChange?.(essentialsValid && hasSelectedCities);
-  }, [essentialsValid, hasSelectedCities, onValidityChange]);
-  const hasSelectedInterests = (data.interests?.length ?? 0) > 0;
+    onValidityChange?.(essentialsValid && hasSelectedVibes);
+  }, [essentialsValid, hasSelectedVibes, onValidityChange]);
 
   return (
     <div className="flex h-full flex-col gap-6">
@@ -37,39 +35,19 @@ export function PlanStep({ onValidityChange }: PlanStepProps) {
         <EssentialsForm onValidityChange={handleEssentialsValidityChange} />
       </div>
 
-      {/* Interests + City Selection */}
-      <div className="flex flex-1 flex-col gap-4">
-        {/* Interest Chips */}
-        <div className="rounded-xl border border-border bg-background p-4">
-          <InterestChips />
-        </div>
+      {/* Vibe Selection */}
+      <div className="rounded-xl border border-border bg-background p-5">
+        <VibeSelector />
+      </div>
 
-        {/* City Selection Header */}
-        <div>
-          <h3 className="text-lg font-semibold text-charcoal">
-            Select Cities
-          </h3>
-          <p className="text-sm text-foreground-secondary">
-            {hasSelectedInterests
-              ? "Cities are highlighted based on your interests."
-              : "Choose which cities to visit on your trip."}
+      {/* Validation Message */}
+      {!hasSelectedVibes && essentialsValid && (
+        <div className="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
+          <p className="text-sm text-warning">
+            Select at least one vibe to continue to the next step.
           </p>
         </div>
-
-        {/* City Selection List */}
-        <div className="flex-1 min-h-[400px]">
-          <CityList />
-        </div>
-
-        {/* Validation Message */}
-        {!hasSelectedCities && essentialsValid && (
-          <div className="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
-            <p className="text-sm text-warning">
-              Select at least one city to continue to the next step.
-            </p>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }

@@ -13,8 +13,9 @@ import {
 
 import { getLocal, setLocal } from "@/lib/storageHelpers";
 import { TRIP_BUILDER_STORAGE_KEY, APP_STATE_DEBOUNCE_MS } from "@/lib/constants";
-import type { CityId, EntryPoint, InterestId, RegionId, TripBuilderData, TripStyle } from "@/types/trip";
-import { INTEREST_CATEGORIES } from "@/data/interests";
+import type { CityId, EntryPoint, RegionId, TripBuilderData, TripStyle, VibeId } from "@/types/trip";
+import { VALID_VIBE_IDS } from "@/types/trip";
+import { vibesToInterests, MAX_VIBE_SELECTION } from "@/data/vibes";
 
 type TripBuilderContextValue = {
   data: TripBuilderData;
@@ -22,11 +23,10 @@ type TripBuilderContextValue = {
   reset: () => void;
 };
 
-const MAX_INTEREST_SELECTION = 5;
-const VALID_INTERESTS = new Set<InterestId>(INTEREST_CATEGORIES.map((category) => category.id));
 
 const createDefaultData = (): TripBuilderData => ({
   dates: {},
+  vibes: [],
   regions: [],
   cities: [],
   interests: [],
@@ -40,7 +40,9 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   if (!raw) {
     return base;
   }
-  const normalizedInterests = sanitizeInterests(raw.interests);
+  const normalizedVibes = sanitizeVibes(raw.vibes);
+  // Derive interests from vibes automatically for backward compatibility
+  const derivedInterests = vibesToInterests(normalizedVibes);
   const normalizedStyle = sanitizeStyle(raw.style);
   const normalizedAccessibility = sanitizeAccessibility(raw.accessibility);
   const normalizedEntryPoint = sanitizeEntryPoint(raw.entryPoint);
@@ -53,9 +55,10 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
       ...base.dates,
       ...raw.dates,
     },
+    vibes: normalizedVibes,
     regions: normalizedRegions,
     cities: normalizedCities,
-    interests: normalizedInterests,
+    interests: derivedInterests,
     style: normalizedStyle,
     entryPoint: normalizedEntryPoint,
     accessibility: normalizedAccessibility,
@@ -96,6 +99,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
             ...normalizedPrev.dates,
             ...normalizedStored.dates,
           },
+          vibes: normalizedStored.vibes,
           regions: normalizedStored.regions,
           cities: normalizedStored.cities,
           interests: normalizedStored.interests,
@@ -224,20 +228,20 @@ function sanitizeCities(cities?: CityId[] | string[]): CityId[] {
   return next;
 }
 
-function sanitizeInterests(interests?: InterestId[]): InterestId[] {
-  if (!interests || interests.length === 0) {
+function sanitizeVibes(vibes?: VibeId[]): VibeId[] {
+  if (!vibes || vibes.length === 0) {
     return [];
   }
-  const next: InterestId[] = [];
-  for (const interest of interests) {
-    if (!VALID_INTERESTS.has(interest)) {
+  const next: VibeId[] = [];
+  for (const vibe of vibes) {
+    if (!VALID_VIBE_IDS.has(vibe)) {
       continue;
     }
-    if (next.includes(interest)) {
+    if (next.includes(vibe)) {
       continue;
     }
-    next.push(interest);
-    if (next.length >= MAX_INTEREST_SELECTION) {
+    next.push(vibe);
+    if (next.length >= MAX_VIBE_SELECTION) {
       break;
     }
   }
