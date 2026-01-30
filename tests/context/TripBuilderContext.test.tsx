@@ -32,7 +32,7 @@ describe("TripBuilderContext", () => {
         dates: { start: "2024-01-01", end: "2024-01-07" },
         regions: ["kansai"],
         cities: ["kyoto"],
-        interests: ["culture"],
+        vibes: ["cultural_heritage"], // vibes derive interests
         style: "balanced" as const,
         accessibility: { mobility: true },
       };
@@ -45,7 +45,7 @@ describe("TripBuilderContext", () => {
 
       expect(result.current.data.regions).toEqual(["kansai"]);
       expect(result.current.data.cities).toEqual(["kyoto"]);
-      expect(result.current.data.interests).toEqual(["culture"]);
+      expect(result.current.data.interests).toEqual(["culture", "history"]); // derived from cultural_heritage vibe
       expect(result.current.data.style).toBe("balanced");
     });
   });
@@ -322,7 +322,7 @@ describe("TripBuilderContext", () => {
       expect(result.current.data.accessibility?.dietary).toEqual(["vegetarian", "vegan", "halal"]);
     });
 
-    it("should filter out invalid interests", () => {
+    it("should filter out invalid vibes and derive correct interests", () => {
       const { result } = renderHook(() => useTripBuilder(), {
         wrapper: createContextWrapper(TripBuilderProvider),
       });
@@ -330,12 +330,14 @@ describe("TripBuilderContext", () => {
       act(() => {
         result.current.setData((prev) => ({
           ...prev,
-          // @ts-expect-error Testing invalid interests
-          interests: ["culture", "invalid-interest", "food"],
+          // @ts-expect-error Testing invalid vibes
+          vibes: ["cultural_heritage", "invalid-vibe", "foodie_paradise"],
         }));
       });
 
-      expect(result.current.data.interests).toEqual(["culture", "food"]);
+      // Invalid vibes are filtered out, interests derived from valid vibes
+      expect(result.current.data.vibes).toEqual(["cultural_heritage", "foodie_paradise"]);
+      expect(result.current.data.interests).toEqual(["culture", "history", "food"]);
     });
   });
 
