@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { Info } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { RegionCard } from "./RegionCard";
@@ -68,18 +67,9 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Info Banner */}
-      <div className="flex items-start gap-3 rounded-lg border border-brand-primary/20 bg-brand-primary/5 p-3">
-        <Info className="h-5 w-5 shrink-0 text-brand-primary" />
-        <p className="text-sm text-charcoal">
-          <span className="font-medium">Regions ranked by your vibes.</span>{" "}
-          Top matches are pre-selected. Cities will be auto-selected based on your trip duration.
-        </p>
-      </div>
-
-      {/* Region Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="flex flex-col gap-6">
+      {/* Region Grid - 1 column mobile, 2 columns tablet, 3 columns desktop */}
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {scoredRegions.map((scored) => (
           <RegionCard
             key={scored.region.id}
@@ -94,19 +84,21 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
 
       {/* Selection Summary */}
       {selectedRegions.length > 0 && (
-        <div className="rounded-lg bg-sand/50 px-4 py-3">
+        <div className="rounded-xl bg-brand-primary/5 border border-brand-primary/20 px-5 py-4 text-center">
           <p className="text-sm text-charcoal">
-            <span className="font-medium">{selectedRegions.length}</span>{" "}
+            <span className="font-semibold text-brand-primary">{selectedRegions.length}</span>{" "}
             {selectedRegions.length === 1 ? "region" : "regions"} selected
+            <span className="mx-2 text-stone">·</span>
+            <span className="text-stone">Cities will be auto-selected based on your trip duration</span>
           </p>
         </div>
       )}
 
       {/* Validation Message */}
       {selectedRegions.length === 0 && (
-        <div className="rounded-lg border border-warning/30 bg-warning/10 px-4 py-3">
+        <div className="rounded-xl border border-warning/30 bg-warning/10 px-5 py-4 text-center">
           <p className="text-sm text-warning">
-            Select at least one region to continue.
+            Select at least one region to continue
           </p>
         </div>
       )}
