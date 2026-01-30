@@ -17,6 +17,7 @@ import type { TripBuilderData } from "@/types/trip";
 import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
+import { TripSummary } from "./TripSummary";
 import { Select } from "@/components/ui/Select";
 import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { logger } from "@/lib/logger";
@@ -28,6 +29,7 @@ import {
   type ReplacementCandidate,
 } from "@/hooks/useReplacementCandidates";
 import { REGIONS } from "@/data/regions";
+import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -44,6 +46,11 @@ type ItineraryShellProps = {
   isUsingMock: boolean;
   tripStartDate?: string; // ISO date string (yyyy-mm-dd)
   tripBuilderData?: TripBuilderData;
+  // Smart suggestions (all days)
+  suggestions?: DetectedGap[];
+  onAcceptSuggestion?: (gap: DetectedGap) => void;
+  onSkipSuggestion?: (gap: DetectedGap) => void;
+  loadingSuggestionId?: string | null;
 };
 
 const normalizeItinerary = (incoming: Itinerary): Itinerary => {
@@ -90,9 +97,9 @@ const normalizeItinerary = (incoming: Itinerary): Itinerary => {
   };
 };
 
-export const ItineraryShell = ({ 
-  itinerary, 
-  tripId, 
+export const ItineraryShell = ({
+  itinerary,
+  tripId,
   onItineraryChange,
   selectedTripId,
   onTripChange,
@@ -105,6 +112,10 @@ export const ItineraryShell = ({
   isUsingMock,
   tripStartDate,
   tripBuilderData,
+  suggestions,
+  onAcceptSuggestion,
+  onSkipSuggestion,
+  loadingSuggestionId,
 }: ItineraryShellProps) => {
   const { reorderActivities, replaceActivity, addActivity, getTripById, dayEntryPoints } = useAppState();
   const [selectedDay, setSelectedDay] = useState(0);
@@ -528,6 +539,12 @@ export const ItineraryShell = ({
   const currentDayEntryPoints =
     tripId && currentDay?.id ? dayEntryPoints[`${tripId}-${currentDay.id}`] : undefined;
 
+  // Filter suggestions for the current day
+  const currentDaySuggestions = useMemo(() => {
+    if (!suggestions || !currentDay) return [];
+    return suggestions.filter((gap) => gap.dayIndex === safeSelectedDay);
+  }, [suggestions, currentDay, safeSelectedDay]);
+
   const handleSelectDayChange = useCallback((dayIndex: number) => {
     setSelectedDay(dayIndex);
     setSelectedActivityId(null);
@@ -625,6 +642,9 @@ export const ItineraryShell = ({
                   ))}
                 </div>
               )}
+              {tripBuilderData && (
+                <TripSummary tripData={tripBuilderData} className="mt-4" />
+              )}
             </div>
             <DaySelector
               totalDays={days.length}
@@ -650,6 +670,10 @@ export const ItineraryShell = ({
                 startPoint={currentDayEntryPoints?.startPoint}
                 endPoint={currentDayEntryPoints?.endPoint}
                 tripBuilderData={tripBuilderData}
+                suggestions={currentDaySuggestions}
+                onAcceptSuggestion={onAcceptSuggestion}
+                onSkipSuggestion={onSkipSuggestion}
+                loadingSuggestionId={loadingSuggestionId}
               />
             ) : (
               <p className="text-sm text-stone">

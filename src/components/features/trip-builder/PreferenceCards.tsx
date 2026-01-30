@@ -170,7 +170,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
   }, [syncToContext, onValidityChange]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
       {/* Budget */}
       <PreferenceCard title="Budget" description="Set your travel budget (optional)">
         <BudgetInput
@@ -203,13 +203,13 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
                 >
                   <div
                     className={cn(
-                      "mt-0.5 h-4 w-4 rounded-full border-2 transition",
+                      "mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 transition",
                       field.value === option.value
                         ? "border-brand-primary bg-brand-primary"
                         : "border-border"
                     )}
                   />
-                  <div>
+                  <div className="min-w-0">
                     <span className="text-sm font-medium text-charcoal">
                       {option.label}
                     </span>
@@ -229,7 +229,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
         title="Group Composition"
         description="Tell us about your travel group"
       >
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <FormField id="group-type" label="Group Type">
             <Controller
               control={control}
@@ -252,7 +252,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
               type="number"
               min={1}
               max={20}
-              placeholder="Number of travelers"
+              placeholder="Travelers"
               className="min-h-[40px]"
               {...register("groupSize", { valueAsNumber: true })}
             />
@@ -339,7 +339,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
           <span className="text-sm text-warm-gray">Need mobility assistance</span>
         </label>
 
-        <div className="mt-4">
+        <div className="mt-2">
           <p className="text-sm font-medium text-warm-gray mb-2">
             Dietary Restrictions
           </p>
@@ -382,7 +382,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
           id="additional-notes"
           placeholder="Special requests, specific places you want to visit, etc."
           className="w-full rounded-lg border border-border px-3 py-2 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-          rows={3}
+          rows={4}
           {...register("additionalNotes")}
         />
       </PreferenceCard>
@@ -393,19 +393,20 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
 type PreferenceCardProps = {
   title: string;
   description?: string;
+  className?: string;
   children: React.ReactNode;
 };
 
-function PreferenceCard({ title, description, children }: PreferenceCardProps) {
+function PreferenceCard({ title, description, className, children }: PreferenceCardProps) {
   return (
-    <div className="rounded-xl border border-border bg-background p-4">
-      <div className="mb-4">
+    <div className={cn("rounded-xl border border-border bg-background p-4", className)}>
+      <div className="mb-3">
         <h4 className="text-sm font-semibold text-charcoal">{title}</h4>
         {description && (
           <p className="mt-0.5 text-xs text-stone">{description}</p>
         )}
       </div>
-      <div className="flex flex-col gap-4">{children}</div>
+      <div className="flex flex-col gap-3">{children}</div>
     </div>
   );
 }

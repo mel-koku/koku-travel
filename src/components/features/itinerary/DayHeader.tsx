@@ -9,7 +9,9 @@ import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { logger } from "@/lib/logger";
 import { DayEntryPointEditor } from "./DayEntryPointEditor";
 import { DayRefinementButtons } from "./DayRefinementButtons";
+import { DaySuggestions } from "./DaySuggestions";
 import { useAppState } from "@/state/AppState";
+import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 
 type DayHeaderProps = {
   day: ItineraryDay;
@@ -19,9 +21,26 @@ type DayHeaderProps = {
   builderData?: TripBuilderData;
   itinerary?: Itinerary;
   onRefineDay?: (refinedDay: ItineraryDay) => void;
+  // Smart suggestions for this day
+  suggestions?: DetectedGap[];
+  onAcceptSuggestion?: (gap: DetectedGap) => void;
+  onSkipSuggestion?: (gap: DetectedGap) => void;
+  loadingSuggestionId?: string | null;
 };
 
-export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, itinerary, onRefineDay }: DayHeaderProps) {
+export function DayHeader({
+  day,
+  dayIndex,
+  tripStartDate,
+  tripId,
+  builderData,
+  itinerary,
+  onRefineDay,
+  suggestions,
+  onAcceptSuggestion,
+  onSkipSuggestion,
+  loadingSuggestionId,
+}: DayHeaderProps) {
   const { dayEntryPoints, setDayEntryPoint, reorderActivities } = useAppState();
   
   const entryPointKey = tripId && day.id ? `${tripId}-${day.id}` : undefined;
@@ -266,6 +285,15 @@ export function DayHeader({ day, dayIndex, tripStartDate, tripId, builderData, i
             onSetEndPoint={handleSetEndPoint}
             onOptimizeRoute={handleOptimizeRoute}
           />
+          {/* Smart suggestions for this day */}
+          {suggestions && suggestions.length > 0 && onAcceptSuggestion && onSkipSuggestion && (
+            <DaySuggestions
+              gaps={suggestions}
+              onAccept={onAcceptSuggestion}
+              onSkip={onSkipSuggestion}
+              loadingGapId={loadingSuggestionId}
+            />
+          )}
           {onRefineDay && (
             <div className="border-t border-border pt-4">
               <p className="mb-2 text-sm font-medium text-warm-gray">Refine this day:</p>

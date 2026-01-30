@@ -29,6 +29,7 @@ import {
   type ItineraryTravelMode,
 } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
+import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
@@ -88,6 +89,11 @@ type ItineraryTimelineProps = {
   startPoint?: { name: string; coordinates: { lat: number; lng: number }; placeId?: string };
   endPoint?: { name: string; coordinates: { lat: number; lng: number }; placeId?: string };
   tripBuilderData?: TripBuilderData;
+  // Smart suggestions for this day
+  suggestions?: DetectedGap[];
+  onAcceptSuggestion?: (gap: DetectedGap) => void;
+  onSkipSuggestion?: (gap: DetectedGap) => void;
+  loadingSuggestionId?: string | null;
 };
 
 export const ItineraryTimeline = ({
@@ -105,6 +111,10 @@ export const ItineraryTimeline = ({
   onReplace,
   onCopy,
   tripBuilderData,
+  suggestions,
+  onAcceptSuggestion,
+  onSkipSuggestion,
+  loadingSuggestionId,
 }: ItineraryTimelineProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -552,6 +562,10 @@ export const ItineraryTimeline = ({
                 return { ...current, days: nextDays };
               });
             }}
+            suggestions={suggestions}
+            onAcceptSuggestion={onAcceptSuggestion}
+            onSkipSuggestion={onSkipSuggestion}
+            loadingSuggestionId={loadingSuggestionId}
           />
 
         {/* City Transition Display */}

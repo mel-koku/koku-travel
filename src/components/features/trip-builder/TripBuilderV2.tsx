@@ -6,8 +6,6 @@ import { IntroStep } from "./IntroStep";
 import { PlanStep } from "./PlanStep";
 import { RegionStep } from "./RegionStep";
 import { ReviewStep } from "./ReviewStep";
-import { LivePreview } from "./LivePreview";
-import { MobileBottomSheet, PreviewToggleButton } from "./MobileBottomSheet";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { cn } from "@/lib/cn";
 
@@ -30,7 +28,6 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   const [step1Valid, setStep1Valid] = useState(false);
   const [step2Valid, setStep2Valid] = useState(false);
   const [step3Valid, setStep3Valid] = useState(true);
-  const [mobilePreviewOpen, setMobilePreviewOpen] = useState(false);
 
   const handleStep1ValidityChange = useCallback((isValid: boolean) => {
     setStep1Valid(isValid);
@@ -159,15 +156,12 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
 
       {/* Main Content */}
       <main className="flex flex-1">
-        <div className={cn(
-          "mx-auto flex w-full max-w-7xl flex-1 flex-col lg:flex-row",
-          currentStep !== 3 && "lg:justify-center"
-        )}>
-          {/* Left Panel - Form */}
+        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col items-center">
+          {/* Form Panel */}
           <div className={cn(
-            "flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:pb-6",
-            currentStep === 1 && "lg:max-w-3xl lg:flex-initial",
-            currentStep === 3 && "lg:max-w-3xl"
+            "w-full flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:pb-6",
+            currentStep === 1 && "max-w-3xl",
+            currentStep === 3 && "max-w-5xl"
           )}>
             {currentStep === 1 && (
               <PlanStep onValidityChange={handleStep1ValidityChange} />
@@ -176,19 +170,9 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
               <RegionStep onValidityChange={handleStep2ValidityChange} />
             )}
             {currentStep === 3 && (
-              <ReviewStep
-                onBack={handleBack}
-                onValidityChange={handleStep3ValidityChange}
-              />
+              <ReviewStep onValidityChange={handleStep3ValidityChange} />
             )}
           </div>
-
-          {/* Right Panel - Preview (Desktop) - only show on step 3 */}
-          {currentStep === 3 && (
-            <div className="hidden w-96 shrink-0 border-l border-border bg-background lg:flex lg:flex-col xl:w-[420px]">
-              <LivePreview className="h-full" />
-            </div>
-          )}
         </div>
       </main>
 
@@ -252,19 +236,6 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
         </div>
       </div>
 
-      {/* Mobile Preview Bottom Sheet */}
-      <MobileBottomSheet
-        isOpen={mobilePreviewOpen}
-        onToggle={setMobilePreviewOpen}
-      >
-        <LivePreview showMap={false} />
-      </MobileBottomSheet>
-
-      {/* Mobile Preview Toggle Button */}
-      <PreviewToggleButton
-        onClick={() => setMobilePreviewOpen(true)}
-        isOpen={mobilePreviewOpen}
-      />
     </div>
   );
 }
