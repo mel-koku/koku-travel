@@ -227,7 +227,7 @@ export function DayHeader({
 
   return (
     <div className="mb-6 rounded-xl border border-border bg-surface p-4 sm:p-5">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
+      <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-semibold text-charcoal sm:text-2xl">
             {dateLabel.dayName ? (
@@ -247,29 +247,24 @@ export function DayHeader({
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-sm text-warm-gray sm:text-base">
-            <svg
-              className="h-5 w-5 text-sage"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <span className="font-medium">Expected duration:</span>
-            <span className="font-semibold text-sage">{durationLabel}</span>
-          </div>
+        <div className="flex items-center gap-2 text-sm text-warm-gray">
+          <svg
+            className="h-4 w-4 text-sage"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span className="font-semibold text-sage">{durationLabel}</span>
           {totalDuration > 0 && (
-            <p className="ml-7 text-xs text-foreground-secondary sm:text-sm">
-              Time at locations only. Travel time varies based on selected transport mode
-            </p>
+            <span className="text-foreground-secondary">· time at locations only</span>
           )}
         </div>
       </div>
