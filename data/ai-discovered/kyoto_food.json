@@ -1,0 +1,801 @@
+[
+  {
+    "name": "Kikunoi Honten",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Higashiyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0016,
+      "lng": 135.782
+    },
+    "short_description": "Legendary 3-Michelin-star kaiseki restaurant offering the pinnacle of traditional Kyoto cuisine in a serene setting.",
+    "estimated_duration": "2.5-3 hours",
+    "rating": 4.8,
+    "review_count": 550,
+    "min_budget": "¥30000"
+  },
+  {
+    "name": "Gion Maruyama",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0025,
+      "lng": 135.779
+    },
+    "short_description": "Exquisite kaiseki dining known for its seasonal charcoal-grilled dishes and elegant presentation.",
+    "estimated_duration": "2-2.5 hours",
+    "rating": 4.6,
+    "review_count": 200,
+    "min_budget": "¥25000"
+  },
+  {
+    "name": "Gion Nishikawa",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0015,
+      "lng": 135.777
+    },
+    "short_description": "Intimate kaiseki counter seating serving highly creative and refined dishes by a friendly chef.",
+    "estimated_duration": "2 hours",
+    "rating": 4.7,
+    "review_count": 150,
+    "min_budget": "¥15000"
+  },
+  {
+    "name": "Hyotei",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Okazaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.011,
+      "lng": 135.786
+    },
+    "short_description": "Historic 400-year-old tea house famous for its morning porridge (asagayu) and kaiseki cuisine.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 300,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Mishima-tei",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Teramachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0085,
+      "lng": 135.767
+    },
+    "short_description": "One of Kyoto's oldest and most famous sukiyaki restaurants, serving premium wagyu in a historic building.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.6,
+    "review_count": 1200,
+    "min_budget": "¥10000"
+  },
+  {
+    "name": "Moritaya Pontocho",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Pontocho",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0065,
+      "lng": 135.771
+    },
+    "short_description": "Riverside sukiyaki and shabu-shabu restaurant offering summer outdoor dining (kawayuka) over the Kamo River.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥8000"
+  },
+  {
+    "name": "Hafuu Honten",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gosho-Minami",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0135,
+      "lng": 135.768
+    },
+    "short_description": "Renowned wagyu beef restaurant blending Japanese ingredients with Western steakhouse techniques.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.7,
+    "review_count": 950,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Yoshikawa Tempura",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Tominokoji",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0105,
+      "lng": 135.764
+    },
+    "short_description": "Traditional ryokan serving exceptional kaiseki-style tempura meals in a classic tatami room setting.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.6,
+    "review_count": 400,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Izuju",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0036,
+      "lng": 135.778
+    },
+    "short_description": "Historic sushi shop across from Yasaka Shrine, famous for Kyoto-style saba-zushi (mackerel sushi).",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1100,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Honke Owariya",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Karasuma Oike",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0118,
+      "lng": 135.76
+    },
+    "short_description": "Kyoto's oldest soba noodle shop, dating back to 1465, located in a charming traditional wooden building.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Nishin Soba Matsuba",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0038,
+      "lng": 135.773
+    },
+    "short_description": "The birthplace of nishin soba (herring soba), a classic Kyoto dish, located right next to the Minamiza Theatre.",
+    "estimated_duration": "45 mins - 1 hour",
+    "rating": 4.1,
+    "review_count": 900,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Yamamoto Menzou",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Okazaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0157,
+      "lng": 135.7827
+    },
+    "short_description": "Extremely popular udon shop known for its chewy noodles and burdock tempura; reservations recommended.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 2600,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Okakita",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Okazaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0158,
+      "lng": 135.7828
+    },
+    "short_description": "Refined udon shop famous for its silky egg-drop broth udon, located right next to Yamamoto Menzou.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1300,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Omen Ginkakuji",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Ginkakuji",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.026,
+      "lng": 135.794
+    },
+    "short_description": "Famous udon restaurant serving noodles with a generous side of seasonal vegetables and sesame for dipping.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1100,
+    "min_budget": "¥1800"
+  },
+  {
+    "name": "Hinode Udon",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Eikando",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0165,
+      "lng": 135.792
+    },
+    "short_description": "A beloved local spot famous for its thick, rich curry udon; expect a line during lunch hours.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 950,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Menbaka Fire Ramen",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Nijo",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.012,
+      "lng": 135.746
+    },
+    "short_description": "Famous for its theatrical 'fire ramen' where chefs ignite burning oil over your noodle bowl.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 4500,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Wajouryoumen Sugari",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Karasuma",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0063,
+      "lng": 135.758
+    },
+    "short_description": "Stylish ramen shop in a renovated machiya, known for its motsu (offal) tsukemen and hidden entrance.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Menya Inoichi Hanare",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Shimogyo",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.001,
+      "lng": 135.762
+    },
+    "short_description": "Michelin Bib Gourmand ramen shop serving delicate, dashi-based broth with premium toppings like wagyu.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Ramen Touhichi",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.053,
+      "lng": 135.745
+    },
+    "short_description": "Highly acclaimed ramen shop in northern Kyoto, famous for its soy sauce chicken broth.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Gion Duck Noodles",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0042,
+      "lng": 135.776
+    },
+    "short_description": "Modern noodle bar specializing in duck ramen and tsukemen, using French culinary techniques.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 900,
+    "min_budget": "¥1800"
+  },
+  {
+    "name": "Ramen Sen no Kaze",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Kawaramachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.005,
+      "lng": 135.768
+    },
+    "short_description": "Tourist-friendly ramen spot famous for its creamy pork bone broth and attentive service.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 3500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ippudo Nishiki-Koji",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Nishiki Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0052,
+      "lng": 135.762
+    },
+    "short_description": "Kyoto branch of the world-famous Hakata tonkotsu ramen chain, conveniently located near the market.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Gion Kappa",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0045,
+      "lng": 135.775
+    },
+    "short_description": "Lively, retro izakaya popular with locals for its affordable menu and fun atmosphere.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.3,
+    "review_count": 600,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Menami",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Kiyamachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.008,
+      "lng": 135.77
+    },
+    "short_description": "Established obanzai restaurant offering a refined selection of Kyoto home-style dishes at the counter.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.2,
+    "review_count": 300,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Miyako Yasai Kamo",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Karasuma",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0035,
+      "lng": 135.76
+    },
+    "short_description": "Budget-friendly restaurant offering an all-you-can-eat buffet of fresh, organic Kyoto vegetables.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 700,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Gyoza ChaoChao Sanjo",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Kiyamachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0088,
+      "lng": 135.77
+    },
+    "short_description": "Popular gyoza bar known for its crispy winged dumplings and wide variety of creative fillings.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Gyoza Taizou",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Shijo",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.003,
+      "lng": 135.762
+    },
+    "short_description": "Small, local gyoza specialist serving thin-skinned dumplings; a hidden gem for quick bites.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 150,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Chojiro Shijo Kiyamachi",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Kiyamachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0038,
+      "lng": 135.77
+    },
+    "short_description": "High-quality kaiten (conveyor belt) sushi restaurant offering fresh seasonal fish in a modern setting.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Kimura Fresh Fish",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Nishiki Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0051,
+      "lng": 135.7635
+    },
+    "short_description": "Historic fishmonger in Nishiki Market selling fresh sashimi skewers and marinated fish to go.",
+    "estimated_duration": "15 mins",
+    "rating": 4.2,
+    "review_count": 300,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Tanaka Keiran",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Nishiki Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0051,
+      "lng": 135.764
+    },
+    "short_description": "Specialty shop famous for its dashi-maki tamago (Japanese rolled omelet) on a stick.",
+    "estimated_duration": "15 mins",
+    "rating": 4.3,
+    "review_count": 250,
+    "min_budget": "¥400"
+  },
+  {
+    "name": "Konnamonja",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Nishiki Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.005,
+      "lng": 135.7625
+    },
+    "short_description": "Popular stall selling soy milk donuts and tofu soft serve ice cream.",
+    "estimated_duration": "15 mins",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥400"
+  },
+  {
+    "name": "Daiyasu",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Nishiki Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.005,
+      "lng": 135.763
+    },
+    "short_description": "Oyster specialty shop and standing bar serving fresh raw, grilled, and fried oysters.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Kai",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Nishiki Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0051,
+      "lng": 135.7638
+    },
+    "short_description": "Famous for 'tako tamago' – a small candied octopus stuffed with a quail egg on a skewer.",
+    "estimated_duration": "15 mins",
+    "rating": 4.0,
+    "review_count": 350,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Gion Komori",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0058,
+      "lng": 135.774
+    },
+    "short_description": "Traditional sweet shop in a preserved machiya, famous for its warabi mochi and matcha parfaits.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1400,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Nakamura Tokichi Kyoto Station",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Kyoto Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.9852,
+      "lng": 135.7585
+    },
+    "short_description": "Branch of the historic Uji tea house, serving premium matcha sweets and savory tea-based dishes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 2800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Tsujiri Honten",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0035,
+      "lng": 135.7745
+    },
+    "short_description": "Iconic tea shop offering a wide range of matcha desserts, parfaits, and souvenirs.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 2000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ippodo Tea Room",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Teramachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0135,
+      "lng": 135.768
+    },
+    "short_description": "One of Kyoto's finest green tea specialists with a serene tea room for tasting high-grade matcha and gyokuro.",
+    "estimated_duration": "1 hour",
+    "rating": 4.6,
+    "review_count": 900,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Kagizen Yoshifusa",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0038,
+      "lng": 135.775
+    },
+    "short_description": "Refined sweet shop famous for its kuzukiri (chilled arrowroot noodles) served with black sugar syrup.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Koe Donuts",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Shijo",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0045,
+      "lng": 135.767
+    },
+    "short_description": "Stylish, Kengo Kuma-designed donut shop focusing on organic, locally sourced ingredients.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1600,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Wife & Husband",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0485,
+      "lng": 135.758
+    },
+    "short_description": "Charming antique-filled cafe offering picnic basket rentals for enjoying coffee by the nearby Kamo River.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.6,
+    "review_count": 600,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Weekenders Coffee Tominokoji",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Tominokoji",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0055,
+      "lng": 135.7645
+    },
+    "short_description": "Hidden specialty coffee roaster located at the back of a parking lot, serving exceptional pour-overs.",
+    "estimated_duration": "30 mins",
+    "rating": 4.5,
+    "review_count": 500,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Kichi Kichi Omurice",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Pontocho",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0075,
+      "lng": 135.771
+    },
+    "short_description": "Viral sensation known for its theatrical chef and fluffy omurice (omelet rice); reservations essential.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Katsukura Sanjo",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Sanjo",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0086,
+      "lng": 135.768
+    },
+    "short_description": "The flagship store of a famous tonkatsu chain, serving crisp pork cutlets with sesame-grinding sauce rituals.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1300,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Okaru",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.004,
+      "lng": 135.775
+    },
+    "short_description": "Late-night udon spot in Gion popular with locals and geisha, famous for its curry udon.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ten-yu",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Gokomachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.006,
+      "lng": 135.766
+    },
+    "short_description": "Michelin-starred tempura restaurant offering a high-end kaiseki experience in a relaxed setting.",
+    "estimated_duration": "2 hours",
+    "rating": 4.6,
+    "review_count": 200,
+    "min_budget": "¥12000"
+  },
+  {
+    "name": "Arashiyama Yoshimura",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Arashiyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0135,
+      "lng": 135.6775
+    },
+    "short_description": "Popular soba restaurant with stunning views of the Togetsukyo Bridge and Arashiyama mountains.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1500,
+    "min_budget": "¥1800"
+  },
+  {
+    "name": "% Arabica Kyoto Arashiyama",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto-fu",
+    "neighborhood": "Arashiyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.013,
+      "lng": 135.6765
+    },
+    "short_description": "Iconic minimalist coffee stand overlooking the Katsura River, known for its high-quality espresso and long lines.",
+    "estimated_duration": "30 mins",
+    "rating": 4.4,
+    "review_count": 3000,
+    "min_budget": "¥600"
+  }
+]

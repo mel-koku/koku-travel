@@ -1,0 +1,767 @@
+[
+  {
+    "name": "Mitchan Sohonten Hatchobori",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hatchobori",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3965,
+      "lng": 132.4635
+    },
+    "short_description": "The pioneer of Hiroshima-style okonomiyaki, serving the classic layered pancake since the 1950s.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 3500,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Okonomiyaki Nagataya",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Otemachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3935,
+      "lng": 132.4545
+    },
+    "short_description": "Extremely popular okonomiyaki spot near the Peace Park, famous for its crispy noodles and signature sauce.",
+    "estimated_duration": "1-1.5 hours",
+    "rating": 4.6,
+    "review_count": 5000,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Reichan",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hiroshima Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3975,
+      "lng": 132.475
+    },
+    "short_description": "A favorite inside Hiroshima Station since 1957, known for using high-quality pork and fresh cabbage.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 2800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Hassei",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Fujimicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.388,
+      "lng": 132.461
+    },
+    "short_description": "Famous for its lively counter seating and delicious okonomiyaki topped with abundant green onions.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Lopez Okonomiyaki",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Yokogawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.406,
+      "lng": 132.448
+    },
+    "short_description": "Run by a Guatemalan chef trained at Hassho, offering a unique spicy jalapeño topping option.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Denkosekka Ekie",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hiroshima Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3978,
+      "lng": 132.4752
+    },
+    "short_description": "Known for its unique 3D dome-shaped okonomiyaki wrapped in a fluffy egg omelet.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Okonomimura",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Shintenchi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.392,
+      "lng": 132.462
+    },
+    "short_description": "A food theme park building housing over 20 different okonomiyaki stalls across multiple floors.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 4000,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Hassho",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Yagenbori",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3905,
+      "lng": 132.464
+    },
+    "short_description": "Legendary shop that takes 20-30 minutes to grill the perfect crispy okonomiyaki; open evenings only.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1800,
+    "min_budget": "¥1800"
+  },
+  {
+    "name": "Henkutsuya",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Shintenchi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3925,
+      "lng": 132.4615
+    },
+    "short_description": "Established over 60 years ago, serving traditional okonomiyaki with a rich, savory sauce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 600,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Yakigaki no Hayashi",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.2975,
+      "lng": 132.3215
+    },
+    "short_description": "The birthplace of grilled oysters on Miyajima, serving large, plump oysters for over 70 years.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 2000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Kakiya",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.297,
+      "lng": 132.321
+    },
+    "short_description": "Stylish oyster specialist offering a wide variety of preparations from raw to deep-fried and grilled.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Shimada Suisan",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajimaguchi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.308,
+      "lng": 132.298
+    },
+    "short_description": "Authentic oyster hut experience where you grill your own fresh oysters right by the fishing rafts.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 1800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Kakifune Kanawa",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Motoyasu River",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.393,
+      "lng": 132.455
+    },
+    "short_description": "Unique floating restaurant on a boat offering elegant oyster kaiseki meals with river views.",
+    "estimated_duration": "2 hours",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Anagomeshi Ueno",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajimaguchi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3115,
+      "lng": 132.3055
+    },
+    "short_description": "Historic restaurant founded in 1901, famous for its grilled conger eel rice box (anagomeshi).",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 4000,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Fujitaya",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.296,
+      "lng": 132.3195
+    },
+    "short_description": "Michelin-starred restaurant specializing in anagomeshi served in hot wooden bowls.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 1200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Tsuki Akari",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Otemachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.394,
+      "lng": 132.455
+    },
+    "short_description": "Refined izakaya specializing in anago dishes, including sashimi and grilled eel rice.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Mametanuki",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.298,
+      "lng": 132.321
+    },
+    "short_description": "Popular spot for steamed conger eel dumplings and hearty anagomeshi sets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Bakudanya Honten",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Shintenchi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.392,
+      "lng": 132.462
+    },
+    "short_description": "Famous for Hiroshima-style tsukemen featuring cold noodles and a spicy, sesame-filled dipping sauce.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 1000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Reimenya",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Tokaichimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3965,
+      "lng": 132.4485
+    },
+    "short_description": "One of the originators of Hiroshima tsukemen, serving a classic, vinegary spicy version.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kisaku",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Funairi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.385,
+      "lng": 132.443
+    },
+    "short_description": "The birthplace of 'Shirunashi Tantanmen' (soupless tantan noodles), offering a numbing spicy kick.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "King Ken",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Otemachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.393,
+      "lng": 132.456
+    },
+    "short_description": "Popular specialist in soupless tantanmen with perfectly balanced sansho pepper spice.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 1000,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Youki Eba",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Eba",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3725,
+      "lng": 132.436
+    },
+    "short_description": "Classic Hiroshima ramen shop famous for its simple yet delicious tonkotsu-shoyu broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 1500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Tsubame",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Kannonmachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3915,
+      "lng": 132.441
+    },
+    "short_description": "One of the oldest ramen shops in Hiroshima, serving a traditional bird-based soup ramen.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 600,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Onomichi Ramen Akatsuki",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Teppocho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.396,
+      "lng": 132.465
+    },
+    "short_description": "Serves authentic Onomichi-style ramen with flat noodles and floating pork back fat in Hiroshima City.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 500,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Naka-chan",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Yagenbori",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3905,
+      "lng": 132.4655
+    },
+    "short_description": "Famous teppanyaki izakaya known for 'Uni Horen' (sea urchin and spinach), a local soul food.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Tempura Masui",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Fukushima-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.391,
+      "lng": 132.435
+    },
+    "short_description": "Local hidden gem specializing in 'Horumon Tempura' (beef offal tempura), a unique regional dish.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Aki Chan",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Fukushima-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3905,
+      "lng": 132.434
+    },
+    "short_description": "Another beloved spot for crispy, chewy horumon tempura and oden in a no-frills setting.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 300,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Suishin Honten",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Tatemachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3935,
+      "lng": 132.4605
+    },
+    "short_description": "Large restaurant specializing in Setouchi seafood, particularly famous for its oyster kamameshi (rice pot).",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 1200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Seasonal Cuisine Nakashima",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hakushima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.405,
+      "lng": 132.465
+    },
+    "short_description": "Hiroshima's only 3-Michelin-star restaurant (past) offering exquisite kaiseki using the finest ingredients.",
+    "estimated_duration": "2.5 hours",
+    "rating": 4.6,
+    "review_count": 150,
+    "min_budget": "¥20000"
+  },
+  {
+    "name": "Tosho",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hijiyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3855,
+      "lng": 132.468
+    },
+    "short_description": "Elegant kaiseki restaurant overlooking a beautiful Japanese garden, formerly a sake brewery residence.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 300,
+    "min_budget": "¥10000"
+  },
+  {
+    "name": "Hanbe Garden",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Minami-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.375,
+      "lng": 132.495
+    },
+    "short_description": "Traditional garden restaurant known for its serene atmosphere and seasonal kaiseki cuisine.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥8000"
+  },
+  {
+    "name": "Hiroto",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Fujimicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.389,
+      "lng": 132.462
+    },
+    "short_description": "Highly acclaimed modern French restaurant utilizing the best of Hiroshima's local produce.",
+    "estimated_duration": "2.5 hours",
+    "rating": 4.5,
+    "review_count": 200,
+    "min_budget": "¥15000"
+  },
+  {
+    "name": "Andersen Hiroshima",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hondori",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3938,
+      "lng": 132.4585
+    },
+    "short_description": "Iconic bakery and cultural landmark in a renovated historical building, offering Danish pastries and meals.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2500,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Momijido Honten",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.2978,
+      "lng": 132.322
+    },
+    "short_description": "Famous for inventing 'Age-Momiji' (deep-fried maple leaf cakes), a must-try sweet snack on Miyajima.",
+    "estimated_duration": "30 mins",
+    "rating": 4.5,
+    "review_count": 1800,
+    "min_budget": "¥300"
+  },
+  {
+    "name": "Musimpanen",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Kanayamacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3915,
+      "lng": 132.468
+    },
+    "short_description": "Top-rated patisserie offering exquisite cakes and a cozy cafe space near the river.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 500,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Tachimachi Canele",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Tatemachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3932,
+      "lng": 132.46
+    },
+    "short_description": "Specialty shop selling authentic French canelés with a crispy exterior and moist interior.",
+    "estimated_duration": "15 mins",
+    "rating": 4.2,
+    "review_count": 400,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Miyajima Coffee",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.2985,
+      "lng": 132.3215
+    },
+    "short_description": "Stylish coffee roaster providing a relaxing break with quality brews on the busy Omotesando street.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Sarasvati",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.2972,
+      "lng": 132.3225
+    },
+    "short_description": "Relaxed cafe next to a temple, known for its excellent coffee and homemade cakes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Backen Mozart Chuodori",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hondori",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.392,
+      "lng": 132.461
+    },
+    "short_description": "Long-established Hiroshima confectionery famous for its cheese souffle and almond cookies.",
+    "estimated_duration": "30 mins",
+    "rating": 4.1,
+    "review_count": 300,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Melange De Shuhari",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hondori",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3935,
+      "lng": 132.459
+    },
+    "short_description": "Chic cafe and patisserie popular for its macarons, crepes, and elegant afternoon tea sets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 500,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Chano-ma Hiroshima",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hondori",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.393,
+      "lng": 132.46
+    },
+    "short_description": "Modern cafe featuring mattress-like seating where you can lounge while eating; great for relaxing.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 400,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Ekie Dining",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hiroshima Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.397,
+      "lng": 132.4755
+    },
+    "short_description": "Modern food hall inside Hiroshima Station gathering many of the city's top restaurants in one place.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 2000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Miyajima Omotesando Shopping Street",
+    "region": "Chugoku",
+    "city": "Hatsukaichi",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Miyajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.2982,
+      "lng": 132.3218
+    },
+    "short_description": "The bustling main street of Miyajima, lined with shops selling grilled oysters, momiji manju, and other snacks.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.4,
+    "review_count": 3000,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Sushitei Hikarimachi",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hiroshima Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3995,
+      "lng": 132.478
+    },
+    "short_description": "Popular sushi izakaya offering fresh Setouchi seafood at reasonable prices.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Steak House Aohige",
+    "region": "Chugoku",
+    "city": "Hiroshima",
+    "prefecture": "Hiroshima-ken",
+    "neighborhood": "Hatchobori",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.3955,
+      "lng": 132.464
+    },
+    "short_description": "Specializes in high-quality Hiroshima Beef steaks and hamburgs in a refined setting.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥5000"
+  }
+]

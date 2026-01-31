@@ -1,5 +1,85 @@
 {
   "audited_files": {
+    "fukuoka_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "a36b4a1b744d4941502400efba9d6cfa",
+      "locations_count": 46
+    },
+    "hiroshima_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "ca1f6c7c40007678c58652f735029551",
+      "locations_count": 45
+    },
+    "ishigaki_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "c5f45528414876b3348a0006750aec39",
+      "locations_count": 48
+    },
+    "kagoshima_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "449eaf6f69e4b19d1fa35581b5e52689",
+      "locations_count": 46
+    },
+    "kobe_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "ec314d80971013dc5ba35600f8897515",
+      "locations_count": 45
+    },
+    "kumamoto_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "8c82c6bbf7005b9fcae494b3cc191f2d",
+      "locations_count": 46
+    },
+    "kyoto_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "237ac7292064e10361b27715f51a6437",
+      "locations_count": 47
+    },
+    "matsue_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "9633ac70b24d8bf400e1490377369d40",
+      "locations_count": 45
+    },
+    "matsuyama_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "f197b46e8426f62e15f6a84cb13dc7a2",
+      "locations_count": 47
+    },
+    "nagasaki_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "8ebd3d16aa3f25a55bf7dac282a457a9",
+      "locations_count": 45
+    },
+    "naha_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "3d1a18e4e4b51d1f94444df3355b2a31",
+      "locations_count": 45
+    },
+    "nara_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "a336390920d97c1e70161a8f95078b73",
+      "locations_count": 50
+    },
+    "okayama_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "a614dddedc537cd78540767eb8122a7f",
+      "locations_count": 45
+    },
+    "osaka_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "4558e3f57f9c8a2b74f68d4d93618ecf",
+      "locations_count": 50
+    },
+    "takamatsu_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "8fd46ec6cff1b182c460021d2a3f5c0d",
+      "locations_count": 48
+    },
+    "tokushima_food.json": {
+      "audited_at": "2026-01-31T10:30:00.000Z",
+      "md5": "06623a2050af4d08f03fa99276a6666f",
+      "locations_count": 45
+    },
     "aomori_food.json": {
       "audited_at": "2026-01-31T08:59:00.209Z",
       "md5": "e048c572c250e8899f121938eb586e2c",
@@ -206,6 +286,6 @@
       "locations_count": 47
     }
   },
-  "last_audit_run": "2026-01-31T08:59:00.208Z",
+  "last_audit_run": "2026-01-31T10:30:00.000Z",
   "version": "1.0"
 }

@@ -1,0 +1,784 @@
+[
+  {
+    "name": "Hakata Issou",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5889,
+      "lng": 130.4227
+    },
+    "short_description": "Famous for its rich, cappuccino-like frothy pork bone broth ramen.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 3200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Shin-Shin Tenjin Main Store",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5915,
+      "lng": 130.3985
+    },
+    "short_description": "A local favorite serving Hakata ramen with a slightly lighter, sweeter broth and ultra-thin noodles.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 2800,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Ichiran Main Office (Sohonten)",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Nakasu",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5931,
+      "lng": 130.4045
+    },
+    "short_description": "The headquarters of the world-famous tonkotsu ramen chain, featuring individual flavor-focus booths.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 6500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ganso Nagahamaya",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Nagahama",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5945,
+      "lng": 130.392
+    },
+    "short_description": "A historic shop often cited as the birthplace of the Nagahama style ramen with heavy noodle refills.",
+    "estimated_duration": "30 mins",
+    "rating": 3.9,
+    "review_count": 4500,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Hakata Genki Ippai",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Shimogofukumachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.601,
+      "lng": 130.409
+    },
+    "short_description": "A cult-favorite ramen shop known for its creamy soup and blue bucket sign indicating it's open.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hakata Daruma",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Watanabe-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.583,
+      "lng": 130.403
+    },
+    "short_description": "Serves a heavy, intense pork-bone broth ramen that has been popular since 1963.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 2100,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Yoshizuka Unagiya",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Nakasu",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5925,
+      "lng": 130.406
+    },
+    "short_description": "Legendary unagi (eel) restaurant operating since 1873, famous for its sweet kabayaki sauce.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.5,
+    "review_count": 4000,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Motsunabe Yamanaka Akasaka",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Akasaka",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.587,
+      "lng": 130.3925
+    },
+    "short_description": "Upscale setting for Motsunabe (offal hotpot), known for its distinct miso-based broth.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 1500,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Hakata Motsunabe Oyama",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5905,
+      "lng": 130.421
+    },
+    "short_description": "Popular motsunabe specialist serving a rich, garlic-heavy miso soup base.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 2200,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Motsunabe Rakutenchi",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.592,
+      "lng": 130.401
+    },
+    "short_description": "Famous for its towering mountain of garlic chives atop the offal hotpot.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 1800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Hakata Mizutaki Toriden",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Yakuin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.579,
+      "lng": 130.402
+    },
+    "short_description": "A stylish spot specializing in Mizutaki, a traditional Fukuoka chicken hotpot.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 900,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Mizutaki Nagano",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tsunabamachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.598,
+      "lng": 130.408
+    },
+    "short_description": "An old-school, highly regarded institution for authentic Mizutaki chicken stew.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 1100,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Hakata Hanamidori",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Nakasu",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.594,
+      "lng": 130.405
+    },
+    "short_description": "Reliable and famous chain offering high-quality chicken Mizutaki courses.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 1600,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Chikae Fukuoka",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Daimyo",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5875,
+      "lng": 130.3955
+    },
+    "short_description": "Famous for large fish tanks and excellent value lunch sets featuring fresh squid.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 3000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Ganso Hakata Mentaiju",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Nishinakasu",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.591,
+      "lng": 130.4035
+    },
+    "short_description": "Specialty shop serving premium spicy cod roe (mentaiko) over rice in a box.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 2500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Tempura Hirao",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Daimyo",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.588,
+      "lng": 130.396
+    },
+    "short_description": "Counter-style tempura known for affordability and free salted squid side dish.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 3500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Sushi Sakai",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Akasaka",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5865,
+      "lng": 130.391
+    },
+    "short_description": "Three-Michelin-starred sushi restaurant offering a top-tier omakase experience.",
+    "estimated_duration": "2.5 hours",
+    "rating": 4.8,
+    "review_count": 200,
+    "min_budget": "¥30000"
+  },
+  {
+    "name": "Hyotan Sushi",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.59,
+      "lng": 130.3995
+    },
+    "short_description": "Extremely popular, casual sushi spot with long lines but high-quality fresh fish.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 2800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Tatsumi Sushi",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Shimokawabata",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.595,
+      "lng": 130.406
+    },
+    "short_description": "Known for creative sushi where soy sauce is pre-applied or unnecessary.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 800,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Karonouron",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Kamikawabatamachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5928,
+      "lng": 130.4085
+    },
+    "short_description": "Fukuoka's oldest udon shop (1882) serving soft noodles and goboten (burdock tempura).",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 1300,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Udon Taira",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5895,
+      "lng": 130.417
+    },
+    "short_description": "Famous udon spot where locals queue for the freshly made noodles and crispy burdock tempura.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1900,
+    "min_budget": "¥700"
+  },
+  {
+    "name": "Maki no Udon",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.59,
+      "lng": 130.42
+    },
+    "short_description": "Beloved chain known for soft noodles that rapidly absorb the broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1500,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Daichi no Udon",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5912,
+      "lng": 130.4215
+    },
+    "short_description": "Famous for massive, disc-shaped burdock tempura and translucent noodles.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 2100,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Tetsunabe Nakasu",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Nakasu",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5922,
+      "lng": 130.4048
+    },
+    "short_description": "Originator of iron-pan gyoza, served sizzling hot and crispy.",
+    "estimated_duration": "1 hour",
+    "rating": 3.8,
+    "review_count": 1400,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Yatai Mamichan",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.591,
+      "lng": 130.4
+    },
+    "short_description": "Friendly street food stall popular with locals and tourists for its roast pork and atmosphere.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Yatai Kokinchan",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5925,
+      "lng": 130.398
+    },
+    "short_description": "Legendary stall known as the birthplace of 'yaki-ramen' (baked ramen).",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Yatai Chez Rémy",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5885,
+      "lng": 130.4015
+    },
+    "short_description": "Unique French-cuisine street stall serving escargot and wine.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.6,
+    "review_count": 300,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Yanagibashi Rengo Market",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Haruyoshi",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.584,
+      "lng": 130.4065
+    },
+    "short_description": "Known as 'Hakata's Kitchen', offering fresh seafood, fish cakes, and local snacks.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 1200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kasanoya",
+    "region": "Kyushu",
+    "city": "Dazaifu",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Dazaifu",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5215,
+      "lng": 130.534
+    },
+    "short_description": "Traditional tea house famous for Umegae Mochi (grilled rice cake with red bean).",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 1100,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Cafe Bimi",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Akasaka",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5855,
+      "lng": 130.389
+    },
+    "short_description": "Revered kissaten (coffee shop) specializing in nel drip coffee and aged beans.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 400,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "FUK Coffee",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Gion",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5908,
+      "lng": 130.4105
+    },
+    "short_description": "Trendy airport-themed cafe offering quality espresso and merchandise.",
+    "estimated_duration": "30 mins",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Daimyo Softcream",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Daimyo",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5878,
+      "lng": 130.395
+    },
+    "short_description": "Specialty shop known for its rich, thick, and photogenic soft-serve ice cream.",
+    "estimated_duration": "20 mins",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Bills Fukuoka",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Nishinakasu",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5918,
+      "lng": 130.4032
+    },
+    "short_description": "Popular all-day dining spot famous for ricotta pancakes and river views.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 1300,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Ivorish Fukuoka",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Daimyo",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5872,
+      "lng": 130.3965
+    },
+    "short_description": "Specialty French Toast shop serving both sweet and savory varieties.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 900,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Seimonbarai",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Kamikawabatamachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5935,
+      "lng": 130.4075
+    },
+    "short_description": "Lively izakaya famous for fresh seafood and live squid sashimi.",
+    "estimated_duration": "2 hours",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Robata San",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.59,
+      "lng": 130.4005
+    },
+    "short_description": "Stylish robatayaki (fireside grilling) place using fresh Kyushu ingredients.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Yakitori Kawaya",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Shirogane",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.578,
+      "lng": 130.405
+    },
+    "short_description": "Famous for crispy, spiraled chicken skin skewers (torikawa) grilled over days.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 1000,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Yakitori Hachibei",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.589,
+      "lng": 130.399
+    },
+    "short_description": "Refined yakitori restaurant popular for pork belly and high-quality skewers.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 700,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Yorozu",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Akasaka",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.585,
+      "lng": 130.39
+    },
+    "short_description": "A modern tea salon offering an exquisite Japanese tea course experience.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.6,
+    "review_count": 200,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Warayaki Mikan",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Haruyoshi",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5895,
+      "lng": 130.4055
+    },
+    "short_description": "Hidden gem izakaya specializing in straw-grilled (warayaki) dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 500,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Hakata Ikkousha",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5892,
+      "lng": 130.4185
+    },
+    "short_description": "Known for its 'bubble' tonkotsu soup and wide variety of condiments.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 2300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Rec Coffee Yakuin",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Yakuin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5815,
+      "lng": 130.401
+    },
+    "short_description": "Top-tier specialty coffee shop founded by a barista champion.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hajime",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5898,
+      "lng": 130.423
+    },
+    "short_description": "Izakaya famous for its Goma Saba (sesame mackerel), a true local delicacy.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 450,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Mengekijo Genei",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Yakuin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5785,
+      "lng": 130.3985
+    },
+    "short_description": "Ramen 'theatre' with stadium seating and unique science-based broth recipes.",
+    "estimated_duration": "1 hour",
+    "rating": 3.9,
+    "review_count": 800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Kappo Yoshida",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Tenjin",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.593,
+      "lng": 130.4015
+    },
+    "short_description": "Long-established restaurant famous for Fugu (pufferfish) cuisine.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥8000"
+  },
+  {
+    "name": "Bar Vita",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Imaizumi",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.586,
+      "lng": 130.4
+    },
+    "short_description": "Casual Italian bar and cafe popular for open-terrace lunches.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 600,
+    "min_budget": "¥1500"
+  }
+]
