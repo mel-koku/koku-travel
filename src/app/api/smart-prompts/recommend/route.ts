@@ -21,6 +21,144 @@ const MEAL_DURATIONS: Record<string, number> = {
 };
 
 /**
+ * Google types that are NOT appropriate for breakfast
+ */
+const NOT_BREAKFAST_TYPES = new Set([
+  "bar",
+  "night_club",
+  "pub",
+  "wine_bar",
+  "cocktail_bar",
+  "brewery",
+  "izakaya",
+]);
+
+/**
+ * Filter restaurants suitable for a specific meal type
+ * Uses mealOptions, operating hours, and Google type as signals
+ */
+function filterByMealType(
+  restaurants: Location[],
+  mealType: "breakfast" | "lunch" | "dinner" | "snack"
+): Location[] {
+  return restaurants.filter((restaurant) => {
+    const mealOptions = restaurant.mealOptions;
+    const googleType = restaurant.googlePrimaryType?.toLowerCase() ?? "";
+    const googleTypes = restaurant.googleTypes ?? [];
+
+    // For breakfast, exclude bars/breweries/pubs
+    if (mealType === "breakfast") {
+      // Check if it's a bar/brewery type
+      const isBarType = NOT_BREAKFAST_TYPES.has(googleType) ||
+        googleTypes.some(t => NOT_BREAKFAST_TYPES.has(t.toLowerCase()));
+
+      if (isBarType) {
+        return false;
+      }
+
+      // If we have mealOptions, use it
+      if (mealOptions) {
+        // Prefer places that serve breakfast or brunch
+        if (mealOptions.servesBreakfast === true || mealOptions.servesBrunch === true) {
+          return true;
+        }
+        // Exclude if explicitly doesn't serve breakfast and we have data
+        if (mealOptions.servesBreakfast === false && mealOptions.servesBrunch === false) {
+          return false;
+        }
+      }
+
+      // Check operating hours - breakfast places should open before 10am
+      if (restaurant.operatingHours?.periods) {
+        const today = new Date().getDay(); // 0 = Sunday
+        const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+        const todayPeriod = restaurant.operatingHours.periods.find(
+          p => p.day === dayNames[today]
+        );
+        if (todayPeriod?.open) {
+          const openHour = parseInt(todayPeriod.open.split(":")[0] ?? "12", 10);
+          // If opens after 11am, not a breakfast place
+          if (openHour >= 11) {
+            return false;
+          }
+        }
+      }
+
+      // Include cafes for breakfast
+      if (googleType === "cafe" || googleTypes.includes("cafe")) {
+        return true;
+      }
+    }
+
+    // For lunch, check if serves lunch and operating hours
+    if (mealType === "lunch") {
+      if (mealOptions) {
+        if (mealOptions.servesLunch === true) {
+          return true;
+        }
+        if (mealOptions.servesLunch === false) {
+          // Only exclude if we have explicit data that it doesn't serve lunch
+          // and it's specifically a dinner-only place
+          if (mealOptions.servesDinner === true && !mealOptions.servesBreakfast) {
+            return false;
+          }
+        }
+      }
+
+      // Check operating hours - exclude places that only open for dinner (after 5pm)
+      if (restaurant.operatingHours?.periods) {
+        const today = new Date().getDay(); // 0 = Sunday
+        const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+        const todayPeriod = restaurant.operatingHours.periods.find(
+          p => p.day === dayNames[today]
+        );
+        if (todayPeriod?.open) {
+          const openHour = parseInt(todayPeriod.open.split(":")[0] ?? "12", 10);
+          // If opens at 5pm or later, it's a dinner-only place
+          if (openHour >= 17) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // For dinner, check if serves dinner and operating hours
+    if (mealType === "dinner") {
+      if (mealOptions) {
+        if (mealOptions.servesDinner === true) {
+          return true;
+        }
+        if (mealOptions.servesDinner === false) {
+          // Only exclude if it's specifically breakfast/lunch only
+          if (mealOptions.servesBreakfast || mealOptions.servesLunch) {
+            return false;
+          }
+        }
+      }
+
+      // Check operating hours - exclude places that close early (before 6pm)
+      if (restaurant.operatingHours?.periods) {
+        const today = new Date().getDay(); // 0 = Sunday
+        const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+        const todayPeriod = restaurant.operatingHours.periods.find(
+          p => p.day === dayNames[today]
+        );
+        if (todayPeriod?.close) {
+          const closeHour = parseInt(todayPeriod.close.split(":")[0] ?? "22", 10);
+          // If closes before 6pm, it's not open for dinner
+          if (closeHour < 18) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Default: include if no disqualifying criteria
+    return true;
+  });
+}
+
+/**
  * Generate a unique activity ID
  */
 function generateActivityId(): string {
@@ -224,15 +362,16 @@ export async function POST(request: NextRequest) {
     let position = 0;
 
     if (action.type === "add_meal") {
-      // Fetch restaurants for this city
+      // Fetch restaurants/food locations for this city (case-insensitive match)
+      // Include both "restaurant" and "food" categories as data may use either
+      // Note: place_id is not required - some locations may not have Google Places data
+      // Note: business_status filter uses OR to include null values (SQL null != value returns null, not true)
       const { data: rows, error } = await supabase
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
-        .eq("city", cityId)
-        .eq("category", "restaurant")
-        .not("place_id", "is", null)
-        .neq("place_id", "")
-        .neq("business_status", "PERMANENTLY_CLOSED")
+        .ilike("city", cityId)
+        .in("category", ["restaurant", "food"])
+        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .limit(100);
 
       if (error) {
@@ -244,12 +383,18 @@ export async function POST(request: NextRequest) {
         transformDbRowToLocation(row as unknown as LocationDbRow)
       );
 
+      // Filter by meal type (e.g., no breweries for breakfast)
+      const mealAppropriate = filterByMealType(restaurants, action.mealType);
+
       // Filter out already-used locations
-      const available = restaurants.filter((r) => !usedIds.has(r.id));
+      const available = mealAppropriate.filter((r) => !usedIds.has(r.id));
 
       if (available.length === 0) {
+        const message = restaurants.length === 0
+          ? `No restaurant data available for ${cityId}. Try a different city like Kyoto or Fukuoka.`
+          : "All restaurants for this city have already been added to your itinerary.";
         return NextResponse.json(
-          { error: "No available restaurant recommendations" },
+          { error: message },
           { status: 404 }
         );
       }
@@ -276,15 +421,16 @@ export async function POST(request: NextRequest) {
       position = calculateMealPosition(dayActivities, action.mealType, action.afterActivityId);
 
     } else if (action.type === "add_experience") {
-      // Fetch locations for this city (non-restaurants)
+      // Fetch locations for this city (non-restaurants, case-insensitive match)
+      // Note: place_id is not required - some locations may not have Google Places data
+      // Note: business_status filter uses OR to include null values
       let query = supabase
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
-        .eq("city", cityId)
+        .ilike("city", cityId)
         .neq("category", "restaurant")
-        .not("place_id", "is", null)
-        .neq("place_id", "")
-        .neq("business_status", "PERMANENTLY_CLOSED")
+        .neq("category", "food")
+        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .limit(100);
 
       // If a specific category is requested, filter by it
@@ -307,8 +453,11 @@ export async function POST(request: NextRequest) {
       const available = locations.filter((l) => !usedIds.has(l.id));
 
       if (available.length === 0) {
+        const message = locations.length === 0
+          ? `No experience data available for ${cityId}.`
+          : "All experiences for this city have already been added to your itinerary.";
         return NextResponse.json(
-          { error: "No available experience recommendations" },
+          { error: message },
           { status: 404 }
         );
       }

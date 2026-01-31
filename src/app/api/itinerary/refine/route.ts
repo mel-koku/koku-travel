@@ -68,9 +68,10 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
       .select(LOCATION_ITINERARY_COLUMNS)
       .order("name", { ascending: true });
 
-    // Filter by cities if provided to reduce memory usage
+    // Filter by cities if provided (case-insensitive to handle variations)
     if (cities && cities.length > 0) {
-      query = query.in("city", cities);
+      const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
+      query = query.or(cityFilters);
     }
 
     const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
