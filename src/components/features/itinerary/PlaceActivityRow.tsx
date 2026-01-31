@@ -289,7 +289,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     // Check availability when location is available
     // Use stable identifiers to prevent excessive re-fetching
     const activityId = activity.id;
-    const activityStartTime = activity.startTime;
+    const activityStartTime = activity.manualStartTime;
     const placeId = placeLocation?.placeId;
 
     useEffect(() => {
