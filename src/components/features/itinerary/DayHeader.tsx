@@ -3,15 +3,12 @@
 import { useMemo } from "react";
 import type { Itinerary, ItineraryDay } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
-import type { EntryPoint } from "@/types/trip";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { logger } from "@/lib/logger";
-import { DayEntryPointEditor } from "./DayEntryPointEditor";
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { DaySuggestions } from "./DaySuggestions";
 import { DayConflictSummary } from "./ConflictBadge";
-import { useAppState } from "@/state/AppState";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 
@@ -46,29 +43,7 @@ export function DayHeader({
   loadingSuggestionId,
   conflicts,
 }: DayHeaderProps) {
-  const { dayEntryPoints, setDayEntryPoint, reorderActivities } = useAppState();
-  
-  const entryPointKey = tripId && day.id ? `${tripId}-${day.id}` : undefined;
-  const entryPoints = entryPointKey ? dayEntryPoints[entryPointKey] : undefined;
-
-  const handleSetStartPoint = (entryPoint: EntryPoint | undefined) => {
-    if (tripId && day.id) {
-      setDayEntryPoint(tripId, day.id, "start", entryPoint);
-    }
-  };
-
-  const handleSetEndPoint = (entryPoint: EntryPoint | undefined) => {
-    if (tripId && day.id) {
-      setDayEntryPoint(tripId, day.id, "end", entryPoint);
-    }
-  };
-
-  const handleOptimizeRoute = (activityIds: string[]) => {
-    if (tripId && day.id) {
-      reorderActivities(tripId, day.id, activityIds);
-    }
-  };
-  // Calculate the date for this day
+// Calculate the date for this day
   const dayDate = useMemo(() => {
     if (tripStartDate) {
       try {
@@ -279,16 +254,6 @@ export function DayHeader({
       </div>
       {tripId && (
         <div className="mt-4 space-y-4">
-          <DayEntryPointEditor
-            tripId={tripId}
-            dayId={day.id}
-            startPoint={entryPoints?.startPoint}
-            endPoint={entryPoints?.endPoint}
-            activities={day.activities ?? []}
-            onSetStartPoint={handleSetStartPoint}
-            onSetEndPoint={handleSetEndPoint}
-            onOptimizeRoute={handleOptimizeRoute}
-          />
           {/* Smart suggestions for this day */}
           {suggestions && suggestions.length > 0 && onAcceptSuggestion && onSkipSuggestion && (
             <DaySuggestions

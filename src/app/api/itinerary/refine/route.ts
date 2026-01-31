@@ -138,12 +138,12 @@ const mapTripActivityToItineraryActivity = (
           }
         : undefined,
     mealType: activity.mealType === "snack" ? undefined : activity.mealType,
+    coordinates: location?.coordinates,
   };
 };
 
 const mapTripDayToItineraryDay = (day: TripDay): ItineraryDay => ({
   id: day.id,
-  dateLabel: day.date,
   cityId: day.cityId,
   activities: day.activities.map(mapTripActivityToItineraryActivity),
 });
