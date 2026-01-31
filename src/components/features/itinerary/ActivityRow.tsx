@@ -3,6 +3,7 @@
 import { forwardRef, memo } from "react";
 import type { Transform } from "@dnd-kit/utilities";
 import type { ItineraryActivity } from "@/types/itinerary";
+import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { PlaceActivityRow } from "./PlaceActivityRow";
 import { NoteActivityRow } from "./NoteActivityRow";
 
@@ -25,6 +26,7 @@ type ActivityRowProps = {
   dayId?: string;
   onReplace?: () => void;
   onCopy?: () => void;
+  conflicts?: ItineraryConflict[];
 };
 
 export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
@@ -44,6 +46,7 @@ export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
         dayId={props.dayId}
         onReplace={props.onReplace}
         onCopy={props.onCopy}
+        conflicts={props.conflicts}
       />
     );
   },
