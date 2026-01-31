@@ -343,6 +343,7 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
     },
     cityId: entryPoint.cityId,
     iataCode: typeof entryPoint.iataCode === "string" ? entryPoint.iataCode.trim().toUpperCase() : undefined,
+    region: entryPoint.region,
   };
 }
 

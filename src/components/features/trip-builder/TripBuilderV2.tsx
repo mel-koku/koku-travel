@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { IntroStep } from "./IntroStep";
 import { PlanStep } from "./PlanStep";
@@ -28,6 +28,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   const [step1Valid, setStep1Valid] = useState(false);
   const [step2Valid, setStep2Valid] = useState(false);
   const [step3Valid, setStep3Valid] = useState(true);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleStep1ValidityChange = useCallback((isValid: boolean) => {
     setStep1Valid(isValid);
@@ -43,6 +44,11 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
 
   const goToStep = useCallback((step: Step) => {
     setCurrentStep(step);
+    // Scroll the content container to top
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    // Also scroll window for mobile/fallback
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
@@ -158,7 +164,9 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
       <main className="flex flex-1">
         <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col items-center">
           {/* Form Panel */}
-          <div className={cn(
+          <div
+            ref={scrollContainerRef}
+            className={cn(
             "w-full flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:pb-6",
             currentStep === 1 && "max-w-3xl",
             currentStep === 3 && "max-w-5xl"
