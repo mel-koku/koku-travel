@@ -1,0 +1,784 @@
+[
+  {
+    "name": "Kurobuta Ryori Ajimori",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.589,
+      "lng": 130.555
+    },
+    "short_description": "The birthplace of Kurobuta (Black Pork) Shabu-shabu, known for its exquisite broth and tender meat.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 1200,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Tonkatsu Kawakyu",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Chuo Station Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5835,
+      "lng": 130.543
+    },
+    "short_description": "Famous tonkatsu restaurant run by a butcher shop, serving thick, juicy cuts of premium pork.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 2800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Aji no Tonkatsu Maruichi",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5885,
+      "lng": 130.5545
+    },
+    "short_description": "Legendary tonkatsu spot with long lines, known for its thick, crispy, and flavorful loin cutlets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2100,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Kagoshima Kurobuta Roppaku",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.59,
+      "lng": 130.554
+    },
+    "short_description": "Offers both tonkatsu and shabu-shabu using the prized 'Roppaku' black pork.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 900,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Ichiniisan Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5915,
+      "lng": 130.556
+    },
+    "short_description": "Popular for its unique style of eating Kurobuta shabu-shabu with soba dipping sauce (Sobatsuyu).",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kurokatsutei Chuo Station",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Chuo Station Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.584,
+      "lng": 130.5415
+    },
+    "short_description": "Specializes in Kurobuta tonkatsu using fresh breadcrumbs for an extra crispy texture.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Tonkatsu Taketei Tagami",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tagami",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.58,
+      "lng": 130.515
+    },
+    "short_description": "A beloved local favorite offering high-quality tonkatsu at very affordable prices.",
+    "estimated_duration": "45 mins",
+    "rating": 4.5,
+    "review_count": 1300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kagoshima Ramen Tontoro",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5875,
+      "lng": 130.553
+    },
+    "short_description": "Famous for its rich tonkotsu broth and melt-in-your-mouth pork cheek (tontoro) topping.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 2500,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Ramen Kokinta",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.586,
+      "lng": 130.5535
+    },
+    "short_description": "A staple late-night ramen spot known for its balanced pork and chicken bone broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 1600,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Noriichi",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5882,
+      "lng": 130.5542
+    },
+    "short_description": "Classic, no-frills ramen shop famous for its clear, light salt-based broth and low prices.",
+    "estimated_duration": "30 mins",
+    "rating": 4.0,
+    "review_count": 1400,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Komurasaki Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5905,
+      "lng": 130.5555
+    },
+    "short_description": "Historic ramen shop established in 1950, unique for its use of thin noodles and cabbage topping.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 1200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Zabon Ramen",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Chuo Station Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5845,
+      "lng": 130.542
+    },
+    "short_description": "Soul food of Kagoshima featuring a soy-based tonkotsu soup with 7 toppings including cabbage.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 1100,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Tenmonkan Mujaki",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5902,
+      "lng": 130.5548
+    },
+    "short_description": "The birthplace of 'Shirokuma' (White Bear), a massive shaved ice dessert topped with fruit and condensed milk.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 3500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "SANDECO COFFEE Sugaku Cafe",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Meizancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.593,
+      "lng": 130.557
+    },
+    "short_description": "Famous for its adorable '3D Shirokuma' shaved ice that looks like a sculpture.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Unagi no Sueyoshi",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5908,
+      "lng": 130.5552
+    },
+    "short_description": "Long-established eel specialist utilizing high-quality Osumi eel with a secret sauce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Yakiniku Nabeshima Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.591,
+      "lng": 130.5535
+    },
+    "short_description": "Kagoshima's most famous yakiniku chain, beloved for its high-quality beef and salad bar.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Karen Kagoshima",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Chuo Station Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.582,
+      "lng": 130.5405
+    },
+    "short_description": "High-end restaurant run by the agricultural cooperative, famous for 'Seiro-mushi' (steamed) Kurobuta and Wagyu.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 1000,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Kuma So Tei",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.59,
+      "lng": 130.5545
+    },
+    "short_description": "Authentic local cuisine restaurant serving Satsuma specialties like Kibinago sashimi and pork bone stew.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 600,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Wakana Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5895,
+      "lng": 130.554
+    },
+    "short_description": "A classic spot for 'Kagoshima Oden' featuring a rich miso broth and local ingredients.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Mawaru Sushi Mekkemon",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Dolphin Port",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.595,
+      "lng": 130.562
+    },
+    "short_description": "High-quality conveyor belt sushi offering fresh local fish from the nearby market.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 2200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Agetateya Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5903,
+      "lng": 130.5549
+    },
+    "short_description": "Famous shop for Satsuma-age (fried fish cakes), best enjoyed piping hot.",
+    "estimated_duration": "20 mins",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Akashiya Main Store",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Kinseicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5925,
+      "lng": 130.558
+    },
+    "short_description": "Renowned confectionery established in 1854, famous for 'Karukan' (steamed yam cake).",
+    "estimated_duration": "30 mins",
+    "rating": 4.4,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kagomma Furusato Yataimura",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Chuo Station Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5842,
+      "lng": 130.5425
+    },
+    "short_description": "A vibrant food stall village (reopened in new locations) offering a variety of local izakaya dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 1000,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Ichiba Shokudo",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Jonancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.578,
+      "lng": 130.56
+    },
+    "short_description": "Market cafeteria serving incredibly fresh seafood bowls and fried fish at bargain prices.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 900,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Tosenkyo Somen Nagashi",
+    "region": "Kyushu",
+    "city": "Ibusuki",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Kaimon",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.185,
+      "lng": 130.59
+    },
+    "short_description": "Unique dining experience where somen noodles flow in circular pools of spring water.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 3000,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Kurozu Hompo Kakuida",
+    "region": "Kyushu",
+    "city": "Kirishima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Fukuyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.67,
+      "lng": 130.82
+    },
+    "short_description": "Restaurant overlooking vinegar jars, serving healthy courses featuring Kurozu (black vinegar).",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Sakurajima Ferry Yabukin",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Sakurajima (Ferry)",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.595,
+      "lng": 130.565
+    },
+    "short_description": "Famous standing udon shop inside the ferry, offering a quick meal with a view of the volcano.",
+    "estimated_duration": "15 mins",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Susumuya Chaten",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Uenosonocho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5805,
+      "lng": 130.54
+    },
+    "short_description": "Modern Japanese tea house specializing in high-quality local Kagoshima green tea.",
+    "estimated_duration": "45 mins",
+    "rating": 4.5,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Starbucks Kagoshima Sengan-en",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Iso",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.617,
+      "lng": 130.575
+    },
+    "short_description": "Located in a Registered Tangible Cultural Property with views of Sakurajima.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1100,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Satsuma Jokiya Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5898,
+      "lng": 130.554
+    },
+    "short_description": "Famous for 'Kasutadon' (custard cake) and freshly baked donuts.",
+    "estimated_duration": "30 mins",
+    "rating": 4.3,
+    "review_count": 900,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Menya Kyujiro",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Chuo Station Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5825,
+      "lng": 130.541
+    },
+    "short_description": "Popular Jiro-style ramen shop known for massive portions and thick noodles.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Menpo Vagabond",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Yamashitacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.594,
+      "lng": 130.5565
+    },
+    "short_description": "Ramen shop known for its rich Tsukemen (dipping noodles) and generous portions.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Gyu do!",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.588,
+      "lng": 130.5525
+    },
+    "short_description": "Specialty restaurant for aged Kagoshima black beef (dry-aged wagyu).",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Tsukiagean Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5905,
+      "lng": 130.555
+    },
+    "short_description": "Offers freshly fried Satsuma-age including seasonal varieties.",
+    "estimated_duration": "20 mins",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Torisen Ippo",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.587,
+      "lng": 130.552
+    },
+    "short_description": "Long-running yakitori izakaya loved by locals for its chicken sashimi and skewers.",
+    "estimated_duration": "1.5 hours",
+    "rating": 3.9,
+    "review_count": 300,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kagoshima Ramen Garufu",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5912,
+      "lng": 130.5543
+    },
+    "short_description": "Classic Kagoshima ramen with a mild pork bone broth and roasted pork.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 700,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Unagi no Matsuju",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Kajiya-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.585,
+      "lng": 130.548
+    },
+    "short_description": "Historic unagi restaurant near the Museum of the Meiji Restoration.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Satsuma Ji-dori Torihana",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Chuo Station Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.583,
+      "lng": 130.542
+    },
+    "short_description": "Izakaya specializing in 'Satsuma Jidori' (local free-range chicken) sashimi and grilling.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Yanagawa Hyoshitsu",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Hotta-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.6,
+      "lng": 130.56
+    },
+    "short_description": "An ice shop serving incredible shaved ice with homemade syrups, popular with locals.",
+    "estimated_duration": "45 mins",
+    "rating": 4.4,
+    "review_count": 300,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Jigenji Somen Nagashi",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Taniyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.52,
+      "lng": 130.5
+    },
+    "short_description": "Scenic spot in Kagoshima City to enjoy flowing somen noodles in a ravine setting (Summer only).",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Festivalo Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.5888,
+      "lng": 130.554
+    },
+    "short_description": "Sweet shop famous for 'Lovely', a smooth sweet potato cake that is a top souvenir.",
+    "estimated_duration": "20 mins",
+    "rating": 4.2,
+    "review_count": 500,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Kurozu Farm CAFE AND MARKET",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Uenosonocho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.581,
+      "lng": 130.538
+    },
+    "short_description": "Cafe offering drinks, sweets, and light meals made with Kagoshima's famous black vinegar.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 150,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Miyama Honpo Tenmonkan",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.59,
+      "lng": 130.553
+    },
+    "short_description": "Specializes in chicken dishes, including lava-grilled chicken and chicken sashimi.",
+    "estimated_duration": "1.5 hours",
+    "rating": 3.8,
+    "review_count": 200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Wasan Meizanbori",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Meizancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.592,
+      "lng": 130.558
+    },
+    "short_description": "Cozy izakaya in the nostalgic Meizanbori alley, serving local shochu and dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 100,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Cafe Kanojonoie",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Tenmonkan",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.589,
+      "lng": 130.553
+    },
+    "short_description": "Known for the 'Kiguma' (Yellow Bear), a mango-flavored variation of the shaved ice.",
+    "estimated_duration": "1 hour",
+    "rating": 3.9,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Aji no Sato Chinman",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Sakurajima",
+    "category": "food",
+    "coordinates": {
+      "lat": 31.588,
+      "lng": 130.6
+    },
+    "short_description": "Local dining spot on Sakurajima known for its 'Chanpon' and large set meals.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  }
+]

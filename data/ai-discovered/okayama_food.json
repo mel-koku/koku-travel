@@ -1,0 +1,767 @@
+[
+  {
+    "name": "Ajitsukasa Nomura",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6655,
+      "lng": 133.9265
+    },
+    "short_description": "The birthplace of Okayama's signature Demi-Katsudon (pork cutlet bowl with demi-glace sauce).",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Shokudo Yamato",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6645,
+      "lng": 133.927
+    },
+    "short_description": "Legendary local diner famous for its Chinese noodles and demi-katsudon sets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Azumazushi",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Okayama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.666,
+      "lng": 133.9185
+    },
+    "short_description": "Famous for 'Okayama Barazushi', a colorful scattered sushi featuring local seafood and vegetables.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Fruit Parlor Okado",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Omotecho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6635,
+      "lng": 133.929
+    },
+    "short_description": "Old-school fruit parlor serving lavish parfaits made with Okayama's famous peaches and grapes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 600,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Tenjin Soba",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6665,
+      "lng": 133.931
+    },
+    "short_description": "Iconic ramen shop serving a punchy chicken soy sauce broth; a pilgrimage site for ramen fans.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 1000,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Kurashiki Momoko Honten",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Bikan Historical Quarter",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.5962,
+      "lng": 133.7715
+    },
+    "short_description": "Extremely popular cafe in the historical district specializing in high-end seasonal fruit parfaits.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1800,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Bukkake Udon Furuichi Nakamise",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Kurashiki Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6005,
+      "lng": 133.7665
+    },
+    "short_description": "The birthplace of 'Bukkake Udon' (noodles with concentrated sauce), a Kurashiki soul food.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Miyake Shoten",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Bikan Historical Quarter",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.595,
+      "lng": 133.7725
+    },
+    "short_description": "Charming cafe in a renovated kominka serving rustic vegetable curry and seasonal parfaits.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "El Greco",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Bikan Historical Quarter",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.5958,
+      "lng": 133.771
+    },
+    "short_description": "A symbol of Kurashiki; an ivy-covered retro coffee shop next to the Ohara Museum of Art.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Yuurin-an",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Bikan Historical Quarter",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.5952,
+      "lng": 133.772
+    },
+    "short_description": "Guesthouse cafe famous for its 'Happy Pudding' shaped like a smiling face and raw egg over rice.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 900,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hashino Shokudo",
+    "region": "Chugoku",
+    "city": "Tsuyama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Tsuyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.0645,
+      "lng": 134.008
+    },
+    "short_description": "Famous for 'Tsuyama Horumon Udon', a savory stir-fried udon dish with beef offal and miso sauce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Tama-chan",
+    "region": "Chugoku",
+    "city": "Bizen",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Hinase",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.7335,
+      "lng": 134.2755
+    },
+    "short_description": "The destination for 'Kaki-oko' (oyster okonomiyaki), loaded with fresh local oysters from Hinase.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Hamayuu",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.662,
+      "lng": 133.924
+    },
+    "short_description": "Specializes in 'Sawara' (Spanish Mackerel) cuisine, a local delicacy eaten as sashimi or tataki.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 300,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Bokkee Ramen",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Shimoishii",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6605,
+      "lng": 133.922
+    },
+    "short_description": "Authentic Okayama-style ramen with a rich soy-pork broth and kimchi on the side.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 600,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Toriginu Honten",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Omotecho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.663,
+      "lng": 133.928
+    },
+    "short_description": "Long-established yakitori restaurant popular for its grilled chicken rice bowls and lively atmosphere.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kabe",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Uchisange",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.665,
+      "lng": 133.935
+    },
+    "short_description": "Hidden gem soba restaurant housed in a traditional building, offering excellent handmade noodles.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Ichiba Fuku",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Central Wholesale Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.629,
+      "lng": 133.931
+    },
+    "short_description": "Popular sushi shop inside the wholesale market offering extremely fresh and affordable seafood bowls.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Menya Gakucho",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Omotecho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6625,
+      "lng": 133.9285
+    },
+    "short_description": "Renowned for its 'Black' ramen (rich soy sauce) and 'White' ramen (tonkotsu), beloved by locals.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Date Soba",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Omotecho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6638,
+      "lng": 133.9295
+    },
+    "short_description": "A historic shop famous not just for soba, but for its show-stopping demi-katsudon.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 400,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Shokudo Kamecchi",
+    "region": "Chugoku",
+    "city": "Misaki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Yanahara",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.935,
+      "lng": 133.978
+    },
+    "short_description": "Pilgrimage site for Tamago Kake Gohan (egg over rice) lovers, using ultra-fresh local eggs.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 2000,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Hiruzen Yakisoba Masuya",
+    "region": "Chugoku",
+    "city": "Maniwa",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Hiruzen",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.292,
+      "lng": 133.675
+    },
+    "short_description": "Best place to try 'Hiruzen Yakisoba', a regional specialty noodle dish with a rich miso-based sauce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Chuka Soba Shukaen",
+    "region": "Chugoku",
+    "city": "Kasaoka",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Kasaoka",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.505,
+      "lng": 133.505
+    },
+    "short_description": "The definitive shop for 'Kasaoka Ramen', characterized by its chicken broth and chewy chicken toppings.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 1200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Kidoairaku",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Minami-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.635,
+      "lng": 133.925
+    },
+    "short_description": "Popular izakaya serving generous portions of fresh seafood and local Okayama sake.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Sakaezushi",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Omotecho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.664,
+      "lng": 133.932
+    },
+    "short_description": "Traditional sushi shop famous for its 'Mamakari' (pickled sardine) sushi, an Okayama staple.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Doppo-kan",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Nishigawara",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.675,
+      "lng": 133.945
+    },
+    "short_description": "Brewery restaurant owned by Miyashita Sake Brewery, offering craft beer, sake, and matching dishes.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kamada",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Bikan Historical Quarter",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.596,
+      "lng": 133.771
+    },
+    "short_description": "Fine dining restaurant in a historical building serving steak and seasonal Japanese cuisine.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Kiyutei",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Bikan Historical Quarter",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.5955,
+      "lng": 133.7715
+    },
+    "short_description": "Retro western-style restaurant (Yoshoku) famous for its steak served on a hot iron plate.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 400,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Koeido Honten",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Okayama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6658,
+      "lng": 133.918
+    },
+    "short_description": "The most famous shop for 'Kibi Dango' (millet dumplings), the sweet treat from the Momotaro legend.",
+    "estimated_duration": "15 mins",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Oyo Udon",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Hokancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.668,
+      "lng": 133.916
+    },
+    "short_description": "Simple, beloved self-service udon shop in a retro shopping arcade, offering cheap and tasty meals.",
+    "estimated_duration": "30 mins",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Kitchen Hoiso",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Omotecho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.663,
+      "lng": 133.928
+    },
+    "short_description": "Home-style restaurant loved by locals for its hearty set meals (teishoku) and friendly vibe.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Fukuzushi",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Shimotsui",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.436,
+      "lng": 133.795
+    },
+    "short_description": "Located near the Great Seto Bridge, famous for its fresh octopus (tako) dishes from Shimotsui port.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Suwaki Korakuchuka",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Omotecho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.664,
+      "lng": 133.929
+    },
+    "short_description": "Classic Okayama ramen chain serving a gentle tonkotsu-shoyu soup with plum pickled toppings.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 300,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Ryori Ryokan Tsurugata",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Bikan Historical Quarter",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.595,
+      "lng": 133.771
+    },
+    "short_description": "Historic ryokan offering exquisite kaiseki lunches in a beautiful Edo-period building.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 200,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Okayama Coffee Kan",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Okayama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.667,
+      "lng": 133.918
+    },
+    "short_description": "Local coffee chain known for excellent siphon coffee and relaxing atmosphere near the station.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Parlor Kudamono Komachi",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Okayama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.666,
+      "lng": 133.919
+    },
+    "short_description": "Convenient spot in the station to try premium Okayama fruit soft serve and parfaits.",
+    "estimated_duration": "30 mins",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Little Okayama",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Okayama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6665,
+      "lng": 133.9195
+    },
+    "short_description": "Izakaya located in the station mall showcasing a variety of Okayama regional specialties in one place.",
+    "estimated_duration": "1.5 hours",
+    "rating": 3.9,
+    "review_count": 200,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Grill Bizen",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Uchisange",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6655,
+      "lng": 133.934
+    },
+    "short_description": "Nostalgic Yoshoku restaurant known for its hamburger steaks and demi-glace sauce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 250,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Cafe Muscat",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Muscat Stadium",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.628,
+      "lng": 133.805
+    },
+    "short_description": "Local cafe famous for sweets made with Shine Muscat grapes when in season.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 150,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Otesho",
+    "region": "Chugoku",
+    "city": "Kurashiki",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Bikan Historical Quarter",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.5965,
+      "lng": 133.771
+    },
+    "short_description": "Cozy cafe offering matcha and Japanese sweets in a relaxed, antique-filled setting.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Yamamotoshoten",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.664,
+      "lng": 133.925
+    },
+    "short_description": "Hidden gem famous for its okonomiyaki and yakisoba cooked on a large iron griddle.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 150,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Chuka Soba Fujiya",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Hokancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.669,
+      "lng": 133.914
+    },
+    "short_description": "Historical ramen shop serving a clean, classic soy broth that has been loved for generations.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Ramen Honten",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Higashi-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.675,
+      "lng": 134.025
+    },
+    "short_description": "A roadside ramen favorite with a distinctively rich pork-chicken broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Kibizen",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Okayama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.666,
+      "lng": 133.918
+    },
+    "short_description": "Upscale Japanese restaurant in Hotel Granvia serving kaiseki courses with local ingredients.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 200,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Aoibado",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Korakuen",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.6675,
+      "lng": 133.936
+    },
+    "short_description": "Sweet shop near Korakuen Garden selling delicious 'Kibi Daifuku' mochi.",
+    "estimated_duration": "15 mins",
+    "rating": 4.2,
+    "review_count": 100,
+    "min_budget": "¥300"
+  },
+  {
+    "name": "Tsubogugawa",
+    "region": "Chugoku",
+    "city": "Okayama",
+    "prefecture": "Okayama-ken",
+    "neighborhood": "Nishigawara",
+    "category": "food",
+    "coordinates": {
+      "lat": 34.672,
+      "lng": 133.945
+    },
+    "short_description": "Refined kaiseki dining known for its beautiful presentation and seasonal menus.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 100,
+    "min_budget": "¥8000"
+  }
+]

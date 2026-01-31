@@ -1,0 +1,818 @@
+[
+  {
+    "name": "Sumibiyakiniku Yamamoto",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Hamasaki-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3405,
+      "lng": 124.153
+    },
+    "short_description": "Legendary yakiniku restaurant famous for being the best spot for Ishigaki Beef.",
+    "estimated_duration": "2 hours",
+    "rating": 4.6,
+    "review_count": 1800,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Maguro Senmon Izakaya Hitoshi Ishigantou",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Okawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.339,
+      "lng": 124.1585
+    },
+    "short_description": "Extremely popular izakaya specializing in fresh tuna and local dishes; reservations are essential.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 2500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Tofu Higa",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.348,
+      "lng": 124.145
+    },
+    "short_description": "Early morning spot located in sugarcane fields serving fresh, warm Yushi Tofu sets.",
+    "estimated_duration": "45 mins",
+    "rating": 4.4,
+    "review_count": 1800,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Akaishi Shokudo",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ibaruma",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.505,
+      "lng": 124.275
+    },
+    "short_description": "Northern island favorite known for its tender Soki Soba and large Tonkatsu.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Miru Miru Honpo Honten",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Arakawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.355,
+      "lng": 124.13
+    },
+    "short_description": "Gelato shop on a hill offering local flavors like milk and genmai with stunning sunset views.",
+    "estimated_duration": "30 mins",
+    "rating": 4.4,
+    "review_count": 2500,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Yakiniku Ishigakiya",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Maezato",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.338,
+      "lng": 124.185
+    },
+    "short_description": "Upscale Ishigaki beef dining housed in a beautiful traditional kominka (wooden house).",
+    "estimated_duration": "2 hours",
+    "rating": 4.2,
+    "review_count": 900,
+    "min_budget": "¥8000"
+  },
+  {
+    "name": "Corner's Grill",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Okawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3395,
+      "lng": 124.158
+    },
+    "short_description": "Famous for high-quality Ishigaki Beef hamburgers and steaks.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Shimasoba Ichibanji",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.341,
+      "lng": 124.156
+    },
+    "short_description": "Specializes in traditional Yaeyama soba with a clean, additive-free soup.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 600,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Usagiya Ishigaki Honten",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Misakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3375,
+      "lng": 124.157
+    },
+    "short_description": "Lively izakaya featuring live Sanshin performances and audience participation.",
+    "estimated_duration": "2 hours",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Vanilla Deli",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.34,
+      "lng": 124.1565
+    },
+    "short_description": "Popular casual spot for Ishigaki beef burgers featuring 100% local beef patties.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 700,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kabira Park Chaya",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kabira",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.453,
+      "lng": 124.146
+    },
+    "short_description": "Convenient spot near Kabira Bay serving classic Yaeyama soba and curry.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 400,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Maruha Sengyo",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Hamasaki-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3398,
+      "lng": 124.1525
+    },
+    "short_description": "Fish market izakaya known for extremely fresh sashimi at reasonable prices.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Steak Restaurant Han Re",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Okawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3392,
+      "lng": 124.159
+    },
+    "short_description": "Established steakhouse offering high-quality Ishigaki beef grilled to perfection.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 400,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Pengin Shokudo",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Okawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3385,
+      "lng": 124.1595
+    },
+    "short_description": "Originator of the 'Ishigaki Island Chili Oil' craze, serving healthy noodle dishes.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Yakiniku Orion",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Misakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.338,
+      "lng": 124.156
+    },
+    "short_description": "Casual, buzzing yakiniku spot popular with locals for good meat at fair prices.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 400,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Yarabu Shokudo",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Sakieda",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.43,
+      "lng": 124.11
+    },
+    "short_description": "Hidden gem famous for 'Noko (Rich) Soba' with a creamy, intense broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Puff Puff (Natural Garden Cafe)",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Maezato",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.335,
+      "lng": 124.175
+    },
+    "short_description": "Stylish cafe offering tropical lunches and desserts with a panoramic ocean view.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Funakura",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Arakawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.345,
+      "lng": 124.148
+    },
+    "short_description": "Traditional Ryukyu cuisine served in a lush garden setting near the sea.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 400,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Kitauchi Bokujo Hamasaki",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Hamasaki-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3415,
+      "lng": 124.1535
+    },
+    "short_description": "Directly managed by a ranch, offering premium beef at competitive prices.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 600,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Menya Yagiya",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.342,
+      "lng": 124.158
+    },
+    "short_description": "Charming noodle shop situated in a registered tangible cultural property house.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Sayoko no Mise",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Tonoshiro",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3385,
+      "lng": 124.162
+    },
+    "short_description": "Tiny shop famous for freshly fried Sata Andagi (Okinawan donuts) that sell out fast.",
+    "estimated_duration": "20 mins",
+    "rating": 4.5,
+    "review_count": 600,
+    "min_budget": "¥200"
+  },
+  {
+    "name": "Chinen Shokai",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Tonoshiro",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.343,
+      "lng": 124.165
+    },
+    "short_description": "Local supermarket famous for 'Oni-Sasami' (chicken breast on rice ball), a soul food snack.",
+    "estimated_duration": "15 mins",
+    "rating": 4.4,
+    "review_count": 900,
+    "min_budget": "¥300"
+  },
+  {
+    "name": "Ishigaki Beef MARU",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3395,
+      "lng": 124.155
+    },
+    "short_description": "Yakiniku restaurant where all rooms are private, offering high-grade beef.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Kiraku",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Misakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3365,
+      "lng": 124.1565
+    },
+    "short_description": "Classic diner near the ferry terminal serving Ishigaki favorites for decades.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 400,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Kunatsuyu",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.344,
+      "lng": 124.159
+    },
+    "short_description": "Known for its light, elegant soba broth and garden views.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 300,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Soba Dokoro Masami",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.341,
+      "lng": 124.16
+    },
+    "short_description": "Small shop run by a dedicated owner, serving refined Yaeyama soba (lunch only).",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Blue Cafe Ishigakijima",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Misakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.336,
+      "lng": 124.155
+    },
+    "short_description": "Bakery cafe right by the port, perfect for breakfast with a harbor view.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Seven Colors Ishigakijima",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Hirakubo",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.605,
+      "lng": 124.31
+    },
+    "short_description": "Remote cafe in the far north offering stunning ocean colors and pancakes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Sole Mare",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.339,
+      "lng": 124.154
+    },
+    "short_description": "Authentic Italian restaurant utilizing fresh local seafood and ingredients.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 250,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Tuna Dake",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kawahara",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.4,
+      "lng": 124.18
+    },
+    "short_description": "Specialty shop offering tuna rice bowls near the path to Kabira.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 150,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Island Vegetable Cafe Re:Hellow Beach",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Maezato",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.333,
+      "lng": 124.178
+    },
+    "short_description": "Hip, hawaiian-style cafe popular for vegetable-heavy plates and pancakes.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 700,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Ishigaki Yoshida",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Okawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3405,
+      "lng": 124.1595
+    },
+    "short_description": "Top-tier teppanyaki known for its 'Crispy Grilled' Ishigaki beef.",
+    "estimated_duration": "2.5 hours",
+    "rating": 4.6,
+    "review_count": 150,
+    "min_budget": "¥15000"
+  },
+  {
+    "name": "Sataake",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ibaruma",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.51,
+      "lng": 124.28
+    },
+    "short_description": "Popular noodle shop located near the hibiscus groves, famous for beef soba.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hitoshi Honten",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Shin-ei-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3415,
+      "lng": 124.152
+    },
+    "short_description": "The original branch of the famous tuna izakaya, just as popular as Ishigantou.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 1800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Banana Cafe",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Okawa",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3395,
+      "lng": 124.1575
+    },
+    "short_description": "Relaxed cafe ideal for a mid-day break or evening dessert.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Yume no Ya",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Misakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.337,
+      "lng": 124.156
+    },
+    "short_description": "Cozy izakaya offering a wide range of Awamori and local dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Gajumaru no Buranko",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kabira",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.445,
+      "lng": 124.14
+    },
+    "short_description": "Scenic cafe famous for its swing overlooking the bay.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Klop",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Hirae",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.35,
+      "lng": 124.17
+    },
+    "short_description": "Bakery known for its hard-crust breads and sandwiches.",
+    "estimated_duration": "30 mins",
+    "rating": 4.2,
+    "review_count": 150,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Baraque",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.341,
+      "lng": 124.1585
+    },
+    "short_description": "Specialty shop for Banh Mi sandwiches with an island twist.",
+    "estimated_duration": "30 mins",
+    "rating": 4.3,
+    "review_count": 200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Senka",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Misakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.3378,
+      "lng": 124.1568
+    },
+    "short_description": "Popular yakiniku spot offering Ishigaki beef at approachable prices.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Karasoba Specialist Myfune",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.345,
+      "lng": 124.155
+    },
+    "short_description": "Specializes in 'Kara Soba', a local style of soupless noodles mixed with mackerel canned sauce.",
+    "estimated_duration": "30 mins",
+    "rating": 4.1,
+    "review_count": 100,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Hirakubo Beach Shokudo",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Hirakubo",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.6,
+      "lng": 124.305
+    },
+    "short_description": "Small seaside eatery in the far north, great for a lunch stop while touring.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 100,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Nakamuraya",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Ishigaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.34,
+      "lng": 124.153
+    },
+    "short_description": "Locally beloved shop serving rich and spicy curry rice.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 300,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Umi no Sudo",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kabira",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.45,
+      "lng": 124.145
+    },
+    "short_description": "Soba shop located in a lush garden setting, feeling like a hideaway.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kamizaki",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Hamasaki-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.342,
+      "lng": 124.152
+    },
+    "short_description": "Butcher-run restaurant serving excellent hamburg steaks and beef dishes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 250,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Nosoko Mape",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Nosoko",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.48,
+      "lng": 124.23
+    },
+    "short_description": "Casual dining spot near the famous Mape mountain, good for refueling.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 100,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ishigaki Island Pudding Honpo",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Misakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.337,
+      "lng": 124.156
+    },
+    "short_description": "Specialty shop for rich, creamy custard puddings using island ingredients.",
+    "estimated_duration": "15 mins",
+    "rating": 4.2,
+    "review_count": 400,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Forestale Uno",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Nosoko",
+    "category": "food",
+    "coordinates": {
+      "lat": 24.49,
+      "lng": 124.24
+    },
+    "short_description": "Italian restaurant in the jungle offering handmade pasta and pizza.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.5,
+    "review_count": 150,
+    "min_budget": "¥2000"
+  }
+]

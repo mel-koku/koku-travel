@@ -1,0 +1,784 @@
+[
+  {
+    "name": "Suganoya Ginza-dori",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8005,
+      "lng": 130.707
+    },
+    "short_description": "The premier specialty restaurant for premium horse meat cuisine (Basashi).",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 1500,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Kumamoto Ramen Kokutei",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Nihongi",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.789,
+      "lng": 130.69
+    },
+    "short_description": "Legendary ramen shop famous for its intense burnt garlic oil (mayu) tonkotsu broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 4000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Katsuretsu Tei Shinshigai",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shinshigai",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.7985,
+      "lng": 130.7045
+    },
+    "short_description": "Michelin-recognized tonkatsu restaurant serving thick, juicy pork cutlets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.6,
+    "review_count": 3500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Imakin Shokudo",
+    "region": "Kyushu",
+    "city": "Aso",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Uchinomaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.9695,
+      "lng": 131.069
+    },
+    "short_description": "Famous for its 'Akaushi Don' (Red Beef Bowl), drawing massive queues daily.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 4500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Keika Ramen Honten",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Hanabatacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.801,
+      "lng": 130.7055
+    },
+    "short_description": "One of the originators of Kumamoto ramen, known for its 'Taromen' with cabbage.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 2200,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Akaushi Dining Yoka-Yoka",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Hanabatacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8,
+      "lng": 130.706
+    },
+    "short_description": "Enjoy Aso's famous Akaushi beef in the city, served as steaks or rice bowls.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 900,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kourantei Shimotori",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8015,
+      "lng": 130.708
+    },
+    "short_description": "Historic Chinese restaurant famous for 'Taiping-yan', a local vermicelli soup dish.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 1800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Komurasaki Kamitori",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kamitori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8035,
+      "lng": 130.7095
+    },
+    "short_description": "Established ramen shop known for its roasted garlic chips and mild tonkotsu soup.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 1500,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Mutsugoro",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Hanabatacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.7995,
+      "lng": 130.705
+    },
+    "short_description": "Highly rated izakaya specializing in fresh horse sashimi and local cuisine.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Tengaiten Honten",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Anseimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.801,
+      "lng": 130.71
+    },
+    "short_description": "Popular late-night ramen spot with a punchy garlic powder topping.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1600,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Aoyagi",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8008,
+      "lng": 130.7075
+    },
+    "short_description": "Refined Japanese restaurant serving traditional local Kaiseki and horse meat dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 3.8,
+    "review_count": 400,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Yokobachi",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kamitori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.805,
+      "lng": 130.71
+    },
+    "short_description": "Atmospheric izakaya in a renovated house serving varied local dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 600,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Ramen Akagumi",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kamitori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.804,
+      "lng": 130.7105
+    },
+    "short_description": "Beloved for its high-quality ramen at incredibly affordable prices.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1300,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Ajisen Ramen Honten",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Suizenji",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.7885,
+      "lng": 130.738
+    },
+    "short_description": "Flagship store of the worldwide chain, birthplace of the 'Kumamoto Ramen' style.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 900,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Bunryu Sohonke",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Totsushima",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.815,
+      "lng": 130.765
+    },
+    "short_description": "Known as the 'heaviest' tonkotsu in Kumamoto, extremely rich and thick broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 1400,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Kenzo",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8,
+      "lng": 130.7065
+    },
+    "short_description": "Hidden gem for horse meat connoisseurs, offering rare cuts and liver sashimi.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 300,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Sakurano Baba Josaien",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kumamoto Castle",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8045,
+      "lng": 130.703
+    },
+    "short_description": "Historical food complex offering various local street foods and souvenirs.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 3000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Goro Hachi",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Suizenji",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.7915,
+      "lng": 130.735
+    },
+    "short_description": "Famous cheap and cheerful izakaya serving local dishes and horse meat.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 700,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Takamori Dengaku no Sato",
+    "region": "Kyushu",
+    "city": "Takamori",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Aso",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.825,
+      "lng": 131.135
+    },
+    "short_description": "Traditional hearth-side dining featuring grilled tofu and vegetables (Dengaku).",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Amakusa Kaimaru",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8002,
+      "lng": 130.7068
+    },
+    "short_description": "Izakaya specializing in fresh seafood from the Amakusa region.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 500,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Kumamoto Yatai Mura",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kamitori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.803,
+      "lng": 130.709
+    },
+    "short_description": "Vibrant food stall village offering various local cuisines and shochu.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 400,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Okada Coffee",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kamitori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8025,
+      "lng": 130.709
+    },
+    "short_description": "Classic kissaten (coffee shop) established in 1945, known for hand-drip coffee.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Swiss Shimotori",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.801,
+      "lng": 130.707
+    },
+    "short_description": "Kumamoto's first western confectionery shop, famous for its liqueur bonbons.",
+    "estimated_duration": "30 mins",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Mori Karashi Renkon",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shinmachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.796,
+      "lng": 130.698
+    },
+    "short_description": "Specialty shop for Karashi Renkon (lotus root stuffed with spicy mustard miso).",
+    "estimated_duration": "15 mins",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Chojuan",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Suizenji",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.791,
+      "lng": 130.736
+    },
+    "short_description": "Famous shop for 'Ikinari Dango', a steamed dumpling with sweet potato and red bean.",
+    "estimated_duration": "15 mins",
+    "rating": 4.2,
+    "review_count": 200,
+    "min_budget": "¥150"
+  },
+  {
+    "name": "Unagi no Tokunaga Kita",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.85,
+      "lng": 130.705
+    },
+    "short_description": "Historic eel restaurant serving crisp and fluffy unagi in a traditional setting.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Hana no Ki",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Nishi-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.795,
+      "lng": 130.65
+    },
+    "short_description": "Restaurant situated in the former residence of a famous novelist, serving local beef.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 200,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Daikoku Ramen",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kita-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.835,
+      "lng": 130.7
+    },
+    "short_description": "Locally adored ramen shop known for its rich soup and celebrity autographs.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 1100,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Uma Sakura",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.801,
+      "lng": 130.7065
+    },
+    "short_description": "Modern dining specializing in creative horse meat dishes like pizza and sushi.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 600,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Kusasenri Coffee Roastery",
+    "region": "Kyushu",
+    "city": "Aso",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kusasenri",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.885,
+      "lng": 131.055
+    },
+    "short_description": "Stylish cafe offering specialty coffee with breathtaking views of Mt. Aso.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Yamami Chaya",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kumamoto Castle",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.805,
+      "lng": 130.7035
+    },
+    "short_description": "Offers Akaushi beef and traditional Dengaku in the Josaien complex.",
+    "estimated_duration": "1 hour",
+    "rating": 3.9,
+    "review_count": 200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Tsugumi",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shinshigai",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.799,
+      "lng": 130.705
+    },
+    "short_description": "Specializes in 'Amakusa Daioh', a premium local chicken breed.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Sekkasanbou",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kamitori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.804,
+      "lng": 130.71
+    },
+    "short_description": "Michelin Bib Gourmand soba shop serving hand-cut noodles.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Tengoku",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Nihongi",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.79,
+      "lng": 130.692
+    },
+    "short_description": "Horse meat specialist famous for its incredibly thick tenderloin steaks.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Yamamoto-ya",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Chuo-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8,
+      "lng": 130.7
+    },
+    "short_description": "Known for local pickles and traditional Kumamoto homestyle dishes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 100,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Yakkozushi",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Hanabatacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8005,
+      "lng": 130.706
+    },
+    "short_description": "Long-established sushi restaurant famous for its decorative horse meat sushi.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 200,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Aso Milk Factory",
+    "region": "Kyushu",
+    "city": "Aso",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Uchinomaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.95,
+      "lng": 131.05
+    },
+    "short_description": "Dairy farm restaurant offering cheese pizzas and fresh Aso milk soft serve.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Fujiwara Steak House",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kamitori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.803,
+      "lng": 130.709
+    },
+    "short_description": "Old-school teppanyaki steakhouse serving premium Japanese beef.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.5,
+    "review_count": 300,
+    "min_budget": "¥8000"
+  },
+  {
+    "name": "Negibouzu",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.801,
+      "lng": 130.708
+    },
+    "short_description": "Lively izakaya famous for its massive selection of local shochu.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 400,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "San-sui Tei",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Ueki",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.9,
+      "lng": 130.68
+    },
+    "short_description": "Famous for its black sesame ramen and spacious, family-friendly atmosphere.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Kyoto Sushi Matsumoto Kumamoto",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8012,
+      "lng": 130.707
+    },
+    "short_description": "Michelin-starred sushi outpost offering high-end omakase.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 100,
+    "min_budget": "¥10000"
+  },
+  {
+    "name": "Koubai",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Kumamoto Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.79,
+      "lng": 130.689
+    },
+    "short_description": "Renowned sweet shop, home of the 'Homare no Jindaiko' red bean treat.",
+    "estimated_duration": "20 mins",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Kumamoto Uokura",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Shimotori",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8015,
+      "lng": 130.7075
+    },
+    "short_description": "Upscale dining featuring live squid sashimi and clay pot rice.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 300,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Ikkyu Honpo",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Chuo-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.81,
+      "lng": 130.72
+    },
+    "short_description": "Traditional confectionery shop serving a wide variety of Japanese sweets.",
+    "estimated_duration": "20 mins",
+    "rating": 4.0,
+    "review_count": 150,
+    "min_budget": "¥400"
+  },
+  {
+    "name": "Tempura Hirao (Kumamoto Style)",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Chuo-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.8,
+      "lng": 130.71
+    },
+    "short_description": "Local tempura spot offering freshly fried items counter-style (Note: Represents the style widely loved).",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Takamori Dengaku Hozonkai",
+    "region": "Kyushu",
+    "city": "Takamori",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Aso",
+    "category": "food",
+    "coordinates": {
+      "lat": 32.82,
+      "lng": 131.13
+    },
+    "short_description": "Authentic rustic dining experience grilling skewers over charcoal.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 900,
+    "min_budget": "¥2500"
+  }
+]

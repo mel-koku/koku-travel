@@ -1,0 +1,767 @@
+[
+  {
+    "name": "Jack's Steak House",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kume",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2123,
+      "lng": 127.674
+    },
+    "short_description": "Legendary American-style diner founded in 1953, famous for late-night steaks.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 6500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Shuri Soba",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Shuri",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2185,
+      "lng": 127.7145
+    },
+    "short_description": "Renowned for its firm, hand-kneaded noodles and clear, flavorful broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 2800,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Yunangi",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kumoji",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.214,
+      "lng": 127.681
+    },
+    "short_description": "Popular izakaya serving authentic Okinawan home cooking like Rafute and Gurukun.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 1800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Pork Tamago Onigiri Honten",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2155,
+      "lng": 127.6885
+    },
+    "short_description": "Specialty shop for Okinawa's soul food, SPAM and egg rice balls, drawing huge lines.",
+    "estimated_duration": "30 mins",
+    "rating": 4.4,
+    "review_count": 3500,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Steakhouse 88 Kokusai-dori",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kokusai-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.216,
+      "lng": 127.689
+    },
+    "short_description": "Iconic steakhouse chain with a retro vibe, offering a wide variety of cuts.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 2200,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Okinawa Soba Eibun",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Tsuboya",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.212,
+      "lng": 127.6895
+    },
+    "short_description": "Modern take on Okinawa soba with stylish toppings and inventive broths.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hanagasa Shokudo",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Makishi",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.215,
+      "lng": 127.689
+    },
+    "short_description": "Deeply local diner in the arcade serving massive portions of teishoku meals.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 1100,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Mikado",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.218,
+      "lng": 127.682
+    },
+    "short_description": "24-hour diner famous for its 'Chanpon' (which is a rice dish in Okinawa, not noodles).",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 1500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Ramen Danbo Naha",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Makishi",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.217,
+      "lng": 127.688
+    },
+    "short_description": "Extremely popular tonkotsu ramen shop known for customizable noodle firmness and spice.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 4000,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Makishi Public Market",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2152,
+      "lng": 127.6888
+    },
+    "short_description": "The kitchen of Okinawa; buy fresh colorful fish downstairs and have it cooked upstairs.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 3000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Blue Seal Kokusai-dori",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kokusai-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2145,
+      "lng": 127.685
+    },
+    "short_description": "Born in America, raised in Okinawa; famous for Beni-imo and Salt Chinsuko ice cream.",
+    "estimated_duration": "20 mins",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Fuji-ya",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Tomari",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.225,
+      "lng": 127.685
+    },
+    "short_description": "Famous spot for 'Okinawa Zenzai', shaved ice with sweet kidney beans and mochi.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 900,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Yappari Steak 3rd",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2158,
+      "lng": 127.6875
+    },
+    "short_description": "Budget-friendly steakhouse on lava rocks, famous for its ¥1000 steak options.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ryukyu Sabo Ashibiuna",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Shuri",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.219,
+      "lng": 127.717
+    },
+    "short_description": "Traditional wooden house restaurant serving Okinawan sets with a view of a rock garden.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Jambo Steak Hans",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kumoji",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.214,
+      "lng": 127.6825
+    },
+    "short_description": "Popular for massive 1kg steaks and a bustling, casual atmosphere.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "A&W Naha Kanagusuku",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kanagusuku",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.195,
+      "lng": 127.665
+    },
+    "short_description": "The first fast-food chain in Japan, loved for Root Beer and Mozza Burgers.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1100,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Tacos-ya Kokusai-dori",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2155,
+      "lng": 127.687
+    },
+    "short_description": "Casual spot for authentic Okinawan tacos (fried shell) and taco rice.",
+    "estimated_duration": "30 mins",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Sam's Sailor Inn",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kokusai-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2165,
+      "lng": 127.6885
+    },
+    "short_description": "Nautical-themed teppanyaki where chefs perform tricks while cooking.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 1500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Boroboro",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Makishi",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2168,
+      "lng": 127.69
+    },
+    "short_description": "A cozy, retro-style izakaya specializing in Awamori and charcoal-grilled dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.2,
+    "review_count": 500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Urizun",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Asato",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2185,
+      "lng": 127.6945
+    },
+    "short_description": "One of the most famous izakayas in Naha, established in 1972, serving royal cuisine.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 1100,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Koyaji",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Makishi",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2165,
+      "lng": 127.6895
+    },
+    "short_description": "Small, stylish standing-style izakaya (with seats) popular for creative small plates.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 300,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "C&C Breakfast Okinawa",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.215,
+      "lng": 127.6885
+    },
+    "short_description": "Trendy cafe famous for acai bowls, pancakes, and healthy breakfasts.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 900,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Ten to Ten",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Shikina",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.205,
+      "lng": 127.705
+    },
+    "short_description": "Soba shop in an ivy-covered building serving ancient-style wood ash noodles.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Maguro Mart",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Maejima",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.222,
+      "lng": 127.683
+    },
+    "short_description": "Extremely popular izakaya specializing in fresh tuna dishes in a modern setting.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 1300,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Yakiniku Motobu Bokujo Naha",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kumoji",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2145,
+      "lng": 127.68
+    },
+    "short_description": "Upscale Yakiniku serving the award-winning local Motobu Wagyu beef.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 700,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Shimauta Live Juri",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.218,
+      "lng": 127.6805
+    },
+    "short_description": "Lively venue to enjoy local cuisine while watching live Sanshin music performances.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Benryya",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Asato",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.218,
+      "lng": 127.696
+    },
+    "short_description": "Famous dumpling stall inside Sakaemachi Market, known for a buzzing local vibe.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 600,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Oden Toudai",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Asato",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2175,
+      "lng": 127.6955
+    },
+    "short_description": "Legendary spot for Okinawan Oden, featuring meltingly tender pig's feet (tebichi).",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Ball Donut Park",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Makishi",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.216,
+      "lng": 127.6895
+    },
+    "short_description": "Hip cafe serving freshly made, airy lemon-sugar ball donuts.",
+    "estimated_duration": "30 mins",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Fontana Gelato",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2155,
+      "lng": 127.6878
+    },
+    "short_description": "Bright gelato shop offering distinct local flavors like Guava and Shikuwasa.",
+    "estimated_duration": "15 mins",
+    "rating": 4.4,
+    "review_count": 300,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Ryukyu Ryori Mie",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kumoji",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2142,
+      "lng": 127.6815
+    },
+    "short_description": "High-end establishment serving authentic Ryukyu Court Cuisine in a formal setting.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 150,
+    "min_budget": "¥10000"
+  },
+  {
+    "name": "Uchina Chaya Buku-Buku",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Tsuboya",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2125,
+      "lng": 127.689
+    },
+    "short_description": "Traditional teahouse famous for 'Buku-Buku Cha', a tea topped with a mountain of foam.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 250,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Takara Shokudo",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Kanagusuku",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.196,
+      "lng": 127.666
+    },
+    "short_description": "Home-style diner loved for its Nanko Soba (soft bone pork ribs).",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 400,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Kame Kame Soba",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Wakasa",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.22,
+      "lng": 127.675
+    },
+    "short_description": "Local favorite famous for its 'Fuchiba' (Mugwort) Soba which you can add freely.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 700,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "George Restaurant",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Tsuji",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.218,
+      "lng": 127.672
+    },
+    "short_description": "A historic taco shop established in the 1950s with a distinct retro American vibe.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 400,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Piparchi Kitchen",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Nishi",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.215,
+      "lng": 127.668
+    },
+    "short_description": "Modern cafe serving dishes using island vegetables and herbs like Piparchi (island pepper).",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Jef Sunrise Naha",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Tsuboya",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.213,
+      "lng": 127.688
+    },
+    "short_description": "Okinawa-exclusive burger chain famous for the 'Nuyaru Burger' made with bitter melon and egg.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Mahoroba",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Makishi",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2172,
+      "lng": 127.6885
+    },
+    "short_description": "Trendy spot specializing in Taiwan Mazesoba (soupless mixed noodles) that is highly addictive.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Daito Soba",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Makishi",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.216,
+      "lng": 127.689
+    },
+    "short_description": "Offers thick, chewy noodles and 'Daito Sushi' (zuke-maguro) from the Daito Islands.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 600,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Miso Meshiya Marutama",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Izumizaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.21,
+      "lng": 127.68
+    },
+    "short_description": "Specialty shop using 160-year-old traditional Tamana Miso in all its dishes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 400,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Toribori",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Shuri",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.22,
+      "lng": 127.72
+    },
+    "short_description": "Hidden gem for homemade Okinawa soba located in a quiet residential area of Shuri.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 300,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Lucky Tacos",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.214,
+      "lng": 127.688
+    },
+    "short_description": "Small shop dedicated to 'Shio (Salt) Tacos' with crispy shells.",
+    "estimated_duration": "30 mins",
+    "rating": 4.1,
+    "review_count": 200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Kurtos Kalacs",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.215,
+      "lng": 127.687
+    },
+    "short_description": "Unique shop serving freshly baked European chimney cakes.",
+    "estimated_duration": "20 mins",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Daikokuya Genghis Khan",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Asato",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2178,
+      "lng": 127.695
+    },
+    "short_description": "Popular spot in Sakaemachi for lamb BBQ and goat sashimi.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Tsubame Shokudo",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa-ken",
+    "neighborhood": "Matsuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2152,
+      "lng": 127.6889
+    },
+    "short_description": "Famous stall in Makishi Market managed by a lively owner, mixing Okinawan and Taiwanese food.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 250,
+    "min_budget": "¥1500"
+  }
+]
