@@ -175,6 +175,11 @@ export function useSmartPrompts(initialGaps: DetectedGap[]) {
   const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
   const [acceptedIds, setAcceptedIds] = useState<Set<string>>(new Set());
 
+  // Sync gaps when initialGaps changes (preserve accepted/skipped state)
+  useEffect(() => {
+    setGaps(initialGaps);
+  }, [initialGaps]);
+
   const visibleGaps = gaps.filter(
     (gap) => !skippedIds.has(gap.id) && !acceptedIds.has(gap.id)
   );
