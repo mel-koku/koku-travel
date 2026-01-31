@@ -25,6 +25,8 @@ import {
 import { logger } from "@/lib/logger";
 import { recordPreferenceEvent } from "@/lib/learning/preferenceStorage";
 import { generateActivityTips, type ActivityTip } from "@/lib/tips/tipGenerator";
+import { ActivityConflictIndicator } from "./ConflictBadge";
+import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -191,6 +193,8 @@ type PlaceActivityRowProps = {
   dayId?: string;
   onReplace?: () => void;
   onCopy?: () => void;
+  /** Conflicts detected for this activity */
+  conflicts?: ItineraryConflict[];
 };
 
 export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRowProps>(
@@ -214,6 +218,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       dayId,
       onReplace,
       onCopy,
+      conflicts,
     },
     ref,
   ) => {
@@ -658,6 +663,13 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 ) : null}
               </div>
             ) : null}
+
+            {/* Conflict Indicators */}
+            {conflicts && conflicts.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                <ActivityConflictIndicator conflicts={conflicts} />
+              </div>
+            )}
 
             {tips.length > 0 ? (
               <div className="space-y-1.5 rounded-lg bg-sage/5 p-2">

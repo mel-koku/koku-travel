@@ -15,6 +15,7 @@ import { Itinerary, type ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
+import { WhatsNextCard } from "./WhatsNextCard";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { TripSummary } from "./TripSummary";
 import { planItineraryClient } from "@/hooks/usePlanItinerary";
@@ -27,6 +28,7 @@ import {
 } from "@/hooks/useReplacementCandidates";
 import { REGIONS } from "@/data/regions";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -532,6 +534,17 @@ export const ItineraryShell = ({
     return suggestions.filter((gap) => gap.dayIndex === safeSelectedDay);
   }, [suggestions, currentDay, safeSelectedDay]);
 
+  // Detect scheduling conflicts in the itinerary
+  const conflictsResult = useMemo(() => {
+    return detectItineraryConflicts(model);
+  }, [model]);
+
+  // Get conflicts for the current day
+  const currentDayConflicts = useMemo(() => {
+    if (!currentDay) return [];
+    return getDayConflicts(conflictsResult, currentDay.id);
+  }, [conflictsResult, currentDay]);
+
   const handleSelectDayChange = useCallback((dayIndex: number) => {
     setSelectedDay(dayIndex);
     setSelectedActivityId(null);
@@ -600,6 +613,7 @@ export const ItineraryShell = ({
                 selected={safeSelectedDay}
                 onChange={handleSelectDayChange}
                 labels={days.map((day) => day.dateLabel ?? "")}
+                tripStartDate={tripStartDate}
               />
             </div>
           </div>
@@ -619,6 +633,16 @@ export const ItineraryShell = ({
         {/* Timeline panel */}
         <div className="order-1 flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-sm xl:order-2">
           <div className="flex-1 overflow-y-auto p-3 pr-2 sm:p-4">
+            {/* What's Next Card for Today */}
+            {currentDay && tripStartDate && (
+              <WhatsNextCard
+                day={currentDay}
+                tripStartDate={tripStartDate}
+                dayIndex={safeSelectedDay}
+                onActivityClick={handleSelectActivity}
+                className="mb-4"
+              />
+            )}
             {currentDay ? (
               <ItineraryTimeline
                 day={currentDay}
@@ -639,6 +663,8 @@ export const ItineraryShell = ({
                 onAcceptSuggestion={onAcceptSuggestion}
                 onSkipSuggestion={onSkipSuggestion}
                 loadingSuggestionId={loadingSuggestionId}
+                conflicts={currentDayConflicts}
+                conflictsResult={conflictsResult}
               />
             ) : (
               <p className="text-sm text-stone">
