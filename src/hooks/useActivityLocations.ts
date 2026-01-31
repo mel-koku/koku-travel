@@ -50,15 +50,32 @@ async function fetchLocationsByIds(ids: string[]): Promise<Location[]> {
 }
 
 /**
- * Extracts location ID from an activity ID pattern (e.g., "kyoto-temple-1737000000-abc")
+ * Extracts location ID from an activity ID pattern.
+ * Activity ID format: {locationId}-{dayIndex}-{timeSlot}-{activityIndex}
+ * Example: nyk-hikawa-kanto-0aa6cf85-1-morning-1
  */
 function extractBaseLocationId(activityId: string): string | null {
-  const match = activityId.match(/^(.*)-\d+-\d+$/);
+  // Match format: {locationId}-{dayIndex}-{timeSlot}-{activityIndex}
+  const match = activityId.match(/^(.+)-\d+-(morning|afternoon|evening|night)-\d+$/);
   if (!match) {
     return null;
   }
   const [, baseId] = match;
   return baseId ?? null;
+}
+
+/**
+ * Checks if a location ID is valid for fetching
+ */
+function isValidLocationId(locationId: string): boolean {
+  // Skip entry point IDs (various formats)
+  if (locationId.startsWith("__entry_point")) return false;
+  if (locationId.startsWith("entry-point")) return false;
+  // Skip fallback IDs
+  if (locationId.startsWith("__fallback__")) return false;
+  // Skip IDs that look like activity IDs (contain time slot pattern)
+  if (/-\d+-(morning|afternoon|evening|night)-\d+$/.test(locationId)) return false;
+  return true;
 }
 
 /**
@@ -71,18 +88,18 @@ function extractLocationIds(
 
   for (const activity of activities) {
     // Skip entry points
-    if (activity.locationId?.startsWith("__entry_point_")) {
+    if (activity.locationId?.startsWith("__entry_point")) {
       continue;
     }
 
-    // Add explicit locationId
-    if (activity.locationId) {
+    // Add explicit locationId if valid
+    if (activity.locationId && isValidLocationId(activity.locationId)) {
       ids.add(activity.locationId);
     }
 
-    // Add extracted ID from activity ID pattern
+    // Add extracted ID from activity ID pattern if valid
     const extractedId = extractBaseLocationId(activity.id);
-    if (extractedId) {
+    if (extractedId && isValidLocationId(extractedId)) {
       ids.add(extractedId);
     }
   }

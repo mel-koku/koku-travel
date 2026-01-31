@@ -104,6 +104,21 @@ async function fetchLocationDetails(locationId: string): Promise<LocationDetails
 }
 
 /**
+ * Checks if a location ID is valid for fetching (not a fallback or entry point)
+ */
+function isValidLocationIdForFetch(locationId: string | null): boolean {
+  if (!locationId) return false;
+  // Skip fallback IDs created by buildFallbackLocation
+  if (locationId.startsWith("__fallback__")) return false;
+  // Skip entry point IDs (various formats)
+  if (locationId.startsWith("__entry_point")) return false;
+  if (locationId.startsWith("entry-point")) return false;
+  // Skip IDs that look like activity IDs (contain time slot pattern)
+  if (/-\d+-(morning|afternoon|evening|night)-\d+$/.test(locationId)) return false;
+  return true;
+}
+
+/**
  * React Query hook for fetching location details with automatic caching
  *
  * Features:
@@ -115,11 +130,12 @@ async function fetchLocationDetails(locationId: string): Promise<LocationDetails
  */
 export function useLocationDetailsQuery(locationId: string | null) {
   const queryClient = useQueryClient();
+  const isValidId = isValidLocationIdForFetch(locationId);
 
   const { data, status, error, refetch } = useQuery({
     queryKey: locationDetailsKeys.detail(locationId ?? ""),
     queryFn: () => fetchLocationDetails(locationId!),
-    enabled: !!locationId,
+    enabled: isValidId,
     staleTime: LOCATION_STALE_TIME,
     gcTime: LOCATION_GC_TIME,
     retry: 2,

@@ -78,6 +78,10 @@ const CITY_CENTER_COORDINATES: Record<string, { lat: number; lng: number }> = {
   hiroshima: { lat: 34.3853, lng: 132.4553 },
   kanazawa: { lat: 36.5613, lng: 136.6562 },
   naha: { lat: 26.2124, lng: 127.6809 },
+  matsuyama: { lat: 33.8416, lng: 132.7657 },
+  takamatsu: { lat: 34.3401, lng: 134.0434 },
+  hakodate: { lat: 41.7687, lng: 140.7288 },
+  nagasaki: { lat: 32.7503, lng: 129.8779 },
 };
 
 /**
@@ -98,6 +102,10 @@ const CITY_EXPECTED_REGION: Record<string, string> = {
   hiroshima: "Chugoku",
   kanazawa: "Chubu",
   naha: "Okinawa",
+  matsuyama: "Shikoku",
+  takamatsu: "Shikoku",
+  hakodate: "Hokkaido",
+  nagasaki: "Kyushu",
 };
 
 /**
@@ -164,6 +172,13 @@ function isLocationValidForCity(
   cityKey: string,
   expectedRegionId?: RegionId
 ): boolean {
+  // If location's city matches the target city, trust the database
+  // This avoids issues with overlapping region bounding boxes
+  const locationCityKey = normalizeKey(location.city);
+  if (locationCityKey === cityKey) {
+    return true;
+  }
+
   // 1. Check region consistency
   const expectedRegion = expectedRegionId
     ? REGIONS.find((r) => r.id === expectedRegionId)?.name
@@ -178,15 +193,20 @@ function isLocationValidForCity(
   }
 
   // 2. Check coordinate-based region (more reliable than region field)
-  if (location.coordinates) {
-    const coordinateRegion = findRegionByCoordinates(
-      location.coordinates.lat,
-      location.coordinates.lng
-    );
+  // Skip this check for regions with overlapping boundaries (Shikoku, Chugoku, Kansai)
+  // as it causes false negatives
+  if (location.coordinates && expectedRegion) {
+    const regionsWithOverlap = ["Shikoku", "Chugoku", "Kansai"];
+    if (!regionsWithOverlap.includes(expectedRegion)) {
+      const coordinateRegion = findRegionByCoordinates(
+        location.coordinates.lat,
+        location.coordinates.lng
+      );
 
-    if (coordinateRegion && expectedRegion && coordinateRegion !== expectedRegion) {
-      logger.debug(`Filtering out "${location.name}": coordinates (${location.coordinates.lat}, ${location.coordinates.lng}) are in "${coordinateRegion}", not "${expectedRegion}"`);
-      return false;
+      if (coordinateRegion && coordinateRegion !== expectedRegion) {
+        logger.debug(`Filtering out "${location.name}": coordinates (${location.coordinates.lat}, ${location.coordinates.lng}) are in "${coordinateRegion}", not "${expectedRegion}"`);
+        return false;
+      }
     }
   }
 
