@@ -1,0 +1,326 @@
+[
+  {
+    "name": "Kenrokuen Garden",
+    "region": "Chubu",
+    "city": "Kanazawa",
+    "prefecture": "Ishikawa",
+    "neighborhood": "Marunouchi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 36.5625,
+      "lng": 136.6625
+    },
+    "short_description": "One of Japan's three most beautiful landscape gardens.",
+    "rating": 4.5,
+    "review_count": 28000,
+    "min_budget": "¥320",
+    "description": "Kenrokuen is ranked among Japan's three most celebrated gardens, developed over nearly two centuries by the ruling Maeda family. The name means 'garden combining six characteristics' referring to spaciousness, seclusion, artificiality, antiquity, water sources, and panoramic views. Spanning 11.4 hectares, it features ponds, stone lanterns, waterfalls, bridges, tea houses, and the famous two-legged Kotoji lantern. The garden is stunning in all seasons, with cherry blossoms in spring, irises in summer, autumn foliage, and yukitsuri rope structures protecting pine trees in winter.",
+    "estimated_duration": "1.5 hours"
+  },
+  {
+    "name": "Shirakawa-go",
+    "region": "Chubu",
+    "city": "Shirakawa",
+    "prefecture": "Gifu",
+    "neighborhood": "Ogimachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.2576,
+      "lng": 136.906
+    },
+    "short_description": "UNESCO World Heritage village with traditional thatched-roof farmhouses.",
+    "rating": 4.4,
+    "review_count": 15000,
+    "min_budget": "Free",
+    "description": "Shirakawa-go is a UNESCO World Heritage Site famous for its gassho-zukuri farmhouses, traditional buildings with steep thatched roofs resembling hands pressed in prayer. Over 100 farmhouses, some more than 250 years old, stand in this remote mountain village where around 500 residents still live. The architectural style developed to withstand heavy snowfall, with the large attic spaces historically used for silkworm cultivation. The village is particularly magical during winter illumination events when the snow-covered houses are lit up at night. Several houses are open as museums, and visitors can stay overnight in traditional minshuku.",
+    "estimated_duration": "3 hours"
+  },
+  {
+    "name": "Matsumoto Castle",
+    "region": "Chubu",
+    "city": "Matsumoto",
+    "prefecture": "Nagano",
+    "neighborhood": "Marunouchi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.2388,
+      "lng": 137.9688
+    },
+    "short_description": "National Treasure castle known as 'Crow Castle' for its striking black exterior.",
+    "rating": 4.5,
+    "review_count": 22000,
+    "min_budget": "¥700",
+    "description": "Matsumoto Castle is one of Japan's five National Treasure castles and the oldest surviving five-tiered castle tower in Japan, built between 1592 and 1614. Known as 'Crow Castle' due to its distinctive black wainscoting, it features a unique design combining both a secondary donjon and a moon-viewing turret. The original wooden interior contains steep staircases, arrow slots, and displays of samurai armor and weapons. The castle sits against a stunning backdrop of the Japanese Alps and is particularly beautiful during cherry blossom season in mid-April when over 300 trees bloom around the moat.",
+    "estimated_duration": "1.5 hours"
+  },
+  {
+    "name": "Nagoya Castle",
+    "region": "Chubu",
+    "city": "Nagoya",
+    "prefecture": "Aichi",
+    "neighborhood": "Naka Ward",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.1856,
+      "lng": 136.899
+    },
+    "short_description": "Historic castle famous for its golden shachihoko roof ornaments.",
+    "rating": 4.2,
+    "review_count": 18000,
+    "min_budget": "¥500",
+    "description": "Nagoya Castle was built in 1615 by Tokugawa Ieyasu and features distinctive golden shachihoko (tiger-headed fish) ornaments on its roof symbolizing the wealth and power of the Tokugawa family. While the main keep was destroyed in World War II air raids and reconstructed in concrete, the magnificently restored Hommaru Palace showcases traditional construction methods and stunning gold-leafed wall paintings by the Kano school. The palace's Jorakuden wing, built in 1634 for visiting shoguns, is particularly opulent. The castle grounds are beautiful during cherry blossom season and host free English-speaking tours.",
+    "estimated_duration": "2 hours"
+  },
+  {
+    "name": "Takayama Old Town (Sanmachi Suji)",
+    "region": "Chubu",
+    "city": "Takayama",
+    "prefecture": "Gifu",
+    "neighborhood": "Kami Sannomachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.1408,
+      "lng": 137.2543
+    },
+    "short_description": "Beautifully preserved Edo-period merchant streets known as 'Little Kyoto'.",
+    "rating": 4.4,
+    "review_count": 14000,
+    "min_budget": "Free",
+    "description": "Takayama's old town, designated as a Preservation District for Groups of Traditional Buildings, preserves the atmosphere of the Edo period with three picturesque streets of wooden merchant houses, sake breweries, and shops. The dark wooden buildings with their latticed windows house traditional craft shops, cafes, and restaurants serving Hida beef. Seven sake breweries remain active, identifiable by sugidama (cedar ball) decorations, with many offering tastings. The area is particularly lively during the famous Takayama Festival held in spring and autumn, when ornate festival floats parade through the streets.",
+    "estimated_duration": "2.5 hours"
+  },
+  {
+    "name": "Mount Fuji 5th Station",
+    "region": "Chubu",
+    "city": "Narusawa",
+    "prefecture": "Yamanashi",
+    "neighborhood": "Fuji Subaru Line",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.3906,
+      "lng": 138.7339
+    },
+    "short_description": "Starting point for Mt. Fuji climbs with spectacular views at 2,305 meters.",
+    "rating": 4.3,
+    "review_count": 12000,
+    "min_budget": "Free",
+    "description": "The Fuji Subaru Line 5th Station sits at 2,305 meters elevation, halfway up Japan's iconic Mount Fuji, and is the most popular starting point for climbing the sacred volcano. Accessible by bus or car outside the climbing season, visitors can enjoy panoramic views of the Fuji Five Lakes region below, visit the Komitake Shrine, and send postcards from Mt. Fuji's post office. The station offers restaurants, souvenir shops, and hiking supplies. For those not climbing to the summit, the Ochudo Trail provides easier walks with stunning scenery. The toll road is closed to private vehicles during the July-September climbing season.",
+    "estimated_duration": "2 hours"
+  },
+  {
+    "name": "Lake Kawaguchiko",
+    "region": "Chubu",
+    "city": "Fujikawaguchiko",
+    "prefecture": "Yamanashi",
+    "neighborhood": "Kawaguchiko",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.5119,
+      "lng": 138.753
+    },
+    "short_description": "Popular lake resort offering iconic 'upside-down Fuji' reflections.",
+    "rating": 4.4,
+    "review_count": 16000,
+    "min_budget": "Free",
+    "description": "Lake Kawaguchiko is the most accessible and developed of the Fuji Five Lakes, famous for its stunning 'upside-down Fuji' reflections on clear days. The lake is surrounded by museums, hot springs, and recreational facilities, with the Kachi Kachi Ropeway ascending to an observation point with panoramic views of both the lake and Mt. Fuji. Sightseeing boats cruise the lake, and the northern shore features beautiful lavender fields in summer. The area offers year-round attractions including autumn foliage along the Momiji Corridor and cherry blossoms in spring. It's an excellent base for exploring the Mt. Fuji region.",
+    "estimated_duration": "3 hours"
+  },
+  {
+    "name": "Jigokudani Monkey Park",
+    "region": "Chubu",
+    "city": "Yamanouchi",
+    "prefecture": "Nagano",
+    "neighborhood": "Jigokudani",
+    "category": "nature",
+    "coordinates": {
+      "lat": 36.733,
+      "lng": 138.4626
+    },
+    "short_description": "Famous park where wild snow monkeys bathe in natural hot springs.",
+    "rating": 4.5,
+    "review_count": 19000,
+    "min_budget": "¥800",
+    "description": "Jigokudani Yaen-Koen (Hell Valley Wild Monkey Park) is the only place in the world where wild monkeys are known to bathe in hot springs. Established in 1964, the park is home to over 200 Japanese macaques who descend from the surrounding mountains to enjoy the natural onsen, particularly during cold winter months. The serene faces of snow-covered monkeys soaking in steamy water have gained international fame through nature documentaries and magazines. Visitors must walk 30-40 minutes through a scenic cedar forest to reach the monkey pool. The monkeys are accustomed to humans and can be observed at close range.",
+    "estimated_duration": "2.5 hours"
+  },
+  {
+    "name": "Higashi Chaya District",
+    "region": "Chubu",
+    "city": "Kanazawa",
+    "prefecture": "Ishikawa",
+    "neighborhood": "Higashiyama",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.5726,
+      "lng": 136.6661
+    },
+    "short_description": "Preserved Edo-era geisha district with traditional wooden teahouses.",
+    "rating": 4.4,
+    "review_count": 13000,
+    "min_budget": "Free",
+    "description": "Higashi Chaya District is the largest and most impressive of Kanazawa's three preserved geisha districts, established in 1820 when the Maeda lord consolidated scattered teahouses. The atmospheric streets feature beautiful wooden chaya buildings with distinctive latticed windows called 'kimusuko' and two-story construction that was restricted to geisha houses during the Edo period. Today, active geisha still entertain here, and two teahouses—Shima and Kaikaro—are open to the public. The area is known for gold leaf products, with Kanazawa producing 99% of Japan's gold leaf, and visitors can try gold leaf ice cream or watch craftspeople at work.",
+    "estimated_duration": "1.5 hours"
+  },
+  {
+    "name": "Chureito Pagoda",
+    "region": "Chubu",
+    "city": "Fujiyoshida",
+    "prefecture": "Yamanashi",
+    "neighborhood": "Arakurayama Sengen Park",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.4979,
+      "lng": 138.8017
+    },
+    "short_description": "Iconic five-story pagoda offering classic Mt. Fuji views.",
+    "rating": 4.4,
+    "review_count": 11000,
+    "min_budget": "Free",
+    "description": "Chureito Pagoda is a five-story memorial pagoda built in 1963 to honor local war dead, but has become one of Japan's most iconic photo spots. Located in Arakurayama Sengen Park, the pagoda offers a quintessential Japanese view combining traditional architecture with Mt. Fuji in the background. Visitors must climb 398 steps to reach the pagoda viewpoint, which is especially stunning during cherry blossom season in mid-April or autumn foliage in November. The pagoda is illuminated during evening hours in certain seasons. The nearby Arakura Fuji Sengen Shrine dates back over 1,000 years.",
+    "estimated_duration": "1.5 hours"
+  },
+  {
+    "name": "Omicho Market",
+    "region": "Chubu",
+    "city": "Kanazawa",
+    "prefecture": "Ishikawa",
+    "neighborhood": "Kamiomi-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 36.5706,
+      "lng": 136.6556
+    },
+    "short_description": "Kanazawa's lively kitchen with fresh seafood and local specialties.",
+    "rating": 4.3,
+    "review_count": 14000,
+    "min_budget": "¥500",
+    "description": "Omicho Market has been Kanazawa's main public market for over 300 years, earning its nickname as 'Kanazawa's Kitchen.' Over 170 shops line the covered arcade, selling the freshest seafood from the Sea of Japan including snow crab, sweet shrimp, and yellowtail. Visitors can enjoy kaisendon (seafood rice bowls) at numerous restaurants or sample local specialties like golden Kaga vegetables and Kanazawa's famous gold leaf products. The market is particularly lively in the morning when locals shop, offering an authentic glimpse into Japanese food culture. Many vendors offer tastings and will prepare purchases for immediate consumption.",
+    "estimated_duration": "1.5 hours"
+  },
+  {
+    "name": "21st Century Museum of Contemporary Art",
+    "region": "Chubu",
+    "city": "Kanazawa",
+    "prefecture": "Ishikawa",
+    "neighborhood": "Hirosaka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.5606,
+      "lng": 136.6577
+    },
+    "short_description": "Innovative circular museum showcasing contemporary art installations.",
+    "rating": 4.4,
+    "review_count": 16000,
+    "min_budget": "¥450",
+    "description": "The 21st Century Museum of Contemporary Art is a striking circular glass building designed by acclaimed architects SANAA, featuring no front or back entrance to encourage visitors to approach from any direction. The museum is famous for its permanent installations including Leandro Erlich's 'Swimming Pool,' which creates an illusion of people walking underwater, and James Turrell's 'Blue Planet Sky,' a meditation room open to the sky. The free public zones and outdoor artworks make art accessible to everyone, while ticketed exhibitions feature rotating contemporary works. The museum sits between Kenrokuen Garden and Kanazawa Castle.",
+    "estimated_duration": "2 hours"
+  },
+  {
+    "name": "Kamikochi",
+    "region": "Chubu",
+    "city": "Matsumoto",
+    "prefecture": "Nagano",
+    "neighborhood": "Northern Alps",
+    "category": "nature",
+    "coordinates": {
+      "lat": 36.248,
+      "lng": 137.6478
+    },
+    "short_description": "Pristine alpine valley in the Northern Japan Alps.",
+    "rating": 4.6,
+    "review_count": 11000,
+    "min_budget": "Free",
+    "description": "Kamikochi is a remote highland valley in the Northern Japan Alps, renowned for its spectacular mountain scenery and pristine nature. At 1,500 meters elevation, the valley features crystal-clear rivers, mirror-like ponds like Taisho-ike and Myojin-ike, and dramatic peaks including Mt. Hotaka. The famous Kappa Bridge spanning the Azusa River offers postcard-perfect views. Private vehicles are prohibited to preserve the environment; visitors access via bus or taxi. The area is only open from mid-April to mid-November, with autumn foliage being particularly spectacular. Walking trails range from easy riverside strolls to challenging mountain hikes.",
+    "estimated_duration": "4 hours"
+  },
+  {
+    "name": "Inuyama Castle",
+    "region": "Chubu",
+    "city": "Inuyama",
+    "prefecture": "Aichi",
+    "neighborhood": "Kitakoken",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3882,
+      "lng": 136.9394
+    },
+    "short_description": "Japan's oldest original castle tower, a National Treasure.",
+    "rating": 4.4,
+    "review_count": 12000,
+    "min_budget": "¥550",
+    "description": "Inuyama Castle is one of only five castles in Japan designated as National Treasures and boasts the oldest surviving castle tower, completed in 1537. Unlike many reconstructed castles, this compact fortress retains its original wooden structure, including steep staircases and narrow passages that evoke the feudal era. Perched on a hill overlooking the Kiso River, the castle offers panoramic views from its top floor observation deck. The castle remained in private ownership by the Naruse family until 2004, making it unique among Japanese castles. The castle town below preserves traditional streetscapes with craft shops and restaurants.",
+    "estimated_duration": "1.5 hours"
+  },
+  {
+    "name": "Zenkoji Temple",
+    "region": "Chubu",
+    "city": "Nagano",
+    "prefecture": "Nagano",
+    "neighborhood": "Motoyoshicho",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.6614,
+      "lng": 138.1877
+    },
+    "short_description": "One of Japan's oldest and most important Buddhist temples.",
+    "rating": 4.4,
+    "review_count": 15000,
+    "min_budget": "Free",
+    "description": "Zenkoji is a non-sectarian Buddhist temple founded around 642 CE, making it one of Japan's oldest temples. It houses what is believed to be the first Buddha statue ever brought to Japan, kept hidden and never shown publicly. The temple welcomes worshippers regardless of sect or gender—unusual for Buddhist temples historically. Visitors can participate in the 'Okaidan' experience, walking through a pitch-black tunnel beneath the main hall to touch a key said to grant salvation. The temple's approach features a charming shopping street with traditional crafts and local specialties. The Gokaicho ceremony, held every six years, reveals a replica of the hidden Buddha.",
+    "estimated_duration": "2 hours"
+  },
+  {
+    "name": "Tateyama Kurobe Alpine Route",
+    "region": "Chubu",
+    "city": "Tateyama",
+    "prefecture": "Toyama",
+    "neighborhood": "Northern Alps",
+    "category": "nature",
+    "coordinates": {
+      "lat": 36.5783,
+      "lng": 137.6047
+    },
+    "short_description": "Spectacular mountain route featuring 20-meter snow walls in spring.",
+    "rating": 4.5,
+    "review_count": 10000,
+    "min_budget": "¥9000",
+    "description": "The Tateyama Kurobe Alpine Route is a unique 90-kilometer mountain crossing connecting Toyama and Nagano through the Northern Japan Alps. Open from mid-April to late November, visitors traverse using various modes of transport including cable cars, ropeways, trolley buses, and buses. The highlight is the Yuki-no-Otani (Snow Walls) at Murodo, where accumulated snow creates corridors up to 20 meters high from mid-April through June. Other attractions include Japan's highest dam at Kurobe, alpine wetlands at Midagahara, and Mt. Tateyama itself. The route passes through Chubu Sangaku National Park with stunning views of peaks exceeding 3,000 meters.",
+    "estimated_duration": "6 hours"
+  },
+  {
+    "name": "Oishi Park",
+    "region": "Chubu",
+    "city": "Fujikawaguchiko",
+    "prefecture": "Yamanashi",
+    "neighborhood": "Oishi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.5274,
+      "lng": 138.7716
+    },
+    "short_description": "Lakeside park famous for Mt. Fuji views and lavender fields.",
+    "rating": 4.3,
+    "review_count": 9000,
+    "min_budget": "Free",
+    "description": "Oishi Park is a beautifully landscaped lakeside park on the northern shore of Lake Kawaguchiko, offering unobstructed views of Mt. Fuji across the water. The park is the main venue for the Kawaguchiko Herb Festival in June-July, when vast fields of lavender bloom with Mt. Fuji as a backdrop. Other seasonal flowers include kochia bushes in autumn and tulips in spring. The free park features a café, shop, and walking paths along the lakeshore. On clear days, the reflection of Mt. Fuji in the lake creates the famous 'upside-down Fuji' view. The park is popular for photography throughout the year.",
+    "estimated_duration": "1 hours"
+  },
+  {
+    "name": "Eiheiji Temple",
+    "region": "Chubu",
+    "city": "Eiheiji",
+    "prefecture": "Fukui",
+    "neighborhood": "Shihi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.0912,
+      "lng": 136.3426
+    },
+    "short_description": "Active Zen monastery in a serene mountain forest setting.",
+    "rating": 4.5,
+    "review_count": 8000,
+    "min_budget": "¥500",
+    "description": "Eiheiji is one of two head temples of Soto Zen Buddhism, founded in 1244 by Zen master Dogen. Nestled in a mountainous forest of towering cedar trees, the temple complex spans a picturesque hillside with over 70 buildings connected by covered corridors. Approximately 200 monks live and train here in rigorous Zen practice, following routines established centuries ago. Visitors can observe the monks' daily activities and explore the main halls, including the Sanmon gate, Buddha Hall, and Dharma Hall. The temple offers overnight stays with zazen meditation experiences. The moss-covered grounds and ancient trees create a profound atmosphere of tranquility.",
+    "estimated_duration": "2 hours"
+  }
+]

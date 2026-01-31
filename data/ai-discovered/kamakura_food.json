@@ -1,0 +1,342 @@
+[
+  {
+    "name": "Tsuruya",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yuigahama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3133,
+      "lng": 139.5397
+    },
+    "short_description": "Michelin-starred unagi restaurant famous for its tender eel and historic atmosphere.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 600,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Yoridocoro",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Inamuragasaki",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3045,
+      "lng": 139.5278
+    },
+    "short_description": "Cafe famous for serving dried fish breakfast sets right beside the Enoden train tracks.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Kamakura Matsubara-an",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yuigahama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3114,
+      "lng": 139.5398
+    },
+    "short_description": "Elegant soba restaurant housed in a renovated traditional Japanese house with a terrace.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Caraway",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Komachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3206,
+      "lng": 139.5522
+    },
+    "short_description": "Legendary curry shop known for its rich, slow-cooked beef curry and generous rice portions.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 2200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "OXYMORON Komachi",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Komachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3201,
+      "lng": 139.5516
+    },
+    "short_description": "Stylish cafe famous for its unique ethnic dry curry with coriander and nuts.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Akimoto",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Komachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3196,
+      "lng": 139.5512
+    },
+    "short_description": "Popular spot for Shirasu-don (whitebait bowl), offering both raw and boiled options.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 1200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Hachinoki Kita-Kamakura",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Kita-Kamakura",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3342,
+      "lng": 139.5463
+    },
+    "short_description": "Authentic Shojin Ryori (Buddhist vegetarian cuisine) restaurant near Kencho-ji Temple.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Iwata Coffee",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Komachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3191,
+      "lng": 139.5507
+    },
+    "short_description": "Kamakura's oldest coffee shop, famous for its incredibly thick, traditional hotcakes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 1800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Garden House Kamakura",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Onarimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3182,
+      "lng": 139.5488
+    },
+    "short_description": "Restaurant in a renovated 50-year-old atelier serving Kamakura ham and local craft beer.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 2000,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Latteria BeBe Kamakura",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Onarimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3176,
+      "lng": 139.5486
+    },
+    "short_description": "Specializes in fresh homemade cheese and wood-fired pizza, located just off the main street.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 1200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Bills Shichirigahama",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Shichirigahama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3058,
+      "lng": 139.5088
+    },
+    "short_description": "Famous all-day breakfast spot offering ricotta pancakes with stunning ocean views.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 2500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Amalfi Della Sera",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Shichirigahama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3054,
+      "lng": 139.5082
+    },
+    "short_description": "Cliffside Italian restaurant offering 180-degree panoramic views of the Enoshima coast.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kamakura Chacha",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Snowshita",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3225,
+      "lng": 139.5542
+    },
+    "short_description": "Matcha specialty shop offering soft serve with five selectable levels of matcha intensity.",
+    "estimated_duration": "20 mins",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Imokichi Yakata Komachi",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Komachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3212,
+      "lng": 139.5532
+    },
+    "short_description": "Street food staple famous for purple sweet potato (Beni-imo) soft serve and croquettes.",
+    "estimated_duration": "15 mins",
+    "rating": 3.9,
+    "review_count": 500,
+    "min_budget": "¥400"
+  },
+  {
+    "name": "Toshimaya Honten",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Komachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3194,
+      "lng": 139.5513
+    },
+    "short_description": "The flagship store of the famous 'Hato Sabure' (dove-shaped cookie), a classic Kamakura souvenir.",
+    "estimated_duration": "30 mins",
+    "rating": 4.4,
+    "review_count": 2000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kamakura Beniya Kurumicco",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Snowshita",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3228,
+      "lng": 139.5545
+    },
+    "short_description": "Famous for 'Kurumicco', a walnut caramel sweet; often sells out early in the day.",
+    "estimated_duration": "30 mins",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Wasai Yakura",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Komachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3218,
+      "lng": 139.5528
+    },
+    "short_description": "Casual Japanese dining offering Shirasu bowls and local vegetable tempura.",
+    "estimated_duration": "1 hour",
+    "rating": 3.9,
+    "review_count": 600,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Saryo Inoue",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Komachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3192,
+      "lng": 139.5508
+    },
+    "short_description": "Refined tea salon located above the station, offering matcha and Japanese sweets with a view.",
+    "estimated_duration": "1 hour",
+    "rating": 3.8,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kamakura J's",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Snowshita",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3222,
+      "lng": 139.5538
+    },
+    "short_description": "Street food stall known for 'Shirasu Takoyaki', octopus balls filled with local whitebait.",
+    "estimated_duration": "15 mins",
+    "rating": 3.8,
+    "review_count": 200,
+    "min_budget": "¥600"
+  },
+  {
+    "name": "Miyokawa",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yuigahama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.3155,
+      "lng": 139.546
+    },
+    "short_description": "Traditional Kaiseki restaurant famous for its Hayama beef hot pot and elegant presentation.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 300,
+    "min_budget": "¥5000"
+  }
+]

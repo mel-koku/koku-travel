@@ -1,0 +1,801 @@
+[
+  {
+    "name": "Shin-Yokohama Ramen Museum",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Shin-Yokohama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.51,
+      "lng": 139.6145
+    },
+    "short_description": "A food amusement park replicating 1958 Tokyo, featuring famous ramen shops from across Japan.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 5000,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Yokohama Chinatown (Chukagai)",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.443,
+      "lng": 139.646
+    },
+    "short_description": "Japan's largest Chinatown, packed with hundreds of restaurants and street food stalls.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 8000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Yoshimuraya",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yokohama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4615,
+      "lng": 139.617
+    },
+    "short_description": "The birthplace of 'Iekei' (Home Style) ramen, featuring a rich pork-soy broth and spinach topping.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 4500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Manchinro Honten",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4435,
+      "lng": 139.6455
+    },
+    "short_description": "One of the oldest and most luxurious Cantonese restaurants in Chinatown, renowned for its service.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 2000,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Houtenkaku",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4428,
+      "lng": 139.6465
+    },
+    "short_description": "Famous street food stall known for its piping hot, pan-fried soup dumplings (sheng jian bao).",
+    "estimated_duration": "30 mins",
+    "rating": 4.3,
+    "review_count": 3500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Cup Noodles Museum Yokohama",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Minato Mirai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4556,
+      "lng": 139.6388
+    },
+    "short_description": "Interactive museum where you can create your own custom Cup Noodle package and flavor.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.5,
+    "review_count": 6000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hotel New Grand The Cafe",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yamashita Park",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.445,
+      "lng": 139.6505
+    },
+    "short_description": "Historical cafe credited with inventing Spaghetti Napolitan, Seafood Doria, and Pudding a la Mode.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Kiyoken Honten",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yokohama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.464,
+      "lng": 139.6225
+    },
+    "short_description": "Flagship restaurant of Yokohama's famous shumai (dumpling) brand, serving extensive Chinese courses.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 1500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Center Grill",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Noge",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4475,
+      "lng": 139.63
+    },
+    "short_description": "Beloved 'Yoshoku' (Western-style Japanese) diner famous for its ketchup-based Napolitan pasta.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 1800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Vanilla Beans Minato Mirai",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Minato Mirai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4525,
+      "lng": 139.637
+    },
+    "short_description": "Specialty chocolate shop and cafe offering single-origin chocolate drinks and sweets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Edosei Honten",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4432,
+      "lng": 139.645
+    },
+    "short_description": "Famous for its giant 'Butaman' (steamed pork buns) filled with juicy meat and vegetables.",
+    "estimated_duration": "30 mins",
+    "rating": 4.2,
+    "review_count": 2200,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Gyunabe Araiya",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Bashamichi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.448,
+      "lng": 139.6355
+    },
+    "short_description": "Established in 1895, serving 'Gyunabe' (beef hot pot), a dish that originated in Yokohama.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 1000,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Bills Yokohama Red Brick Warehouse",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Minato Mirai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4528,
+      "lng": 139.6425
+    },
+    "short_description": "Trendy Australian all-day dining spot famous for its ricotta hotcakes and harbor views.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Hungry Tiger Yokohama More's",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yokohama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4655,
+      "lng": 139.6205
+    },
+    "short_description": "Local charcoal-grilled hamburg steak chain where the staff cuts the sizzling meat tableside.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Jukei Hanten Shinkan",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4425,
+      "lng": 139.647
+    },
+    "short_description": "Famous Sichuan restaurant known for its spicy Mapo Tofu, a staple of Yokohama Chinatown.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Uchiki Pan",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Motomachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4395,
+      "lng": 139.648
+    },
+    "short_description": "One of Japan's oldest bakeries, established in 1888, famous for its traditional English bread.",
+    "estimated_duration": "20 mins",
+    "rating": 4.3,
+    "review_count": 1500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Pie Holic",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Minato Mirai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.455,
+      "lng": 139.6405
+    },
+    "short_description": "Popular restaurant at Marine & Walk offering an all-you-can-eat savory pie lunch.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 1200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Chano-ma Yokohama",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Minato Mirai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4526,
+      "lng": 139.6428
+    },
+    "short_description": "Relaxing cafe in the Red Brick Warehouse where you can dine while lounging on mattress-like seats.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 1000,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Noge Tabemono Yokocho",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Noge",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.449,
+      "lng": 139.6295
+    },
+    "short_description": "A retro indoor alley packed with small izakayas and bistros, perfect for bar hopping.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Katsuretsu-an Bashamichi",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Bashamichi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.447,
+      "lng": 139.636
+    },
+    "short_description": "Historic tonkatsu restaurant established in 1927, famous for its secret sauce and square pork cutlets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1600,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Kuriyama",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Hakuraku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.488,
+      "lng": 139.628
+    },
+    "short_description": "Highly acclaimed ramen shop specializing in rich tsukemen (dipping noodles).",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 900,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Gyokusentei",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Isezakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4438,
+      "lng": 139.6315
+    },
+    "short_description": "The birthplace of 'Sanmamen', a local Yokohama ramen topped with stir-fried bean sprouts.",
+    "estimated_duration": "1 hour",
+    "rating": 3.9,
+    "review_count": 800,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Sankoen",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Noge",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4495,
+      "lng": 139.6305
+    },
+    "short_description": "Famous for its garlic-heavy gyoza and simple Chinese dishes, a staple of the Noge drinking district.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 1100,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Mawashizushi Katsu Yokohama Sky Building",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yokohama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4645,
+      "lng": 139.624
+    },
+    "short_description": "Extremely popular conveyor belt sushi offering high-quality toppings and long lines.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 2500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Enoki-tei",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yamate",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.438,
+      "lng": 139.652
+    },
+    "short_description": "Charming tea room located in a preserved Western-style residence, famous for cherry cakes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Janomeya",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Isezakicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.445,
+      "lng": 139.631
+    },
+    "short_description": "Historic Gyunabe (beef hot pot) restaurant operating since 1893, offering premium wagyu.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Yokohama Hammerhead (Japan Ramen Food Hall)",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Minato Mirai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4558,
+      "lng": 139.6415
+    },
+    "short_description": "A complex featuring a food hall dedicated to popular ramen shops from across Japan.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hof Brau",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yamashita Park",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4455,
+      "lng": 139.6485
+    },
+    "short_description": "Historic German-style restaurant famous for its 'Spa Pizza', a pasta dish baked with cheese.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 700,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Noge Suehiro",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Noge",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4485,
+      "lng": 139.629
+    },
+    "short_description": "Legendary yakitori stall in Noge, famous for its simple menu and delicious grilled chicken.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Mizunobu Fruit Parlor",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Bashamichi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4505,
+      "lng": 139.6365
+    },
+    "short_description": "High-end fruit parlor serving exquisite parfaits and fruit sandwiches in a stylish setting.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 400,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Baikou",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Kannai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.446,
+      "lng": 139.634
+    },
+    "short_description": "Specialty chicken restaurant famous for its yakitori and delicious Oyako-don (chicken and egg bowl).",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Wangfujing",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4426,
+      "lng": 139.6462
+    },
+    "short_description": "Popular for 'Yaki-Shoronpo' (pan-fried soup dumplings) eaten straight from the stall.",
+    "estimated_duration": "30 mins",
+    "rating": 4.2,
+    "review_count": 2500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Shofukumon",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.442,
+      "lng": 139.648
+    },
+    "short_description": "Large restaurant offering a popular all-you-can-eat dim sum buffet.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 1500,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Motomachi Mutekiro",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Motomachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.44,
+      "lng": 139.65
+    },
+    "short_description": "Renowned French restaurant also famous for its 'Mutekiro Curry' and pound cakes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Italian Garden",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Motomachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4385,
+      "lng": 139.653
+    },
+    "short_description": "Historic pizza house popular with American soldiers post-war, serving square pizzas.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Kadohei",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Hiranuma",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4605,
+      "lng": 139.616
+    },
+    "short_description": "Long-established soba shop famous for its massive 'Tsuke-Katen' (large shrimp tempura) soba.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Uni Coffee Roastery Red Brick",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Minato Mirai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.453,
+      "lng": 139.643
+    },
+    "short_description": "Stylish cafe serving specialty coffee and popular canelés in the Red Brick Warehouse.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Alte Liebe Yokohama",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Nihon-Odori",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4472,
+      "lng": 139.6425
+    },
+    "short_description": "Elegant restaurant featuring live classical music and European cuisine in a historic building.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 300,
+    "min_budget": "¥8000"
+  },
+  {
+    "name": "Scandia",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Kaigan-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4485,
+      "lng": 139.6445
+    },
+    "short_description": "Classic Scandinavian restaurant famous for its smorgasbord and retro atmosphere near the port.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 600,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Saiko Shinkan",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.443,
+      "lng": 139.6468
+    },
+    "short_description": "Elegant Cantonese restaurant offering high-quality dim sum and roasted meats.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 1000,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Dohatsu Main Store",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4422,
+      "lng": 139.646
+    },
+    "short_description": "Famous for its Chinese sweets and pastries, particularly the egg tarts and mooncakes.",
+    "estimated_duration": "30 mins",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Ramen Jiro Yokohama Kannai",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Kannai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4445,
+      "lng": 139.6325
+    },
+    "short_description": "Cult-favorite ramen shop serving massive portions of noodles, pork, and garlic (expect a long queue).",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1500,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Heichinrou Yokohama (Currently Closed/Renovating - replacing with Manchinro as primary, added Saiko)",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4435,
+      "lng": 139.6455
+    },
+    "short_description": "Included as a placeholder for high-end legacy; verify current status or visit Manchinro instead.",
+    "estimated_duration": "N/A",
+    "rating": 0,
+    "review_count": 0,
+    "min_budget": "N/A"
+  },
+  {
+    "name": "Xie Xie",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Chinatown",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4418,
+      "lng": 139.6475
+    },
+    "short_description": "Known for its soothing Chinese morning porridge (congee), especially popular for breakfast.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Tamagoya",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yokohama Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.465,
+      "lng": 139.622
+    },
+    "short_description": "Underground eatery popular for its classic, fluffy Omurice (omelet rice) at budget prices.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 600,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Kirin Beer Factory Yokohama",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Namamugi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.4845,
+      "lng": 139.6685
+    },
+    "short_description": "Brewery tour and tasting experience, often with a restaurant attached serving fresh beer.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Sizzler Landmark Plaza",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Minato Mirai",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.455,
+      "lng": 139.6315
+    },
+    "short_description": "Premium salad bar and grill with great views, popular for families visiting Minato Mirai.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥3000"
+  }
+]

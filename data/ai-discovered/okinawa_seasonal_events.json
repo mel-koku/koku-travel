@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Nakijin Castle Cherry Blossom Festival",
+    "region": "Okinawa",
+    "city": "Nakijin",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.6917,
+      "lng": 127.9295
+    },
+    "short_description": "Winter cherry blossoms illuminated against the ruins of a World Heritage castle.",
+    "description": "While the rest of Japan waits until March, Okinawa’s cherry blossoms (Kanhizakura) peak in late January. At the Nakijin Castle ruins, these dark pink, bell-shaped flowers frame the undulating limestone walls of the former Ryukyu Kingdom fortress. At night, the castle is lit with colorful LEDs, creating a glowing path through the stone tunnels and trees.\n\nHistorically, Nakijin was the residence of the Hokuzan kings before the unification of Okinawa. Visiting during this time allows you to see the unique architectural style of Ryukyuan 'gusuku' (castles) while enjoying a climate that feels like a mild spring. **Pros:** Stunning night photography and unique flower species. **Cons:** The site involves steep, uneven stone steps which can be slippery at night.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "January-February"
+  },
+  {
+    "name": "Naha Great Tug-of-War",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.2144,
+      "lng": 127.6765
+    },
+    "short_description": "A massive street festival featuring a Guinness World Record-sized rope.",
+    "description": "Held annually in October during the Sports Day long weekend, the Naha Otsunahiki is a sight to behold. It features a 200-meter long rope weighing over 40 tons. Thousands of people gather on Highway 58 in the center of Naha to pull for either the East or West team, symbolizing a prayer for prosperity and health.\n\nThe tradition dates back to the 17th century when local rulers used the event to settle disputes and pray for rain. After the match, it is customary for participants to cut off a piece of the rope to take home as a good luck charm. **Pros:** Incredible energy and a chance to participate in a world-record event. **Cons:** Extreme crowds and very high humidity even in October.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October"
+  },
+  {
+    "name": "Shuri Castle Festival",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.217,
+      "lng": 127.7194
+    },
+    "short_description": "A grand reenactment of the Ryukyu Kingdom’s royal ceremonies.",
+    "description": "The Shuri Castle Festival (Shurijo Matsuri) takes place in late October or early November. The centerpiece is the Ryukyu Dynasty Parade through the streets of Naha, featuring hundreds of participants in elaborate 15th-century court costumes. The parade depicts the 'Sapposhi' mission, where envoys from China arrived to invest the new Okinawan King.\n\nEven as the castle continues its massive reconstruction project following the 2019 fire, the festival remains a vital symbol of Okinawan resilience. Traditional dances (Kumiodori) and music are performed on various stages. **Pros:** The most historically significant cultural event on the island. **Cons:** Some areas of the castle grounds are still restricted due to ongoing rebuilding efforts.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October-November"
+  },
+  {
+    "name": "Ie Island Lily Festival",
+    "region": "Okinawa",
+    "city": "Ie Village",
+    "prefecture": "Okinawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.7167,
+      "lng": 127.8
+    },
+    "short_description": "A million white lilies blooming against the backdrop of the emerald sea.",
+    "description": "During the Golden Week holidays in late April and early May, Ie Island (accessible by ferry from Motobu) transforms into a floral paradise. The Lily Field Park hosts over 200,000 pure white Easter lilies and 100 varieties of colorful lilies from around the world. The scent of the flowers is so strong it can be smelled from the ferry docks.\n\nIe Island is famous for its distinctive peak, 'Mount Gusuku,' which provides a dramatic backdrop to the flower fields. The festival features live music, Okinawan street food, and family-friendly activities. **Pros:** One of the most scenic floral displays in all of Japan. **Cons:** The ferry can have very long wait times during the holiday peak.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "April-May"
+  },
+  {
+    "name": "Naha Hari (Dragon Boat Races)",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.2333,
+      "lng": 127.6833
+    },
+    "short_description": "Intense dragon boat races to pray for safe voyages and bountiful harvests.",
+    "description": "Hari (or Haaree) is a traditional dragon boat race brought from China roughly 600 years ago. The Naha Hari is the largest on the island, held during early May at Naha Port. The boats are highly decorated with dragon heads and tails, and rowers move in sync to the beat of a drum.\n\nThe festival is a celebration of the sea deities. Unlike other regions of Japan, Okinawa has a deep connection to maritime trade, and these races were historically vital for community bonding. **Pros:** High-energy sports atmosphere with great food stalls. **Cons:** It is usually held during the rainy season start, so expect downpours.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "May"
+  },
+  {
+    "name": "Ryukyu Lantern Festival",
+    "region": "Okinawa",
+    "city": "Yomitan",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.4063,
+      "lng": 127.7188
+    },
+    "short_description": "A winter night event featuring thousands of Chinese-style lanterns.",
+    "description": "Held at Murasaki Mura, a theme park that recreates a 14th-century Ryukyuan town, this festival runs from early December to late March. Thousands of lanterns of all shapes and sizes are lit, casting a warm, nostalgic glow over the red-tiled buildings and stone paths. It reflects the deep cultural ties between Okinawa and China.\n\nSpecial projection mapping shows are displayed on the gates, and local performers provide live Sanshin music. The atmosphere is much more tranquil than the high-energy summer festivals. **Pros:** Extremely romantic and less crowded than Naha events. **Cons:** Yomitan is a bit of a drive from the main hotel areas in Naha.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "December-March"
+  },
+  {
+    "name": "All-Okinawa Eisa Festival",
+    "region": "Okinawa",
+    "city": "Okinawa City",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.3364,
+      "lng": 127.8011
+    },
+    "short_description": "The island's premier traditional dance festival featuring powerful drumming.",
+    "description": "Eisa is the traditional folk dance of Okinawa, performed during the Obon season to honor ancestor spirits. The All-Okinawa Eisa Festival is held in late August or early September in Koza (Okinawa City). It features groups from all over the islands, each with their own unique drumming style and choreography.\n\nThe sound of the 'O-daiko' (large drums) is so powerful you can feel the vibration in your chest. The festival is a massive celebration of Okinawan identity. **Pros:** One of the most culturally immersive experiences in Japan. **Cons:** The heat in August is oppressive, making outdoor spectating difficult.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "August-September"
+  },
+  {
+    "name": "Ocean Expo Park Summer Festival",
+    "region": "Kyushu",
+    "city": "Motobu",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.6944,
+      "lng": 127.8781
+    },
+    "short_description": "Okinawa's largest fireworks display over the emerald sea.",
+    "description": "Held in mid-July at the park that houses the Churaumi Aquarium, this is the biggest fireworks event on the island. Over 10,000 fireworks are launched from Emerald Beach, reflected in the clear coastal waters. It draws massive crowds of locals and tourists alike.\n\nThe event includes all-day live music and stage performances. Many people combine the fireworks with a visit to the aquarium earlier in the day. **Pros:** Spectacular scale and world-class pyrotechnics. **Cons:** Traffic congestion leaving the park can take 3-4 hours after the show.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "July"
+  },
+  {
+    "name": "Southeast Botanical Gardens Illumination",
+    "region": "Okinawa",
+    "city": "Okinawa City",
+    "prefecture": "Okinawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.3756,
+      "lng": 127.8064
+    },
+    "short_description": "Award-winning tropical winter lights across 100 acres.",
+    "description": "From late October to late May, the Southeast Botanical Gardens host a massive illumination called 'Hikari no Sanpo-michi.' It has consistently been ranked as one of Japan's top illuminations. The display uses over 4 million lights to decorate tropical palms, lotus ponds, and castle-like structures.\n\nBecause of Okinawa's warm climate, the 'Winter' illumination can be enjoyed without heavy coats. The highlights include a glowing 'Lotus Lake' and a light-up tunnel. **Pros:** Very family-friendly with petting zoo areas and large paths. **Cons:** Admission price increases during the illumination event.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "October-May"
+  },
+  {
+    "name": "Peace Memorial Ceremony",
+    "region": "Okinawa",
+    "city": "Itoman",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.0964,
+      "lng": 127.7258
+    },
+    "short_description": "A solemn day of remembrance for the Battle of Okinawa.",
+    "description": "June 23rd is 'Okinawa Memorial Day' (Irei no Hi). A ceremony is held at the Peace Memorial Park in Itoman to commemorate the lives lost during the Battle of Okinawa in 1945. It is a day of deep reflection on the island's history and its desire for world peace.\n\nWhile not a 'matsuri' in the festive sense, it is a significant seasonal event. The 'Cornerstone of Peace' monuments, which list the names of all those who died regardless of nationality, are covered in flowers and offerings. **Pros:** Deeply moving and educational. **Cons:** Very hot weather and a somber atmosphere that may not suit all travelers.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "June"
+  },
+  {
+    "name": "Nago Cherry Blossom Festival",
+    "region": "Okinawa",
+    "city": "Nago",
+    "prefecture": "Okinawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.5917,
+      "lng": 127.9833
+    },
+    "short_description": "A massive cherry blossom festival in the mountain park of Nago.",
+    "description": "Held in late January, Nago Central Park is one of the best spots to see the Kanhizakura blossoms. The park features a staircase with over 20,000 trees. This festival marks the 'front line' of spring in Japan. The town holds a parade and a taiko drum performance to celebrate the blooming.\n\nFrom the top of the park, you can see the pink trees leading down to the blue Nago Bay. It is a classic spot for local families to have hanami picnics. **Pros:** Huge volume of trees and great viewpoints. **Cons:** Parking is extremely limited; expect to use shuttle buses.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "January-February"
+  },
+  {
+    "name": "Yonaguni Marlin Fishing Tournament",
+    "region": "Okinawa",
+    "city": "Yonaguni",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 24.4667,
+      "lng": 122.95
+    },
+    "short_description": "An international billfish competition on Japan's westernmost island.",
+    "description": "In early July, the remote island of Yonaguni hosts an international Marlin fishing tournament. The waters around the island are some of the richest in the world for large game fish. It’s a rugged, high-adventure festival that draws anglers from all over Asia.\n\nThe tournament is accompanied by a local festival on the docks with fresh seafood and traditional dances. It is a great time to visit Japan’s westernmost point. **Pros:** Unique island culture and world-class fishing. **Cons:** Yonaguni is very difficult and expensive to reach via flight or long ferry.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "July"
+  },
+  {
+    "name": "Higashi Village Azalea Festival",
+    "region": "Okinawa",
+    "city": "Higashi Village",
+    "prefecture": "Okinawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.6264,
+      "lng": 128.1611
+    },
+    "short_description": "50,000 blooming azaleas overlooking the Pacific Ocean.",
+    "description": "The 'Tsutsuji' (Azalea) Festival in Higashi Village occurs in March. This village in the northern 'Yanbaru' region grows 50,000 bushes that create a sea of red, pink, and white. The park is built on a hillside that slopes down toward the Pacific.\n\nMarch is a perfect time to visit as the humidity is low and the temperatures are comfortable. The village is also famous for its pineapple production, so visitors can enjoy fresh local fruit during the festival. **Pros:** Incredible ocean views and pleasant walking paths. **Cons:** It’s a long drive from central/southern Okinawa.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "March"
+  },
+  {
+    "name": "Itoman Peaceful Illumination",
+    "region": "Okinawa",
+    "city": "Itoman",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.1167,
+      "lng": 127.6667
+    },
+    "short_description": "Winter lights commemorating peace at the southern tip of the island.",
+    "description": "During the month of December, the Itoman City Tourist Farm is lit up with hundreds of thousands of lights. Unlike commercial light displays, this event is focused on the theme of 'Peace' and 'Hope for the Future.' It is a community-run event with a very local feel.\n\nThe illumination includes light tunnels and displays made by local children. On New Year's Eve, there is a special countdown event with small fireworks. **Pros:** Heartwarming community atmosphere and lower entry fees than major theme parks. **Cons:** The location is quite windy and can get surprisingly cold in winter.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "December"
+  },
+  {
+    "name": "Kumejima Bullfighting",
+    "region": "Okinawa",
+    "city": "Kumejima",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.35,
+      "lng": 126.75
+    },
+    "short_description": "Traditional 'Toshi' (Okinawan Bullfighting) seasonal matches.",
+    "description": "Bullfighting in Okinawa is a bloodless sport known as 'Toshi' or 'Bull Sumo.' Two massive bulls lock horns and push each other until one gives up and turns away. Kumejima Island holds seasonal matches, particularly around the Obon and New Year periods.\n\nIt is a high-stakes, traditional event where owners and spectators shout encouragement in the local dialect. The power of these 1,000kg animals is immense. **Pros:** A rare and authentic glimpse into Ryukyu rural culture. **Cons:** Matches are infrequent and scheduled on short notice based on the lunar calendar.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "Varies (August, January)"
+  },
+  {
+    "name": "Kerama Islands Whale Watching",
+    "region": "Okinawa",
+    "city": "Zamami",
+    "prefecture": "Okinawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.2264,
+      "lng": 127.3033
+    },
+    "short_description": "Humpback whales returning to Okinawa's warm waters to breed.",
+    "description": "From January to March, humpback whales migrate from the north to the warm, protected waters around the Kerama Islands. Boat tours depart from Naha and Zamami Island daily. This is the only time of year you can see these giants breaching and tail-slapping in the wild in Japan.\n\nThe Kerama Blue water is exceptionally clear, making it a world-class spot for marine life observation. Many tours offer a 'guarantee' or your money back. **Pros:** Breathtaking wildlife encounters. **Cons:** Sea conditions in winter can be very rough; motion sickness is a common issue for many passengers.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "January-March"
+  },
+  {
+    "name": "Miyako Island Pantu Festival",
+    "region": "Okinawa",
+    "city": "Miyakojima",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 24.8,
+      "lng": 125.2833
+    },
+    "short_description": "Masked 'mud gods' roaming the streets to bless/terrorize the locals.",
+    "description": "Pantu is a unique and slightly terrifying festival held in early October on Miyako Island. Three men dressed as 'Pantu' (masked deities covered in mud and vines) roam the village, smearing mud on people, houses, and even cars to ward off evil spirits for the year.\n\nWhile it is technically a blessing, children often run away in fear. The festival is a UNESCO Intangible Cultural Heritage. **Pros:** One of Japan's most bizarre and ancient rituals. **Cons:** If you attend, you *will* get covered in smelly mud. Wear old clothes.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October"
+  },
+  {
+    "name": "Okinawa International Movie Festival",
+    "region": "Okinawa",
+    "city": "Naha",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.2167,
+      "lng": 127.6833
+    },
+    "short_description": "A 'Laugh and Peace' themed film festival featuring red carpet events.",
+    "description": "Held in April, this modern festival brings celebrities from Japan and across Asia to Okinawa. The theme is 'Laugh and Peace,' focusing on comedies and feel-good films. Events take place at Kokusai Street and the Umisora Park in Naha.\n\nThere are free outdoor screenings, comedy live shows, and a giant red carpet parade. It’s a fun, celebrity-filled event that brings a modern vibe to the island. **Pros:** Great for fans of Japanese entertainment and J-pop. **Cons:** Events are often spread out, requiring a lot of walking or transit between venues.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "April"
+  },
+  {
+    "name": "Ishigaki Island Angama",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 24.3411,
+      "lng": 124.1558
+    },
+    "short_description": "A humorous Obon ritual featuring masked ancestors and dancing.",
+    "description": "During the Obon period (late August), Ishigaki Island holds a unique performance called Angama. Two people dressed as an old man (Ushumai) and an old woman (Umi) represent spirits from the 'other world.' They visit houses to perform dances and answer audience questions in high-pitched, comical voices.\n\nIt’s a mix of comedy, ancestral worship, and community bonding. The performances are accompanied by Sanshin music. **Pros:** A delightful and funny cultural experience. **Cons:** The dialogue is in the local Yaeyama dialect, making it very hard to follow for non-speakers.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "August"
+  },
+  {
+    "name": "Ogimi Village Shikuwasa Festival",
+    "region": "Okinawa",
+    "city": "Ogimi",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.6833,
+      "lng": 128.1167
+    },
+    "short_description": "A celebration of the 'longevity citrus' in the village of centenarians.",
+    "description": "Ogimi Village is known as the 'Village of Longevity,' with one of the world's highest percentages of centenarians. In September, they celebrate the harvest of Shikuwasa (Okinawan lime). The festival features citrus picking, fresh juice stalls, and health-focused seminars.\n\nShikuwasa is believed to be one of the secrets to the locals' long lives. The festival is a great way to experience rural Okinawan life and learn about the local diet. **Pros:** Authentic rural experience and very healthy food. **Cons:** The village is very quiet and lacks major tourist infrastructure.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "September"
+  },
+  {
+    "name": "Yaese Cherry Blossom Festival",
+    "region": "Okinawa",
+    "city": "Yaese",
+    "prefecture": "Okinawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.1333,
+      "lng": 127.7333
+    },
+    "short_description": "Southern Okinawa's best sakura viewing spot in an elevated park.",
+    "description": "While the north has the most trees, Yaese Park in the south offers a beautiful sakura festival in early February. The park is home to 500 Kanhizakura trees. Because the park is on a hill, it offers views of the southern Okinawan landscape and the coastline while you walk under the pink canopy.\n\nThe festival includes local 'Eisa' drum performances and food stalls selling Okinawan donuts (Sata Andagi). **Pros:** Closer to Naha than the northern festivals. **Cons:** The park is smaller, so it can feel very crowded on weekends.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "January-February"
+  },
+  {
+    "name": "Kanucha Resort Stardust Fantasia",
+    "region": "Okinawa",
+    "city": "Nago",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.5411,
+      "lng": 128.0833
+    },
+    "short_description": "A massive, resort-wide winter illumination on the east coast.",
+    "description": "From November to February, the Kanucha Resort hosts 'Stardust Fantasia,' one of the most famous winter light events in Okinawa. Millions of lights cover the massive resort grounds, including the golf course, beach, and pools. There are daily light-and-music shows.\n\nIt’s a popular spot for couples and is often used for marriage proposals. The resort also sets up a 'Mother Tree' where guests can hang their wishes. **Pros:** High-end, polished display with great facilities. **Cons:** It requires a separate entry fee if you aren't staying at the resort.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November-February"
+  },
+  {
+    "name": "Nago Summer Festival",
+    "region": "Okinawa",
+    "city": "Nago",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.5833,
+      "lng": 127.9833
+    },
+    "short_description": "A classic summer festival with fireworks and beer near the Orion factory.",
+    "description": "Held in late July, this festival is famous because Nago is the home of Orion Beer. The festival features a large beer garden, live music, and street performances. It culminates in a fireworks show over Nago Bay.\n\nIt has a very 'local' feel compared to the Naha festivals. People come to enjoy the cool breeze of the bay and the fresh local beer. **Pros:** Fantastic atmosphere for adults and beer lovers. **Cons:** Public transit to Nago is limited late at night; you’ll likely need a taxi or a designated driver.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "July"
+  },
+  {
+    "name": "Okinawa Zento Eisa Matsuri",
+    "region": "Okinawa",
+    "city": "Okinawa City",
+    "prefecture": "Okinawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.3333,
+      "lng": 127.8
+    },
+    "short_description": "A three-day island-wide drumming celebration to conclude the summer.",
+    "description": "This is the final major Eisa event of the season, usually held in early September. It spans three days, starting with a parade and ending with a massive performance at the Koza Music Town area. It’s the best place to see the 'Thousand-Man Eisa' where the audience is invited to dance.\n\nThe energy of thousands of drummers in one stadium is an experience like no other. It ends with a fireworks show. **Pros:** The peak of Okinawan festival energy. **Cons:** Hotels in Okinawa City sell out months in advance.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "September"
+  },
+  {
+    "name": "Manza Ocean Park (Seasonal)",
+    "region": "Okinawa",
+    "city": "Onna",
+    "prefecture": "Okinawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.5056,
+      "lng": 127.8581
+    },
+    "short_description": "Japan's largest inflatable water park open during the warm months.",
+    "description": "Located at the ANA InterContinental Manza Beach Resort, this massive inflatable obstacle course on the ocean is a summer staple. It includes slides, trampolines, and climbing walls all floating on the emerald water. It typically opens in March (Okinawa's beach opening season) and closes in November.\n\nIt’s a major draw for families with kids. The resort area itself is famous for the nearby 'Manzamo' scenic cliff. **Pros:** Incredibly fun and safe for families. **Cons:** Can be very expensive for a family and often has 60-minute time limits during peak hours.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "March-November"
+  }
+]

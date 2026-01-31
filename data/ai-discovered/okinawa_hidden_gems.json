@@ -1,0 +1,662 @@
+[
+  {
+    "name": "Sefa-Utaki",
+    "region": "Okinawa",
+    "city": "Nanjo",
+    "neighborhood": "Chinen",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.1733,
+      "lng": 127.8261
+    },
+    "short_description": "The most sacred site in the Ryukyu Kingdom.",
+    "description": "A World Heritage site located in a dense forest. This was the most sacred prayer site for the Ryukyu Kingdom, where priestesses (Noro) performed rituals. The 'Sangui-i' rock formation forms a triangular tunnel that leads to a view of Kudaka Island, the island of the gods.",
+    "estimated_duration": "1 hour",
+    "min_budget": "300 JPY"
+  },
+  {
+    "name": "Valley of Gangala",
+    "region": "Okinawa",
+    "city": "Nanjo",
+    "neighborhood": "Tamagusuku",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.1425,
+      "lng": 127.7778
+    },
+    "short_description": "A collapsed limestone cave turned into a lush subtropical jungle.",
+    "description": "Formed by the collapse of a limestone cave hundreds of thousands of years ago, this valley is a jungle filled with massive banyan trees and ancient history. Tours are mandatory and guided. The entrance features the 'Cave Cafe,' a coffee shop inside a natural cave.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "2,500 JPY (Tour fee)"
+  },
+  {
+    "name": "Shikinaen Garden",
+    "region": "Okinawa",
+    "city": "Naha",
+    "neighborhood": "Maaji",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.2044,
+      "lng": 127.715
+    },
+    "short_description": "A royal villa blending Ryukyuan and Chinese landscaping styles.",
+    "description": "The second residence of the Ryukyu kings, used to entertain Chinese envoys. Unlike Japanese gardens, it features circular landscaping, Chinese-style hexagonal pavilions, and tropical flora. It offers a peaceful, distinctively Okinawan royal atmosphere away from the bustle of Shuri Castle.",
+    "estimated_duration": "1 hour",
+    "min_budget": "400 JPY"
+  },
+  {
+    "name": "Sakaemachi Market",
+    "region": "Okinawa",
+    "city": "Naha",
+    "neighborhood": "Asato",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.2186,
+      "lng": 127.6961
+    },
+    "short_description": "A retro market that transforms into a deep nightlife alley.",
+    "description": "By day, it's a nostalgic local market selling vegetables and meat. By night, the alleys fill with tiny, open-air stalls, gyoza shops, and izakayas. It captures the chaotic, friendly, and 'deep' atmosphere of Showa-era Okinawa.",
+    "estimated_duration": "2 hours",
+    "min_budget": "1,000 - 2,000 JPY"
+  },
+  {
+    "name": "Fukushu-en Garden",
+    "region": "Okinawa",
+    "city": "Naha",
+    "neighborhood": "Kume",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.2183,
+      "lng": 127.6756
+    },
+    "short_description": "A stunning authentic Chinese garden in the heart of Naha.",
+    "description": "Built to commemorate the relationship between Naha and Fuzhou, China. The garden is walled off from the city and features pagodas, waterfalls, and koi ponds designed with Fuzhou materials. It is an incredibly photogenic and quiet oasis often overlooked by tourists.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "200 JPY"
+  },
+  {
+    "name": "Tsuboya Yachimun Street",
+    "region": "Okinawa",
+    "city": "Naha",
+    "neighborhood": "Tsuboya",
+    "category": "shopping",
+    "coordinates": {
+      "lat": 26.2128,
+      "lng": 127.6883
+    },
+    "short_description": "The historic birthplace of Okinawan pottery.",
+    "description": "A charming cobblestone street lined with traditional pottery (Yachimun) workshops and galleries. The area survived WWII largely intact, so it retains old limestone walls and red-tiled roofs. You can buy authentic shisa dogs and tableware directly from artisans.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Minatogawa Stateside Town",
+    "region": "Okinawa",
+    "city": "Urasoe",
+    "neighborhood": "Minatogawa",
+    "category": "shopping",
+    "coordinates": {
+      "lat": 26.2625,
+      "lng": 127.7139
+    },
+    "short_description": "Former US military housing turned into hipster cafes and shops.",
+    "description": "A neighborhood of retro, boxy concrete houses that once housed US military families. They have been painted in pastel colors and converted into trendy tart shops, bakeries, and vintage clothing stores. It has a unique 'American-Okinawan' vintage aesthetic.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Urasoe Castle Ruins (Hacksaw Ridge)",
+    "region": "Okinawa",
+    "city": "Urasoe",
+    "neighborhood": "Nakama",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.2472,
+      "lng": 127.7297
+    },
+    "short_description": "Pre-Shuri royal castle and site of a fierce WWII battle.",
+    "description": "Before Shuri, this was the royal capital. The stone walls are impressive, but it is also internationally known as 'Hacksaw Ridge,' the site of Desmond Doss's heroism during the Battle of Okinawa. The view from the ridge over the island is commanding.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Zakimi Castle Ruins",
+    "region": "Okinawa",
+    "city": "Yomitan",
+    "neighborhood": "Zakimi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.4058,
+      "lng": 127.7419
+    },
+    "short_description": "UNESCO site famous for its graceful curved stone walls.",
+    "description": "Built by the famous architect Gosamaru, the walls here are known for their sophisticated archways and curves. Unlike other castles, you can walk on top of the walls, offering a 360-degree view of the ocean. It is a spectacular and free spot for sunsets.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Yachimun no Sato",
+    "region": "Okinawa",
+    "city": "Yomitan",
+    "neighborhood": "Zakimi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.4161,
+      "lng": 127.7533
+    },
+    "short_description": "A cooperative village of master potters and climbing kilns.",
+    "description": "A dedicated village where many potters live and work. The centerpiece is a massive red-roofed climbing kiln (Noborigama). It is quiet, surrounded by nature, and offers the highest quality Okinawan pottery. It feels less commercial than Tsuboya.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nakagusuku Castle Ruins",
+    "region": "Okinawa",
+    "city": "Kitanakagusuku",
+    "neighborhood": "Ogusuku",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.2872,
+      "lng": 127.8014
+    },
+    "short_description": "The best-preserved ancient stone walls in Okinawa.",
+    "description": "A World Heritage site comprising six courtyards. The limestone masonry (Aikata-zumi) is remarkably preserved. The ruins sit high on a ridge, offering dramatic views of both the Pacific Ocean and the East China Sea. It feels ancient and fortress-like.",
+    "estimated_duration": "1 hour",
+    "min_budget": "400 JPY"
+  },
+  {
+    "name": "Nakamura House",
+    "region": "Okinawa",
+    "city": "Kitanakagusuku",
+    "neighborhood": "Ogusuku",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.2894,
+      "lng": 127.8033
+    },
+    "short_description": "A perfectly preserved 18th-century wealthy farmer's residence.",
+    "description": "Located near Nakagusuku Castle, this house survived the war intact. It showcases traditional Ryukyuan architecture with red tiles, stone walls to block typhoons, and a distinct layout separating animal quarters from living spaces. A rare glimpse into pre-war domestic life.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "Kaichu-doro (Sea Road)",
+    "region": "Okinawa",
+    "city": "Uruma",
+    "neighborhood": "Yonashiro",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.3317,
+      "lng": 127.9303
+    },
+    "short_description": "A road that cuts straight across the ocean connecting islands.",
+    "description": "A 4.7km causeway connecting the Katsuren Peninsula to four remote islands. Driving across feels like driving on water. It attracts windsurfers and leads to Hamahiga, Henza, Miyagi, and Ikei islands, each with unique rural charms.",
+    "estimated_duration": "30 minutes (drive)",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Hamahiga Island",
+    "region": "Okinawa",
+    "city": "Uruma",
+    "neighborhood": "Katsuren",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.3197,
+      "lng": 127.9603
+    },
+    "short_description": "A spiritual island considered the birthplace of the gods.",
+    "description": "Connected by bridge, this island is home to the tomb of Amamikiyo and Shinerikiyo, the mythological creators of the Ryukyus. It retains a very old village atmosphere with stone walls and sacred groves, feeling time-removed from the main island.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nuchi Masu Salt Factory",
+    "region": "Okinawa",
+    "city": "Uruma",
+    "neighborhood": "Yonashiro",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.3536,
+      "lng": 127.9947
+    },
+    "short_description": "Visit a factory making fluffy 'snow salt' on Miyagi Island.",
+    "description": "Located on the cliffs of Miyagi Island (accessible via Kaichu-doro). You can see the unique room-temperature process that creates mineral-rich salt that looks like snow. The grounds, 'Kafuu Banta,' offer stunning views of the ocean.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Bios Hill",
+    "region": "Okinawa",
+    "city": "Uruma",
+    "neighborhood": "Ishikawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.4239,
+      "lng": 127.8094
+    },
+    "short_description": "A subtropical nature park with water buffalo rides and canoe tours.",
+    "description": "While a theme park, it focuses heavily on preserving the natural orchid-filled jungle of Okinawa. The lake boat tour and water buffalo cart rides are peaceful. It's a great place to see endemic plants and enjoy a slower pace away from the beaches.",
+    "estimated_duration": "2 hours",
+    "min_budget": "1,800 JPY"
+  },
+  {
+    "name": "Cape Manzamo",
+    "region": "Okinawa",
+    "city": "Onna",
+    "neighborhood": "Onna",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.505,
+      "lng": 127.8508
+    },
+    "short_description": "Iconic elephant-trunk shaped rock cliff.",
+    "description": "A grassy plateau on a high cliff facing the East China Sea. The rock formation looks like an elephant's trunk dipping into the water. 'Manzamo' means 'a field for 10,000 people to sit.' Sunset views here are legendary.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "100 JPY"
+  },
+  {
+    "name": "Bise Fukugi Tree Road",
+    "region": "Okinawa",
+    "city": "Motobu",
+    "neighborhood": "Bise",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.7036,
+      "lng": 127.8803
+    },
+    "short_description": "A village protected by tunnels of ancient Garcinia trees.",
+    "description": "Located near the Aquarium, this village features sandy lanes lined with thousands of Fukugi trees planted as windbreaks. Sunlight filters through the leaves creating green tunnels. It is peaceful to walk or cycle through, leading directly to the beach.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nakijin Castle Ruins",
+    "region": "Okinawa",
+    "city": "Nakijin",
+    "neighborhood": "Imadomari",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.6917,
+      "lng": 127.9272
+    },
+    "short_description": "A vast northern fortress known for cherry blossoms.",
+    "description": "The headquarters of the Northern Kings before unification. The scale is immense, with walls stretching like the Great Wall of China across the hillside. It is less crowded than Shuri and offers a wilder, more ruin-like atmosphere. Famous for blooming vivid pink cherry blossoms in late January.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "600 JPY"
+  },
+  {
+    "name": "Kouri Island (Heart Rock)",
+    "region": "Okinawa",
+    "city": "Nakijin",
+    "neighborhood": "Kouri",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.7083,
+      "lng": 128.0211
+    },
+    "short_description": "An island accessible by a stunning long bridge, home to heart-shaped rocks.",
+    "description": "The drive over the 2km Kouri Bridge offers some of the bluest water views in Okinawa. The island has 'Heart Rock' on Tinu Beach, made famous by a J-Pop commercial. It is known as the 'Love Island' of Okinawa.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Ta-Taki Falls",
+    "region": "Okinawa",
+    "city": "Ogimi",
+    "neighborhood": "Tsuha",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.6381,
+      "lng": 128.0772
+    },
+    "short_description": "A river trekking adventure leading to a jungle waterfall.",
+    "description": "There is no paved path; visitors must hike *in* the river (shoes required) to reach the falls. It is a fun, accessible adventure in the Yambaru jungle. At the end, you can swim in the basin of the waterfall. A great way to cool off in summer.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Daisekirinzan",
+    "region": "Okinawa",
+    "city": "Kunigami",
+    "neighborhood": "Gina",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.8458,
+      "lng": 128.2542
+    },
+    "short_description": "Japan's southernmost tropical karst landscape.",
+    "description": "Located in the northern Yambaru National Park. It features jagged limestone peaks formed 200 million years ago, strange rock formations, and sacred prayer sites. Accessible hiking courses offer views of the ocean and gigantic banyan trees.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "1,200 JPY"
+  },
+  {
+    "name": "Cape Hedo",
+    "region": "Okinawa",
+    "city": "Kunigami",
+    "neighborhood": "Hedo",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.8667,
+      "lng": 128.2639
+    },
+    "short_description": "The dramatic northernmost tip of Okinawa's main island.",
+    "description": "A place of raw nature where the Pacific Ocean meets the East China Sea. The cliffs are rugged and the wind is strong. A monument commemorates the reversion of Okinawa to Japan, pointing towards the mainland. On clear days, you can see Yoron Island.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Yanbaru Kuina Ecological Exhibition Hall",
+    "region": "Okinawa",
+    "city": "Kunigami",
+    "neighborhood": "Ada",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.7561,
+      "lng": 128.2981
+    },
+    "short_description": "See the endangered, flightless Okinawa Rail bird.",
+    "description": "The Okinawa Rail (Yanbaru Kuina) is elusive in the wild. This facility houses a rescued bird in a naturalistic enclosure, offering the only guaranteed chance to see this rare species up close and learn about conservation efforts.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "King Tacos (Kin Main Store)",
+    "region": "Okinawa",
+    "city": "Kin",
+    "neighborhood": "Kin",
+    "category": "food",
+    "coordinates": {
+      "lat": 26.4561,
+      "lng": 127.9233
+    },
+    "short_description": "The birthplace of Okinawa's soul food, Taco Rice.",
+    "description": "Kin Town hosts a US military base (Camp Hansen) and is where Taco Rice was invented to feed hungry marines cheaply. 'King Tacos' serves massive portions of rice topped with taco meat, cheese, and lettuce. It's a greasy, delicious cultural staple.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "800 JPY"
+  },
+  {
+    "name": "Kudaka Island",
+    "region": "Okinawa",
+    "city": "Nanjo",
+    "neighborhood": "Kudaka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.1558,
+      "lng": 127.8872
+    },
+    "short_description": "The 'Island of Gods' where the Ryukyus were created.",
+    "description": "A ferry ride from Nanjo, this island is sacred. There are forbidden areas visitors cannot enter. Cycling around the island is popular, offering untouched beaches and a quiet, spiritual atmosphere. Consumption of the local sea snake soup (Irabu-jiru) is a tradition here.",
+    "estimated_duration": "3 hours",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Senaga Island Umikaji Terrace",
+    "region": "Okinawa",
+    "city": "Tomigusuku",
+    "neighborhood": "Senaga",
+    "category": "shopping",
+    "coordinates": {
+      "lat": 26.1756,
+      "lng": 127.6433
+    },
+    "short_description": "A white terraced shopping complex by the airport runway.",
+    "description": "A Mediterranean-style complex built on a slope facing the ocean. It's filled with boutiques and restaurants. The highlight is watching planes take off and land at Naha Airport incredibly close by while enjoying a sunset drink.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Zamami Island (Furuzamami Beach)",
+    "region": "Okinawa",
+    "city": "Zamami",
+    "neighborhood": "Zamami",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.2258,
+      "lng": 127.3081
+    },
+    "short_description": "World-class 'Kerama Blue' waters teeming with sea turtles.",
+    "description": "Part of the Kerama Islands National Park. The water clarity is astonishing. Furuzamami beach has received 2 stars from Michelin. Snorkeling here often guarantees sightings of sea turtles just a few meters from the shore.",
+    "estimated_duration": "Day trip or overnight",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Aka Island",
+    "region": "Okinawa",
+    "city": "Zamami",
+    "neighborhood": "Aka",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.1983,
+      "lng": 127.2806
+    },
+    "short_description": "A quiet island where Kerama Deer swim in the ocean.",
+    "description": "Connected to Geruma Island by bridge, Aka is quieter than Zamami. It is famous for the protected Kerama Deer which can sometimes be seen swimming between islands. The North Beach (Nishibama) is a snorkeling paradise with pristine coral.",
+    "estimated_duration": "Day trip or overnight",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Kume Island (Hate-no-Hama)",
+    "region": "Okinawa",
+    "city": "Kumejima",
+    "neighborhood": "Ou",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.3389,
+      "lng": 126.8372
+    },
+    "short_description": "A 7km pure white sandbar located in the middle of the ocean.",
+    "description": "Accessible only by tour boat, this sandbar has no trees or buildings—just white sand and emerald water as far as the eye can see. It is arguably the most beautiful beach in East Asia.",
+    "estimated_duration": "2 hours",
+    "min_budget": "3,000 JPY (Boat tour)"
+  },
+  {
+    "name": "Kume Island (Tatami Ishi)",
+    "region": "Okinawa",
+    "city": "Kumejima",
+    "neighborhood": "Ou",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.3308,
+      "lng": 126.8122
+    },
+    "short_description": "Rare pentagonal rock formations resembling turtle shells.",
+    "description": "Located on Oujima (connected to Kumejima by bridge). These flat, geometric andesite rocks appear at low tide, resembling a tatami mat floor or a giant turtle shell. It is a designated National Natural Monument.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sunayama Beach",
+    "region": "Okinawa",
+    "city": "Miyakojima",
+    "neighborhood": "Hirara",
+    "category": "nature",
+    "coordinates": {
+      "lat": 24.8317,
+      "lng": 125.2758
+    },
+    "short_description": "A white sand beach with an iconic natural coral arch.",
+    "description": "After walking over a sand dune, a small, stunning beach is revealed with a natural rock archway created by wave erosion. The contrast between the white sand, the arch, and the 'Miyako Blue' water is breathtaking.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "17 End (Shimojishima)",
+    "region": "Okinawa",
+    "city": "Miyakojima",
+    "neighborhood": "Irabu",
+    "category": "nature",
+    "coordinates": {
+      "lat": 24.8333,
+      "lng": 125.1389
+    },
+    "short_description": "A man-made pier with the most vibrant blue water in Miyako.",
+    "description": "Located at the end of the runway at Shimojishima Airport (Runway 17). At low tide, a white sand beach emerges from the incredibly vivid turquoise water. Visitors can walk along the tetrapods and watch planes land, surrounded by unreal colors.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Higashi-Hennazaki",
+    "region": "Okinawa",
+    "city": "Miyakojima",
+    "neighborhood": "Gusukube",
+    "category": "nature",
+    "coordinates": {
+      "lat": 24.7317,
+      "lng": 125.465
+    },
+    "short_description": "A narrow 2km cape jutting into the Pacific Ocean.",
+    "description": "One of Japan's 100 best scenic spots. The cape is lined with massive rocks and distinct huge boulders in the water (Tsunami rocks). A white lighthouse stands at the tip. In spring, the cape is covered in Easter lilies.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kabira Bay",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "neighborhood": "Kabira",
+    "category": "nature",
+    "coordinates": {
+      "lat": 24.4539,
+      "lng": 124.1436
+    },
+    "short_description": "The most famous view in Ishigaki, dotted with small green islands.",
+    "description": "Swimming is prohibited due to fast currents, but glass-bottom boats offer views of the manta rays and coral below. The view of the emerald water and small islets from the observation deck is the definitive postcard image of the Yaeyama islands.",
+    "estimated_duration": "1 hour",
+    "min_budget": "1,000 JPY (Boat)"
+  },
+  {
+    "name": "Yonehara Palm Tree Grove",
+    "region": "Okinawa",
+    "city": "Ishigaki",
+    "neighborhood": "Fukai",
+    "category": "nature",
+    "coordinates": {
+      "lat": 24.4361,
+      "lng": 124.1883
+    },
+    "short_description": "A native jungle of massive Yaeyama fan palms.",
+    "description": "A boardwalk takes you through a dense subtropical jungle filled with the endemic Yaeyama Palm (Satake palm), which grows up to 25 meters tall. It feels prehistoric and provides a cool, shady break from the beach sun.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Taketomi Island Village",
+    "region": "Okinawa",
+    "city": "Taketomi",
+    "neighborhood": "Taketomi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 24.3283,
+      "lng": 124.0864
+    },
+    "short_description": "A preserved Ryukyu village of red-tiled roofs and buffalo carts.",
+    "description": "Just 10 minutes from Ishigaki, this island strictly preserves its traditional architecture. The roads are white coral sand, and the houses have red-tiled roofs topped with Shisa statues. Water buffalo carts slowly tour the village while guides play the sanshin.",
+    "estimated_duration": "2 - 3 hours",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Pinaisara Falls",
+    "region": "Okinawa",
+    "city": "Taketomi",
+    "neighborhood": "Iriomote",
+    "category": "nature",
+    "coordinates": {
+      "lat": 24.3917,
+      "lng": 123.8236
+    },
+    "short_description": "The highest waterfall in Okinawa, accessible by kayak and trek.",
+    "description": "Located on the wild Iriomote Island. The typical tour involves kayaking through mangroves up the Mare River, then hiking through the jungle to the basin or top of the falls (55m high). It is a full immersion into the 'Galapagos of the East.'",
+    "estimated_duration": "Half day tour",
+    "min_budget": "6,000 JPY (Tour)"
+  },
+  {
+    "name": "Yubu Island",
+    "region": "Okinawa",
+    "city": "Taketomi",
+    "neighborhood": "Iriomote",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 24.3417,
+      "lng": 123.9317
+    },
+    "short_description": "An island garden accessible only by water buffalo cart.",
+    "description": "Separated from Iriomote by a shallow strait, visitors cross on carts pulled by water buffaloes. The entire tiny island is a botanical garden filled with hibiscus, bougainvillea, and butterflies. It is a slow, charming, and very Okinawan experience.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "1,700 JPY"
+  },
+  {
+    "name": "Hateruma Island (Nishihama Beach)",
+    "region": "Okinawa",
+    "city": "Taketomi",
+    "neighborhood": "Hateruma",
+    "category": "nature",
+    "coordinates": {
+      "lat": 24.0617,
+      "lng": 123.7686
+    },
+    "short_description": "The southernmost inhabited island with 'Hateruma Blue' water.",
+    "description": "Famous for having perhaps the clearest, bluest water in all of Japan ('Hateruma Blue'). It is the southernmost point of Japan accessible to civilians. At night, it is the best place to see the Southern Cross constellation.",
+    "estimated_duration": "Day trip (weather permitting)",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Yonaguni Monument",
+    "region": "Okinawa",
+    "city": "Yonaguni",
+    "neighborhood": "Yonaguni",
+    "category": "nature",
+    "coordinates": {
+      "lat": 24.4367,
+      "lng": 123.0117
+    },
+    "short_description": "Mysterious underwater rock formations resembling a sunken city.",
+    "description": "Located off the coast of Japan's westernmost island. These massive underwater sandstone formations look like terraces, steps, and walls. Debate rages whether they are man-made ruins or natural formations. You can see them via diving or semi-submersible boat.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Tour fee"
+  },
+  {
+    "name": "Aguni Island",
+    "region": "Okinawa",
+    "city": "Aguni",
+    "neighborhood": "Aguni",
+    "category": "nature",
+    "coordinates": {
+      "lat": 26.5833,
+      "lng": 127.2333
+    },
+    "short_description": "A remote island of white volcanic rock and salt.",
+    "description": "Known for 'Aguni Salt,' made using bamboo towers to evaporate seawater. The coastline features dramatic white volcanic tuff cliffs unlike the limestone found elsewhere in Okinawa. It is very quiet and off the main tourist radar.",
+    "estimated_duration": "Day trip or overnight",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Iheya Island",
+    "region": "Okinawa",
+    "city": "Iheya",
+    "neighborhood": "Gakiya",
+    "category": "culture",
+    "coordinates": {
+      "lat": 27.0389,
+      "lng": 127.9694
+    },
+    "short_description": "The legendary birthplace of the first King of the Second Sho Dynasty.",
+    "description": "The northernmost island of Okinawa prefecture. It is the birthplace of King Sho En. Visitors can see his tomb and the Kumaya Cave, which is linked to the Sun Goddess myth. The island remains very rural and authentic.",
+    "estimated_duration": "Overnight",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Okinawa Peace Memorial Park",
+    "region": "Okinawa",
+    "city": "Itoman",
+    "neighborhood": "Mabuni",
+    "category": "culture",
+    "coordinates": {
+      "lat": 26.0967,
+      "lng": 127.7236
+    },
+    "short_description": "A solemn memorial on the southern cliffs ending the Battle of Okinawa.",
+    "description": "Located where the final fierce battles took place. The Cornerstone of Peace lists the names of all victims regardless of nationality. The view of the ocean from the cliffs is beautiful yet heartbreaking, serving as a powerful plea for world peace.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free (Museum fee applies)"
+  }
+]
