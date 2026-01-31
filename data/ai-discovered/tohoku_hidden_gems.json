@@ -1,0 +1,452 @@
+[
+  {
+    "name": "Takayama Inari Shrine",
+    "region": "Tohoku",
+    "city": "Tsugaru",
+    "neighborhood": "Ushigata",
+    "category": "culture",
+    "coordinates": {
+      "lat": 40.8356,
+      "lng": 140.3475
+    },
+    "short_description": "A surreal dragon-like path of red torii gates winding through a garden.",
+    "description": "Located on the remote west coast of Aomori, this shrine is a spectacular hidden alternative to Kyoto's Fushimi Inari. Dozens of bright red torii gates snake through a meticulously kept Japanese garden featuring ponds and bridges. The shrine is dedicated to the gods of harvest and maritime safety, offering a peaceful, otherworldly atmosphere without the crushing crowds of more central landmarks.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Zenringai (Zen Temple District)",
+    "region": "Tohoku",
+    "city": "Hirosaki",
+    "neighborhood": "Nishisaka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 40.5936,
+      "lng": 140.4578
+    },
+    "short_description": "A quiet street containing 33 Zen Buddhist temples in a single line.",
+    "description": "Established in 1610 to protect Hirosaki Castle from the 'unlucky' southwest direction, this district is a rare architectural concentration of Zen spirituality. Walking down the cedar-lined street leads you past varied temple gates to Choshoji, the family temple of the Tsugaru lords. It’s a meditative walk that feels entirely removed from the modern city just a few blocks away.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Aoni Onsen",
+    "region": "Tohoku",
+    "city": "Kuroishi",
+    "neighborhood": "Aoni",
+    "category": "hotel",
+    "coordinates": {
+      "lat": 40.5694,
+      "lng": 140.7811
+    },
+    "short_description": "A remote mountain inn lit entirely by oil lamps with no electricity.",
+    "description": "Known as the 'Lamp Inn,' Aoni Onsen offers a true digital detox. There are no power outlets, no Wi-Fi, and no cell service. At night, the entire valley is illuminated only by the soft glow of hundreds of oil lamps. It features four different hot spring baths, including an outdoor one beside a mountain stream, providing a hauntingly beautiful glimpse into pre-modern Japan.",
+    "estimated_duration": "Overnight recommended",
+    "min_budget": "15,000 JPY (including meals)"
+  },
+  {
+    "name": "Mikoda Morning Market",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "neighborhood": "Mikoda-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.6894,
+      "lng": 141.1561
+    },
+    "short_description": "A gritty, authentic morning market run by local farmers.",
+    "description": "Operating since the 1970s, this is where Morioka's residents buy their daily produce. Unlike tourist-facing markets, Mikoda is raw and bustling with grandmothers selling pickled vegetables, fresh fruit, and handmade snacks like 'Hitsumi' soup. It starts at 5:00 AM and is the perfect place to experience the warm, unpretentious hospitality of Iwate's people.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free entry (Food costs 500 - 1,500 JPY)"
+  },
+  {
+    "name": "Geibikei Gorge Boat Trip",
+    "region": "Tohoku",
+    "city": "Ichinoseki",
+    "neighborhood": "Higashiyama",
+    "category": "nature",
+    "coordinates": {
+      "lat": 38.9903,
+      "lng": 141.2536
+    },
+    "short_description": "Punted wooden boats through towering limestone cliffs.",
+    "description": "Unlike its neighbor Genbikei, Geibikei is a quiet experience where boatmen use long poles to punt passengers up the river. The highlight is the 'Ougebi' rock at the end of the line, where you can try to throw 'lucky stones' into a hole in the cliff for good fortune. During the ride, the boatmen often sing 'Geibi Oiwake,' a traditional folk song that echoes beautifully off the 50-meter-high stone walls.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "1,800 JPY"
+  },
+  {
+    "name": "Nambu Ironware Workshop (Osuji Mizusawa)",
+    "region": "Tohoku",
+    "city": "Oshu",
+    "neighborhood": "Mizusawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 39.1417,
+      "lng": 141.1667
+    },
+    "short_description": "The 900-year-old birthplace of Japan’s famous iron kettles.",
+    "description": "While many buy Nanbu Tekki (ironware) in Tokyo, visiting the source in Mizusawa allows you to see the grueling casting process firsthand. Several small family workshops offer tours where you can watch molten iron being poured into clay molds. Many offer small workshops to make your own iron wind chimes or coasters, connecting you to a craft that dates back to the Heian period.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "Free for tours; workshops ~2,500 JPY"
+  },
+  {
+    "name": "Seiryuji Temple (Great Showa Buddha)",
+    "region": "Tohoku",
+    "city": "Aomori",
+    "neighborhood": "Kuwabara",
+    "category": "culture",
+    "coordinates": {
+      "lat": 40.8164,
+      "lng": 140.8256
+    },
+    "short_description": "The largest seated bronze Buddha in Japan, hidden in the woods.",
+    "description": "Often overshadowed by the Buddhas in Nara and Kamakura, the Showa Daibutsu is actually taller at 21 meters. It sits in a serene forest setting on the outskirts of Aomori City. The temple complex also includes a stunning five-story pagoda built of Aomori cypress and a main hall filled with intricate Buddhist paintings, offering a grand but quiet spiritual experience.",
+    "estimated_duration": "1 hour",
+    "min_budget": "400 JPY"
+  },
+  {
+    "name": "Jodogahama Beach",
+    "region": "Tohoku",
+    "city": "Miyako",
+    "neighborhood": "Hitachihama-cho",
+    "category": "nature",
+    "coordinates": {
+      "lat": 39.6472,
+      "lng": 141.9803
+    },
+    "short_description": "A beach described as 'the Pure Land' due to its white rocks.",
+    "description": "Meaning 'Pure Land Beach,' this spot features jagged white volcanic rock formations rising from emerald-green waters. It was named by a 17th-century monk who felt the beauty resembled the Buddhist paradise. You can take a small 'Blue Grotto' boat tour to enter sea caves or simply walk the pebble shore, which remains remarkably calm due to the natural rock breakwaters.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "Free (Boat tours ~1,500 JPY)"
+  },
+  {
+    "name": "Sankyo Soko Storehouses",
+    "region": "Tohoku",
+    "city": "Sakata",
+    "neighborhood": "Sankyo-machi",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 38.9136,
+      "lng": 139.8406
+    },
+    "short_description": "19th-century rice warehouses shaded by massive zelkova trees.",
+    "description": "These nine interconnected wooden warehouses were built in 1893 to store the bounty of the Shonai Plain. The row of trees behind them wasn't just for aesthetics; they were planted to provide shade and keep the warehouses cool. Today, some are still used for rice storage, while others house a museum and a local market selling Yamagata’s famous cherries and sake.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free entry"
+  },
+  {
+    "name": "Tatehana Wharf Morning Market",
+    "region": "Tohoku",
+    "city": "Hachinohe",
+    "neighborhood": "Minato-machi",
+    "category": "food",
+    "coordinates": {
+      "lat": 40.5244,
+      "lng": 141.5281
+    },
+    "short_description": "Japan's largest morning market, appearing only on Sundays.",
+    "description": "Every Sunday at dawn, a massive wharf in Hachinohe transforms into a city of 300+ stalls. It is more than a fish market; you can find everything from sewing machines and power tools to fresh espresso and fried 'shio-teba' chicken wings. It’s an energetic, chaotic festival of local life that draws tens of thousands of people before 9:00 AM.",
+    "estimated_duration": "1.5 - 2 hours",
+    "min_budget": "Free entry"
+  },
+  {
+    "name": "Goshikinuma Ponds",
+    "region": "Tohoku",
+    "city": "Kitashiobara",
+    "neighborhood": "Urabandai",
+    "category": "nature",
+    "coordinates": {
+      "lat": 37.6533,
+      "lng": 140.0633
+    },
+    "short_description": "Volcanic ponds that change color from cobalt to emerald.",
+    "description": "Formed by the eruption of Mount Bandai in 1888, these 'Five-Color Ponds' contain various mineral deposits that create surreal water colors. A flat, 4km walking trail connects the ponds. The most famous is Bishamon-numa, where you can rent a rowboat. The colors shift depending on the weather and season, making it a favorite for nature photographers.",
+    "estimated_duration": "1.5 - 2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kakunodate Samurai District (Secret Side)",
+    "region": "Tohoku",
+    "city": "Semboku",
+    "neighborhood": "Kakunodate",
+    "category": "culture",
+    "coordinates": {
+      "lat": 39.6014,
+      "lng": 140.5614
+    },
+    "short_description": "Edo-period streets famous for weeping cherry trees and soy sauce.",
+    "description": "While many visit for the cherry blossoms, the 'hidden' charm lies in the small, family-run soy sauce and miso breweries tucked between the samurai houses. Visiting the Ando Jozo brewery (an 1891 brick building) offers free tastings of traditional Akita miso. The district's black wooden walls and massive weeping cherries create one of Japan's most authentic 'Little Kyoto' atmospheres.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free (Museum entries ~500 JPY)"
+  },
+  {
+    "name": "Hanamiyama Park",
+    "region": "Tohoku",
+    "city": "Fukushima",
+    "neighborhood": "Watari",
+    "category": "nature",
+    "coordinates": {
+      "lat": 37.7397,
+      "lng": 140.4856
+    },
+    "short_description": "A private farm turned public 'flower mountain'.",
+    "description": "Originally a silk-worm farm, the family began planting flowering trees to sell. It eventually became so beautiful that they opened it to the public. In mid-April, the entire mountain explodes in shades of pink, white, and yellow as cherry blossoms, peach blossoms, and forsythia bloom simultaneously. It offers a panoramic view of Fukushima City framed by a literal wall of flowers.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "Free (Donations encouraged)"
+  },
+  {
+    "name": "Tsugaru Kokeshi Museum",
+    "region": "Tohoku",
+    "city": "Kuroishi",
+    "neighborhood": "Fukuro",
+    "category": "culture",
+    "coordinates": {
+      "lat": 40.5961,
+      "lng": 140.6728
+    },
+    "short_description": "A deep dive into the wooden dolls that define Tohoku.",
+    "description": "This museum houses over 4,000 traditional Kokeshi dolls, each with distinct features based on their region of origin. The Tsugaru style is known for its narrow waist and peony patterns. You can watch master artisans turn blocks of wood on a lathe and paint the intricate faces. Most visitors enjoy the workshop where you can paint your own personalized doll to take home.",
+    "estimated_duration": "1 hour",
+    "min_budget": "320 JPY entry; ~1,200 JPY for workshop"
+  },
+  {
+    "name": "Ryusendo Cave",
+    "region": "Tohoku",
+    "city": "Iwaizumi",
+    "neighborhood": "Kannari",
+    "category": "nature",
+    "coordinates": {
+      "lat": 39.8617,
+      "lng": 141.7969
+    },
+    "short_description": "One of Japan's three largest limestone caves with 'Dragon Blue' lakes.",
+    "description": "This cave system extends unknown distances underground, with over 3,600 meters explored so far. It is famous for its underground lakes, the third of which is 98 meters deep and illuminated with blue lights to showcase its incredible transparency. The constant 10°C temperature makes it a cool refuge in summer and a fascinating geological journey year-round.",
+    "estimated_duration": "1 hour",
+    "min_budget": "1,100 JPY"
+  },
+  {
+    "name": "Aizu Sazaedo",
+    "region": "Tohoku",
+    "city": "Aizuwakamatsu",
+    "neighborhood": "Ikkyumachi",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 37.5036,
+      "lng": 139.9439
+    },
+    "short_description": "A unique 18th-century double-helix wooden tower.",
+    "description": "Built in 1796, this 16.5-meter pagoda is famous for its architectural 'magic': the up-stairs and down-stairs are completely separate, so visitors never pass each other. It was originally designed so pilgrims could worship 33 Kannon statues without backtracking. It is a rare, dizzying example of Edo-period engineering and the only building of its kind in the world.",
+    "estimated_duration": "30 - 45 minutes",
+    "min_budget": "400 JPY"
+  },
+  {
+    "name": "Entsuin Temple",
+    "region": "Tohoku",
+    "city": "Matsushima",
+    "neighborhood": "Matsushima-aza",
+    "category": "culture",
+    "coordinates": {
+      "lat": 38.3719,
+      "lng": 141.0608
+    },
+    "short_description": "A mausoleum featuring hidden Western symbols and a moss garden.",
+    "description": "While many visit the nearby Zuiganji, Entsuin is a more intimate 'hidden' gem. It was built to mourn Date Mitsumune, a young samurai. The mausoleum interior is decorated with Western symbols (like roses and hearts) brought back by the Hasekura embassy from Europe—highly illegal at the time. The grounds also feature a stunning rose garden and a rock garden that is famous for night illuminations in autumn.",
+    "estimated_duration": "1 hour",
+    "min_budget": "300 JPY"
+  },
+  {
+    "name": "Kabushima Shrine",
+    "region": "Tohoku",
+    "city": "Hachinohe",
+    "neighborhood": "Same-machi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 40.5408,
+      "lng": 141.5622
+    },
+    "short_description": "A shrine on a hill surrounded by 30,000 black-tailed gulls.",
+    "description": "From March to August, this island (now connected to the mainland) becomes the nesting ground for thousands of Umineko (gulls). The shrine at the top is dedicated to the goddess of wealth. Visitors are given umbrellas not for rain, but to protect them from 'lucky' droppings. If you get hit, you can get a certificate from the shrine office to commemorate your good fortune.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kamo Aquarium",
+    "region": "Tohoku",
+    "city": "Tsuruoka",
+    "neighborhood": "Imaizumi",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 38.7611,
+      "lng": 139.7236
+    },
+    "short_description": "The world’s leading aquarium for jellyfish species.",
+    "description": "Once a failing local aquarium, Kamo reinvented itself as the 'Jellyfish Dream House.' It now holds the Guinness World Record for the most jellyfish species on display. The centerpiece is a 5-meter diameter 'Jellyfish Dream Theater' where thousands of moon jellies drift in a circular tank. It’s a hypnotic, artistic experience that feels more like a light show than a zoo.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "1,000 JPY"
+  },
+  {
+    "name": "Oirase Stream (Choshi Orui Waterfall)",
+    "region": "Tohoku",
+    "city": "Towada",
+    "neighborhood": "Okuse",
+    "category": "nature",
+    "coordinates": {
+      "lat": 40.4492,
+      "lng": 140.9497
+    },
+    "short_description": "A 14km moss-covered gorge with countless waterfalls.",
+    "description": "While popular among hikers, the Oirase Stream remains 'off-the-beaten-path' for those sticking to major cities. The trail follows the crystal-clear water flowing from Lake Towada. The Choshi Orui Waterfall is the only one that spans the full width of the river, acting as a natural barrier for fish. The entire walk is a lush, mossy paradise that is particularly stunning when the autumn leaves turn fire-red.",
+    "estimated_duration": "3 - 5 hours for the full walk",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Fujita Memorial Garden",
+    "region": "Tohoku",
+    "city": "Hirosaki",
+    "neighborhood": "Kamishiroganemachi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 40.6078,
+      "lng": 140.4633
+    },
+    "short_description": "A Taisho-era garden with a retro Western-style tea room.",
+    "description": "This garden is divided into an upper and lower section, showcasing both traditional Japanese landscaping and early 20th-century Western influence. The highlight for many is the red-roofed Western-style house, which serves Hirosaki's famous apple pie in a sun-drenched cafe overlooking the gardens. It’s a perfect spot to rest after exploring the nearby castle.",
+    "estimated_duration": "1 hour",
+    "min_budget": "310 JPY"
+  },
+  {
+    "name": "Shiogama Seafood Wholesale Market",
+    "region": "Tohoku",
+    "city": "Shiogama",
+    "neighborhood": "Shinhamacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.3247,
+      "lng": 141.0336
+    },
+    "short_description": "The 'Tuna Capital' where you can make your own 'My Kaisen-don'.",
+    "description": "Shiogama has one of the highest concentrations of sushi restaurants in Japan. At the wholesale market, you can buy a 'Rice and Soup Set' and then wander the 100+ stalls to buy individual portions of fresh tuna, octopus, or urchin to build your own bowl. It’s much more interactive and affordable than the seafood markets in Sendai or Tokyo.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "1,500 - 3,000 JPY"
+  },
+  {
+    "name": "Uto Shrine",
+    "region": "Tohoku",
+    "city": "Aomori",
+    "neighborhood": "Yasuakata",
+    "category": "culture",
+    "coordinates": {
+      "lat": 40.8267,
+      "lng": 140.7431
+    },
+    "short_description": "Aomori City's oldest shrine with ties to famous woodblock artists.",
+    "description": "Founded in the year 807, this shrine is the spiritual guardian of Aomori City. It is famously associated with the world-renowned woodblock artist Munakata Shiko, who played here as a child. The grounds contain a beautiful carp pond and several stones inscribed with haiku by the poet Matsuo Basho, who visited the area during his 'Narrow Road to the Deep North' journey.",
+    "estimated_duration": "30 - 45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Lake Tazawa (Secret Statue)",
+    "region": "Tohoku",
+    "city": "Semboku",
+    "neighborhood": "Tazawako",
+    "category": "nature",
+    "coordinates": {
+      "lat": 39.7214,
+      "lng": 140.655
+    },
+    "short_description": "Japan's deepest lake, featuring the golden Tatsuko Statue.",
+    "description": "At 423 meters deep, Lake Tazawa never freezes in winter. The iconic golden statue of Tatsuko depicts a local girl who, according to legend, prayed for eternal beauty and was transformed into a dragon. The lake is famous for its circular shape and vibrant blue water, which can be explored via a quiet cycling path or a local sightseeing boat.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "Free (Boat or bike rental ~1,200 JPY)"
+  },
+  {
+    "name": "Sajiki-mori (Traditional Stage)",
+    "region": "Tohoku",
+    "city": "Hinoemata",
+    "neighborhood": "Hinoemata Village",
+    "category": "culture",
+    "coordinates": {
+      "lat": 37.0425,
+      "lng": 139.3892
+    },
+    "short_description": "An outdoor Kabuki stage used by villagers for 200 years.",
+    "description": "Hinoemata is Japan's least-populated village, and for centuries the locals have performed their own version of Kabuki. The stage is a beautiful thatched-roof building, and the 'audience' seats are natural rock slopes. Performances occur twice a year, but the stage itself is a historic relic located next to a small mountain shrine, symbolizing the resilience of mountain culture.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free entry"
+  },
+  {
+    "name": "Mt. Haguro (Dewa Sanzan)",
+    "region": "Tohoku",
+    "city": "Tsuruoka",
+    "neighborhood": "Haguro-machi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 38.7067,
+      "lng": 139.9678
+    },
+    "short_description": "A cedar-lined climb past a 600-year-old five-story pagoda.",
+    "description": "As one of the three sacred mountains of Dewa, Mt. Haguro represents 'the present.' A stone staircase of 2,446 steps leads through a forest of 600-year-old cedar trees. Along the way, you pass a magnificent wooden pagoda that was built without nails. It is a major site for Yamabushi (mountain ascetics), but offers a profound, quiet strength for any hiker.",
+    "estimated_duration": "2 - 3 hours",
+    "min_budget": "Free (Temple entry 600 JPY)"
+  },
+  {
+    "name": "Zasu Pottery at Hanayama",
+    "region": "Tohoku",
+    "city": "Kurihara",
+    "neighborhood": "Hanayama",
+    "category": "culture",
+    "coordinates": {
+      "lat": 38.8333,
+      "lng": 140.85
+    },
+    "short_description": "A traditional wood-fired kiln specializing in unglazed pottery.",
+    "description": "Zasu is one of the few remaining 'Anagama' (hole kilns) in Tohoku. This traditional method involves firing the kiln for several days with wood, which creates natural ash glazes on the clay. Visitors can tour the kiln, see the cooling process, and purchase rugged, functional tableware that feels like it was pulled directly from the earth. The setting is deep in the rural mountains of Miyagi.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free for tour; Pottery costs vary"
+  },
+  {
+    "name": "Kajo Park (Yamagata Castle Ruins)",
+    "region": "Tohoku",
+    "city": "Yamagata",
+    "neighborhood": "Kajo-machi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 38.2558,
+      "lng": 140.3283
+    },
+    "short_description": "Massive stone walls and restored gates of a former feudal hub.",
+    "description": "Though the main castle tower no longer stands, the reconstructed East Gate and stone walls are imposing. The park is a favorite for locals during cherry blossom season, but remains relatively quiet otherwise. It also houses the Yamagata Museum of Art and the Mogami Yoshiaki Historical Museum, making it the cultural center of the city.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Bandai-Azuma Skyline",
+    "region": "Tohoku",
+    "city": "Fukushima",
+    "neighborhood": "Azuma",
+    "category": "nature",
+    "coordinates": {
+      "lat": 37.7225,
+      "lng": 140.255
+    },
+    "short_description": "A high-altitude drive through a volcanic 'moonscape'.",
+    "description": "Often called the 'Venus Line of the North,' this winding road reaches heights of 1,600 meters. The scenery changes from lush forests to a barren, sulfurous volcanic wasteland near Mount Azuma-Kofuji. You can stop at the Jododaira rest area and hike the rim of a perfectly circular crater in just 20 minutes, offering views that feel more like Iceland than Japan.",
+    "estimated_duration": "2 hours (driving)",
+    "min_budget": "Free (Toll road fees may apply)"
+  },
+  {
+    "name": "Shogimura Tendo Tower",
+    "region": "Tohoku",
+    "city": "Tendo",
+    "neighborhood": "Kamada",
+    "category": "shopping",
+    "coordinates": {
+      "lat": 38.3514,
+      "lng": 140.3703
+    },
+    "short_description": "The capital of Shogi (Japanese chess) pieces.",
+    "description": "Tendo produces 95% of Japan's shogi pieces. At the Tendo Tower, you can see artisans carving and lacquering the pieces by hand. There is a workshop where you can try 'writing' your own kanji onto a giant decorative shogi piece. Even the sidewalks and bridges in the town are decorated with shogi pieces, making it a unique themed destination.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free entry; Workshop ~1,000 JPY"
+  }
+]

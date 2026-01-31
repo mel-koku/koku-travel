@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Tateyama Snow Wall Opening",
+    "region": "Chubu",
+    "city": "Tateyama",
+    "prefecture": "Toyama",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.5783,
+      "lng": 137.6047
+    },
+    "short_description": "The famous Yuki-no-Otani snow corridor on the Tateyama Kurobe Alpine Route.",
+    "description": "Each spring, the Tateyama Kurobe Alpine Route opens with one of Japan's most spectacular natural phenomena: the Yuki-no-Otani (Snow Wall). At Murodo, the highest point on the route at 2,450 meters, accumulated winter snow is carved into towering walls that can reach up to 20 meters in height. Visitors can walk through this dramatic corridor of snow, dwarfed by the white cliffs on either side.\n\nThe snow walls typically reach their maximum height in mid-April when the route first opens, gradually diminishing through June as temperatures rise. The phenomenon occurs because the Tateyama area receives some of the heaviest snowfall in Japan, with annual accumulation often exceeding 20 meters. The route's operators carefully clear the road each spring, creating the famous walls as a byproduct.\n\nThe experience of walking between massive walls of snow while surrounded by the peaks of the Northern Japan Alps is unforgettable. The route also offers other attractions including cable cars, ropeways, and Japan's only trolley bus, making the journey as memorable as the destination.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "April, May, June"
+  },
+  {
+    "name": "Korankei Maple Festival",
+    "region": "Chubu",
+    "city": "Toyota",
+    "prefecture": "Aichi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.1332,
+      "lng": 137.3148
+    },
+    "short_description": "A world-renowned autumn foliage site with 4,000 maples and historic temple origins.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "November",
+    "description": "Korankei Gorge is the most famous location for autumn leaves in the Tokai region of Chubu. The forest was established in 1634 by San-ei Washo, the 11th priest of Kojakuji Temple, who planted maples along the Tomoe River. Today, approximately 4,000 trees across 11 varieties turn brilliant shades of red and gold. The area stretches from the Iimori Mountains to the Tomoe River, featuring several scenic hiking paths and the iconic Taigetsukyo red bridge.\n\nThe festival held every November includes nightly illuminations that make the trees appear to glow in shades of gold and red. Cultural highlights include taiko drum performances, a craft market at the Sanshu Asuke Yashiki open-air museum, and bamboo lantern displays at Kojakuji Temple. It is a vital site for 'momijigari' (autumn leaf hunting), drawing visitors from throughout the nation to witness the vibrant reflections on the Tomoe River."
+  },
+  {
+    "name": "Takayama Spring Festival (Sanno Matsuri)",
+    "region": "Chubu",
+    "city": "Takayama",
+    "prefecture": "Gifu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.1408,
+      "lng": 137.2581
+    },
+    "short_description": "A UNESCO Intangible Cultural Heritage event featuring ornate Edo-period floats and mechanical puppets.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "April",
+    "description": "Held annually on April 14 and 15, the Takayama Spring Festival celebrates the Hie Shrine. It is one of the three most beautiful festivals in Japan, showcasing 12 'Yatai' floats that are masterpieces of Hida carpentry and lacquerwork. These floats feature gold leaf, detailed carvings, and 'Karakuri' puppets—mechanical dolls operated by master puppeteers using a complex string system to perform lifelike movements for the crowds.\n\nHistorical records trace the festival back to the 16th century, though the floats in their current form were refined during the Edo period by wealthy local merchants. The festival highlight is the night parade, where each float is decorated with 100 lanterns and pulled through the preserved wooden architecture of Takayama’s old town. The event symbolizes the high artistic achievement of the Hida region's craftspeople and remains a pillar of regional pride."
+  },
+  {
+    "name": "Obara Shikizakura Festival",
+    "region": "Chubu",
+    "city": "Toyota",
+    "prefecture": "Aichi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.2536,
+      "lng": 137.2625
+    },
+    "short_description": "A unique botanical event where 10,000 cherry trees bloom simultaneously with autumn maples.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "November",
+    "description": "Obara is home to the rare Shikizakura, or four-season cherry tree, which blooms twice annually. The most spectacular viewing occurs in late November, when the pink cherry blossoms overlap with the deep red and orange of autumn maple leaves. The district hosts over 10,000 trees, centered on the Obara Fureai Park and Senmi Shikizakura no Sato, where hillsides are covered in a patchwork of spring and autumn colors.\n\nThe variety was introduced in the early 19th century by a physician named Genseki Fujimoto, who brought a seedling from Nagoya. One tree, the Maehora Shikizakura, is over 100 years old and is a designated natural monument. The festival includes local paper-making workshops at the Obara Paper Art Museum and food stalls serving seasonal specialties like sweet adzuki soup, celebrating a landscape that defies traditional seasonal boundaries."
+  },
+  {
+    "name": "Takada Park Cherry Blossom Festival",
+    "region": "Chubu",
+    "city": "Joetsu",
+    "prefecture": "Niigata",
+    "category": "culture",
+    "coordinates": {
+      "lat": 37.11,
+      "lng": 138.2558
+    },
+    "short_description": "One of Japan’s top three night-viewing cherry blossom spots, featuring 4,000 trees and a castle keep.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "April",
+    "description": "Takada Park is situated on the site of Takada Castle, built in 1614 for Matsudaira Tadateru. The park is famous for the scale of its cherry blossom display, with approximately 4,000 Somei Yoshino trees surrounding the castle moats. It is widely regarded as one of Japan's three best night viewing spots for sakura, largely due to the illumination of over 3,000 lanterns and the reconstructed three-story castle turret.\n\nThe 'Sakura Road' is the park's highlight, where trees on both sides of a walkway form a dense canopy that is lit up after sunset. The reflection of the illuminated pagoda and blossoms in the inner moat creates a breathtaking scene that embodies the beauty of the Hokuriku region. The park remains a year-round attraction, also featuring a massive lotus festival in the summer, but its spring festival is the primary draw for national tourism."
+  },
+  {
+    "name": "Inuyama Matsuri",
+    "region": "Chubu",
+    "city": "Inuyama",
+    "prefecture": "Aichi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3883,
+      "lng": 136.9392
+    },
+    "short_description": "A historic float festival featuring 13 three-story floats and mechanical karakuri puppets.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "April",
+    "description": "The Inuyama Festival dates back to 1635 and is held to honor the local deity of Haritsuna Shrine at the base of Inuyama Castle. The festival is unique for its 13 three-tiered 'Yama' floats, which are over 8 meters tall. Each float features 'Karakuri' dolls that perform plays based on Japanese mythology to the accompaniment of flutes and taiko drums. It is designated as a UNESCO Intangible Cultural Heritage.\n\nThe event’s most photogenic moment occurs at night, when all 13 floats are lit with exactly 365 lanterns and paraded through the historic streets, which are often lined with full-bloom cherry blossoms. The floats are owned and maintained by different neighborhoods in the old town, representing centuries of community rivalry and artistic cooperation. The festival is a prime example of the cultural wealth of the Owari Tokugawa domain."
+  },
+  {
+    "name": "Hamamatsu Festival",
+    "region": "Chubu",
+    "city": "Hamamatsu",
+    "prefecture": "Shizuoka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.6756,
+      "lng": 137.7475
+    },
+    "short_description": "A dynamic citizen festival famous for giant kite battles and illuminated palace-like floats.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "May",
+    "description": "Held from May 3 to 5, the Hamamatsu Festival is not a shrine-based religious event but a celebration of the city's residents and their children. Its origins lie in the 16th century when a local lord flew a kite to celebrate the birth of his son. The main attraction is the 'Tako Gassen' (Kite Battle) on the Nakatajima Sand Dunes, where over 170 towns fly massive kites, competing to cut the strings of opponents using friction.\n\nAt night, the focus shifts to the city center for the 'Goten-yatai' procession. These are elaborately carved, palace-like floats that are brilliantly lit and paraded through the streets to the sound of trumpets and festival chants. The festival is a massive display of community spirit, attracting over 1 million visitors annually. It emphasizes the strength and healthy growth of the town’s next generation through fierce but friendly competition."
+  },
+  {
+    "name": "Gujo Odori Festival",
+    "region": "Chubu",
+    "city": "Gujo",
+    "prefecture": "Gifu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.7485,
+      "lng": 136.9643
+    },
+    "short_description": "A traditional Bon dance festival spanning 30 nights, including four nights of all-night dancing.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "Various",
+    "description": "The Gujo Odori is a 400-year-old tradition in Gujo Hachiman, established during the Edo period by the local lord as a way to unite the four social classes through dance. It is one of Japan's three most famous Bon dances. The festival runs on select nights from mid-July to early September, but its pinnacle is the 'Tetsuya Odori' during the Obon season (August 13-16), when dancing continues from 8 PM until sunrise.\n\nThere are ten distinct dances, each with specific meanings—some imitating farming practices and others celebrating historical events like the Horeki Riot. Participants of all backgrounds are encouraged to join the circle, usually wearing yukata and wooden geta sandals, which provide a rhythmic percussion on the streets. It is one of the most accessible traditional festivals in Japan, focusing on social harmony and ancestral veneration."
+  },
+  {
+    "name": "Fujikawaguchiko Autumn Leaves Festival",
+    "region": "Chubu",
+    "city": "Fujikawaguchiko",
+    "prefecture": "Yamanashi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.5222,
+      "lng": 138.749
+    },
+    "short_description": "Iconic autumn foliage festival featuring the 'Maple Corridor' and views of Mt. Fuji.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "November",
+    "description": "The Fujikawaguchiko Autumn Leaves Festival is held throughout the month of November on the northern shore of Lake Kawaguchi. The centerpiece of the event is the 'Momiji Kairou' (Maple Corridor), a 150-meter-long stretch of a riverbed lined with 60 giant maple trees that form a brilliant red canopy. The area is a prime destination for photographers looking to capture Mount Fuji framed by the fiery reds of the autumn leaves.\n\nAfter sunset, the corridor is illuminated until 10 PM, creating a golden, dramatic atmosphere that contrasts with the dark lake waters. The festival also features a craft market where artists sell glass, woodwork, and silver, along with food booths serving local delicacies. The 'Momiji Tunnel' and the lakeside walking trails provide additional spots for scenic strolls, making it the most important autumn destination in the Fuji Five Lakes region."
+  },
+  {
+    "name": "Nabana no Sato Winter Illumination",
+    "region": "Chubu",
+    "city": "Kuwana",
+    "prefecture": "Mie",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.0781,
+      "lng": 136.7058
+    },
+    "short_description": "One of Japan's largest and most famous winter illuminations with over 5.8 million LEDs.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Various",
+    "description": "Nabana no Sato is a floral theme park that hosts one of the largest winter light displays in Japan. The illumination features over 5.8 million LED lights and runs from October through early summer. The park’s most iconic feature is the 200-meter-long 'Tunnel of Light,' which provides a brilliant, arching canopy for visitors to walk through. Each year, a massive main display is created to reflect a specific theme, such as 'Mt. Fuji' or 'The Great Nature of Africa'.\n\nThe park also includes an 'Island Fuji' observation deck that rises 45 meters into the air, allowing visitors to see the entire illuminated landscape from above. Other highlights include the 'Twin Trees' and the illuminated 'Mirror Pond' which reflects the autumn leaves and lights perfectly. It is a highly popular destination for romantic dates and families, combining advanced lighting technology with natural botanical beauty."
+  },
+  {
+    "name": "Nagaoka Fireworks Festival",
+    "region": "Chubu",
+    "city": "Nagaoka",
+    "prefecture": "Niigata",
+    "category": "culture",
+    "coordinates": {
+      "lat": 37.4561,
+      "lng": 138.8344
+    },
+    "short_description": "A profound fireworks festival held annually as a tribute to post-war reconstruction and peace.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "August",
+    "description": "The Nagaoka Fireworks Festival is one of Japan's top three pyrotechnic events, held on August 2 and 3 along the Shinano River. Unlike many entertainment-focused displays, Nagaoka's fireworks have a somber origin as a memorial for the lives lost in the 1945 air raids and a prayer for the city’s recovery. The show begins with three white fireworks known as 'Shiragiku' to honor the deceased.\n\nThe highlight is the 'Phoenix Fireworks,' a five-minute display spread across a 2-kilometer stretch of the river, synchronized to the song 'Jupiter.' This segment was expanded to commemorate recovery from the 2004 Chuetsu earthquake. The scale is massive, featuring 20,000 fireworks over two days, including the legendary Sanshaku-dama shells which create explosions nearly 650 meters in diameter. It is an emotional spectacle that draws nearly 1 million spectators each year."
+  },
+  {
+    "name": "Owara Kaze no Bon",
+    "region": "Chubu",
+    "city": "Toyama City",
+    "prefecture": "Toyama",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.5861,
+      "lng": 137.1306
+    },
+    "short_description": "An elegant and mysterious folk dance festival with a 300-year history of appeasing wind spirits.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "Various",
+    "description": "Held from September 1 to 3 in the historic Yatsuo district, the Owara Kaze no Bon is a unique folk festival intended to appease the wind god and prevent crop damage from typhoons during the harvest season. The festival is characterized by its elegant, synchronized dances performed by young men and women in straw hats, moving through streets lined with lanterns and wooden lattice-doored houses.\n\nThe music is distinctively haunting, featuring the 'Owara' song accompanied by shamisen, taiko drums, and the kokyu (a four-stringed fiddle). The festival has roots dating back to the Genroku era (1702). Today, it draws as many as 200,000 visitors who come to witness the 'all-night' dancing and the mysterious, quiet beauty of the Yatsuo streets. It is considered one of the most culturally significant and atmospheric folk festivals in the Hokuriku region."
+  },
+  {
+    "name": "Kenrokuen Garden Seasonal Light-up",
+    "region": "Chubu",
+    "city": "Kanazawa",
+    "prefecture": "Ishikawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.5621,
+      "lng": 136.6627
+    },
+    "short_description": "One of Japan’s three great gardens, featuring seasonal night-time illuminations and 'yukitsuri'.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "April, November, January, February",
+    "description": "Kenrokuen is a renowned strolling-style garden created by the Maeda clan over nearly 200 years. Its name implies 'Six Attributes'—spaciousness, seclusion, human power, antiquity, water, and panoramas. While beautiful year-round, the garden is famous for its seasonal light-ups, particularly in winter when 'yukitsuri' (rope umbrellas) are installed to protect the trees from heavy snow. These ropes are lit up at night, creating golden, conical silhouettes against the winter sky.\n\nIn spring, the garden is illuminated for the cherry blossoms, and in autumn, the red maple leaves around the Kasumigaike Pond are lit, creating stunning reflections on the water. The garden connects to Kanazawa Castle and serves as the cultural heart of the city. The Kotoji-toro stone lantern, with its two legs of different lengths, is the garden’s most famous symbol and a central feature during these illumination events."
+  },
+  {
+    "name": "Yahiko Park Maple Valley",
+    "region": "Chubu",
+    "city": "Yahiko",
+    "prefecture": "Niigata",
+    "category": "culture",
+    "coordinates": {
+      "lat": 37.7011,
+      "lng": 138.8261
+    },
+    "short_description": "A scenic autumn leaf viewing spot featuring the vermilion Kangetsu Bridge.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November",
+    "description": "Yahiko Park, located just outside Yahiko Station, is a 13-hectare landscape garden famous for its 'Maple Valley' (Momiji-dani). The highlight of the park is the vermilion-painted Kangetsu Bridge, which was modeled after an old wooden bridge. In autumn, the surrounding maples turn a vivid red, creating a quintessential Japanese scene with the bridge as its center. The area is illuminated from sunset until 9 PM throughout November.\n\nThe park also features waterfalls, mountain streams, and tunnels made from Mt. Fuji’s lava. Historically, the park is linked to the nearby Yahiko Shrine, one of the oldest in the region. In spring, the park is equally popular for its cherry blossoms, with a flowering season that lasts from April (Somei Yoshino) to May (Yaezakura). It is a peaceful, nature-rich destination that captures the changing seasons of the Niigata coastline."
+  },
+  {
+    "name": "Sumatakyo Gorge Suspension Bridge",
+    "region": "Chubu",
+    "city": "Kawanehon",
+    "prefecture": "Shizuoka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.1819,
+      "lng": 138.1139
+    },
+    "short_description": "A remote gorge in the Southern Alps famous for its emerald water and 'Bridge of Dreams'.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November",
+    "description": "Sumatakyo Gorge is a hidden scenic beauty carved by the Sumata River, a tributary of the Oigawa. It is famous for the 'Yume no Tsuribashi' (Suspension Bridge of Dreams), a 90-meter rope bridge that spans a brilliant emerald-green lake. In November, the steep walls of the gorge are covered in red and yellow foliage, creating a striking contrast with the blue-green water. The area is a protected habitat for the Japanese serow and is popular with hikers.\n\nHistorically, the gorge was developed alongside the Oigawa Railway, which still runs steam locomotives to the nearby Senzu Station. Visitors often pair a hike to the bridge with a soak in the Sumatakyo Onsen, whose waters are believed to have restorative benefits for the skin. Because no more than 11 people are allowed on the bridge at once, it offers a tranquil and sometimes adventurous way to experience the autumn colors of the Southern Alps."
+  },
+  {
+    "name": "Kanazawa Hyakumangoku Festival",
+    "region": "Chubu",
+    "city": "Kanazawa",
+    "prefecture": "Ishikawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.5781,
+      "lng": 136.6481
+    },
+    "short_description": "A massive celebration of Kanazawa’s history, featuring a samurai reenactment parade.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "June",
+    "description": "The Hyakumangoku Festival is Kanazawa’s biggest annual event, held on the first weekend of June. It commemorates the entry of Maeda Toshiie, the first lord of the Kaga Domain, into Kanazawa Castle on June 14, 1583. The highlight is the Hyakumangoku Parade, which marches from Kanazawa Station to the castle and features participants dressed in 16th-century period costumes, including samurai warriors and princesses.\n\nOther festival events include the 'Kaga-tobi' firefighter performances atop tall ladders, tea ceremonies in Kenrokuen Garden, and the 'Tourou Nagashi' (floating lanterns) on the Asano River. On Saturday night, approximately 10,000 residents participate in the 'Odori-nagashi' dance through the city streets. The festival is a vital showcase of Kaga culture, celebrating the wealth ('Hyakumangoku' refers to 1 million koku of rice) and artistic patronage of the Maeda clan."
+  },
+  {
+    "name": "Mikuni Festival",
+    "region": "Chubu",
+    "city": "Sakai",
+    "prefecture": "Fukui",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.2197,
+      "lng": 136.1461
+    },
+    "short_description": "A grand festival in a historic port town featuring massive floats with 6.5-meter samurai dolls.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "May",
+    "description": "The Mikuni Festival is the main annual event of the Mikuni Shrine, held from May 19 to 21. It is one of the three great festivals of the Hokuriku region. Its hallmark is the parade of 'Yama' floats, which carry majestic, 6.5-meter-tall dolls of historical and legendary figures. These dolls are handcrafted each year and paraded through the town’s narrow historic streets to the sound of flutes and drums.\n\nThe festival's roots lie in the Edo period, when Mikuni flourished as a major port for the Kitamae-bune cargo ships. Prosperous merchants funded these extravagant floats to show their wealth and pray for business prosperity. Today, 6 or 7 floats are chosen from the 43 local neighborhoods to participate each year. It is a designated intangible folk cultural property of Fukui Prefecture, highlighting the maritime culture and craftsmanship of the Japan Sea coast."
+  },
+  {
+    "name": "Toki no Sumika Illumination",
+    "region": "Chubu",
+    "city": "Gotemba",
+    "prefecture": "Shizuoka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.2344,
+      "lng": 138.9247
+    },
+    "short_description": "A high-altitude winter light festival in Gotemba with Mt. Fuji as a backdrop.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Various",
+    "description": "Toki no Sumika is a resort at the foot of Mt. Fuji that hosts the 'Hikari no Sumika' illumination from October to March. It features several themed areas, including a 450-meter-long 'Light Tunnel' and the 'Versailles Fountain Show,' which uses lasers, music, and water to create a spectacular nocturnal performance. The resort’s high altitude and the clear winter air of Gotemba make the lights appear exceptionally brilliant.\n\nOther features include the 120-year-old illuminated 'Twin Trees' and the 'Underwater Paradise' aquarium. The resort offers various accommodation types, from slow house villas to hotel rooms, making it a popular winter getaway. Because it is near the Tomei Expressway and major train stations like Mishima, it is a key destination for both Kanto and Chubu residents seeking winter seasonal entertainment alongside views of a snow-covered Mt. Fuji."
+  },
+  {
+    "name": "138 Tower Park Winter Illumination",
+    "region": "Chubu",
+    "city": "Ichinomiya",
+    "prefecture": "Aichi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3781,
+      "lng": 136.7844
+    },
+    "short_description": "A festive winter light event featuring different themes each year at the Kiso Sansen National Park.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Various",
+    "description": "138 Tower Park hosts an annual winter illumination featuring approximately 300,000 lights. The park is named after its 138-meter-high observation tower, 'Twin Arch 138,' whose height is a pun on the city name Ichinomiya (1-3-8). Each year, the illumination has a specific theme that dictates the designs of the light installations throughout the grounds, which are part of the larger Kiso Sansen National Government Park.\n\nVisitors can view the lights from the 100-meter-high observation deck for a 360-degree panorama of the park and the nightscape of the city. The event includes a lighting ceremony in mid-November and continues through Christmas Day, often with a brief revival for the New Year. It is a family-oriented attraction with food trucks and interactive displays, serving as a major winter focal point for the western Aichi and southern Gifu prefectures."
+  },
+  {
+    "name": "Shirakawa-go Winter Light-up",
+    "region": "Chubu",
+    "city": "Shirakawa",
+    "prefecture": "Gifu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.2589,
+      "lng": 136.9064
+    },
+    "short_description": "A world-famous winter event where historic gassho-zukuri farmhouses are lit amidst heavy snow.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "January, February",
+    "description": "Shirakawa-go is a UNESCO World Heritage site known for its 'Gassho-zukuri' farmhouses, which have steep thatched roofs designed to withstand the region's massive snowfall. On select nights in January and February, the village is illuminated, creating a fairytale-like scene that attracts visitors from around the globe. The sight of the warm, yellow light glowing from the ancient houses against the deep white snow is one of Japan's most iconic winter images.\n\nDue to the extreme popularity and the small size of the village, the event now operates on a strict lottery-based pre-booking system. Visitors can view the entire village from the Shiroyama Observatory, which offers a panoramic view of the illuminated farmhouses. The event highlights the functional and aesthetic resilience of traditional Japanese mountain architecture in a region known for some of the heaviest snowfall in the world."
+  },
+  {
+    "name": "Nagoya Castle Sakura Festival",
+    "region": "Chubu",
+    "city": "Nagoya",
+    "prefecture": "Aichi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.1838,
+      "lng": 136.9
+    },
+    "short_description": "A historic castle festival featuring 1,000 cherry trees and golden shachihoko.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "March, April",
+    "description": "Nagoya Castle, originally built in 1612 for the Owari Tokugawa clan, is one of Japan's most famous hanami spots. Approximately 1,000 cherry trees, primarily Somei Yoshino and Shidare-zakura, bloom across the castle grounds from late March to early April. The festival is marked by the contrast between the delicate pink blossoms and the massive castle keep with its iconic golden tiger-headed carp ornaments (shachihoko).\n\nDuring the festival, the castle and trees are illuminated at night, and the grounds host various traditional performances and food stalls. The reconstructed Honmaru Palace, with its exquisite Kano-school screen paintings, provides a deep cultural backdrop to the spring celebrations. It remains the most important destination for spring tourism in central Nagoya, representing the city's identity as a former center of the Tokugawa shogunate."
+  },
+  {
+    "name": "Asuwa River Cherry Blossom Path",
+    "region": "Chubu",
+    "city": "Fukui",
+    "prefecture": "Fukui",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.0528,
+      "lng": 136.2106
+    },
+    "short_description": "One of Japan’s Top 100 Sakura spots, featuring a 2.2 km tunnel of cherry trees.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "April",
+    "description": "The Asuwa River flows through the heart of Fukui City and is home to a 2.2-kilometer-long path lined with approximately 600 Somei Yoshino cherry trees. This stretch is recognized as one of Japan's 'Top 100 Cherry Blossom Spots.' The trees were planted in the 1950s with donations from local citizens as a symbol of the city’s reconstruction following the devastation of World War II and the 1948 Fukui Earthquake.\n\nDuring the peak bloom in early April, the trees form a massive pink tunnel for strollers. The area is illuminated at night, and the nearby Asuwayama Park provides another 3,500 trees for viewing. The Fukui Spring Festival coincides with the bloom, often featuring the 'Echizen Era Parade' with participants in period costumes. It is the definitive spring attraction for the Fukui region, combining historical resilience with natural beauty."
+  },
+  {
+    "name": "Maruoka Castle Sakura Festival",
+    "region": "Chubu",
+    "city": "Sakai",
+    "prefecture": "Fukui",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.1522,
+      "lng": 136.2722
+    },
+    "short_description": "Cherry blossoms surrounding the 'Mist Castle', one of 12 original castle keeps in Japan.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "April",
+    "description": "Maruoka Castle, built in 1576, is one of only 12 original pre-modern castle keeps remaining in Japan. In spring, the castle hill is covered with 400 Somei Yoshino trees, which give the castle its nickname 'Kasumi-ga-jo' (Mist Castle) as it appears to float in a cloud of blossoms. The park is designated as one of Japan's Top 100 Cherry Blossom Viewing Sites.\n\nDuring the festival in early April, the castle and the trees are illuminated by 300 lanterns, creating a magical atmosphere. Despite being completely destroyed in the 1948 Fukui Earthquake, the castle keep was miraculously restored using 70% of the original materials. The festival celebrates both the arrival of spring and the resilience of this National Important Cultural Property. Visitors can climb the steep castle stairs for a view of the blossoms from above."
+  },
+  {
+    "name": "Takayama Autumn Festival (Hachiman Matsuri)",
+    "region": "Chubu",
+    "city": "Takayama",
+    "prefecture": "Gifu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.1461,
+      "lng": 137.2588
+    },
+    "short_description": "A harvest festival featuring 11 distinct floats and a traditional daimyo procession.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October",
+    "description": "The Takayama Autumn Festival is held on October 9 and 10 at the Sakurayama Hachiman Shrine. It is the counterpart to the spring festival and is held to give thanks for a successful harvest. It features 11 'Yatai' floats that are separate from those used in the spring. These floats are masterpieces of lacquer and woodwork, and some also feature Karakuri puppet performances.\n\nA highlight is the 'Gofun' procession, where hundreds of participants in traditional Edo-period costumes parade through the streets, accompanied by Gagaku (court music) and lion dances. At night, the floats are lit with lanterns and paraded through the town. This festival is also a UNESCO Intangible Cultural Heritage and represents the peak of autumn cultural activity in the Hida mountains."
+  },
+  {
+    "name": "Kamikochi Autumn Foliage",
+    "region": "Chubu",
+    "city": "Matsumoto",
+    "prefecture": "Nagano",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.2492,
+      "lng": 137.6375
+    },
+    "short_description": "High alpine autumn colors in the Northern Japan Alps, featuring golden larches.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "October, November",
+    "description": "Kamikochi is a high-altitude plateau in the Northern Japan Alps, part of the Chubu Sangaku National Park. It is famous for its pristine natural scenery, including the Azusa River and the Kappa Bridge. Autumn foliage here occurs in two stages: the maples and rowan trees turn red in mid-October, while the Japanese larches (karamatsu) turn a brilliant golden yellow in late October to early November.\n\nBecause of the altitude, Kamikochi offers some of the most dramatic autumn scenery in Japan, with snow-capped peaks providing a backdrop to the yellow and red forests. The area is accessible only by bus or taxi to preserve the environment. It closes for the winter in mid-November and reopens in late April, making the autumn season the final peak of activity for hikers and nature photographers before the resort is buried in snow."
+  }
+]

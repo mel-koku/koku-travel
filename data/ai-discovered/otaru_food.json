@@ -1,0 +1,767 @@
+[
+  {
+    "name": "Otaru Masazushi Main Branch",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sushiya-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1953,
+      "lng": 140.9965
+    },
+    "short_description": "One of Otaru's most famous and long-standing sushi restaurants, offering premium Hokkaido toppings.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 2500,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Isezushi",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1982,
+      "lng": 140.9945
+    },
+    "short_description": "Michelin-starred sushi shop known for its intimate counter service and exquisite craftsmanship.",
+    "estimated_duration": "2 hours",
+    "rating": 4.6,
+    "review_count": 800,
+    "min_budget": "¥8000"
+  },
+  {
+    "name": "Kukizen",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Shinonome",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1915,
+      "lng": 141.0012
+    },
+    "short_description": "Two-Michelin-starred sushi restaurant offering an authentic omakase experience at a reasonable price.",
+    "estimated_duration": "2 hours",
+    "rating": 4.7,
+    "review_count": 600,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Naruto Main Shop",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1968,
+      "lng": 140.9962
+    },
+    "short_description": "Famous for 'Wakadori Hanmiage', a crispy fried half-chicken that is a local soul food.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 4000,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "LeTAO Main Store",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1912,
+      "lng": 141.0088
+    },
+    "short_description": "Flagship store of the famous confectionery, featuring the iconic Double Fromage cheesecake and a cafe.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 3500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kita no Donburiya Takinami Shokudo",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sankaku Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1975,
+      "lng": 140.9942
+    },
+    "short_description": "Popular market stall allowing you to customize your own seafood rice bowl with fresh toppings.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Kitakaro Otaru Honkan",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1928,
+      "lng": 141.0075
+    },
+    "short_description": "Housed in a stone warehouse, famous for its jumbo cream puffs and 'Baumkuchen'.",
+    "estimated_duration": "45 mins",
+    "rating": 4.4,
+    "review_count": 1500,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Waraku Kaiten Sushi Otaru",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Canal Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.2005,
+      "lng": 141.0055
+    },
+    "short_description": "High-quality conveyor belt sushi located in a converted stone warehouse.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1800,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Chinese Restaurant Keien",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1965,
+      "lng": 140.995
+    },
+    "short_description": "A pioneer of 'Otaru Ankake Yakisoba', serving crispy noodles topped with thick, savory sauce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Minshuku Aotsuka Shokudo",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Shukutsu",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.2425,
+      "lng": 141.012
+    },
+    "short_description": "Seaside dining famous for giant grilled herring served on skewers outside the shop.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Rokkatei Otaru Canal Store",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.193,
+      "lng": 141.0072
+    },
+    "short_description": "Offers exclusive sweets like the 'Yukikon Cheese' biscuit in a historic gallery space.",
+    "estimated_duration": "45 mins",
+    "rating": 4.4,
+    "review_count": 1600,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Ajidokoro Takeda",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sankaku Market",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1974,
+      "lng": 140.994
+    },
+    "short_description": "Market eatery run by a fishmonger, known for high-quality sea urchin and crab bowls.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Kitaichi Hall",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1918,
+      "lng": 141.0082
+    },
+    "short_description": "Atmospheric cafe in a former warehouse illuminated by 167 oil lamps.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Yabuhan Soba",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1958,
+      "lng": 140.9955
+    },
+    "short_description": "Historic soba restaurant in a beautifully preserved merchant house, loved by locals.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1100,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Kamaei Factory Direct Store",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.195,
+      "lng": 141.0045
+    },
+    "short_description": "Famous fish cake factory offering the exclusive 'Pan Roll' (fried bread-wrapped fish paste).",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 2200,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Otaru Beer Otaru Warehouse No.1",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Canal Area",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1995,
+      "lng": 141.004
+    },
+    "short_description": "German-style beer hall inside a canal warehouse, serving fresh brews and sausages.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 1800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Amato Otaru Honten",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1962,
+      "lng": 140.9958
+    },
+    "short_description": "Retro dessert shop famous for 'Marron Coron' cookies and cream zenzai.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 900,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Ramen Tokaiya",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1985,
+      "lng": 140.998
+    },
+    "short_description": "Tiny local favorite known for its rich miso ramen topped with grilled pork belly.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Otaru Poseidon Main Shop",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1935,
+      "lng": 141.0065
+    },
+    "short_description": "Popular for affordable and overflowing seafood bowls, especially the 'Poseidon Bowl'.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 1200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Sawasaki Suisan",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Denuki Koji",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.199,
+      "lng": 141.0042
+    },
+    "short_description": "Small counter-only shop by the canal serving premium kaisendon.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "LeTAO Pathos",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1918,
+      "lng": 141.0085
+    },
+    "short_description": "LeTAO's largest store featuring a cafe with exclusive pasta and dessert menus.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 1200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Sushiya Kodai",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Hanazono",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1945,
+      "lng": 140.9975
+    },
+    "short_description": "Standing sushi bar offering high-quality pieces at casual prices, run by an Isezushi alumnus.",
+    "estimated_duration": "45 mins",
+    "rating": 4.5,
+    "review_count": 300,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Otaru Ankake Yakisoba Kakuryu",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Denuki Koji",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1992,
+      "lng": 141.0041
+    },
+    "short_description": "Specializes in Ankake Yakisoba with a clear chicken-broth based sauce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 400,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Otaru Vine",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Ironai",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1988,
+      "lng": 141.0015
+    },
+    "short_description": "Wine bar and restaurant located in a historic former bank building.",
+    "estimated_duration": "1.5 hours",
+    "rating": 3.9,
+    "review_count": 500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Torori An",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Otaru-Chikko",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.185,
+      "lng": 141.025
+    },
+    "short_description": "Specialty shop for Ankake Yakisoba offering huge portions and rich flavors.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ramen Shodai",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sumiyoshi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1835,
+      "lng": 141.0125
+    },
+    "short_description": "Famous for its complex soy sauce ramen aged for days to deepen the flavor.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Sushiden",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sushiya-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1948,
+      "lng": 140.9968
+    },
+    "short_description": "Reliable sushi spot on Sushi Street known for friendly service and fresh local catch.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Otaru Takeno Sushi",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sushiya-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1955,
+      "lng": 140.996
+    },
+    "short_description": "Offers giant sushi toppings (neta) that are visually impressive and delicious.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Press Cafe",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "North Canal",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.2035,
+      "lng": 141.0025
+    },
+    "short_description": "Stylish cafe in an old ironworks building along the quieter North Canal.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 200,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Otaru Kita Tougarashi",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.194,
+      "lng": 141.006
+    },
+    "short_description": "Hidden gem soup curry shop with a nostalgic atmosphere and spicy, flavorful broth.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 150,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Very Very Strawberry",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1905,
+      "lng": 141.0095
+    },
+    "short_description": "Italian restaurant using Hokkaido ingredients, famous for its strawberry desserts.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Nishizuka",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Takashima",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.22,
+      "lng": 141.0
+    },
+    "short_description": "A hidden sushi gem away from the tourist center, offering exceptional quality.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.6,
+    "review_count": 100,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Otaru Orizushi",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sushiya-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1952,
+      "lng": 140.9963
+    },
+    "short_description": "Family-run sushi shop founded in the early Showa era, known for traditional flavors.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Yoshi",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.197,
+      "lng": 140.9955
+    },
+    "short_description": "High-end sushi experience focusing on sea urchin and tuna, near Otaru Station.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 150,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Osteria il Piatto Nuovo",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.196,
+      "lng": 140.9945
+    },
+    "short_description": "Cozy Italian restaurant serving excellent pasta and dishes with local seafood.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 100,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Gin no Kane No. 1",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.191,
+      "lng": 141.009
+    },
+    "short_description": "Cafe famous for letting you keep the cute Hello Kitty or original tea cup as a souvenir.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Nouvelle Vague LeTAO Chocolatier",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1915,
+      "lng": 141.0086
+    },
+    "short_description": "LeTAO's chocolate specialty store offering rich chocolates and soft serve.",
+    "estimated_duration": "30 mins",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Ramen Mahoro",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Ironai",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.198,
+      "lng": 141.002
+    },
+    "short_description": "Ramen shop known for using natural ingredients and no chemical additives.",
+    "estimated_duration": "1 hour",
+    "rating": 3.8,
+    "review_count": 200,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Ryuhou",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1965,
+      "lng": 140.9935
+    },
+    "short_description": "Popular ramen shop that also serves a massive and delicious portion of Ankake Yakisoba.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Otaru New Sanko Main Store",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1958,
+      "lng": 140.9948
+    },
+    "short_description": "Historical western-style restaurant operating since 1954, famous for beef stew.",
+    "estimated_duration": "1.5 hours",
+    "rating": 3.8,
+    "review_count": 400,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Uomasa",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.196,
+      "lng": 140.9952
+    },
+    "short_description": "Sushi restaurant offering good value sets, popular for lunch.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Yamanaka Dairy Farm Otaru",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Sakaimachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1945,
+      "lng": 141.0058
+    },
+    "short_description": "Soft serve ice cream stand using fresh milk from a local dairy farm.",
+    "estimated_duration": "20 mins",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥400"
+  },
+  {
+    "name": "Rakuten",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1955,
+      "lng": 140.994
+    },
+    "short_description": "Michelin Bib Gourmand izakaya famous for its oden and extensive sake list.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 200,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Unga Plaza",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Ironai",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1998,
+      "lng": 141.0035
+    },
+    "short_description": "Cafe and shop in a historic warehouse, great for resting and trying local snacks.",
+    "estimated_duration": "30 mins",
+    "rating": 3.9,
+    "review_count": 500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Tanaka Sake Brewery Kikkogura",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Nobuka",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.189,
+      "lng": 141.015
+    },
+    "short_description": "Historic sake brewery offering free tours and tasting of fresh unpasteurized sake.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "Free"
+  }
+]

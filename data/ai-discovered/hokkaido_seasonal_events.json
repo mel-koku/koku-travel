@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Sapporo Snow Festival (Sapporo Yuki Matsuri)",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0618,
+      "lng": 141.3545
+    },
+    "short_description": "Japan's most famous winter festival featuring massive snow and ice sculptures.",
+    "description": "Held annually in February, this is one of Japan's largest winter events. Spectacular snow statues stretch for 1.5km along Odori Park. Pros: World-class sculptures and food stalls. Cons: Extremely crowded and accommodation prices skyrocket. Cost: Free (amenities extra).",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "February"
+  },
+  {
+    "name": "Goryokaku Park Cherry Blossoms",
+    "region": "Hokkaido",
+    "city": "Hakodate",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 41.7969,
+      "lng": 140.757
+    },
+    "short_description": "Star-shaped fortress surrounded by over 1,600 cherry trees.",
+    "description": "A historic star fort that turns pink in spring. It is one of Hokkaido's top hanami spots. Pros: Unique star shape visible from the nearby tower. Cons: Very crowded during peak bloom. Cost: Park is free (Tower: ~1000 JPY).",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late April-Early May"
+  },
+  {
+    "name": "Matsumae Park Cherry Blossom Festival",
+    "region": "Hokkaido",
+    "city": "Matsumae",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 41.4316,
+      "lng": 140.1167
+    },
+    "short_description": "Home to 10,000 cherry trees and the only Japanese-style castle in Hokkaido.",
+    "description": "This park boasts 250 varieties of cherry trees that bloom at different times, allowing for a month-long viewing season. Pros: Long blooming window and historical castle backdrop. Cons: Difficult to access (far from major train lines). Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "Late April-Late May"
+  },
+  {
+    "name": "Farm Tomita Lavender Fields",
+    "region": "Hokkaido",
+    "city": "Nakafurano",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.4186,
+      "lng": 142.4277
+    },
+    "short_description": "Iconic lavender fields with rainbow-colored flower rows.",
+    "description": "The most famous flower farm in Hokkaido. The 'Traditional Lavender Field' is a must-see. Pros: Stunning photography and free entry. Cons: Traffic jams are common in July; trains are infrequent. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "July"
+  },
+  {
+    "name": "Daisetsuzan National Park (Autumn Foliage)",
+    "region": "Hokkaido",
+    "city": "Higashikawa",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.6639,
+      "lng": 142.8333
+    },
+    "short_description": "The earliest autumn colors in Japan, starting in September.",
+    "description": "Hiking trails around Mount Asahi offer spectacular reds and oranges long before the rest of Japan. Pros: Breathtaking alpine scenery. Cons: Weather is unpredictable; requires hiking gear. Cost: Free (Ropeway: ~3200 JPY).",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "September-October"
+  },
+  {
+    "name": "Otaru Snow Light Path",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.1907,
+      "lng": 140.9947
+    },
+    "short_description": "A romantic winter festival with candles floating in the canal.",
+    "description": "The town is decorated with snow candles and floating glass lanterns along the canal. Pros: Magical, romantic atmosphere; less commercial than Sapporo. Cons: Very cold near the water; slippery paths. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "February"
+  },
+  {
+    "name": "Hokuryu Sunflower Village",
+    "region": "Hokkaido",
+    "city": "Hokuryu",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.7383,
+      "lng": 141.8711
+    },
+    "short_description": "Japan's largest sunflower field with over 2 million blooms.",
+    "description": "Vast fields of yellow sunflowers as far as the eye can see. Visitors can rent bicycles or take a tractor bus. Pros: Incredible scale; great for families. Cons: Best reached by car; limited public transit. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "August"
+  },
+  {
+    "name": "Lake Shikotsu Ice Festival",
+    "region": "Hokkaido",
+    "city": "Chitose",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 42.768,
+      "lng": 141.405
+    },
+    "short_description": "Ice sculptures created from lake water, illuminated in multi-colored lights.",
+    "description": "The ice here is famous for its 'Shikotsu Blue' color. Sculptures are created by spraying lake water that freezes in layers. Pros: Magical at night; close to New Chitose Airport. Cons: Extremely cold; entrance fee required. Cost: ~500-1000 JPY.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "January-February"
+  },
+  {
+    "name": "Yosakoi Soran Festival",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0618,
+      "lng": 141.3545
+    },
+    "short_description": "High-energy dance festival taking over the streets of Sapporo.",
+    "description": "Teams from across Japan perform energetic dances using 'naruko' clappers, mixing traditional tunes with modern rhythms. Pros: Vibrant energy and free street performances. Cons: Loud crowds; paid seating sells out fast. Cost: Free (Paid seats available).",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "June"
+  },
+  {
+    "name": "Sounkyo Ice Fall Festival",
+    "region": "Hokkaido",
+    "city": "Kamikawa",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.7258,
+      "lng": 142.9515
+    },
+    "short_description": "Ice structures built along the Ishikari River in a dramatic gorge.",
+    "description": "Features ice tunnels, shrines, and slides illuminated at night. Pros: Unique location in a gorge; fireworks on weekends. Cons: Bitterly cold wind; stairs can be icy. Cost: ~500 JPY.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "January-March"
+  },
+  {
+    "name": "Jozankei Onsen (Autumn Foliage)",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.966,
+      "lng": 141.1633
+    },
+    "short_description": "Famous hot spring town surrounded by colorful autumn valley walls.",
+    "description": "Located just an hour from Sapporo, the valley turns vibrant red and yellow in October. Pros: Easy access from Sapporo; combination of views and hot springs. Cons: Traffic jams on Route 230 during peak weekends. Cost: Free (Onsen fees vary).",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "October"
+  },
+  {
+    "name": "Higashimokoto Shibazakura Park",
+    "region": "Hokkaido",
+    "city": "Ozora",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.834,
+      "lng": 144.298
+    },
+    "short_description": "A hillside covered in vivid pink moss phlox (shibazakura).",
+    "description": "The entire hillside turns shocking pink. There is even a pink torii gate. Pros: Surreal landscape; go-karts available. Cons: Remote location in Eastern Hokkaido; requires car/bus. Cost: ~500 JPY.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "May-Early June"
+  },
+  {
+    "name": "Hakodate Christmas Fantasy",
+    "region": "Hokkaido",
+    "city": "Hakodate",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 41.7687,
+      "lng": 140.7188
+    },
+    "short_description": "A giant Christmas tree floats in the bay near the Red Brick Warehouses.",
+    "description": "A massive fir tree (often gifted from Canada) is illuminated daily, accompanied by soup bars. Pros: Very festive; excellent seafood nearby. Cons: Coastal winds are freezing. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "December"
+  },
+  {
+    "name": "Abashiri Drift Ice Sightseeing",
+    "region": "Hokkaido",
+    "city": "Abashiri",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 44.0203,
+      "lng": 144.2714
+    },
+    "short_description": "Icebreaker cruises through the frozen Sea of Okhotsk.",
+    "description": "Take the 'Aurora' ship to crunch through drift ice that floats down from Russia. Pros: Once-in-a-lifetime experience; chance to see seals/eagles. Cons: Ice conditions are weather-dependent and not guaranteed. Cost: ~4000 JPY.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "February-March"
+  },
+  {
+    "name": "Asahiyama Zoo Penguin Walk",
+    "region": "Hokkaido",
+    "city": "Asahikawa",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.768,
+      "lng": 142.48
+    },
+    "short_description": "King penguins parade through the zoo to exercise in winter.",
+    "description": "To keep penguins fit during winter, they walk along a snowy path right in front of visitors. Pros: Extremely cute; close-up photo ops. Cons: Crowded; only happens twice a day. Cost: ~1000 JPY.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late December-Mid March"
+  },
+  {
+    "name": "Sapporo Autumn Fest",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0618,
+      "lng": 141.3545
+    },
+    "short_description": "A massive food festival showcasing Hokkaido's harvest.",
+    "description": "Held in Odori Park, this event gathers gourmet food, ramen, beer, and wine from all over Hokkaido. Pros: One-stop shop for Hokkaido cuisine; friendly vibe. Cons: Prices can add up; seating is competitive. Cost: Free entry (Food varies).",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "September"
+  },
+  {
+    "name": "Noboribetsu Hell Valley Demon Fireworks",
+    "region": "Hokkaido",
+    "city": "Noboribetsu",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 42.4975,
+      "lng": 141.1466
+    },
+    "short_description": "Hand-held fireworks performed by 'demons' in Hell Valley.",
+    "description": "Performers dressed as Yukijin (demons) launch handheld fireworks to pray for good health. Pros: Dramatic setting; unique cultural performance. Cons: Canceled if rainy; restricted to specific nights. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "June-July"
+  },
+  {
+    "name": "Shirogane Blue Pond Illumination",
+    "region": "Hokkaido",
+    "city": "Biei",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.4938,
+      "lng": 142.6144
+    },
+    "short_description": "The famous blue pond is lit up with ethereal lights in winter.",
+    "description": "Different lighting patterns illuminate the withered larch trees and frozen pond surface. Pros: Mystical atmosphere different from daytime. Cons: Very dark/cold walking paths; public transit is limited at night. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November-April"
+  },
+  {
+    "name": "Hokkaido Shrine Festival",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.052,
+      "lng": 141.307
+    },
+    "short_description": "Sapporo's main summer festival with traditional parades and food stalls.",
+    "description": "Also known as the Sapporo Festival. Features a Heian-period costume parade and hundreds of food stalls in Nakajima Park. Pros: Great mix of history and festival food fun. Cons: Nakajima Park gets extremely crowded. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "June"
+  },
+  {
+    "name": "Shizunai Nijukken Road Cherry Blossoms",
+    "region": "Hokkaido",
+    "city": "Shinhidaka",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.368,
+      "lng": 142.418
+    },
+    "short_description": "A 7km straight road lined with over 3,000 cherry trees.",
+    "description": "Ranked as one of Japan's top 100 cherry blossom spots and roads. The scale is immense. Pros: Epic driving/walking route. Cons: Very far from Sapporo (2.5 hrs); heavy traffic. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "May"
+  },
+  {
+    "name": "Lake Akan Ice Festival (Fuyu-Hana-Bi)",
+    "region": "Hokkaido",
+    "city": "Kushiro",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.435,
+      "lng": 144.095
+    },
+    "short_description": "Fireworks launched over the frozen lake every night.",
+    "description": "Features ice cutting ceremonies and daily fireworks on the frozen lake surface. Pros: Daily fireworks (rare in winter); Ainu culture nearby. Cons: Remote location. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "February-March"
+  },
+  {
+    "name": "Otonofuke Tokachigawa Swan Festival",
+    "region": "Hokkaido",
+    "city": "Otofuke",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 42.943,
+      "lng": 143.303
+    },
+    "short_description": "Light and sound show celebrating the arrival of migratory swans.",
+    "description": "Sairinka is a nightly event with music and hundreds of synchronized colorful lights in the snow. Pros: Beautifully synchronized light show; warm hand baths available. Cons: Outdoor event in freezing temps. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "January-February"
+  },
+  {
+    "name": "Moerenuma Park Cherry Blossoms",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.123,
+      "lng": 141.43
+    },
+    "short_description": "Art meets nature in this park designed by Isamu Noguchi.",
+    "description": "A massive park with geometric glass pyramids and a 'Forest of Cherry Trees' area. Pros: Unique artistic landscape; great for cycling. Cons: Requires a bus ride from the subway; wide open spaces can be windy. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "May"
+  },
+  {
+    "name": "Monbetsu Drift Ice Festival",
+    "region": "Hokkaido",
+    "city": "Monbetsu",
+    "prefecture": "Hokkaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 44.356,
+      "lng": 143.354
+    },
+    "short_description": "Ice sculptures and fresh seafood on the northern coast.",
+    "description": "A festival celebrating the drift ice season. The main draw is the massive ice sculptures and local crab soup. Pros: Authentic local vibe; famous for crab. Cons: Hard to reach without a car/tour. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "February"
+  },
+  {
+    "name": "Kosetsu-en (Miharashi Park) Autumn Foliage",
+    "region": "Hokkaido",
+    "city": "Hakodate",
+    "prefecture": "Hokkaido",
+    "category": "nature",
+    "coordinates": {
+      "lat": 41.815,
+      "lng": 140.785
+    },
+    "short_description": "Hokkaido's only designated national cultural property garden.",
+    "description": "A Japanese-style landscape garden that is illuminated at night during peak autumn colors. Pros: Elegant, peaceful atmosphere; stunning night illumination. Cons: slightly outside the main Hakodate city center. Cost: Free.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late October-Early November"
+  }
+]

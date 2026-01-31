@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Mount Yoshino (Yoshinoyama)",
+    "region": "Kansai",
+    "city": "Yoshino",
+    "prefecture": "Nara",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.3567,
+      "lng": 135.8706
+    },
+    "short_description": "Japan's most famous cherry blossom spot with 30,000 trees.",
+    "description": "Mount Yoshino is widely considered the top cherry blossom viewing spot in Japan. The mountain is covered by approximately 30,000 cherry trees of many different varieties, especially the Yamazakura variety. The trees are planted in four distinct areas at different altitudes, causing them to bloom at different times and extending the viewing season.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Early April - Late April"
+  },
+  {
+    "name": "Philosopher's Path (Tetsugaku no michi)",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.0268,
+      "lng": 135.7954
+    },
+    "short_description": "A scenic stone path along a canal lined with hundreds of cherry trees.",
+    "description": "This pleasant stone path runs through the northern part of Kyoto's Higashiyama district. The path follows a canal which is lined by hundreds of cherry trees. It is named after Nishida Kitaro, one of Japan's most famous philosophers, who was said to practice meditation while walking this route on his daily commute to Kyoto University.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late March - Early April"
+  },
+  {
+    "name": "Himeji Castle",
+    "region": "Kansai",
+    "city": "Himeji",
+    "prefecture": "Hyogo",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.8394,
+      "lng": 134.6939
+    },
+    "short_description": "Viewing cherry blossoms against the backdrop of Japan's finest majestic white castle.",
+    "description": "Himeji Castle is a UNESCO World Heritage site and widely considered Japan's most spectacular castle. During spring, the castle grounds are filled with over 1,000 cherry trees. The contrast between the delicate pink blossoms and the brilliant white plaster of the castle keep creates one of the most iconic images of Japan.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late March - Early April"
+  },
+  {
+    "name": "Osaka Castle Park",
+    "region": "Kansai",
+    "city": "Osaka",
+    "prefecture": "Osaka",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.6873,
+      "lng": 135.5262
+    },
+    "short_description": "Expansive park with over 4,000 cherry trees surrounding the castle tower.",
+    "description": "The park surrounding Osaka Castle is one of Kansai's most popular hanami (cherry blossom viewing) spots. It features over 4,000 cherry trees. The Nishinomaru Garden, located in the castle's western citadel, is particularly famous for its wide lawns and views of the castle tower lit up at night.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late March - Early April"
+  },
+  {
+    "name": "Kema Sakuranomiya Park",
+    "region": "Kansai",
+    "city": "Osaka",
+    "prefecture": "Osaka",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.7039,
+      "lng": 135.5176
+    },
+    "short_description": "A riverbank park with nearly 5,000 cherry trees lining the Okawa River.",
+    "description": "This park stretches for over four kilometers along the Okawa River. It boasts nearly 5,000 cherry trees, creating a seemingly endless tunnel of pink during peak season. It is a favorite spot for strolling and picnicking, and river cruises offer a unique perspective of the blossoms from the water.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late March - Early April"
+  },
+  {
+    "name": "Maruyama Park",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.0035,
+      "lng": 135.7797
+    },
+    "short_description": "Kyoto's most popular public park for cherry blossom parties, famous for its weeping cherry tree.",
+    "description": "Located next to Yasaka Shrine, Maruyama Park is Kyoto's oldest public park and the city's premier spot for cherry blossom parties. The centerpiece of the park is a massive weeping cherry tree (shidarezakura) that is beautifully illuminated at night, drawing large crowds of locals and tourists alike.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late March - Early April"
+  },
+  {
+    "name": "Tofuku-ji Temple",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.9765,
+      "lng": 135.7741
+    },
+    "short_description": "Spectacular autumn foliage viewed from the Tsutenkyo Bridge.",
+    "description": "Tofuku-ji is a large Zen temple in southeastern Kyoto that is famous for its spectacular autumn colors. The most popular view is from the Tsutenkyo Bridge, which spans a valley of lush maple trees that turn a fiery red in November. The view is often compared to a sea of red clouds.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Mid November - Late November"
+  },
+  {
+    "name": "Eikan-do Zenrin-ji",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.0143,
+      "lng": 135.7955
+    },
+    "short_description": "Renowned as 'Eikando of Maples', offering stunning evening illuminations.",
+    "description": "Eikan-do has been famous for its autumn leaves since the Heian Period. The temple grounds are home to around 3,000 maple trees. In the evening during the peak season, the temple and its gardens are illuminated, creating a mystical atmosphere that differs greatly from the daytime view.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Mid November - Late November"
+  },
+  {
+    "name": "Arashiyama",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.0116,
+      "lng": 135.6766
+    },
+    "short_description": "Scenic district where the mountainside turns vibrant red and yellow.",
+    "description": "Arashiyama is a pleasant, touristy district in the western outskirts of Kyoto. The mountains that serve as a backdrop to the Togetsukyo Bridge turn vibrant shades of red and yellow in late November. The Romantic Train ride through the nearby ravine offers another stunning way to view the foliage.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late November - Early December"
+  },
+  {
+    "name": "Minoo Park",
+    "region": "Kansai",
+    "city": "Minoo",
+    "prefecture": "Osaka",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.8465,
+      "lng": 135.4727
+    },
+    "short_description": "A forested valley famous for its waterfall and 'fried maple leaf' snacks.",
+    "description": "Minoo Park is a forested valley on the outskirts of Osaka. It is the best place in the Osaka area to see autumn colors in a natural setting. A paved trail leads along a river to the Minoo Waterfall. The area is also famous for 'Momiji Tempura'—maple leaves fried in sweet batter.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Mid November - Late November"
+  },
+  {
+    "name": "Gion Matsuri",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.0037,
+      "lng": 135.7786
+    },
+    "short_description": "Kyoto's biggest festival featuring massive parade floats.",
+    "description": "The Gion Matsuri is the festival of Yasaka Shrine and the most famous festival in Japan. It takes place over the entire month of July. The highlights are the Yamaboko Junko processions on July 17th and 24th, where massive, elaborately decorated floats weighing up to 12 tons are pulled through the streets.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "July (Main events: July 17 & 24)"
+  },
+  {
+    "name": "Tenjin Matsuri",
+    "region": "Kansai",
+    "city": "Osaka",
+    "prefecture": "Osaka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.6966,
+      "lng": 135.5164
+    },
+    "short_description": "One of Japan's top three festivals, featuring a river procession and fireworks.",
+    "description": "The Tenjin Matsuri is the festival of the Osaka Tenmangu Shrine. It is ranked as one of Japan's top three festivals. The main celebration is on July 25th, featuring a land procession followed by a massive river procession with over 100 boats, culminating in a spectacular fireworks display.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "July 24-25"
+  },
+  {
+    "name": "Jidai Matsuri",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.016,
+      "lng": 135.7824
+    },
+    "short_description": "The 'Festival of the Ages' featuring a historical costume parade.",
+    "description": "Jidai Matsuri (Festival of the Ages) is held annually on October 22, the anniversary of Kyoto's foundation. It features a large parade from the Imperial Palace to Heian Shrine. Participants dress in accurate historical costumes representing various periods of Japanese history, from the Meiji Restoration back to the Heian Period.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October 22"
+  },
+  {
+    "name": "Aoi Matsuri",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.0392,
+      "lng": 135.773
+    },
+    "short_description": "An aristocratic festival with a parade in Heian-period court dress.",
+    "description": "The Aoi Matsuri is one of Kyoto's three most famous festivals. Held on May 15th, the main attraction is a large parade of over 500 people dressed in the aristocratic style of the Heian Period (794-1185). The procession walks from the Imperial Palace to the Kamo Shrines.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "May 15"
+  },
+  {
+    "name": "Nada no Kenka Matsuri",
+    "region": "Kansai",
+    "city": "Himeji",
+    "prefecture": "Hyogo",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.7823,
+      "lng": 134.7088
+    },
+    "short_description": "The 'Fighting Festival' where portable shrines are smashed together.",
+    "description": "Held at Matsubara Hachiman Shrine in Himeji, this is known as a 'fighting festival.' Participants carry heavy portable shrines (mikoshi) and intentionally crash them into each other to show their strength and please the gods. It is a raucous, energetic, and visually intense event.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October 14-15"
+  },
+  {
+    "name": "Kurama Fire Festival",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.118,
+      "lng": 135.772
+    },
+    "short_description": "A dramatic fire festival held in the mountain village of Kurama.",
+    "description": "Held on the evening of October 22nd in the village of Kurama, north of Kyoto city. Villagers carry massive flaming pine torches, some weighing up to 80kg, through the streets to the Yuki Shrine. The fire is meant to guide the spirits of the deities.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October 22"
+  },
+  {
+    "name": "Wakakusa Yamayaki",
+    "region": "Kansai",
+    "city": "Nara",
+    "prefecture": "Nara",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.689,
+      "lng": 135.85
+    },
+    "short_description": "The annual burning of the grass on Mount Wakakusa, accompanied by fireworks.",
+    "description": "On the fourth Saturday of January, the dry grass on the slopes of Mount Wakakusa is set on fire. The fire spreads across the entire mountain, visible from all over Nara city. The burning is preceded by a fireworks display, creating a dramatic winter spectacle.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "Late January"
+  },
+  {
+    "name": "Midosuji Illumination",
+    "region": "Kansai",
+    "city": "Osaka",
+    "prefecture": "Osaka",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 34.6937,
+      "lng": 135.5023
+    },
+    "short_description": "One of the world's longest illuminated streets.",
+    "description": "During the winter season, Midosuji Avenue, the main street of Osaka, is decorated with colorful illuminations stretching for about 4 kilometers from Umeda to Namba. It holds a Guinness World Record for the most illuminated trees on a single street.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November - December"
+  },
+  {
+    "name": "Kobe Luminarie",
+    "region": "Kansai",
+    "city": "Kobe",
+    "prefecture": "Hyogo",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 34.6874,
+      "lng": 135.1932
+    },
+    "short_description": "A magnificent light festival commemorating the Great Hanshin Earthquake.",
+    "description": "Kobe Luminarie is a light festival held every December in memory of the victims of the Great Hanshin Earthquake of 1995. Intricate, cathedral-like light structures are set up near Motomachi Station, attracting millions of visitors who walk through the tunnel of lights.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Early December - Late December"
+  },
+  {
+    "name": "Nara Rurie",
+    "region": "Kansai",
+    "city": "Nara",
+    "prefecture": "Nara",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.6851,
+      "lng": 135.843
+    },
+    "short_description": "Winter illumination event lighting up Nara Park and historic temples.",
+    "description": "Held in early February, Nara Rurie lights up the three great sites of Nara Park: Kasuga Taisha, Todai-ji, and Kofuku-ji. The event features beautiful azure lights (ruri-iro) intended to bring happiness and peace. It offers a rare chance to see these UNESCO sites illuminated at night.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Early February"
+  },
+  {
+    "name": "Osaka Castle Illuminage",
+    "region": "Kansai",
+    "city": "Osaka",
+    "prefecture": "Osaka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.6853,
+      "lng": 135.523
+    },
+    "short_description": "Historical-themed illuminations in the Nishinomaru Garden.",
+    "description": "A paid illumination event held in the Nishinomaru Garden of Osaka Castle. It features millions of LED lights depicting historical scenes, samurai, and Japanese culture, with the illuminated Osaka Castle tower serving as a majestic background.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November - February"
+  },
+  {
+    "name": "Kodai-ji Winter/Spring Illumination",
+    "region": "Kansai",
+    "city": "Kyoto",
+    "prefecture": "Kyoto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.0005,
+      "lng": 135.7823
+    },
+    "short_description": "Modern projection mapping in a traditional Zen garden.",
+    "description": "Kodai-ji Temple is famous for its seasonal light-up events. Unlike other temples that focus on subtle lighting, Kodai-ji often uses modern projection mapping technologies in its rock garden (Hojo garden), creating a unique fusion of Zen tradition and digital art.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "March-May, Oct-Dec"
+  },
+  {
+    "name": "Biwako Fireworks Festival",
+    "region": "Kansai",
+    "city": "Otsu",
+    "prefecture": "Shiga",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.0089,
+      "lng": 135.8752
+    },
+    "short_description": "A massive fireworks display over Lake Biwa.",
+    "description": "Held in early August, this is one of the largest fireworks festivals in the Kansai region. Over 10,000 fireworks are launched over the surface of Lake Biwa, Japan's largest lake. The reflections on the water and the sheer scale of the display attract massive crowds.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "Early August"
+  },
+  {
+    "name": "Awaji Island Narcissus",
+    "region": "Kansai",
+    "city": "Sumoto",
+    "prefecture": "Hyogo",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.2415,
+      "lng": 134.9463
+    },
+    "short_description": "Millions of wild daffodils blooming along the coast.",
+    "description": "The southern coast of Awaji Island, particularly Nadayama, is famous for its wild daffodils (suisen). From late December to February, millions of these flowers bloom on steep slopes facing the ocean, filling the air with a sweet scent and offering a stunning contrast against the blue sea.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Late December - February"
+  },
+  {
+    "name": "Toka Ebisu",
+    "region": "Kansai",
+    "city": "Osaka",
+    "prefecture": "Osaka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.6548,
+      "lng": 135.5008
+    },
+    "short_description": "A business prosperity festival held at Imamiya Ebisu Shrine.",
+    "description": "Held annually from January 9th to 11th, Toka Ebisu is a massive festival dedicated to Ebisu, the god of commerce. Over a million people, mostly business owners, visit the shrine to pray for success in the coming year and buy lucky bamboo branches (fukusasa) decorated with charms.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "January 9-11"
+  }
+]

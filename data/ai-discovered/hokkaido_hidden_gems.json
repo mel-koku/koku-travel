@@ -1,0 +1,602 @@
+[
+  {
+    "name": "Meiji Park Brick Silos",
+    "region": "Hokkaido",
+    "city": "Nemuro",
+    "neighborhood": "Maki-no-uchi",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 43.3283,
+      "lng": 145.5719
+    },
+    "short_description": "Massive red-brick silos from the dairy pioneering era.",
+    "description": "Meiji Park is home to three of the largest and second-oldest brick silos in Hokkaido, recognized as Tangible Cultural Properties. They represent the dawn of Japan’s dairy farming industry in the late Meiji era. The striking contrast between the weathered red bricks and the vast green pastures makes it a favorite for photographers seeking industrial heritage in a natural setting.",
+    "estimated_duration": "45 minutes - 1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kaminokoike (Pond of the God's Child)",
+    "region": "Hokkaido",
+    "city": "Kiyosato",
+    "neighborhood": "Kiyosato Town",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.6194,
+      "lng": 144.5422
+    },
+    "short_description": "A crystal-clear emerald pond that never freezes.",
+    "description": "Hidden deep in the forest near Lake Mashu, this small pond is famous for its glowing blue water and remarkably high clarity. Fed by underground springs from Lake Mashu, the water remains a constant 8°C year-round. Fallen trees at the bottom of the pond do not rot due to the low temperature, creating a prehistoric and ethereal atmosphere that feels like a scene from a fantasy novel.",
+    "estimated_duration": "30 - 45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sankebetsu Brown Bear Incident Site",
+    "region": "Hokkaido",
+    "city": "Tomamae",
+    "neighborhood": "Sankebetsu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 44.1353,
+      "lng": 141.7919
+    },
+    "short_description": "The haunting reconstruction of Japan's most famous bear attack.",
+    "description": "Deep in the mountains of Tomamae, this site commemorates the 1915 Sankebetsu brown bear incident. A reconstructed pioneer hut and a massive, life-sized bear statue recreate the scene of the tragedy. It serves as a somber reminder of the harsh realities faced by Hokkaido's early settlers and their relationship with the island's apex predator.",
+    "estimated_duration": "30 - 60 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Tanaka Sake Brewery Kikkogura",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "neighborhood": "Nobukacho",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.1907,
+      "lng": 141.0083
+    },
+    "short_description": "A stone-built Meiji-era brewery still making sake year-round.",
+    "description": "While many visit Otaru's canal, fewer make it to this stone warehouse brewery. Built in 1905, it utilizes Otaru's cold climate to brew sake throughout all four seasons. Visitors can tour the production area, taste local spring water used in the process, and sample exclusive seasonal sakes that aren't distributed elsewhere.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free (Tastings may have a small fee)"
+  },
+  {
+    "name": "Arte Piazza Bibai",
+    "region": "Hokkaido",
+    "city": "Bibai",
+    "neighborhood": "Omachi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.3444,
+      "lng": 141.8841
+    },
+    "short_description": "An open-air sculpture park in a converted elementary school.",
+    "description": "Created by world-renowned sculptor Kan Yasuda, this park blends contemporary marble art with the nostalgic architecture of a former coal-mining town's school. Over 40 sculptures are scattered across rolling green hills and inside the old wooden schoolhouse. It is a quiet, meditative space where art and nature are perfectly integrated.",
+    "estimated_duration": "1.5 - 2 hours",
+    "min_budget": "Free (Donations encouraged)"
+  },
+  {
+    "name": "Bihoro Pass Lookout",
+    "region": "Hokkaido",
+    "city": "Bihoro/Teshikaga",
+    "neighborhood": "Bihoro Pass",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.6339,
+      "lng": 144.2503
+    },
+    "short_description": "The best panoramic view of Lake Kussharo's caldera.",
+    "description": "Perched 525 meters above sea level, Bihoro Pass offers a breathtaking 360-degree view of Japan's largest caldera lake, Lake Kussharo. In the early morning during summer and autumn, a 'sea of clouds' often fills the basin. It is a popular spot for stargazing and seeing the first sunrise of the year, yet remains less crowded than the viewpoints at Lake Mashu.",
+    "estimated_duration": "30 - 60 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Esashi Inishie Kaido",
+    "region": "Hokkaido",
+    "city": "Esashi",
+    "neighborhood": "Inishie Kaido",
+    "category": "culture",
+    "coordinates": {
+      "lat": 41.8675,
+      "lng": 140.1264
+    },
+    "short_description": "A historic street preserved from the Edo period herring boom.",
+    "description": "Esashi was once so prosperous from herring fishing that people said 'even Edo doesn't compare to Esashi in May.' This street features meticulously restored merchant houses, warehouses, and traditional inns. Walking here feels like stepping back 200 years into the Kitamaebune trading culture, complete with the haunting melodies of Esashi Oiwake folk songs played from local shops.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Wakkanai Port North Breakwater Dome",
+    "region": "Hokkaido",
+    "city": "Wakkanai",
+    "neighborhood": "Kaiun",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 45.4208,
+      "lng": 141.6781
+    },
+    "short_description": "An arched Romanesque breakwater at the northern edge of Japan.",
+    "description": "Designed by a 26-year-old engineer in 1931, this unique semi-arched breakwater protected the former ferry terminal to Sakhalin from harsh northern waves. With 70 pillars stretching 427 meters, its architecture resembles an ancient Greek temple. It is a powerful monument to the region's history as a gateway between Japan and the Russian Far East.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Manabe Garden",
+    "region": "Hokkaido",
+    "city": "Obihiro",
+    "neighborhood": "Inada-cho",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.895,
+      "lng": 143.1972
+    },
+    "short_description": "Japan's first conifer garden with a fairytale atmosphere.",
+    "description": "Spanning 24,000 square meters, Manabe Garden is a private botanical collection divided into Japanese, Western, and Landscape sections. It feels like a secret forest, featuring rare trees imported from around the world. The winding paths and hidden ponds create a quiet, whimsical environment that contrasts with the vast, flat farmlands of the Tokachi Plain.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "1,000 JPY"
+  },
+  {
+    "name": "Upopoy Crafts Studio",
+    "region": "Hokkaido",
+    "city": "Shiraoi",
+    "neighborhood": "Wakakusa-cho",
+    "category": "culture",
+    "coordinates": {
+      "lat": 42.5561,
+      "lng": 141.3556
+    },
+    "short_description": "Hands-on wood carving and embroidery of Ainu patterns.",
+    "description": "Located within the National Ainu Museum and Park, this studio allows visitors to sit with Ainu artisans. You can try your hand at carving traditional wooden patterns or learning the distinct geometric embroidery used in Ainu robes. It is a tactile way to connect with the indigenous culture of Hokkaido beyond just looking at museum displays.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "500 - 2,000 JPY (for workshop materials)"
+  },
+  {
+    "name": "Kushiro Washo Market",
+    "region": "Hokkaido",
+    "city": "Kushiro",
+    "neighborhood": "Kurogane-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 42.9906,
+      "lng": 144.3811
+    },
+    "short_description": "The home of 'Katte-don' (build-your-own seafood bowl).",
+    "description": "While Sapporo's Nijo Market is famous, Washo Market offers a more local experience. It is famous for Katte-don: you buy a bowl of rice and walk from stall to stall, picking individual slices of sashimi, fish roe, or sea urchin to top it. It’s an interactive, customizable seafood feast used primarily by locals and savvy domestic travelers.",
+    "estimated_duration": "45 - 60 minutes",
+    "min_budget": "1,500 - 3,000 JPY"
+  },
+  {
+    "name": "Hakodate Jiyu Ichiba",
+    "region": "Hokkaido",
+    "city": "Hakodate",
+    "neighborhood": "Shinkawa-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 41.7758,
+      "lng": 140.7328
+    },
+    "short_description": "The 'Citizen's Kitchen' where local chefs shop.",
+    "description": "Often skipped in favor of the more tourist-heavy Morning Market, Jiyu Ichiba is where Hakodate's restaurant owners source their daily seafood. It is quieter, more authentic, and often cheaper. The market includes a space where you can grill your purchased seafood on the spot, offering a raw and unpolished glimpse into the city's culinary heart.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free entry (Food costs vary)"
+  },
+  {
+    "name": "Hill of the Buddha",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "neighborhood": "Minami-ku",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 42.9208,
+      "lng": 141.3533
+    },
+    "short_description": "A massive Buddha statue hidden inside a lavender-covered hill.",
+    "description": "Designed by Tadao Ando, this architectural marvel features a 13.5-meter-tall Buddha statue. From the outside, only the top of the Buddha's head is visible above a hill planted with 150,000 lavender plants. Visitors walk through a long, dark tunnel to reach the open-air rotunda, creating a dramatic sense of discovery and serenity.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free (Parking/Maintenance fee may apply)"
+  },
+  {
+    "name": "Otaru Sankaku Market",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "neighborhood": "Inaho",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.1972,
+      "lng": 140.9936
+    },
+    "short_description": "A steep, narrow market alley serving incredible kaisen-don.",
+    "description": "Tucked right next to the JR Otaru Station, this 'Triangular Market' is built on a slope. The narrow lane is packed with about 15 stalls selling fresh crab, scallops, and salmon. Because it caters to locals coming off the trains, the quality is exceptionally high. Many stalls have small back-room restaurants where you can eat the freshest catch of the day.",
+    "estimated_duration": "1 hour",
+    "min_budget": "2,000 - 4,000 JPY (for a meal)"
+  },
+  {
+    "name": "Horomitoge Lavender Garden",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "neighborhood": "Chuo-ku",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.0483,
+      "lng": 141.2989
+    },
+    "short_description": "Lavender fields with a view of the Sapporo skyline.",
+    "description": "While Furano is the king of lavender, this hidden hillside in Sapporo offers something unique: the purple fields set against a backdrop of the city's skyscrapers. It is much quieter than the farms in central Hokkaido and offers one of the best night views of Sapporo once the sun sets over the flowers.",
+    "estimated_duration": "45 - 60 minutes",
+    "min_budget": "Free (Parking fee applies)"
+  },
+  {
+    "name": "Bifuka Trolley Kingdom",
+    "region": "Hokkaido",
+    "city": "Bifuka",
+    "neighborhood": "Niupu",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 44.4756,
+      "lng": 142.505
+    },
+    "short_description": "Drive your own engine-powered trolley on an abandoned rail line.",
+    "description": "Located on a stretch of the defunct Biko Line, this 'kingdom' allows you to pilot a small rail trolley through 10 kilometers of beautiful forest and over iron bridges. It is a rare chance to experience the 'romance of the rails' in a hands-on way, deep in Hokkaido's northern wilderness.",
+    "estimated_duration": "1 hour",
+    "min_budget": "1,500 - 2,500 JPY"
+  },
+  {
+    "name": "Cape Kamui",
+    "region": "Hokkaido",
+    "city": "Shakotan",
+    "neighborhood": "Kozaki",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.3311,
+      "lng": 140.3547
+    },
+    "short_description": "A dramatic ridge walk into the 'Shakotan Blue' sea.",
+    "description": "A narrow walking path follows the spine of this cape, offering 300-degree views of the vibrant blue ocean. Historically, women were forbidden from entering this sacred Ainu site (though the gate is now open to all). It is one of the most rugged and beautiful coastal walks in Japan, particularly stunning during the early summer sea urchin season.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Ueno Farm",
+    "region": "Hokkaido",
+    "city": "Asahikawa",
+    "neighborhood": "Nagayama-cho",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.8058,
+      "lng": 142.4789
+    },
+    "short_description": "An English-style 'Dramatic Garden' adapted for Hokkaido's climate.",
+    "description": "Designed by Sayuyuki Ueno, this garden takes the concepts of British perennial borders and adapts them to the intense four seasons of Hokkaido. The result is a lush, colorful landscape that looks different every single week. It includes a charming café housed in an old barn and a 'Gnome's Hill' with panoramic views of the Ishikari Plain.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "1,000 JPY"
+  },
+  {
+    "name": "Sengoku-tei (Historic Site)",
+    "region": "Hokkaido",
+    "city": "Matsumae",
+    "neighborhood": "Matsushiro",
+    "category": "culture",
+    "coordinates": {
+      "lat": 41.4294,
+      "lng": 140.1158
+    },
+    "short_description": "The northernmost castle town and its samurai history.",
+    "description": "Matsumae was the only feudal domain in Hokkaido during the Edo period. Beyond the reconstructed castle, the town features the Teramachi (Temple District), where several ancient temples have been preserved. It offers a rare glimpse of 'traditional' Japan in a region mostly known for modern pioneering history.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free (Castle entry fee applies)"
+  },
+  {
+    "name": "Lake Onneto",
+    "region": "Hokkaido",
+    "city": "Ashoro",
+    "neighborhood": "Kamiruan-pashiga",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.4947,
+      "lng": 143.9875
+    },
+    "short_description": "A mysterious 'Five-Color Lake' in Akan-Mashu National Park.",
+    "description": "This small, secluded lake is known as 'Onneto' (Old Pond in Ainu). Depending on the angle of the sun and the wind, the water color shifts between emerald green, cobalt blue, and dark purple. It is surrounded by primeval forests of Ezo Spruce and offers a stunning view of the active volcano, Mount Meakan.",
+    "estimated_duration": "45 - 90 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Tokachi Millennium Forest",
+    "region": "Hokkaido",
+    "city": "Shimizu",
+    "neighborhood": "Haobi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.0108,
+      "lng": 142.8714
+    },
+    "short_description": "An ambitious ecological project and world-class garden.",
+    "description": "This massive forest project was designed to be sustainable for 1,000 years. It features the 'Earth Garden' and 'Meadow Garden,' which won the Society of Garden Designers' award. Visitors can explore the grounds via Segway, visit the goat farm to try fresh cheese, or admire contemporary art installations hidden among the trees.",
+    "estimated_duration": "2 - 3 hours",
+    "min_budget": "1,500 JPY"
+  },
+  {
+    "name": "Ningle Terrace",
+    "region": "Hokkaido",
+    "city": "Furano",
+    "neighborhood": "Nakafurano",
+    "category": "shopping",
+    "coordinates": {
+      "lat": 43.3253,
+      "lng": 142.355
+    },
+    "short_description": "Whimsical forest cabins selling handmade local crafts.",
+    "description": "Located in a forest in Furano, this collection of 15 log cabins is connected by wooden boardwalks. Based on the characters from writer So Kuramoto's stories, each cabin houses a unique craft workshop, from 'Kaleidoscope' makers to 'Forest Wise Men' wood carvers. It is particularly magical at night when the paths are lit with fairy lights.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free entry"
+  },
+  {
+    "name": "Mount Moiwa Ropeway",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "neighborhood": "Minami-ku",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 43.0317,
+      "lng": 141.3331
+    },
+    "short_description": "One of Japan's top three night views.",
+    "description": "While Mount Hakodate is more famous, many travelers miss the equally spectacular view from Mount Moiwa in Sapporo. A unique 'Morris' mini-cable car takes you to the summit, where a 360-degree observation deck reveals the glittering grid of Sapporo. It is also home to a 'Bell of Happiness' and a high-end restaurant with panoramic windows.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "2,100 JPY (Round trip)"
+  },
+  {
+    "name": "Atsuta Port Morning Market",
+    "region": "Hokkaido",
+    "city": "Ishikari",
+    "neighborhood": "Atsuta",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.4011,
+      "lng": 141.4339
+    },
+    "short_description": "A rugged, coastal morning market for the freshest salmon.",
+    "description": "Held daily from April to October, this is a true 'fishermen's market.' The focus here is on seasonal catches like salmon, flatfish, and octopus. It lacks the polish of city markets but makes up for it with incredibly low prices and a salty, authentic atmosphere. It’s a great stop on a coastal drive north of Sapporo.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free entry"
+  },
+  {
+    "name": "Fukidashi Park",
+    "region": "Hokkaido",
+    "city": "Kyogoku",
+    "neighborhood": "Kawanishi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.8594,
+      "lng": 140.8906
+    },
+    "short_description": "Drink fresh, pure water springing directly from Mount Yotei.",
+    "description": "About 80,000 tons of water spring from the ground here every day, filtered naturally by the volcanic rock of Mount Yotei. The park is designed with beautiful stone paths and bridges around the gushing springs. Locals come with large jugs to collect the water, which is famous for its purity and crisp taste. It’s a peaceful spot for a picnic and a literal taste of Hokkaido’s nature.",
+    "estimated_duration": "45 - 60 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Hakodate Kosetsuen (Miharashi Park)",
+    "region": "Hokkaido",
+    "city": "Hakodate",
+    "neighborhood": "Miharashi-cho",
+    "category": "nature",
+    "coordinates": {
+      "lat": 41.7969,
+      "lng": 140.7936
+    },
+    "short_description": "The only nationally-designated cultural property garden in Hokkaido.",
+    "description": "This Japanese-style garden was built by a wealthy merchant in the Meiji era. It is famous for its autumn colors, where the maple trees are illuminated at night during the 'Momi-G' festival. Unlike the central Goryokaku Park, Kosetsuen feels like a private estate, featuring a traditional greenhouse and a tea house set amidst 150 species of trees.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Shikabe Geyser Park",
+    "region": "Hokkaido",
+    "city": "Shikabe",
+    "neighborhood": "Shikabe",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 42.0286,
+      "lng": 140.8225
+    },
+    "short_description": "A natural geyser used for footbaths and cooking seafood.",
+    "description": "The geyser here erupts approximately every 10 minutes, shooting hot water up to 15 meters high. What makes this 'Michi-no-Eki' (roadside station) unique is the 'Steam Cooking' area. You can buy fresh local scallops or salmon and cook them yourself using the natural volcanic steam. There is also a free footbath that uses the geyser's runoff.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free (Cooking ingredients ~1,000 JPY)"
+  },
+  {
+    "name": "Sarufutsu Scallop Village",
+    "region": "Hokkaido",
+    "city": "Sarufutsu",
+    "neighborhood": "Hama-onishibetsu",
+    "category": "food",
+    "coordinates": {
+      "lat": 45.3347,
+      "lng": 142.1092
+    },
+    "short_description": "The scallop capital of Japan at the northern tip.",
+    "description": "Sarufutsu is the wealthiest village in Japan thanks to its massive scallop industry. This 'hidden gem' isn't about luxury buildings, but about the sheer scale of the seafood. At the local roadside station, you can eat world-class scallops for a fraction of the price in Sapporo. The nearby 'Path of White Shells' is a scenic road made of crushed scallop shells leading toward Cape Soya.",
+    "estimated_duration": "1 hour",
+    "min_budget": "1,000 - 2,000 JPY"
+  },
+  {
+    "name": "Kaitaku Jinja (Pioneer Shrine)",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "neighborhood": "Miyagaoka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0544,
+      "lng": 141.3075
+    },
+    "short_description": "A powerful 'hidden' shrine within the Hokkaido Shrine grounds.",
+    "description": "While everyone visits the main Hokkaido Jingu, this smaller shrine located in a quiet corner of the same park is often overlooked. It is dedicated to the 37 pioneers who laid the foundation of modern Hokkaido. It is known as a 'power spot' for those seeking success in business or new ventures, offering a more intimate atmosphere for prayer.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Lake Notoro Coral Grass",
+    "region": "Hokkaido",
+    "city": "Abashiri",
+    "neighborhood": "Ubaranai",
+    "category": "nature",
+    "coordinates": {
+      "lat": 44.0156,
+      "lng": 144.1567
+    },
+    "short_description": "A shoreline that turns a vibrant, crimson red in autumn.",
+    "description": "Every September, the salt-marsh glasswort (Sango-sho) around Lake Notoro turns a deep red, making the shoreline look like it’s covered in a carpet of rubies. Wooden boardwalks allow you to walk right into the middle of the 'crimson sea.' It’s a unique botanical phenomenon that occurs in very few places in Japan.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Rinyu Morning Market",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "neighborhood": "Ironai",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.2044,
+      "lng": 141.0089
+    },
+    "short_description": "The local alternative to the touristy Otaru Canal area.",
+    "description": "Located at the north end of Otaru Port, this market opens at 4:00 AM. It’s a no-frills, gritty market where 12 specialized shops deal in the morning's fresh haul. It features a small, legendary diner where you can get a hearty seafood breakfast alongside the fishermen and wholesalers who just finished their shift.",
+    "estimated_duration": "1 hour",
+    "min_budget": "1,000 - 3,000 JPY"
+  },
+  {
+    "name": "Tokachi Hills",
+    "region": "Hokkaido",
+    "city": "Makubetsu",
+    "neighborhood": "Nikkishiro",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.8833,
+      "lng": 143.25
+    },
+    "short_description": "A hilltop garden focused on 'flowers and food'.",
+    "description": "Sitting on a hill overlooking the Tokachi Plain, this garden combines ornamental flower beds with an edible garden. It emphasizes the farm-to-table culture of the region. The on-site restaurant uses vegetables and herbs grown just meters away, and the 'Sky Mirror' pond offers beautiful reflections of the vast Hokkaido sky.",
+    "estimated_duration": "1.5 - 2 hours",
+    "min_budget": "1,000 JPY"
+  },
+  {
+    "name": "Midorigaoka Park",
+    "region": "Hokkaido",
+    "city": "Obihiro",
+    "neighborhood": "Midorigaoka",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.9125,
+      "lng": 143.195
+    },
+    "short_description": "Home to the 'World's Longest Bench' and a giant forest.",
+    "description": "This massive urban park in Obihiro features a 400-meter-long bench and the 'Green Park' lawn, which is one of the largest in Japan. It’s a perfect spot to observe local life, from families picnicking to residents enjoying the pond. The park also houses the Obihiro Centennial City Museum, which explains the unique history of the Tokachi region.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Mikuni Pass Cafe",
+    "region": "Hokkaido",
+    "city": "Kamishihoro",
+    "neighborhood": "Mitsumata",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.59,
+      "lng": 143.1467
+    },
+    "short_description": "The highest point on Hokkaido's national highway system.",
+    "description": "Located at 1,139 meters, this pass offers a spectacular view of the sea of trees in the Daisetsuzan National Park. The small log-cabin cafe at the lookout is famous for its hand-dripped coffee and soft-serve ice cream. The view of the red Matsumi-ohashi Bridge winding through the primeval forest is one of the most iconic (yet remote) road-trip views in Japan.",
+    "estimated_duration": "30 - 45 minutes",
+    "min_budget": "500 - 1,500 JPY"
+  },
+  {
+    "name": "Usu Zenko-ji Temple",
+    "region": "Hokkaido",
+    "city": "Date",
+    "neighborhood": "Usu-cho",
+    "category": "culture",
+    "coordinates": {
+      "lat": 42.5083,
+      "lng": 140.8033
+    },
+    "short_description": "One of the oldest temples in Hokkaido, dating to 826 AD.",
+    "description": "While most of Hokkaido’s history is modern, this temple has roots going back over 1,000 years. It was officially established as a major temple by the Shogunate in 1804. The grounds are famous for their ancient cherry trees and stone Buddhas that have survived numerous volcanic eruptions from nearby Mount Usu. It is a rare pocket of ancient Japanese spirituality in the north.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Biei Senka Market",
+    "region": "Hokkaido",
+    "city": "Biei",
+    "neighborhood": "Omachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.5925,
+      "lng": 142.4572
+    },
+    "short_description": "A high-end farmer's market showcasing the 'Biei Brand'.",
+    "description": "Biei Senka is a stylish market run by the local agricultural cooperative. It features a vegetable 'showroom' where the presentation is as beautiful as an art gallery. You can buy freshly baked bread, corn-on-the-cob in summer, and unique sweets made from local produce. It’s the best place to taste the quality of Hokkaido’s volcanic-soil agriculture.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "500 - 2,000 JPY"
+  },
+  {
+    "name": "Takino Suzuran Hillside Park",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "neighborhood": "Minami-ku",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.9222,
+      "lng": 141.3853
+    },
+    "short_description": "A massive government-run park with waterfalls and tulips.",
+    "description": "Spanning 400 hectares, this park is divided into zones. The 'Mountain Zone' features four beautiful waterfalls, including the Ashiribetsu Falls. The 'Central Zone' has massive flower gardens that rival Furano in beauty but with far fewer crowds. In winter, it transforms into 'Takino Snow World' with one of the longest tube sledding runs in Japan.",
+    "estimated_duration": "2 - 4 hours",
+    "min_budget": "450 JPY"
+  },
+  {
+    "name": "Kushiro Fisherman’s Wharf MOO",
+    "region": "Hokkaido",
+    "city": "Kushiro",
+    "neighborhood": "Saiwai-cho",
+    "category": "shopping",
+    "coordinates": {
+      "lat": 42.9822,
+      "lng": 144.3844
+    },
+    "short_description": "A retro-future waterfront mall with indoor botanical gardens.",
+    "description": "MOO (Marine Our Oasis) is a unique complex featuring local seafood stalls, craft shops, and a 'Gastronomy Alley.' The standout feature is the 'EGG' (Ever Green Garden), a giant glass-domed botanical garden that stays green even during Kushiro's freezing winters. It is a great place to try local 'Sanma' (Pacific Saury) rolls.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "Free entry"
+  },
+  {
+    "name": "Otaru Glass Blowing Workshop",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "neighborhood": "Sakaimachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.1925,
+      "lng": 141.0061
+    },
+    "short_description": "Create your own glass art in the city of glass.",
+    "description": "Otaru is famous for its history of making glass buoys for herring nets. Today, several small studios like 'The Glass Studio in Otaru' allow you to blow your own glass vase or cup. Under the guidance of master glassmakers, you experience the heat of the furnace and the delicate process of shaping molten glass—a craft that has defined the city for over a century.",
+    "estimated_duration": "1 hour",
+    "min_budget": "3,000 - 5,000 JPY"
+  },
+  {
+    "name": "Sengen Park",
+    "region": "Hokkaido",
+    "city": "Noboribetsu",
+    "neighborhood": "Noboribetsu Onsen-cho",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.495,
+      "lng": 141.1458
+    },
+    "short_description": "A pocket park where you can see a geyser erupt.",
+    "description": "Located in the heart of the onsen town, this small park features a geyser that erupts every 3 hours with a powerful roar. It is surrounded by nine different 'Demon Clubs' (Kanabo statues) which represent different blessings like health or prosperity. It is a quick, powerful demonstration of the geothermal energy that powers the town's famous baths.",
+    "estimated_duration": "20 - 30 minutes",
+    "min_budget": "Free"
+  }
+]

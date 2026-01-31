@@ -1,0 +1,326 @@
+[
+  {
+    "name": "Senso-ji Temple",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Asakusa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.7147,
+      "lng": 139.7967
+    },
+    "short_description": "Tokyo's oldest Buddhist temple with iconic Kaminarimon Gate and vibrant Nakamise shopping street.",
+    "description": "Senso-ji Temple, founded in 628 CE, stands as Tokyo's oldest and most significant Buddhist temple. According to legend, two fishermen discovered a golden statue of Kannon, the goddess of mercy, in the Sumida River, and a temple was built to enshrine it. The temple complex is entered through the iconic Kaminarimon (Thunder Gate) with its massive red lantern weighing 700 kilograms.\n\nThe approach to the main hall follows Nakamise-dori, a 250-meter historic shopping street lined with approximately 90 shops selling traditional crafts, souvenirs, and delicious street food including ningyo-yaki cakes and senbei crackers. The impressive five-story pagoda, standing 53 meters tall, and the main hall were rebuilt after World War II and remain stunning examples of traditional Japanese architecture.\n\nVisitors can participate in traditional rituals such as drawing omikuji (fortune slips) and wafting incense smoke for good health. The temple draws over 30 million visitors annually, making it the most visited religious site in the world. Evening illuminations until 11 PM offer a magical atmosphere with fewer crowds.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.5,
+    "review_count": 45000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Meiji Jingu Shrine",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Harajuku",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.6764,
+      "lng": 139.6993
+    },
+    "short_description": "Serene Shinto shrine dedicated to Emperor Meiji, set within 70 hectares of tranquil forest.",
+    "description": "Meiji Jingu Shrine, completed in 1920, honors the deified spirits of Emperor Meiji and Empress Shoken, who led Japan through its transformation into a modern nation during the Meiji Restoration. The shrine sits within a magnificent 70-hectare evergreen forest created by 100,000 trees donated from across Japan, forming a peaceful oasis in the heart of bustling Tokyo.\n\nThe approach to the shrine passes through towering torii gates, the largest being the Otorii made from 1,500-year-old Japanese cypress. The forested pathways effectively block out city sounds, replacing urban noise with birdsong and rustling leaves. The main shrine complex, rebuilt after World War II, exemplifies elegant nagare-zukuri architectural style with its distinctive asymmetrical roof.\n\nVisitors can participate in Shinto rituals, purchase amulets, and write wishes on wooden ema plaques. The shrine attracts over three million visitors for hatsumode (first shrine visit of the new year). The adjacent Meiji Jingu Museum, designed by architect Kengo Kuma, houses treasures including the emperor's personal belongings and ceremonial carriage.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.6,
+    "review_count": 35000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Tokyo Skytree",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Sumida",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.7101,
+      "lng": 139.8107
+    },
+    "short_description": "Japan's tallest structure at 634 meters with observation decks offering panoramic Tokyo views.",
+    "description": "Tokyo Skytree, standing at 634 meters, is Japan's tallest structure and the world's tallest free-standing broadcasting tower. Opened in 2012, its height was deliberately chosen as '634' can be read as 'Musashi,' the historic name for the Tokyo region. The tower's design draws inspiration from traditional Japanese architecture, featuring a distinctive blue-white exterior that changes appearance with lighting conditions.\n\nThe Tembo Deck observation platform at 350 meters offers 360-degree panoramic views through floor-to-ceiling glass windows, including sections with glass floors for thrilling downward views. On clear days, Mount Fuji is visible in the distance. The higher Tembo Galleria at 450 meters features a spiraling skywalk that provides an even more dramatic perspective of the Kanto Plain and Tokyo Bay.\n\nThe tower complex includes Tokyo Solamachi, a shopping and entertainment center with over 300 shops and restaurants, plus the Sumida Aquarium and Konica Minolta Planetarium. Night visits are particularly popular for seeing Tokyo's spectacular illuminated cityscape. The tower itself features nightly LED lighting displays in varying colors.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.4,
+    "review_count": 42000,
+    "min_budget": "¥2100"
+  },
+  {
+    "name": "Shinjuku Gyoen National Garden",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shinjuku",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.6852,
+      "lng": 139.7094
+    },
+    "short_description": "58-hectare garden blending Japanese, French, and English landscaping styles with 1,500 cherry trees.",
+    "description": "Shinjuku Gyoen National Garden is one of Tokyo's largest and most beautiful parks, spanning 58.3 hectares with a 3.5-kilometer circumference. Originally a feudal lord's residence during the Edo period, it was converted into an imperial garden in 1906 before opening to the public in 1949. The garden masterfully combines three distinct landscaping styles: traditional Japanese, formal French, and English landscape gardens.\n\nThe Japanese garden features a tranquil pond surrounded by manicured shrubs and the historic Kyu-Goryotei pavilion, built in Chinese architectural style for Emperor Showa's wedding. The French formal garden showcases geometric patterns and approximately 500 rose bushes, while the English landscape garden offers expansive lawns beneath magnificent trees including a 35-meter Himalayan cedar.\n\nThe park is home to over 20,000 trees including 1,500 cherry trees representing 65 varieties, making it one of Tokyo's premier hanami destinations from late March through April. A historic greenhouse dating from the 19th century displays tropical plants and orchids. The Chrysanthemum Exhibition in November connects to the garden's imperial heritage.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.6,
+    "review_count": 28000,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Toyosu Fish Market",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Toyosu",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6421,
+      "lng": 139.7811
+    },
+    "short_description": "World's largest wholesale fish market featuring famous tuna auctions and fresh seafood restaurants.",
+    "description": "Toyosu Market, opened in October 2018, is the world's largest wholesale fish market, covering 40.7 hectares—nearly twice the size of its predecessor, Tsukiji Market. Built on reclaimed land in Tokyo Bay, this state-of-the-art facility handles thousands of tons of seafood daily, supplying restaurants and retailers throughout Tokyo and beyond. The market consists of three interconnected buildings with climate-controlled environments ensuring food safety.\n\nThe famous tuna auctions take place daily from 5:30 to 6:30 AM in the Fisheries Wholesale Market Building, where massive bluefin tuna are sold to the highest bidders. Visitors can observe the action from glass-enclosed observation decks, with advance lottery registration required for the lower observation deck. The market floor features color-coded zones: green for tuna auctions and grey for other seafood.\n\nAfter watching the auctions, visitors can enjoy exceptionally fresh sushi and seafood at over 37 restaurants, many relocated from Tsukiji. Popular spots like Sushi Dai attract long queues for their outstanding omakase sets. The adjacent Toyosu Senkyaku Banrai complex opened in 2024, offering additional dining, shopping, and a 24-hour onsen facility.",
+    "estimated_duration": "3-4 hours",
+    "rating": 4.3,
+    "review_count": 18000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nikko Toshogu Shrine",
+    "region": "Kanto",
+    "city": "Nikko",
+    "prefecture": "Tochigi-ken",
+    "neighborhood": "Sannai",
+    "category": "culture",
+    "coordinates": {
+      "lat": 36.758,
+      "lng": 139.5998
+    },
+    "short_description": "UNESCO World Heritage shrine and mausoleum of Tokugawa Ieyasu with elaborate gold-leaf decorations.",
+    "description": "Nikko Toshogu Shrine is Japan's most lavishly decorated shrine complex, serving as the mausoleum of Tokugawa Ieyasu, founder of the Tokugawa shogunate that ruled Japan for over 250 years. Built in 1617 and extensively expanded by his grandson Iemitsu in 1636, the shrine complex contains 55 buildings including 8 National Treasures and 34 Important Cultural Properties, all designated as a UNESCO World Heritage Site.\n\nThe shrine's architecture is extraordinarily ornate, featuring over 500 intricate wood carvings, brilliant vermillion lacquer, and abundant gold leaf—a deliberate display of Tokugawa power and wealth. Famous carvings include the 'Three Wise Monkeys' (see no evil, hear no evil, speak no evil) on the Sacred Stable, the 'Sleeping Cat' (Nemuri-neko) above Sakashita Gate, and the spectacular Yomeimon Gate with its 500+ sculptures of dragons, mythical creatures, and sages.\n\nBeyond the Karamon Gate lies the inner sanctuary containing Ieyasu's spirit, while 207 stone steps lead to his tomb surrounded by ancient cedars. The shrine hosts spectacular spring and autumn festivals featuring traditional processions. The surrounding Nikko National Park offers stunning natural scenery including Lake Chuzenji and Kegon Falls.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.6,
+    "review_count": 25000,
+    "min_budget": "¥1300"
+  },
+  {
+    "name": "Kotoku-in (Great Buddha of Kamakura)",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Hase",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3168,
+      "lng": 139.5358
+    },
+    "short_description": "Iconic 13.35-meter bronze Buddha statue dating from 1252, Japan's second tallest bronze Buddha.",
+    "description": "Kotoku-in Temple is home to the Great Buddha of Kamakura (Kamakura Daibutsu), one of Japan's most iconic and photographed landmarks. Cast in bronze around 1252 during the Kamakura period, the statue depicts Amitabha Buddha and stands 13.35 meters tall including its base, weighing approximately 93 tons. It is Japan's second tallest bronze Buddha after the one at Todaiji Temple in Nara.\n\nOriginally housed within a large temple hall, the statue has sat in the open air since the 15th century after a series of tsunamis destroyed the surrounding buildings. This exposed setting gives the Buddha a unique presence, especially against changing skies and seasonal backdrops. The statue's serene expression and meditative pose have inspired artists and writers for centuries, including Rudyard Kipling who referenced it in his novel 'Kim.'\n\nFor an additional 50 yen, visitors can enter the hollow interior of the statue to see the casting technique used by medieval craftsmen. The temple grounds also feature a beautiful garden and the 'Waraji' (giant straw sandals) weighing 45 kg each, offered to Buddha so he can 'walk Japan to save its people.' The temple is easily combined with nearby Hase-dera Temple and accessed via the charming Enoden Railway.",
+    "estimated_duration": "1-1.5 hours",
+    "rating": 4.5,
+    "review_count": 22000,
+    "min_budget": "¥300"
+  },
+  {
+    "name": "Yokohama Chinatown",
+    "region": "Kanto",
+    "city": "Yokohama",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Naka-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.442,
+      "lng": 139.6456
+    },
+    "short_description": "Japan's largest Chinatown with 600+ shops, restaurants, and ornate Chinese gates and temples.",
+    "description": "Yokohama Chinatown is the largest Chinatown in Japan and one of the world's largest, featuring over 600 shops and restaurants within a densely packed 250,000 square meter area. Established after Yokohama's port opened to foreign trade in 1859, the district has been a vibrant center of Chinese culture and cuisine for over 160 years, surviving the 1923 Great Kanto Earthquake and World War II.\n\nThe neighborhood is marked by ten colorful gates (paifang), with four main gates representing the cardinal directions and five additional gates within. The ornate Kanteibyo Temple, built in 1873, is dedicated to Guan Yu, the Chinese god of commerce and prosperity, while the newer Masobyo Temple (2006) honors the Taoist goddess Mazu. These elaborately decorated temples feature traditional Chinese architecture rarely seen elsewhere in Japan.\n\nThe district is renowned for its incredible variety of Chinese cuisine, from quick street food like nikuman (steamed buns), goma-dango (sesame dumplings), and egg tarts to elaborate multi-course Cantonese, Sichuan, Shanghai, and Beijing meals. Chinese New Year celebrations in early February transform the area with lion dances, dragon parades, and festival performances. The neighborhood is easily explored on foot and pairs well with visits to nearby Yamashita Park and the Minato Mirai waterfront.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.2,
+    "review_count": 20000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Hakone Open Air Museum",
+    "region": "Kanto",
+    "city": "Hakone",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Ninotaira",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.2452,
+      "lng": 139.0474
+    },
+    "short_description": "Japan's first open-air museum featuring 120 sculptures against stunning Hakone mountain scenery.",
+    "description": "The Hakone Open Air Museum, opened in 1969, was Japan's first outdoor sculpture museum, creating a harmonious dialogue between art and nature across 70,000 square meters of landscaped grounds. Set against the backdrop of the Hakone mountains, the museum displays approximately 120 sculptures by renowned artists including Rodin, Moore, Miró, and prominent Japanese sculptors, allowing visitors to experience art in ever-changing natural light and seasonal settings.\n\nThe museum's centerpiece is the Symphonic Sculpture by Gabriel Loire, an 18-meter tower of colorful stained glass that visitors can climb via a spiral staircase for panoramic mountain views. The Picasso Exhibition Hall houses one of the world's most impressive collections of his works, featuring 188 pieces including paintings, sculptures, ceramics, and tapestries displayed across two floors.\n\nFamilies particularly enjoy interactive installations like the 'Woods of Net,' a colorful crocheted playscape for children, and various sculptures designed for climbing and exploration. After exploring the grounds, visitors can relax tired feet in the outdoor hot spring foot bath while admiring the mountain scenery. The museum's restaurants offer stunning views of the sculpture gardens, and the gift shop features unique art-inspired souvenirs including popular gachapon machines with miniature artwork replicas.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.5,
+    "review_count": 15000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Hitachi Seaside Park",
+    "region": "Kanto",
+    "city": "Hitachinaka",
+    "prefecture": "Ibaraki-ken",
+    "neighborhood": "Mawatari",
+    "category": "nature",
+    "coordinates": {
+      "lat": 36.4002,
+      "lng": 140.5935
+    },
+    "short_description": "350-hectare park famous for 5.3 million blue nemophila flowers in spring and red kochia in autumn.",
+    "description": "Hitachi Seaside Park is a spectacular 350-hectare public park along the Pacific coast of Ibaraki Prefecture, transformed from a former US military airfield into one of Japan's most photogenic flower destinations. The park gained international fame when CNN selected it as one of Japan's 36 most beautiful places, primarily for its stunning spring displays of nemophila (baby blue eyes) flowers that blanket Miharashi Hill in waves of blue.\n\nFrom mid-April to early May, approximately 5.3 million nemophila flowers create an otherworldly landscape where the blue hill seems to merge seamlessly with the sky and ocean. In autumn (late September to mid-October), the same hill transforms with 33,000 kochia (summer cypress) bushes that change from green to brilliant red, creating equally dramatic scenery. Throughout the year, other flowers including daffodils, tulips, roses, and cosmos provide continuous blooms.\n\nBeyond flowers, the park offers an amusement park with a Ferris wheel and roller coasters, 11 kilometers of cycling paths, a BMX course, and children's play areas. The park hosts ROCK IN JAPAN FESTIVAL, one of Japan's largest music festivals. During peak seasons, special nemophila-blue soft serve ice cream and themed treats are available. Despite being about 2 hours from Tokyo, the park's spectacular scenery makes it well worth the journey.",
+    "estimated_duration": "3-4 hours",
+    "rating": 4.4,
+    "review_count": 12000,
+    "min_budget": "¥450"
+  },
+  {
+    "name": "Shibuya Crossing",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shibuya",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.6595,
+      "lng": 139.7004
+    },
+    "short_description": "World's busiest pedestrian crossing where up to 3,000 people cross simultaneously.",
+    "description": "Shibuya Crossing, known as the 'Scramble,' is the world's busiest pedestrian intersection and an iconic symbol of Tokyo's energy and organization. Located outside Shibuya Station's Hachiko Exit, the crossing sees up to 3,000 people traversing from all directions simultaneously when the lights change, with daily crossings estimated at over 500,000 people during peak times. The spectacle perfectly encapsulates Tokyo's controlled chaos and has been featured in countless films, music videos, and photographs.\n\nThe crossing is surrounded by massive video screens, neon advertisements, and the famous Shibuya 109 department store, creating a sensory-overloading urban landscape that's particularly impressive at night. The best vantage points for photography include the second-floor Starbucks in the Tsutaya building, the rooftop of Magnet by Shibuya 109, and the Shibuya Sky observation deck atop Shibuya Scramble Square.\n\nNearby, the bronze statue of Hachiko commemorates Japan's most loyal dog, who waited at this spot for his deceased owner for nearly 10 years. The surrounding area offers world-class shopping, dining, and nightlife, from high-end department stores to quirky boutiques and the vibrant streets of Dogenzaka and Center-gai. The district represents Tokyo's youth culture and is constantly evolving with new developments.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 38000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Ueno Park",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Ueno",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.7148,
+      "lng": 139.7745
+    },
+    "short_description": "Tokyo's oldest public park with world-class museums, a zoo, temples, and 1,000 cherry trees.",
+    "description": "Ueno Park, established in 1873, is Tokyo's oldest and most culturally significant public park, spanning 53 hectares in the heart of the city. Originally the grounds of Kan'ei-ji Temple, the park was designated as Japan's first public park and has since become a major cultural hub home to some of the nation's most important museums and institutions.\n\nThe park contains an unparalleled concentration of museums including the Tokyo National Museum (Japan's oldest and largest museum with 110,000 items spanning Japanese art and archaeology), the National Museum of Nature and Science, the National Museum of Western Art (designed by Le Corbusier and a UNESCO World Heritage Site), and the Tokyo Metropolitan Art Museum. Ueno Zoo, Japan's oldest zoological garden, houses over 3,000 animals including giant pandas.\n\nHistoric sites within the park include the 17th-century Toshogu Shrine, Kiyomizu Kannon-do Temple, Bentendo Hall on its island in Shinobazu Pond, and the grand Saigo Takamori statue. The park is one of Tokyo's premier cherry blossom viewing spots, with over 1,000 trees creating spectacular spring displays that draw massive hanami crowds. The adjacent Ameyoko market offers a lively shopping experience with fresh food vendors and discount goods.",
+    "estimated_duration": "3-4 hours",
+    "rating": 4.4,
+    "review_count": 32000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Imperial Palace East Gardens",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Chiyoda",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.6867,
+      "lng": 139.7593
+    },
+    "short_description": "Beautifully landscaped former Edo Castle gardens open to the public with seasonal flowers.",
+    "description": "The Imperial Palace East Gardens occupy part of the former innermost circles of Edo Castle, the seat of Tokugawa shogunal power for over 250 years. Opened to the public in 1968, these meticulously maintained gardens offer a tranquil escape in central Tokyo while providing glimpses into Japan's feudal and imperial history. The gardens cover approximately 21 hectares and are free to enter.\n\nThe gardens preserve numerous Edo Castle ruins including massive stone walls, the foundations of the former castle keep (tenshu-dai), guard houses, and moats that demonstrate the impressive scale of the original fortifications. The Ninomaru Garden is a traditional Japanese landscape garden featuring a pond with large carp, carefully pruned trees, and seasonal flowers. The Suwano-chaya teahouse provides an atmospheric spot for contemplation.\n\nThroughout the year, the gardens display beautiful seasonal vegetation including plum blossoms in February, cherry blossoms in April, irises in June, and autumn colors in November. The Museum of the Imperial Collections (Sannomaru Shozokan) exhibits rotating selections of art from the Imperial Household. Note that the gardens are closed on Mondays and Fridays, and visitors must collect a numbered token at the entrance.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.3,
+    "review_count": 18000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Tsurugaoka Hachimangu Shrine",
+    "region": "Kanto",
+    "city": "Kamakura",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Yukinoshita",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3257,
+      "lng": 139.5565
+    },
+    "short_description": "Kamakura's most important shrine founded by Minamoto no Yoritomo with impressive stone stairway.",
+    "description": "Tsurugaoka Hachimangu is Kamakura's most important Shinto shrine and the spiritual heart of the former shogunal capital. Founded in 1063 and relocated to its present site by Minamoto no Yoritomo in 1180, the shrine was central to the Kamakura shogunate that governed Japan from 1185 to 1333. The shrine is dedicated to Hachiman, the Shinto deity of war and the divine protector of Japan and the Japanese people.\n\nThe shrine complex is approached via Wakamiya-oji, a broad tree-lined avenue that served as the main processional route during the Kamakura period. Three torii gates mark the approach, leading to a dramatic 61-step stone stairway that ascends to the main hall. The vermillion-lacquered main hall and the grounds offer commanding views over the town toward the sea. Beside the stairway stood a massive ginkgo tree until 2010, legendarily the hiding place of an assassin who killed a shogun in 1219.\n\nThe shrine hosts numerous festivals including the spectacular Kamakura Matsuri in April featuring yabusame (horseback archery) and the bustling Reitaisai in September. Lotus ponds flank the approach, with spectacular blooms in summer. The shrine is one of the Kanto region's most popular hatsumode destinations, welcoming over two million visitors in the first three days of the new year.",
+    "estimated_duration": "1-1.5 hours",
+    "rating": 4.4,
+    "review_count": 15000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "teamLab Planets Tokyo",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Toyosu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.6497,
+      "lng": 139.7881
+    },
+    "short_description": "Immersive digital art museum where visitors wade through water and become one with the artwork.",
+    "description": "teamLab Planets Tokyo is a groundbreaking immersive digital art museum created by the internationally acclaimed art collective teamLab. The museum offers a unique sensory experience where visitors remove their shoes and wade barefoot through water and art installations that respond to human presence. Opened in 2018, it has become one of Tokyo's most popular and Instagram-worthy attractions.\n\nThe museum comprises four large-scale artwork spaces and two gardens that blur the boundaries between art and visitor. Highlights include the Infinite Crystal Universe, a space filled with LED lights that extend infinitely in all directions; the Water Area where visitors walk through knee-deep water amid projections of swimming koi that react to movement; and the Garden Area featuring real hanging flowers and moss that create a living, fragrant environment.\n\nEach installation uses cutting-edge technology to create environments where the artwork changes based on visitor interaction, making every experience unique. The museum recommends wearing comfortable clothes that can get wet (shorts/skirts above the knee) and visiting during weekday mornings or evenings to avoid the largest crowds. Due to its immense popularity, advance ticket purchase is strongly recommended. The experience takes approximately 1-2 hours.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 28000,
+    "min_budget": "¥3800"
+  },
+  {
+    "name": "Enoshima Island",
+    "region": "Kanto",
+    "city": "Fujisawa",
+    "prefecture": "Kanagawa-ken",
+    "neighborhood": "Enoshima",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.2997,
+      "lng": 139.4798
+    },
+    "short_description": "Sacred island with shrines, caves, observation tower, and panoramic views of Mount Fuji and Shonan coast.",
+    "description": "Enoshima is a small sacred island connected to the mainland by a 600-meter bridge, offering a perfect blend of natural beauty, spiritual sites, and seaside atmosphere. The island has been a pilgrimage destination for over a thousand years, dedicated to Benzaiten, the goddess of music, entertainment, and fortune. Rising 60 meters above the sea, the island's terrain creates a natural exploration route with rewards at every turn.\n\nThe Enoshima Shrine complex consists of three connected shrines as visitors ascend the island. The paid Sea Candle observation tower provides 360-degree views including Mount Fuji on clear days, the Shonan coastline, and the Miura Peninsula. Samuel Cocking Garden, named after the British merchant who built a greenhouse here in 1880, offers beautifully landscaped grounds with seasonal flowers and winter illuminations.\n\nThe island's western side features the Iwaya Caves, natural sea caves carved by wave erosion over thousands of years, associated with Buddhist deities and the goddess Benzaiten. The caves can be explored with candles provided at the entrance. Numerous restaurants serve the island's specialty, shirasu (whitebait), fresh from local waters. The island is easily combined with the charming Enoden Railway ride along the coast and visits to nearby Kamakura.",
+    "estimated_duration": "3-4 hours",
+    "rating": 4.3,
+    "review_count": 12000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Naritasan Shinshoji Temple",
+    "region": "Kanto",
+    "city": "Narita",
+    "prefecture": "Chiba-ken",
+    "neighborhood": "Narita",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.7862,
+      "lng": 140.3183
+    },
+    "short_description": "Historic Buddhist temple complex founded in 940 with beautiful grounds and traditional shopping street.",
+    "description": "Naritasan Shinshoji Temple is one of the most important Buddhist temples in the Kanto region, drawing over 12 million visitors annually, second only to Meiji Jingu for hatsumode pilgrimages. Founded in 940 and dedicated to Fudo Myoo, the fierce deity of unwavering resolve, the temple has been a major pilgrimage destination for over a thousand years, with strong connections to the Kabuki world and Edo-period culture.\n\nThe sprawling temple complex spans multiple levels and includes impressive structures from various periods. The three-story Great Pagoda, rebuilt in 1712, houses five golden Buddhas, while the Great Main Hall (1968) serves as the center of worship. The older Gakudo Hall and Komyodo Hall display exceptional Edo-period architecture. The temple's grounds include a beautiful 16.5-hectare park with ponds, waterfalls, and seasonal gardens featuring plum blossoms in February, cherry blossoms in April, and autumn foliage in November.\n\nThe approach to the temple, Omotesando Street, is a charming 800-meter traditional shopping street lined with shops selling pickled vegetables, rice crackers, yokan sweets, and the area's famous unagi (freshwater eel). The street's atmosphere evokes the Edo period, making it perfect for a leisurely stroll before or after temple visits. The temple is conveniently located near Narita International Airport, making it an excellent final or first stop for travelers.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.4,
+    "review_count": 14000,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kawagoe (Little Edo)",
+    "region": "Kanto",
+    "city": "Kawagoe",
+    "prefecture": "Saitama-ken",
+    "neighborhood": "Central Kawagoe",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.9251,
+      "lng": 139.4856
+    },
+    "short_description": "Preserved Edo-period merchant town with traditional kurazukuri warehouses and iconic bell tower.",
+    "description": "Kawagoe, known as 'Little Edo,' is a remarkably preserved merchant town that provides a window into Japan's Edo period (1603-1868). Located just 30 minutes from Ikebukuro in Tokyo, the city flourished as a commercial center supplying the capital with goods, and its prosperity funded the construction of sturdy kurazukuri (clay-walled warehouse) buildings that survived fires and still line the main street today.\n\nThe Kurazukuri Zone along Ichibangai Street features approximately 30 well-preserved merchant warehouses with their distinctive thick walls, heavy doors, and tile roofs designed to protect against fire. Many now house shops selling traditional crafts, sweets, and souvenirs. The iconic Toki no Kane (Time Bell Tower), rebuilt in 1893 after a fire, has told time for Kawagoe residents for 400 years and still rings four times daily at 6 AM, noon, 3 PM, and 6 PM.\n\nCandy Alley (Kashiya Yokocho) is a narrow lane of about 20 shops specializing in traditional Japanese dagashi sweets and nostalgic snacks, evoking the atmosphere of old Japan. The city is famous for its sweet potatoes, featured in countless local specialties including chips, ice cream, and beer. Historical sites include the Kita-in Temple with the only surviving structures from Edo Castle, moved here in 1638, and the beautiful Kawagoe Hikawa Shrine, famous for its wind chime corridor in summer.",
+    "estimated_duration": "3-4 hours",
+    "rating": 4.3,
+    "review_count": 11000,
+    "min_budget": "Free"
+  }
+]

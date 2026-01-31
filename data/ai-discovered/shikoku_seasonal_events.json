@@ -1,0 +1,402 @@
+[
+  {
+    "name": "Ritsurin Garden Sakura Light-up",
+    "region": "Shikoku",
+    "city": "Takamatsu",
+    "prefecture": "Kagawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.3303,
+      "lng": 134.0444
+    },
+    "short_description": "Illuminated cherry blossoms in one of Japan's most prestigious 'Special Places of Scenic Beauty'.",
+    "description": "Ritsurin Garden is a masterpiece of Japanese landscaping, originally completed in 1745 after 100 years of construction. It is a 'strolling garden' featuring six ponds and thirteen landscaped hills. In late March, approximately 300 cherry trees, mostly Somei Yoshino, come into bloom. The garden hosts a special night opening where the trees are artfully lit, creating reflections on the water that are often cited as some of the most beautiful in the country.\n\nThe illumination highlights the 'borrowed scenery' of Mt. Shiun, which serves as a dark backdrop to the glowing pink blossoms. Visitors can take traditional wasen boat rides at night during this period, offering a unique perspective of the flowers from the pond's surface. The contrast between the meticulously pruned pine trees—some over 300 years old—and the ethereal cherry blossoms is a highlight of the season.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "March-April"
+  },
+  {
+    "name": "Awa Odori Festival",
+    "region": "Shikoku",
+    "city": "Tokushima",
+    "prefecture": "Tokushima",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.0711,
+      "lng": 134.5516
+    },
+    "short_description": "Japan's most famous dance festival, known as the 'Fool's Dance'.",
+    "description": "Held annually from August 12th to 15th, the Awa Odori is the largest dance festival in Japan, attracting over a million visitors. Its history dates back over 400 years, rumored to have started as a drunken celebration of the completion of Tokushima Castle. The festival is characterized by the chant: 'The dancers are fools, the watchers are fools; if both are fools, you might as well dance!'\n\nGroups of dancers known as 'ren' perform through the streets to the accompaniment of lute, taiko drums, shinobue flutes, and kane bells. Women wear traditional yukata and woven straw hats (amigasa), while men often perform a more vigorous, low-crouched dance. The energy of the festival is infectious, and the entire city center is transformed into a massive outdoor stage for four days.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "August"
+  },
+  {
+    "name": "Yosakoi Festival",
+    "region": "Shikoku",
+    "city": "Kochi",
+    "prefecture": "Kochi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5597,
+      "lng": 133.5311
+    },
+    "short_description": "A high-energy, modern dance festival featuring 'naruko' clappers.",
+    "description": "Yosakoi originated in Kochi city in 1954 as a modern interpretation of the Awa Odori to help boost the local economy. It has since grown into a massive event held from August 9th to 12th. Unlike more traditional festivals, Yosakoi allows for a wide range of musical styles—from rock to samba—as long as the music incorporates a phrase from the original 'Yosakoi Naruko Dancing' song.\n\nPerformers dance in large teams, often wearing elaborate, multi-layered costumes that they shed during the performance. Every dancer carries 'naruko,' small wooden clappers originally used to scare birds away from rice fields. The festival concludes with a massive fireworks display over the Kagami River. It is known for its vibrant, youthful energy and has inspired similar festivals throughout Japan and even overseas.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "August"
+  },
+  {
+    "name": "Iya Valley Autumn Foliage",
+    "region": "Shikoku",
+    "city": "Miyoshi",
+    "prefecture": "Tokushima",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.8778,
+      "lng": 133.8341
+    },
+    "short_description": "Breathtaking autumn colors in one of Japan's most remote mountain valleys.",
+    "description": "The Iya Valley is one of Japan's 'Three Hidden Regions,' famous for its steep forested slopes and deep canyons. In November, the valley's diverse mix of deciduous trees turns into a tapestry of brilliant reds, oranges, and yellows. The most iconic spot to view the foliage is the Iya Kazurabashi, a bridge made of mountain vines that hangs 14 meters above the Iya River.\n\nDriving or hiking along the narrow roads provides panoramic views of the 'V' shaped valley, particularly at the Nana-magari (Seven Curves) section, where a famous statue of a peeing boy stands on a rocky ledge. The reflection of the autumn leaves in the emerald-green water of the river below is a signature sight. The area's relative isolation enhances the experience, offering a sense of ancient, untouched Japan during the peak color season.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November"
+  },
+  {
+    "name": "Sanuki Manno Park Winter Illumination",
+    "region": "Shikoku",
+    "city": "Manno",
+    "prefecture": "Kagawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.1611,
+      "lng": 133.8864
+    },
+    "short_description": "Shikoku's largest winter light display with over 600,000 LEDs.",
+    "description": "Sanuki Manno Park, home to Japan's largest irrigation pond, hosts a massive winter illumination event from late November to early January. The park's 30,000 square meters of hillside are covered in intricate light designs, creating a luminous landscape that can be seen from observation decks. The theme changes annually, but often includes a 9-meter tall 'Champagne Tower' and light tunnels.\n\nThe illumination is designed to follow the natural contours of the park's hills and valleys, creating a three-dimensional light experience. Because the park is far from the city lights of Takamatsu, the display is exceptionally bright against the dark night sky. It has become a premier winter tradition for families and couples in the region, featuring local food stalls and seasonal performances.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November-January"
+  },
+  {
+    "name": "Matsuyama Castle Sakura",
+    "region": "Shikoku",
+    "city": "Matsuyama",
+    "prefecture": "Ehime",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.8456,
+      "lng": 132.7657
+    },
+    "short_description": "Panoramic cherry blossom views from a hilltop castle tower.",
+    "description": "Matsuyama Castle is one of Japan's twelve 'original' castles, sitting atop Mt. Katsuyama in the center of the city. In spring, the castle grounds are filled with approximately 200 cherry trees. The contrast between the white blossoms and the dark, authentic wood and stone of the castle structures is a classic Japanese image. From the top of the main tower, visitors can look down on a sea of pink blossoms with the city and the Seto Inland Sea in the distance.\n\nThe castle is accessible by a ropeway or chairlift, both of which pass over the blooming trees. During the peak season, the castle hosts a spring festival with samurai reenactments and tea ceremonies. The park at the base of the hill, Horinouchi, also offers wide-open spaces perfect for hanami (flower viewing) picnics with the castle silhouetted above.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "March-April"
+  },
+  {
+    "name": "Kotohira-gu Cherry Blossom Festival",
+    "region": "Shikoku",
+    "city": "Kotohira",
+    "prefecture": "Kagawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.1846,
+      "lng": 133.8131
+    },
+    "short_description": "A traditional spring ritual at Shikoku's most famous shrine.",
+    "description": "Kotohira-gu, affectionately known as 'Konpira-san,' is a famous shrine complex located on the slopes of Mt. Zozu. The shrine is famous for its 1,368 steps to the inner sanctum. On April 10th, the shrine holds its Sakura-sai (Cherry Blossom Festival). Priests and shrine maidens carrying cherry branches participate in a solemn procession, dressed in elegant Heian-period costumes.\n\nThe path up the mountain is lined with cherry trees that bloom in early April, providing a beautiful canopy for the pilgrims. The festival is a celebration of spring and a prayer for peace. Visitors can enjoy traditional 'Kemari' (ancient football) matches performed by players in courtly robes. The atmosphere is a unique mix of physical challenge (the climb) and refined historical beauty.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "April"
+  },
+  {
+    "name": "Uwajima Ushi-oni Festival",
+    "region": "Shikoku",
+    "city": "Uwajima",
+    "prefecture": "Ehime",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.2234,
+      "lng": 132.5606
+    },
+    "short_description": "Massive 'Ox-Demon' floats parading through the streets in summer.",
+    "description": "Held from July 22nd to 24th, the Uwajima Warei Shrine Festival is most famous for its 'Ushi-oni' (Ox-Demon). These are massive floats, up to 6 meters tall, featuring a long neck with a frightening demon head, a body covered in palm fibers or red cloth, and a sword for a tail. Dozens of people carry each float, swinging the long neck to ward off evil spirits.\n\nThe festival's climax occurs on the final night when the Ushi-oni are carried into the Sukagawa River. Men compete to climb a sacred bamboo pole erected in the middle of the river to retrieve a symbolic bundle. The event also features a unique 'Bullfighting' (Toshi) event, which is a bloodless trial of strength between two massive bulls, a tradition unique to this region of Japan.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "July"
+  },
+  {
+    "name": "Kochi Castle Sakura",
+    "region": "Shikoku",
+    "city": "Kochi",
+    "prefecture": "Kochi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5607,
+      "lng": 133.5314
+    },
+    "short_description": "Cherry blossoms surrounding the only castle in Japan with its original 'Honmaru' intact.",
+    "description": "Kochi Castle is one of the twelve original castles of Japan and is unique because all of its main inner-circle (Honmaru) buildings date back to the Edo period. In the spring, the castle hill is decorated with hundreds of cherry trees. This is one of the few places where you can photograph the original castle gate (Otemon) and the main tower (Donjon) in a single frame framed by cherry blossoms.\n\nDuring the peak bloom, the castle hosts the 'Kochi Castle Flower Promenade' illumination. The stone walls are projected with light, and lanterns line the paths leading up to the tower. Because Kochi is in the warm southern part of Shikoku, its cherry blossoms often bloom several days earlier than those in Kyoto or Tokyo, making it a popular early-season destination.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "March-April"
+  },
+  {
+    "name": "Niihama Taiko Festival",
+    "region": "Shikoku",
+    "city": "Niihama",
+    "prefecture": "Ehime",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.9602,
+      "lng": 133.2833
+    },
+    "short_description": "One of Japan's 'Three Great Fighting Festivals' featuring 2.5-ton drum floats.",
+    "description": "Held from October 16th to 18th, the Niihama Taiko Festival is an incredibly vigorous event. It features over 50 'Taiko-dai' (drum floats), each weighing about 2.5 tons and decorated with elaborate gold and silver embroidery. Each float is carried by 150 men known as 'kaki-fu.'\n\nThe highlight is the 'Kakibe' (float-fighting) where teams demonstrate their strength by lifting the massive floats high into the air. Sometimes the floats are deliberately bumped into each other in a show of bravado. The rhythm of the giant drums inside the floats provides a constant, heartbeat-like soundtrack to the city. It is a powerful display of community pride and physical endurance that draws hundreds of thousands of spectators.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October"
+  },
+  {
+    "name": "Mt. Ishizuchi Koyo",
+    "region": "Shikoku",
+    "city": "Saijo",
+    "prefecture": "Ehime",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.7708,
+      "lng": 133.1156
+    },
+    "short_description": "Autumn colors on the highest peak in Western Japan.",
+    "description": "Mount Ishizuchi is one of Japan's Seven Holy Mountains. Standing at 1,982 meters, it offers the earliest autumn foliage in Shikoku, beginning at the summit in early October and moving down the slopes throughout the month. The sight of the jagged stone peaks surrounded by a sea of red nana-kamado (Japanese rowan) and golden beech trees is spectacular.\n\nHikers can take the ropeway halfway up the mountain to the Ishizuchi Shrine Joju-sha, where the views of the surrounding Shikoku Mountains are vast. For the adventurous, the final ascent involves climbing four massive iron chains bolted into the rock. The 'Misen' peak offers a 360-degree view of the autumn colors stretching all the way to the Seto Inland Sea on clear days.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "October"
+  },
+  {
+    "name": "Chikurin-ji Temple Autumn Foliage",
+    "region": "Shikoku",
+    "city": "Kochi",
+    "prefecture": "Kochi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5463,
+      "lng": 133.5775
+    },
+    "short_description": "Five-storied red pagoda framed by vivid maple leaves.",
+    "description": "Chikurin-ji, the 31st temple on the Shikoku 88 Temple Pilgrimage, is known as the 'Temple of the Bamboo Forest.' It sits on Mt. Godaisan and is famous for its moss-covered grounds and elegant five-storied pagoda. In late November, the temple's many maple trees turn a fiery red, creating a stunning visual harmony with the vermilion pagoda.\n\nThe temple also features a landscape garden designed by the famous monk Muso Soseki, which is designated as a National Place of Scenic Beauty. A walk through the quiet, forested grounds during the autumn peak provides a peaceful, spiritual experience. It is widely considered the best spot for 'Koyo' (autumn colors) within Kochi city limits.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November"
+  },
+  {
+    "name": "Oboke Gorge Koyo",
+    "region": "Shikoku",
+    "city": "Miyoshi",
+    "prefecture": "Tokushima",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.9014,
+      "lng": 133.7631
+    },
+    "short_description": "Dramatic rock formations and autumn leaves viewed from a river boat.",
+    "description": "Oboke Gorge is famous for its jagged, crystalline schist rock formations carved by the Yoshino River over millions of years. The name 'Oboke' means 'dangerous to walk with big strides.' In November, the steep cliffs on both sides of the river are covered in colorful autumn foliage. The best way to see the colors is from the Oboke Pleasure Boats.\n\nThe 30-minute boat ride takes you through the calmest sections of the river, allowing for close-up views of the rocks and the overhead canopy of red and yellow. The contrast between the emerald water, the white-grey rocks, and the autumn colors is a photographer's dream. The area is also known as the home of many Japanese 'yokai' (monsters) legends, adding a layer of mystery to the scenic beauty.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November"
+  },
+  {
+    "name": "Kochi Castle of Lights",
+    "region": "Shikoku",
+    "city": "Kochi",
+    "prefecture": "Kochi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5607,
+      "lng": 133.5314
+    },
+    "short_description": "Interactive digital art installation transforming the historic castle in winter.",
+    "description": "From mid-December to mid-January, Kochi Castle hosts the 'TeamLab: Digitized Kochi Castle' event. This winter illumination uses cutting-edge digital technology and projection mapping to transform the castle grounds into an interactive art space. Massive glowing orbs that change color when touched are scattered around the stone walls, and the main tower is used as a canvas for digital art.\n\nThe event is designed to 'digitize' nature and history without harming the physical structures. Digital animals made of flowers appear to walk along the ancient stone walls, and the forest around the castle comes alive with light. It is a stunning fusion of 17th-century architecture and 21st-century art, providing a reasons to visit the castle after dark during the cold winter months.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "December-January"
+  },
+  {
+    "name": "Saijo Festival",
+    "region": "Shikoku",
+    "city": "Saijo",
+    "prefecture": "Ehime",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.9188,
+      "lng": 133.1818
+    },
+    "short_description": "A massive parade of over 150 wooden floats lit by lanterns.",
+    "description": "The Saijo Festival, held in mid-October, is actually four separate shrine festivals combined. It features more than 150 'danjiri' (wooden floats), 'taikodai' (drum floats), and 'mikoshi' (portable shrines), which is one of the highest numbers of floats in any Japanese festival. Each float is intricately carved and decorated with gold leaf.\n\nThe most dramatic moment is the 'Kawari' (river crossing) on the final day. Dozens of lantern-lit danjiri gather on the banks of the Kamo River. As the mikoshi are carried into the water to return to the shrine, the danjiri carriers rush into the river to prevent them from leaving, resulting in a chaotic and beautiful spectacle of light and water. The sight of over a hundred floats glowing with lanterns in the pre-dawn darkness is unforgettable.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October"
+  },
+  {
+    "name": "Goshikidai Autumn Foliage",
+    "region": "Shikoku",
+    "city": "Sakaide",
+    "prefecture": "Kagawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.3542,
+      "lng": 133.9483
+    },
+    "short_description": "A scenic plateau overlooking the Seto Inland Sea with colorful autumn trees.",
+    "description": "Goshikidai is a plateau consisting of five peaks, each named after a traditional color: Red, White, Blue, Yellow, and Black. In autumn, the plateau becomes a popular driving route as the forests of maple and zelkova turn vibrant colors. The 'Skyline' road offers multiple viewpoints where you can see the autumn leaves in the foreground and the islands of the Seto Inland Sea in the background.\n\nThe area is also home to the 81st and 82nd temples of the Shikoku Pilgrimage (Shiamine-ji and Negoro-ji). Negoro-ji is particularly famous for its 'Koyo,' with hundreds of maples surrounding the temple buildings. The combination of spiritual atmosphere, coastal views, and autumn colors makes this a favorite weekend getaway for locals.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November"
+  },
+  {
+    "name": "Tokushima Central Park Sakura",
+    "region": "Shikoku",
+    "city": "Tokushima",
+    "prefecture": "Tokushima",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.0753,
+      "lng": 134.5556
+    },
+    "short_description": "Cherry blossoms along the stone walls of the former Tokushima Castle.",
+    "description": "Tokushima Central Park is built on the ruins of Tokushima Castle. In spring, approximately 250 cherry trees bloom along the outer moat and the base of the castle hill (Mt. Shiroyama). The reflection of the pink blossoms in the moat water, alongside the preserved 'Eagle Gate,' creates a peaceful and historic atmosphere in the center of the city.\n\nThe park is a major hub for hanami parties. At night, the trees are illuminated, and the park remains busy with locals enjoying the 'yozakura.' It is also home to the Tokushima Castle Museum and a beautiful Omotesenke-style rock garden, which can be enjoyed alongside the seasonal flowers. The park provides a green lung for the city and is the premier spot for spring celebrations.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "March-April"
+  },
+  {
+    "name": "Kotohira-gu Annual Festival",
+    "region": "Shikoku",
+    "city": "Kotohira",
+    "prefecture": "Kagawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.1846,
+      "lng": 133.8131
+    },
+    "short_description": "The most important annual event at Konpira-san, featuring a grand parade.",
+    "description": "The 'Go-shinkosai' or Annual Festival of Kotohira-gu takes place from October 9th to 11th. The highlight is on the night of the 10th, when a massive procession carries the deity down the 785 steps from the Main Shrine to the temporary shrine (Otabisho) in the town below. Hundreds of participants in traditional costume, including samurai and court nobles, march by torchlight.\n\nThe procession is nearly a kilometer long and is a solemn, majestic sight. Once the deity reaches the town, the atmosphere turns festive with local lion dances (shishimai) and musical performances. This festival has been held for centuries and represents the deep bond between the mountain shrine and the townspeople who serve it. It is the best time to see the shrine's cultural traditions at their peak.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "October"
+  },
+  {
+    "name": "Hiwasa Sea Turtle Festival",
+    "region": "Shikoku",
+    "city": "Minami",
+    "prefecture": "Tokushima",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.7311,
+      "lng": 134.5456
+    },
+    "short_description": "A summer festival celebrating the arrival of nesting loggerhead turtles.",
+    "description": "The town of Hiwasa (now Minami) is one of the few places in Japan where loggerhead sea turtles come to lay their eggs on the beach. In mid-July, the town holds the 'Umigame Matsuri' (Sea Turtle Festival) to pray for the safe arrival of the turtles and the prosperity of the town. The event features a unique turtle-themed parade and a 'turtle race' for children.\n\nThe festival takes place near Ohama Beach, which is a protected nesting site. While the festival itself is a lively cultural event with dancing and fireworks, it also serves to raise awareness for turtle conservation. Visitors can visit the 'Caretta' Sea Turtle Museum nearby to learn about the turtles' life cycle. If lucky, visitors might see nesting turtles at night during the summer months, though strict rules are in place to protect them.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "July"
+  },
+  {
+    "name": "Nametoko Gorge Koyo",
+    "region": "Shikoku",
+    "city": "Uwajima",
+    "prefecture": "Ehime",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.1978,
+      "lng": 132.6689
+    },
+    "short_description": "Scenic autumn colors in a gorge famous for its smooth granite riverbed.",
+    "description": "Nametoko Gorge is located in the foothills of Mt. Onigajo and is famous for its unique 'smooth' granite riverbed. The water flows over flat, slippery rocks, creating a series of gentle cascades. In November, the gorge is filled with vibrant autumn colors. The 'Yura-no-taki' waterfall, where water slides down an 80-meter long granite slope, is particularly beautiful when framed by red maples.\n\nA well-maintained walking trail follows the river, offering a 2-hour round trip hike through the heart of the foliage. The area is also famous for its wild monkeys and deer, which can often be seen along the trail. The clear, shallow water reflects the colors of the trees, making the entire gorge appear to glow in shades of orange and red during the peak season.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November"
+  },
+  {
+    "name": "Ekin Festival",
+    "region": "Shikoku",
+    "city": "Konan",
+    "prefecture": "Kochi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5414,
+      "lng": 133.7231
+    },
+    "short_description": "A summer night festival displaying macabre and vibrant Edo-period paintings.",
+    "description": "Held on the third weekend of July in the town of Akaoka, this festival is dedicated to the works of 'Ekin,' a 19th-century painter known for his dramatic, bloody, and vibrant ukiyo-e style paintings. During the festival, the town's residents display authentic Ekin screens in the doorways of their traditional houses, illuminated only by candles.\n\nThe dim, flickering candlelight makes the scenes of samurai drama and folklore appear to come alive. The atmosphere is haunting and unique, unlike any other festival in Japan. Street stalls sell local Kochi delicacies, and the small town becomes packed with art lovers and curious tourists. It is a rare opportunity to see priceless historic art in its original, community-based setting.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "July"
+  },
+  {
+    "name": "Matsuyama Winter Illumination",
+    "region": "Shikoku",
+    "city": "Matsuyama",
+    "prefecture": "Ehime",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.8411,
+      "lng": 132.7631
+    },
+    "short_description": "Winter lights in the Horinouchi Park with the castle as a backdrop.",
+    "description": "From late November to early January, the Horinouchi Park at the base of Matsuyama Castle is transformed by thousands of blue and white LED lights. The display is designed to represent the 'milky way' flowing through the city. The main attraction is the 'Light Tunnel,' which stretches across the park's walking paths.\n\nThe most striking feature of this illumination is the sight of the original Matsuyama Castle tower lit up on the hill above the modern light display. It bridges the gap between the city's ancient history and modern festive celebrations. The area is also close to the Okaido shopping district, making it a convenient and popular spot for evening walks and seasonal photography.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "November-January"
+  },
+  {
+    "name": "Zentsu-ji Temple Manto-e",
+    "region": "Shikoku",
+    "city": "Zentsuji",
+    "prefecture": "Kagawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.225,
+      "lng": 133.7742
+    },
+    "short_description": "Thousands of lanterns illuminating the birthplace of Kobo Daishi.",
+    "description": "Zentsu-ji is the 75th temple of the Shikoku Pilgrimage and is the birthplace of Kobo Daishi, the founder of Shingon Buddhism. In mid-August, the temple holds the 'Manto-e' (Ten Thousand Lanterns) festival. Thousands of glass lanterns are placed throughout the vast temple grounds, creating a sea of light as the sun sets.\n\nThe lanterns are lit as an offering and a prayer for ancestors. The sight of the temple's massive pagoda and ancient camphor trees illuminated by flickering candles is deeply spiritual and peaceful. Visitors can participate by lighting their own lanterns. The event also features traditional Buddhist chanting and music, making it a quintessential Japanese summer evening experience.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "August"
+  },
+  {
+    "name": "Kanampira Kabuki",
+    "region": "Shikoku",
+    "city": "Kotohira",
+    "prefecture": "Kagawa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.1889,
+      "lng": 133.8156
+    },
+    "short_description": "Annual Kabuki performances in Japan's oldest surviving theatre.",
+    "description": "Every April, the town of Kotohira hosts 'Shikoku Konpira Kabuki Oshiba' at the Kanamaru-za, which was built in 1835 and is the oldest surviving Kabuki theater in Japan. Famous actors from Tokyo and Osaka travel here to perform in the traditional style. The theater uses no electricity for the performance; the stage is lit by natural light through windows, and all stage effects (like the revolving stage) are operated manually by people below the floorboards.\n\nThe event is highly prestigious and tickets are famously difficult to obtain. The theater itself is a National Important Cultural Property. Seeing Kabuki in such an authentic, intimate setting—where the audience sits on tatami mats—is a journey back to the Edo period. The town celebrates the arrival of the actors with a grand parade through the streets.",
+    "is_seasonal": true,
+    "seasonal_type": "festival",
+    "seasonal_months": "April"
+  },
+  {
+    "name": "Dogo Onsen Art Festival",
+    "region": "Shikoku",
+    "city": "Matsuyama",
+    "prefecture": "Ehime",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.8519,
+      "lng": 132.7864
+    },
+    "short_description": "A seasonal contemporary art event in Japan's oldest hot spring district.",
+    "description": "While Dogo Onsen is open year-round, it hosts major seasonal art festivals (like Dogo Onsenart) where the entire district is transformed by contemporary art installations. Famous artists decorate hotel rooms, public squares, and even the exterior of the historic bathhouse. These events often feature night-time projections and light art that change with the seasons.\n\nThe festival aims to merge the 3,000-year history of the springs with modern creativity. Visitors can take an 'art stroll' in their yukata, moving between various sculptures and galleries. These events often run for several months, with special limited-time performances and workshops that make the district feel like a living museum. It is a unique way to experience traditional bathhouse culture through a modern lens.",
+    "is_seasonal": true,
+    "seasonal_type": "seasonal_attraction",
+    "seasonal_months": "Varies (often April-December)"
+  }
+]

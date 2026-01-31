@@ -1,0 +1,752 @@
+[
+  {
+    "name": "Mitaki-dera Temple",
+    "region": "Chugoku",
+    "city": "Hiroshima City, Hiroshima",
+    "neighborhood": "Mitaki-honmachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.4109,
+      "lng": 132.4431
+    },
+    "short_description": "A serene, moss-covered temple hidden in a valley.",
+    "description": "Located on the slopes of Mount Mitaki just outside central Hiroshima, this atmospheric temple is famous for its three waterfalls ('Mitaki') and profound tranquility. The grounds are covered in lush moss and dotted with stone statues and Jizo figures, creating a mystical vibe often compared to Kyoto's moss temples but without the crowds.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Daisho-in Temple",
+    "region": "Chugoku",
+    "city": "Hatsukaichi, Hiroshima",
+    "neighborhood": "Miyajima",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.2938,
+      "lng": 132.3169
+    },
+    "short_description": "The spiritual heart of Miyajima often missed by shrine visitors.",
+    "description": "While most tourists flock to the floating Torii, Daisho-in is a spectacular Shingon temple complex nestled at the base of Mt. Misen. It features a cave filled with 88 icons representing the Shikoku pilgrimage, a staircase lined with spinning sutra wheels, and playful Rakan statues. It is historically significant as a place where the Emperor Meiji stayed.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Takehara Preservation District",
+    "region": "Chugoku",
+    "city": "Takehara, Hiroshima",
+    "neighborhood": "Honmachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.3486,
+      "lng": 132.9097
+    },
+    "short_description": "A beautifully preserved 'Little Kyoto' of Hiroshima.",
+    "description": "Known as the 'Little Kyoto of Aki,' this district features Edo-period merchant houses, sake breweries, and salt-making history. Unlike crowded spots in Kyoto, the streets here are quiet and atmospheric. It was recently popularized by the anime 'Tamayura' but remains a hidden gem for international travelers.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kosanji Temple",
+    "region": "Chugoku",
+    "city": "Onomichi, Hiroshima",
+    "neighborhood": "Ikuchijima",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.3072,
+      "lng": 133.0925
+    },
+    "short_description": "A dazzling, colorful temple complex with a marble hill.",
+    "description": "Built by a wealthy industrialist for his mother, this temple is an eclectic mix of replicas of Japan's most famous religious architecture. The highlight is the 'Hill of Hope' (Miraishin no Oka), a stunning landscaped garden made entirely of white marble imported from Italy, offering a surreal contrast to the traditional temple structures.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "1,400 JPY"
+  },
+  {
+    "name": "Abuto Kannon (Bandai-ji)",
+    "region": "Chugoku",
+    "city": "Fukuyama, Hiroshima",
+    "neighborhood": "Numakuma",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.3761,
+      "lng": 133.3764
+    },
+    "short_description": "A Vermillion temple perched precariously on a seaside cliff.",
+    "description": "Dedicated to safe voyages and childbirth, this Kannon temple sits atop a rocky crag overlooking the Seto Inland Sea. The view from the temple balcony is breathtaking, with the water crashing directly below. It resembles a smaller, sea-bound version of Kiyomizu-dera's stage.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "300 JPY"
+  },
+  {
+    "name": "Sandankyo Gorge",
+    "region": "Chugoku",
+    "city": "Akiota, Hiroshima",
+    "neighborhood": "Yamagata District",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.5886,
+      "lng": 132.2225
+    },
+    "short_description": "A pristine ravine with emerald waters and boat tours.",
+    "description": "A designated Special Place of Scenic Beauty, Sandankyo offers hiking trails along clear emerald waters, waterfalls, and towering cliffs. The Kurobuchi pool area can be crossed by a small traditional ferry, offering views of the gorge that feel worlds away from modern life. It is especially spectacular during autumn foliage.",
+    "estimated_duration": "3 - 4 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Fudoin Temple",
+    "region": "Chugoku",
+    "city": "Hiroshima City, Hiroshima",
+    "neighborhood": "Ushita",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.4208,
+      "lng": 132.4739
+    },
+    "short_description": "One of the few structures in Hiroshima to survive the atomic bomb.",
+    "description": "While the A-Bomb Dome is famous, Fudoin is a National Treasure temple that actually survived the blast despite being in the city. The main hall dates back to the 16th century and is the largest remaining example of medieval Zen architecture in the area. It offers a poignant, quiet connection to pre-war history.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sera Kogen Farm",
+    "region": "Chugoku",
+    "city": "Sera, Hiroshima",
+    "neighborhood": "Sera District",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.6297,
+      "lng": 133.0569
+    },
+    "short_description": "Expansive flower fields that change with the seasons.",
+    "description": "Famous for massive fields of tulips in spring, sunflowers in summer, and dahlias in autumn. The farm uses the plateau's climate to create intricate flower art designs visible from observation decks. It is a photographer's paradise and very popular with locals but less known to foreign tourists.",
+    "estimated_duration": "2 hours",
+    "min_budget": "1,000 JPY"
+  },
+  {
+    "name": "Taishaku Gorge",
+    "region": "Chugoku",
+    "city": "Shobara, Hiroshima",
+    "neighborhood": "Tojo",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.8453,
+      "lng": 133.2208
+    },
+    "short_description": "Home to a massive natural limestone bridge.",
+    "description": "This limestone gorge features 'Onbashi,' a natural rock bridge spanning the river that is over 90 meters long. The area is great for walking, with paved paths suitable for bicycles and gentle hiking. The Godan-kyo area offers more rugged scenery with rapids and lush greenery.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Okunoshima (Rabbit Island)",
+    "region": "Chugoku",
+    "city": "Takehara, Hiroshima",
+    "neighborhood": "Tadanoumi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.3094,
+      "lng": 132.9936
+    },
+    "short_description": "An island overrun by wild rabbits with a dark history.",
+    "description": "While increasingly famous, it is still an adventure to reach. The island is inhabited by hundreds of tame, wild rabbits. It also houses the ruins of a former poison gas factory from WWII, creating a unique juxtaposition of 'kawaii' animal encounters and somber historical ruins.",
+    "estimated_duration": "3 hours",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Kibitsu Shrine",
+    "region": "Chugoku",
+    "city": "Okayama City, Okayama",
+    "neighborhood": "Kibitsu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.6697,
+      "lng": 133.8519
+    },
+    "short_description": "Legendary origin of the Momotaro tale with a massive corridor.",
+    "description": "The main pavilion is a National Treasure with a unique double-gabled roof. The highlight is the 360-meter-long wooden corridor that follows the undulating terrain, offering a stunning perspective for photography. The shrine is deeply connected to the legend of Momotaro (Peach Boy) and the ogre Ura.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Shizutani School",
+    "region": "Chugoku",
+    "city": "Bizen, Okayama",
+    "neighborhood": "Shizutani",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.7969,
+      "lng": 134.2197
+    },
+    "short_description": "The oldest public school for commoners in Japan.",
+    "description": "Built in 1670, this school is a designated National Treasure. It is famous for its lecture hall with a gleaming floor of lacquered wood and its roof tiles made of Bizen pottery. The surrounding Kai trees turn a brilliant red and yellow in autumn, making it a spectacular seasonal spot.",
+    "estimated_duration": "1 hour",
+    "min_budget": "400 JPY"
+  },
+  {
+    "name": "Bitchu Matsuyama Castle",
+    "region": "Chugoku",
+    "city": "Takahashi, Okayama",
+    "neighborhood": "Uchisange",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.8091,
+      "lng": 133.6222
+    },
+    "short_description": "The 'Castle in the Sky' and oldest surviving mountain keep.",
+    "description": "One of only 12 original castles surviving in Japan, it sits atop a mountain. In autumn mornings, a sea of clouds often surrounds the mountain, making the castle appear to float in the sky. It is a hike to get up there, but the authentic feudal atmosphere is unmatched.",
+    "estimated_duration": "2 - 3 hours",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "Fukiya Furusato Village",
+    "region": "Chugoku",
+    "city": "Takahashi, Okayama",
+    "neighborhood": "Nariwa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.8697,
+      "lng": 133.4736
+    },
+    "short_description": "A copper mining town painted in 'Bengara' red.",
+    "description": "This isolated village was once wealthy from the production of red ochre (bengara). The townscape is uniform, with houses featuring red plaster walls and red roof tiles. It feels like a movie set frozen in the Meiji period, and visitors can try pottery or dyeing with the red pigment.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Ushimado Olive Garden",
+    "region": "Chugoku",
+    "city": "Setouchi, Okayama",
+    "neighborhood": "Ushimado",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.6067,
+      "lng": 134.1561
+    },
+    "short_description": "A Mediterranean landscape overlooking the Seto Inland Sea.",
+    "description": "Known as the 'Aegean of Japan,' this hilltop garden is filled with olive trees and offers panoramic views of the calm blue sea and islands. It features a 'Bell of Happiness' and a shop selling local high-quality olive oil and cosmetics. A relaxing spot for couples and families.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Yubara Onsen",
+    "region": "Chugoku",
+    "city": "Maniwa, Okayama",
+    "neighborhood": "Yubara",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.1972,
+      "lng": 133.7431
+    },
+    "short_description": "A massive open-air mixed gender bath right by a dam.",
+    "description": "Famous for the 'Sunayu' (Sand Bath), a large, free, open-air hot spring located directly in the riverbed at the foot of a dam. It is open 24 hours and is mixed-gender (bathing suits or towels allowed/encouraged for women). It is a rustic and liberating onsen experience.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Tsuyama Castle (Kakuzan Park)",
+    "region": "Chugoku",
+    "city": "Tsuyama, Okayama",
+    "neighborhood": "Sange",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.0617,
+      "lng": 134.0044
+    },
+    "short_description": "Impressive stone walls and one of Japan's best cherry blossom spots.",
+    "description": "Although the main keep is gone (replaced by a reconstructed turret), the massive, tiered stone walls remain and are breathtaking in scale. The park contains over 1,000 cherry trees, creating a cloud of pink in spring. The view from the top of the stone walls over the city is commanding.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "310 JPY"
+  },
+  {
+    "name": "Handayama Botanical Garden",
+    "region": "Chugoku",
+    "city": "Okayama City, Okayama",
+    "neighborhood": "Kita Ward",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.6861,
+      "lng": 133.9167
+    },
+    "short_description": "A hillside garden with city views and seasonal blooms.",
+    "description": "Located on a hill overlooking Okayama City, this garden is a local favorite for cherry blossoms and roses but rarely visited by tourists. It offers a peaceful escape from the city center with winding paths and great views of the urban skyline framed by nature.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "310 JPY"
+  },
+  {
+    "name": "Manabeshima",
+    "region": "Chugoku",
+    "city": "Kasaoka, Okayama",
+    "neighborhood": "Kasaoka Islands",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.3569,
+      "lng": 133.5686
+    },
+    "short_description": "A nostalgic island known for cats and film locations.",
+    "description": "A small fishing island that retains a very old-school Japanese atmosphere. It is known for its population of friendly cats and was the filming location for the movie 'MacArthur's Children.' The pace of life here is incredibly slow, perfect for aimless wandering.",
+    "estimated_duration": "2 - 3 hours",
+    "min_budget": "Ferry fee"
+  },
+  {
+    "name": "Gokei Gorge",
+    "region": "Chugoku",
+    "city": "Soja, Okayama",
+    "neighborhood": "Makidani",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.7358,
+      "lng": 133.7292
+    },
+    "short_description": "A scenic valley with unique rock formations and autumn colors.",
+    "description": "Designated a National Place of Scenic Beauty, Gokei features strangely shaped granite rocks protruding from the mountainside along a clear stream. It is a top spot for autumn foliage in Okayama but remains relatively quiet compared to major tourist hubs.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Yuushien Garden",
+    "region": "Chugoku",
+    "city": "Matsue, Shimane",
+    "neighborhood": "Daikonshima",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.4967,
+      "lng": 133.1767
+    },
+    "short_description": "A stunning garden famous for peonies and ginseng.",
+    "description": "Located on Daikonshima island in Lake Nakaumi, this garden specializes in peonies which bloom year-round in temperature-controlled houses. The traditional landscape garden is exquisite, featuring ponds, waterfalls, and lava rock formations. It also focuses on the local history of ginseng production.",
+    "estimated_duration": "1 - 1.5 hours",
+    "min_budget": "800 JPY"
+  },
+  {
+    "name": "Yaegaki Shrine",
+    "region": "Chugoku",
+    "city": "Matsue, Shimane",
+    "neighborhood": "Sakusa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.4336,
+      "lng": 133.0733
+    },
+    "short_description": "A shrine for matchmaking with a unique 'Mirror Pond' divination.",
+    "description": "Dedicated to Susanoo and Princess Inata, this shrine is a power spot for love. Visitors place a coin on a piece of paper and float it on the Mirror Pond in the forest; how quickly and where it sinks is said to predict one's romantic fortune.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Hinomisaki Shrine",
+    "region": "Chugoku",
+    "city": "Izumo, Shimane",
+    "neighborhood": "Taisha",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.4286,
+      "lng": 132.6281
+    },
+    "short_description": "A vibrant vermillion shrine protecting the night.",
+    "description": "While Izumo Taisha protects the day, Hinomisaki protects the night. The complex is beautifully painted in bright vermillion and white, contrasting with the surrounding green pines and blue sea. A short walk leads to the Hinomisaki Lighthouse, the tallest stone masonry lighthouse in Asia.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Taikodani Inari Shrine",
+    "region": "Chugoku",
+    "city": "Tsuwano, Shimane",
+    "neighborhood": "Ushiroda",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.4631,
+      "lng": 131.7708
+    },
+    "short_description": "One of the five great Inari shrines with a tunnel of 1,000 torii gates.",
+    "description": "Perched on a hill overlooking the castle town of Tsuwano, this shrine features a winding tunnel of red torii gates similar to Fushimi Inari but far less crowded. The view of the town's red-tiled roofs from the shrine precincts is wonderful.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Iwami Ginzan Silver Mine",
+    "region": "Chugoku",
+    "city": "Oda, Shimane",
+    "neighborhood": "Omori",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.1053,
+      "lng": 132.4397
+    },
+    "short_description": "A World Heritage site hidden in the mountains.",
+    "description": "Once responsible for a significant portion of the world's silver, this area is now a quiet, preserved historic district. You can walk through the old town of Omori with its samurai residences and enter the Ryugenji Mabu Mine Shaft. It is a low-key, walking-intensive heritage site surrounded by deep nature.",
+    "estimated_duration": "3 hours",
+    "min_budget": "410 JPY (Mine entry)"
+  },
+  {
+    "name": "Kamosu Shrine",
+    "region": "Chugoku",
+    "city": "Matsue, Shimane",
+    "neighborhood": "Oba",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.4261,
+      "lng": 133.0811
+    },
+    "short_description": "Home to the oldest Taisha-zukuri style building in Japan.",
+    "description": "This National Treasure shrine is older in architectural style than the famous Izumo Taisha. It feels ancient and primitive, tucked away in a quiet forest. It offers a profound sense of the Shinto roots of the Izumo region without the crowds of the main shrines.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Miho Shrine",
+    "region": "Chugoku",
+    "city": "Matsue, Shimane",
+    "neighborhood": "Mihonoseki",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.5583,
+      "lng": 133.3072
+    },
+    "short_description": "Head shrine for Ebisu, god of fishing and music.",
+    "description": "Located at the tip of the Shimane peninsula in a rustic port town. The shrine houses a collection of musical instruments donated by devotees. The morning ritual involving music and dance is mystical. The surrounding town has atmospheric alleys paved with blue stones.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kiyomizu-dera Temple",
+    "region": "Chugoku",
+    "city": "Yasugi, Shimane",
+    "neighborhood": "Kiyomizu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3922,
+      "lng": 133.2725
+    },
+    "short_description": "A grand mountain temple surrounded by ancient cedars.",
+    "description": "Sharing the name with the famous Kyoto temple, this site is hidden in a forest of cedar trees. It features a three-story pagoda and serves excellent Shojin Ryori (Buddhist vegetarian cuisine). The temple grounds are vast and misty, offering a spiritual retreat atmosphere.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Shimane Museum of Ancient Izumo",
+    "region": "Chugoku",
+    "city": "Izumo, Shimane",
+    "neighborhood": "Taisha",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3992,
+      "lng": 132.6897
+    },
+    "short_description": "Fascinating insights into the mythology and bronze history of Japan.",
+    "description": "Located next to Izumo Taisha, this museum displays hundreds of bronze swords and bells excavated in the region, proving the power of the ancient Izumo kingdom. It provides crucial context to the myths of the region with excellent displays and models.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "620 JPY"
+  },
+  {
+    "name": "Oki Islands (Candle Rock)",
+    "region": "Chugoku",
+    "city": "Okinoshima, Shimane",
+    "neighborhood": "Oki District",
+    "category": "nature",
+    "coordinates": {
+      "lat": 36.2575,
+      "lng": 133.2436
+    },
+    "short_description": "A UNESCO Global Geopark with dramatic coastal scenery.",
+    "description": "The Oki Islands are a remote archipelago with unique geology and culture. The highlight is the 'Candle Rock' (Rosoku-jima), a rock formation that looks like a lit candle when the setting sun rests on its tip (viewable by sightseeing boat). The islands offer rugged hiking and fresh seafood.",
+    "estimated_duration": "Full day trip",
+    "min_budget": "Ferry cost"
+  },
+  {
+    "name": "Mitokusan Sanbutsuji (Nageiredo)",
+    "region": "Chugoku",
+    "city": "Misasa, Tottori",
+    "neighborhood": "Mitoku",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3972,
+      "lng": 133.9583
+    },
+    "short_description": "Japan's most dangerous national treasure, built into a cliff face.",
+    "description": "The Nageiredo Hall is seemingly 'thrown' into a cave on a vertical cliff. Visitors must perform a strenuous and somewhat dangerous hike involving chains and tree roots to reach the viewing point. Shoes are inspected for safety before entry; it is a true ascetic challenge.",
+    "estimated_duration": "2 - 3 hours",
+    "min_budget": "1,200 JPY"
+  },
+  {
+    "name": "Uradome Coast",
+    "region": "Chugoku",
+    "city": "Iwami, Tottori",
+    "neighborhood": "Uradome",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.5897,
+      "lng": 134.3039
+    },
+    "short_description": "Rugged coastline known as the 'San'in Matsushima'.",
+    "description": "Part of the San'in Kaigan Geopark, this coast features clear waters, tunnels, caves, and jagged rocks formed by sea erosion. Visitors can take a sightseeing boat, kayak, or hike the coastal trail. The water clarity is exceptional, often called 'Iwami Blue'.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kurayoshi Shirakabe Storehouses",
+    "region": "Chugoku",
+    "city": "Kurayoshi, Tottori",
+    "neighborhood": "Uomachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.4311,
+      "lng": 133.8194
+    },
+    "short_description": "A retro district of white-walled warehouses with red tiled roofs.",
+    "description": "This preservation district features merchant storehouses from the Edo and Meiji periods lining a small canal. Many have been converted into craft shops, cafes, and soy sauce breweries. It has a quiet, nostalgic atmosphere perfect for a leisurely stroll.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Jinpukaku",
+    "region": "Chugoku",
+    "city": "Tottori City, Tottori",
+    "neighborhood": "Higashimachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.5083,
+      "lng": 134.2386
+    },
+    "short_description": "A French Renaissance style mansion by the castle ruins.",
+    "description": "Built in 1907 for the visit of the Crown Prince (later Emperor Taisho), this white wooden western-style building stands in stark contrast to the neighboring Tottori Castle ruins. It was featured as a location in the 'Rurouni Kenshin' live-action movie.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "150 JPY"
+  },
+  {
+    "name": "Hakuto Shrine",
+    "region": "Chugoku",
+    "city": "Tottori City, Tottori",
+    "neighborhood": "Hakuto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.5458,
+      "lng": 134.1553
+    },
+    "short_description": "The setting for the myth of the White Hare of Inaba.",
+    "description": "Situated near the coast, this shrine is dedicated to the white hare from Japanese mythology who predicted a marriage between a god and a princess. It is considered the first 'lovers' sanctuary' in Japan. Rabbit statues line the path, and visitors place white stones on them for luck.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Ishitani Residence",
+    "region": "Chugoku",
+    "city": "Chizu, Tottori",
+    "neighborhood": "Chizu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.2678,
+      "lng": 134.2289
+    },
+    "short_description": "A massive, luxurious timber residence of a forestry tycoon.",
+    "description": "This sprawling estate showcases the wealth of the Ishitani family with over 40 rooms, massive garden views, and high-quality timber construction. It is an architectural masterpiece of the Showa era that blends traditional Japanese style with subtle Western influences.",
+    "estimated_duration": "1 hour",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "Kannon-in Temple",
+    "region": "Chugoku",
+    "city": "Tottori City, Tottori",
+    "neighborhood": "Uemachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.5036,
+      "lng": 134.2442
+    },
+    "short_description": "A temple famous for its exquisite pond garden.",
+    "description": "The highlight here is the Edo-period garden, designed to be viewed while seated in the main hall. Visitors are served matcha tea and sweets (included in the fee) to enjoy while contemplating the view of the pond, pine trees, and islands.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "Ogamiyama Shrine Okunomiya",
+    "region": "Chugoku",
+    "city": "Daisen, Tottori",
+    "neighborhood": "Daisen",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.3889,
+      "lng": 133.5358
+    },
+    "short_description": "A mystical shrine at the end of Japan's longest stone path.",
+    "description": "Located on the sacred Mt. Daisen, the approach is a long, cobblestone path lined with ancient cedar trees, leading up to the shrine which features the largest Gongen-zukuri style lacquered interior in Japan. The atmosphere is heavy with spiritual gravity and nature.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Misasa Onsen",
+    "region": "Chugoku",
+    "city": "Misasa, Tottori",
+    "neighborhood": "Misasa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 35.4086,
+      "lng": 133.8925
+    },
+    "short_description": "A historic radium hot spring resort with open-air river baths.",
+    "description": "Famous for high radium content waters believed to heal various ailments. The 'Kawara-buro' is a public open-air bath located right on the riverbank, offering a very exposed but authentic communal bathing experience. The town has a charming, old-fashioned atmosphere.",
+    "estimated_duration": "Overnight or 1 hour",
+    "min_budget": "Free (Kawara-buro)"
+  },
+  {
+    "name": "Tottori Folk Crafts Museum",
+    "region": "Chugoku",
+    "city": "Tottori City, Tottori",
+    "neighborhood": "Sakaemachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 35.4958,
+      "lng": 134.2253
+    },
+    "short_description": "The birthplace of the Mingei (Folk Craft) movement in Tottori.",
+    "description": "Founded by Shoya Yoshida, a leader in the folk craft movement, this museum displays beautiful, functional everyday items like pottery and textiles. It sits next to the Takumi Kappo restaurant where you can eat local dishes served on this very craftware.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "Motonosumi Shrine",
+    "region": "Chugoku",
+    "city": "Nagato, Yamaguchi",
+    "neighborhood": "Yuyatsuo",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.4267,
+      "lng": 131.0542
+    },
+    "short_description": "A spectacular line of 123 red torii gates on a seaside cliff.",
+    "description": "Though popular on social media, its remote location keeps it from being overrun. The bright red gates snake down a green cliff toward the deep blue Sea of Japan. There is a challenging offertory box placed high up on the final torii gate.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Beppu Benten Pond",
+    "region": "Chugoku",
+    "city": "Mine, Yamaguchi",
+    "neighborhood": "Shuho",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.2267,
+      "lng": 131.2597
+    },
+    "short_description": "A mystical pond with incredibly clear, cobalt blue water.",
+    "description": "Hidden near the Akiyoshidai karst region, this small pond is fed by underground springs. The water is highly transparent and glows with a mysterious blue hue. It is considered sacred water, and visitors can drink from a dedicated tap.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Rurikoji Temple",
+    "region": "Chugoku",
+    "city": "Yamaguchi City, Yamaguchi",
+    "neighborhood": "Kozan",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.1883,
+      "lng": 131.4725
+    },
+    "short_description": "Features a stunning five-storied pagoda, a national treasure.",
+    "description": "The pagoda is ranked among the top three finest in Japan. It sits in a beautiful park (Kozan Park) that is lovely in all seasons, especially plum blossom season and autumn. The temple grounds include a museum about the Restoration hero Saigo Takamori's connections to the area.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Hofu Tenmangu",
+    "region": "Chugoku",
+    "city": "Hofu, Yamaguchi",
+    "neighborhood": "Matsuzaki",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.0583,
+      "lng": 131.5722
+    },
+    "short_description": "One of Japan's three main Tenmangu shrines.",
+    "description": "Dedicated to the god of learning, this grand shrine features a long staircase approach and beautiful vermillion buildings. It is famous for its plum festival in February. The tea house 'Hoshoan' within the grounds offers a peaceful matcha experience.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Senjojiki",
+    "region": "Chugoku",
+    "city": "Nagato, Yamaguchi",
+    "neighborhood": "Heki",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.3986,
+      "lng": 131.0917
+    },
+    "short_description": "A grassy plateau offering panoramic views of the Sea of Japan.",
+    "description": "Located at an elevation of 333m, this 'thousand mat' grassy field offers unending views of the sea and sky. It is a popular spot for camping and picnics, and wind turbines add to the scenic landscape. It feels open, airy, and disconnected from the busy world.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Joei-ji Sesshu Garden",
+    "region": "Chugoku",
+    "city": "Yamaguchi City, Yamaguchi",
+    "neighborhood": "Miyano",
+    "category": "culture",
+    "coordinates": {
+      "lat": 34.1978,
+      "lng": 131.4939
+    },
+    "short_description": "A rock garden designed by the famous ink painter Sesshu.",
+    "description": "This temple garden is a masterpiece of Muromachi period landscape design. It uses the surrounding mountains as 'borrowed scenery.' The garden is arranged to look like a three-dimensional ink painting, reflecting Sesshu's artistic genius.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "Iwakuni White Snakes Museum",
+    "region": "Chugoku",
+    "city": "Iwakuni, Yamaguchi",
+    "neighborhood": "Imazu",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 34.1708,
+      "lng": 132.2269
+    },
+    "short_description": "See living white snakes believed to be messengers of gods.",
+    "description": "Iwakuni is the only place where these albino rat snakes live naturally. They are designated National Natural Monuments. The museum allows you to see them up close and learn about their genetics and local lore connecting them to good fortune.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "200 JPY"
+  },
+  {
+    "name": "Chomonkyo Gorge",
+    "region": "Chugoku",
+    "city": "Yamaguchi City, Yamaguchi",
+    "neighborhood": "Ato",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.3542,
+      "lng": 131.5625
+    },
+    "short_description": "A scenic gorge perfect for autumn foliage hiking.",
+    "description": "A designated Place of Scenic Beauty, this gorge offers a flat, easy 5km walking trail along the river. Huge rocks and cliffs frame the path, which becomes a tunnel of red and orange leaves in November. It is less commercialized than other major gorges.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Omijima (The Alps of the Sea)",
+    "region": "Chugoku",
+    "city": "Nagato, Yamaguchi",
+    "neighborhood": "Senzaki",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.4083,
+      "lng": 131.2167
+    },
+    "short_description": "Dramatic rock formations best viewed by sightseeing boat.",
+    "description": "This island features spectacular cliffs, stone pillars, and caves carved by the rough Sea of Japan. It is part of the Kita-Nagato Kaigan Quasi-National Park. The walking trail offers great views, but the boat tour allows you to enter the sea caves.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free (Walking)"
+  },
+  {
+    "name": "Yuda Onsen (Footbaths)",
+    "region": "Chugoku",
+    "city": "Yamaguchi City, Yamaguchi",
+    "neighborhood": "Yuda",
+    "category": "nature",
+    "coordinates": {
+      "lat": 34.1639,
+      "lng": 131.4556
+    },
+    "short_description": "The 'White Fox' hot spring town with many free footbaths.",
+    "description": "According to legend, a white fox healed its wounds here. The town is dotted with multiple free 'ashiyu' (footbaths) where you can soak your feet while wandering the streets. It is a great place to experience onsen culture casually without committing to a full bathhouse.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  }
+]

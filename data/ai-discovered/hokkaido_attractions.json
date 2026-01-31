@@ -1,0 +1,434 @@
+[
+  {
+    "name": "Hokkaido Shrine",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Maruyama",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0554,
+      "lng": 141.3073
+    },
+    "short_description": "Sapporo's most important Shinto shrine, located in beautiful Maruyama Park with 1,400 cherry trees and 250 plum trees.",
+    "description": "Hokkaido Shrine (Hokkaido Jingu) was established in 1869 by decree of Emperor Meiji to enshrine the 'three pioneering gods' who protected and guided the early settlers of Hokkaido. The shrine is located within Maruyama Park, surrounded by dense forests that create a serene atmosphere.\n\nThe shrine grounds feature approximately 1,400 cherry blossom trees and 250 plum blossom trees, making it one of Hokkaido's premier cherry blossom viewing spots during Golden Week. Visitors can encounter wild Ezo squirrels and foxes throughout the year. The shrine is dedicated to improving fortune in business, traffic safety, and matchmaking.\n\nThe main hall was rebuilt in 1964 when Emperor Showa approved the additional enshrinement of Emperor Meiji. Today, it remains a spiritual center for Hokkaido's residents, particularly busy during New Year celebrations, the Sapporo Festival in June, and Shichi-Go-San celebrations in November.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.5,
+    "review_count": 3200,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sapporo Fushimi Inari Shrine",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Fushimi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0367,
+      "lng": 141.3332
+    },
+    "short_description": "A picturesque shrine featuring 27 vibrant red torii gates, a branch of Kyoto's famous Fushimi Inari Taisha.",
+    "description": "Sapporo Fushimi Inari Shrine is a subsidiary of the famous Fushimi Inari Taisha in Kyoto, dedicated to the same deity of prosperity and business success. The shrine is particularly renowned for its pathway lined with 27 striking red torii gates that create a stunning visual corridor.\n\nThe shrine has gained popularity as a spiritual destination, especially for those seeking blessings in love and finding a romantic partner. The contrast between the vibrant red gates and white snow during winter creates particularly photogenic scenes that attract photographers year-round.\n\nLocated just a 15-minute walk from the Mt. Moiwa Ropeway boarding point, visitors often combine a trip here with viewing Sapporo's famous night views. The shrine offers beautiful goshuin (temple seals) for collectors at ¥500.",
+    "estimated_duration": "30-45 minutes",
+    "rating": 4.3,
+    "review_count": 1100,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Goryokaku Fort",
+    "region": "Hokkaido",
+    "city": "Hakodate",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Goryokaku",
+    "category": "culture",
+    "coordinates": {
+      "lat": 41.7967,
+      "lng": 140.7571
+    },
+    "short_description": "Japan's first Western-style star-shaped fortress, now a beautiful park and one of Hokkaido's best cherry blossom spots.",
+    "description": "Goryokaku is a remarkable star-shaped Western-style citadel completed in 1866 during the final years of the Edo Period. It was Japan's first bastion fortress, designed by Takeda Ayasaburo who studied European fortification methods to create a defense structure suitable for modern warfare.\n\nThe fortress played a crucial role in Japanese history as the site of the final battle between the Tokugawa shogunate forces and the Imperial troops during the Boshin War in 1869. After losing its military significance, it was converted into a public park in the 1910s and is now designated as a Special Historic Site.\n\nToday, over 1,600 cherry trees line the moats, making it one of Hokkaido's premier hanami spots in early May. The adjacent 107-meter Goryokaku Tower offers stunning aerial views of the perfect star shape. Inside the park, the reconstructed Hakodate Magistrate's Office showcases the building's history and traditional Japanese architecture.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.4,
+    "review_count": 4500,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Upopoy National Ainu Museum",
+    "region": "Hokkaido",
+    "city": "Shiraoi",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Lake Poroto",
+    "category": "culture",
+    "coordinates": {
+      "lat": 42.5498,
+      "lng": 141.3564
+    },
+    "short_description": "Japan's first national museum dedicated to the indigenous Ainu people, featuring exhibits, performances, and cultural experiences.",
+    "description": "Upopoy (meaning 'singing together in a large group' in Ainu language) opened in 2020 as Japan's foremost national center dedicated to preserving and promoting Ainu culture. Located on the scenic shores of Lake Poroto, this comprehensive facility combines a museum, cultural park, and memorial site.\n\nThe National Ainu Museum features permanent exhibitions covering six core themes: Language, Universe (spirituality), Lives, History, Work, and Exchange with other cultures. Interactive displays, dioramas, and short films bring Ainu traditions to life. Visitors can explore the Kotan (traditional village) with reconstructed cise (Ainu homes) and learn about their spiritual connection to kamuy (spirit deities).\n\nThe park offers authentic Ainu dance performances, hands-on workshops for traditional crafts and music (including the mukkuri mouth harp and tonkori five-stringed zither), and opportunities to taste traditional Ainu cuisine. It serves as an essential starting point for understanding Hokkaido's indigenous heritage.",
+    "estimated_duration": "3-4 hours",
+    "rating": 4.5,
+    "review_count": 2800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Sapporo Beer Museum",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Higashi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0705,
+      "lng": 141.3784
+    },
+    "short_description": "Japan's only beer museum housed in an elegant red brick building, offering tours and tastings of Sapporo's famous brews.",
+    "description": "The Sapporo Beer Museum is Japan's only museum dedicated to beer history, housed in a beautiful red brick building that was originally constructed in 1890 as a sugar factory and later converted to a brewery. The distinctive architecture reflects Hokkaido's pioneering era and is a registered Tangible Cultural Property.\n\nThe museum traces the history of Japanese beer from 1876 when the Hokkaido Development Commission first introduced brewing to Japan. Visitors can learn about the brewing process, see historical equipment, and understand how Sapporo Beer became one of Japan's most beloved brands.\n\nThe highlight for many visitors is the tasting hall (Starfall), where three different beers can be sampled for ¥1,200, including the classic Pilsner that has been produced since the brewery's founding. The adjacent Sapporo Beer Garden offers genghis khan (lamb barbecue) dining, making it perfect for a complete culinary experience.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.2,
+    "review_count": 3100,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Historical Village of Hokkaido",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Atsubetsu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0417,
+      "lng": 141.5103
+    },
+    "short_description": "An expansive open-air museum featuring over 60 restored historical buildings from Hokkaido's pioneering era.",
+    "description": "The Historical Village of Hokkaido (Kaitaku no Mura) is a remarkable open-air museum spanning over 50 hectares on the edge of Nopporo Forest, showcasing life during Hokkaido's pioneering days from the Meiji era onwards. Over 60 authentic buildings have been relocated and meticulously restored to their original condition.\n\nThe village is divided into four distinct zones: town, mountain, farming village, and fishing village, each representing different aspects of early settler life. Buildings include the old Sapporo Railway Station, traditional merchants' homes, a sleigh factory, and various farmhouses. Many buildings can be entered, allowing visitors to experience historical interiors and sometimes view craftsmen demonstrating traditional techniques.\n\nA highlight is the horse-drawn tram (or sleigh in winter) that traverses the village for just ¥250. Throughout the year, seasonal events and festivals recreate historical celebrations. The adjacent Hokkaido Museum offers additional context about the region's natural history and cultural development.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.4,
+    "review_count": 1800,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Mount Hakodate",
+    "region": "Hokkaido",
+    "city": "Hakodate",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Motomachi",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 41.7587,
+      "lng": 140.7046
+    },
+    "short_description": "Offering one of Japan's top three night views, this 334-meter mountain provides stunning panoramas of Hakodate's sparkling cityscape.",
+    "description": "Mount Hakodate stands 334 meters high at the southern tip of Hakodate's peninsula, offering what is widely regarded as one of Japan's three best night views alongside Nagasaki's Mount Inasa and Kobe's Mount Rokko. The Michelin Green Guide Japan awards it three stars.\n\nThe view is particularly spectacular at dusk, about 30 minutes after sunset, when the city's lights begin to twinkle against the fading sky. Hakodate's unique hourglass-shaped geography, sandwiched between Hakodate Bay and the Tsugaru Strait, creates an unforgettable panorama. Legend has it that finding a heart shape hidden among the city lights brings romantic fortune.\n\nAccess to the summit is possible via the Hakodateyama Ropeway (3-minute ride), bus, taxi, or hiking trail (approximately one hour). The observation deck offers 360-degree views and includes a restaurant and souvenir shops. During summer, the view includes fishing boats' lights on the sea; in winter, snow enhances the city's sparkle during the Hakodate Illumination (December-February).",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.7,
+    "review_count": 6200,
+    "min_budget": "¥1800"
+  },
+  {
+    "name": "Shirogane Blue Pond",
+    "region": "Hokkaido",
+    "city": "Biei",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Shirogane",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.4936,
+      "lng": 142.6139
+    },
+    "short_description": "A mystical man-made pond famous for its stunning cobalt blue waters and ethereal dead tree silhouettes.",
+    "description": "Shirogane Blue Pond (Aoiike) is one of Hokkaido's most photographed natural wonders, located in the Shirogane district of Biei. The pond's striking cobalt blue color is created by natural aluminum hydroxide dissolved in water from nearby Shirahige Falls, which reflects light to produce the distinctive hue.\n\nThe pond was accidentally created as part of an erosion control system built after the 1988 eruption of Mount Tokachi to prevent volcanic mudflows from reaching Biei town. Submerged larch and silver birch trees that died during flooding stand as ghostly silhouettes against the vivid blue water, creating an otherworldly landscape.\n\nThe color changes with seasons and weather conditions—most vibrant blue in summer, emerald green in autumn, and frozen with an unusual bluish tint in winter. From late October to late April, the pond is illuminated at night, creating a magical winter wonderland. A 300-meter wooden boardwalk provides easy viewing access. The nearby Shirahige Falls is just a short walk away.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 4100,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Farm Tomita",
+    "region": "Hokkaido",
+    "city": "Nakafurano",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Nakafurano",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.4244,
+      "lng": 142.3778
+    },
+    "short_description": "Hokkaido's most famous lavender farm, featuring spectacular rainbow-colored flower fields against a mountain backdrop.",
+    "description": "Farm Tomita is Hokkaido's most celebrated flower farm and the birthplace of lavender cultivation in Furano. Originally started as a commercial lavender farm for perfume production, it has evolved into one of Japan's most iconic agricultural attractions, drawing millions of visitors annually.\n\nThe farm's Irodori Field is the most photographed spot, featuring seven distinct flower varieties arranged in colorful stripes—purple lavender, white baby's breath, red and orange poppies, yellow mustard, and pink catchflies—creating a natural rainbow against the Tokachi mountain range backdrop. The Traditional Lavender Field, one of Japan's oldest lavender plantations, offers pure purple waves.\n\nPeak lavender season runs from early to late July, though various flowers bloom from April through October. The farm offers free admission and features a perfume workshop, distillery, greenhouse (with year-round lavender), shops selling lavender products, and cafes serving the famous lavender soft-serve ice cream. A sister farm, Lavender East, opened in 2008 with 14 hectares of lavender fields.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.6,
+    "review_count": 5500,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Noboribetsu Hell Valley",
+    "region": "Hokkaido",
+    "city": "Noboribetsu",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Noboribetsu Onsen",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.4932,
+      "lng": 141.1506
+    },
+    "short_description": "A dramatic volcanic valley with steaming vents and bubbling hot springs, the source of Noboribetsu's famous therapeutic waters.",
+    "description": "Jigokudani (Hell Valley) is a spectacular volcanic crater formed by the eruption of Mount Hiyoriyama approximately 10,000 years ago. Spanning about 450 meters in diameter and covering 11 hectares, this geothermally active landscape features countless fumaroles, steam vents, and bubbling sulfurous pools that create an appropriately 'hellish' atmosphere.\n\nThe valley serves as the primary source for Noboribetsu Onsen, supplying an impressive 10,000 tons of hot spring water daily to the resort's hotels and ryokans. The water contains various minerals including sulfur, iron, and salt, believed to provide therapeutic benefits for skin conditions and various ailments.\n\nA well-maintained boardwalk promenade (approximately 20 minutes) allows safe exploration of the steaming terrain. The extended trail to Oyunuma Pond and its natural foot bath takes about 2 hours round trip. At night, the 'Onibi no Michi' (Path of Ghostly Lights) illumination creates a mystical atmosphere. The summer 'Oni Hanabi' fireworks festival features spectacular pyrotechnics against the steaming backdrop.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.4,
+    "review_count": 3800,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Shiretoko National Park",
+    "region": "Hokkaido",
+    "city": "Shari/Rausu",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Shiretoko Peninsula",
+    "category": "nature",
+    "coordinates": {
+      "lat": 44.0742,
+      "lng": 145.1478
+    },
+    "short_description": "A UNESCO World Heritage Site at Hokkaido's northeastern tip, offering pristine wilderness, dramatic cliffs, and diverse wildlife.",
+    "description": "Shiretoko National Park occupies the remote Shiretoko Peninsula, one of Japan's most pristine wilderness areas and a UNESCO World Heritage Site since 2005. The name derives from the Ainu word 'sir etok,' meaning 'the end of the Earth' or 'the place where the Earth protrudes.'\n\nThe park is home to remarkable biodiversity including brown bears, Ezo deer, Blakiston's fish owl (the world's largest owl species), Steller's sea eagles, and harbor seals. The Shiretoko Five Lakes offer accessible hiking through primeval forest with boardwalks protecting the delicate ecosystem. Cruise boats from Utoro provide views of dramatic coastal cliffs, waterfalls, and wildlife.\n\nFrom late January to early March, drift ice from the Sea of Okhotsk reaches Shiretoko's shores, creating surreal ice fields that visitors can walk upon with specialized tours. The park offers different experiences each season—wildflowers and hiking in summer, autumn foliage in October, and the unique drift ice phenomena in winter. The Shiretoko Nature Center provides information and equipment rentals.",
+    "estimated_duration": "Full day",
+    "rating": 4.7,
+    "review_count": 2900,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Daisetsuzan National Park",
+    "region": "Hokkaido",
+    "city": "Asahikawa/Kamikawa",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Daisetsuzan",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.6614,
+      "lng": 142.8528
+    },
+    "short_description": "Hokkaido's largest national park, known as the 'Roof of Hokkaido,' featuring volcanic peaks, pristine lakes, and Japan's earliest autumn colors.",
+    "description": "Daisetsuzan National Park is Hokkaido's largest national park and one of Japan's most treasured wilderness areas, often called the 'Roof of Hokkaido' or 'Playground of the Gods.' The park encompasses the Daisetsuzan mountain range, including Mount Asahidake (2,291m), Hokkaido's highest peak.\n\nThe park is renowned for being the first place in Japan to see autumn colors (typically mid-September) and snow (often by late September). Its diverse landscapes include volcanic mountains, alpine meadows carpeted with wildflowers, pristine lakes like the crystal-clear Lake Shikaribetsu, and dramatic gorges including Sounkyo with its columnar basalt cliffs.\n\nThe Kurodake Ropeway and Asahidake Ropeway provide easy access to alpine terrain suitable for hiking. Trails range from easy walks to challenging multi-day treks through some of Japan's most pristine wilderness. Hot spring areas like Sounkyo Onsen and Asahidake Onsen offer accommodation and relaxation. The park also features Japan's longest ski season, from November to early May.",
+    "estimated_duration": "Full day",
+    "rating": 4.6,
+    "review_count": 2400,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Lake Toya",
+    "region": "Hokkaido",
+    "city": "Toyako",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Toyako Onsen",
+    "category": "nature",
+    "coordinates": {
+      "lat": 42.6061,
+      "lng": 140.8558
+    },
+    "short_description": "A stunning caldera lake within a UNESCO Global Geopark, featuring year-round fireworks and accessible volcanic landscapes.",
+    "description": "Lake Toya is a beautiful caldera lake formed by a massive volcanic eruption approximately 110,000 years ago. The nearly circular lake, about 11 kilometers in diameter, is the centerpiece of the Toya-Usu UNESCO Global Geopark and part of Shikotsu-Toya National Park.\n\nThe lake features four forested islands (Nakajima) at its center, accessible by sightseeing boat. The surrounding area showcases ongoing volcanic activity, with Mount Usu having erupted as recently as 2000. The Mt. Usu Ropeway offers spectacular views of the volcanic crater, the lake, and on clear days, Mount Yotei (often called Hokkaido's Mount Fuji).\n\nToyako Onsen, on the lake's southern shore, is a popular hot spring resort. Uniquely, Lake Toya hosts fireworks displays nightly from late April through October (8:45 PM, 20 minutes), visible from lakeside hotels and viewing spots. The Volcano Science Museum provides educational exhibits about the area's geological history and volcanic activity.",
+    "estimated_duration": "Half day",
+    "rating": 4.5,
+    "review_count": 3200,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Otaru Canal",
+    "region": "Hokkaido",
+    "city": "Otaru",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Minatomachi",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 43.1968,
+      "lng": 140.9942
+    },
+    "short_description": "A picturesque historic canal lined with stone warehouses and gas lamps, creating one of Hokkaido's most romantic settings.",
+    "description": "Otaru Canal is the iconic symbol of Otaru, a charming port city that flourished as Hokkaido's commercial hub during the late 19th and early 20th centuries. Completed in 1923, the 1,140-meter canal originally served to transport goods from ships to warehouses via small boats.\n\nWhen modern port facilities made the canal obsolete, a citizens' movement in the 1980s successfully preserved it from being completely filled in. The southern section was partially filled to create walkways while the northern section (North Canal) retains its original 40-meter width. Historic stone warehouses lining the canal have been converted into restaurants, shops, cafes, and museums.\n\nThe canal is particularly magical at dusk when 63 old-fashioned gas lamps illuminate, and the warehouses glow with ambient lighting reflected on the water. The 40-minute Otaru Canal Cruise offers a unique perspective with captain's commentary. During February's Otaru Snow Light Path Festival, hundreds of candles line the walkways and float on the water. The nearby Sakaimachi Street offers shopping for local glass crafts and music boxes.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.3,
+    "review_count": 5800,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sapporo TV Tower",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Odori",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 43.0607,
+      "lng": 141.3566
+    },
+    "short_description": "Sapporo's iconic 147-meter landmark tower offering panoramic city views, especially spectacular during the Snow Festival.",
+    "description": "Sapporo TV Tower has been the city's most recognizable landmark since its completion in 1957. Standing 147.2 meters tall at the eastern edge of Odori Park, it was designed by architect Tachu Naito, who also designed Tokyo Tower. The tower's distinctive red silhouette and large digital clocks are iconic symbols of Sapporo.\n\nThe observation deck at 90.38 meters offers 360-degree panoramic views of Sapporo. Looking west, visitors can see Odori Park stretching 1.5 kilometers, with views extending to Mount Teine and the Okurayama Ski Jump Stadium. On clear days, the vista reaches to the Ishikari Plain and Sea of Japan. The 'Kowaso' (Thrill Window) is a floor-to-ceiling glass panel that provides vertigo-inducing views straight down.\n\nThe tower is particularly popular during the Sapporo Snow Festival in early February when it provides the best vantage point for the elaborate snow and ice sculptures in Odori Park. Night views reveal the city's grid layout illuminated like a jewel box. The tower houses souvenir shops, restaurants, and a tourist information center.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 4200,
+    "min_budget": "¥720"
+  },
+  {
+    "name": "Odori Park",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Chuo",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.059,
+      "lng": 141.3478
+    },
+    "short_description": "Sapporo's central green oasis stretching 1.5 kilometers, hosting major festivals including the famous Snow Festival.",
+    "description": "Odori Park is a 1.5-kilometer-long green corridor that divides central Sapporo into northern and southern districts, serving as the city's main gathering place and event venue. Originally designed in 1871 as a firebreak during Sapporo's city planning, it has evolved into the heart of urban life.\n\nThe park stretches from the TV Tower (Nishi 1-chome) to the Sapporo Municipal Museum (Nishi 13-chome), featuring beautiful flower beds, fountains, sculptures, and 92 varieties of trees. The iconic Corn Wagon sells freshly grilled 'tokibi' (local corn) during summer, a beloved Sapporo tradition.\n\nOdori Park hosts Sapporo's most famous events: the Snow Festival (early February) with massive snow sculptures; the Sapporo Summer Festival and Beer Garden (July-August) transforming the park into a massive outdoor biergarten; the Autumn Fest (September-October) showcasing Hokkaido's gourmet delights; and the White Illumination (November-March) with spectacular light displays. The park is easily accessible from Odori Station, where three subway lines intersect.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.3,
+    "review_count": 3500,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Susukino",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Susukino",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.0541,
+      "lng": 141.353
+    },
+    "short_description": "Hokkaido's largest entertainment district, famous for neon-lit streets, izakayas, ramen shops, and vibrant nightlife.",
+    "description": "Susukino is the largest entertainment and nightlife district north of Tokyo, featuring over 4,000 bars, restaurants, clubs, and entertainment venues packed into a compact area south of Odori Park. The district is instantly recognizable by its dazzling neon signs, particularly the iconic Nikka Whisky billboard.\n\nFor food lovers, Susukino is a paradise of culinary experiences. The area is famous for Sapporo ramen, particularly the rich miso variety, with numerous renowned shops operating late into the night. Genghis Khan (lamb barbecue) restaurants and fresh seafood izakayas serving Hokkaido's catch are local favorites. Ramen Yokocho (Ramen Alley) is a narrow lane packed with 17 ramen shops.\n\nBeyond dining, Susukino offers diverse entertainment from karaoke and game centers to sophisticated cocktail bars. During the Snow Festival, the area hosts ice sculpture exhibitions that complement the snow sculptures in Odori Park. The district remains lively until the early morning hours, offering a complete nightlife experience for visitors.",
+    "estimated_duration": "2-4 hours",
+    "rating": 4.2,
+    "review_count": 4800,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Nijo Market",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Chuo",
+    "category": "food",
+    "coordinates": {
+      "lat": 43.0594,
+      "lng": 141.3611
+    },
+    "short_description": "A historic seafood market dating back to 1903, offering the freshest catch and donburi (rice bowls) for a true Hokkaido breakfast.",
+    "description": "Nijo Market (Nijo Ichiba) is one of Sapporo's oldest and most beloved seafood markets, established in 1903 during Hokkaido's pioneering era. Located under a continuous blue-roofed arcade just a 5-minute walk from Sapporo TV Tower, the market offers an authentic glimpse into Hokkaido's fishing heritage.\n\nApproximately 60 shops line the narrow covered streets, selling the day's freshest catch including king crab, sea urchin, salmon roe, scallops, and countless other seafood varieties. Many vendors allow visitors to sample before buying, and purchases can be shipped anywhere in Japan. The market atmosphere is lively, with shopkeepers calling out to passersby.\n\nSeveral small restaurants within the market serve spectacular kaisendon (seafood rice bowls) and sushi at reasonable prices—a perfect Hokkaido breakfast experience. Popular spots open early (around 7 AM) and can get crowded by mid-morning. The market is closed during New Year (January 1-3) and operates with varying hours by individual shop.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.2,
+    "review_count": 2600,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Hakodate Morning Market",
+    "region": "Hokkaido",
+    "city": "Hakodate",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Wakamatsu",
+    "category": "food",
+    "coordinates": {
+      "lat": 41.7733,
+      "lng": 140.7278
+    },
+    "short_description": "A bustling seafood market right next to Hakodate Station, famous for ultra-fresh squid and spectacular seafood breakfasts.",
+    "description": "Hakodate Morning Market (Asaichi) is one of Japan's most celebrated fish markets, located immediately adjacent to Hakodate Station. Established shortly after World War II, the market now comprises approximately 250 shops spread across several blocks, opening as early as 5 AM to serve the freshest catch.\n\nThe market is particularly famous for live squid (ika), a Hakodate specialty. Many restaurants feature 'ika-tsuri' (squid fishing) where diners catch their own squid from tanks, which is then prepared as sashimi within minutes—so fresh it's still moving. Hairy crab, sea urchin, scallops, and salmon roe are other highlights.\n\nNumerous small eateries serve spectacular kaisendon (seafood rice bowls) at very reasonable prices, making this one of Japan's best breakfast destinations. The Donburi Yokocho area has around 20 restaurants specializing in these dishes. Beyond seafood, the market sells Hokkaido melons, dairy products, and regional vegetables. Activity peaks between 6-8 AM; by early afternoon, many shops close.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.4,
+    "review_count": 4100,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Tanukikoji Shopping Street",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Chuo",
+    "category": "shopping",
+    "coordinates": {
+      "lat": 43.0575,
+      "lng": 141.3504
+    },
+    "short_description": "Hokkaido's oldest and longest covered shopping arcade, stretching nearly 1 kilometer with over 200 shops and restaurants.",
+    "description": "Tanukikoji (Tanuki Alley) is Sapporo's premier covered shopping arcade and one of Hokkaido's oldest commercial streets, with origins dating back to 1873. Stretching approximately 900 meters from Nishi 1-chome to Nishi 7-chome, it runs parallel to Odori Park and is easily accessible from Odori Station.\n\nThe arcade houses over 200 shops offering everything from Hokkaido souvenirs, clothing, and electronics to traditional goods and local specialties. Numerous restaurants serve Hokkaido cuisine including ramen, soup curry, and seafood. The covered design allows comfortable shopping year-round, regardless of Sapporo's often challenging weather.\n\nThe shopping street is named after the tanuki (raccoon dog), a creature from Japanese folklore believed to bring good fortune to merchants. Tanuki statues and imagery can be found throughout the arcade. The area becomes particularly lively during evening hours and connects to Susukino entertainment district at its southern end, making it perfect for combining shopping with dining and nightlife.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4,
+    "review_count": 2200,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sapporo Clock Tower",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Kita",
+    "category": "culture",
+    "coordinates": {
+      "lat": 43.0629,
+      "lng": 141.3536
+    },
+    "short_description": "An iconic American-style wooden building from 1878, one of the few surviving structures from Sapporo's pioneering era.",
+    "description": "The Sapporo Clock Tower (Tokeidai) is one of Hokkaido's most recognized landmarks and an Important Cultural Property of Japan. Built in 1878 as the drill hall for Sapporo Agricultural College (now Hokkaido University), the distinctively American-style wooden building represents Sapporo's pioneering heritage.\n\nThe clock mechanism, manufactured by Howard & Co. of Boston, was installed in 1881 and has been operating continuously for over 140 years—one of the oldest functioning tower clocks in Japan. The bell chimes on the hour, a beloved sound that echoes through central Sapporo.\n\nThe museum inside documents Sapporo's development history and the building's significance. Exhibits explain the connection to William S. Clark, the American educator whose famous departing words 'Boys, be ambitious!' remain an inspirational motto. While the tower may seem small compared to surrounding modern buildings, its historical importance and architectural charm make it a must-visit. The most photogenic views are from the small park opposite the building.",
+    "estimated_duration": "30-45 minutes",
+    "rating": 3.8,
+    "review_count": 3800,
+    "min_budget": "¥200"
+  },
+  {
+    "name": "Akan-Mashu National Park",
+    "region": "Hokkaido",
+    "city": "Kushiro/Teshikaga",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Akan",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.4317,
+      "lng": 144.1028
+    },
+    "short_description": "Eastern Hokkaido's scenic national park featuring three stunning caldera lakes, rare marimo algae, and Ainu cultural heritage.",
+    "description": "Akan-Mashu National Park is one of Hokkaido's oldest national parks, established in 1934, featuring some of Japan's most beautiful caldera lakes and pristine primeval forests. The park showcases three remarkable lakes: Lake Akan, Lake Mashu, and Lake Kussharo, each with unique characteristics.\n\nLake Mashu is renowned as one of the world's clearest lakes with visibility exceeding 20 meters, often shrouded in mystical morning mist. Lake Akan is famous for marimo—unique spherical green algae found in only two places worldwide—protected as a Special Natural Monument. Lake Kussharo, Japan's largest caldera lake, features natural sand-bath hot springs along its shores.\n\nThe park is also significant as a center of Ainu culture, with Ainu Kotan village on Lake Akan's shore offering cultural performances, crafts, and traditional cuisine. The area features volcanic landscapes including Mount Meakan and Mount Oakan, accessible hot springs at Kawayu Onsen, and exceptional wildlife including red foxes, deer, and the rare Blakiston's fish owl.",
+    "estimated_duration": "Full day",
+    "rating": 4.5,
+    "review_count": 2100,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kushiro Shitsugen National Park",
+    "region": "Hokkaido",
+    "city": "Kushiro",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Kushiro Wetland",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.1172,
+      "lng": 144.3722
+    },
+    "short_description": "Japan's largest wetland, home to the endangered red-crowned crane and spectacular natural scenery.",
+    "description": "Kushiro Shitsugen National Park protects Japan's largest wetland and marsh habitat, spanning approximately 26,000 hectares of pristine natural landscape. Designated as a Ramsar Convention site, the wetland serves as critical habitat for numerous species, most notably the endangered Japanese red-crowned crane (tancho).\n\nThe red-crowned crane, a symbol of longevity and fidelity in Japanese culture, was once feared extinct but has recovered to over 1,000 birds thanks to conservation efforts centered in this area. Winter (December-March) is the best time to observe these majestic birds at designated feeding stations and observation centers, where they perform elaborate courtship dances.\n\nThe park offers various viewing platforms and observation decks, including the popular Hosooka Observatory and Kottaro Wetland Observatory, providing panoramic views across the endless marshland and Mount Oakan in the distance. Canoe tours on the Kushiro River offer intimate encounters with nature, while the Norokko scenic train provides a leisurely way to appreciate the landscape. The visitor center provides educational exhibits about wetland ecology.",
+    "estimated_duration": "Half day",
+    "rating": 4.4,
+    "review_count": 1600,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Moerenuma Park",
+    "region": "Hokkaido",
+    "city": "Sapporo",
+    "prefecture": "Hokkaido",
+    "neighborhood": "Higashi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 43.1164,
+      "lng": 141.4075
+    },
+    "short_description": "A sculptural park designed by Isamu Noguchi, blending art and nature with geometric landforms and interactive installations.",
+    "description": "Moerenuma Park is a remarkable sculptural landscape conceived by renowned Japanese-American artist Isamu Noguchi as his final major project. Built on a former garbage disposal site, the 188-hectare park transformed urban waste into an artistic masterpiece, completed in 2005.\n\nThe park features striking geometric structures and landforms including the 62-meter-high Mount Moere (a man-made mountain offering panoramic views), the glass pyramid 'Hidamari' (serving as a cultural facility), and the stunning Sea Fountain with choreographed water performances reaching 25 meters high (operates April-October). Play Mountain and its surrounding areas offer spaces for children's activities.\n\nThe design philosophy treats the entire park as a single sculpture, emphasizing the relationship between human creativity and nature. Cherry blossoms bloom in spring, while summer brings vibrant green landscapes. The park is free to enter and offers bicycle rentals for exploring its vast grounds. Evening illuminations and fountain shows create magical atmospheres during warmer months.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.3,
+    "review_count": 1900,
+    "min_budget": "Free"
+  }
+]
