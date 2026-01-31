@@ -19,7 +19,7 @@ import { calculateDistance } from "@/lib/utils/geoUtils";
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
 const DEFAULT_CITY_ROTATION: readonly CityId[] = ["kyoto", "tokyo", "osaka"] as const;
-const DEFAULT_INTEREST_ROTATION: readonly InterestId[] = ["culture", "food", "nature", "shopping"];
+const DEFAULT_INTEREST_ROTATION: readonly InterestId[] = ["culture", "nature", "shopping"];
 
 // Time slot capacities in minutes (9am-9pm day)
 const TIME_SLOT_CAPACITIES = {
