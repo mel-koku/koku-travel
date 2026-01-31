@@ -1,0 +1,434 @@
+[
+  {
+    "name": "Dazaifu Tenmangu Shrine",
+    "region": "Kyushu",
+    "city": "Dazaifu",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Saifu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5194,
+      "lng": 130.5339
+    },
+    "short_description": "One of Japan's most important Shinto shrines dedicated to the god of learning, featuring 6,000 plum trees and stunning gardens.",
+    "description": "Dazaifu Tenmangu is the head shrine of approximately 12,000 Tenjin shrines throughout Japan, built over the grave of Sugawara no Michizane (845-903), a revered scholar and poet who became deified as the god of learning, culture, and the arts. The shrine attracts over 10 million visitors annually, particularly students praying for academic success.\n\nThe current main hall dates back to 1591 and is designated as a National Important Cultural Property, preserving magnificent Azuchi-Momoyama period architecture. The grounds feature a heart-shaped pond crossed by three drum bridges, representing the past, present, and future. The legendary 'flying plum tree' (Tobiume) stands to the right of the main hall, said to have flown from Kyoto to reunite with Michizane in exile.\n\nThe shrine is particularly beautiful during plum blossom season (late February to mid March) when the 6,000 plum trees bloom. The approach is lined with shops selling umegae mochi, a traditional grilled rice cake stamped with a plum blossom pattern.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.6,
+    "review_count": 12500,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Takachiho Gorge",
+    "region": "Kyushu",
+    "city": "Takachiho",
+    "prefecture": "Miyazaki-ken",
+    "neighborhood": "Mukoyama",
+    "category": "nature",
+    "coordinates": {
+      "lat": 32.7128,
+      "lng": 131.3047
+    },
+    "short_description": "A stunning volcanic gorge with dramatic basalt cliffs and a 17-meter waterfall, famous for boat rides beneath cascading waters.",
+    "description": "Takachiho Gorge is a breathtaking natural wonder formed over 120,000 years ago by lava flows from Mount Aso that cooled rapidly in the Gokase River. The resulting columnar basalt cliffs rise 80 to 100 meters on either side of the narrow canyon, creating a dramatic landscape that feels otherworldly.\n\nThe highlight is the stunning Manai Falls (真名井の滝), a 17-meter waterfall that cascades elegantly into the jade-colored river below. The most iconic experience is renting a rowboat (30 minutes, ¥4,100 for up to 3 people) and paddling directly beneath the waterfall—a bucket-list activity for photographers and couples alike. There's also a 1km nature trail along the rim offering panoramic viewpoints.\n\nBeyond its natural beauty, Takachiho holds deep spiritual significance in Japanese mythology. According to legend, this is where the deity Ninigi-no-mikoto descended from heaven to establish the Japanese imperial line. The nearby Takachiho Shrine and Amano Iwato Shrine add cultural depth to the visit.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.7,
+    "review_count": 8900,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Kumamoto Castle",
+    "region": "Kyushu",
+    "city": "Kumamoto",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Chuo-ku",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.8061,
+      "lng": 130.706
+    },
+    "short_description": "One of Japan's three premier castles, featuring impressive black walls and curved stone fortifications built in 1607.",
+    "description": "Kumamoto Castle is considered one of Japan's three most impressive castles, alongside Himeji and Matsumoto. Built by the master castle designer Kato Kiyomasa between 1601-1607, it features distinctive curved stone walls called 'musha-gaeshi' designed to prevent attackers from climbing, and covers a vast 980,000 square meters with 49 turrets and 29 gates.\n\nThe castle played a pivotal role in history, notably withstanding a 50-day siege during the Satsuma Rebellion of 1877—the last samurai uprising in Japan. The main keep was destroyed by fire during this conflict and reconstructed in 1960, housing a museum with artifacts from the Kato and Hosokawa clans. Thirteen structures remain designated as Important Cultural Properties.\n\nThe 2016 Kumamoto earthquakes caused significant damage, with ongoing restoration expected to continue until 2037-2052. Despite this, visitors can still admire the impressive stone walls and reconstructed main keep. The castle grounds feature 800 cherry trees, making it spectacular during spring, and the adjacent Sakuranobaba Josaien offers dining and shopping.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.5,
+    "review_count": 11200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Nagasaki Peace Park",
+    "region": "Kyushu",
+    "city": "Nagasaki",
+    "prefecture": "Nagasaki-ken",
+    "neighborhood": "Urakami",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.7753,
+      "lng": 129.8635
+    },
+    "short_description": "A tranquil memorial park commemorating the atomic bombing of August 9, 1945, featuring the iconic 10-meter Peace Statue.",
+    "description": "Nagasaki Peace Park is a solemn and moving memorial established in 1955 to commemorate the atomic bombing of August 9, 1945, which killed tens of thousands instantly and destroyed much of the city. The park complex comprises two main areas and the Nagasaki Atomic Bomb Museum.\n\nThe centerpiece is the 10-meter tall Peace Statue created by local sculptor Seibo Kitamura—the right hand points upward to the threat of nuclear weapons while the extended left hand symbolizes eternal peace, and the closed eyes offer prayer for the victims' souls. The nearby Fountain of Peace commemorates those who died searching for water after the bombing.\n\nThe Hypocenter Park below marks the exact point where the bomb exploded, indicated by a black stone monolith. Remnants of the former Urakami Cathedral and a preserved layer of soil showing debris from the explosion provide powerful reminders of that day. The park also features numerous monuments donated by countries worldwide, conveying international solidarity for peace.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.7,
+    "review_count": 9800,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nagasaki Atomic Bomb Museum",
+    "region": "Kyushu",
+    "city": "Nagasaki",
+    "prefecture": "Nagasaki-ken",
+    "neighborhood": "Urakami",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.7728,
+      "lng": 129.8644
+    },
+    "short_description": "A powerful museum documenting the atomic bombing with artifacts, photographs, and survivor testimonies.",
+    "description": "The Nagasaki Atomic Bomb Museum presents a comprehensive and deeply moving account of the atomic bombing on August 9, 1945, when the plutonium bomb 'Fat Man' killed over 70,000 people instantly, with thousands more dying from injuries and radiation in the following months. Completed in 1996, the museum replaced the deteriorating International Culture Hall.\n\nThe exhibits are arranged as a narrative journey beginning with daily life in pre-war Nagasaki, then documenting the devastating aftermath through photographs, artifacts, and firsthand accounts. Particularly haunting items include a clock stopped at 11:02 AM (the exact moment of detonation), burnt clothing, broken toys, and melted roof tiles. Personal testimonies from survivors (hibakusha) provide graphic accounts of the horror.\n\nThe museum also covers the history of nuclear weapons development and post-war disarmament efforts, emphasizing the city's commitment to peace and the abolition of nuclear weapons. Adjacent is the Nagasaki National Peace Memorial Hall, a strikingly modern underground structure incorporating water and light in its design.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.8,
+    "review_count": 7600,
+    "min_budget": "¥200"
+  },
+  {
+    "name": "Hells of Beppu",
+    "region": "Kyushu",
+    "city": "Beppu",
+    "prefecture": "Oita-ken",
+    "neighborhood": "Kannawa",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.3186,
+      "lng": 131.4434
+    },
+    "short_description": "Seven spectacular geothermal hot springs featuring boiling pools of vibrant colors, bubbling mud, and erupting geysers.",
+    "description": "The Hells of Beppu (Jigoku Meguri) are seven extraordinary geothermal hot springs that showcase the volcanic power beneath this famous onsen town. Too hot to bathe in (reaching 98°C), these 'hells' are natural spectacles that have been tourist attractions since the 8th century when locals feared the bubbling, steaming landscape.\n\nEach hell has a distinct character: Umi Jigoku ('Sea Hell') features a stunning cobalt blue pool; Chinoike Jigoku ('Blood Pond Hell') is dramatically red due to iron and magnesium; Kamado Jigoku ('Cooking Pot Hell') has multiple pools where you can steam eggs; Oniyama Jigoku breeds crocodiles in its warm waters; and Tatsumaki Jigoku features a geyser erupting every 30-40 minutes. Five hells are clustered in Kannawa, with two more in Shibaseki, 3km away.\n\nBeppu produces more hot spring water than any other city in Japan—over 130,000 tons daily from nearly 3,000 vents. After touring the hells, visitors can enjoy actual bathing at nearby public onsens, including the historic Takegawara Onsen (built 1879) with its famous sand baths.",
+    "estimated_duration": "3-4 hours",
+    "rating": 4.4,
+    "review_count": 6800,
+    "min_budget": "¥2200"
+  },
+  {
+    "name": "Canal City Hakata",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "shopping",
+    "coordinates": {
+      "lat": 33.5897,
+      "lng": 130.4111
+    },
+    "short_description": "Kyushu's largest shopping and entertainment complex with 250 stores, theaters, and the famous Ramen Stadium.",
+    "description": "Canal City Hakata is Kyushu's largest shopping and entertainment complex, covering 43,500 square meters—equivalent to the Tokyo Dome. Opened in 1996, it's nicknamed 'a city within the city' and features an artificial canal running through the center, creating a unique atmosphere with regular fountain shows synchronized to music and lights.\n\nThe complex houses approximately 250 shops across the South and North Buildings, including international brands, unique Japanese stores, and specialty shops like THE GUNDAM BASE FUKUOKA and the Studio Ghibli shop. The 5th floor features the famous Ramen Stadium, a food theme park gathering eight renowned ramen restaurants serving regional varieties including the local specialty Hakata tonkotsu ramen.\n\nBeyond shopping, Canal City offers a 13-screen cinema, a game center, the United Cinema theater (featuring Japanese versions of Broadway shows like The Lion King), and two hotels. The architecture itself is a draw, designed by American architect Jon Jerde with colorful, curving buildings and dramatic atriums.",
+    "estimated_duration": "2-4 hours",
+    "rating": 4.3,
+    "review_count": 8500,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sengan-en Garden",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Yoshino",
+    "category": "nature",
+    "coordinates": {
+      "lat": 31.6156,
+      "lng": 130.57
+    },
+    "short_description": "A UNESCO World Heritage garden using Sakurajima volcano and Kagoshima Bay as 'borrowed scenery' in its stunning design.",
+    "description": "Sengan-en is one of Japan's most celebrated traditional gardens, built in 1658 as a residence for the powerful Shimazu clan who ruled the Satsuma domain for nearly 700 years. Its most striking feature is the use of 'borrowed scenery' (shakkei)—the active Sakurajima volcano and Kagoshima Bay become integral parts of the garden's composition, appearing as a mountain and pond within the landscape.\n\nThe 50,000 square meter grounds include calming ponds, bubbling streams, a bamboo grove (Japan's original moso bamboo, imported from China in 1736), and several shrines including the unusual Nekogami (Cat Shrine). The Iso Residence at the garden's center offers tours showing how feudal lords lived, with rooms that hosted royalty including Edward VIII and Nicholas II of Russia.\n\nSengan-en gained UNESCO World Heritage status in 2015 for its role in Japan's industrialization—the adjacent Shoko Shuseikan was Japan's first modern factory complex. The museum tells the Shimazu family's 800-year story and their pioneering industrial efforts. Don't miss the Satsuma Kiriko glassworks where artisans create traditional cut glass.",
+    "estimated_duration": "2-3 hours",
+    "rating": 4.5,
+    "review_count": 5400,
+    "min_budget": "¥1600"
+  },
+  {
+    "name": "Yufuin Onsen",
+    "region": "Kyushu",
+    "city": "Yufu",
+    "prefecture": "Oita-ken",
+    "neighborhood": "Yufuin-cho",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.2667,
+      "lng": 131.3667
+    },
+    "short_description": "A charming hot spring town with rural beauty, boutique shops, and healing waters beneath Mount Yufu.",
+    "description": "Yufuin Onsen is a picturesque hot spring town that offers a more tranquil, refined alternative to bustling Beppu 30 kilometers away. Nestled in a small basin surrounded by mountains with Mount Yufu (1,584m) as its backdrop, Yufuin has the second highest hot spring water flow in Japan and is known for its beautifying alkaline simple springs that are gentle on the skin.\n\nThe town has retained its charming character through careful urban planning, attracting artists, potters, and craftspeople who've established galleries and workshops alongside boutique shops, cafes, and museums. The main Yunotsubo Kaido street connects Yufuin Station to Lake Kinrin, lined with quirky shops selling local crafts, sweets, and the famous B-Speak roll cake. Lake Kinrin is magical in early mornings when mist rises from its warm waters fed by both hot and cold springs.\n\nUnlike commercialized resort towns, Yufuin emphasizes quality over quantity. Many traditional ryokans offer exceptional open-air baths with views of Mount Yufu. The Yufuin Floral Village recreates a Cotswold-style English village and houses a popular Studio Ghibli merchandise store.",
+    "estimated_duration": "Half-day to overnight",
+    "rating": 4.4,
+    "review_count": 4200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Glover Garden",
+    "region": "Kyushu",
+    "city": "Nagasaki",
+    "prefecture": "Nagasaki-ken",
+    "neighborhood": "Minamiyamate",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.7335,
+      "lng": 129.8683
+    },
+    "short_description": "An open-air museum featuring Japan's oldest Western-style wooden house and stunning harbor views.",
+    "description": "Glover Garden is an open-air museum on the Minamiyamate hillside overlooking Nagasaki Harbor, preserving the residences of foreign merchants who settled here after Japan opened to the West in the 1850s. The centerpiece is the Glover Residence, Japan's oldest surviving Western-style wooden building, constructed in 1863 for Scottish merchant Thomas Blake Glover.\n\nGlover was instrumental in Japan's modernization, contributing to shipbuilding, coal mining, and the establishment of what became Kirin Brewery. His house blends Western elements (French windows, chimneys) with Japanese construction techniques, and is associated with the opera Madame Butterfly—a statue of Japanese soprano Tamaki Miura stands in the garden. The residence became a UNESCO World Heritage Site as part of Sites of Japan's Meiji Industrial Revolution.\n\nThe garden contains nine historic Western-style buildings relocated from around Nagasaki, including Ringer House, Alt House, and Walker House, each furnished in period style. Escalators and the unique Glover Sky Road elevator help visitors navigate the hillside. The panoramic views of Nagasaki Harbor, especially at sunset, are unforgettable.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.4,
+    "review_count": 6200,
+    "min_budget": "¥620"
+  },
+  {
+    "name": "Mount Aso",
+    "region": "Kyushu",
+    "city": "Aso",
+    "prefecture": "Kumamoto-ken",
+    "neighborhood": "Aso",
+    "category": "nature",
+    "coordinates": {
+      "lat": 32.8844,
+      "lng": 131.1042
+    },
+    "short_description": "One of the world's largest volcanic calderas with an active crater, vast grasslands, and dramatic mountain scenery.",
+    "description": "Mount Aso is one of the largest active volcanoes in the world, featuring a massive caldera measuring 25km north-south and 18km east-west—so large that entire towns exist within it. The central volcanic group of five peaks includes Nakadake (1,506m), which remains highly active with a steaming crater lake that visitors can sometimes approach.\n\nThe Nakadake crater is accessible via a ropeway or hiking trail (when volcanic activity permits), offering views of the dramatically colored crater lake that changes from turquoise to gray depending on conditions. The Aso Volcano Museum near the crater provides information about volcanic activity and Aso's geological history through interactive exhibits.\n\nBeyond the crater, Aso-Kuju National Park encompasses vast grasslands (Kusasenri is particularly scenic), hiking trails, and hot springs. The Daikanbō viewpoint offers spectacular panoramic views of the entire caldera. The area is home to wild horses and cattle grazing on the slopes, and spring brings beautiful wildflowers while autumn colors the grasslands gold.",
+    "estimated_duration": "Half to full day",
+    "rating": 4.5,
+    "review_count": 4800,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kirishima Shrine",
+    "region": "Kyushu",
+    "city": "Kirishima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Kirishima",
+    "category": "culture",
+    "coordinates": {
+      "lat": 31.8633,
+      "lng": 130.8722
+    },
+    "short_description": "A vibrant vermillion shrine dedicated to Ninigi-no-Mikoto, set amid ancient forests in the Kirishima mountain range.",
+    "description": "Kirishima Shrine (Kirishima Jingu) is the largest and most important shrine in southern Kyushu, with a history dating back to the 6th century. It's dedicated to Ninigi-no-Mikoto, grandson of the sun goddess Amaterasu, who according to legend descended from heaven to Mount Takachiho-no-mine nearby, bringing the sacred imperial regalia.\n\nThe current structures date from 1715, rebuilt after previous buildings were destroyed by volcanic eruptions—a reminder of the geologically active landscape. The shrine's striking vermillion buildings contrast beautifully with the surrounding forest of ancient Japanese cedars and pines. A magnificent 22-meter torii gate marks the entrance, and the main hall features intricate carvings and architectural details typical of the Edo period.\n\nThe shrine is particularly stunning during autumn when maple trees turn brilliant red and gold, creating breathtaking scenery. Located within Kirishima-Kinkowan National Park, the shrine can be combined with hiking the volcanic peaks, visiting crater lakes, or soaking in nearby onsen towns like Kirishima Onsen.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.4,
+    "review_count": 2800,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Takachiho Shrine",
+    "region": "Kyushu",
+    "city": "Takachiho",
+    "prefecture": "Miyazaki-ken",
+    "neighborhood": "Mitai",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.7089,
+      "lng": 131.3086
+    },
+    "short_description": "An ancient shrine in a mystical cedar forest, known for nightly Kagura dance performances depicting Japanese mythology.",
+    "description": "Takachiho Shrine is one of Japan's most spiritually significant sites, established approximately 1,900 years ago in a grove of giant cryptomeria cedars—including trees over 800 years old. According to Japanese mythology, this area is where the gods descended to earth, making it a powerful 'power spot' and pilgrimage destination.\n\nThe shrine is dedicated to Takuchiho Sumeramikoto and other deities from the age of the gods. Its atmospheric grounds, shrouded in ancient trees with moss-covered roots supported by wooden stilts, create an otherworldly ambiance. The 'couple cedars' (meoto-sugi) at the entrance are believed to bring blessings for marriage and relationships when couples walk around them holding hands.\n\nEvery evening, the shrine holds Yokagura performances (20:00-21:00, ¥1,000)—traditional Shinto music and dance that depict scenes from Japanese mythology, including the famous story of Amaterasu hiding in a cave. These condensed versions of the longer winter Yokagura festivals offer visitors a chance to experience this UNESCO Intangible Cultural Heritage tradition.",
+    "estimated_duration": "1-1.5 hours",
+    "rating": 4.5,
+    "review_count": 3200,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Udo Shrine",
+    "region": "Kyushu",
+    "city": "Nichinan",
+    "prefecture": "Miyazaki-ken",
+    "neighborhood": "Udozaki",
+    "category": "culture",
+    "coordinates": {
+      "lat": 31.6431,
+      "lng": 131.4344
+    },
+    "short_description": "A dramatic cliffside shrine built inside a sea cave, dedicated to the father of Japan's first emperor.",
+    "description": "Udo Shrine (Udo Jingu) is one of Japan's most dramatically situated shrines, built inside a large cave in the cliffs above the wild waves of the Pacific Ocean. Dedicated to Ugayafukiaezu-no-Mikoto, the father of legendary Emperor Jimmu (Japan's first emperor), the shrine has deep connections to Japanese mythology and imperial lineage.\n\nThe vermillion buildings set against the dark cave walls and crashing surf below create an unforgettable scene. The main hall sits within the cave, which according to legend is where Ugayafukiaezu-no-Mikoto was born. Behind the hall are rock formations said to resemble breasts (Ochichi-iwa), and water dripping from them is collected and sold as lucky charm water for safe childbirth and child-rearing.\n\nA popular activity involves trying to throw clay balls called 'undama' into a rope-outlined target on a rock formation in front of the shrine—men throw with their left hand, women with their right. Making the target is said to bring good luck. The shrine is particularly popular with couples praying for fertility and safe childbirth.",
+    "estimated_duration": "1-1.5 hours",
+    "rating": 4.6,
+    "review_count": 4100,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Yutoku Inari Shrine",
+    "region": "Kyushu",
+    "city": "Kashima",
+    "prefecture": "Saga-ken",
+    "neighborhood": "Fureda",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.0628,
+      "lng": 130.0861
+    },
+    "short_description": "One of Japan's three most important Inari shrines, featuring stunning vermillion architecture on a forested hillside.",
+    "description": "Yutoku Inari Shrine is one of Japan's three most significant Inari shrines (along with Fushimi Inari in Kyoto and Toyokawa Inari in Aichi), attracting over three million visitors annually. Established in 1687 by Kazanin Manko-hime, wife of the local lord Nabeshima Naotomo, it's dedicated to the Inari deity associated with good fortune, business success, and bountiful harvests.\n\nThe shrine's main hall is dramatically perched on a hillside, accessed by climbing stairs through vermillion torii gates and past numerous smaller shrines. The multi-tiered architecture rises against the forested mountainside, offering stunning views from the upper levels. The main hall, rebuilt in 1957 after fire, features elaborate carvings and traditional craftsmanship.\n\nThe shrine grounds include a Japanese garden (particularly beautiful when azaleas bloom in spring), a museum of shrine treasures, and the Yutoku Museum of History with folk art displays. The approach features shops selling local specialties, particularly Kashima's renowned sake. Major festivals include the fire festival in autumn and New Year celebrations drawing massive crowds.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.4,
+    "review_count": 2600,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Usa Jingu Shrine",
+    "region": "Kyushu",
+    "city": "Usa",
+    "prefecture": "Oita-ken",
+    "neighborhood": "Minamiusa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5267,
+      "lng": 131.3744
+    },
+    "short_description": "The head shrine of over 40,000 Hachiman shrines nationwide, established in 725 and a National Treasure.",
+    "description": "Usa Jingu is the most important Hachiman shrine in Japan, serving as the head of a network of over 40,000 Hachiman shrines throughout the country. Established in 725 during the Nara period, it enshrines Hachiman—originally Emperor Ojin, later revered as the god of warriors and protector of Japan.\n\nThe shrine's main buildings are designated National Treasures and represent the prototype for the distinctive 'Hachiman-zukuri' architectural style characterized by two halls joined under a single roof. The present structures date from the early 19th century, maintaining the original design while showcasing exceptional craftsmanship. The three main halls (Ichi-no-goten, Ni-no-goten, and San-no-goten) are aligned in an impressive row.\n\nThe shrine grounds are extensive, set in a serene forest with tranquil lotus ponds, stone bridges, and centuries-old trees. The path from the parking area passes through a peaceful landscape before reaching the main worship area. Unique to Usa Jingu is the tradition of bowing twice, clapping four times (rather than the usual two), then bowing once more. The shrine holds important festivals throughout the year, including the spectacular Hojoe festival in summer.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.4,
+    "review_count": 2100,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Ohori Park",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Chuo-ku",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.5847,
+      "lng": 130.3781
+    },
+    "short_description": "A beautiful lakeside park built on Fukuoka Castle's former moat, perfect for jogging, picnics, and swan boat rides.",
+    "description": "Ohori Park is a beloved urban oasis in central Fukuoka, built on the site of the outer moat (ohori) of the former Fukuoka Castle. The park centers around a tranquil lake with a 2km walking/jogging path that's popular with locals for morning exercise and evening strolls.\n\nThree small islands connected by elegant bridges dot the lake, creating picturesque views and peaceful spots for contemplation. Swan-shaped pedal boats are available for rent, offering a relaxing way to enjoy the water. The park is particularly beautiful during cherry blossom season (late March-early April) when approximately 1,000 trees burst into bloom, and again in August during the summer fireworks festival.\n\nAdjacent to the park is the Fukuoka Art Museum, featuring an impressive collection of modern art including works by Dalí, Miró, and Japanese masters, plus the famous Kofukuji Urn. The traditional Japanese garden (separate admission) offers meticulously landscaped scenery with tea houses where visitors can enjoy matcha. Nearby, the ruins of Fukuoka Castle on Maizuru Hill provide additional walking trails and historical interest.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.3,
+    "review_count": 5100,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nanzoin Temple",
+    "region": "Kyushu",
+    "city": "Sasaguri",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Sasaguri",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.6156,
+      "lng": 130.5292
+    },
+    "short_description": "Home to the world's largest bronze reclining Buddha statue, measuring 41 meters long and weighing 300 tons.",
+    "description": "Nanzoin Temple is famous for housing the Nehanzo—the world's largest bronze reclining Buddha statue, an awe-inspiring sight at 41 meters long, 11 meters high, and weighing 300 tons (about the same as the Statue of Liberty). Completed in 1995, the statue depicts Buddha entering Nirvana and is flanked by numerous smaller Buddhist deities.\n\nThe temple was originally located in Wakayama Prefecture but was relocated to Sasaguri in 1899. It serves as the first temple on the Sasaguri Pilgrimage, a mini version of the famous Shikoku 88 Temple Pilgrimage that includes 88 Buddhist temples throughout the Sasaguri area. This pilgrimage was established 180 years ago and can be completed in a few days rather than the weeks required for Shikoku.\n\nBeyond the giant Buddha, the temple complex includes the Shichifukujin Tunnel—a passage said to grant wishes when you encounter statues of the Seven Gods of Good Fortune. The grounds feature beautiful autumn foliage, numerous small shrines and chapels housing over 500 Buddhist deities, and a serene tea room. The temple is easily accessible as a day trip from Fukuoka.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.4,
+    "review_count": 3800,
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kyushu National Museum",
+    "region": "Kyushu",
+    "city": "Dazaifu",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Ishizaka",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5158,
+      "lng": 130.5403
+    },
+    "short_description": "One of Japan's four national museums, featuring innovative architecture and exhibits on Asian cultural exchange.",
+    "description": "The Kyushu National Museum, opened in 2005, is one of only four national museums in Japan and the first to be built in over 100 years. Unlike other national museums that focus primarily on fine arts, this museum emphasizes the cultural exchange between Japan and Asia through history, reflecting Kyushu's role as the gateway between Japan and the continent.\n\nThe striking modern building, designed by architect Kikutake Kiyonori, features a wave-like glass and steel structure that appears to float amid the forested hillside. It covers 15,000 square meters and houses approximately 1,200 cultural artifacts in its permanent exhibition, chronologically tracing Asian cultural history from prehistoric times through the Edo period.\n\nSpecial exhibitions showcase treasures on loan from museums worldwide. The 'Ajippa' hands-on exhibition space allows visitors to experience Asian cultures through touchable replicas and traditional costumes. The museum connects directly to Dazaifu Tenmangu Shrine via a pleasant forest path and escalator tunnel, making it easy to combine both attractions.",
+    "estimated_duration": "1.5-2 hours",
+    "rating": 4.3,
+    "review_count": 2400,
+    "min_budget": "¥700"
+  },
+  {
+    "name": "Tochoji Temple",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5922,
+      "lng": 130.4153
+    },
+    "short_description": "Fukuoka's oldest temple, home to Japan's largest wooden seated Buddha and a beautiful five-story pagoda.",
+    "description": "Tochoji Temple, founded in 806 by the famous Buddhist monk Kukai (Kobo Daishi) upon his return from studying in China, is the oldest temple in Fukuoka and holds significant historical importance as the first Shingon Buddhist temple established by Kukai in Japan.\n\nThe temple's main attraction is the Fukuoka Daibutsu (Great Buddha), the largest wooden seated Buddha in Japan, measuring 10.8 meters tall and weighing approximately 30 tons. Completed in 1992, the statue is made of Japanese cypress and depicts Shaka Nyorai (the historical Buddha). Visitors can enter a passage beneath the statue for a unique 'hell and paradise' experience, walking through complete darkness before emerging into light—symbolizing the Buddhist journey from ignorance to enlightenment.\n\nThe temple also features a striking five-story vermillion pagoda, rebuilt in 2011, which has become an iconic Hakata landmark. The grounds include the graves of the Kuroda clan, former feudal lords of Fukuoka. The temple can be easily combined with nearby Kushida Shrine (a 5-minute walk) for a comprehensive cultural experience in central Hakata.",
+    "estimated_duration": "30-60 minutes",
+    "rating": 4.3,
+    "review_count": 2900,
+    "min_budget": "¥50"
+  },
+  {
+    "name": "Sakurajima",
+    "region": "Kyushu",
+    "city": "Kagoshima",
+    "prefecture": "Kagoshima-ken",
+    "neighborhood": "Sakurajima",
+    "category": "nature",
+    "coordinates": {
+      "lat": 31.5858,
+      "lng": 130.6578
+    },
+    "short_description": "One of Japan's most active volcanoes, connected to the mainland since 1914 and offering dramatic landscapes and hot springs.",
+    "description": "Sakurajima is one of the world's most active volcanoes, erupting thousands of times per year with ash plumes visible from Kagoshima City across the bay. Once an island, it became a peninsula when a massive 1914 eruption sent lava flows connecting it to the Osumi Peninsula. Today, approximately 4,000 people live on its slopes, adapting to life alongside this dynamic geological feature.\n\nThe volcano dominates Kagoshima's skyline and is reached by a frequent 15-minute ferry from the city—a scenic journey offering spectacular views. On the island, visitors can explore several observation points: Yunohira Observatory at 373m offers close views of the active Minamidake crater; Arimura Lava Observatory shows the moonscape created by the 1914 eruption; and the Kurokami Buried Torii preserves a shrine gate buried up to its crossbar by volcanic debris.\n\nSakurajima Dinosaur Park is a family-friendly attraction with dinosaur-shaped playground equipment and cherry trees. The island also offers onsen experiences, including the beachside Shirahama Onsen with natural foot baths. Sakurajima's unique giant radishes and tiny tangerines, grown in mineral-rich volcanic soil, are local specialties.",
+    "estimated_duration": "Half day",
+    "rating": 4.5,
+    "review_count": 5600,
+    "min_budget": "¥200"
+  },
+  {
+    "name": "Fukuoka Tower",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Momochihama",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 33.5932,
+      "lng": 130.3514
+    },
+    "short_description": "Japan's tallest seaside tower at 234 meters, offering 360-degree panoramic views from its observation decks.",
+    "description": "Fukuoka Tower is Japan's tallest seaside tower, standing 234 meters high in the Momochihama area near Fukuoka's waterfront. Completed in 1989 for the Asian-Pacific Expo, the tower is covered with 8,000 half-mirrors that reflect the sky and sea, creating a striking appearance that changes throughout the day.\n\nThe main observation deck at 123 meters provides 360-degree panoramic views of Fukuoka city, Hakata Bay, and on clear days, the distant Kyushu mountains. A higher deck offers even more expansive views. The experience is particularly memorable at sunset when the city transforms from day to night, and the tower itself is illuminated with seasonal light displays—hearts for Valentine's Day, Christmas themes in December, and special patterns for local events.\n\nThe tower complex includes restaurants, a souvenir shop, and a lover's sanctuary on the observation floor where couples can purchase heart-shaped padlocks to secure to the railings. The surrounding Momochi Seaside Park area offers beaches, the Robosquare robot museum, and access to the PayPay Dome (home of the Softbank Hawks baseball team).",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 4300,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Nakasu Yatai Food Stalls",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Nakasu",
+    "category": "food",
+    "coordinates": {
+      "lat": 33.5908,
+      "lng": 130.4028
+    },
+    "short_description": "Iconic open-air food stalls along the Naka River serving Hakata ramen, yakitori, and oden in a lively atmosphere.",
+    "description": "Fukuoka's yatai (open-air food stalls) are an iconic symbol of the city's vibrant food culture, with the largest concentration found along the Naka River in the Nakasu entertainment district. These mobile restaurants, typically seating around 8-10 people on stools beneath a canvas awning, create an intimate dining experience unique to Fukuoka.\n\nEach evening from around 6pm, over 100 yatai set up throughout the city, with Nakasu and Tenjin being the most popular areas. The signature dish is Hakata tonkotsu ramen—rich, creamy pork bone broth with thin noodles—but stalls also serve yakitori (grilled chicken skewers), oden (hot pot), gyoza, mentaiko (spicy cod roe), and local specialties. Cold beer and sake flow freely.\n\nThe experience is as much about atmosphere as food. Sitting elbow-to-elbow with locals and fellow travelers, chatting with the stall owner, and watching dishes prepared just feet away creates memorable moments. Many stalls have been family-run for generations, each with its own specialty and loyal following. Peak hours are 8pm-midnight; most stalls close around 2am. Note that some stalls may charge a 'seating fee' (around ¥500) separate from food costs.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.5,
+    "review_count": 7200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kushida Shrine",
+    "region": "Kyushu",
+    "city": "Fukuoka",
+    "prefecture": "Fukuoka-ken",
+    "neighborhood": "Hakata",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5911,
+      "lng": 130.41
+    },
+    "short_description": "Hakata's most important shrine, famous for the spectacular Hakata Gion Yamakasa festival and year-round decorated floats.",
+    "description": "Kushida Shrine, affectionately called 'Okushida-san' by locals, is the most important shrine in Hakata and spiritual guardian of the city. Founded in 757, it's dedicated to three deities including Amaterasu and the gods of wind and earth, making it a popular spot for prayers for commercial prosperity and longevity.\n\nThe shrine is famous as the home of the Hakata Gion Yamakasa Festival, one of Japan's most exciting summer festivals held July 1-15, culminating in an early morning race where teams carry massive, elaborately decorated floats (yamakasa) weighing over a ton through the streets. Year-round, visitors can see these impressive floats displayed on the shrine grounds—the 10-meter tall kazariyama (decorative float) changes annually.\n\nThe shrine grounds are compact but filled with interesting features: a 1,000-year-old ginkgo tree designated a natural monument, a unique 'crane well' whose water is said to bring longevity, and anchor stones from a Mongol invasion ship. The entrance gate features 12 wooden zodiac carvings. Kushida Shrine sits conveniently in central Hakata, within walking distance of Canal City and Tochoji Temple.",
+    "estimated_duration": "30-60 minutes",
+    "rating": 4.4,
+    "review_count": 4800,
+    "min_budget": "Free"
+  }
+]

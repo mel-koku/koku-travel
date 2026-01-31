@@ -1,0 +1,801 @@
+[
+  {
+    "name": "Aji Tasuke",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kokubuncho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2625,
+      "lng": 140.8718
+    },
+    "short_description": "The birthplace of Sendai Gyutan (grilled beef tongue), serving the original simple salt-seasoned set.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Umami Tasuke",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kokubuncho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.263,
+      "lng": 140.8705
+    },
+    "short_description": "A split from the original Tasuke, offering the same legendary charcoal-grilled beef tongue experience.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 2000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Zunda Saryo Sendai Station",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2601,
+      "lng": 140.8824
+    },
+    "short_description": "Famous for the Zunda Shake, a creamy edamame-based smoothie that sparked a nationwide boom.",
+    "estimated_duration": "30 mins",
+    "rating": 4.2,
+    "review_count": 3000,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Murakamiya Mochi Ten",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Itsutsubashi",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2525,
+      "lng": 140.878
+    },
+    "short_description": "A historic mochi shop famous for its freshly made Zunda Mochi with a coarse, flavorful edamame paste.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 1800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Tanya Zenjiro Sendai Station",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2605,
+      "lng": 140.8828
+    },
+    "short_description": "Extremely popular Gyutan spot known for its thick cuts and perfectly grilled texture.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 3500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Chuka Soba Kaichi",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kokubuncho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2642,
+      "lng": 140.8708
+    },
+    "short_description": "Top-rated ramen shop serving a pure, golden chicken broth made with mature hens.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Sendai Asaichi",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.259,
+      "lng": 140.881
+    },
+    "short_description": "Known as 'Sendai's Kitchen', this morning market is packed with fresh seafood, produce, and street food stalls.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 2500,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Gyutan Tsukasa",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station East",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.261,
+      "lng": 140.885
+    },
+    "short_description": "Locals' favorite for beef tongue, known for using high-quality Australian beef and charcoal grilling.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Ryutei",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Nishikicho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.266,
+      "lng": 140.8755
+    },
+    "short_description": "The birthplace of Hiyashi Chuka (cold ramen), serving it year-round with separate toppings.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Endou Mochi Ten",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Miyamachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.275,
+      "lng": 140.888
+    },
+    "short_description": "Long-established sweet shop famous for its 'Zunda Mochi' with a rich, natural edamame flavor.",
+    "estimated_duration": "45 mins",
+    "rating": 4.4,
+    "review_count": 600,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Robata",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kokubuncho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2632,
+      "lng": 140.8695
+    },
+    "short_description": "The birthplace of the 'Robatayaki' style of grilling, offering fresh fish and vegetables passed on paddles.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Asaichi Shokudo Shoyu",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Asaichi",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2588,
+      "lng": 140.8808
+    },
+    "short_description": "Market eatery serving fresh, affordable Kaisendon (seafood bowls) directly from the morning market.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 900,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Sendai-kko Ramen Sendai Station",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2615,
+      "lng": 140.8835
+    },
+    "short_description": "Sendai's soul food ramen featuring a rich pork soy sauce broth and thick noodles.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 1200,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Kazunori Ikeda Individuel",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Minamimachidori",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2585,
+      "lng": 140.876
+    },
+    "short_description": "Sendai's premier French patisserie known for exquisite macarons and artistic cakes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 1000,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Shiogama Shirahata S-PAL",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2602,
+      "lng": 140.8822
+    },
+    "short_description": "Standing sushi bar serving premium fresh catch from the famous Shiogama port nearby.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Gyutan Ryori Kaku",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Vlandome",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2612,
+      "lng": 140.8735
+    },
+    "short_description": "High-end beef tongue specialist known for its tender 'special cut' and relaxed atmosphere.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kanmidokoro Hikoichi",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Ichibancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2628,
+      "lng": 140.8725
+    },
+    "short_description": "Retro sweets parlor serving traditional zunda mochi and anmitsu in a nostalgic setting.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1100,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Rikyu Sendai Station",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2603,
+      "lng": 140.8826
+    },
+    "short_description": "The most famous Gyutan chain, reliable for its thick cuts and oxtail soup sets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 2000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Abe Kamaboko Ten Honten",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Ichibancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2618,
+      "lng": 140.8745
+    },
+    "short_description": "Experience hand-grilling your own Sasa Kamaboko (bamboo-leaf shaped fish cake).",
+    "estimated_duration": "30 mins",
+    "rating": 4.3,
+    "review_count": 1500,
+    "min_budget": "¥300"
+  },
+  {
+    "name": "Genji",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Bunka Yokocho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2595,
+      "lng": 140.8732
+    },
+    "short_description": "Atmospheric, legendary izakaya run by a kimono-clad proprietress, serving classic sake and sides.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.5,
+    "review_count": 400,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Cafe Mozart Atelier",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Katahira",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.256,
+      "lng": 140.871
+    },
+    "short_description": "Hidden cafe with a terrace overlooking the Hirose River, perfect for a relaxing break.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 600,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Ajiyoshi",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kokubuncho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2638,
+      "lng": 140.8702
+    },
+    "short_description": "Famous for Sendai Spicy Miso Ramen, featuring a rich broth and a ball of spicy miso.",
+    "estimated_duration": "1 hour",
+    "rating": 3.9,
+    "review_count": 900,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Wabisuke",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Omachi",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2598,
+      "lng": 140.8685
+    },
+    "short_description": "The go-to spot for Seri Nabe (parsley hotpot), a beloved Sendai winter specialty.",
+    "estimated_duration": "2 hours",
+    "rating": 4.4,
+    "review_count": 300,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Umai Sushikan Ichibancho",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Ichibancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2614,
+      "lng": 140.8728
+    },
+    "short_description": "Popular sushi chain offering high-quality local seafood at accessible prices.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Taiyaki Ankoya",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Nakakecho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2622,
+      "lng": 140.8805
+    },
+    "short_description": "Specialty shop known for square-shaped taiyaki overflowing with delicious bean paste.",
+    "estimated_duration": "20 mins",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥300"
+  },
+  {
+    "name": "Flat White Coffee Factory",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Izumi-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.305,
+      "lng": 140.865
+    },
+    "short_description": "Specialty coffee roaster credited with popularizing flat whites in the region.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Senreizushi",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2604,
+      "lng": 140.8825
+    },
+    "short_description": "Standing sushi bar inside the station offering quick, fresh, and affordable local fish.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1000,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Kisuke",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Ichibancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.262,
+      "lng": 140.8722
+    },
+    "short_description": "A classic Gyutan restaurant known for its miso-flavored tongue option.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 1200,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Darestore",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Ichibancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2608,
+      "lng": 140.8738
+    },
+    "short_description": "Trendy coffee shop and roastery tucked away in a building, serving great lattes.",
+    "estimated_duration": "45 mins",
+    "rating": 4.5,
+    "review_count": 300,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Ramen Smith",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Miyagino",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2655,
+      "lng": 140.895
+    },
+    "short_description": "Creative miso ramen shop with a reggae theme, famous for its rich 'Nibo-Miso' soup.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 600,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Sushidokoro Koya",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kokubuncho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2636,
+      "lng": 140.8712
+    },
+    "short_description": "Well-regarded sushi shop open late, perfect for a high-quality meal after drinking.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 400,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Chinese Meshiya Chikuchiku",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Itsutsubashi",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.254,
+      "lng": 140.8795
+    },
+    "short_description": "Famous for Sendai Mabo Yakisoba, a local B-gourmet dish of crispy noodles with spicy tofu.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hosshoyan",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kotodai Koen",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.265,
+      "lng": 140.8715
+    },
+    "short_description": "Beloved pancake house known for its thick, fluffy hotcakes and retro vibe.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Izakaya Chocho",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kokubuncho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2645,
+      "lng": 140.8698
+    },
+    "short_description": "Popular izakaya specializing in fresh grilled fish and sake, always lively.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 600,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Date no Gyutan Honpo",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2608,
+      "lng": 140.882
+    },
+    "short_description": "Famous for the 'Core Tongue' (thickest part) and elegant presentation.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Dashiro",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Aoba-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.258,
+      "lng": 140.875
+    },
+    "short_description": "Modern ramen shop winning awards for its rich shellfish and fish-based broths.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hachi Sendai Station",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2602,
+      "lng": 140.8829
+    },
+    "short_description": "Local western-style diner famous for its award-winning Hamburg Steak and Napolitan.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 1200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Saito Sozai",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Asaichi",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2589,
+      "lng": 140.8812
+    },
+    "short_description": "Butcher shop in the morning market famous for its delicious, freshly fried potato croquettes.",
+    "estimated_duration": "15 mins",
+    "rating": 4.4,
+    "review_count": 500,
+    "min_budget": "¥200"
+  },
+  {
+    "name": "Kakigoya Tobiume",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Ichibancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2618,
+      "lng": 140.872
+    },
+    "short_description": "Casual oyster shack serving fresh Miyagi oysters grilled, fried, or raw all year round.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 600,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kumaryu",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Aoba-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2652,
+      "lng": 140.869
+    },
+    "short_description": "Sichuan restaurant highly regarded for its spicy, numbing Mabo Tofu and Mabo Yakisoba.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Suehiro Honten",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Ichibancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2625,
+      "lng": 140.8728
+    },
+    "short_description": "Historic ramen shop serving a light, savory soy sauce ramen that is a local classic.",
+    "estimated_duration": "45 mins",
+    "rating": 3.8,
+    "review_count": 600,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Aoyama Bunko",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2612,
+      "lng": 140.8815
+    },
+    "short_description": "Book-themed cafe with a cozy atmosphere, known for beautiful cream sodas and galettes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Imou",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Sendai Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.26,
+      "lng": 140.88
+    },
+    "short_description": "Long-running izakaya famous for its seasonal Seri Nabe with duck.",
+    "estimated_duration": "2 hours",
+    "rating": 4.3,
+    "review_count": 300,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Taishoken",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Izumi-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.31,
+      "lng": 140.88
+    },
+    "short_description": "Branch of the famous dipping noodle shop, also popular for its hearty Mabo Yakisoba.",
+    "estimated_duration": "1 hour",
+    "rating": 3.9,
+    "review_count": 500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Gyutan Keyaki",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Ichibancho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.2616,
+      "lng": 140.8718
+    },
+    "short_description": "Offers a unique 'Hitsumabushi' style beef tongue dish.",
+    "estimated_duration": "1 hour",
+    "rating": 4.1,
+    "review_count": 400,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Seki",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Kokubuncho",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.264,
+      "lng": 140.87
+    },
+    "short_description": "Hidden basement yakitori spot with no menu, serving only a chef's course of skewers.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 200,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Kano",
+    "region": "Tohoku",
+    "city": "Sendai",
+    "prefecture": "Miyagi-ken",
+    "neighborhood": "Aoba-ku",
+    "category": "food",
+    "coordinates": {
+      "lat": 38.261,
+      "lng": 140.865
+    },
+    "short_description": "Teppanyaki restaurant specializing in premium Sendai Beef steaks.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 150,
+    "min_budget": "¥10000"
+  }
+]

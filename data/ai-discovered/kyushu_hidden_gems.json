@@ -1,0 +1,752 @@
+[
+  {
+    "name": "Nanzoin Temple",
+    "region": "Kyushu",
+    "city": "Sasaguri, Fukuoka",
+    "neighborhood": "Sasaguri",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.6208,
+      "lng": 130.5736
+    },
+    "short_description": "Home to a massive bronze Reclining Buddha, larger than Nara's.",
+    "description": "While famous among locals, this temple is often missed by hasty tourists. It houses the world's largest bronze statue of a reclining Buddha (41 meters long). The temple complex is part of the Sasaguri pilgrimage and features beautiful tunnels, statues, and lucky charms.",
+    "estimated_duration": "1 - 2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Miyajidake Shrine",
+    "region": "Kyushu",
+    "city": "Fukutsu, Fukuoka",
+    "neighborhood": "Miyaji",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.7806,
+      "lng": 130.4864
+    },
+    "short_description": "Famous for the 'Path of Light' sunset and massive shimenawa rope.",
+    "description": "This shrine features Japan's largest shimenawa (sacred straw rope), weighing 3 tons. Twice a year (Feb/Oct), the setting sun aligns perfectly with the straight path leading from the shrine to the sea, creating a stunning 'Path of Light.'",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Akizuki Castle Ruins",
+    "region": "Kyushu",
+    "city": "Asakura, Fukuoka",
+    "neighborhood": "Akizuki",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.4667,
+      "lng": 130.6931
+    },
+    "short_description": "A quiet 'Little Kyoto' famous for autumn leaves and black gates.",
+    "description": "A former castle town with no train station, keeping it peaceful. The 'Kuromon' (Black Gate) surrounded by maple trees is a quintessential Japanese autumn scene. The streets are lined with samurai walls and tea houses serving local kudzu sweets.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Hiraodai Karst",
+    "region": "Kyushu",
+    "city": "Kitakyushu, Fukuoka",
+    "neighborhood": "Kokuraminami",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.7719,
+      "lng": 130.9083
+    },
+    "short_description": "A plateau scattered with white limestone rocks resembling sheep.",
+    "description": "One of Japan's three major karsts. The grassy plateau is dotted with white limestone rocks, looking like a flock of sheep. Underneath lies the Senbutsu Limestone Cave, where visitors can walk through an underground river (bring sandals/towels).",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free (Cave: 900 JPY)"
+  },
+  {
+    "name": "Ukiha Inari Shrine",
+    "region": "Kyushu",
+    "city": "Ukiha, Fukuoka",
+    "neighborhood": "Nagano",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.3283,
+      "lng": 130.7681
+    },
+    "short_description": "A mountainside shrine with 90 red torii gates and city views.",
+    "description": "Ascend a steep line of vermilion torii gates that climb the side of a mountain. From the top, you get a panoramic view of the Chikugo Plain and vineyards below. It is a fantastic photo spot often compared to Fushimi Inari but much quieter.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Itoshima (Sakurai Futamigaura)",
+    "region": "Kyushu",
+    "city": "Itoshima, Fukuoka",
+    "neighborhood": "Shima",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.6425,
+      "lng": 130.1417
+    },
+    "short_description": "A white torii gate standing in the ocean framing 'husband and wife' rocks.",
+    "description": "A trendy coastal area for Fukuoka locals. The highlight is the pure white torii gate in the sea, contrasting with the blue water. Behind it are the 'Meoto Iwa' (wedded rocks) joined by a shimenawa rope. The surrounding coastline has hip cafes and sunset spots.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kawachi Reservoir (Chuo Weir)",
+    "region": "Kyushu",
+    "city": "Kitakyushu, Fukuoka",
+    "neighborhood": "Yahatahigashi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.8344,
+      "lng": 130.8208
+    },
+    "short_description": "An enchanting European-style stone bridge in a forest park.",
+    "description": "While the nearby Wisteria Garden is famous, this reservoir area offers a peaceful retreat year-round. The distinct stone masonry bridge (Minami-Kawachi Bridge) has a retro, European fairytale aesthetic and is a designated Important Cultural Property.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Yutoku Inari Shrine",
+    "region": "Kyushu",
+    "city": "Kashima, Saga",
+    "neighborhood": "Furueda",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.0733,
+      "lng": 130.1086
+    },
+    "short_description": "One of Japan's top three Inari shrines with stunning hillside architecture.",
+    "description": "Often called the 'Nikko of Kyushu' for its ornate designs. The main hall stands on tall wooden beams against a hillside, reminiscent of Kyoto's Kiyomizu-dera. A row of torii gates leads up the mountain for a short hike with great views.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Oouo Shrine (Sea Torii)",
+    "region": "Kyushu",
+    "city": "Tara, Saga",
+    "neighborhood": "Tara",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.0231,
+      "lng": 130.2106
+    },
+    "short_description": "Three torii gates standing in the Ariake Sea, revealed at low tide.",
+    "description": "Located in a town famous for crabs, these gates stand in the ocean to pray for safe fishing. At high tide, they are half-submerged; at low tide, you can walk through them. It is a serene and mystical sight, especially during sunrise.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Okawachiyama Village",
+    "region": "Kyushu",
+    "city": "Imari, Saga",
+    "neighborhood": "Okawachiyama",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.2389,
+      "lng": 129.8925
+    },
+    "short_description": "The 'Village of Secret Kilns' hidden in the mountains.",
+    "description": "Once the exclusive pottery production site for the Shogun, it was guarded to protect trade secrets. Today, it is a narrow valley packed with brick chimneys, pottery shops, and a bridge decorated with porcelain tiles. The setting is dramatic, surrounded by jagged peaks.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Mifuneyama Rakuen",
+    "region": "Kyushu",
+    "city": "Takeo, Saga",
+    "neighborhood": "Takeo",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.1819,
+      "lng": 130.0039
+    },
+    "short_description": "A massive azalea garden often featuring TeamLab digital art.",
+    "description": "A spacious park at the foot of the ruggest Mt. Mifune. In spring, it is a bowl of color with 50,000 azaleas. At night (seasonally), TeamLab installs digital art projections on the forest and rocks, creating a magical atmosphere.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "600-1200 JPY"
+  },
+  {
+    "name": "Hamanoura Rice Terraces",
+    "region": "Kyushu",
+    "city": "Genkai, Saga",
+    "neighborhood": "Hamanoura",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.4983,
+      "lng": 129.8786
+    },
+    "short_description": "Coastal rice fields that turn orange during sunset.",
+    "description": "These terraced fields face the ocean like an amphitheater. In late April and May, when filled with water, the setting sun reflects off the paddies, painting the entire hillside in geometric patterns of orange and gold. It is a designated 'Lover's Sanctuary.'",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nanatsugama Caves",
+    "region": "Kyushu",
+    "city": "Karatsu, Saga",
+    "neighborhood": "Yobuko",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.5439,
+      "lng": 129.9406
+    },
+    "short_description": "Sea caves formed of hexagonal basalt columns.",
+    "description": "Located near the famous Yobuko morning market. The Genkai Sea's rough waves have carved seven caves into the cliff. The rock formations are hexagonal basalt columns. You can view them from a walking trail above or take the 'Ika-maru' squid boat to enter the caves.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free (Boat fee applies)"
+  },
+  {
+    "name": "Arita Porcelain Park",
+    "region": "Kyushu",
+    "city": "Arita, Saga",
+    "neighborhood": "Toyaji",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 33.1594,
+      "lng": 129.9058
+    },
+    "short_description": "A surreal replica of a German palace dedicated to ceramics.",
+    "description": "This theme park features a full-scale reconstruction of the Zwinger Palace from Dresden, Germany. It celebrates the historical link between Arita porcelain and European royalty. The palace houses a stunning museum, and you can try painting your own porcelain.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free (Museum fee applies)"
+  },
+  {
+    "name": "Kujukushima (Tenkaiho Observatory)",
+    "region": "Kyushu",
+    "city": "Sasebo, Nagasaki",
+    "neighborhood": "Shimofunagoshicho",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.1536,
+      "lng": 129.6919
+    },
+    "short_description": "The best view of the '99 Islands' archipelago.",
+    "description": "This observatory offers the most spectacular panoramic view of the 208 islands (Kujukushima) dotted across the blue sea. It is especially beautiful in spring when surrounded by rape blossoms or cosmos in autumn. The density of islands creates a maze-like seascape.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Unzen Jigoku (Hells)",
+    "region": "Kyushu",
+    "city": "Unzen, Nagasaki",
+    "neighborhood": "Obama",
+    "category": "nature",
+    "coordinates": {
+      "lat": 32.7428,
+      "lng": 130.2625
+    },
+    "short_description": "Steam vents and hot springs in a national park.",
+    "description": "Walkways weave through white, sulfurous steam rising from the ground, creating a 'hellish' landscape. It has a dark history as a site of Christian martyrdom. You can buy eggs cooked in the steam. The area is also famous for azaleas in May.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Shimabara Carp Street",
+    "region": "Kyushu",
+    "city": "Shimabara, Nagasaki",
+    "neighborhood": "Shinmachi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.7836,
+      "lng": 130.3708
+    },
+    "short_description": "A town where colorful koi carp swim in the roadside gutters.",
+    "description": "In this 'City of Water,' crystal clear spring water flows through the drainage canals along the streets. The locals have released hundreds of colorful koi fish into these canals. Visitors can stroll the old samurai streets and admire the swimming carp.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Ikitsuki Sunsetway",
+    "region": "Kyushu",
+    "city": "Hirado, Nagasaki",
+    "neighborhood": "Ikitsuki",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.3667,
+      "lng": 129.4333
+    },
+    "short_description": "A dramatic driving route along rugged seaside cliffs.",
+    "description": "Popularized by Japanese car commercials, this road hugs the coastline of Ikitsuki Island. With steep cliffs on one side and the East China Sea on the other, it offers exhilarating views. The Shiodawara Cliffs nearby showcase unique basalt columns.",
+    "estimated_duration": "1 hour (drive)",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kawachi Toge Pass",
+    "region": "Kyushu",
+    "city": "Hirado, Nagasaki",
+    "neighborhood": "Kawachi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.3444,
+      "lng": 129.5306
+    },
+    "short_description": "Rolling grassy hills with 360-degree ocean views.",
+    "description": "This pass offers one of the best views in Hirado. The hills are covered in grass (burned annually in February), and from the top, you can see the intricate coastline, nearby islands, and the blue sea on all sides. It feels incredibly open and liberating.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kamishikimi Kumanoimasu Shrine",
+    "region": "Kyushu",
+    "city": "Takamori, Kumamoto",
+    "neighborhood": "Kamishikimi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.8336,
+      "lng": 131.1417
+    },
+    "short_description": "A mystical shrine setting that inspired anime scenery.",
+    "description": "Famous as a setting in the anime 'Hotarubi no Mori e.' The approach is a long, moss-covered staircase lined with nearly 100 stone lanterns winding through a dense cedar forest. At the top, there is a large wind-blown hole in the rock (Ugetoiwa) said to grant victory.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nabegataki Falls",
+    "region": "Kyushu",
+    "city": "Oguni, Kumamoto",
+    "neighborhood": "Kurobuchi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.1367,
+      "lng": 131.0375
+    },
+    "short_description": "A wide waterfall you can walk behind.",
+    "description": "This waterfall looks like a curtain of water. Erosion has carved out a large space behind the falls, allowing visitors to walk behind the cascade without getting wet. The view through the water curtain toward the green forest is magical.",
+    "estimated_duration": "1 hour",
+    "min_budget": "300 JPY"
+  },
+  {
+    "name": "Tsujunkyo Bridge",
+    "region": "Kyushu",
+    "city": "Yamato, Kumamoto",
+    "neighborhood": "Komine",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.6847,
+      "lng": 130.9881
+    },
+    "short_description": "The largest stone aqueduct in Japan, which releases water.",
+    "description": "Built in 1854 to irrigate rice fields, this massive stone arch bridge is an engineering marvel. Periodically, they open the central plug to release water in a powerful stream (check schedule), creating a spectacular man-made waterfall.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kuratake Shrine",
+    "region": "Kyushu",
+    "city": "Amakusa, Kumamoto",
+    "neighborhood": "Kuratake",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.4208,
+      "lng": 130.3472
+    },
+    "short_description": "A 'Torii in the Sky' overlooking the Amakusa islands.",
+    "description": "Located at the summit of Mt. Kuratake (682m). The stone torii gate frames a breathtaking view of the Amakusa archipelago and Yatsushiro Sea. It is a spiritual spot that prays for safety at sea, offering one of the best high-altitude ocean views in Kyushu.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Nagabeta Seabed Road",
+    "region": "Kyushu",
+    "city": "Uto, Kumamoto",
+    "neighborhood": "Sumiyoshi",
+    "category": "nature",
+    "coordinates": {
+      "lat": 32.6953,
+      "lng": 130.5892
+    },
+    "short_description": "A road used by fishermen that disappears at high tide.",
+    "description": "This road extends into the Ariake Sea for seaweed farming. At high tide, the road is submerged, leaving only the power poles sticking out of the water, reminiscent of the train scene in 'Spirited Away.' It is a favorite spot for sunset photography.",
+    "estimated_duration": "30 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Heitate Jingu",
+    "region": "Kyushu",
+    "city": "Yamato, Kumamoto",
+    "neighborhood": "Soyou",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.7094,
+      "lng": 131.1717
+    },
+    "short_description": "One of the oldest and most mysterious shrines in Japan.",
+    "description": "Hidden deep in the forest, this shrine is said to date back thousands of years, predating standard history. It is a powerful 'power spot' surrounded by giant cedar trees. The atmosphere is thick with ancient spirituality, distinct from more commercial shrines.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Misumi West Port",
+    "region": "Kyushu",
+    "city": "Uki, Kumamoto",
+    "neighborhood": "Misumi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.6186,
+      "lng": 130.4572
+    },
+    "short_description": "A Meiji-era World Heritage port that looks untouched.",
+    "description": "One of the only Meiji industrial sites to remain perfectly intact. The stone wharves, canals, and western-style buildings create a movie-set atmosphere. It is quiet and offers lovely views of the bridges connecting to Amakusa.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sakitsu Church",
+    "region": "Kyushu",
+    "city": "Amakusa, Kumamoto",
+    "neighborhood": "Kawaura",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.3117,
+      "lng": 130.0267
+    },
+    "short_description": "A gothic church with tatami mats in a fishing village.",
+    "description": "Part of the 'Hidden Christian Sites' World Heritage. This church stands right on the water in a small fishing port. Uniquely, the interior features tatami mat flooring, blending Western religion with Japanese culture. The village vibe is incredibly nostalgic.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Usa Jingu",
+    "region": "Kyushu",
+    "city": "Usa, Oita",
+    "neighborhood": "Minamiusa",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5264,
+      "lng": 131.3744
+    },
+    "short_description": "The head shrine of 40,000 Hachiman shrines, vast and ancient.",
+    "description": "Despite its massive importance (2nd only to Ise Jingu in imperial prestige), it sees few western tourists. The complex is huge, featuring unique 'Hachiman-zukuri' vermilion architecture, ponds, and ancient trees. It is the birthplace of the syncretism of Shinto and Buddhism.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Fukiji Temple",
+    "region": "Kyushu",
+    "city": "Bungotakada, Oita",
+    "neighborhood": "Tashibu",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5392,
+      "lng": 131.5269
+    },
+    "short_description": "The oldest wooden structure in Kyushu, amidst peaceful nutmeg trees.",
+    "description": "Located on the Kunisaki Peninsula, this National Treasure Amida Hall stands simply in a forest. It is especially stunning in autumn when the gingko leaves carpet the ground in gold. It represents the ancient Rokugo Manzan culture of the region.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "300 JPY"
+  },
+  {
+    "name": "Harajiri Falls",
+    "region": "Kyushu",
+    "city": "Bungo-ono, Oita",
+    "neighborhood": "Ogata",
+    "category": "nature",
+    "coordinates": {
+      "lat": 32.9642,
+      "lng": 131.4589
+    },
+    "short_description": "The 'Oriental Niagara' located in the middle of a flat plain.",
+    "description": "Unusual for a waterfall, this horseshoe-shaped fall (120m wide) drops suddenly from a flat agricultural plain. You can walk across a suspension bridge in front of it or down to the water's edge. A torii gate stands at the top of the falls.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Yabakei Gorge (Ao-no-domon)",
+    "region": "Kyushu",
+    "city": "Nakatsu, Oita",
+    "neighborhood": "Honyabakei",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.5036,
+      "lng": 131.1719
+    },
+    "short_description": "A tunnel hand-carved by a monk to save travelers.",
+    "description": "The Ao-no-domon is a tunnel carved through sheer rock cliffs. Legend says a monk spent 30 years digging it by hand to prevent people from falling off the dangerous cliff path. The surrounding gorge offers spectacular rock formations and autumn colors.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Matama Coast",
+    "region": "Kyushu",
+    "city": "Bungotakada, Oita",
+    "neighborhood": "Matama",
+    "category": "nature",
+    "coordinates": {
+      "lat": 33.5936,
+      "lng": 131.4647
+    },
+    "short_description": "Mudflats that create a mirror-like sunset spectacle.",
+    "description": "Famous as one of Japan's best sunset spots. At low tide, the vast mudflats retain pools of water that reflect the orange sky, creating a striped pattern of light and shadow. It attracts photographers but remains a quiet, natural beach.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kokonoe Yume Suspension Bridge",
+    "region": "Kyushu",
+    "city": "Kokonoe, Oita",
+    "neighborhood": "Tano",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 33.1728,
+      "lng": 131.2253
+    },
+    "short_description": "Japan's highest pedestrian suspension bridge.",
+    "description": "Spanning a mountain valley at 173 meters high, the bridge offers dizzying views of the Shindo Falls and the Kuju mountain range. It is windy and thrilling. In autumn, the valley below turns a brilliant red and orange.",
+    "estimated_duration": "1 hour",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "Inazumi Underwater Cave",
+    "region": "Kyushu",
+    "city": "Bungo-ono, Oita",
+    "neighborhood": "Mie",
+    "category": "nature",
+    "coordinates": {
+      "lat": 32.9328,
+      "lng": 131.5369
+    },
+    "short_description": "A limestone cave submerged in crystal clear blue water.",
+    "description": "This cave was formed 300 million years ago and later submerged. Walkways allow you to see the emerald blue water and stalactites. It is cool year-round. Recently, it has become a unique spot for cave snorkeling and sauna experiences.",
+    "estimated_duration": "1 hour",
+    "min_budget": "1,300 JPY"
+  },
+  {
+    "name": "Futago-ji Temple",
+    "region": "Kyushu",
+    "city": "Kunisaki, Oita",
+    "neighborhood": "Akibun",
+    "category": "culture",
+    "coordinates": {
+      "lat": 33.5681,
+      "lng": 131.6033
+    },
+    "short_description": "Mossy stone steps guarded by Nio statues in the mountains.",
+    "description": "The central temple of the Kunisaki Peninsula. The approach is iconic: a pair of stone Nio guardian statues stand at the base of moss-covered stone steps leading into the forest. It feels ancient and deeply connected to the mountain worship (Shugendo) of the region.",
+    "estimated_duration": "1 hour",
+    "min_budget": "300 JPY"
+  },
+  {
+    "name": "Amano Yasukawara",
+    "region": "Kyushu",
+    "city": "Takachiho, Miyazaki",
+    "neighborhood": "Iwato",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.7236,
+      "lng": 131.3197
+    },
+    "short_description": "A cave filled with stacked stones where gods conferred.",
+    "description": "Located near Amanoiwato Shrine, this cave is where the gods gathered to discuss how to lure the Sun Goddess out of hiding. Visitors stack millions of small stones to make wishes, creating a surreal and spiritual atmosphere along the riverbank.",
+    "estimated_duration": "1 hour",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Udo Jingu",
+    "region": "Kyushu",
+    "city": "Nichinan, Miyazaki",
+    "neighborhood": "Miyaura",
+    "category": "culture",
+    "coordinates": {
+      "lat": 31.6497,
+      "lng": 131.4653
+    },
+    "short_description": "A bright vermilion shrine built inside a seaside cliff cave.",
+    "description": "Dedicated to the father of the first Emperor, this shrine is unique for being located inside a cave on a cliff facing the Pacific Ocean. Visitors throw small clay balls (undama) at a target rock in the waves below for good luck. The contrast of red wood, dark rock, and blue sea is stunning.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Obi Castle Town",
+    "region": "Kyushu",
+    "city": "Nichinan, Miyazaki",
+    "neighborhood": "Obi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 31.6289,
+      "lng": 131.3517
+    },
+    "short_description": "Known as the 'Kyoto of Kyushu' with mossy stone walls.",
+    "description": "A preservation district featuring samurai residences, moss-covered stone walls, and wide majestic gates. The 'Ayumi-chan Map' ticket allows you to eat local snacks and enter museums while walking around. The atmosphere is quiet, green, and historical.",
+    "estimated_duration": "2 - 3 hours",
+    "min_budget": "Free (Town)"
+  },
+  {
+    "name": "Cape Toi",
+    "region": "Kyushu",
+    "city": "Kushima, Miyazaki",
+    "neighborhood": "Ono",
+    "category": "nature",
+    "coordinates": {
+      "lat": 31.3686,
+      "lng": 131.3503
+    },
+    "short_description": "Home to wild Misaki horses roaming freely.",
+    "description": "Wild horses (Misaki-uma) have lived here for 300 years. They roam freely on the grassy hills overlooking the ocean, sometimes blocking the roads. It is a rare chance to see wild horses in their natural habitat against a backdrop of blue sea.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free (Toll road 400 JPY)"
+  },
+  {
+    "name": "Sun Messe Nichinan",
+    "region": "Kyushu",
+    "city": "Nichinan, Miyazaki",
+    "neighborhood": "Miyaura",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 31.6492,
+      "lng": 131.4553
+    },
+    "short_description": "The only authorized replicas of Easter Island Moai statues.",
+    "description": "This park features seven massive Moai statues, built with the permission of Easter Island elders to thank Japan for crane restoration assistance. They stand on a hill with the Pacific Ocean as a backdrop. It is a quirky, very photogenic spot.",
+    "estimated_duration": "1 hour",
+    "min_budget": "1,000 JPY"
+  },
+  {
+    "name": "Amaterasu Railway",
+    "region": "Kyushu",
+    "city": "Takachiho, Miyazaki",
+    "neighborhood": "Mitai",
+    "category": "attraction",
+    "coordinates": {
+      "lat": 32.7119,
+      "lng": 131.3056
+    },
+    "short_description": "Ride an open-air 'super cart' on Japan's highest railway bridge.",
+    "description": "Using the tracks of a discontinued railway, this open-air sightseeing train takes you across the 105m-high Takachiho Bridge. The conductor stops in the middle of the bridge for photos and bubble-blowing. It offers thrilling views of the gorge and rice paddies.",
+    "estimated_duration": "40 minutes",
+    "min_budget": "1,800 JPY"
+  },
+  {
+    "name": "Kamafuta Shrine",
+    "region": "Kyushu",
+    "city": "Minamikyushu, Kagoshima",
+    "neighborhood": "Ei-cho",
+    "category": "culture",
+    "coordinates": {
+      "lat": 31.2522,
+      "lng": 130.4994
+    },
+    "short_description": "Balance a pot lid on your head for good luck.",
+    "description": "A unique shrine on a rocky cape. To get your wish granted, you must walk from the torii gate to the shrine altar with a kama-futa (traditional pot lid) balanced on your head without dropping it. It is fun, challenging, and offers great views of Mt. Kaimon.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Ogawa Falls",
+    "region": "Kyushu",
+    "city": "Minamiosumi, Kagoshima",
+    "neighborhood": "Nejime",
+    "category": "nature",
+    "coordinates": {
+      "lat": 31.2069,
+      "lng": 130.7967
+    },
+    "short_description": "Emerald green basin surrounded by hexagonal rock walls.",
+    "description": "Hidden in the southern tip of the mainland, this waterfall features a stunning emerald green pool. The water cascades down a 46-meter cliff face made of hexagonal columnar jointing. It gained fame from the drama 'Segodon' and feels like a tropical oasis.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Sogi Power Plant Ruins",
+    "region": "Kyushu",
+    "city": "Isa, Kagoshima",
+    "neighborhood": "Okuchi",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.0469,
+      "lng": 130.5564
+    },
+    "short_description": "Brick ruins that emerge from the lake in summer.",
+    "description": "Often called the 'Castle in the Sky' of the water. These Meiji-era brick ruins are usually submerged in the dam lake but emerge fully in summer (May-Sept) when water levels are lowered. The European-style brickwork against the water is hauntingly beautiful.",
+    "estimated_duration": "45 minutes",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Chiran Samurai District",
+    "region": "Kyushu",
+    "city": "Minamikyushu, Kagoshima",
+    "neighborhood": "Chiran",
+    "category": "culture",
+    "coordinates": {
+      "lat": 31.3789,
+      "lng": 130.4431
+    },
+    "short_description": "A street of preserved samurai houses with exquisite gardens.",
+    "description": "Known as the 'Little Kyoto of Satsuma.' Seven samurai gardens are open to the public, designed with borrowed scenery of the surrounding mountains. The street is lined with manicured hedges and stone walls, looking exactly as it did in the Edo period.",
+    "estimated_duration": "2 hours",
+    "min_budget": "530 JPY"
+  },
+  {
+    "name": "Cape Sata",
+    "region": "Kyushu",
+    "city": "Minamiosumi, Kagoshima",
+    "neighborhood": "Satamisaki",
+    "category": "nature",
+    "coordinates": {
+      "lat": 30.9953,
+      "lng": 130.6592
+    },
+    "short_description": "The southernmost point of mainland Japan.",
+    "description": "The absolute bottom of the main islands of Japan. A newly renovated observatory offers views of the endless ocean and Yakushima island on clear days. The park includes huge banyan trees and cycads, giving it a distinctly subtropical, jungle feel.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Kirishima Art Forest",
+    "region": "Kyushu",
+    "city": "Yusui, Kagoshima",
+    "neighborhood": "Koba",
+    "category": "culture",
+    "coordinates": {
+      "lat": 31.9367,
+      "lng": 130.7303
+    },
+    "short_description": "An open-air museum with Yayoi Kusama art in the wild.",
+    "description": "Located in the highlands, this museum features massive modern art installations scattered across a grassy forest. Yayoi Kusama's famous polka-dot 'Flowers of Shangri-La' is here. Visitors can walk through and touch the art in a relaxing, natural setting.",
+    "estimated_duration": "1.5 hours",
+    "min_budget": "310 JPY"
+  },
+  {
+    "name": "Sarugajo Gorge",
+    "region": "Kyushu",
+    "city": "Tarumizu, Kagoshima",
+    "neighborhood": "Shinjyo",
+    "category": "nature",
+    "coordinates": {
+      "lat": 31.5478,
+      "lng": 130.7675
+    },
+    "short_description": "Crystal clear water and granite rocks perfect for summer cooling.",
+    "description": "A hidden spot known for its incredibly clear water flowing over smooth granite rocks. It is a popular spot for river trekking and canyoning in summer. The 'Monkey Castle' name comes from the local legend, and the scenery is wild and refreshing.",
+    "estimated_duration": "2 hours",
+    "min_budget": "Free"
+  },
+  {
+    "name": "Yakushima (Shiratani Unsuikyo)",
+    "region": "Kyushu",
+    "city": "Yakushima, Kagoshima",
+    "neighborhood": "Miyanoura",
+    "category": "nature",
+    "coordinates": {
+      "lat": 30.3806,
+      "lng": 130.5694
+    },
+    "short_description": "The mossy forest that inspired Princess Mononoke.",
+    "description": "While Yakushima is famous, this specific ravine is a magical world of deep green moss covering every rock and root. It is accessible for day hikers (unlike the long trek to Jomon Sugi). The atmosphere is ancient, wet, and vibrantly living.",
+    "estimated_duration": "3 - 4 hours",
+    "min_budget": "500 JPY"
+  },
+  {
+    "name": "Yurakkusu (Yulax)",
+    "region": "Kyushu",
+    "city": "Kumamoto City, Kumamoto",
+    "neighborhood": "Honjo",
+    "category": "culture",
+    "coordinates": {
+      "lat": 32.7917,
+      "lng": 130.7064
+    },
+    "short_description": "The 'Mecca of Saunas' in western Japan.",
+    "description": "A legendary facility for sauna enthusiasts ('saunners'). It features a deep water bath filled with natural groundwater (Mad Water) and intense 'Aufguss' (towel waving) sessions. It is a cultural deep-dive into Japan's modern relaxation boom.",
+    "estimated_duration": "2 hours",
+    "min_budget": "1,000 JPY"
+  }
+]

@@ -1,0 +1,767 @@
+[
+  {
+    "name": "Azumaya Honten",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Nakanohashi-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.6995,
+      "lng": 141.1558
+    },
+    "short_description": "The most famous spot for Wanko Soba, offering a 'certification' if you eat over 100 bowls.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 2500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Pyon-Pyon-Sha Morioka Ekimae",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.702,
+      "lng": 141.1375
+    },
+    "short_description": "Famous for Morioka Reimen (cold noodles) and yakiniku in a stylish setting right by the station.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 3000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Hakuryu Honten",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Uchimaru",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7015,
+      "lng": 141.151
+    },
+    "short_description": "The birthplace of Morioka Jajamen, serving hot noodles with a rich meat miso sauce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 2800,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Fukuda Pan Nagatacho Honten",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Nagatacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7085,
+      "lng": 141.145
+    },
+    "short_description": "Legendary bakery famous for large, fluffy 'koppe-pan' rolls with dozens of filling combinations.",
+    "estimated_duration": "30 mins",
+    "rating": 4.5,
+    "review_count": 2000,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Seirokaku",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7022,
+      "lng": 141.138
+    },
+    "short_description": "High-end yakiniku restaurant famous for its refined, flavorful Morioka Reimen.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 3500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Chokurian",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Nakanohashi-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.6988,
+      "lng": 141.1565
+    },
+    "short_description": "Historic soba shop established in 1884, known for Wanko Soba with varying delicious condiments.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Kaitenzushi Seijiro Fesan",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7018,
+      "lng": 141.1365
+    },
+    "short_description": "Extremely popular conveyor belt sushi offering fresh Sanriku seafood at great quality.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 1500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Coffee Shop Clampon",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Konyacho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.699,
+      "lng": 141.1585
+    },
+    "short_description": "Classic 'kissaten' coffee shop with a nostalgic atmosphere, beloved by locals for decades.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Nanbu Hanagasa",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7025,
+      "lng": 141.137
+    },
+    "short_description": "Specializes in authentic local Iwate cuisine like 'Hittsumi' soup and various regional sets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Yakiniku Reimen Hige",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Tsushida",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.675,
+      "lng": 141.135
+    },
+    "short_description": "Locally loved yakiniku spot known for reimen with a distinct, savory beef broth.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 600,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Hatsukoma Honten",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Hachiman-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.6955,
+      "lng": 141.162
+    },
+    "short_description": "Traditional restaurant offering Wanko Soba and Kaiseki cuisine near the Hachimangu shrine.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 400,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Mikoda Morning Market",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Mikoda-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.692,
+      "lng": 141.165
+    },
+    "short_description": "Famous daily morning market with food stalls selling fresh produce and local Hittsumi soup.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 1200,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Pairon Fesan",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7018,
+      "lng": 141.136
+    },
+    "short_description": "Convenient station branch of Hakuryu (Pairon), serving the classic Morioka Jajamen.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 1000,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Tea House Liebe",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Uchimaru",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.701,
+      "lng": 141.152
+    },
+    "short_description": "European-style tea house famous for its elegant atmosphere and wide tea selection.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Steak & Teppan Wakana Honten",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Osawakawara",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7035,
+      "lng": 141.148
+    },
+    "short_description": "Premium teppanyaki restaurant specializing in high-grade Iwate Maesawa beef.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 300,
+    "min_budget": "¥8000"
+  },
+  {
+    "name": "Dekunobo",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Tsushida",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.665,
+      "lng": 141.14
+    },
+    "short_description": "Local favorite specializing in 'Hittsumi', a traditional Iwate dumpling soup.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 200,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Pyon-Pyon-Sha Inaricho Honten",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Inaricho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.705,
+      "lng": 141.115
+    },
+    "short_description": "The flagship store of the famous Reimen chain, featuring grand architecture and a full menu.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 1200,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Hot JaJa",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7023,
+      "lng": 141.1378
+    },
+    "short_description": "Accessible Jajamen shop near the station offering different noodle portions and toppings.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 600,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Izakaya Sai",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Minamiodori",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.697,
+      "lng": 141.153
+    },
+    "short_description": "Hidden gem izakaya praised by travelers for its welcoming staff and delicious small plates.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 150,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Nagamatsu-en",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Zaimoku-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7055,
+      "lng": 141.143
+    },
+    "short_description": "Historic tea shop offering rich matcha sweets and parfaits in a relaxing space.",
+    "estimated_duration": "45 mins",
+    "rating": 4.2,
+    "review_count": 200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Tono Shokuniku Center Kippushi",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7028,
+      "lng": 141.139
+    },
+    "short_description": "Specialty restaurant for 'Genghis Khan' (grilled lamb), a soul food of the nearby Tono region.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Azumaya Ekimae",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.703,
+      "lng": 141.1385
+    },
+    "short_description": "Convenient branch of Azumaya for those wanting the Wanko Soba challenge near the station.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 1800,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Moriro",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7025,
+      "lng": 141.1382
+    },
+    "short_description": "Popular for its thick, chewy cold noodles and high-quality yakiniku cuts.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 800,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Kissa Carta",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Uchimaru",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7005,
+      "lng": 141.1515
+    },
+    "short_description": "Quiet, literary cafe perfect for reading, serving excellent coffee and simple toasts.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Baeren Beer Zaimoku-cho",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Zaimoku-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.706,
+      "lng": 141.142
+    },
+    "short_description": "Pub serving Baeren, Morioka's award-winning craft beer, often in a lively atmosphere.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 400,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Yakiniku Restaurant Yonezawa",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Konan",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.68,
+      "lng": 141.15
+    },
+    "short_description": "Locally renowned yakiniku restaurant known for its rich and flavorful Reimen soup.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Jajamenya Kojan",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Kamimorioka",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.71,
+      "lng": 141.15
+    },
+    "short_description": "A top competitor in the Jajamen scene, offering a slightly different miso blend.",
+    "estimated_duration": "45 mins",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Zaimoku-cho Yoichi",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Zaimoku-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7058,
+      "lng": 141.1425
+    },
+    "short_description": "Saturday street market (Apr-Nov) with food stalls, beer, and fresh produce.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ginga Rikyu",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Saien",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7012,
+      "lng": 141.145
+    },
+    "short_description": "Upscale dining featuring Iwate wagyu beef and premium pork in a refined setting.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 100,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Uwasa no Hittsumi",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Mikoda-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.6922,
+      "lng": 141.1652
+    },
+    "short_description": "Popular stall in Mikoda Morning Market serving hot, comforting Hittsumi soup.",
+    "estimated_duration": "30 mins",
+    "rating": 4.3,
+    "review_count": 100,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Robata to Oden Koronagirai",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7026,
+      "lng": 141.1395
+    },
+    "short_description": "Warm izakaya specializing in Oden and Robatayaki (charcoal grilled) dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 200,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Le Gu Merveille",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Mukainakano",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.685,
+      "lng": 141.13
+    },
+    "short_description": "Patisserie famous for its artistic cakes and delicious baked goods.",
+    "estimated_duration": "30 mins",
+    "rating": 4.2,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Kozukata Jajamen",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7016,
+      "lng": 141.1358
+    },
+    "short_description": "A well-regarded Jajamen shop offering a hearty, savory noodle experience.",
+    "estimated_duration": "45 mins",
+    "rating": 3.9,
+    "review_count": 200,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Sanriku Sengyo to Sumiyaki Gyutan Kakko",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7029,
+      "lng": 141.1372
+    },
+    "short_description": "Offers a mix of fresh Sanriku seafood and charcoal-grilled beef tongue.",
+    "estimated_duration": "2 hours",
+    "rating": 3.9,
+    "review_count": 300,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Tarte Tatin Fezan",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7018,
+      "lng": 141.1362
+    },
+    "short_description": "Local confectionery chain famous for sweets made with Iwate apples.",
+    "estimated_duration": "20 mins",
+    "rating": 4.0,
+    "review_count": 150,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Shuko Dining Saiki",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.703,
+      "lng": 141.139
+    },
+    "short_description": "Tempura dining spot where you can enjoy freshly fried seafood and local vegetables.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 100,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Asabiraki Sake Brewery Sekison-tei",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Daijiji-cho",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.695,
+      "lng": 141.165
+    },
+    "short_description": "Restaurant within the famous Asabiraki brewery offering meals paired with their sake.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 200,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Gozaku",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Nakanohashi-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.6985,
+      "lng": 141.156
+    },
+    "short_description": "Izakaya located in a renovated historic townhouse, serving local Iwate dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 150,
+    "min_budget": "¥4000"
+  },
+  {
+    "name": "Printemps Blanc",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Minamiodori",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.696,
+      "lng": 141.154
+    },
+    "short_description": "Popular cake shop specializing in fruit-filled roll cakes and sweets.",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 200,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Rocchumano",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Uchimaru",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.704,
+      "lng": 141.15
+    },
+    "short_description": "Italian bar focusing on local ingredients, especially Iwate's 'Sasuke Pork'.",
+    "estimated_duration": "2 hours",
+    "rating": 4.0,
+    "review_count": 100,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Morioka Bus Center SIDE-B",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Nakanohashi-dori",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.6992,
+      "lng": 141.157
+    },
+    "short_description": "Modern food hall in the bus center featuring local craft beer, coffee, and casual eats.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 300,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Teppanyaki Kougetsu",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.704,
+      "lng": 141.138
+    },
+    "short_description": "Teppanyaki restaurant offering premium steaks and seafood from the Tohoku region.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 80,
+    "min_budget": "¥6000"
+  },
+  {
+    "name": "Mebukiya",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.7015,
+      "lng": 141.1368
+    },
+    "short_description": "Specializes in traditional Iwate sweets like dango and mochi using local ingredients.",
+    "estimated_duration": "20 mins",
+    "rating": 3.9,
+    "review_count": 200,
+    "min_budget": "¥500"
+  },
+  {
+    "name": "Kippin Shokudo",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Morioka Station",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.702,
+      "lng": 141.139
+    },
+    "short_description": "A charming hidden gem offering hearty local meals and set menus.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 50,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Mass Bar",
+    "region": "Tohoku",
+    "city": "Morioka",
+    "prefecture": "Iwate-ken",
+    "neighborhood": "Odori",
+    "category": "food",
+    "coordinates": {
+      "lat": 39.701,
+      "lng": 141.146
+    },
+    "short_description": "Stylish bar and dining spot popular with locals for its relaxed vibe and food.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.0,
+    "review_count": 100,
+    "min_budget": "¥3000"
+  }
+]

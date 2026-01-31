@@ -1,0 +1,767 @@
+[
+  {
+    "name": "Sushi Dai",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Toyosu",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6465,
+      "lng": 139.7876
+    },
+    "short_description": "The most famous sushi breakfast spot in Tokyo, formerly at Tsukiji, now at Toyosu Market.",
+    "estimated_duration": "1-2 hours",
+    "rating": 4.5,
+    "review_count": 1500,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Ichiran Shibuya",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shibuya",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6605,
+      "lng": 139.701
+    },
+    "short_description": "Famous Hakata-style tonkotsu ramen chain known for its solitary dining booths.",
+    "estimated_duration": "45 mins",
+    "rating": 4.4,
+    "review_count": 4000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Fuunji",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shinjuku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6877,
+      "lng": 139.6975
+    },
+    "short_description": "Renowned tsukemen (dipping noodles) shop featuring a rich, creamy chicken and fish broth.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 3500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Tempura Shinjuku Tsunahachi Souhonten",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shinjuku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.691,
+      "lng": 139.704
+    },
+    "short_description": "Historic tempura restaurant serving light, crispy tempura in a traditional setting since 1924.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 2200,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Tonkatsu Maisen Aoyama Honten",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Omotesando",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.666,
+      "lng": 139.7115
+    },
+    "short_description": "Located in a converted bathhouse, famous for its tender pork cutlets and katsu sandwiches.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 3000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Kitsuneya",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Tsukiji",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6645,
+      "lng": 139.7715
+    },
+    "short_description": "Iconic street stall in Tsukiji Outer Market famous for 'Horumon-don' (offal stew on rice).",
+    "estimated_duration": "45 mins",
+    "rating": 4.1,
+    "review_count": 2500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Afuri Harajuku",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Harajuku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.672,
+      "lng": 139.7055
+    },
+    "short_description": "Stylish ramen shop famous for its light, refreshing Yuzu Shio (citrus salt) broth.",
+    "estimated_duration": "45 mins",
+    "rating": 4.4,
+    "review_count": 2800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Gonpachi Nishi-Azabu",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Nishi-Azabu",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6602,
+      "lng": 139.7235
+    },
+    "short_description": "The 'Kill Bill' restaurant, a massive izakaya with a rustic interior and lively atmosphere.",
+    "estimated_duration": "2 hours",
+    "rating": 4.1,
+    "review_count": 4500,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Ginza Kyubey Main Store",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Ginza",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6685,
+      "lng": 139.761
+    },
+    "short_description": "One of Tokyo's most prestigious sushi establishments, credited with inventing the gunkan-maki.",
+    "estimated_duration": "2 hours",
+    "rating": 4.6,
+    "review_count": 1200,
+    "min_budget": "¥15000"
+  },
+  {
+    "name": "Nakiryu",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Otsuka",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.7305,
+      "lng": 139.7285
+    },
+    "short_description": "Michelin-starred ramen shop famous for its complex and spicy Tantanmen.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 1800,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Sushi no Midori Shibuya",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shibuya",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.658,
+      "lng": 139.6985
+    },
+    "short_description": "Extremely popular sushi spot offering generous portions and high quality at mid-range prices.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 3500,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Rokurinsha",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Marunouchi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6805,
+      "lng": 139.7665
+    },
+    "short_description": "Located in Tokyo Station's Ramen Street, famous for thick dipping noodles and long queues.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 3000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Udon Shin",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shinjuku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6855,
+      "lng": 139.697
+    },
+    "short_description": "Small shop serving freshly made udon noodles with a perfect chewy texture and modern toppings.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 3200,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Tofuya Ukai",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shiba",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.656,
+      "lng": 139.746
+    },
+    "short_description": "Stunning kaiseki restaurant set in a Japanese garden at the foot of Tokyo Tower, specializing in tofu.",
+    "estimated_duration": "2.5 hours",
+    "rating": 4.6,
+    "review_count": 2000,
+    "min_budget": "¥10000"
+  },
+  {
+    "name": "Gyukatsu Motomura Shibuya",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shibuya",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6588,
+      "lng": 139.7025
+    },
+    "short_description": "Specializes in deep-fried beef cutlets that you grill lightly on a hot stone at your table.",
+    "estimated_duration": "1 hour",
+    "rating": 4.5,
+    "review_count": 4000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Kanda Yabu Soba",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Kanda",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6965,
+      "lng": 139.769
+    },
+    "short_description": "One of Tokyo's oldest and most prestigious soba restaurants, rebuilt after a fire but retaining tradition.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 1500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Harajuku Gyozaro",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Harajuku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6675,
+      "lng": 139.7065
+    },
+    "short_description": "No-frills shop serving delicious fried and boiled dumplings at very affordable prices.",
+    "estimated_duration": "45 mins",
+    "rating": 4.3,
+    "review_count": 3500,
+    "min_budget": "¥800"
+  },
+  {
+    "name": "Shiro-Hige's Cream Puff Factory",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Setagaya",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6575,
+      "lng": 139.6605
+    },
+    "short_description": "Whimsical bakery officially licensed by Studio Ghibli, selling Totoro-shaped cream puffs.",
+    "estimated_duration": "45 mins",
+    "rating": 4.5,
+    "review_count": 1500,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Asakusa Imahan",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Asakusa",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.7145,
+      "lng": 139.793
+    },
+    "short_description": "Historic restaurant established in 1895, famous for its high-quality Wagyu Sukiyaki.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 1800,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Kagari Ginza",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Ginza",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6705,
+      "lng": 139.7645
+    },
+    "short_description": "Elegant ramen shop serving a creamy, potage-like Chicken Paitan broth.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2500,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Monja Kura",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Tsukishima",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.663,
+      "lng": 139.78
+    },
+    "short_description": "One of the most popular spots on 'Monja Street' to try Monjayaki, a savory grilled batter dish.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥2500"
+  },
+  {
+    "name": "Komagata Dozeu",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Asakusa",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.7075,
+      "lng": 139.794
+    },
+    "short_description": "A cultural experience serving 'Dozeu' (loach) hotpot in an Edo-period style tatami room.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 2000,
+    "min_budget": "¥3500"
+  },
+  {
+    "name": "Starbucks Reserve Roastery Tokyo",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Nakameguro",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6495,
+      "lng": 139.6935
+    },
+    "short_description": "A massive, four-story immersive coffee wonderland designed by Kengo Kuma.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.5,
+    "review_count": 4500,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Kaitenzushi Nemuro Hanamaru KITTE",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Marunouchi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6795,
+      "lng": 139.765
+    },
+    "short_description": "Top-tier conveyor belt sushi from Hokkaido, located right next to Tokyo Station.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.4,
+    "review_count": 3000,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "A Happy Pancake Omotesando",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Omotesando",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6668,
+      "lng": 139.7095
+    },
+    "short_description": "Famous for its incredibly thick and fluffy Japanese-style soufflé pancakes.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 2500,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Omoide Yokocho",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shinjuku",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.693,
+      "lng": 139.6995
+    },
+    "short_description": "Atmospheric alleyway ('Piss Alley') packed with tiny yakitori stalls and bars.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 3000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Narisawa",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Aoyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.669,
+      "lng": 139.718
+    },
+    "short_description": "World-renowned restaurant serving 'Innovative Satoyama' cuisine focused on nature and sustainability.",
+    "estimated_duration": "3 hours",
+    "rating": 4.7,
+    "review_count": 800,
+    "min_budget": "¥35000"
+  },
+  {
+    "name": "Sometaro",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Asakusa",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.7125,
+      "lng": 139.7915
+    },
+    "short_description": "Charming, rustic okonomiyaki restaurant where you cook your own food on iron griddles.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.2,
+    "review_count": 1500,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Butagumi",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Nishi-Azabu",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.661,
+      "lng": 139.724
+    },
+    "short_description": "Specialty Tonkatsu restaurant in a traditional house, offering premium pork breeds from across Japan.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.5,
+    "review_count": 1000,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Onigiri Bongo",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Otsuka",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.7315,
+      "lng": 139.728
+    },
+    "short_description": "Legendary shop serving large, warm, fluffy rice balls with over 50 filling options.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 2000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Toritama Shirokane",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shirokane",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.644,
+      "lng": 139.7225
+    },
+    "short_description": "Yakitori specialist known for offering rare cuts of the chicken including unlaid eggs (chochin).",
+    "estimated_duration": "2 hours",
+    "rating": 4.2,
+    "review_count": 500,
+    "min_budget": "¥5000"
+  },
+  {
+    "name": "Tempura Kondo",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Ginza",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.671,
+      "lng": 139.763
+    },
+    "short_description": "Two-Michelin-starred tempura known for its incredibly thin batter and signature sweet potato dish.",
+    "estimated_duration": "2 hours",
+    "rating": 4.5,
+    "review_count": 800,
+    "min_budget": "¥12000"
+  },
+  {
+    "name": "Savoy Azabu Juban",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Azabu-Juban",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6565,
+      "lng": 139.7355
+    },
+    "short_description": "Famous wood-fired pizza spot serving some of the best Neapolitan pizza in Tokyo.",
+    "estimated_duration": "1 hour",
+    "rating": 4.3,
+    "review_count": 1000,
+    "min_budget": "¥2000"
+  },
+  {
+    "name": "Yoroniku",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Minami-Aoyama",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6608,
+      "lng": 139.7185
+    },
+    "short_description": "High-end Yakiniku (Japanese BBQ) famous for its silk loin and expert grilling service.",
+    "estimated_duration": "2 hours",
+    "rating": 4.6,
+    "review_count": 1200,
+    "min_budget": "¥10000"
+  },
+  {
+    "name": "Satei Hato",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shibuya",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6615,
+      "lng": 139.7045
+    },
+    "short_description": "Quiet, traditional coffee house (kissaten) known for hand-drip charcoal roasted coffee and chiffon cake.",
+    "estimated_duration": "1 hour",
+    "rating": 4.4,
+    "review_count": 800,
+    "min_budget": "¥1500"
+  },
+  {
+    "name": "Nabezo Shibuya Center-Gai",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shibuya",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.66,
+      "lng": 139.699
+    },
+    "short_description": "Popular all-you-can-eat Shabu-Shabu and Sukiyaki chain with good quality meat and vegetables.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 1200,
+    "min_budget": "¥3000"
+  },
+  {
+    "name": "Menya Itto",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shin-Koiwa",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.7175,
+      "lng": 139.8565
+    },
+    "short_description": "Legendary Tsukemen shop serving a rich seafood and chicken broth that draws long lines.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.3,
+    "review_count": 2500,
+    "min_budget": "¥1200"
+  },
+  {
+    "name": "Ise Sueyoshi",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Nishi-Azabu",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.659,
+      "lng": 139.721
+    },
+    "short_description": "Friendly Kaiseki restaurant catering to international guests with English explanations of traditional dishes.",
+    "estimated_duration": "2.5 hours",
+    "rating": 4.8,
+    "review_count": 500,
+    "min_budget": "¥15000"
+  },
+  {
+    "name": "Yanaka Ginza",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Yanaka",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.7275,
+      "lng": 139.7645
+    },
+    "short_description": "Old-fashioned shopping street (shitamachi) perfect for street food like minced meat cutlets (menchi-katsu).",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 2000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Koffee Mameya",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Omotesando",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.668,
+      "lng": 139.71
+    },
+    "short_description": "Minimalist coffee bean shop offering a curated selection of beans and personalized tastings.",
+    "estimated_duration": "30 mins",
+    "rating": 4.6,
+    "review_count": 900,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Ameyoko Shopping Street",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Ueno",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.709,
+      "lng": 139.7745
+    },
+    "short_description": "Bustling market street under the train tracks, famous for cheap seafood, fruit skewers, and street snacks.",
+    "estimated_duration": "1.5 hours",
+    "rating": 4.1,
+    "review_count": 5000,
+    "min_budget": "¥1000"
+  },
+  {
+    "name": "Hakushu Teppanyaki",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shibuya",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.655,
+      "lng": 139.6975
+    },
+    "short_description": "Family-run teppanyaki famous for its high-quality Kobe beef and warm hospitality.",
+    "estimated_duration": "2 hours",
+    "rating": 4.7,
+    "review_count": 800,
+    "min_budget": "¥10000"
+  },
+  {
+    "name": "Chuka Soba Ibuki",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Shimura-sakaue",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.7725,
+      "lng": 139.6935
+    },
+    "short_description": "Hidden gem for hardcore Niboshi (dried sardine) ramen lovers, known for its intense gray soup.",
+    "estimated_duration": "1 hour",
+    "rating": 4.2,
+    "review_count": 600,
+    "min_budget": "¥900"
+  },
+  {
+    "name": "Tapas Molecular Bar",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Nihonbashi",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.687,
+      "lng": 139.7725
+    },
+    "short_description": "Innovative dining bar inside the Mandarin Oriental serving bite-sized molecular gastronomy dishes.",
+    "estimated_duration": "2 hours",
+    "rating": 4.6,
+    "review_count": 400,
+    "min_budget": "¥20000"
+  },
+  {
+    "name": "Sushi Zanmai Tsukiji",
+    "region": "Kanto",
+    "city": "Tokyo",
+    "prefecture": "Tokyo-to",
+    "neighborhood": "Tsukiji",
+    "category": "food",
+    "coordinates": {
+      "lat": 35.6655,
+      "lng": 139.7705
+    },
+    "short_description": "The flagship 24-hour sushi restaurant of the famous chain, known for affordable tuna sets.",
+    "estimated_duration": "1 hour",
+    "rating": 4.0,
+    "review_count": 3000,
+    "min_budget": "¥2500"
+  }
+]
