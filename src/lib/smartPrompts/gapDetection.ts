@@ -10,7 +10,14 @@ import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinera
 /**
  * Types of gaps that can be detected in an itinerary.
  */
-export type GapType = "meal" | "transport" | "experience";
+export type GapType =
+  | "meal"
+  | "transport"
+  | "experience"
+  | "long_gap"
+  | "early_end"
+  | "late_start"
+  | "category_imbalance";
 
 /**
  * A detected gap with contextual information for prompting.
@@ -35,6 +42,12 @@ export type GapAction =
       mealType: "breakfast" | "lunch" | "dinner";
       timeSlot: "morning" | "afternoon" | "evening";
       afterActivityId?: string;
+      /** Context for smarter messaging */
+      context?: {
+        previousActivityName?: string;
+        timeContext?: string;
+        nearbyArea?: string;
+      };
     }
   | {
       type: "add_transport";
@@ -45,35 +58,75 @@ export type GapAction =
       type: "add_experience";
       timeSlot: "morning" | "afternoon" | "evening";
       category?: string;
+      /** Context for smarter messaging */
+      context?: {
+        previousActivityName?: string;
+        gapDurationMinutes?: number;
+        suggestedCategories?: string[];
+      };
+    }
+  | {
+      type: "fill_long_gap";
+      afterActivityId: string;
+      gapMinutes: number;
+      timeSlot: "morning" | "afternoon" | "evening";
+      context?: {
+        previousActivityName?: string;
+        nextActivityName?: string;
+        nearbyArea?: string;
+      };
+    }
+  | {
+      type: "extend_day";
+      direction: "morning" | "evening";
+      currentEndTime?: string;
+      context?: {
+        currentFirstActivity?: string;
+        currentLastActivity?: string;
+      };
+    }
+  | {
+      type: "diversify_categories";
+      dominantCategory: string;
+      suggestedCategories: string[];
+      timeSlot: "morning" | "afternoon" | "evening";
     };
 
 
 /**
- * Detect meal gaps in a day.
+ * Detect meal gaps in a day with smarter contextual messaging.
  */
 function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
   const gaps: DetectedGap[] = [];
-  const activities = day.activities.filter((a) => a.kind === "place");
+  const activities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
 
   // Check for breakfast (morning activities without breakfast)
   const morningActivities = activities.filter((a) => a.timeOfDay === "morning");
-  const hasBreakfast = morningActivities.some(
-    (a) => a.kind === "place" && a.mealType === "breakfast"
-  );
+  const hasBreakfast = morningActivities.some((a) => a.mealType === "breakfast");
 
   if (morningActivities.length > 0 && !hasBreakfast) {
+    const firstActivity = morningActivities[0];
+    const cityName = day.cityId ?? "the area";
+
     gaps.push({
       id: `meal-breakfast-${day.id}`,
       type: "meal",
       dayIndex,
       dayId: day.id,
       title: "Add breakfast",
-      description: `Start Day ${dayIndex + 1} with a local breakfast spot`,
+      description: firstActivity
+        ? `Fuel up before ${firstActivity.title} with a local breakfast spot`
+        : `Start Day ${dayIndex + 1} with a local breakfast in ${cityName}`,
       icon: "Coffee",
       action: {
         type: "add_meal",
         mealType: "breakfast",
         timeSlot: "morning",
+        context: {
+          nearbyArea: firstActivity?.neighborhood ?? cityName,
+        },
       },
     });
   }
@@ -82,44 +135,70 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
   const afternoonActivities = activities.filter(
     (a) => a.timeOfDay === "afternoon" || a.timeOfDay === "morning"
   );
-  const hasLunch = activities.some((a) => a.kind === "place" && a.mealType === "lunch");
+  const hasLunch = activities.some((a) => a.mealType === "lunch");
 
   if (afternoonActivities.length >= 2 && !hasLunch) {
     const lastMorningActivity = morningActivities[morningActivities.length - 1];
+    const firstAfternoonActivity = activities.find((a) => a.timeOfDay === "afternoon");
+    const cityName = day.cityId ?? "the area";
+
+    let description = `Refuel with lunch in ${cityName}`;
+    if (lastMorningActivity) {
+      description = `After visiting ${lastMorningActivity.title}, you might be hungry—add lunch nearby?`;
+    } else if (firstAfternoonActivity) {
+      description = `Add lunch before heading to ${firstAfternoonActivity.title}`;
+    }
+
     gaps.push({
       id: `meal-lunch-${day.id}`,
       type: "meal",
       dayIndex,
       dayId: day.id,
       title: "Add lunch",
-      description: `Refuel with lunch in ${day.cityId ?? "the area"}`,
+      description,
       icon: "Utensils",
       action: {
         type: "add_meal",
         mealType: "lunch",
         timeSlot: "afternoon",
         afterActivityId: lastMorningActivity?.id,
+        context: {
+          previousActivityName: lastMorningActivity?.title,
+          nearbyArea: lastMorningActivity?.neighborhood ?? cityName,
+        },
       },
     });
   }
 
   // Check for dinner (evening activities without dinner)
   const eveningActivities = activities.filter((a) => a.timeOfDay === "evening");
-  const hasDinner = activities.some((a) => a.kind === "place" && a.mealType === "dinner");
+  const hasDinner = activities.some((a) => a.mealType === "dinner");
 
   if (eveningActivities.length > 0 && !hasDinner) {
+    const lastAfternoonActivity = activities.filter((a) => a.timeOfDay === "afternoon").pop();
+    const cityName = day.cityId ?? "the area";
+
+    let description = `End Day ${dayIndex + 1} with a memorable dinner`;
+    if (lastAfternoonActivity) {
+      description = `After ${lastAfternoonActivity.title}, find a great dinner spot in ${cityName}`;
+    }
+
     gaps.push({
       id: `meal-dinner-${day.id}`,
       type: "meal",
       dayIndex,
       dayId: day.id,
       title: "Add dinner",
-      description: `End Day ${dayIndex + 1} with a memorable dinner`,
+      description,
       icon: "UtensilsCrossed",
       action: {
         type: "add_meal",
         mealType: "dinner",
         timeSlot: "evening",
+        context: {
+          previousActivityName: lastAfternoonActivity?.title,
+          nearbyArea: lastAfternoonActivity?.neighborhood ?? cityName,
+        },
       },
     });
   }
@@ -232,6 +311,252 @@ function detectExperienceGaps(day: ItineraryDay, dayIndex: number): DetectedGap[
 }
 
 /**
+ * Parse time string (HH:MM) to minutes since midnight
+ */
+function parseTimeToMinutes(timeStr: string | undefined): number | null {
+  if (!timeStr) return null;
+  const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) return null;
+  const hours = parseInt(match[1] ?? "0", 10);
+  const minutes = parseInt(match[2] ?? "0", 10);
+  if (isNaN(hours) || isNaN(minutes)) return null;
+  return hours * 60 + minutes;
+}
+
+/**
+ * Detect long gaps between activities (>2.5 hours).
+ */
+function detectLongGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  const gaps: DetectedGap[] = [];
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
+
+  const LONG_GAP_THRESHOLD = 150; // 2.5 hours in minutes
+
+  for (let i = 0; i < placeActivities.length - 1; i++) {
+    const current = placeActivities[i];
+    const next = placeActivities[i + 1];
+
+    if (!current || !next) continue;
+
+    const currentDeparture = parseTimeToMinutes(current.schedule?.departureTime);
+    const nextArrival = parseTimeToMinutes(next.schedule?.arrivalTime);
+
+    if (currentDeparture === null || nextArrival === null) continue;
+
+    // Account for travel time if available
+    const travelTime = next.travelFromPrevious?.durationMinutes ?? 0;
+    const freeTime = nextArrival - currentDeparture - travelTime;
+
+    if (freeTime >= LONG_GAP_THRESHOLD) {
+      const hours = Math.floor(freeTime / 60);
+      const minutes = freeTime % 60;
+      const timeLabel = minutes > 0 ? `${hours}h ${minutes}m` : `${hours} hours`;
+
+      gaps.push({
+        id: `long-gap-${current.id}-${next.id}`,
+        type: "long_gap",
+        dayIndex,
+        dayId: day.id,
+        title: `${timeLabel} free`,
+        description: `You have ${timeLabel} free after ${current.title}. Want to add something nearby?`,
+        icon: "Clock",
+        action: {
+          type: "fill_long_gap",
+          afterActivityId: current.id,
+          gapMinutes: freeTime,
+          timeSlot: current.timeOfDay,
+          context: {
+            previousActivityName: current.title,
+            nextActivityName: next.title,
+            nearbyArea: current.neighborhood,
+          },
+        },
+      });
+    }
+  }
+
+  return gaps;
+}
+
+/**
+ * Detect early end days (ending before 5pm).
+ */
+function detectEarlyEnd(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  const gaps: DetectedGap[] = [];
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
+
+  if (placeActivities.length === 0) return gaps;
+
+  const EARLY_END_THRESHOLD = 17 * 60; // 5pm in minutes
+
+  // Find the last activity
+  const lastActivity = placeActivities[placeActivities.length - 1];
+  if (!lastActivity) return gaps;
+
+  const lastDeparture = parseTimeToMinutes(lastActivity.schedule?.departureTime);
+
+  if (lastDeparture !== null && lastDeparture < EARLY_END_THRESHOLD) {
+    const endHour = Math.floor(lastDeparture / 60);
+    const endMinute = lastDeparture % 60;
+    const timeLabel = `${endHour}:${endMinute.toString().padStart(2, "0")}`;
+
+    gaps.push({
+      id: `early-end-${day.id}`,
+      type: "early_end",
+      dayIndex,
+      dayId: day.id,
+      title: "Day ends early",
+      description: `Day ${dayIndex + 1} ends at ${timeLabel}. Extend into the evening?`,
+      icon: "Sunset",
+      action: {
+        type: "extend_day",
+        direction: "evening",
+        currentEndTime: timeLabel,
+        context: {
+          currentLastActivity: lastActivity.title,
+        },
+      },
+    });
+  }
+
+  return gaps;
+}
+
+/**
+ * Detect late start days (starting after 11am).
+ */
+function detectLateStart(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  const gaps: DetectedGap[] = [];
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
+
+  if (placeActivities.length === 0) return gaps;
+
+  const LATE_START_THRESHOLD = 11 * 60; // 11am in minutes
+
+  // Find the first activity
+  const firstActivity = placeActivities[0];
+  if (!firstActivity) return gaps;
+
+  const firstArrival = parseTimeToMinutes(firstActivity.schedule?.arrivalTime);
+
+  if (firstArrival !== null && firstArrival >= LATE_START_THRESHOLD) {
+    const startHour = Math.floor(firstArrival / 60);
+    const startMinute = firstArrival % 60;
+    const timeLabel = `${startHour}:${startMinute.toString().padStart(2, "0")}`;
+
+    gaps.push({
+      id: `late-start-${day.id}`,
+      type: "late_start",
+      dayIndex,
+      dayId: day.id,
+      title: "Late start",
+      description: `Day ${dayIndex + 1} starts at ${timeLabel}. Add a morning activity?`,
+      icon: "Sunrise",
+      action: {
+        type: "extend_day",
+        direction: "morning",
+        context: {
+          currentFirstActivity: firstActivity.title,
+        },
+      },
+    });
+  }
+
+  return gaps;
+}
+
+/**
+ * Detect category imbalance (3+ activities of the same category in a day).
+ */
+function detectCategoryImbalance(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  const gaps: DetectedGap[] = [];
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
+      a.kind === "place" && !a.mealType
+  );
+
+  if (placeActivities.length < 3) return gaps;
+
+  // Count categories
+  const categoryCounts = new Map<string, number>();
+  for (const activity of placeActivities) {
+    const category = activity.tags?.[0] ?? "unknown";
+    categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
+  }
+
+  // Find dominant categories (3+ occurrences)
+  const IMBALANCE_THRESHOLD = 3;
+  for (const [category, count] of categoryCounts) {
+    if (count >= IMBALANCE_THRESHOLD && category !== "unknown") {
+      // Suggest alternative categories
+      const suggestedCategories = getSuggestedAlternatives(category);
+
+      const categoryLabel = formatCategoryName(category);
+      gaps.push({
+        id: `category-imbalance-${day.id}-${category}`,
+        type: "category_imbalance",
+        dayIndex,
+        dayId: day.id,
+        title: `Lots of ${categoryLabel}`,
+        description: `Day ${dayIndex + 1} has ${count} ${categoryLabel} activities. Mix in something different?`,
+        icon: "Shuffle",
+        action: {
+          type: "diversify_categories",
+          dominantCategory: category,
+          suggestedCategories,
+          timeSlot: "afternoon", // Default to afternoon for variety
+        },
+      });
+    }
+  }
+
+  return gaps;
+}
+
+/**
+ * Get suggested alternative categories based on the dominant category.
+ */
+function getSuggestedAlternatives(dominantCategory: string): string[] {
+  const alternatives: Record<string, string[]> = {
+    temple: ["garden", "shopping", "food", "museum"],
+    shrine: ["garden", "market", "food", "nature"],
+    museum: ["garden", "shopping", "cafe", "nature"],
+    shopping: ["temple", "garden", "museum", "nature"],
+    food: ["temple", "garden", "museum", "nature"],
+    garden: ["temple", "museum", "shopping", "cafe"],
+    nature: ["temple", "museum", "shopping", "food"],
+    landmark: ["garden", "shopping", "food", "museum"],
+  };
+
+  return alternatives[dominantCategory] ?? ["garden", "cafe", "shopping"];
+}
+
+/**
+ * Format category name for display.
+ */
+function formatCategoryName(category: string): string {
+  const names: Record<string, string> = {
+    temple: "temples",
+    shrine: "shrines",
+    museum: "museums",
+    shopping: "shopping spots",
+    food: "food spots",
+    garden: "gardens",
+    nature: "nature spots",
+    landmark: "landmarks",
+    cafe: "cafes",
+  };
+
+  return names[category] ?? category;
+}
+
+/**
  * Analyze an itinerary and detect all gaps.
  *
  * @param itinerary - The itinerary to analyze
@@ -244,14 +569,20 @@ export function detectGaps(
     includeMeals?: boolean;
     includeTransport?: boolean;
     includeExperiences?: boolean;
+    includeLongGaps?: boolean;
+    includeTimingGaps?: boolean;
+    includeCategoryBalance?: boolean;
     maxGapsPerDay?: number;
   } = {}
 ): DetectedGap[] {
   const {
     includeMeals = true,
-    includeTransport = true,
+    includeTransport = false, // Disabled by default (too noisy)
     includeExperiences = true,
-    maxGapsPerDay = 3,
+    includeLongGaps = true,
+    includeTimingGaps = true,
+    includeCategoryBalance = true,
+    maxGapsPerDay = 4,
   } = options;
 
   const allGaps: DetectedGap[] = [];
@@ -271,10 +602,31 @@ export function detectGaps(
       dayGaps.push(...detectExperienceGaps(day, dayIndex));
     }
 
+    if (includeLongGaps) {
+      dayGaps.push(...detectLongGaps(day, dayIndex));
+    }
+
+    if (includeTimingGaps) {
+      dayGaps.push(...detectEarlyEnd(day, dayIndex));
+      dayGaps.push(...detectLateStart(day, dayIndex));
+    }
+
+    if (includeCategoryBalance) {
+      dayGaps.push(...detectCategoryImbalance(day, dayIndex));
+    }
+
     // Prioritize and limit gaps per day
-    // Priority: meals > transport > experience
+    // Priority: meals > timing > long gaps > category > transport > experience
     const prioritized = dayGaps.sort((a, b) => {
-      const priority = { meal: 0, transport: 1, experience: 2 };
+      const priority: Record<GapType, number> = {
+        meal: 0,
+        late_start: 1,
+        early_end: 1,
+        long_gap: 2,
+        category_imbalance: 3,
+        transport: 4,
+        experience: 5,
+      };
       return priority[a.type] - priority[b.type];
     });
 
@@ -292,7 +644,15 @@ export function getGapsSummary(gaps: DetectedGap[]): {
   byType: Record<GapType, number>;
   byDay: Record<number, number>;
 } {
-  const byType: Record<GapType, number> = { meal: 0, transport: 0, experience: 0 };
+  const byType: Record<GapType, number> = {
+    meal: 0,
+    transport: 0,
+    experience: 0,
+    long_gap: 0,
+    early_end: 0,
+    late_start: 0,
+    category_imbalance: 0,
+  };
   const byDay: Record<number, number> = {};
 
   for (const gap of gaps) {

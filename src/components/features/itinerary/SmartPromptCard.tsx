@@ -1,11 +1,14 @@
 "use client";
 
 import {
+  Clock,
   Coffee,
   Loader2,
   Moon,
   Plus,
+  Shuffle,
   Sunrise,
+  Sunset,
   Train,
   Utensils,
   UtensilsCrossed,
@@ -16,10 +19,13 @@ import { cn } from "@/lib/cn";
 import type { DetectedGap, GapType } from "@/lib/smartPrompts/gapDetection";
 
 const ICON_MAP: Record<string, LucideIcon> = {
+  Clock,
   Coffee,
   Moon,
   Plus,
+  Shuffle,
   Sunrise,
+  Sunset,
   Train,
   Utensils,
   UtensilsCrossed,
@@ -40,6 +46,26 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     bg: "bg-purple-50",
     text: "text-purple-700",
     badge: "bg-purple-100 text-purple-700",
+  },
+  long_gap: {
+    bg: "bg-amber-50",
+    text: "text-amber-700",
+    badge: "bg-amber-100 text-amber-700",
+  },
+  early_end: {
+    bg: "bg-rose-50",
+    text: "text-rose-700",
+    badge: "bg-rose-100 text-rose-700",
+  },
+  late_start: {
+    bg: "bg-sky-50",
+    text: "text-sky-700",
+    badge: "bg-sky-100 text-sky-700",
+  },
+  category_imbalance: {
+    bg: "bg-emerald-50",
+    text: "text-emerald-700",
+    badge: "bg-emerald-100 text-emerald-700",
   },
 };
 
