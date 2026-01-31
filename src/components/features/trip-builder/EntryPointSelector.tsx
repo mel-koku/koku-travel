@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useId, useCallback, useMemo } from "react";
-import type { EntryPoint } from "@/types/trip";
+import type { EntryPoint, KnownRegionId } from "@/types/trip";
 import type { Airport } from "@/app/api/airports/route";
 import { FormField } from "@/components/ui/FormField";
 import { logger } from "@/lib/logger";
@@ -86,6 +86,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
       name: airport.name,
       coordinates: airport.coordinates,
       iataCode: airport.iataCode,
+      region: airport.region.toLowerCase() as KnownRegionId,
     };
     setSelectedAirport(entryPoint);
     setSearchInput(airport.name);

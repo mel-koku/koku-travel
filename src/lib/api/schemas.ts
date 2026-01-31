@@ -183,6 +183,21 @@ const coordinatesSchema = z.object({
 }).strict();
 
 /**
+ * Schema for known region IDs (Japan's 9 main regions)
+ */
+const knownRegionIdSchema = z.enum([
+  "kansai",
+  "kanto",
+  "chubu",
+  "kyushu",
+  "hokkaido",
+  "tohoku",
+  "chugoku",
+  "shikoku",
+  "okinawa",
+]);
+
+/**
  * Schema for entry point (airports only)
  */
 const entryPointSchema = z.object({
@@ -192,6 +207,7 @@ const entryPointSchema = z.object({
   coordinates: coordinatesSchema,
   cityId: z.string().max(255).optional(),
   iataCode: z.string().length(3).regex(/^[A-Z]{3}$/).optional(),
+  region: knownRegionIdSchema.optional(),
 }).strict().optional();
 
 /**

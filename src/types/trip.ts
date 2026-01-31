@@ -96,6 +96,7 @@ export type EntryPoint = {
   };
   cityId?: CityId;
   iataCode?: string; // 3-letter IATA airport code
+  region?: KnownRegionId; // Region the entry point belongs to
 };
 
 /**

@@ -111,6 +111,7 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
             region={scored.region}
             matchScore={scored.totalScore}
             isRecommended={scored.isRecommended}
+            isEntryPointRegion={scored.isEntryPointRegion}
             isSelected={selectedRegions.includes(scored.region.id)}
             onToggle={() => toggleRegion(scored.region.id)}
           />

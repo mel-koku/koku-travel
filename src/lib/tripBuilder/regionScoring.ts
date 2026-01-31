@@ -18,6 +18,7 @@ export type RegionScore = {
   proximityScore: number; // 0-100 based on entry point distance
   totalScore: number; // Combined weighted score
   isRecommended: boolean; // True if in top 3
+  isEntryPointRegion: boolean; // True if this is the entry point's region
 };
 
 /**
@@ -98,15 +99,18 @@ function calculateProximityScore(
 
 /**
  * Score all regions based on vibes and entry point.
+ * The entry point's region always appears first.
  *
  * @param vibes - Selected vibe IDs
  * @param entryPoint - Optional entry point
- * @returns Array of scored regions, sorted by total score (descending)
+ * @returns Array of scored regions, sorted by total score (descending), with entry point region first
  */
 export function scoreRegionsForTrip(
   vibes: VibeId[],
   entryPoint?: EntryPoint
 ): RegionScore[] {
+  const entryPointRegionId = entryPoint?.region;
+
   const scoredRegions = REGION_DESCRIPTIONS.map((region) => {
     const matchScore = calculateVibeMatch(region, vibes);
     const proximityScore = calculateProximityScore(region, entryPoint);
@@ -120,11 +124,26 @@ export function scoreRegionsForTrip(
       proximityScore,
       totalScore,
       isRecommended: false, // Will be set after sorting
+      isEntryPointRegion: region.id === entryPointRegionId,
     };
   });
 
   // Sort by total score descending
   scoredRegions.sort((a, b) => b.totalScore - a.totalScore);
+
+  // If entry point has a region, move it to the front
+  if (entryPoint?.region) {
+    const entryPointRegionIndex = scoredRegions.findIndex(
+      (s) => s.region.id === entryPoint.region
+    );
+    if (entryPointRegionIndex > 0) {
+      const entryPointRegion = scoredRegions[entryPointRegionIndex];
+      if (entryPointRegion) {
+        scoredRegions.splice(entryPointRegionIndex, 1);
+        scoredRegions.unshift(entryPointRegion);
+      }
+    }
+  }
 
   // Mark top 3 as recommended
   scoredRegions.slice(0, 3).forEach((score) => {
