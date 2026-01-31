@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { ItineraryActivity } from "@/types/itinerary";
+import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { ActivityRow } from "./ActivityRow";
 
 type SortableActivityProps = {
@@ -19,6 +20,7 @@ type SortableActivityProps = {
   dayId?: string;
   onReplace?: () => void;
   onCopy?: () => void;
+  conflicts?: ItineraryConflict[];
 };
 
 export const SortableActivity = memo(function SortableActivity({
@@ -35,6 +37,7 @@ export const SortableActivity = memo(function SortableActivity({
   dayId,
   onReplace,
   onCopy,
+  conflicts,
 }: SortableActivityProps) {
   const {
     attributes,
@@ -76,6 +79,7 @@ export const SortableActivity = memo(function SortableActivity({
         dayId={dayId}
         onReplace={onReplace}
         onCopy={onCopy}
+        conflicts={conflicts}
       />
     </li>
   );
