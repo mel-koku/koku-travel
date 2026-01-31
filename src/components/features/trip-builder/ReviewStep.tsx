@@ -1,14 +1,19 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 import { PreferenceCards } from "./PreferenceCards";
+import { PlanningWarningsList } from "./PlanningWarning";
+import { useTripBuilder } from "@/context/TripBuilderContext";
+import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
 
 export type ReviewStepProps = {
   onValidityChange?: (isValid: boolean) => void;
 };
 
 export function ReviewStep({ onValidityChange }: ReviewStepProps) {
+  const { data } = useTripBuilder();
+
   const handlePreferenceValidityChange = useCallback(
     (_isValid: boolean) => {
       // Step 3 is always considered valid since preferences are optional
@@ -16,6 +21,9 @@ export function ReviewStep({ onValidityChange }: ReviewStepProps) {
     },
     [onValidityChange]
   );
+
+  // Detect planning warnings based on trip data
+  const warnings = useMemo(() => detectPlanningWarnings(data), [data]);
 
   return (
     <div className="flex h-full flex-col gap-6">
@@ -28,6 +36,11 @@ export function ReviewStep({ onValidityChange }: ReviewStepProps) {
           All fields are optional. Add details to get more personalized recommendations, or skip ahead to generate your itinerary.
         </p>
       </div>
+
+      {/* Planning Warnings */}
+      {warnings.length > 0 && (
+        <PlanningWarningsList warnings={warnings} />
+      )}
 
       {/* Preference Cards */}
       <PreferenceCards onValidityChange={handlePreferenceValidityChange} />

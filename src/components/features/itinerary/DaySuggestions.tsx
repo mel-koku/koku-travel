@@ -42,6 +42,22 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     bg: "bg-purple-50",
     text: "text-purple-600",
   },
+  long_gap: {
+    bg: "bg-teal-50",
+    text: "text-teal-600",
+  },
+  early_end: {
+    bg: "bg-amber-50",
+    text: "text-amber-600",
+  },
+  late_start: {
+    bg: "bg-sky-50",
+    text: "text-sky-600",
+  },
+  category_imbalance: {
+    bg: "bg-rose-50",
+    text: "text-rose-600",
+  },
 };
 
 export type DaySuggestionsProps = {

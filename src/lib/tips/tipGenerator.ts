@@ -9,7 +9,7 @@ export type ActivityTip = {
   /**
    * Type of tip
    */
-  type: "crowd" | "photo" | "weather" | "timing" | "accessibility" | "budget" | "general";
+  type: "crowd" | "photo" | "weather" | "timing" | "accessibility" | "budget" | "general" | "travel" | "payment" | "reservation";
   /**
    * Tip title
    */
@@ -26,6 +26,10 @@ export type ActivityTip = {
    * Optional icon emoji
    */
   icon?: string;
+  /**
+   * Is this an important/critical tip?
+   */
+  isImportant?: boolean;
 };
 
 /**
@@ -41,6 +45,18 @@ export function generateActivityTips(
   },
 ): ActivityTip[] {
   const tips: ActivityTip[] = [];
+
+  // Travel tips (based on travel segment to this activity)
+  const travelTips = generateTravelTips(activity, options?.allActivities);
+  tips.push(...travelTips);
+
+  // Reservation tips
+  const reservationTips = generateReservationTips(location, activity);
+  tips.push(...reservationTips);
+
+  // Payment tips
+  const paymentTips = generatePaymentTips(location, activity);
+  tips.push(...paymentTips);
 
   // Crowd avoidance tips
   const crowdTips = generateCrowdTips(location, activity, options);
@@ -72,8 +88,15 @@ export function generateActivityTips(
   const generalTips = generateGeneralTips(location, activity);
   tips.push(...generalTips);
 
-  // Sort by priority (highest first) and return top 3
-  return tips.sort((a, b) => b.priority - a.priority).slice(0, 3);
+  // Sort by priority (highest first), with important tips getting a boost
+  // Return top 3 tips
+  return tips
+    .sort((a, b) => {
+      const aScore = a.priority + (a.isImportant ? 5 : 0);
+      const bScore = b.priority + (b.isImportant ? 5 : 0);
+      return bScore - aScore;
+    })
+    .slice(0, 3);
 }
 
 /**
@@ -391,6 +414,164 @@ function generateGeneralTips(
       message: "Markets are best visited in the morning for freshest produce. Bring cash as some vendors may not accept cards.",
       priority: 6,
       icon: "🛒",
+    });
+  }
+
+  return tips;
+}
+
+/**
+ * Generate travel tips based on the travel segment
+ */
+function generateTravelTips(
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
+  allActivities?: ItineraryActivity[],
+): ActivityTip[] {
+  const tips: ActivityTip[] = [];
+
+  // Check travel from previous
+  const travelSegment = activity.travelFromPrevious;
+  if (travelSegment && travelSegment.durationMinutes > 0) {
+    const durationMinutes = travelSegment.durationMinutes;
+    const mode = travelSegment.mode;
+
+    // Long travel time tip
+    if (durationMinutes >= 30) {
+      const hours = Math.floor(durationMinutes / 60);
+      const mins = durationMinutes % 60;
+      const timeLabel = hours > 0
+        ? `${hours}h ${mins > 0 ? `${mins}m` : ""}`
+        : `${mins} min`;
+
+      // Find the previous activity name
+      let previousActivityName = "previous location";
+      if (allActivities) {
+        const activityIndex = allActivities.findIndex((a) => a.id === activity.id);
+        if (activityIndex > 0) {
+          const prev = allActivities[activityIndex - 1];
+          if (prev && prev.kind === "place") {
+            previousActivityName = prev.title;
+          }
+        }
+      }
+
+      if (mode === "train" || mode === "subway" || mode === "transit") {
+        tips.push({
+          type: "travel",
+          title: `${timeLabel} by train`,
+          message: `From ${previousActivityName}. Consider getting an IC card for convenient payment.`,
+          priority: 8,
+          icon: "🚃",
+          isImportant: durationMinutes >= 45,
+        });
+      } else if (mode === "walk") {
+        tips.push({
+          type: "travel",
+          title: `${timeLabel} walk`,
+          message: `Good walking shoes recommended. ${durationMinutes >= 30 ? "Consider taking transit if you prefer." : ""}`,
+          priority: 7,
+          icon: "🚶",
+        });
+      } else if (mode === "bus") {
+        tips.push({
+          type: "travel",
+          title: `${timeLabel} by bus`,
+          message: `Check bus schedules in advance. IC cards work on most city buses.`,
+          priority: 7,
+          icon: "🚌",
+        });
+      }
+    }
+
+    // Transfer tip for complex transit
+    if (travelSegment.instructions && travelSegment.instructions.length >= 2) {
+      const transferCount = travelSegment.instructions.length - 1;
+      tips.push({
+        type: "travel",
+        title: `${transferCount} transfer${transferCount > 1 ? "s" : ""}`,
+        message: "Allow extra time for transfers. Follow station signage carefully.",
+        priority: 7,
+        icon: "🔄",
+      });
+    }
+  }
+
+  return tips;
+}
+
+/**
+ * Generate payment tips
+ */
+function generatePaymentTips(
+  location: Location,
+  _activity: Extract<ItineraryActivity, { kind: "place" }>,
+): ActivityTip[] {
+  const tips: ActivityTip[] = [];
+  const category = location.category?.toLowerCase() ?? "";
+
+  // Cash-only common categories
+  const cashOnlyCategories = ["market", "street_food", "ramen", "izakaya", "shrine", "temple"];
+  const isCashOnlyCategory = cashOnlyCategories.some((cat) => category.includes(cat));
+
+  // Infer cash preference from category (paymentTypes not yet in Location schema)
+  if (isCashOnlyCategory) {
+    // Infer cash-only from category
+    tips.push({
+      type: "payment",
+      title: "Cash Recommended",
+      message: "Many traditional shops and street vendors prefer cash. Convenience store ATMs are widely available.",
+      priority: 6,
+      icon: "💵",
+    });
+  }
+
+  // Temple/shrine donation tip
+  if (category === "shrine" || category === "temple") {
+    tips.push({
+      type: "payment",
+      title: "Small Change",
+      message: "Bring coins (especially 5 yen coins for shrines) for offerings and fortune papers (omikuji).",
+      priority: 5,
+      icon: "🪙",
+    });
+  }
+
+  return tips;
+}
+
+/**
+ * Generate reservation tips
+ */
+function generateReservationTips(
+  location: Location,
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
+): ActivityTip[] {
+  const tips: ActivityTip[] = [];
+  const category = location.category?.toLowerCase() ?? "";
+
+  // High-end restaurants
+  const reservationCategories = ["fine_dining", "kaiseki", "omakase", "sushi"];
+  const needsReservation = reservationCategories.some((cat) => category.includes(cat));
+
+  if (needsReservation || (location.rating && location.rating >= 4.7 && (category === "restaurant" || activity.mealType === "dinner"))) {
+    tips.push({
+      type: "reservation",
+      title: "Reservation Recommended",
+      message: "Popular with tourists and locals alike. Book several days in advance if possible.",
+      priority: 9,
+      icon: "📞",
+      isImportant: true,
+    });
+  }
+
+  // Popular attractions
+  if (location.rating && location.rating >= 4.5 && (category === "museum" || category === "attraction")) {
+    tips.push({
+      type: "reservation",
+      title: "Consider Advance Tickets",
+      message: "This popular attraction may have lines. Online tickets can save time.",
+      priority: 7,
+      icon: "🎟️",
     });
   }
 

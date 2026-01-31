@@ -10,8 +10,10 @@ import { logger } from "@/lib/logger";
 import { DayEntryPointEditor } from "./DayEntryPointEditor";
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { DaySuggestions } from "./DaySuggestions";
+import { DayConflictSummary } from "./ConflictBadge";
 import { useAppState } from "@/state/AppState";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 
 type DayHeaderProps = {
   day: ItineraryDay;
@@ -26,6 +28,8 @@ type DayHeaderProps = {
   onAcceptSuggestion?: (gap: DetectedGap) => void;
   onSkipSuggestion?: (gap: DetectedGap) => void;
   loadingSuggestionId?: string | null;
+  // Conflicts for this day
+  conflicts?: ItineraryConflict[];
 };
 
 export function DayHeader({
@@ -40,6 +44,7 @@ export function DayHeader({
   onAcceptSuggestion,
   onSkipSuggestion,
   loadingSuggestionId,
+  conflicts,
 }: DayHeaderProps) {
   const { dayEntryPoints, setDayEntryPoint, reorderActivities } = useAppState();
   
@@ -267,6 +272,10 @@ export function DayHeader({
             <span className="text-foreground-secondary">· time at locations only</span>
           )}
         </div>
+        {/* Conflict Summary */}
+        {conflicts && conflicts.length > 0 && (
+          <DayConflictSummary dayConflicts={conflicts} className="mt-3" />
+        )}
       </div>
       {tripId && (
         <div className="mt-4 space-y-4">

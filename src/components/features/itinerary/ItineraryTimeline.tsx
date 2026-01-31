@@ -30,6 +30,8 @@ import {
 } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
+import { getActivityConflicts } from "@/lib/validation/itineraryConflicts";
 import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
@@ -94,6 +96,9 @@ type ItineraryTimelineProps = {
   onAcceptSuggestion?: (gap: DetectedGap) => void;
   onSkipSuggestion?: (gap: DetectedGap) => void;
   loadingSuggestionId?: string | null;
+  // Conflicts for this day
+  conflicts?: ItineraryConflict[];
+  conflictsResult?: ItineraryConflictsResult;
 };
 
 export const ItineraryTimeline = ({
@@ -115,6 +120,8 @@ export const ItineraryTimeline = ({
   onAcceptSuggestion,
   onSkipSuggestion,
   loadingSuggestionId,
+  conflicts,
+  conflictsResult,
 }: ItineraryTimelineProps) => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -566,6 +573,7 @@ export const ItineraryTimeline = ({
             onAcceptSuggestion={onAcceptSuggestion}
             onSkipSuggestion={onSkipSuggestion}
             loadingSuggestionId={loadingSuggestionId}
+            conflicts={conflicts}
           />
 
         {/* City Transition Display */}
@@ -747,6 +755,11 @@ export const ItineraryTimeline = ({
                   );
                 }
 
+                // Get conflicts for this specific activity
+                const activityConflicts = conflictsResult
+                  ? getActivityConflicts(conflictsResult, activity.id)
+                  : [];
+
                 return (
                   <SortableActivity
                     key={activity.id}
@@ -763,6 +776,7 @@ export const ItineraryTimeline = ({
                     dayId={day.id}
                     onReplace={onReplace ? () => onReplace(activity.id) : undefined}
                     onCopy={onCopy ? () => onCopy(activity.id) : undefined}
+                    conflicts={activityConflicts}
                   />
                 );
               })}
