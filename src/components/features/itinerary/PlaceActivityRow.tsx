@@ -55,7 +55,8 @@ function buildFallbackLocation(
   const fallbackCity = activity.neighborhood ?? "Japan";
 
   return {
-    id: activity.id,
+    // Use locationId if available, otherwise mark as fallback to prevent API calls
+    id: activity.locationId ?? `__fallback__${activity.id}`,
     name: activity.title,
     city: fallbackCity,
     region: fallbackCity,
@@ -99,17 +100,27 @@ function useEntryPointLocation(
 ): Location | null {
   const [location, setLocation] = useState<Location | null>(null);
 
+  // Extract stable identifiers to prevent excessive re-fetching
+  const locationId = activity.locationId;
+  const activityId = activity.id;
+  const neighborhood = activity.neighborhood;
+  const fallbackCategory = activity.tags?.[0] ?? "transport";
+
   useEffect(() => {
     // Extract placeId from entry point locationId
-    const placeIdMatch = activity.locationId?.match(/^__entry_point_(?:start|end)__(.+?)__$/);
+    const placeIdMatch = locationId?.match(/^__entry_point_(?:start|end)__(.+?)__$/);
     const placeId = placeIdMatch ? placeIdMatch[1] : null;
 
     if (!placeId) {
       return;
     }
 
+    const abortController = new AbortController();
+
     // Use Basic tier endpoint (4 fields) instead of Pro tier (35 fields)
-    fetch(`/api/places/autocomplete?placeId=${encodeURIComponent(placeId)}`)
+    fetch(`/api/places/autocomplete?placeId=${encodeURIComponent(placeId)}`, {
+      signal: abortController.signal,
+    })
       .then((res) => {
         if (!res.ok) {
           throw new Error(`Failed to fetch place coordinates: ${res.status}`);
@@ -119,8 +130,7 @@ function useEntryPointLocation(
       .then((data: { place?: { placeId: string; displayName: string; formattedAddress?: string; location: { latitude: number; longitude: number } } }) => {
         if (data.place) {
           const { place } = data;
-          const city = extractCityFromAddress(place.formattedAddress, activity.neighborhood);
-          const fallbackCategory = activity.tags?.[0] ?? "transport";
+          const city = extractCityFromAddress(place.formattedAddress, neighborhood);
 
           // Build Location object from Basic tier response
           const loc: Location = {
@@ -140,15 +150,24 @@ function useEntryPointLocation(
         }
       })
       .catch((error) => {
+        // Ignore abort errors
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
         logger.error(
           "Error fetching entry point location details",
           error instanceof Error ? error : new Error(String(error)),
-          { activityId: activity.id },
+          { activityId },
         );
         // Fall back to basic location
         setLocation(buildFallbackLocation(activity));
       });
-  }, [activity]);
+
+    return () => {
+      abortController.abort();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable IDs to prevent excessive re-fetching
+  }, [locationId, activityId, neighborhood, fallbackCategory]);
 
   return location;
 }
@@ -268,6 +287,11 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     const { details: locationDetails } = useLocationDetailsQuery(placeLocation?.id ?? null);
 
     // Check availability when location is available
+    // Use stable identifiers to prevent excessive re-fetching
+    const activityId = activity.id;
+    const activityStartTime = activity.startTime;
+    const placeId = placeLocation?.placeId;
+
     useEffect(() => {
       // Use availability status from activity if available, otherwise check
       if (activity.availabilityStatus && activity.availabilityMessage) {
@@ -279,15 +303,18 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       }
 
       // Only check if we have a placeId
-      if (!placeLocation?.placeId || isEntryPoint) {
+      if (!placeId || isEntryPoint) {
         return;
       }
+
+      const abortController = new AbortController();
 
       // Check availability via API
       fetch("/api/itinerary/availability", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ activities: [activity] }),
+        signal: abortController.signal,
       })
         .then((res) => {
           if (!res.ok) return null;
@@ -304,14 +331,29 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           }
         })
         .catch((error) => {
+          // Ignore abort errors
+          if (error instanceof Error && error.name === "AbortError") {
+            return;
+          }
           logger.warn("Failed to check availability", {
-            activityId: activity.id,
+            activityId,
             error: error instanceof Error ? error.message : String(error),
           });
         });
-    }, [activity, placeLocation?.placeId, isEntryPoint]);
+
+      return () => {
+        abortController.abort();
+      };
+    }, [activityId, activityStartTime, placeId, isEntryPoint, activity.availabilityStatus, activity.availabilityMessage]);
 
     // Generate tips when location is available
+    // Use stable identifiers to prevent excessive re-computation
+    const allActivityIds = useMemo(
+      () => allActivities.map((a) => a.id).join(","),
+      [allActivities]
+    );
+    const placeLocationId = placeLocation?.id;
+
     useEffect(() => {
       if (placeLocation && activity.kind === "place") {
         const generatedTips = generateActivityTips(activity, placeLocation, {
@@ -319,7 +361,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         });
         setTips(generatedTips);
       }
-    }, [activity, placeLocation, allActivities]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable IDs to prevent excessive re-computation
+    }, [activityId, placeLocationId, allActivityIds]);
 
     const summary = placeLocation
       ? getShortOverview(placeLocation, locationDetails?.editorialSummary ?? null)
