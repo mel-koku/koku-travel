@@ -38,7 +38,7 @@ const MIN_QUERY_LENGTH = 2;
  * - limit: Max results (default: 10, max: 10)
  *
  * Searches across: name, city, region, category
- * Excludes: permanently closed locations, locations without place_id
+ * Excludes: permanently closed locations
  *
  * @returns Array of LocationSearchResult
  */
@@ -81,9 +81,7 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase
       .from("locations")
       .select("id, name, city, region, category, place_id, image, rating")
-      .not("place_id", "is", null)
-      .neq("place_id", "")
-      .neq("business_status", "PERMANENTLY_CLOSED")
+      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
       .or(
         `name.ilike.%${query}%,city.ilike.%${query}%,region.ilike.%${query}%,category.ilike.%${query}%`
       )
@@ -105,18 +103,16 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform to LocationSearchResult
-    const results: LocationSearchResult[] = (data || [])
-      .filter((row) => row.place_id != null && row.place_id.trim() !== "")
-      .map((row) => ({
-        id: row.id,
-        name: row.name,
-        city: row.city,
-        region: row.region,
-        category: row.category,
-        placeId: row.place_id!,
-        image: row.image || undefined,
-        rating: row.rating ?? undefined,
-      }));
+    const results: LocationSearchResult[] = (data || []).map((row) => ({
+      id: row.id,
+      name: row.name,
+      city: row.city,
+      region: row.region,
+      category: row.category,
+      placeId: row.place_id ?? "",
+      image: row.image || undefined,
+      rating: row.rating ?? undefined,
+    }));
 
     return addRequestContextHeaders(
       NextResponse.json(results, {

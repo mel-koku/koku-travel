@@ -52,12 +52,11 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Fetch all locations with valid place_id to get city/region data
+    // Fetch all locations to get city/region data
     const { data: locations, error } = await supabase
       .from("locations")
       .select("id, city, region, place_id, image, rating")
-      .not("place_id", "is", null)
-      .neq("place_id", "")
+      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
       .order("rating", { ascending: false, nullsFirst: false });
 
     if (error) {

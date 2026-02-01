@@ -17,7 +17,7 @@ import {
 /**
  * Fetches the total count of explorable locations in the database
  *
- * Only counts locations that have a valid place_id and are not permanently closed,
+ * Only counts locations that are not permanently closed,
  * matching the filtering logic used by the /api/locations endpoint.
  *
  * @returns The total number of explorable locations
@@ -28,9 +28,7 @@ export async function getLocationCount(): Promise<number> {
   const { count, error } = await supabase
     .from("locations")
     .select("*", { count: "exact", head: true })
-    .not("place_id", "is", null)
-    .neq("place_id", "")
-    .neq("business_status", "PERMANENTLY_CLOSED");
+    .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
   if (error || count === null) {
     return 0;
@@ -212,6 +210,9 @@ export async function fetchLocationsByCity(
     query = query.not("place_id", "is", null).neq("place_id", "");
   }
 
+  // Exclude permanently closed locations but include null business_status
+  query = query.or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+
   if (excludeIds.length > 0) {
     // Use .not('id', 'in', excludeIds) to exclude specific IDs
     for (const id of excludeIds) {
@@ -273,6 +274,9 @@ export async function fetchLocationsByCategories(
   if (requirePlaceId) {
     query = query.not("place_id", "is", null).neq("place_id", "");
   }
+
+  // Exclude permanently closed locations but include null business_status
+  query = query.or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
   if (excludeIds.length > 0) {
     for (const id of excludeIds) {
@@ -344,6 +348,7 @@ export async function fetchTopRatedLocations(
     .select(LOCATION_LISTING_COLUMNS)
     .not("place_id", "is", null)
     .neq("place_id", "")
+    .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
     .not("rating", "is", null)
     .gte("rating", minRating)
     .not("review_count", "is", null)
