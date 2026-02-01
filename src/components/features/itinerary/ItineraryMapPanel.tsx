@@ -127,8 +127,21 @@ export const ItineraryMapPanel = ({
       });
     });
 
+    // Add end point as last marker
+    if (endPoint) {
+      results.push({
+        id: "end-point",
+        title: endPoint.name,
+        lat: endPoint.coordinates.lat,
+        lng: endPoint.coordinates.lng,
+        tags: [],
+        timeOfDay: "evening",
+        placeNumber: placeCounter++,
+      });
+    }
+
     return results;
-  }, [activities, startPoint, locationsMap]);
+  }, [activities, startPoint, endPoint, locationsMap]);
 
   const pointLookup = useMemo(() => {
     const map = new Map<string, MapPoint>();
@@ -312,10 +325,19 @@ export const ItineraryMapPanel = ({
 
         points.forEach((point) => {
           // Create custom numbered marker icon
-          // Start point (0) gets a different color
-          const isStartPoint = point.placeNumber === 0;
-          const backgroundColor = isStartPoint ? "#10B981" : "#4F46E5"; // Green for start, indigo for others
-          
+          const isStartPoint = point.id === "start-point";
+          const isEndPoint = point.id === "end-point";
+
+          // Determine color: green for start, rose for end, indigo for regular
+          const backgroundColor = isStartPoint
+            ? "#10B981"
+            : isEndPoint
+              ? "#F43F5E"
+              : "#4F46E5";
+
+          // Show "S" for start, "E" for end, otherwise show the number
+          const displayLabel = isStartPoint ? "S" : isEndPoint ? "E" : point.placeNumber;
+
           const iconHtml = `
             <div style="
               display: flex;
@@ -331,7 +353,7 @@ export const ItineraryMapPanel = ({
               font-weight: 600;
               font-size: 12px;
               line-height: 1;
-            ">${point.placeNumber}</div>
+            ">${displayLabel}</div>
           `;
           
           const customIcon = Leaflet.divIcon({
@@ -342,11 +364,15 @@ export const ItineraryMapPanel = ({
           });
           
           const marker = Leaflet.marker([point.lat, point.lng], { icon: customIcon });
-          const popupLabel = isStartPoint ? `<strong>Start: ${point.title}</strong>` : `<strong>${point.title}</strong>`;
+          const popupLabel = isStartPoint
+            ? `<strong>Start: ${point.title}</strong>`
+            : isEndPoint
+              ? `<strong>End: ${point.title}</strong>`
+              : `<strong>${point.placeNumber}. ${point.title}</strong>`;
           marker.bindPopup(popupLabel);
           marker.on("click", () => {
-            // Only allow selecting activities, not the start point
-            if (!isStartPoint) {
+            // Only allow selecting activities, not start/end points
+            if (!isStartPoint && !isEndPoint) {
               onSelectActivity?.(point.id);
             }
           });
@@ -453,15 +479,15 @@ export const ItineraryMapPanel = ({
     <>
       <aside className="flex h-full flex-col p-4">
       <header className="mb-4">
-        <h2 className="text-lg font-semibold text-gray-900">Day {day + 1} map</h2>
-        <p className="text-sm text-gray-500">
+        <h2 className="text-lg font-semibold text-charcoal">Day {day + 1} map</h2>
+        <p className="text-sm text-stone">
           Visualize the stops planned for this day and preview travel flow.
         </p>
         {endPoint && (
-          <p className="text-xs text-gray-400">Ending at {endPoint.name}</p>
+          <p className="text-xs text-stone/70">Ending at {endPoint.name}</p>
         )}
       </header>
-      <div className="relative flex-1 w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100">
+      <div className="relative flex-1 w-full overflow-hidden rounded-xl border border-border bg-surface">
         {useMapbox ? (
           <ItineraryMap
             day={{ id: `day-${day}`, dateLabel: `Day ${day + 1}`, activities: activities ?? [] } as ItineraryDay}
@@ -477,18 +503,18 @@ export const ItineraryMapPanel = ({
               aria-label="Map showing planned activities"
             />
             {!mapReady && !mapError ? (
-              <div className="absolute inset-0 flex items-center justify-center text-sm text-gray-500">
+              <div className="absolute inset-0 flex items-center justify-center text-sm text-stone">
                 Loading map…
               </div>
             ) : null}
             {mapError ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-rose-600">
+              <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-error">
                 <p>We couldn&apos;t load the map right now.</p>
-                <p className="mt-1 text-gray-500">Please refresh or try again later.</p>
+                <p className="mt-1 text-stone">Please refresh or try again later.</p>
               </div>
             ) : null}
             {mapReady && points.length === 0 ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-gray-500">
+              <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-stone">
                 <p>No mappable activities yet.</p>
                 <p className="mt-1">Add places with known locations to see them here.</p>
               </div>
@@ -497,7 +523,7 @@ export const ItineraryMapPanel = ({
         )}
         {isPlanning ? (
           <div className="pointer-events-none absolute inset-0 flex items-end justify-end p-3">
-            <div className="rounded-lg bg-indigo-600/90 px-3 py-1 text-xs font-semibold text-white shadow-lg">
+            <div className="rounded-lg bg-brand-primary/90 px-3 py-1 text-xs font-semibold text-white shadow-lg">
               Updating schedule…
             </div>
           </div>

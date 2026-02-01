@@ -58,10 +58,10 @@ export function ActivityReplacementPicker({
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return "text-emerald-600 bg-emerald-50";
-    if (score >= 60) return "text-blue-600 bg-blue-50";
-    if (score >= 40) return "text-amber-600 bg-amber-50";
-    return "text-gray-600 bg-gray-50";
+    if (score >= 80) return "text-success bg-success/10";
+    if (score >= 60) return "text-sage bg-sage/10";
+    if (score >= 40) return "text-warning bg-warning/10";
+    return "text-stone bg-surface";
   };
 
   return (
@@ -75,16 +75,16 @@ export function ActivityReplacementPicker({
       <div className="space-y-4">
         {/* Sort controls */}
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700">Sort by:</span>
-          <div className="flex gap-1 rounded-lg border border-gray-200 p-1">
+          <span className="text-sm font-medium text-warm-gray">Sort by:</span>
+          <div className="flex gap-1 rounded-lg border border-border p-1">
             {(["score", "rating", "distance"] as const).map((option) => (
               <button
                 key={option}
                 onClick={() => setSortBy(option)}
                 className={`rounded-md px-3 py-1 text-xs font-medium transition ${
                   sortBy === option
-                    ? "bg-indigo-600 text-white"
-                    : "text-gray-700 hover:bg-gray-100"
+                    ? "bg-brand-primary text-white"
+                    : "text-warm-gray hover:bg-sand"
                 }`}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -96,11 +96,11 @@ export function ActivityReplacementPicker({
         {/* Candidates list */}
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="text-sm text-gray-500">Finding alternatives...</div>
+            <div className="text-sm text-stone">Finding alternatives...</div>
           </div>
         ) : sortedCandidates.length === 0 ? (
           <div className="flex items-center justify-center py-12">
-            <div className="text-sm text-gray-500">No alternatives found</div>
+            <div className="text-sm text-stone">No alternatives found</div>
           </div>
         ) : (
           <div className="space-y-3 max-h-[60vh] overflow-y-auto">
@@ -113,10 +113,10 @@ export function ActivityReplacementPicker({
               return (
                 <div
                   key={location.id}
-                  className={`rounded-lg border-2 p-4 transition ${
+                  className={`rounded-2xl border-2 p-4 transition ${
                     isSelected
-                      ? "border-indigo-500 bg-indigo-50"
-                      : "border-gray-200 bg-white hover:border-indigo-200"
+                      ? "border-brand-primary bg-brand-primary/5"
+                      : "border-border bg-background hover:border-brand-primary/30"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -132,15 +132,15 @@ export function ActivityReplacementPicker({
                           />
                         )}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-semibold text-gray-900">
+                          <h3 className="text-base font-semibold text-charcoal">
                             {location.name}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-warm-gray">
                             {location.city}
                             {location.region && `, ${location.region}`}
                           </p>
                           {location.category && (
-                            <span className="mt-1 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-700">
+                            <span className="mt-1 inline-block rounded-full bg-surface px-2 py-0.5 text-xs text-warm-gray">
                               {location.category}
                             </span>
                           )}
@@ -152,17 +152,17 @@ export function ActivityReplacementPicker({
                         {rating > 0 && (
                           <div className="flex items-center gap-1">
                             <svg
-                              className="h-4 w-4 text-amber-500"
+                              className="h-4 w-4 text-warning"
                               fill="currentColor"
                               viewBox="0 0 20 20"
                             >
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
-                            <span className="text-sm font-semibold text-gray-900">
+                            <span className="text-sm font-semibold text-charcoal">
                               {rating.toFixed(1)}
                             </span>
                             {reviewCount > 0 && (
-                              <span className="text-xs text-gray-500">
+                              <span className="text-xs text-stone">
                                 ({numberFormatter.format(reviewCount)})
                               </span>
                             )}
@@ -177,9 +177,9 @@ export function ActivityReplacementPicker({
 
                       {/* Reasoning */}
                       {candidate.reasoning.length > 0 && (
-                        <div className="mt-2 text-xs text-gray-600">
+                        <div className="mt-2 text-xs text-warm-gray">
                           <details className="cursor-pointer">
-                            <summary className="font-medium text-gray-700">
+                            <summary className="font-medium text-charcoal">
                               Why this match?
                             </summary>
                             <ul className="mt-1 ml-4 list-disc space-y-0.5">
@@ -215,7 +215,7 @@ export function ActivityReplacementPicker({
         )}
 
         {/* Actions */}
-        <div className="flex justify-end gap-2 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-2 pt-4 border-t border-border">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>

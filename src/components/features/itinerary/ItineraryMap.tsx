@@ -326,7 +326,7 @@ export function ItineraryMap({
       : (
         <>
           Map requires a Mapbox token. Set{" "}
-          <code className="rounded bg-gray-100 px-1 py-0.5 text-xs font-mono">
+          <code className="rounded bg-surface px-1 py-0.5 text-xs font-mono">
             NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
           </code>{" "}
           in your environment variables.
@@ -334,8 +334,8 @@ export function ItineraryMap({
       );
 
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-4">
-        <p className="text-center text-sm text-gray-600">
+      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+        <p className="text-center text-sm text-warm-gray">
           {errorMessage}
         </p>
       </div>
@@ -344,25 +344,25 @@ export function ItineraryMap({
 
   if (mapError) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-4">
-        <p className="text-sm text-gray-600 text-center">{mapError}</p>
+      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+        <p className="text-sm text-warm-gray text-center">{mapError}</p>
       </div>
     );
   }
 
   if (activityPoints.length === 0) {
     return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-4">
-        <p className="text-sm text-gray-600 text-center">No mappable activities yet.</p>
+      <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
+        <p className="text-sm text-warm-gray text-center">No mappable activities yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="relative h-full w-full rounded-xl border border-transparent bg-gray-100">
+    <div className="relative h-full w-full rounded-xl border border-transparent bg-surface">
       {!mapReady && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <p className="text-sm text-gray-600">Loading map…</p>
+          <p className="text-sm text-warm-gray">Loading map…</p>
         </div>
       )}
       <div
@@ -370,9 +370,9 @@ export function ItineraryMap({
         className="absolute inset-0 h-full w-full"
         aria-label="Map showing planned activities"
       />
-      <div className="pointer-events-none absolute bottom-4 left-4 rounded-lg bg-white/80 px-3 py-2 text-xs text-gray-800 shadow-lg backdrop-blur-sm">
+      <div className="pointer-events-none absolute bottom-4 left-4 rounded-lg bg-background/80 px-3 py-2 text-xs text-charcoal shadow-lg backdrop-blur-sm">
         <p className="font-semibold">{day.dateLabel ?? "Planned day"}</p>
-        <p className="text-gray-600">{activityPoints.length} stop{activityPoints.length === 1 ? "" : "s"}</p>
+        <p className="text-warm-gray">{activityPoints.length} stop{activityPoints.length === 1 ? "" : "s"}</p>
       </div>
     </div>
   );
