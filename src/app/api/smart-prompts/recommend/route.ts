@@ -34,8 +34,66 @@ const NOT_BREAKFAST_TYPES = new Set([
 ]);
 
 /**
+ * Keywords in name/description that indicate NOT appropriate for breakfast
+ * Used as fallback when no Google data is available
+ */
+const NOT_BREAKFAST_KEYWORDS = [
+  "izakaya",
+  "bar",
+  "pub",
+  "brewery",
+  "sake",
+  "cocktail",
+  "night",
+  "ramen",     // Ramen is typically lunch/dinner in Japan
+  "gyoza",     // Usually dinner food
+  "sukiyaki",  // Hot pot - dinner experience
+  "shabu",     // Shabu-shabu hot pot - dinner
+  "yakiniku",  // BBQ - dinner
+  "yakitori",  // Grilled skewers - evening/night
+];
+
+/**
+ * Keywords that indicate a place IS appropriate for breakfast
+ */
+const BREAKFAST_KEYWORDS = [
+  "cafe",
+  "café",
+  "coffee",
+  "breakfast",
+  "brunch",
+  "morning",
+  "bakery",
+  "toast",
+  "egg",
+  "pancake",
+];
+
+/**
+ * Keywords that indicate dessert/snack places (not meals)
+ */
+const DESSERT_KEYWORDS = [
+  "soft serve",
+  "ice cream",
+  "gelato",
+  "dessert",
+  "sweets",
+  "parfait",
+  "cake shop",
+  "patisserie",
+];
+
+/**
+ * Check if name or description contains any of the keywords
+ */
+function containsKeyword(text: string, keywords: string[]): boolean {
+  const lowerText = text.toLowerCase();
+  return keywords.some(keyword => lowerText.includes(keyword.toLowerCase()));
+}
+
+/**
  * Filter restaurants suitable for a specific meal type
- * Uses mealOptions, operating hours, and Google type as signals
+ * Uses mealOptions, operating hours, Google type, and name/description keywords as signals
  */
 function filterByMealType(
   restaurants: Location[],
@@ -45,15 +103,33 @@ function filterByMealType(
     const mealOptions = restaurant.mealOptions;
     const googleType = restaurant.googlePrimaryType?.toLowerCase() ?? "";
     const googleTypes = restaurant.googleTypes ?? [];
+    const nameAndDesc = `${restaurant.name} ${restaurant.shortDescription ?? ""} ${restaurant.description ?? ""}`;
+    const hasGoogleData = googleType !== "" || googleTypes.length > 0;
 
-    // For breakfast, exclude bars/breweries/pubs
+    // For breakfast, exclude bars/breweries/pubs and other inappropriate places
     if (mealType === "breakfast") {
-      // Check if it's a bar/brewery type
+      // Check if it's a bar/brewery type (Google data)
       const isBarType = NOT_BREAKFAST_TYPES.has(googleType) ||
         googleTypes.some(t => NOT_BREAKFAST_TYPES.has(t.toLowerCase()));
 
       if (isBarType) {
         return false;
+      }
+
+      // Fallback: Check name/description for bar/izakaya/ramen keywords when no Google data
+      if (!hasGoogleData) {
+        // Exclude if contains not-breakfast keywords
+        if (containsKeyword(nameAndDesc, NOT_BREAKFAST_KEYWORDS)) {
+          return false;
+        }
+        // Exclude dessert places from breakfast (soft serve, ice cream, etc.)
+        if (containsKeyword(nameAndDesc, DESSERT_KEYWORDS)) {
+          return false;
+        }
+        // Prefer places with breakfast keywords
+        if (containsKeyword(nameAndDesc, BREAKFAST_KEYWORDS)) {
+          return true;
+        }
       }
 
       // If we have mealOptions, use it
