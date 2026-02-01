@@ -98,7 +98,7 @@ async function refineTooLight(day: TripDay, trip: Trip): Promise<TripDay> {
   const availableLocations = await fetchLocationsByCity(day.cityId, {
     limit: 50,
     excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
-    requirePlaceId: true,
+    requirePlaceId: false,
   });
 
   if (availableLocations.length === 0) {
@@ -154,12 +154,12 @@ async function refineMoreFood(day: TripDay, trip: Trip): Promise<TripDay> {
 
   // Find food locations from the database
   const foodLocations = await fetchLocationsByCategories(
-    ["restaurant", "market"],
+    ["restaurant", "food", "market"],
     {
       city: day.cityId,
       limit: 30,
       excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
-      requirePlaceId: true,
+      requirePlaceId: false,
     },
   );
 
@@ -235,7 +235,7 @@ async function refineMoreCulture(day: TripDay, trip: Trip): Promise<TripDay> {
       city: day.cityId,
       limit: 30,
       excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
-      requirePlaceId: true,
+      requirePlaceId: false,
     },
   );
 
@@ -302,7 +302,7 @@ async function refineMoreKidFriendly(day: TripDay, trip: Trip): Promise<TripDay>
       city: day.cityId,
       limit: 30,
       excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
-      requirePlaceId: true,
+      requirePlaceId: false,
     },
   );
 
