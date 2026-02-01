@@ -6,6 +6,7 @@
  */
 
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
+import { getCoveredMealTypes } from "./foodDetection";
 
 /**
  * Types of gaps that can be detected in an itinerary.
@@ -95,6 +96,8 @@ export type GapAction =
 
 /**
  * Detect meal gaps in a day with smarter contextual messaging.
+ * Uses food detection to recognize restaurants already in the itinerary,
+ * even if they weren't added via smart prompts flow.
  */
 function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
   const gaps: DetectedGap[] = [];
@@ -102,9 +105,13 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
     (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
   );
 
+  // Build set of covered meal types by checking ALL food activities
+  // This catches restaurants that were added manually or imported without mealType
+  const coveredMealTypes = getCoveredMealTypes(activities);
+
   // Check for breakfast (morning activities without breakfast)
   const morningActivities = activities.filter((a) => a.timeOfDay === "morning");
-  const hasBreakfast = morningActivities.some((a) => a.mealType === "breakfast");
+  const hasBreakfast = coveredMealTypes.has("breakfast");
 
   if (morningActivities.length > 0 && !hasBreakfast) {
     const firstActivity = morningActivities[0];
@@ -135,7 +142,7 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
   const afternoonActivities = activities.filter(
     (a) => a.timeOfDay === "afternoon" || a.timeOfDay === "morning"
   );
-  const hasLunch = activities.some((a) => a.mealType === "lunch");
+  const hasLunch = coveredMealTypes.has("lunch");
 
   if (afternoonActivities.length >= 2 && !hasLunch) {
     const lastMorningActivity = morningActivities[morningActivities.length - 1];
@@ -172,7 +179,7 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
 
   // Check for dinner (evening activities without dinner)
   const eveningActivities = activities.filter((a) => a.timeOfDay === "evening");
-  const hasDinner = activities.some((a) => a.mealType === "dinner");
+  const hasDinner = coveredMealTypes.has("dinner");
 
   if (eveningActivities.length > 0 && !hasDinner) {
     const lastAfternoonActivity = activities.filter((a) => a.timeOfDay === "afternoon").pop();
