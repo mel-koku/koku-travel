@@ -1,0 +1,2252 @@
+[
+  {
+    "id": "mawashizushi-katsu-yokohama-sky-building-kanto-44cb308f",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "enoki-tei-kanto-0738b3eb",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "janomeya-kanto-0da4b2d7",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yokohama-hammerhead-japan-ramen-food-hall-kanto-7b34ef4d",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hof-brau-kanto-e25a2c8b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "noge-suehiro-kanto-50f1bd4c",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "mizunobu-fruit-parlor-kanto-3a059344",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "baikou-kanto-d00ec2f0",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "wangfujing-kanto-570f5a51",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "shofukumon-kanto-1c685fe6",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "motomachi-mutekiro-kanto-73e0a337",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "italian-garden-kanto-5856bcb5",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kadohei-kanto-ae16f364",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "uni-coffee-roastery-red-brick-kanto-f025baf5",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "alte-liebe-yokohama-kanto-8538b797",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "scandia-kanto-31dafeb3",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "saiko-shinkan-kanto-f413e688",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "dohatsu-main-store-kanto-4b1c137b",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "ramen-jiro-yokohama-kannai-kanto-8d288100",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "heichinrou-yokohama-currently-closed-renovating-replacing-with-manchinro-as-primary-added-saiko-kanto-c5a54c82",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "xie-xie-kanto-63b2903d",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tamagoya-kanto-18709958",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kirin-beer-factory-yokohama-kanto-97e31652",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sizzler-landmark-plaza-kanto-cfc14eef",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hakata-issou-kyushu-31a3f319",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "shin-shin-tenjin-main-store-kyushu-df56208f",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ichiran-main-office-sohonten-kyushu-57bc1b78",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ganso-nagahamaya-kyushu-5a5c1036",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hakata-genki-ippai-kyushu-e0e6d782",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hakata-daruma-kyushu-fba9a548",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yoshizuka-unagiya-kyushu-e9f9f31b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "motsunabe-yamanaka-akasaka-kyushu-ca4ac1ca",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hakata-motsunabe-oyama-kyushu-7e812ebf",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "motsunabe-rakutenchi-kyushu-0b8977e1",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hakata-mizutaki-toriden-kyushu-32e26805",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "mizutaki-nagano-kyushu-53c23e28",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hakata-hanamidori-kyushu-d60d372d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "chikae-fukuoka-kyushu-0c68f708",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ganso-hakata-mentaiju-kyushu-0b41f068",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tempura-hirao-kyushu-bd6d3d47",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sushi-sakai-kyushu-ae7313d0",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hyotan-sushi-kyushu-ff33a5ab",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tatsumi-sushi-kyushu-ee1781a1",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "wakkoqu-kitano-kansai-e277bc2b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "mouriya-honten-kansai-8fd56a61",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "steakland-kobe-kansai-5697a66a",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kobe-beef-steak-ishida-kansai-93b44fcb",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "grill-ippei-sannomiya-kansai-28fb6063",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "l-ami-kansai-cc96b991",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yoshoku-no-asahi-kansai-9dfd0ea2",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "rousho-ki-kansai-3adb014d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "minsei-kansai-83ecbd10",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hyotan-gyoza-kansai-d248e4b3",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "gyoza-daigaku-kansai-1e012a81",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "karonouron-kyushu-81148a35",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "udon-taira-kyushu-99fe17ac",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "maki-no-udon-kyushu-cc1f529e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "daichi-no-udon-kyushu-66ec1efa",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tetsunabe-nakasu-kyushu-4985737e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yatai-kokinchan-kyushu-b560bb3f",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yatai-chez-r-my-kyushu-f093900d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yanagibashi-rengo-market-kyushu-21b63c57",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kasanoya-kyushu-22152901",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "cafe-bimi-kyushu-0b2ca414",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "fuk-coffee-kyushu-48248aae",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "daimyo-softcream-kyushu-c785db51",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "bills-fukuoka-kyushu-c784bd77",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ivorish-fukuoka-kyushu-5f2ab8b6",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "seimonbarai-kyushu-7f9eaf3c",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "robata-san-kyushu-3c1fc59d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yakitori-kawaya-kyushu-5bbb0fcc",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yakitori-hachibei-kyushu-203ccbaa",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yorozu-kyushu-1f123dfb",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "warayaki-mikan-kyushu-a9331998",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hakata-ikkousha-kyushu-fe3d3f64",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "rec-coffee-yakuin-kyushu-7c7882bb",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "hajime-kyushu-4ee4749c",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "mengekijo-genei-kyushu-b0f8b8cd",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kappo-yoshida-kyushu-f2afd7a1",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "bar-vita-kyushu-fc326ec3",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "mitchan-sohonten-hatchobori-chugoku-2ba2a468",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "okonomiyaki-nagataya-chugoku-3015457b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "reichan-chugoku-1c736252",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hassei-chugoku-50515df4",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "lopez-okonomiyaki-chugoku-659d852e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "denkosekka-ekie-chugoku-f0584fa9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "okonomimura-chugoku-0a07d885",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hassho-chugoku-09f4704d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "henkutsuya-chugoku-79f1413c",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yakigaki-no-hayashi-chugoku-f00f8273",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kakiya-chugoku-cfc6b40b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kakifune-kanawa-chugoku-d71410b8",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "anagomeshi-ueno-chugoku-c2eabf19",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "fujitaya-chugoku-687cb6f9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tsuki-akari-chugoku-ed2c8d55",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "mametanuki-chugoku-aaab8a07",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "bakudanya-honten-chugoku-60d63d2b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "reimenya-chugoku-97a52bb5",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kisaku-chugoku-b413a86b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "king-ken-chugoku-94c7f217",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "youki-eba-chugoku-9d63b490",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tsubame-chugoku-16fafce6",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "onomichi-ramen-akatsuki-chugoku-07acacca",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "naka-chan-chugoku-ba30efff",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tempura-masui-chugoku-150ac72d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "aki-chan-chugoku-dc0ab068",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "suishin-honten-chugoku-c143d100",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "seasonal-cuisine-nakashima-chugoku-d8ea2748",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kourantei-shimotori-kyushu-9951200b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tosho-chugoku-d241e980",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hanbe-garden-chugoku-20507302",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hiroto-chugoku-3aae1b73",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "andersen-hiroshima-chugoku-5e5734bb",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "momijido-honten-chugoku-c26929da",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "musimpanen-chugoku-fc472024",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "tachimachi-canele-chugoku-12b6ed92",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "miyajima-coffee-chugoku-00f5c98e",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "sarasvati-chugoku-b8bc848e",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "backen-mozart-chuodori-chugoku-37e532a3",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "melange-de-shuhari-chugoku-02dc14c2",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "chano-ma-hiroshima-chugoku-471b993a",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "ekie-dining-chugoku-fd2db671",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "miyajima-omotesando-shopping-street-chugoku-29c581b1",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sushitei-hikarimachi-chugoku-2acd6630",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "steak-house-aohige-chugoku-673b6e17",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yakumoan-chugoku-f2c8575e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kawakyo-chugoku-aa5f7ea6",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kamiyo-soba-chugoku-2fe7b6f0",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "izumo-soba-kigaru-chugoku-5d8108f9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "funatsu-chugoku-4e036383",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kiharu-tea-room-chugoku-44813957",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "unagi-dokoro-oga-chugoku-f6bacc13",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ryotei-minami-chugoku-7e210ed9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "oden-sho-chugoku-9f84a5b4",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "saiundo-honten-chugoku-7d565afa",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sumibiyakiniku-yamamoto-okinawa-b3f489b9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "maguro-senmon-izakaya-hitoshi-ishigantou-okinawa-5169bc1b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tofu-higa-okinawa-baf15e46",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "akaishi-shokudo-okinawa-73fce832",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "miru-miru-honpo-honten-okinawa-3f2246fe",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "yakiniku-ishigakiya-okinawa-1eb42624",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "corner-s-grill-okinawa-7046d8a9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "shimasoba-ichibanji-okinawa-c772967d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "usagiya-ishigaki-honten-okinawa-6f3a5522",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "vanilla-deli-okinawa-722d2484",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kabira-park-chaya-okinawa-407d3da2",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "maruha-sengyo-okinawa-e544567e",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "steak-restaurant-han-re-okinawa-b786725e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "pengin-shokudo-okinawa-44094f7b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yakiniku-orion-okinawa-960e935d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yarabu-shokudo-okinawa-a40e794a",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "puff-puff-natural-garden-cafe-okinawa-2f24363c",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "funakura-okinawa-070b696f",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kitauchi-bokujo-hamasaki-okinawa-db05b235",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "menya-yagiya-okinawa-9a9600ed",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sayoko-no-mise-okinawa-f9722261",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "chinen-shokai-okinawa-10f8d4a3",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ishigaki-beef-maru-okinawa-0343515e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kiraku-okinawa-decfda52",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kunatsuyu-okinawa-83ad2a3b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "soba-dokoro-masami-okinawa-f84a6d1e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "blue-cafe-ishigakijima-okinawa-3d1a745f",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "seven-colors-ishigakijima-okinawa-298de636",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "sole-mare-okinawa-e860031a",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tuna-dake-okinawa-34715327",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "island-vegetable-cafe-re-hellow-beach-okinawa-bb9f454a",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "ishigaki-yoshida-okinawa-c21c1aae",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sataake-okinawa-4ccbec68",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hitoshi-honten-okinawa-d32fb65a",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "banana-cafe-okinawa-e35e2fb3",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "yume-no-ya-okinawa-1f5ab616",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "gajumaru-no-buranko-okinawa-313e4ac9",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "klop-okinawa-9ee1af1c",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "baraque-okinawa-48e6de6a",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "senka-okinawa-2a5ed4ea",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "karasoba-specialist-myfune-okinawa-ff644da1",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hirakubo-beach-shokudo-okinawa-40e628a8",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "nakamuraya-okinawa-5dd6e223",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "umi-no-sudo-okinawa-e42c313f",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kamizaki-okinawa-dccd0def",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "nosoko-mape-okinawa-a0fe2118",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ishigaki-island-pudding-honpo-okinawa-e252eaf2",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "forestale-uno-okinawa-640c1ea0",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kurobuta-ryori-ajimori-kyushu-59b425a5",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tonkatsu-kawakyu-kyushu-dcfb7ce2",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "aji-no-tonkatsu-maruichi-kyushu-74a68c2e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kagoshima-kurobuta-roppaku-kyushu-a57590e2",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ichiniisan-tenmonkan-kyushu-d8c5abee",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kurokatsutei-chuo-station-kyushu-9cef1eb0",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tonkatsu-taketei-tagami-kyushu-47f905e0",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kagoshima-ramen-tontoro-kyushu-4e6050a2",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ramen-kokinta-kyushu-7e0bc89c",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "noriichi-kyushu-53b0dfa4",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "komurasaki-tenmonkan-kyushu-1d5a61a2",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "zabon-ramen-kyushu-7b333d8f",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tenmonkan-mujaki-kyushu-3aa0e40e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sandeco-coffee-sugaku-cafe-kyushu-5d18ea01",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "unagi-no-sueyoshi-kyushu-1d2840f9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yakiniku-nabeshima-tenmonkan-kyushu-0114839a",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "karen-kagoshima-kyushu-24da585b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kuma-so-tei-kyushu-d7ee5816",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "wakana-tenmonkan-kyushu-53db5728",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "mawaru-sushi-mekkemon-kyushu-2896389b",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "agetateya-tenmonkan-kyushu-1fc9ebf8",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "akashiya-main-store-kyushu-1ab1a2c0",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "kagomma-furusato-yataimura-kyushu-c1b1ec0f",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "ichiba-shokudo-kyushu-f2023796",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tosenkyo-somen-nagashi-kyushu-73fad5d8",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kurozu-hompo-kakuida-kyushu-3d45c47d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sakurajima-ferry-yabukin-kyushu-859ddd1d",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "susumuya-chaten-kyushu-a804fb4f",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "starbucks-kagoshima-sengan-en-kyushu-b50bb130",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "satsuma-jokiya-tenmonkan-kyushu-553fbe2a",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "menya-kyujiro-kyushu-68ec938b",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "menpo-vagabond-kyushu-c9f81ff8",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "gyu-do-kyushu-4d7a7fd1",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tsukiagean-tenmonkan-kyushu-a933bb5c",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "torisen-ippo-kyushu-d7aeeda0",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kagoshima-ramen-garufu-kyushu-64117f23",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "unagi-no-matsuju-kyushu-6582c9fd",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "satsuma-ji-dori-torihana-kyushu-f98b7ba9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "yanagawa-hyoshitsu-kyushu-d8276032",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "jigenji-somen-nagashi-kyushu-45a6bbb1",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "festivalo-tenmonkan-kyushu-97737cdb",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "kurozu-farm-cafe-and-market-kyushu-a6658326",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "miyama-honpo-tenmonkan-kyushu-a36512ab",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "wasan-meizanbori-kyushu-6c530655",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "cafe-kanojonoie-kyushu-6c7cc33c",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "aji-no-sato-chinman-kyushu-c7f4d2d1",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "sky-view-candle-chugoku-24e4b4cf",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hamayaki-sakaba-minato-chugoku-73a5d746",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "toriya-ebisu-chugoku-86bed541",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "gurunavi-chugoku-7a65f7a3",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "red-rock-sannomiya-kansai-fb2ff0a9",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "cafe-freundlieb-kansai-597e2134",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "nishimura-coffee-kitano-kansai-62ee5532",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "comme-chinois-kansai-b4b6c18e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "patisserie-tooth-tooth-maison-15th-kansai-a3a53471",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "kannonya-motomachi-kansai-30a03171",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "motomachi-cake-kansai-a8415301",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "kobe-frantz-kansai-f7e096bc",
+    "meal_options": {
+      "servesBreakfast": true,
+      "servesBrunch": true,
+      "servesLunch": true,
+      "servesDinner": false
+    }
+  },
+  {
+    "id": "enishi-kansai-7e1db693",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "mokkosu-honten-kansai-b46e1a08",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "nagata-tank-suji-kansai-a7244680",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "aomori-kansai-dbe1f5f8",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "tachibana-kansai-09367dea",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "uoshin-sannomiya-kansai-f9a64ccc",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "hakutsuru-sake-brewery-museum-kansai-59319aef",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "kiku-masamune-sake-brewery-museum-kansai-1c9f09a4",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": false,
+      "servesDinner": true
+    }
+  },
+  {
+    "id": "gaylord-kansai-e351051e",
+    "meal_options": {
+      "servesBreakfast": false,
+      "servesBrunch": false,
+      "servesLunch": true,
+      "servesDinner": true
+    }
+  }
+]
