@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import type { Location } from "@/types/location";
+import type { Location, LocationAvailability } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import type { GapAction } from "@/lib/smartPrompts/gapDetection";
@@ -9,6 +9,11 @@ import { scoreLocation } from "@/lib/scoring/locationScoring";
 import { logger } from "@/lib/logger";
 import { internalError, badRequest } from "@/lib/api/errors";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
+import {
+  isSeasonalLocationRelevant,
+  transformAvailabilityRow,
+  type LocationAvailabilityRow,
+} from "@/lib/availability/seasonalFilter";
 
 /**
  * Default durations for different meal types in minutes
@@ -283,6 +288,65 @@ function transformDbRowToLocation(row: LocationDbRow): Location {
 }
 
 /**
+ * Filter locations by seasonal availability based on trip dates.
+ * Non-seasonal locations are always included.
+ * Seasonal locations are only included if their availability overlaps with trip dates.
+ */
+async function filterBySeasonalAvailability(
+  locations: Location[],
+  tripStart: string | undefined,
+  tripEnd: string | undefined,
+  supabaseClient: Awaited<ReturnType<typeof createClient>>
+): Promise<Location[]> {
+  // If no trip dates, exclude all seasonal locations (can't determine relevance)
+  if (!tripStart || !tripEnd) {
+    return locations.filter((l) => !l.isSeasonal);
+  }
+
+  // Separate seasonal and non-seasonal locations
+  const nonSeasonal = locations.filter((l) => !l.isSeasonal);
+  const seasonal = locations.filter((l) => l.isSeasonal);
+
+  if (seasonal.length === 0) {
+    return nonSeasonal;
+  }
+
+  // Fetch availability rules for seasonal locations
+  const seasonalIds = seasonal.map((l) => l.id);
+  const { data: availabilityRows, error } = await supabaseClient
+    .from("location_availability")
+    .select("*")
+    .in("location_id", seasonalIds);
+
+  if (error) {
+    logger.warn("Failed to fetch availability data, excluding seasonal locations", { error });
+    return nonSeasonal;
+  }
+
+  // Group availability by location ID
+  const availabilityByLocation = new Map<string, LocationAvailability[]>();
+  for (const row of availabilityRows || []) {
+    const transformed = transformAvailabilityRow(row as LocationAvailabilityRow);
+    const existing = availabilityByLocation.get(transformed.locationId) || [];
+    existing.push(transformed);
+    availabilityByLocation.set(transformed.locationId, existing);
+  }
+
+  // Filter seasonal locations by date relevance
+  const relevantSeasonal = seasonal.filter((location) => {
+    const availability = availabilityByLocation.get(location.id);
+    return isSeasonalLocationRelevant(
+      location.isSeasonal,
+      availability,
+      tripStart,
+      tripEnd
+    );
+  });
+
+  return [...nonSeasonal, ...relevantSeasonal];
+}
+
+/**
  * Calculate the insertion position for a meal activity
  */
 function calculateMealPosition(
@@ -525,8 +589,19 @@ export async function POST(request: NextRequest) {
         transformDbRowToLocation(row as unknown as LocationDbRow)
       );
 
+      // Filter by seasonal availability based on trip dates
+      // Seasonal locations (festivals, events) are only shown if trip dates overlap
+      const tripStart = tripBuilderData.dates?.start;
+      const tripEnd = tripBuilderData.dates?.end;
+      const dateFiltered = await filterBySeasonalAvailability(
+        locations,
+        tripStart,
+        tripEnd,
+        supabase
+      );
+
       // Filter out already-used locations
-      const available = locations.filter((l) => !usedIds.has(l.id));
+      const available = dateFiltered.filter((l) => !usedIds.has(l.id));
 
       if (available.length === 0) {
         const message = locations.length === 0
