@@ -16,7 +16,6 @@ import { getCategoryDefaultDuration } from "./durationExtractor";
 import { logger } from "./logger";
 
 import { requestRoute } from "./routing";
-import type { RoutingResult } from "./routing/types";
 import { toItineraryMode } from "./routing/types";
 
 type PlannerOptions = {
@@ -84,46 +83,6 @@ function chooseTravelMode(
     }
   }
   return "walk";
-}
-
-/**
- * Finds the fastest transit route by trying several transit-focused modes.
- * Returns the full routing result for the quickest option or null if all fail.
- */
-async function findFastestTransitRoute(
-  origin: Coordinates,
-  destination: Coordinates,
-  departureTime: string,
-  timezone: string,
-): Promise<RoutingResult | null> {
-  if (!origin || !destination) {
-    logger.warn("Skipping transit route search due to missing coordinates", {
-      origin,
-      destination,
-    });
-    return null;
-  }
-
-  // Only try "transit" mode which covers all public transit - reduces API calls significantly
-  try {
-    const route = await requestRoute({
-      origin,
-      destination,
-      mode: "transit",
-      departureTime,
-      timezone,
-    });
-    logger.debug("Transit route found", {
-      mode: route.mode,
-      durationSeconds: route.durationSeconds,
-    });
-    return route;
-  } catch (error) {
-    logger.debug("Failed to get transit route", {
-      error: error instanceof Error ? error.message : String(error),
-    });
-    return null;
-  }
 }
 
 function lookupCoordinates(activity: Extract<ItineraryActivity, { kind: "place" }>, location: Location | null): Coordinates {
@@ -491,7 +450,7 @@ async function planItineraryDay(
           timezone: dayTimezone,
         });
       } else {
-        // First, check walk duration
+        // First, get walk route to check distance
         const walkRoute = await requestRoute({
           origin: lastPlaceCoordinates,
           destination: coordinates,
@@ -499,47 +458,47 @@ async function planItineraryDay(
           departureTime,
           timezone: dayTimezone,
         });
-        
-        const walkDurationMinutes = Math.round(walkRoute.durationSeconds / 60);
-        
-        logger.debug("Checking travel mode", {
-          walkDurationMinutes,
+
+        const distanceMeters = walkRoute.distanceMeters ?? 0;
+        const distanceKm = distanceMeters / 1000;
+
+        logger.debug("Checking travel mode based on distance", {
+          distanceMeters,
+          distanceKm,
           origin: lastPlaceCoordinates,
           destination: coordinates,
         });
-        
-        // If walk is more than 10 minutes, use the fastest transit option
-        if (walkDurationMinutes > 10) {
-          const fastestTransitRoute = await findFastestTransitRoute(
-            lastPlaceCoordinates,
-            coordinates,
+
+        // If distance >= 1km, use train; otherwise walk
+        if (distanceKm >= 1) {
+          // Try to get train route
+          const trainRoute = await requestRoute({
+            origin: lastPlaceCoordinates,
+            destination: coordinates,
+            mode: "transit",
             departureTime,
-            dayTimezone,
-          );
-          
-          if (fastestTransitRoute) {
-            const transitDurationMinutes = Math.round(fastestTransitRoute.durationSeconds / 60);
-            logger.debug("Found transit options, using fastest", {
-              fastestMode: fastestTransitRoute.mode,
-              transitDurationMinutes,
-              walkDurationMinutes,
+            timezone: dayTimezone,
+          });
+
+          if (trainRoute && trainRoute.durationSeconds > 0) {
+            const trainDurationMinutes = Math.round(trainRoute.durationSeconds / 60);
+            logger.debug("Using train for distance >= 1km", {
+              distanceKm,
+              trainDurationMinutes,
             });
-            
-            // Use the fastest transit option (as per requirement: if walk > 10 min, use fastest transit)
-            route = fastestTransitRoute;
-            travelMode = toItineraryMode(route.mode);
-            logger.debug("Using transit mode", { mode: travelMode, durationMinutes: transitDurationMinutes });
+            route = trainRoute;
+            travelMode = "train";
           } else {
-            // Fallback to walk if no transit options available
+            // Fallback to walk if no train route available
             travelMode = "walk";
             route = walkRoute;
-            logger.warn("No transit options found for walk > 10 min, using walk", { walkDurationMinutes });
+            logger.warn("No train route found for distance >= 1km, using walk", { distanceKm });
           }
         } else {
-          // Walk is 10 minutes or less, use walk
+          // Distance < 1km, use walk
           travelMode = "walk";
           route = walkRoute;
-          logger.debug("Walk <= 10 minutes, using walk", { walkDurationMinutes });
+          logger.debug("Distance < 1km, using walk", { distanceKm });
         }
       }
       
