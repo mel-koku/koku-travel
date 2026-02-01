@@ -37,12 +37,11 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Only aggregate locations with valid place_id to match main query behavior
+    // Exclude permanently closed locations but include null business_status
     const baseFilter = supabase
       .from("locations")
       .select("*")
-      .not("place_id", "is", null)
-      .neq("place_id", "");
+      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
     // Fetch all locations for aggregation (use column projections for efficiency)
     const { data, error } = await baseFilter.select("city, category, region, prefecture, neighborhood");
