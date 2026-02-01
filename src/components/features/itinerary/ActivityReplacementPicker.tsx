@@ -27,6 +27,19 @@ export function ActivityReplacementPicker({
 }: ActivityReplacementPickerProps) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<"score" | "rating" | "distance">("score");
+  const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
+
+  const toggleDescription = (locationId: string) => {
+    setExpandedDescriptions((prev) => {
+      const next = new Set(prev);
+      if (next.has(locationId)) {
+        next.delete(locationId);
+      } else {
+        next.add(locationId);
+      }
+      return next;
+    });
+  };
 
   const sortedCandidates = useMemo(() => {
     const sorted = [...candidates];
@@ -143,6 +156,26 @@ export function ActivityReplacementPicker({
                             <span className="mt-1 inline-block rounded-full bg-surface px-2 py-0.5 text-xs text-warm-gray">
                               {location.category}
                             </span>
+                          )}
+                          {location.shortDescription && (
+                            <div className="mt-2">
+                              <p
+                                className={`text-sm text-warm-gray ${
+                                  expandedDescriptions.has(location.id) ? "" : "line-clamp-2"
+                                }`}
+                              >
+                                {location.shortDescription}
+                              </p>
+                              {location.shortDescription.length > 50 && (
+                                <button
+                                  type="button"
+                                  onClick={() => toggleDescription(location.id)}
+                                  className="mt-1 text-xs font-medium text-sage hover:text-sage/80"
+                                >
+                                  {expandedDescriptions.has(location.id) ? "Show less" : "Show more"}
+                                </button>
+                              )}
+                            </div>
                           )}
                         </div>
                       </div>

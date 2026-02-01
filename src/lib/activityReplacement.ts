@@ -38,7 +38,7 @@ export interface ReplacementOptions {
 export async function findReplacementCandidates(
   activity: Extract<ItineraryActivity, { kind: "place" }>,
   tripData: TripBuilderData,
-  _allActivities: ItineraryActivity[],
+  allActivities: ItineraryActivity[],
   dayActivities: ItineraryActivity[],
   _currentDayIndex: number,
   maxCandidates: number = 10,
@@ -49,6 +49,18 @@ export async function findReplacementCandidates(
 ): Promise<ReplacementOptions> {
   // Get the original location if available
   const originalLocation = await findLocationForActivity(activity);
+
+  // Collect all location IDs already in the itinerary to exclude from suggestions
+  const usedLocationIds = new Set<string>();
+  for (const act of allActivities) {
+    if (act.kind === "place" && act.locationId) {
+      usedLocationIds.add(act.locationId);
+    }
+  }
+  // Also exclude the original location being replaced
+  if (originalLocation) {
+    usedLocationIds.add(originalLocation.id);
+  }
 
   // Extract interests from trip data
   const interests: InterestId[] = tripData.interests ?? [];
@@ -100,44 +112,22 @@ export async function findReplacementCandidates(
     group: tripData.group,
   };
 
-  // Get the city to filter by (from activity or original location)
-  const city = activity.neighborhood ?? originalLocation?.city ?? "";
+  // Get the city to filter by (prefer original location's city over neighborhood)
+  // activity.neighborhood might contain a neighborhood name (e.g., "Nada-Goro") instead of city
+  // so we prioritize originalLocation.city which is the actual city name (e.g., "Kobe")
+  const city = originalLocation?.city ?? activity.neighborhood ?? "";
 
   // Fetch available locations from the database, filtering by city
-  // This now queries all 2,586 real locations instead of ~500 mock ones
+  // This now queries all 4,385 real locations instead of ~500 mock ones
+  // Note: requirePlaceId is false to include locations without Google Places enrichment
   const availableLocations = await fetchLocationsByCity(city, {
     limit: 100, // Get more candidates for better scoring
-    excludeIds: originalLocation ? [originalLocation.id] : [],
-    requirePlaceId: true,
+    excludeIds: Array.from(usedLocationIds), // Exclude all locations already in the itinerary
+    requirePlaceId: false,
   });
 
-  // Score all available locations
+  // Score all available locations (already filtered by excludeIds at query level)
   const scoredCandidates: ReplacementCandidate[] = availableLocations
-    .filter((location) => {
-      // Exclude original location (should already be excluded by excludeIds)
-      if (originalLocation && location.id === originalLocation.id) {
-        return false;
-      }
-
-      // Exclude already-used locations (but allow duplicates if user wants variety)
-      // For now, we'll allow duplicates but they'll score lower due to diversity penalty
-
-      // Filter by city if activity has neighborhood/city info
-      if (activity.neighborhood) {
-        const activityCity = activity.neighborhood.toLowerCase();
-        const locationCity = location.city.toLowerCase();
-        // Allow same city or nearby cities
-        if (
-          activityCity !== locationCity &&
-          !locationCity.includes(activityCity) &&
-          !activityCity.includes(locationCity)
-        ) {
-          // Still allow, but will score lower due to distance
-        }
-      }
-
-      return true;
-    })
     .map((location) => {
       const scoreResult = scoreLocation(location, criteria);
       return {
