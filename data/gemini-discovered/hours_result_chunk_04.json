@@ -1,0 +1,982 @@
+[
+  {
+    "id": "kano-tohoku-bc7ee734",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "seki-tohoku-80704c00",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "gyutan-keyaki-tohoku-a28694f0",
+    "operating_hours": { "open": "11:00", "close": "21:30" }
+  },
+  {
+    "id": "taishoken-tohoku-910f7817",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "imou-tohoku-42e25f12",
+    "operating_hours": { "open": "11:30", "close": "20:00" }
+  },
+  {
+    "id": "suehiro-honten-tohoku-8a094ba5",
+    "operating_hours": { "open": "11:00", "close": "20:30" }
+  },
+  {
+    "id": "kumaryu-tohoku-18cbb6f6",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "kakigoya-tobiume-tohoku-06aca9de",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "saito-sozai-tohoku-369a40af",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "hachi-sendai-station-tohoku-9c6327cc",
+    "operating_hours": { "open": "10:00", "close": "22:30" }
+  },
+  {
+    "id": "dashiro-tohoku-c527d7ad",
+    "operating_hours": { "open": "11:00", "close": "23:00" }
+  },
+  {
+    "id": "izakaya-chocho-tohoku-19ba5133",
+    "operating_hours": { "open": "17:00", "close": "23:30" }
+  },
+  {
+    "id": "hosshoyan-tohoku-611b8021",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "chinese-meshiya-chikuchiku-tohoku-5285f833",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "sushidokoro-koya-tohoku-60cc2e0e",
+    "operating_hours": { "open": "11:30", "close": "22:30" }
+  },
+  {
+    "id": "darestore-tohoku-7043d150",
+    "operating_hours": { "open": "08:00", "close": "18:00" }
+  },
+  {
+    "id": "kisuke-tohoku-fa4ffee5",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "senreizushi-tohoku-d9bfd754",
+    "operating_hours": { "open": "10:00", "close": "20:00" }
+  },
+  {
+    "id": "taiyaki-ankoya-tohoku-f8ead38b",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "umai-sushikan-ichibancho-tohoku-f7c2a534",
+    "operating_hours": { "open": "11:30", "close": "23:00" }
+  },
+  {
+    "id": "wabisuke-tohoku-11378c99",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "cafe-mozart-atelier-tohoku-24fa7fbb",
+    "operating_hours": { "open": "11:00", "close": "19:00" }
+  },
+  {
+    "id": "genji-tohoku-88eea17b",
+    "operating_hours": { "open": "16:30", "close": "23:00" }
+  },
+  {
+    "id": "rikyu-sendai-station-tohoku-d0610d89",
+    "operating_hours": { "open": "10:00", "close": "22:30" }
+  },
+  {
+    "id": "kanmidokoro-hikoichi-tohoku-9866fe88",
+    "operating_hours": { "open": "11:00", "close": "18:00" }
+  },
+  {
+    "id": "gyutan-ryori-kaku-tohoku-bc52a04c",
+    "operating_hours": { "open": "11:30", "close": "22:30" }
+  },
+  {
+    "id": "kazunori-ikeda-individuel-tohoku-23a9bd25",
+    "operating_hours": { "open": "11:00", "close": "20:00" }
+  },
+  {
+    "id": "asaichi-shokudo-shoyu-tohoku-8a84e9fd",
+    "operating_hours": { "open": "05:00", "close": "08:30" }
+  },
+  {
+    "id": "robata-tohoku-bf0e09a9",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "endou-mochi-ten-tohoku-3241a460",
+    "operating_hours": { "open": "09:00", "close": "18:00" }
+  },
+  {
+    "id": "ryutei-tohoku-4fdd8c80",
+    "operating_hours": { "open": "11:30", "close": "20:30" }
+  },
+  {
+    "id": "gyutan-tsukasa-tohoku-c0f0a480",
+    "operating_hours": { "open": "11:30", "close": "23:00" }
+  },
+  {
+    "id": "sendai-asaichi-tohoku-e1a85341",
+    "operating_hours": { "open": "08:00", "close": "18:00" }
+  },
+  {
+    "id": "tanya-zenjiro-sendai-station-tohoku-ceda2bd2",
+    "operating_hours": { "open": "10:00", "close": "22:30" }
+  },
+  {
+    "id": "murakamiya-mochi-ten-tohoku-106f3f1a",
+    "operating_hours": { "open": "09:00", "close": "18:00" }
+  },
+  {
+    "id": "zunda-saryo-sendai-station-tohoku-6d6de509",
+    "operating_hours": { "open": "09:00", "close": "21:00" }
+  },
+  {
+    "id": "umami-tasuke-tohoku-bb428a4b",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "shiogama-shirahata-s-pal-tohoku-fd9c3dd3",
+    "operating_hours": { "open": "11:00", "close": "23:00" }
+  },
+  {
+    "id": "flat-white-coffee-factory-tohoku-b608d152",
+    "operating_hours": { "open": "10:00", "close": "21:00" }
+  },
+  {
+    "id": "aji-tasuke-tohoku-28c84445",
+    "operating_hours": { "open": "11:30", "close": "20:30" }
+  },
+  {
+    "id": "sendai-kko-ramen-sendai-station-tohoku-fe13fcb3",
+    "operating_hours": { "open": "11:00", "close": "23:00" }
+  },
+  {
+    "id": "abe-kamaboko-ten-honten-tohoku-526d1b4e",
+    "operating_hours": { "open": "10:00", "close": "18:30" }
+  },
+  {
+    "id": "date-no-gyutan-honpo-tohoku-e13af191",
+    "operating_hours": { "open": "08:00", "close": "22:00" }
+  },
+  {
+    "id": "ramen-smith-tohoku-4e21427c",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "aoyama-bunko-tohoku-a1a27985",
+    "operating_hours": { "open": "07:30", "close": "23:00" }
+  },
+  {
+    "id": "chuka-soba-kaichi-tohoku-7c625bce",
+    "operating_hours": { "open": "11:00", "close": "15:00" }
+  },
+  {
+    "id": "ueharaya-honten-shikoku-5e14557c",
+    "operating_hours": { "open": "09:30", "close": "15:30" }
+  },
+  {
+    "id": "cafe-kuguri-shikoku-f865d3bd",
+    "operating_hours": { "open": "08:30", "close": "18:00" }
+  },
+  {
+    "id": "sake-to-sakana-shikoku-89ed88aa",
+    "operating_hours": { "open": "17:30", "close": "23:00" }
+  },
+  {
+    "id": "tamoya-honten-shikoku-4e10c74d",
+    "operating_hours": { "open": "08:00", "close": "15:00" }
+  },
+  {
+    "id": "kiyowatei-shikoku-012d2565",
+    "operating_hours": { "open": "11:30", "close": "21:00" }
+  },
+  {
+    "id": "uoichiba-ogase-shikoku-7d483a36",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "keyaki-cafe-shikoku-a8129870",
+    "operating_hours": { "open": "09:00", "close": "18:00" }
+  },
+  {
+    "id": "yakiniku-nakagawa-shikoku-946234da",
+    "operating_hours": { "open": "17:00", "close": "22:30" }
+  },
+  {
+    "id": "hidamari-kaki-gori-stand-shikoku-c9ee33fd",
+    "operating_hours": { "open": "11:00", "close": "18:00" }
+  },
+  {
+    "id": "robata-yaki-amiya-shikoku-99c82fd9",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "sushikatsu-shikoku-9f4b5af5",
+    "operating_hours": { "open": "11:30", "close": "21:00" }
+  },
+  {
+    "id": "menya-kiseki-shikoku-fd2c8290",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "takamatsu-central-wholesale-market-shikoku-529c61f9",
+    "operating_hours": { "open": "05:00", "close": "14:00" }
+  },
+  {
+    "id": "lantana-shikoku-27cc3c33",
+    "operating_hours": { "open": "11:00", "close": "20:00" }
+  },
+  {
+    "id": "ikkaku-takamatsu-shikoku-a42e04e1",
+    "operating_hours": { "open": "11:00", "close": "23:00" }
+  },
+  {
+    "id": "teuchi-judan-udon-baka-ichidai-shikoku-cc428c6d",
+    "operating_hours": { "open": "06:00", "close": "18:00" }
+  },
+  {
+    "id": "sakaeda-udon-shikoku-221be034",
+    "operating_hours": { "open": "07:00", "close": "15:00" }
+  },
+  {
+    "id": "teuchi-udon-tsurumaru-shikoku-18c6294a",
+    "operating_hours": { "open": "20:00", "close": "03:00" }
+  },
+  {
+    "id": "machi-no-shule-963-shikoku-fc3997dc",
+    "operating_hours": { "open": "11:00", "close": "19:00" }
+  },
+  {
+    "id": "honetsukidori-yoridorimidori-shikoku-1fcd03d0",
+    "operating_hours": { "open": "11:00", "close": "22:30" }
+  },
+  {
+    "id": "matsushita-seimenjo-shikoku-2daa8cd2",
+    "operating_hours": { "open": "07:30", "close": "14:30" }
+  },
+  {
+    "id": "ranmaru-shikoku-9b31578c",
+    "operating_hours": { "open": "18:00", "close": "23:00" }
+  },
+  {
+    "id": "sanuki-rock-shikoku-008ec784",
+    "operating_hours": { "open": "11:30", "close": "20:00" }
+  },
+  {
+    "id": "udon-ippuku-shikoku-5848504d",
+    "operating_hours": { "open": "10:00", "close": "15:00" }
+  },
+  {
+    "id": "tenkatsu-shikoku-b3037485",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "merikenya-takamatsu-station-shikoku-fcc646b5",
+    "operating_hours": { "open": "07:00", "close": "20:00" }
+  },
+  {
+    "id": "ramen-suzumushi-shikoku-82c5ca6e",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "honetsukidori-azuma-shikoku-0324cad3",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "shinpei-udon-shikoku-0776e614",
+    "operating_hours": { "open": "11:00", "close": "19:00" }
+  },
+  {
+    "id": "chikusei-shikoku-9f8d02c9",
+    "operating_hours": { "open": "11:00", "close": "14:30" }
+  },
+  {
+    "id": "setouchi-ajidokoro-katsu-shikoku-b0d3542f",
+    "operating_hours": { "open": "11:30", "close": "23:00" }
+  },
+  {
+    "id": "waraya-shikoku-cd55a172",
+    "operating_hours": { "open": "10:00", "close": "19:00" }
+  },
+  {
+    "id": "grill-plancha-shikoku-8a68f431",
+    "operating_hours": { "open": "17:00", "close": "22:00" }
+  },
+  {
+    "id": "azuki-bakery-shikoku-3ae47df9",
+    "operating_hours": { "open": "09:00", "close": "16:00" }
+  },
+  {
+    "id": "goument-shikoku-c1574e61",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "itamae-izakaya-kiraku-shikoku-46b439d8",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "funachu-shikoku-59ee725d",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "umie-shikoku-71df886c",
+    "operating_hours": { "open": "11:00", "close": "19:00" }
+  },
+  {
+    "id": "kaisen-umai-monoya-hamakaido-shikoku-7b462125",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "sanbue-shikoku-8866f43c",
+    "operating_hours": { "open": "17:00", "close": "22:00" }
+  },
+  {
+    "id": "tsuruya-shikoku-16a33d1b",
+    "operating_hours": { "open": "11:30", "close": "20:00" }
+  },
+  {
+    "id": "godhand-shikoku-044fd36d",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "steak-house-yamashita-shikoku-1465c538",
+    "operating_hours": { "open": "11:30", "close": "21:00" }
+  },
+  {
+    "id": "agura-shikoku-a7f2d6d0",
+    "operating_hours": { "open": "11:30", "close": "22:30" }
+  },
+  {
+    "id": "udon-market-shikoku-56355ca6",
+    "operating_hours": { "open": "11:00", "close": "15:00" }
+  },
+  {
+    "id": "cafe-asu-shikoku-16e559de",
+    "operating_hours": { "open": "09:00", "close": "18:00" }
+  },
+  {
+    "id": "takamori-dengaku-no-sato-kyushu-f4b1e14b",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "takamori-dengaku-hozonkai-kyushu-e9898a6e",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "ajikura-tengoku-chubu-20abe442",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "miyagawa-morning-market-chubu-4ee34c47",
+    "operating_hours": { "open": "07:00", "close": "12:00" }
+  },
+  {
+    "id": "center4-hamburgers-chubu-a6b249db",
+    "operating_hours": { "open": "11:00", "close": "20:00" }
+  },
+  {
+    "id": "kyoya-chubu-58324a16",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "maruaki-takayama-chubu-b905a8bc",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "suzuya-chubu-71d1b1c4",
+    "operating_hours": { "open": "11:00", "close": "20:00" }
+  },
+  {
+    "id": "tsuzumi-soba-chubu-9f4a79ce",
+    "operating_hours": { "open": "11:30", "close": "21:00" }
+  },
+  {
+    "id": "restaurant-le-midi-chubu-01431f7c",
+    "operating_hours": { "open": "11:30", "close": "21:30" }
+  },
+  {
+    "id": "kihachiro-chubu-7b01fe90",
+    "operating_hours": { "open": "09:00", "close": "18:00" }
+  },
+  {
+    "id": "dekonaru-yokocho-chubu-fdb202c4",
+    "operating_hours": { "open": "18:00", "close": "00:00" }
+  },
+  {
+    "id": "cafe-ao-chubu-768c2568",
+    "operating_hours": { "open": "10:00", "close": "17:00" }
+  },
+  {
+    "id": "sakaguchiya-chubu-f475ea8e",
+    "operating_hours": { "open": "10:30", "close": "18:30" }
+  },
+  {
+    "id": "mame-tengu-chubu-8a830014",
+    "operating_hours": { "open": "11:00", "close": "19:00" }
+  },
+  {
+    "id": "hida-takayama-gyoza-sohonten-chubu-6cd2b11e",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "heianraku-chubu-1330cbfa",
+    "operating_hours": { "open": "11:30", "close": "21:00" }
+  },
+  {
+    "id": "chitose-chubu-e6249ad2",
+    "operating_hours": { "open": "11:00", "close": "20:00" }
+  },
+  {
+    "id": "menya-shirakawa-chubu-2efa7d7f",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "hida-kotte-ushi-chubu-558f9ff9",
+    "operating_hours": { "open": "10:00", "close": "17:00" }
+  },
+  {
+    "id": "yamatake-shoten-chubu-33cb1993",
+    "operating_hours": { "open": "11:00", "close": "18:00" }
+  },
+  {
+    "id": "saika-ramen-honten-kansai-15fb0bc5",
+    "operating_hours": { "open": "11:00", "close": "00:00" }
+  },
+  {
+    "id": "tenri-stamina-ramen-honten-kansai-19749cfc",
+    "operating_hours": { "open": "11:30", "close": "00:00" }
+  },
+  {
+    "id": "wada-no-yaukun-shikoku-3148388b",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "ramen-todai-omichi-honten-shikoku-516b20d0",
+    "operating_hours": { "open": "11:00", "close": "04:00" }
+  },
+  {
+    "id": "awa-kemuri-shikoku-71c93113",
+    "operating_hours": { "open": "19:00", "close": "00:00" }
+  },
+  {
+    "id": "takashima-coffee-shikoku-a978c776",
+    "operating_hours": { "open": "07:00", "close": "19:00" }
+  },
+  {
+    "id": "hachiman-shikoku-0af95873",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "kappo-hamai-shikoku-dc67e558",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "agnes-pastry-boutique-shikoku-78cb301a",
+    "operating_hours": { "open": "10:00", "close": "21:00" }
+  },
+  {
+    "id": "arata-shikoku-a8c5c0b7",
+    "operating_hours": { "open": "08:00", "close": "01:00" }
+  },
+  {
+    "id": "isaribi-shikoku-e2d3e838",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "kuramoto-coffee-shikoku-1c21fdf4",
+    "operating_hours": { "open": "08:00", "close": "18:00" }
+  },
+  {
+    "id": "sushiroku-shikoku-33a12f6c",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "mamebon-shikoku-9bcb10e1",
+    "operating_hours": { "open": "11:00", "close": "18:00" }
+  },
+  {
+    "id": "ganshu-shikoku-058f468e",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "namidame-shikoku-a6417166",
+    "operating_hours": { "open": "18:00", "close": "00:00" }
+  },
+  {
+    "id": "cafe-contigo-shikoku-270943e8",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "awaan-shikoku-eed12d60",
+    "operating_hours": { "open": "20:00", "close": "23:59" }
+  },
+  {
+    "id": "ikkaku-shikoku-97e969d4",
+    "operating_hours": { "open": "11:00", "close": "23:00" }
+  },
+  {
+    "id": "kintoki-kitchen-shikoku-d0d62083",
+    "operating_hours": { "open": "09:00", "close": "18:00" }
+  },
+  {
+    "id": "ramen-kinto-shikoku-e9f6aa1c",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "tototo-shikoku-33917cbc",
+    "operating_hours": { "open": "17:00", "close": "22:00" }
+  },
+  {
+    "id": "cafe-limone-shikoku-31f907bf",
+    "operating_hours": { "open": "11:00", "close": "18:00" }
+  },
+  {
+    "id": "yakiniku-ten-zan-kaku-shikoku-59935d9a",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "wanko-soba-shikoku-58c5aee5",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "tokushima-marche-shikoku-462bbc42",
+    "operating_hours": { "open": "09:00", "close": "15:00" }
+  },
+  {
+    "id": "kashin-shikoku-170f03e0",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "fukumo-shikoku-e72dd7d1",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "ousho-shikoku-25b247b0",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "ramen-sanpa-shikoku-e9929cee",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "kapoue-shikoku-4b076428",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "chuuka-soba-tasya-shikoku-52a5ece9",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "chuka-soba-inotani-honten-shikoku-3c4168e3",
+    "operating_hours": { "open": "10:30", "close": "17:00" }
+  },
+  {
+    "id": "domannaka-shikoku-e151761c",
+    "operating_hours": { "open": "17:00", "close": "00:00" }
+  },
+  {
+    "id": "torigian-shikoku-09d645f6",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "men-o-shikoku-bfe4dcc2",
+    "operating_hours": { "open": "11:00", "close": "00:00" }
+  },
+  {
+    "id": "cafe-role-shikoku-3e6d9110",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "ameyoko-shopping-street-kanto-e6788ad4",
+    "operating_hours": { "open": "10:00", "close": "20:00" }
+  },
+  {
+    "id": "shiro-hige-s-cream-puff-factory-kanto-dc68db28",
+    "operating_hours": { "open": "10:30", "close": "19:00" }
+  },
+  {
+    "id": "sushi-dai-kanto-3727f874",
+    "operating_hours": { "open": "05:30", "close": "14:00" }
+  },
+  {
+    "id": "udon-shin-kanto-954ae552",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "tempura-shinjuku-tsunahachi-souhonten-kanto-ea198ee2",
+    "operating_hours": { "open": "11:00", "close": "22:30" }
+  },
+  {
+    "id": "nakiryu-kanto-7e9364e4",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "koffee-mameya-kanto-1d75654f",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "ichiran-shibuya-kanto-c62967be",
+    "operating_hours": { "open": "00:00", "close": "23:59" }
+  },
+  {
+    "id": "fuunji-kanto-df6a446c",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "tonkatsu-maisen-aoyama-honten-kanto-db4d49bf",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "kitsuneya-kanto-cb119590",
+    "operating_hours": { "open": "06:30", "close": "13:30" }
+  },
+  {
+    "id": "onigiri-bongo-kanto-6dd4a1e3",
+    "operating_hours": { "open": "11:30", "close": "23:00" }
+  },
+  {
+    "id": "nabezo-shibuya-center-gai-kanto-42284154",
+    "operating_hours": { "open": "11:30", "close": "23:00" }
+  },
+  {
+    "id": "afuri-harajuku-kanto-0dbd9029",
+    "operating_hours": { "open": "10:00", "close": "23:00" }
+  },
+  {
+    "id": "gonpachi-nishi-azabu-kanto-78c8c00b",
+    "operating_hours": { "open": "11:30", "close": "03:30" }
+  },
+  {
+    "id": "ginza-kyubey-main-store-kanto-68dff28b",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "sushi-no-midori-shibuya-kanto-319497b5",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "rokurinsha-kanto-258bfffc",
+    "operating_hours": { "open": "07:30", "close": "22:30" }
+  },
+  {
+    "id": "tofuya-ukai-kanto-d7fd8bf6",
+    "operating_hours": { "open": "11:45", "close": "22:00" }
+  },
+  {
+    "id": "gyukatsu-motomura-shibuya-kanto-8548b673",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "kanda-yabu-soba-kanto-10372ba7",
+    "operating_hours": { "open": "11:30", "close": "20:00" }
+  },
+  {
+    "id": "harajuku-gyozaro-kanto-c394a8ee",
+    "operating_hours": { "open": "11:30", "close": "22:30" }
+  },
+  {
+    "id": "asakusa-imahan-kanto-95a9e327",
+    "operating_hours": { "open": "11:30", "close": "21:30" }
+  },
+  {
+    "id": "kagari-ginza-kanto-aa5f8c23",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "monja-kura-kanto-bc736b51",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "komagata-dozeu-kanto-5f0430ba",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "starbucks-reserve-roastery-tokyo-kanto-418fc1e6",
+    "operating_hours": { "open": "07:00", "close": "22:00" }
+  },
+  {
+    "id": "kaitenzushi-nemuro-hanamaru-kitte-kanto-6231f09d",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "omoide-yokocho-kanto-2861c135",
+    "operating_hours": { "open": "16:00", "close": "23:00" }
+  },
+  {
+    "id": "narisawa-kanto-ab9161b4",
+    "operating_hours": { "open": "12:00", "close": "21:00" }
+  },
+  {
+    "id": "sometaro-kanto-1e6cd395",
+    "operating_hours": { "open": "12:00", "close": "21:00" }
+  },
+  {
+    "id": "butagumi-kanto-73ac989f",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "toritama-shirokane-kanto-4f8c2152",
+    "operating_hours": { "open": "17:30", "close": "23:30" }
+  },
+  {
+    "id": "tempura-kondo-kanto-57c220ea",
+    "operating_hours": { "open": "12:00", "close": "20:30" }
+  },
+  {
+    "id": "savoy-azabu-juban-kanto-0736cef8",
+    "operating_hours": { "open": "12:00", "close": "22:00" }
+  },
+  {
+    "id": "yoroniku-kanto-db278a38",
+    "operating_hours": { "open": "17:00", "close": "23:30" }
+  },
+  {
+    "id": "satei-hato-kanto-a5388b46",
+    "operating_hours": { "open": "11:00", "close": "23:30" }
+  },
+  {
+    "id": "menya-itto-kanto-f6be396a",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "ise-sueyoshi-kanto-064803ce",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "yanaka-ginza-kanto-174717a7",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "hakushu-teppanyaki-kanto-3745dd6d",
+    "operating_hours": { "open": "17:30", "close": "22:30" }
+  },
+  {
+    "id": "a-happy-pancake-omotesando-kanto-98525143",
+    "operating_hours": { "open": "10:00", "close": "19:00" }
+  },
+  {
+    "id": "chuka-soba-ibuki-kanto-1cafcd42",
+    "operating_hours": { "open": "11:00", "close": "20:00" }
+  },
+  {
+    "id": "tapas-molecular-bar-kanto-14da972b",
+    "operating_hours": { "open": "18:30", "close": "23:00" }
+  },
+  {
+    "id": "sushi-zanmai-tsukiji-kanto-dc7cfe7b",
+    "operating_hours": { "open": "00:00", "close": "23:59" }
+  },
+  {
+    "id": "hashino-shokudo-chugoku-f04b98f1",
+    "operating_hours": { "open": "10:00", "close": "19:00" }
+  },
+  {
+    "id": "nuchi-masu-salt-factory-okinawa-aca913cb",
+    "operating_hours": { "open": "09:00", "close": "17:30" }
+  },
+  {
+    "id": "minatto-yawatahama-chanpon-shikoku-e6baec90",
+    "operating_hours": { "open": "09:00", "close": "18:00" }
+  },
+  {
+    "id": "vanilla-beans-minato-mirai-kanto-8a552b18",
+    "operating_hours": { "open": "11:00", "close": "19:00" }
+  },
+  {
+    "id": "hungry-tiger-yokohama-more-s-kanto-2c0f47ef",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "yokohama-hammerhead-japan-ramen-food-hall-kanto-7b34ef4d",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "uchiki-pan-kanto-89f7af4a",
+    "operating_hours": { "open": "09:00", "close": "19:00" }
+  },
+  {
+    "id": "pie-holic-kanto-d246ecd9",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "noge-tabemono-yokocho-kanto-46f80c96",
+    "operating_hours": { "open": "17:00", "close": "23:00" }
+  },
+  {
+    "id": "shin-yokohama-ramen-museum-kanto-35feda81",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "italian-garden-kanto-5856bcb5",
+    "operating_hours": { "open": "17:30", "close": "23:00" }
+  },
+  {
+    "id": "chano-ma-yokohama-kanto-c4ada0c4",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "mawashizushi-katsu-yokohama-sky-building-kanto-44cb308f",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "bills-yokohama-red-brick-warehouse-kanto-bbaeba0d",
+    "operating_hours": { "open": "09:00", "close": "23:00" }
+  },
+  {
+    "id": "sizzler-landmark-plaza-kanto-cfc14eef",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "kirin-beer-factory-yokohama-kanto-97e31652",
+    "operating_hours": { "open": "10:00", "close": "16:00" }
+  },
+  {
+    "id": "kiyoken-honten-kanto-1f343c0e",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "tamagoya-kanto-18709958",
+    "operating_hours": { "open": "09:00", "close": "17:00" }
+  },
+  {
+    "id": "xie-xie-kanto-63b2903d",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "heichinrou-yokohama-currently-closed-renovating-replacing-with-manchinro-as-primary-added-saiko-kanto-c5a54c82",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "center-grill-kanto-0102a1b8",
+    "operating_hours": { "open": "11:00", "close": "20:45" }
+  },
+  {
+    "id": "ramen-jiro-yokohama-kannai-kanto-8d288100",
+    "operating_hours": { "open": "11:00", "close": "21:30" }
+  },
+  {
+    "id": "dohatsu-main-store-kanto-4b1c137b",
+    "operating_hours": { "open": "11:00", "close": "21:30" }
+  },
+  {
+    "id": "saiko-shinkan-kanto-f413e688",
+    "operating_hours": { "open": "11:00", "close": "21:30" }
+  },
+  {
+    "id": "scandia-kanto-31dafeb3",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "alte-liebe-yokohama-kanto-8538b797",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "uni-coffee-roastery-red-brick-kanto-f025baf5",
+    "operating_hours": { "open": "10:00", "close": "20:00" }
+  },
+  {
+    "id": "kadohei-kanto-ae16f364",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "motomachi-mutekiro-kanto-73e0a337",
+    "operating_hours": { "open": "11:30", "close": "21:00" }
+  },
+  {
+    "id": "shofukumon-kanto-1c685fe6",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "wangfujing-kanto-570f5a51",
+    "operating_hours": { "open": "10:00", "close": "21:00" }
+  },
+  {
+    "id": "baikou-kanto-d00ec2f0",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "mizunobu-fruit-parlor-kanto-3a059344",
+    "operating_hours": { "open": "11:00", "close": "20:00" }
+  },
+  {
+    "id": "noge-suehiro-kanto-50f1bd4c",
+    "operating_hours": { "open": "16:30", "close": "22:00" }
+  },
+  {
+    "id": "hof-brau-kanto-e25a2c8b",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "janomeya-kanto-0da4b2d7",
+    "operating_hours": { "open": "11:30", "close": "21:00" }
+  },
+  {
+    "id": "enoki-tei-kanto-0738b3eb",
+    "operating_hours": { "open": "11:00", "close": "18:00" }
+  },
+  {
+    "id": "sankoen-kanto-a3c067c5",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "gyokusentei-kanto-0c4ea94e",
+    "operating_hours": { "open": "11:00", "close": "20:30" }
+  },
+  {
+    "id": "kuriyama-kanto-e8fa629c",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "katsuretsu-an-bashamichi-kanto-c1d733ef",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "yokohama-chinatown-chukagai-kanto-7955eafb",
+    "operating_hours": { "open": "10:00", "close": "21:00" }
+  },
+  {
+    "id": "yoshimuraya-kanto-7459a437",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "manchinro-honten-kanto-1beb1036",
+    "operating_hours": { "open": "11:00", "close": "22:00" }
+  },
+  {
+    "id": "edosei-honten-kanto-3bce1344",
+    "operating_hours": { "open": "09:00", "close": "20:00" }
+  },
+  {
+    "id": "hotel-new-grand-the-cafe-kanto-a963a210",
+    "operating_hours": { "open": "10:00", "close": "21:30" }
+  },
+  {
+    "id": "houtenkaku-kanto-c791644a",
+    "operating_hours": { "open": "11:00", "close": "21:00" }
+  },
+  {
+    "id": "cup-noodles-museum-yokohama-kanto-9fc2d159",
+    "operating_hours": { "open": "10:00", "close": "18:00" }
+  },
+  {
+    "id": "jukei-hanten-shinkan-kanto-f37a8ec9",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  },
+  {
+    "id": "gyunabe-araiya-kanto-e78ee52a",
+    "operating_hours": { "open": "11:30", "close": "22:00" }
+  }
+]
