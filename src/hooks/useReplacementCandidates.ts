@@ -116,9 +116,6 @@ export function locationToActivity(
     location.recommendedVisit?.typicalMinutes ??
     getCategoryDefaultDuration(location.category ?? "landmark");
 
-  // Preserve timeOfDay from original activity
-  const timeOfDay = originalActivity.timeOfDay;
-
   // Build tags from location category and interests
   const tags: string[] = [];
   if (location.category) {
@@ -129,11 +126,14 @@ export function locationToActivity(
     kind: "place",
     id: `${location.id}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
     title: location.name,
-    timeOfDay,
+    timeOfDay: originalActivity.timeOfDay,
     durationMin: duration,
-    neighborhood: location.city,
+    neighborhood: location.neighborhood ?? location.city,
     tags,
     locationId: location.id,
-    notes: originalActivity.notes, // Preserve notes
+    coordinates: location.coordinates, // Include coordinates for travel calculations
+    notes: originalActivity.notes,
+    schedule: originalActivity.schedule, // Preserve scheduled times (will be recalculated)
+    travelFromPrevious: originalActivity.travelFromPrevious, // Preserve travel segment (will be recalculated)
   };
 }

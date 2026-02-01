@@ -116,6 +116,8 @@ export const ItineraryShell = ({
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
+  // Ref to store scheduleUserPlanning for use in handleReplaceSelect (avoids initialization order issues)
+  const scheduleUserPlanningRef = useRef<((next: Itinerary) => void) | null>(null);
 
   // Mutation hook for fetching replacement candidates
   const replacementMutation = useReplacementCandidates();
@@ -241,17 +243,23 @@ export const ItineraryShell = ({
         replaceActivity(tripId, currentDay.id, replacementActivityId, newActivity);
       }
 
-      // Update local model
-      setModelState((current) => {
-        const nextDays = current.days.map((d) => {
-          if (d.id !== currentDay.id) return d;
-          return {
-            ...d,
-            activities: d.activities.map((a) => (a.id === replacementActivityId ? newActivity : a)),
-          };
-        });
-        return { ...current, days: nextDays };
+      // Build the updated itinerary for replanning
+      const nextDays = model.days.map((d) => {
+        if (d.id !== currentDay.id) return d;
+        return {
+          ...d,
+          activities: d.activities.map((a) => (a.id === replacementActivityId ? newActivity : a)),
+        };
       });
+      const nextItinerary = { ...model, days: nextDays };
+
+      // Update local model
+      setModelState(nextItinerary);
+
+      // Schedule replanning after state update to recalculate travel times
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
 
       setReplacementActivityId(null);
       setReplacementCandidates([]);
@@ -400,6 +408,11 @@ export const ItineraryShell = ({
     },
     [setIsPlanning, setModelState, setPlanningError, buildDayEntryPointsMap, tripBuilderData],
   );
+
+  // Keep ref in sync with scheduleUserPlanning for use in handleReplaceSelect
+  useEffect(() => {
+    scheduleUserPlanningRef.current = scheduleUserPlanning;
+  }, [scheduleUserPlanning]);
 
   const applyModelUpdate = useCallback<Dispatch<SetStateAction<Itinerary>>>(
     (updater) => {
