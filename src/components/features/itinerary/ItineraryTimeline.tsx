@@ -2,11 +2,13 @@
 
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   closestCenter,
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
@@ -123,6 +125,8 @@ export const ItineraryTimeline = ({
   conflicts,
   conflictsResult,
 }: ItineraryTimelineProps) => {
+  const [activeId, setActiveId] = useState<string | null>(null);
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 6 },
@@ -284,8 +288,13 @@ export const ItineraryTimeline = ({
     [],
   );
 
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(String(event.active.id));
+  }, []);
+
   const handleDragEnd = useCallback(
     async ({ active, over }: DragEndEvent) => {
+      setActiveId(null);
       if (!over) return;
 
       const activeId = String(active.id);
@@ -546,11 +555,17 @@ export const ItineraryTimeline = ({
     });
   }, [dayIndex, setModel]);
 
+  // Get the active activity for DragOverlay
+  const activeActivity = activeId
+    ? extendedActivities.find((a) => a.id === activeId)
+    : null;
+
   return (
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       modifiers={[restrictToVerticalAxis]}
+      onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       <div className="space-y-6">
@@ -750,6 +765,7 @@ export const ItineraryTimeline = ({
                         onCopy={undefined}
                         attributes={{}}
                         listeners={{}}
+                        hideDragHandle
                       />
                     </li>
                   );
@@ -795,6 +811,46 @@ export const ItineraryTimeline = ({
           </div>
         )}
       </div>
+
+      {/* Drag Preview Overlay - Compact card preview */}
+      <DragOverlay dropAnimation={{ duration: 250, easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)" }}>
+        {activeActivity && activeActivity.kind === "place" && (
+          <div className="pointer-events-none w-[320px] max-w-[90vw]">
+            <div className="rounded-2xl border-2 border-brand-primary/50 bg-background p-3 shadow-2xl ring-4 ring-brand-primary/20 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                {/* Drag indicator */}
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10">
+                  <svg className="h-5 w-5 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                  </svg>
+                </div>
+                {/* Activity info */}
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-charcoal">
+                    {activeActivity.title}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    {activeActivity.schedule?.arrivalTime && (
+                      <span className="text-xs text-sage">
+                        {activeActivity.schedule.arrivalTime}
+                      </span>
+                    )}
+                    {activeActivity.neighborhood && (
+                      <span className="truncate text-xs text-stone">
+                        {activeActivity.neighborhood}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {/* Visual indicator that it's being dragged */}
+                <div className="shrink-0 rounded-full bg-sage/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-sage">
+                  Moving
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </DragOverlay>
     </DndContext>
   );
 }

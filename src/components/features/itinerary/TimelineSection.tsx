@@ -149,10 +149,10 @@ export function TimelineSection({
     >
       <header className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
         <div>
-          <h2 id={headingId} className="text-lg font-semibold text-gray-900">
+          <h2 id={headingId} className="text-lg font-semibold text-charcoal">
             {meta.title}
           </h2>
-          <p className="text-sm text-gray-500">{meta.description}</p>
+          <p className="text-sm text-stone">{meta.description}</p>
         </div>
         {hasActivities ? (
           <div className="flex flex-wrap items-center gap-3">
@@ -160,7 +160,7 @@ export function TimelineSection({
               type="button"
               aria-label={addNoteLabel}
               onClick={() => onAddNote(sectionKey)}
-              className="text-indigo-600 hover:text-indigo-700 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+              className="text-sage hover:text-sage/80 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
               + Add note
             </button>
@@ -238,7 +238,7 @@ export function TimelineSection({
           strategy={verticalListSortingStrategy}
         >
           <ul ref={setNodeRef} className="space-y-3">
-            <li className="rounded-xl border-2 border-dashed border-gray-300 p-6 text-gray-500">
+            <li className="rounded-xl border-2 border-dashed border-border p-6 text-stone">
               <div className="flex flex-col items-start gap-3">
                 <p className="text-sm">
                   No activities yet for this part of the day.
@@ -248,7 +248,7 @@ export function TimelineSection({
                     type="button"
                     aria-label={addNoteLabel}
                     onClick={() => onAddNote(sectionKey)}
-                    className="text-indigo-600 hover:text-indigo-700 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                    className="text-sage hover:text-sage/80 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                   >
                     + Add note
                   </button>

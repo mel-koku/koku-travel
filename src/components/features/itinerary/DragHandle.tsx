@@ -32,9 +32,9 @@ export function DragHandle({
   listeners,
 }: DragHandleProps) {
   const baseClasses =
-    "flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold shadow-sm transition cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing";
+    "group/handle flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs font-medium shadow-sm transition-all cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-95 data-[dragging=true]:shadow-none hover:shadow-md active:scale-95";
   const placeClasses =
-    "border-sage/30 bg-background/95 text-sage hover:bg-sage/10";
+    "border-border bg-background text-stone hover:border-sage/50 hover:bg-sage/5 hover:text-sage";
   const noteClasses =
     "border-sage/30 bg-sage/10 text-sage hover:bg-sage/20";
 
@@ -98,7 +98,7 @@ export function DragHandle({
       }}
     >
       <GripIcon />
-      <span>Drag</span>
+      <span className="hidden sm:inline group-hover/handle:inline">Reorder</span>
     </button>
   );
 }

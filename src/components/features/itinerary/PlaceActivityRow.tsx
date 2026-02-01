@@ -195,6 +195,8 @@ type PlaceActivityRowProps = {
   onCopy?: () => void;
   /** Conflicts detected for this activity */
   conflicts?: ItineraryConflict[];
+  /** Hide the drag handle (for entry points) */
+  hideDragHandle?: boolean;
 };
 
 export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRowProps>(
@@ -219,6 +221,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       onReplace,
       onCopy,
       conflicts,
+      hideDragHandle,
     },
     ref,
   ) => {
@@ -456,30 +459,49 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         data-activity-id={activity.id}
       >
         <div
-          className={`group relative overflow-hidden rounded-lg border bg-background transition duration-200 ${
+          className={`group relative overflow-hidden rounded-2xl border bg-background transition-all duration-200 ${
             isDragging
-              ? "border-sage/30 ring-2 ring-sage/30 shadow-lg"
+              ? "border-sage/30 ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
               : isSelected
                 ? "border-brand-primary ring-2 ring-brand-primary shadow-lg"
-                : "border-border shadow-sm hover:border-sage/20 hover:shadow-lg"
+                : "border-border shadow-sm hover:border-sage/20 hover:shadow-lg hover:-translate-y-0.5"
           }`}
         >
           <div className="p-3 space-y-1.5">
 
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div className="flex items-start gap-2 flex-1 min-w-0">
-                <DragHandle
-                  variant="place"
-                  label={dragHandleLabel}
-                  isDragging={isDragging}
-                  attributes={attributes}
-                  listeners={listeners}
-                />
-                {placeNumber !== undefined ? (
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white shadow-sm ring-2 ring-background">
-                    {placeNumber}
-                  </div>
-                ) : null}
+                {!hideDragHandle && (
+                  <DragHandle
+                    variant="place"
+                    label={dragHandleLabel}
+                    isDragging={isDragging}
+                    attributes={attributes}
+                    listeners={listeners}
+                  />
+                )}
+                {placeNumber !== undefined ? (() => {
+                  // Check if this is a start or end entry point
+                  const isStartEntryPoint = activity.locationId?.startsWith("__entry_point_start__");
+                  const isEndEntryPoint = activity.locationId?.startsWith("__entry_point_end__");
+
+                  // Determine display label and color
+                  const displayLabel = isStartEntryPoint ? "S" : isEndEntryPoint ? "E" : placeNumber;
+                  const bgColor = isStartEntryPoint
+                    ? "bg-emerald-500"
+                    : isEndEntryPoint
+                      ? "bg-rose-500"
+                      : "bg-indigo-600";
+
+                  return (
+                    <div
+                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white shadow-sm ring-2 ring-background ${bgColor}`}
+                      title={isStartEntryPoint ? "Starting point" : isEndEntryPoint ? "Ending point" : `Stop ${placeNumber}`}
+                    >
+                      {displayLabel}
+                    </div>
+                  );
+                })() : null}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-charcoal">
                     {placeLocation.name}
@@ -509,7 +531,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    className="rounded-full bg-background/95 p-1.5 text-foreground-secondary shadow-sm ring-1 ring-border transition hover:bg-success/10 hover:text-success focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success"
+                    className="rounded-full bg-background/95 p-1.5 text-foreground-secondary shadow-sm ring-1 ring-border transition hover:bg-success/10 hover:text-success active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -524,7 +546,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   </button>
                   <button
                     type="button"
-                    className="rounded-full bg-background/95 p-1.5 text-foreground-secondary shadow-sm ring-1 ring-border transition hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
+                    className="rounded-full bg-background/95 p-1.5 text-foreground-secondary shadow-sm ring-1 ring-border transition hover:bg-error/10 hover:text-error active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -538,6 +560,41 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     </svg>
                   </button>
                 </div>
+                {/* Quick Actions - Replace and Copy */}
+                {tripId && dayId && onReplace && (
+                  <button
+                    type="button"
+                    className="rounded-lg p-1.5 text-stone hover:bg-sage/10 hover:text-sage transition active:scale-[0.97]"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onReplace();
+                    }}
+                    aria-label="Find alternatives"
+                    title="Find alternatives"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </button>
+                )}
+                {tripId && dayId && onCopy && (
+                  <button
+                    type="button"
+                    className="rounded-lg p-1.5 text-stone hover:bg-sage/10 hover:text-sage transition active:scale-[0.97]"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onCopy();
+                    }}
+                    aria-label="Duplicate"
+                    title="Duplicate"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
+                )}
                 {tripId && dayId && (onReplace || onCopy) ? (
                   <ActivityActions
                     activity={activity}

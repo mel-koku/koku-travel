@@ -168,9 +168,9 @@ export function Modal(props: ModalProps) {
         <div
           ref={panelRef}
           className={cn(
-            "relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+            "relative w-full max-w-lg rounded-2xl bg-background p-6 shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
             "max-h-[calc(100vh-6rem)] overflow-y-auto sm:p-8",
-            "transform transition-transform duration-200 ease-out",
+            "animate-[modal-enter_0.2s_ease-out]",
             panelClassName,
           )}
           role="dialog"
@@ -182,7 +182,7 @@ export function Modal(props: ModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-4 top-4 rounded-full p-2 text-gray-500 transition hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2"
+            className="absolute right-4 top-4 rounded-full p-2 text-stone transition hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
             aria-label="Close dialog"
           >
             <svg
@@ -200,11 +200,11 @@ export function Modal(props: ModalProps) {
 
           {title ? (
             <div className="flex flex-col gap-2">
-              <h2 id={titleId} className="text-2xl font-semibold text-gray-900">
+              <h2 id={titleId} className="text-2xl font-semibold text-charcoal">
                 {title}
               </h2>
               {description ? (
-                <p id={descriptionId} className="text-sm text-gray-600">
+                <p id={descriptionId} className="text-sm text-warm-gray">
                   {description}
                 </p>
               ) : null}
