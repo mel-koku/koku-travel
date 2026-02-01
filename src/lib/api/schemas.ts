@@ -293,6 +293,14 @@ const weatherPreferencesSchema = z.object({
  * Comprehensive schema for TripBuilderData
  * Validates all fields with proper types and constraints
  */
+/**
+ * Schema for time in HH:MM format (24-hour)
+ */
+const timeSchema = z
+  .string()
+  .regex(/^([01]?\d|2[0-3]):[0-5]\d$/, "Time must be in HH:MM format (24-hour)")
+  .optional();
+
 export const tripBuilderDataSchema = z.object({
   duration: z.number().int().min(1).max(14).optional(),
   dates: travelDatesSchema,
@@ -308,6 +316,8 @@ export const tripBuilderDataSchema = z.object({
   weatherPreferences: weatherPreferencesSchema,
   // travelerProfile is optional and will be built from other fields if not provided
   travelerProfile: z.any().optional(),
+  // Day start time in HH:MM format (24-hour)
+  dayStartTime: timeSchema,
 }).strict();
 
 /**

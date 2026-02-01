@@ -578,11 +578,11 @@ export const ItineraryTimeline = ({
           >
             <ul className="space-y-3">
               {extendedActivities.map((activity, index) => {
-                // Calculate place number (only for place activities, sequential starting from 0)
+                // Calculate place number (only for place activities, 1-indexed to match map pins)
                 let placeNumber: number | undefined = undefined;
                 if (activity.kind === "place") {
-                  // Count place activities before this index
-                  let placeCounter = 0;
+                  // Count place activities before this index, starting from 1
+                  let placeCounter = 1;
                   for (let i = 0; i < index; i++) {
                     if (extendedActivities[i]?.kind === "place") {
                       placeCounter++;
