@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
+import { ItinerarySkeleton } from "@/components/features/itinerary/ItinerarySkeleton";
 import { useSmartPrompts } from "@/components/features/itinerary/SmartPromptsDrawer";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { useAppState } from "@/state/AppState";
@@ -191,11 +192,7 @@ function ItineraryPageContent() {
 
 export default function ItineraryPage() {
   return (
-    <Suspense fallback={
-      <div className="p-16 text-center text-foreground-secondary">
-        <p>Loading...</p>
-      </div>
-    }>
+    <Suspense fallback={<ItinerarySkeleton />}>
       <ItineraryPageContent />
     </Suspense>
   );

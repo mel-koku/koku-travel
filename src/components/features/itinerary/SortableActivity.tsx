@@ -46,7 +46,12 @@ export const SortableActivity = memo(function SortableActivity({
     transform,
     transition,
     isDragging,
+    isOver,
+    active,
   } = useSortable({ id: activity.id });
+
+  // Show drop indicator when something else is being dragged over this item
+  const showDropIndicator = isOver && active?.id !== activity.id;
 
   const dragStyles =
     transform || transition
@@ -57,30 +62,50 @@ export const SortableActivity = memo(function SortableActivity({
       : undefined;
 
   return (
-    <li ref={setNodeRef} className="space-y-0" style={dragStyles} {...attributes}>
-      {travelSegment && (
+    <li ref={setNodeRef} className="relative space-y-0" style={dragStyles} {...attributes}>
+      {/* Drop indicator line */}
+      {showDropIndicator && (
+        <div className="absolute -top-1.5 left-0 right-0 z-10 flex items-center gap-2">
+          <div className="h-1 w-1 rounded-full bg-brand-primary" />
+          <div className="h-0.5 flex-1 rounded-full bg-brand-primary" />
+          <div className="h-1 w-1 rounded-full bg-brand-primary" />
+        </div>
+      )}
+      {travelSegment && !isDragging && (
         <div className="mb-3">
           {travelSegment}
         </div>
       )}
-      <ActivityRow
-        activity={activity}
-        allActivities={allActivities}
-        dayTimezone={dayTimezone}
-        onDelete={onDelete}
-        onUpdate={onUpdate}
-        attributes={attributes as unknown as Record<string, unknown>}
-        listeners={listeners as unknown as Record<string, unknown>}
-        isDragging={isDragging}
-        isSelected={isSelected}
-        onSelect={onSelect}
-        placeNumber={placeNumber}
-        tripId={tripId}
-        dayId={dayId}
-        onReplace={onReplace}
-        onCopy={onCopy}
-        conflicts={conflicts}
-      />
+      {/* Show ghost placeholder when dragging */}
+      {isDragging ? (
+        <div className="rounded-2xl border-2 border-dashed border-sage/40 bg-sage/5 p-4 transition-all">
+          <div className="flex items-center gap-2 text-sage/60">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+            <span className="text-sm font-medium">Drop here to reorder</span>
+          </div>
+        </div>
+      ) : (
+        <ActivityRow
+          activity={activity}
+          allActivities={allActivities}
+          dayTimezone={dayTimezone}
+          onDelete={onDelete}
+          onUpdate={onUpdate}
+          attributes={attributes as unknown as Record<string, unknown>}
+          listeners={listeners as unknown as Record<string, unknown>}
+          isDragging={isDragging}
+          isSelected={isSelected}
+          onSelect={onSelect}
+          placeNumber={placeNumber}
+          tripId={tripId}
+          dayId={dayId}
+          onReplace={onReplace}
+          onCopy={onCopy}
+          conflicts={conflicts}
+        />
+      )}
     </li>
   );
 });

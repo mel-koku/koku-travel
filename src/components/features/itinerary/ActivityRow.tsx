@@ -27,6 +27,8 @@ type ActivityRowProps = {
   onReplace?: () => void;
   onCopy?: () => void;
   conflicts?: ItineraryConflict[];
+  /** Hide the drag handle (for entry points) */
+  hideDragHandle?: boolean;
 };
 
 export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
@@ -47,6 +49,7 @@ export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
         onReplace={props.onReplace}
         onCopy={props.onCopy}
         conflicts={props.conflicts}
+        hideDragHandle={props.hideDragHandle}
       />
     );
   },
