@@ -33,6 +33,7 @@ const createDefaultData = (): TripBuilderData => ({
   style: undefined,
   entryPoint: undefined,
   accessibility: undefined,
+  dayStartTime: undefined,
 });
 
 const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
@@ -48,6 +49,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedEntryPoint = sanitizeEntryPoint(raw.entryPoint);
   const normalizedRegions = sanitizeRegions(raw.regions);
   const normalizedCities = sanitizeCities(raw.cities);
+  const normalizedDayStartTime = sanitizeDayStartTime(raw.dayStartTime);
   return {
     ...base,
     ...raw,
@@ -62,6 +64,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     style: normalizedStyle,
     entryPoint: normalizedEntryPoint,
     accessibility: normalizedAccessibility,
+    dayStartTime: normalizedDayStartTime,
   };
 };
 
@@ -106,6 +109,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
           style: normalizedStored.style,
           entryPoint: normalizedStored.entryPoint,
           accessibility: normalizedStored.accessibility,
+          dayStartTime: normalizedStored.dayStartTime,
         };
       });
     }
@@ -345,6 +349,31 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
     iataCode: typeof entryPoint.iataCode === "string" ? entryPoint.iataCode.trim().toUpperCase() : undefined,
     region: entryPoint.region,
   };
+}
+
+/**
+ * Sanitize day start time - validates HH:MM format (24-hour)
+ */
+function sanitizeDayStartTime(dayStartTime?: string): string | undefined {
+  if (!dayStartTime || typeof dayStartTime !== "string") {
+    return undefined;
+  }
+
+  // Validate HH:MM format (24-hour)
+  const match = dayStartTime.match(/^(\d{1,2}):(\d{2})$/);
+  if (!match) {
+    return undefined;
+  }
+
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+
+  if (Number.isNaN(hours) || Number.isNaN(minutes) || hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+    return undefined;
+  }
+
+  // Normalize to HH:MM format
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
 

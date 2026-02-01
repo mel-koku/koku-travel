@@ -81,9 +81,9 @@ export const ItineraryMapPanel = ({
 
   const points = useMemo<MapPoint[]>(() => {
     const results: MapPoint[] = [];
-    let placeCounter = 0; // Start at 0 for start point
+    let placeCounter = 1; // Start at 1 for activities (entry points use S/E labels)
 
-    // Add start point as marker 0
+    // Add start point (uses "S" label, not a number)
     if (startPoint) {
       results.push({
         id: "start-point",
@@ -92,12 +92,12 @@ export const ItineraryMapPanel = ({
         lng: startPoint.coordinates.lng,
         tags: [],
         timeOfDay: "morning",
-        placeNumber: placeCounter++,
+        placeNumber: 0, // Not displayed, uses "S" label
         isEntryPoint: "start",
       });
     }
 
-    // Add regular activities (starting from 1 if start point exists, otherwise from 1)
+    // Add regular activities (1-indexed to match card numbers)
     activities.forEach((activity) => {
       if (!isPlaceActivity(activity)) {
         return;
@@ -139,7 +139,7 @@ export const ItineraryMapPanel = ({
       });
     });
 
-    // Add end point as last marker
+    // Add end point (uses "E" label, not a number)
     if (endPoint) {
       results.push({
         id: "end-point",
@@ -148,7 +148,7 @@ export const ItineraryMapPanel = ({
         lng: endPoint.coordinates.lng,
         tags: [],
         timeOfDay: "evening",
-        placeNumber: placeCounter++,
+        placeNumber: 0, // Not displayed, uses "E" label
         isEntryPoint: "end",
       });
     }

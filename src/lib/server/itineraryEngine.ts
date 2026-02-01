@@ -1,4 +1,5 @@
 import { generateItinerary } from "@/lib/itineraryGenerator";
+import { planItinerary } from "@/lib/itineraryPlanner";
 import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 import type { Trip, TripDay, TripActivity } from "@/types/tripDomain";
 import type { TripBuilderData } from "@/types/trip";
@@ -208,7 +209,17 @@ export async function generateTripFromBuilderData(
   const allLocations = await fetchAllLocations(builderData.cities);
 
   // Generate itinerary using existing generator
-  const itinerary = await generateItinerary(builderData);
+  const rawItinerary = await generateItinerary(builderData);
+
+  // Schedule the itinerary to add arrival/departure times
+  // This uses the dayStartTime from builderData or defaults to 09:00
+  const itinerary = await planItinerary(rawItinerary, {
+    defaultDayStart: builderData.dayStartTime ?? "09:00",
+  });
+  logger.info("Scheduled itinerary with times", {
+    dayStartTime: builderData.dayStartTime ?? "09:00",
+    daysCount: itinerary.days.length,
+  });
 
   // Get restaurants for meal planning
   // Filter for actual dining establishments, excluding landmarks and closed locations

@@ -367,8 +367,11 @@ export const ItineraryShell = ({
         setIsPlanning(true);
 
         const dayEntryPointsMap = buildDayEntryPointsMap(target);
-        
-        planItineraryClient(target, undefined, dayEntryPointsMap)
+        const plannerOptions = tripBuilderData?.dayStartTime
+          ? { defaultDayStart: tripBuilderData.dayStartTime }
+          : undefined;
+
+        planItineraryClient(target, plannerOptions, dayEntryPointsMap)
           .then((planned) => {
             if (planningRequestRef.current !== runId || !isMountedRef.current) {
               return;
@@ -395,7 +398,7 @@ export const ItineraryShell = ({
           });
       }, 450);
     },
-    [setIsPlanning, setModelState, setPlanningError, buildDayEntryPointsMap],
+    [setIsPlanning, setModelState, setPlanningError, buildDayEntryPointsMap, tripBuilderData],
   );
 
   const applyModelUpdate = useCallback<Dispatch<SetStateAction<Itinerary>>>(
@@ -463,8 +466,11 @@ export const ItineraryShell = ({
     }, 0);
 
     const dayEntryPointsMap = buildDayEntryPointsMap(nextNormalized);
-    
-    planItineraryClient(nextNormalized, undefined, dayEntryPointsMap)
+    const initialPlannerOptions = tripBuilderData?.dayStartTime
+      ? { defaultDayStart: tripBuilderData.dayStartTime }
+      : undefined;
+
+    planItineraryClient(nextNormalized, initialPlannerOptions, dayEntryPointsMap)
       .then((planned) => {
         if (
           cancelled ||
@@ -511,7 +517,7 @@ export const ItineraryShell = ({
         planWatchdogRef.current = null;
       }
     };
-  }, [serializedItinerary, itinerary, tripId, buildDayEntryPointsMap]);
+  }, [serializedItinerary, itinerary, tripId, buildDayEntryPointsMap, tripBuilderData]);
 
   useEffect(() => {
     if (skipSyncRef.current) {

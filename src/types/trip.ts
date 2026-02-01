@@ -184,6 +184,12 @@ export type TripBuilderData = {
    * This allows gradual migration to the new domain model.
    */
   travelerProfile?: TravelerProfile;
+  /**
+   * Default day start time in HH:MM format (24-hour).
+   * Used as the starting point for calculating activity times.
+   * Defaults to "09:00" if not specified.
+   */
+  dayStartTime?: string;
 };
 
 /**
