@@ -1,7 +1,6 @@
 "use client";
 
-import { KeyboardEvent, useMemo, useRef, useEffect } from "react";
-import { cn } from "@/lib/cn";
+import { useMemo, useEffect, useRef, type ChangeEvent } from "react";
 
 type DaySelectorProps = {
   totalDays: number;
@@ -22,7 +21,6 @@ function getTodayIndex(tripStartDate: string | undefined, totalDays: number): nu
   if (!tripStartDate || totalDays === 0) return -1;
 
   try {
-    // Parse trip start date
     const [year, month, day] = tripStartDate.split("-").map(Number);
     if (!year || !month || !day || isNaN(year) || isNaN(month) || isNaN(day)) {
       return -1;
@@ -32,11 +30,9 @@ function getTodayIndex(tripStartDate: string | undefined, totalDays: number): nu
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Calculate difference in days
     const diffTime = today.getTime() - startDate.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    // Check if today is within trip range
     if (diffDays < 0 || diffDays >= totalDays) {
       return -1;
     }
@@ -55,26 +51,55 @@ export const DaySelector = ({
   tripStartDate,
   autoScrollToToday = true,
 }: DaySelectorProps) => {
-  const buttonRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const hasAutoScrolled = useRef(false);
 
-  // Calculate today's index
   const todayIndex = useMemo(
     () => getTodayIndex(tripStartDate, totalDays),
     [tripStartDate, totalDays]
   );
 
   const days = useMemo(() => {
-    return Array.from({ length: totalDays }).map((_, index) => ({
-      index,
-      label: labels[index] || `Day ${index + 1}`,
-      isToday: index === todayIndex,
-      isPast: todayIndex >= 0 && index < todayIndex,
-      isFuture: todayIndex >= 0 && index > todayIndex,
-    }));
-  }, [labels, totalDays, todayIndex]);
+    // Separate formatters for custom order: "Feb 11, Tue"
+    const monthDayFormatter = new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+    });
+    const weekdayFormatter = new Intl.DateTimeFormat(undefined, {
+      weekday: "short",
+    });
 
-  // Auto-scroll to today on mount
+    return Array.from({ length: totalDays }).map((_, index) => {
+      let dateLabel = `Day ${index + 1}`;
+
+      // Calculate actual date from trip start date
+      if (tripStartDate) {
+        try {
+          const [year, month, day] = tripStartDate.split("-").map(Number);
+          if (year && month && day) {
+            const date = new Date(year, month - 1, day);
+            date.setDate(date.getDate() + index);
+            const monthDay = monthDayFormatter.format(date);
+            const weekday = weekdayFormatter.format(date);
+            dateLabel = `${monthDay}, ${weekday}`;
+          }
+        } catch {
+          // Fall back to Day X format
+        }
+      }
+
+      // Extract city from label if available (format: "Day X (City)")
+      const cityMatch = labels[index]?.match(/\(([^)]+)\)/);
+      const city = cityMatch ? cityMatch[1] : null;
+
+      return {
+        index,
+        label: city ? `${dateLabel} · ${city}` : dateLabel,
+        isToday: index === todayIndex,
+      };
+    });
+  }, [labels, totalDays, todayIndex, tripStartDate]);
+
+  // Auto-select today on mount
   useEffect(() => {
     if (
       autoScrollToToday &&
@@ -87,26 +112,8 @@ export const DaySelector = ({
     }
   }, [autoScrollToToday, todayIndex, selected, onChange]);
 
-  const focusButton = (targetIndex: number) => {
-    const button = buttonRefs.current[targetIndex];
-    button?.focus();
-  };
-
-  const selectDay = (index: number) => {
-    onChange(index);
-    focusButton(index);
-  };
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    if (event.key === "ArrowRight") {
-      event.preventDefault();
-      const nextIndex = (index + 1) % days.length;
-      selectDay(nextIndex);
-    } else if (event.key === "ArrowLeft") {
-      event.preventDefault();
-      const prevIndex = (index - 1 + days.length) % days.length;
-      selectDay(prevIndex);
-    }
+  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    onChange(Number(event.target.value));
   };
 
   if (days.length === 0) {
@@ -117,51 +124,38 @@ export const DaySelector = ({
     );
   }
 
+  const selectedDay = days[selected];
+
   return (
-    <nav aria-label="Day selector">
-      <div
-        role="tablist"
-        className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] sm:flex-wrap"
+    <div className="relative">
+      <select
+        value={selected}
+        onChange={handleChange}
+        className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm font-medium text-charcoal shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+        aria-label="Select day"
       >
-        {days.map(({ index, label, isToday, isPast }) => {
-          const isSelected = index === selected;
-          return (
-            <button
-              key={index}
-              ref={(el) => {
-                buttonRefs.current[index] = el;
-              }}
-              role="tab"
-              type="button"
-              className={cn(
-                "relative whitespace-nowrap rounded-full border px-4 py-2 text-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-primary",
-                isSelected
-                  ? "border-brand-primary bg-brand-primary text-white shadow-sm"
-                  : isPast
-                    ? "border-border bg-surface/50 text-stone hover:border-sage/30 hover:text-sage"
-                    : "border-border bg-background text-warm-gray hover:border-sage/30 hover:text-sage",
-                isToday && !isSelected && "border-sage ring-2 ring-sage/30"
-              )}
-              aria-selected={isSelected}
-              aria-current={isToday ? "date" : undefined}
-              tabIndex={isSelected ? 0 : -1}
-              onClick={() => selectDay(index)}
-              onKeyDown={(event) => handleKeyDown(event, index)}
-            >
-              <span className="flex items-center gap-1.5">
-                {isToday && (
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-75"></span>
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-sage"></span>
-                  </span>
-                )}
-                {isToday ? "Today" : label}
-              </span>
-            </button>
-          );
-        })}
+        {days.map(({ index, label, isToday }) => (
+          <option key={index} value={index}>
+            {isToday ? `${label} (Today)` : label}
+          </option>
+        ))}
+      </select>
+      {/* Dropdown arrow */}
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+        <svg className="h-4 w-4 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
       </div>
-    </nav>
+      {/* Today indicator */}
+      {selectedDay?.isToday && (
+        <div className="absolute left-3 top-1/2 -translate-y-1/2">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-75"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-sage"></span>
+          </span>
+        </div>
+      )}
+    </div>
   );
 };
 

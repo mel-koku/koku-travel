@@ -13,8 +13,14 @@ export type LeafletLatLngBounds = {
   pad(factor: number): LeafletLatLngBounds;
 };
 
+export type LeafletPopupOptions = {
+  closeButton?: boolean;
+  offset?: [number, number];
+  className?: string;
+};
+
 export type LeafletMarker = {
-  bindPopup(html: string): LeafletMarker;
+  bindPopup(html: string, options?: LeafletPopupOptions): LeafletMarker;
   on(event: string, handler: () => void): void;
   getLatLng(): LeafletLatLng;
   getElement(): HTMLElement | null;
