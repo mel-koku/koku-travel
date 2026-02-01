@@ -137,10 +137,15 @@ export function findMealRecommendation(
 
   const scored = filtered.map((restaurant) => scoreLocation(restaurant, scoringCriteria));
 
-  // Sort by score and pick top candidate
+  // Sort by score descending
   scored.sort((a, b) => b.score - a.score);
 
-  return scored[0]?.location ?? null;
+  // Pick randomly from top candidates for variety
+  // Use top 5 or all if fewer than 5 candidates
+  const topCandidates = scored.slice(0, Math.min(5, scored.length));
+  const randomIndex = Math.floor(Math.random() * topCandidates.length);
+
+  return topCandidates[randomIndex]?.location ?? null;
 }
 
 /**
