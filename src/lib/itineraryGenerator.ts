@@ -1,6 +1,6 @@
 import { getRegionForCity, REGIONS } from "@/data/regions";
 import { shouldSuggestDayTrip, getDayTripTravelOverhead, type DayTripConfig } from "@/data/dayTrips";
-import type { Itinerary, ItineraryTravelMode } from "@/types/itinerary";
+import type { Itinerary, ItineraryTravelMode, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
 import type { WeatherForecast, TripWeatherContext } from "@/types/weather";
@@ -15,6 +15,34 @@ import { logger } from "@/lib/logger";
 import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { calculateDistance } from "@/lib/utils/geoUtils";
+
+/**
+ * Food-related location categories for meal detection.
+ */
+const FOOD_CATEGORIES = new Set(["restaurant", "food", "cafe", "bar", "market"]);
+
+/**
+ * Check if a location category indicates a food/dining establishment.
+ */
+function isFoodCategory(category: string): boolean {
+  return FOOD_CATEGORIES.has(category.toLowerCase());
+}
+
+/**
+ * Infer meal type from time of day.
+ */
+function inferMealTypeFromTimeSlot(
+  timeSlot: "morning" | "afternoon" | "evening"
+): "breakfast" | "lunch" | "dinner" {
+  switch (timeSlot) {
+    case "morning":
+      return "breakfast";
+    case "afternoon":
+      return "lunch";
+    case "evening":
+      return "dinner";
+  }
+}
 
 const TIME_OF_DAY_SEQUENCE = ["morning", "afternoon", "evening"] as const;
 const DEFAULT_TOTAL_DAYS = 5;
@@ -743,7 +771,14 @@ export async function generateItinerary(
               ].filter(f => f.reasoning) : undefined,
             } : undefined;
 
-            dayActivities.push({
+            // Build activity object with optional meal info for food locations
+            const isFood = isFoodCategory(location.category);
+            const mealType = isFood ? inferMealTypeFromTimeSlot(timeSlot) : undefined;
+            const mealNote = mealType
+              ? `${mealType.charAt(0).toUpperCase() + mealType.slice(1)} spot`
+              : undefined;
+
+            const activity: Extract<ItineraryActivity, { kind: "place" }> = {
               kind: "place",
               id: `${location.id}-${dayIndex + 1}-${timeSlot}-${activityIndex + 1}`,
               title: location.name,
@@ -754,7 +789,11 @@ export async function generateItinerary(
               neighborhood: location.neighborhood ?? location.city,
               tags: buildTags(interest, location.category),
               recommendationReason,
-            });
+              ...(mealType && { mealType }),
+              ...(mealNote && { notes: mealNote }),
+            };
+
+            dayActivities.push(activity);
             usedLocations.add(location.id);
             usedLocationNames.add(normalizedName);
             remainingTime -= timeNeeded;
