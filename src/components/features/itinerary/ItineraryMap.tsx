@@ -250,6 +250,7 @@ export function ItineraryMap({
         color: "#fff",
       });
       markerEl.setAttribute("data-activity-id", point.id);
+      markerEl.textContent = String(activityPoints.indexOf(point) + 1);
 
       const marker = new mapboxModule.Marker({ element: markerEl })
         .setLngLat([point.coordinates.lng, point.coordinates.lat])

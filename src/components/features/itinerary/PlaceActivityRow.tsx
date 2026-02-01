@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { forwardRef, memo, useMemo, useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
@@ -27,6 +28,7 @@ import { recordPreferenceEvent } from "@/lib/learning/preferenceStorage";
 import { generateActivityTips, type ActivityTip } from "@/lib/tips/tipGenerator";
 import { ActivityConflictIndicator } from "./ConflictBadge";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
+import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -352,6 +354,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       return () => {
         abortController.abort();
       };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable IDs to prevent excessive re-fetching
     }, [activityId, activityStartTime, placeId, isEntryPoint, activity.availabilityStatus, activity.availabilityMessage]);
 
     // Generate tips when location is available
@@ -439,6 +442,29 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     const hasManualTime = Boolean(activity.manualStartTime);
     const displayArrivalTime = activity.manualStartTime ?? schedule?.arrivalTime;
 
+    // Get color scheme based on activity type
+    const colorScheme = useMemo(() => getActivityColorScheme(activity), [activity]);
+
+    // Get the activity image
+    const activityImage = useMemo(() => {
+      // Try location's primary photo first
+      const primaryPhoto = (placeLocation as Location & { primaryPhotoUrl?: string })?.primaryPhotoUrl;
+      if (primaryPhoto) return primaryPhoto;
+      // Then fall back to location image
+      if (placeLocation?.image) return placeLocation.image;
+      // Finally use category fallback
+      const category = placeLocation?.category ?? activity.tags?.[0] ?? "culture";
+      return FALLBACK_IMAGES[category] ?? DEFAULT_FALLBACK_IMAGE;
+    }, [placeLocation, activity.tags]);
+
+    const [imageLoaded, setImageLoaded] = useState(false);
+    const [imageError, setImageError] = useState(false);
+
+    // Check if this is an entry point for display purposes
+    const isStartEntryPoint = activity.locationId?.startsWith("__entry_point_start__");
+    const isEndEntryPoint = activity.locationId?.startsWith("__entry_point_end__");
+    const displayLabel = isStartEntryPoint ? "S" : isEndEntryPoint ? "E" : placeNumber;
+
     return (
       <div
         ref={ref}
@@ -458,66 +484,156 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         onFocus={handleHover}
         data-activity-id={activity.id}
       >
-        <div
-          className={`group relative overflow-hidden rounded-2xl border bg-background transition-all duration-200 ${
-            isDragging
-              ? "border-sage/30 ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
-              : isSelected
-                ? "border-brand-primary ring-2 ring-brand-primary shadow-lg"
-                : "border-border shadow-sm hover:border-sage/20 hover:shadow-lg hover:-translate-y-0.5"
-          }`}
-        >
-          <div className="p-3 space-y-1.5">
-
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <div className="flex items-start gap-2 flex-1 min-w-0">
-                {!hideDragHandle && (
-                  <DragHandle
-                    variant="place"
-                    label={dragHandleLabel}
-                    isDragging={isDragging}
-                    attributes={attributes}
-                    listeners={listeners}
-                  />
+        <div className="flex gap-3">
+          {/* Left: Time Column */}
+          <div className="relative flex w-16 shrink-0 flex-col items-center pt-2">
+            {displayArrivalTime ? (
+              <>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setShowTimePicker(!showTimePicker);
+                    setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
+                  }}
+                  className={`text-sm font-bold transition hover:text-brand-primary ${
+                    hasManualTime ? "text-sage" : "text-charcoal"
+                  }`}
+                  title={hasManualTime ? "Manual time - click to edit" : "Click to set time"}
+                >
+                  {displayArrivalTime}
+                </button>
+                {schedule?.departureTime && (
+                  <>
+                    <div className="my-0.5 h-4 w-px bg-border/50" />
+                    <span className="text-[11px] text-stone">
+                      {schedule.departureTime}
+                    </span>
+                  </>
                 )}
-                {placeNumber !== undefined ? (() => {
-                  // Check if this is a start or end entry point
-                  const isStartEntryPoint = activity.locationId?.startsWith("__entry_point_start__");
-                  const isEndEntryPoint = activity.locationId?.startsWith("__entry_point_end__");
+                {hasManualTime && (
+                  <span className="mt-0.5 text-[9px] font-medium uppercase text-sage">manual</span>
+                )}
+              </>
+            ) : (
+              <span className="text-[11px] text-stone capitalize">{activity.timeOfDay || "—"}</span>
+            )}
+            {/* Time picker popover */}
+            {showTimePicker && (
+              <div
+                className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-3 shadow-lg"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <p className="mb-2 text-xs font-medium text-warm-gray">Set time</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="time"
+                    value={tempManualTime}
+                    onChange={(e) => setTempManualTime(e.target.value)}
+                    className="rounded border border-border px-2 py-1 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSetManualTime}
+                    className="rounded bg-brand-primary px-2 py-1 text-xs font-medium text-white hover:bg-brand-primary/90"
+                  >
+                    Set
+                  </button>
+                </div>
+                {hasManualTime && (
+                  <button
+                    type="button"
+                    onClick={handleClearManualTime}
+                    className="mt-2 text-xs text-stone hover:text-error"
+                  >
+                    Reset to auto
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
-                  // Determine display label and color
-                  const displayLabel = isStartEntryPoint ? "S" : isEndEntryPoint ? "E" : placeNumber;
-                  const bgColor = isStartEntryPoint
-                    ? "bg-emerald-500"
-                    : isEndEntryPoint
-                      ? "bg-rose-500"
-                      : "bg-indigo-600";
+          {/* Right: Main Card */}
+          <div
+            className={`group relative flex-1 overflow-hidden rounded-2xl border-l-4 ${colorScheme.border} ${colorScheme.background} transition-all duration-200 ${
+              isDragging
+                ? "ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
+                : isSelected
+                  ? "ring-2 ring-brand-primary shadow-lg"
+                  : "shadow-sm hover:shadow-lg hover:-translate-y-0.5"
+            }`}
+          >
+            {/* Large Image Section - 16:9 aspect ratio */}
+            <div className="relative aspect-video w-full overflow-hidden">
+              {!imageLoaded && !imageError && (
+                <div className="absolute inset-0 animate-pulse bg-stone-200" />
+              )}
+              <Image
+                src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
+                alt={activity.title}
+                fill
+                sizes="(max-width: 640px) 100vw, 600px"
+                className={`object-cover transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                onLoad={() => setImageLoaded(true)}
+                onError={() => {
+                  setImageError(true);
+                  setImageLoaded(true);
+                }}
+              />
+              {/* Gradient overlay for better text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
-                  return (
+              {/* Top overlay: Drag handle left, badges right */}
+              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
+                {/* Drag Handle */}
+                {!hideDragHandle && (
+                  <div className="rounded-lg bg-white/90 p-1 shadow-sm backdrop-blur-sm">
+                    <DragHandle
+                      variant="place"
+                      label={dragHandleLabel}
+                      isDragging={isDragging}
+                      attributes={attributes}
+                      listeners={listeners}
+                    />
+                  </div>
+                )}
+                {hideDragHandle && <div />}
+
+                {/* Right badges: Number */}
+                <div className="flex items-center gap-1.5">
+                  {/* Number badge */}
+                  {placeNumber !== undefined && (
                     <div
-                      className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white shadow-sm ring-2 ring-background ${bgColor}`}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shadow-md ${colorScheme.badge} ${colorScheme.badgeText}`}
                       title={isStartEntryPoint ? "Starting point" : isEndEntryPoint ? "Ending point" : `Stop ${placeNumber}`}
                     >
                       {displayLabel}
                     </div>
-                  );
-                })() : null}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-charcoal">
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Info Section */}
+            <div className="p-3 sm:p-4">
+              {/* Title Row */}
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-base font-semibold leading-tight text-charcoal sm:text-lg">
                     {placeLocation.name}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <p className="text-xs text-foreground-secondary">
+                  </h3>
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs text-foreground-secondary">
                       {placeLocation.city}
-                      {placeLocation.city && placeLocation.region ? ", " : ""}
-                      {placeLocation.region}
-                    </p>
+                      {placeLocation.city && placeLocation.region && placeLocation.city !== placeLocation.region ? `, ${placeLocation.region}` : ""}
+                    </span>
                     {rating ? (
-                      <div className="flex shrink-0 items-center gap-1 rounded-full bg-background/90 px-2 py-0.5 text-[11px] font-semibold text-charcoal shadow-sm ring-1 ring-border">
+                      <div className="flex items-center gap-0.5 text-[11px] font-medium text-charcoal">
                         <StarIcon />
                         <span>{rating.toFixed(1)}</span>
                         {reviewCount ? (
-                          <span className="text-[10px] font-normal text-stone">
+                          <span className="font-normal text-stone">
                             ({numberFormatter.format(reviewCount)})
                           </span>
                         ) : null}
@@ -526,73 +642,194 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   </div>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center justify-end gap-2">
-                {/* Feedback buttons */}
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    className="rounded-full bg-background/95 p-1.5 text-foreground-secondary shadow-sm ring-1 ring-border transition hover:bg-success/10 hover:text-success active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      handleFeedback("favorite");
-                    }}
-                    aria-label={`Like ${activity.title}`}
-                    title="Like this activity"
-                  >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                    </svg>
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-full bg-background/95 p-1.5 text-foreground-secondary shadow-sm ring-1 ring-border transition hover:bg-error/10 hover:text-error active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      handleFeedback("skip");
-                    }}
-                    aria-label={`Skip ${activity.title}`}
-                    title="Skip this activity"
-                  >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
+
+              {/* Tags Row */}
+              <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                {placeLocation.category ? (
+                  <span className="inline-block rounded-full bg-surface px-2 py-0.5 text-[11px] font-medium text-warm-gray capitalize">
+                    {placeLocation.category}
+                  </span>
+                ) : null}
+                {durationLabel ? (
+                  <span className="inline-block rounded-full bg-sage/10 px-2 py-0.5 text-[11px] font-semibold text-sage">
+                    {durationLabel.replace("~", "")}
+                  </span>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleMoreInfo}
+                  className="inline-flex items-center gap-1 rounded-full border border-sage/30 bg-white px-2 py-0.5 text-[11px] font-semibold text-sage shadow-sm transition hover:bg-sage/10"
+                >
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  More info
+                </button>
+              </div>
+
+              {/* Status Badges */}
+              {(availabilityStatus || (schedule?.operatingWindow?.status === "outside") || isOutOfHours || waitLabel || (conflicts && conflicts.length > 0)) && (
+                <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                  {availabilityStatus && availabilityStatus.status === "closed" && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
+                      Closed
+                    </span>
+                  )}
+                  {availabilityStatus && availabilityStatus.status === "busy" && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
+                      Busy
+                    </span>
+                  )}
+                  {(availabilityStatus?.status === "requires_reservation" || availabilityStatus?.reservationRequired) && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
+                      Reservation recommended
+                    </span>
+                  )}
+                  {(schedule?.operatingWindow?.status === "outside" || isOutOfHours) && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
+                      Outside hours
+                    </span>
+                  )}
+                  {waitLabel && (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
+                      {waitLabel}
+                    </span>
+                  )}
+                  {conflicts && conflicts.length > 0 && (
+                    <ActivityConflictIndicator conflicts={conflicts} />
+                  )}
                 </div>
-                {/* Quick Actions - Replace and Copy */}
+              )}
+
+              {/* Tips Section (collapsible) */}
+              {tips.length > 0 && (
+                <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
+                  <p className="mb-1.5 text-xs font-semibold text-charcoal">Tips</p>
+                  <div className="space-y-1">
+                    {tips.slice(0, 2).map((tip, index) => (
+                      <div key={index} className="flex items-start gap-1.5 text-xs text-foreground-secondary">
+                        <span className="shrink-0">{tip.icon ?? "💡"}</span>
+                        <span>
+                          <span className="font-medium">{tip.title}:</span> {tip.message}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Description */}
+              {summary && (
+                <p className="mt-3 text-xs leading-relaxed text-warm-gray line-clamp-2">{summary}</p>
+              )}
+
+              {/* Why this recommendation */}
+              {activity.recommendationReason && (
+                <div className="mt-3">
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setReasoningOpen((prev) => !prev);
+                    }}
+                    className="flex w-full items-center justify-between text-left text-xs font-medium text-sage hover:text-sage/80"
+                  >
+                    <span>Why this place?</span>
+                    <svg className={`h-4 w-4 transition-transform ${reasoningOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {reasoningOpen && (
+                    <div className="mt-2 rounded-lg bg-surface/50 p-2 text-xs text-warm-gray">
+                      <p className="font-medium">{activity.recommendationReason.primaryReason}</p>
+                      {activity.recommendationReason.factors && activity.recommendationReason.factors.length > 0 && (
+                        <ul className="mt-1 space-y-0.5 pl-3">
+                          {activity.recommendationReason.factors.map((factor, idx) => (
+                            <li key={idx} className="text-[11px] list-disc">
+                              {factor.factor}
+                              {factor.score !== undefined && (
+                                <span className="text-stone"> ({factor.score})</span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Actions Footer */}
+            <div className="flex items-center justify-between border-t border-border/30 bg-surface/30 px-3 py-2 sm:px-4">
+              {/* Left: Feedback & Notes */}
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    handleFeedback("skip");
+                  }}
+                  title="Not interested"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="hidden sm:inline">Skip</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    handleToggleNotes();
+                  }}
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                  <span className="hidden sm:inline">{notesOpen ? "Hide note" : "Add note"}</span>
+                </button>
+              </div>
+
+              {/* Right: Edit Actions */}
+              <div className="flex items-center gap-1">
                 {tripId && dayId && onReplace && (
                   <button
                     type="button"
-                    className="rounded-lg p-1.5 text-stone hover:bg-sage/10 hover:text-sage transition active:scale-[0.97]"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
                       onReplace();
                     }}
-                    aria-label="Find alternatives"
                     title="Find alternatives"
                   >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                     </svg>
+                    <span className="hidden sm:inline">Replace</span>
                   </button>
                 )}
                 {tripId && dayId && onCopy && (
                   <button
                     type="button"
-                    className="rounded-lg p-1.5 text-stone hover:bg-sage/10 hover:text-sage transition active:scale-[0.97]"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
                       onCopy();
                     }}
-                    aria-label="Duplicate"
                     title="Duplicate"
                   >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
+                    <span className="hidden sm:inline">Copy</span>
                   </button>
                 )}
                 {tripId && dayId && (onReplace || onCopy) ? (
@@ -607,7 +844,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 ) : (
                   <button
                     type="button"
-                    className="rounded-full bg-background/95 px-2 py-0.5 text-[11px] font-semibold text-error shadow-sm ring-1 ring-error/30 transition hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
+                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-error transition hover:bg-error/10"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -615,229 +852,32 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     }}
                     aria-label={`Delete ${activity.title}`}
                   >
-                    Delete
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <span className="hidden sm:inline">Delete</span>
                   </button>
                 )}
               </div>
             </div>
 
-            {schedule || hasManualTime ? (
-              <div className="flex flex-wrap items-center gap-1.5">
-                {/* Arrival time with manual edit option */}
-                <div className="relative inline-flex items-center">
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      setShowTimePicker(!showTimePicker);
-                      setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
-                    }}
-                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold transition hover:ring-2 hover:ring-sage/30 ${
-                      hasManualTime
-                        ? "bg-sage/10 text-sage"
-                        : "bg-success/10 text-success"
-                    }`}
-                    title={hasManualTime ? "Manual time set - click to edit" : "Click to set manual time"}
-                  >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Arrive {displayArrivalTime}
-                    {hasManualTime && <span className="ml-1 text-[9px] uppercase">Manual</span>}
-                  </button>
-
-                  {/* Time picker popover */}
-                  {showTimePicker && (
-                    <div
-                      className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-3 shadow-lg"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <p className="mb-2 text-xs font-medium text-warm-gray">Set arrival time</p>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="time"
-                          value={tempManualTime}
-                          onChange={(e) => setTempManualTime(e.target.value)}
-                          className="rounded border border-border px-2 py-1 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleSetManualTime}
-                          className="rounded bg-brand-primary px-2 py-1 text-xs font-medium text-white hover:bg-brand-primary/90"
-                        >
-                          Set
-                        </button>
-                      </div>
-                      {hasManualTime && (
-                        <button
-                          type="button"
-                          onClick={handleClearManualTime}
-                          className="mt-2 text-xs text-stone hover:text-error"
-                        >
-                          Reset to auto
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                <span className="inline-flex items-center gap-1 rounded-full bg-sage/10 px-2 py-0.5 text-[11px] font-semibold text-sage">
-                  Depart {schedule?.departureTime ?? "—"}
-                </span>
-                {waitLabel ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-                    {waitLabel}
-                  </span>
-                ) : null}
-                {schedule?.operatingWindow?.status === "outside" || isOutOfHours ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
-                    Outside hours
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
-            {schedule?.operatingWindow?.note ? (
-              <p className="text-[11px] text-stone">{schedule.operatingWindow.note}</p>
-            ) : null}
-            {availabilityStatus && availabilityStatus.status !== "open" && availabilityStatus.status !== "unknown" ? (
-              <div className="flex flex-wrap items-center gap-1.5">
-                {availabilityStatus.status === "closed" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
-                    ⚠️ Closed
-                  </span>
-                ) : availabilityStatus.status === "busy" ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-                    ⚠️ Busy
-                  </span>
-                ) : availabilityStatus.status === "requires_reservation" || availabilityStatus.reservationRequired ? (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-                    📞 Reservation recommended
-                  </span>
-                ) : null}
-                {availabilityStatus.message ? (
-                  <p className="text-[11px] text-foreground-secondary">{availabilityStatus.message}</p>
-                ) : null}
-              </div>
-            ) : null}
-
-            {/* Conflict Indicators */}
-            {conflicts && conflicts.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5">
-                <ActivityConflictIndicator conflicts={conflicts} />
-              </div>
-            )}
-
-            {tips.length > 0 ? (
-              <div className="space-y-1.5 rounded-lg bg-sage/5 p-2">
-                <p className="text-xs font-semibold text-charcoal">💡 Tips:</p>
-                {tips.map((tip, index) => (
-                  <div key={index} className="flex items-start gap-2 text-xs text-foreground-secondary">
-                    <span className="mt-0.5">{tip.icon ?? "•"}</span>
-                    <div className="flex-1">
-                      <span className="font-medium">{tip.title}:</span>{" "}
-                      <span>{tip.message}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : null}
-
-            {summary ? (
-              <p className="text-xs leading-relaxed text-warm-gray line-clamp-2">{summary}</p>
-            ) : null}
-            {activity.recommendationReason ? (
-              <div className="border-t border-border/50 pt-2 mt-2">
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setReasoningOpen((prev) => !prev);
-                  }}
-                  className="flex w-full items-center justify-between text-left text-xs font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-                >
-                  <span>Why this recommendation?</span>
-                  <span className="text-stone">{reasoningOpen ? "−" : "+"}</span>
-                </button>
-                {reasoningOpen ? (
-                  <div className="mt-2 space-y-2 text-xs text-warm-gray">
-                    <p className="font-medium">{activity.recommendationReason.primaryReason}</p>
-                    {activity.recommendationReason.factors && activity.recommendationReason.factors.length > 0 ? (
-                      <div className="space-y-1">
-                        <p className="font-semibold text-charcoal">Scoring breakdown:</p>
-                        <ul className="space-y-1 pl-2">
-                          {activity.recommendationReason.factors.map((factor, idx) => (
-                            <li key={idx} className="flex items-start gap-2">
-                              <span className="text-stone">•</span>
-                              <span>
-                                <span className="font-medium">{factor.factor}</span>
-                                {factor.score !== undefined && (
-                                  <span className="text-stone"> ({factor.score} pts)</span>
-                                )}
-                                {factor.reasoning && (
-                                  <span className="text-foreground-secondary">: {factor.reasoning}</span>
-                                )}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
-              </div>
-            ) : null}
-            <div className="flex flex-wrap items-center gap-1.5">
-              {placeLocation.category ? (
-                <span className="inline-block rounded-full bg-surface px-2 py-0.5 text-[11px] text-warm-gray">
-                  {placeLocation.category}
-                </span>
-              ) : null}
-              {durationLabel ? (
-                <span className="inline-block rounded-full bg-sage/10 px-2 py-0.5 text-[11px] font-semibold text-sage">
-                  Est. {durationLabel.replace("~", "")}
-                </span>
-              ) : null}
-              <button
-                type="button"
-                onClick={handleMoreInfo}
-                className="inline-flex items-center rounded-full border border-sage/30 px-2 py-0.5 text-[11px] font-semibold text-sage shadow-sm transition hover:bg-sage/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-              >
-                More info
-              </button>
-            </div>
-          </div>
-          <div className="border-t border-border/50 bg-background p-3">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-xs font-semibold text-charcoal">Notes</p>
-              <button
-                type="button"
-                onClick={(event) => {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  handleToggleNotes();
-                }}
-                className="text-xs font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-              >
-                {notesOpen ? "Hide note" : "Add note"}
-              </button>
-            </div>
-            {notesOpen ? (
-              <div className="mt-2 space-y-1.5">
-                <label htmlFor={notesId} className="text-xs font-medium text-warm-gray">
+            {/* Notes Section (collapsible) */}
+            {notesOpen && (
+              <div className="border-t border-border/30 bg-background/50 p-3">
+                <label htmlFor={notesId} className="sr-only">
                   {noteLabel}
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-lg border border-border px-2.5 py-1.5 text-xs text-warm-gray shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                  className="w-full rounded-lg border border-border bg-white px-2.5 py-1.5 text-xs text-warm-gray shadow-sm placeholder:text-stone/50 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                   rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}
-                  placeholder="Add helpful details, reminders, or context for this activity."
+                  placeholder="Add helpful details, reminders, or context..."
+                  onClick={(e) => e.stopPropagation()}
                 />
               </div>
-            ) : null}
+            )}
           </div>
         </div>
         <LocationDetailsModal

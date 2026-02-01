@@ -5,6 +5,7 @@ import type { ItineraryTravelSegment } from "@/types/itinerary";
 import { TravelModeSelector } from "./TravelModeSelector";
 import type { Coordinate } from "@/lib/routing/types";
 import { Modal } from "@/components/ui/Modal";
+import { getTravelColorScheme } from "@/lib/itinerary/activityColors";
 
 type TravelSegmentProps = {
   segment: ItineraryTravelSegment;
@@ -78,11 +79,16 @@ export function TravelSegment({
 
   const isLoading = isRecalculating || segment.durationMinutes === 0;
   const showEstimatedBadge = segment.isEstimated && !isLoading;
+  const travelColors = getTravelColorScheme();
 
   return (
     <>
-      <div className="flex items-center justify-center py-1">
-        <div className="flex items-center gap-1.5 text-sm text-foreground-secondary">
+      <div className="flex gap-3">
+        {/* Spacer to match time column width */}
+        <div className="w-14 shrink-0 sm:w-16" />
+        {/* Travel segment content */}
+        <div className={`flex flex-1 items-center justify-center py-2 px-3 rounded-lg border-l-4 ${travelColors.border} ${travelColors.background}`}>
+          <div className="flex items-center gap-1.5 text-sm text-foreground-secondary">
           {isLoading && (
             <span className="flex items-center gap-1 text-xs text-stone">
               <svg
@@ -155,6 +161,7 @@ export function TravelSegment({
               </button>
             </>
           )}
+          </div>
         </div>
       </div>
       {hasDirections && (

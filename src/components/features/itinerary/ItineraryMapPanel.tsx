@@ -9,6 +9,7 @@ import { ensureLeafletResources, type LeafletMap, type LeafletMarker, type Leafl
 import { ItineraryMap } from "./ItineraryMap";
 import { mapboxService } from "@/lib/mapbox/mapService";
 import { featureFlags } from "@/lib/env/featureFlags";
+import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
 
 const DEFAULT_CENTER = { lat: 35.0116, lng: 135.7681 }; // Kyoto station area
 const DEFAULT_ZOOM = 12;
@@ -24,6 +25,9 @@ type MapPoint = {
   timeOfDay: ItineraryActivity["timeOfDay"];
   tags?: string[];
   placeNumber: number;
+  category?: string;
+  mealType?: "breakfast" | "lunch" | "dinner" | "snack";
+  isEntryPoint?: "start" | "end";
 };
 
 type ItineraryMapPanelProps = {
@@ -34,6 +38,9 @@ type ItineraryMapPanelProps = {
   isPlanning?: boolean;
   startPoint?: { name: string; coordinates: { lat: number; lng: number } };
   endPoint?: { name: string; coordinates: { lat: number; lng: number } };
+  tripStartDate?: string;
+  /** Day label like "Day 1 (Kobe)" to extract city from */
+  dayLabel?: string;
 };
 
 function isPlaceActivity(
@@ -50,6 +57,8 @@ export const ItineraryMapPanel = ({
   isPlanning = false,
   startPoint,
   endPoint,
+  tripStartDate,
+  dayLabel,
 }: ItineraryMapPanelProps) => {
   const useMapbox = featureFlags.enableMapbox && mapboxService.isEnabled();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -84,6 +93,7 @@ export const ItineraryMapPanel = ({
         tags: [],
         timeOfDay: "morning",
         placeNumber: placeCounter++,
+        isEntryPoint: "start",
       });
     }
 
@@ -124,6 +134,8 @@ export const ItineraryMapPanel = ({
         tags: activity.tags,
         timeOfDay: activity.timeOfDay,
         placeNumber: placeCounter++,
+        category: resolvedLocation?.category ?? activity.tags?.[0],
+        mealType: activity.mealType,
       });
     });
 
@@ -137,6 +149,7 @@ export const ItineraryMapPanel = ({
         tags: [],
         timeOfDay: "evening",
         placeNumber: placeCounter++,
+        isEntryPoint: "end",
       });
     }
 
@@ -325,15 +338,27 @@ export const ItineraryMapPanel = ({
 
         points.forEach((point) => {
           // Create custom numbered marker icon
-          const isStartPoint = point.id === "start-point";
-          const isEndPoint = point.id === "end-point";
+          const isStartPoint = point.isEntryPoint === "start";
+          const isEndPoint = point.isEntryPoint === "end";
 
-          // Determine color: green for start, rose for end, indigo for regular
-          const backgroundColor = isStartPoint
-            ? "#10B981"
-            : isEndPoint
-              ? "#F43F5E"
-              : "#4F46E5";
+          // Determine color based on activity type
+          let backgroundColor: string;
+          if (isStartPoint) {
+            backgroundColor = "#10B981"; // emerald-500
+          } else if (isEndPoint) {
+            backgroundColor = "#F43F5E"; // rose-500
+          } else if (point.mealType) {
+            // Use meal type color
+            const mealColors: Record<string, string> = {
+              breakfast: "#F59E0B", // amber-500
+              lunch: "#F97316", // orange-500
+              dinner: "#A855F7", // purple-500
+              snack: "#EAB308", // yellow-500
+            };
+            backgroundColor = mealColors[point.mealType] ?? getCategoryHexColor(point.category);
+          } else {
+            backgroundColor = getCategoryHexColor(point.category);
+          }
 
           // Show "S" for start, "E" for end, otherwise show the number
           const displayLabel = isStartPoint ? "S" : isEndPoint ? "E" : point.placeNumber;
@@ -343,33 +368,46 @@ export const ItineraryMapPanel = ({
               display: flex;
               align-items: center;
               justify-content: center;
-              width: 28px;
-              height: 28px;
+              width: 32px;
+              height: 32px;
               background-color: ${backgroundColor};
-              border: 2px solid white;
+              border: 3px solid white;
               border-radius: 50%;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+              box-shadow: 0 2px 6px rgba(0,0,0,0.35);
               color: white;
-              font-weight: 600;
-              font-size: 12px;
+              font-weight: 700;
+              font-size: 13px;
               line-height: 1;
+              cursor: pointer;
+              transition: transform 0.15s ease;
             ">${displayLabel}</div>
           `;
-          
+
           const customIcon = Leaflet.divIcon({
             html: iconHtml,
             className: "koku-numbered-marker",
-            iconSize: [28, 28],
-            iconAnchor: [14, 14],
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
           });
-          
+
           const marker = Leaflet.marker([point.lat, point.lng], { icon: customIcon });
           const popupLabel = isStartPoint
-            ? `<strong>Start: ${point.title}</strong>`
+            ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#10B981;">Start</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
             : isEndPoint
-              ? `<strong>End: ${point.title}</strong>`
-              : `<strong>${point.placeNumber}. ${point.title}</strong>`;
-          marker.bindPopup(popupLabel);
+              ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#F43F5E;">End</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
+              : `<div style="text-align:center;padding:4px 8px;"><strong style="color:${backgroundColor};">${point.placeNumber}. ${point.title}</strong></div>`;
+          marker.bindPopup(popupLabel, { closeButton: false, offset: [0, -8] });
+
+          // Show popup on hover
+          marker.on("mouseover", () => {
+            marker.openPopup();
+          });
+          marker.on("mouseout", () => {
+            // Only close if not selected
+            if (selectedActivityId !== point.id) {
+              marker.closePopup();
+            }
+          });
           marker.on("click", () => {
             // Only allow selecting activities, not start/end points
             if (!isStartPoint && !isEndPoint) {
@@ -427,7 +465,7 @@ export const ItineraryMapPanel = ({
     return () => {
       cancelled = true;
     };
-  }, [points, travelSegments, onSelectActivity, useMapbox]);
+  }, [points, travelSegments, onSelectActivity, useMapbox, selectedActivityId]);
 
   useEffect(() => {
     if (!mapReady || !mapRef.current) {
@@ -475,11 +513,44 @@ export const ItineraryMapPanel = ({
     };
   }, []);
 
+  // Format the day's date and extract city from label
+  const dayDateLabel = useMemo(() => {
+    let dateStr = `Day ${day + 1}`;
+
+    if (tripStartDate) {
+      try {
+        const [year, month, dayNum] = tripStartDate.split("-").map(Number);
+        if (year && month && dayNum) {
+          const date = new Date(year, month - 1, dayNum);
+          date.setDate(date.getDate() + day);
+
+          const monthDayFormatter = new Intl.DateTimeFormat(undefined, {
+            month: "short",
+            day: "numeric",
+          });
+          const weekdayFormatter = new Intl.DateTimeFormat(undefined, {
+            weekday: "short",
+          });
+
+          dateStr = `${monthDayFormatter.format(date)}, ${weekdayFormatter.format(date)}`;
+        }
+      } catch {
+        // Keep default
+      }
+    }
+
+    // Extract city from dayLabel (format: "Day X (City)")
+    const cityMatch = dayLabel?.match(/\(([^)]+)\)/);
+    const city = cityMatch ? cityMatch[1] : null;
+
+    return city ? `${dateStr} · ${city}` : dateStr;
+  }, [tripStartDate, day, dayLabel]);
+
   return (
     <>
       <aside className="flex h-full flex-col p-4">
       <header className="mb-4">
-        <h2 className="text-lg font-semibold text-charcoal">Day {day + 1} map</h2>
+        <h2 className="text-lg font-semibold text-charcoal">{dayDateLabel}</h2>
         <p className="text-sm text-stone">
           Visualize the stops planned for this day and preview travel flow.
         </p>

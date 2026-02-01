@@ -565,49 +565,54 @@ export const ItineraryShell = ({
   }, []);
 
   return (
-    <section className="mx-auto min-h-[calc(100vh-120px)] max-w-screen-2xl p-3 sm:p-4 md:p-6 md:min-h-[calc(100vh-140px)]">
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(380px,40%)_1fr] xl:gap-6">
-        {/* Left column: Header + Map panel */}
-        <div className="order-2 flex flex-col gap-4 xl:order-1">
-          {/* Header section - moved here from timeline panel */}
-          <div className="rounded-2xl border border-border bg-background p-3 shadow-sm sm:p-4">
-            <div className="space-y-1">
+    <section className="mx-auto min-h-[calc(100vh-64px)] max-w-screen-2xl">
+      <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
+        {/* Left: Cards Panel (50%) */}
+        <div className="flex flex-col lg:w-1/2">
+          {/* Header */}
+          <div className="border-b border-border bg-background p-3 lg:rounded-t-2xl lg:border lg:border-b-0">
+            <div className="flex items-center justify-between">
               <h1
                 ref={finalHeadingRef}
                 tabIndex={-1}
-                className="text-2xl font-semibold text-charcoal focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary sm:text-3xl"
+                className="text-lg font-semibold text-charcoal focus:outline-none"
               >
                 Your Itinerary
               </h1>
-              {isUsingMock ? (
-                <p className="mt-2 text-sm text-stone sm:mt-3">
-                  Showing mock itinerary for development. Build a trip to see your personalized plan.
-                </p>
-              ) : null}
-              {createdLabel ? (
-                <p className="text-xs text-stone">
-                  Saved {createdLabel}
-                  {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
-                </p>
-              ) : null}
-              {selectedCityNames.length > 0 && (
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs font-medium text-stone">Cities:</span>
-                  {selectedCityNames.map((cityName) => (
-                    <span
-                      key={cityName}
-                      className="inline-flex items-center rounded-full bg-sage/15 px-2.5 py-0.5 text-xs font-medium text-sage"
-                    >
-                      {cityName}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {tripBuilderData && (
-                <TripSummary tripData={tripBuilderData} className="mt-4" />
+              {isUsingMock && (
+                <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                  Mock
+                </span>
               )}
             </div>
-            <div className="mt-4">
+            {createdLabel && (
+              <p className="mt-0.5 text-[11px] text-stone">
+                Saved {createdLabel}
+                {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
+              </p>
+            )}
+
+            {/* Cities chips */}
+            {selectedCityNames.length > 0 && (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {selectedCityNames.map((cityName) => (
+                  <span
+                    key={cityName}
+                    className="inline-flex items-center rounded-full bg-sage/15 px-2 py-0.5 text-[11px] font-medium text-sage"
+                  >
+                    {cityName}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Trip Summary Accordion */}
+            {tripBuilderData && (
+              <TripSummary tripData={tripBuilderData} className="mt-2" defaultCollapsed />
+            )}
+
+            {/* Day Selector Dropdown */}
+            <div className="mt-3">
               <DaySelector
                 totalDays={days.length}
                 selected={safeSelectedDay}
@@ -617,32 +622,21 @@ export const ItineraryShell = ({
               />
             </div>
           </div>
-          {/* Map panel */}
-          <div className="sticky h-[400px] rounded-2xl border border-border bg-background shadow-sm sm:h-[500px] xl:h-[calc(100vh-280px)] xl:min-h-[400px]" style={{ top: 'var(--sticky-offset, calc(80px + 10px))' }}>
-            <ItineraryMapPanel
-              day={safeSelectedDay}
-              activities={currentDay?.activities ?? []}
-              selectedActivityId={selectedActivityId}
-              onSelectActivity={handleSelectActivity}
-              isPlanning={isPlanning}
-              startPoint={currentDayEntryPoints?.startPoint}
-              endPoint={currentDayEntryPoints?.endPoint}
-            />
-          </div>
-        </div>
-        {/* Timeline panel */}
-        <div className="order-1 flex flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-sm xl:order-2">
-          <div className="flex-1 overflow-y-auto p-3 pr-2 sm:p-4">
-            {/* What's Next Card for Today */}
+
+          {/* Activities List */}
+          <div className="flex-1 overflow-y-auto border-border bg-background p-3 lg:rounded-b-2xl lg:border lg:border-t-0">
+            {/* What's Next Card */}
             {currentDay && tripStartDate && (
               <WhatsNextCard
                 day={currentDay}
                 tripStartDate={tripStartDate}
                 dayIndex={safeSelectedDay}
                 onActivityClick={handleSelectActivity}
-                className="mb-4"
+                className="mb-3"
               />
             )}
+
+            {/* Timeline */}
             {currentDay ? (
               <ItineraryTimeline
                 day={currentDay}
@@ -656,8 +650,6 @@ export const ItineraryShell = ({
                 onReorder={handleReorder}
                 onReplace={tripId && !isUsingMock ? handleReplace : undefined}
                 onCopy={tripId && !isUsingMock ? handleCopy : undefined}
-                startPoint={currentDayEntryPoints?.startPoint}
-                endPoint={currentDayEntryPoints?.endPoint}
                 tripBuilderData={tripBuilderData}
                 suggestions={currentDaySuggestions}
                 onAcceptSuggestion={onAcceptSuggestion}
@@ -671,31 +663,48 @@ export const ItineraryShell = ({
                 We could not find this itinerary day. Please select another.
               </p>
             )}
-            {isPlanning ? (
-              <div className="mt-4 rounded-xl border border-dashed border-sage/30 bg-sage/10 p-3 text-sm text-sage sm:p-4">
-                Updating travel times and schedule…
+
+            {/* Planning status */}
+            {isPlanning && (
+              <div className="mt-3 rounded-lg border border-dashed border-sage/30 bg-sage/10 p-2.5 text-xs text-sage">
+                Updating travel times...
               </div>
-            ) : null}
-            {planningError ? (
-              <div className="mt-4 rounded-xl border border-error/30 bg-error/10 p-3 text-sm text-error sm:p-4">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <p className="font-semibold">Planning error</p>
-                    <p className="text-xs text-error/80">{planningError}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPlanningError(null);
-                      scheduleUserPlanning(model);
-                    }}
-                    className="mt-2 shrink-0 rounded-lg bg-error px-4 py-2 text-xs font-semibold text-white transition hover:bg-error/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error sm:mt-0"
-                  >
-                    Retry
-                  </button>
-                </div>
+            )}
+
+            {/* Planning error */}
+            {planningError && (
+              <div className="mt-3 rounded-lg border border-error/30 bg-error/10 p-2.5 text-xs text-error">
+                <p className="font-medium">Planning error</p>
+                <p className="mt-0.5 text-error/80">{planningError}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPlanningError(null);
+                    scheduleUserPlanning(model);
+                  }}
+                  className="mt-2 w-full rounded-md bg-error px-3 py-1.5 text-xs font-medium text-white transition hover:bg-error/90"
+                >
+                  Retry
+                </button>
               </div>
-            ) : null}
+            )}
+          </div>
+        </div>
+
+        {/* Right: Sticky Map (50%) */}
+        <div className="h-[50vh] lg:sticky lg:top-[80px] lg:h-[calc(100vh-96px)] lg:w-1/2">
+          <div className="h-full lg:rounded-2xl lg:overflow-hidden lg:border lg:border-border">
+            <ItineraryMapPanel
+              day={safeSelectedDay}
+              activities={currentDay?.activities ?? []}
+              selectedActivityId={selectedActivityId}
+              onSelectActivity={handleSelectActivity}
+              isPlanning={isPlanning}
+              startPoint={currentDayEntryPoints?.startPoint}
+              endPoint={currentDayEntryPoints?.endPoint}
+              tripStartDate={tripStartDate}
+              dayLabel={currentDay?.dateLabel}
+            />
           </div>
         </div>
       </div>
@@ -705,9 +714,9 @@ export const ItineraryShell = ({
         const originalActivity = model.days[selectedDay]?.activities.find(
           (a) => a.id === replacementActivityId && a.kind === "place",
         ) as Extract<ItineraryActivity, { kind: "place" }> | undefined;
-        
+
         if (!originalActivity) return null;
-        
+
         return (
           <ActivityReplacementPicker
             isOpen={true}
