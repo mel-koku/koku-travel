@@ -14,8 +14,8 @@ import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
 const DEFAULT_CENTER = { lat: 35.0116, lng: 135.7681 }; // Kyoto station area
 const DEFAULT_ZOOM = 12;
 const SELECTED_MARKER_CLASS = "koku-map-marker-selected";
-const ROUTE_POLYLINE_COLOR = "#6366F1";
-const ROUTE_POLYLINE_HIGHLIGHT_COLOR = "#4338CA";
+const ROUTE_POLYLINE_COLOR = "#8b7355"; // brand-primary
+const ROUTE_POLYLINE_HIGHLIGHT_COLOR = "#607263"; // earthy-sage
 
 type MapPoint = {
   id: string;
@@ -341,23 +341,12 @@ export const ItineraryMapPanel = ({
           const isStartPoint = point.isEntryPoint === "start";
           const isEndPoint = point.isEntryPoint === "end";
 
-          // Determine color based on activity type
+          // Use consistent colors from earthy palette
           let backgroundColor: string;
-          if (isStartPoint) {
-            backgroundColor = "#10B981"; // emerald-500
-          } else if (isEndPoint) {
-            backgroundColor = "#F43F5E"; // rose-500
-          } else if (point.mealType) {
-            // Use meal type color
-            const mealColors: Record<string, string> = {
-              breakfast: "#F59E0B", // amber-500
-              lunch: "#F97316", // orange-500
-              dinner: "#A855F7", // purple-500
-              snack: "#EAB308", // yellow-500
-            };
-            backgroundColor = mealColors[point.mealType] ?? getCategoryHexColor(point.category);
+          if (isStartPoint || isEndPoint) {
+            backgroundColor = "#607263"; // earthy-sage for entry points
           } else {
-            backgroundColor = getCategoryHexColor(point.category);
+            backgroundColor = "#8b7355"; // brand-primary for all activities
           }
 
           // Show "S" for start, "E" for end, otherwise show the number
@@ -392,10 +381,10 @@ export const ItineraryMapPanel = ({
 
           const marker = Leaflet.marker([point.lat, point.lng], { icon: customIcon });
           const popupLabel = isStartPoint
-            ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#10B981;">Start</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
+            ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#607263;">Start</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
             : isEndPoint
-              ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#F43F5E;">End</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
-              : `<div style="text-align:center;padding:4px 8px;"><strong style="color:${backgroundColor};">${point.placeNumber}. ${point.title}</strong></div>`;
+              ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#607263;">End</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
+              : `<div style="text-align:center;padding:4px 8px;"><strong style="color:#8b7355;">${point.placeNumber}. ${point.title}</strong></div>`;
           marker.bindPopup(popupLabel, { closeButton: false, offset: [0, -8] });
 
           // Show popup on hover
@@ -604,7 +593,7 @@ export const ItineraryMapPanel = ({
       <style jsx global>{`
         .leaflet-marker-icon.${SELECTED_MARKER_CLASS},
         .leaflet-marker-shadow.${SELECTED_MARKER_CLASS} {
-          filter: drop-shadow(0 2px 6px rgba(79, 70, 229, 0.45));
+          filter: drop-shadow(0 2px 6px rgba(96, 114, 99, 0.6));
         }
       `}</style>
     </>

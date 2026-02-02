@@ -81,7 +81,7 @@ function UserMenu({
             <span className="flex items-center justify-between gap-2">
               <span>Clear local data</span>
               <svg
-                className="h-[1em] w-[1em] text-amber-500 flex-shrink-0"
+                className="h-[1em] w-[1em] text-semantic-warning flex-shrink-0"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -243,7 +243,7 @@ export default function Header() {
       <>
         <div
           className={cn(
-            "fixed inset-0 z-[9998] bg-black/50 transition-opacity duration-300 ease-out md:hidden",
+            "fixed inset-0 z-60 bg-black/50 transition-opacity duration-300 ease-out md:hidden",
             isMobileMenuOpen ? "opacity-100" : "pointer-events-none opacity-0"
           )}
           onClick={() => setIsMobileMenuOpen(false)}
@@ -251,7 +251,7 @@ export default function Header() {
         />
         <nav
           className={cn(
-            "fixed inset-y-0 right-0 z-[9999] w-full max-w-xs sm:max-w-sm bg-background shadow-xl transition-transform duration-300 ease-out md:hidden overflow-y-auto scroll-smooth",
+            "fixed inset-y-0 right-0 z-70 w-full max-w-xs sm:max-w-sm bg-background shadow-xl transition-transform duration-300 ease-out md:hidden overflow-y-auto scroll-smooth",
             isMobileMenuOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
           )}
           aria-label="Mobile navigation"

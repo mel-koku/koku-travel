@@ -33,39 +33,39 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> = {
   meal: {
-    bg: "bg-orange-50",
-    text: "text-orange-700",
-    badge: "bg-orange-100 text-orange-700",
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
+    badge: "bg-brand-secondary/15 text-brand-secondary",
   },
   transport: {
-    bg: "bg-blue-50",
-    text: "text-blue-700",
-    badge: "bg-blue-100 text-blue-700",
+    bg: "bg-brand-primary/10",
+    text: "text-brand-primary",
+    badge: "bg-brand-primary/15 text-brand-primary",
   },
   experience: {
-    bg: "bg-purple-50",
-    text: "text-purple-700",
-    badge: "bg-purple-100 text-purple-700",
+    bg: "bg-earthy-sage/10",
+    text: "text-earthy-sage",
+    badge: "bg-earthy-sage/15 text-earthy-sage",
   },
   long_gap: {
-    bg: "bg-amber-50",
-    text: "text-amber-700",
-    badge: "bg-amber-100 text-amber-700",
+    bg: "bg-semantic-warning/10",
+    text: "text-semantic-warning",
+    badge: "bg-semantic-warning/15 text-semantic-warning",
   },
   early_end: {
-    bg: "bg-rose-50",
-    text: "text-rose-700",
-    badge: "bg-rose-100 text-rose-700",
+    bg: "bg-semantic-error/10",
+    text: "text-semantic-error",
+    badge: "bg-semantic-error/15 text-semantic-error",
   },
   late_start: {
-    bg: "bg-sky-50",
-    text: "text-sky-700",
-    badge: "bg-sky-100 text-sky-700",
+    bg: "bg-brand-primary/10",
+    text: "text-brand-primary",
+    badge: "bg-brand-primary/15 text-brand-primary",
   },
   category_imbalance: {
-    bg: "bg-emerald-50",
-    text: "text-emerald-700",
-    badge: "bg-emerald-100 text-emerald-700",
+    bg: "bg-earthy-sage/10",
+    text: "text-earthy-sage",
+    badge: "bg-earthy-sage/15 text-earthy-sage",
   },
 };
 

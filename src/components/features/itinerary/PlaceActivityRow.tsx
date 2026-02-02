@@ -453,7 +453,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       <div
         ref={ref}
         style={dragStyles}
-        className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        className="focus-visible:outline-none"
         data-kind="place"
         data-selected={isSelected || undefined}
         tabIndex={0}
@@ -544,9 +544,10 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               isDragging
                 ? "ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
                 : isSelected
-                  ? "ring-2 ring-brand-primary shadow-lg"
+                  ? "shadow-lg"
                   : "shadow-sm hover:shadow-lg hover:-translate-y-0.5"
             }`}
+            style={isSelected && !isDragging ? { outline: "2px solid #607263", outlineOffset: "-2px" } : undefined}
           >
             {/* Large Image Section - 16:9 aspect ratio */}
             <div className="relative aspect-video w-full overflow-hidden">
@@ -586,10 +587,15 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
                 {/* Right badges: Number */}
                 <div className="flex items-center gap-1.5">
-                  {/* Number badge */}
+                  {/* Number badge - sage green when selected */}
                   {placeNumber !== undefined && (
                     <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shadow-md ${colorScheme.badge} ${colorScheme.badgeText}`}
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shadow-md transition-colors ${
+                        isSelected
+                          ? "text-white"
+                          : `${colorScheme.badge} ${colorScheme.badgeText}`
+                      }`}
+                      style={isSelected ? { backgroundColor: "#607263" } : undefined}
                       title={isStartEntryPoint ? "Starting point" : isEndEntryPoint ? "Ending point" : `Stop ${placeNumber}`}
                     >
                       {displayLabel}

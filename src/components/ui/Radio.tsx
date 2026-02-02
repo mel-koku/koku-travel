@@ -32,8 +32,8 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       <label
         htmlFor={inputId}
         className={cn(
-          "group flex min-h-10 cursor-pointer items-start gap-3 rounded-xl border border-transparent px-4 py-3 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2",
-          disabled ? "cursor-not-allowed bg-gray-50 opacity-70" : "hover:bg-gray-50",
+          "group flex min-h-10 cursor-pointer items-start gap-3 rounded-xl border border-transparent px-4 py-3 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-primary focus-within:ring-offset-2",
+          disabled ? "cursor-not-allowed bg-neutral-surface opacity-70" : "hover:bg-neutral-surface",
           containerClassName,
         )}
       >
@@ -49,15 +49,15 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           />
           <span
             aria-hidden="true"
-            className="flex h-5 w-5 items-center justify-center rounded-full border border-gray-300 bg-white transition peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2 peer-disabled:border-gray-200 peer-disabled:bg-gray-100"
+            className="flex h-5 w-5 items-center justify-center rounded-full border border-neutral-border bg-white transition peer-checked:border-brand-primary peer-checked:bg-brand-primary/10 peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-brand-primary peer-focus-visible:ring-offset-2 peer-disabled:border-neutral-border peer-disabled:bg-neutral-surface"
           >
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 opacity-0 transition peer-checked:opacity-100 peer-disabled:bg-gray-400" />
+            <span className="h-2.5 w-2.5 rounded-full bg-brand-primary opacity-0 transition peer-checked:opacity-100 peer-disabled:bg-earthy-stone" />
           </span>
         </span>
         <span className="flex flex-1 flex-col gap-1">
-          <span className="text-sm font-medium text-gray-900">{label}</span>
+          <span className="text-sm font-medium text-earthy-charcoal">{label}</span>
           {description && (
-            <span id={descriptionId} className="text-sm text-gray-500">
+            <span id={descriptionId} className="text-sm text-earthy-stone">
               {description}
             </span>
           )}
@@ -82,8 +82,8 @@ export const RadioGroup = ({
   ...rest
 }: RadioGroupProps) => (
   <fieldset className={cn("space-y-2", className)} {...rest}>
-    {legend && <legend className="mb-2 text-sm font-semibold text-gray-900">{legend}</legend>}
-    {helpText && <p className="mb-2 text-sm text-gray-500">{helpText}</p>}
+    {legend && <legend className="mb-2 text-sm font-semibold text-earthy-charcoal">{legend}</legend>}
+    {helpText && <p className="mb-2 text-sm text-earthy-stone">{helpText}</p>}
     <div className="flex flex-col gap-2">{children}</div>
   </fieldset>
 );

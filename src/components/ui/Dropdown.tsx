@@ -335,7 +335,7 @@ export function Dropdown({
         type="button"
         id={triggerId}
         className={cn(
-          "inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-gray-900 transition hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
+          "inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-earthy-charcoal transition hover:bg-neutral-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
           triggerClassName
         )}
         aria-haspopup="menu"
@@ -393,18 +393,18 @@ export function Dropdown({
                 aria-disabled={disabled}
                 disabled={disabled}
                 className={cn(
-                  "flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm text-gray-800 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2",
-                  activeIndex === index && "bg-indigo-50 text-indigo-700",
+                  "flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm text-earthy-charcoal transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+                  activeIndex === index && "bg-brand-primary/10 text-brand-primary",
                   disabled
                     ? "cursor-not-allowed opacity-50"
-                    : "hover:bg-gray-50 focus:bg-gray-50 focus:text-indigo-700",
+                    : "hover:bg-neutral-surface focus:bg-neutral-surface focus:text-brand-primary",
                 )}
                 onClick={() => selectItem(index)}
               >
-                {icon ? <span className="mt-0.5 text-gray-500">{icon}</span> : null}
+                {icon ? <span className="mt-0.5 text-earthy-stone">{icon}</span> : null}
                 <span className="flex flex-col">
                   <span className="font-medium">{itemLabel}</span>
-                  {description ? <span className="text-xs text-gray-500">{description}</span> : null}
+                  {description ? <span className="text-xs text-earthy-stone">{description}</span> : null}
                 </span>
               </button>
             ))}
