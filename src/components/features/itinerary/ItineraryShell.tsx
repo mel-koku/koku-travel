@@ -107,7 +107,7 @@ export const ItineraryShell = ({
   onSkipSuggestion,
   loadingSuggestionId,
 }: ItineraryShellProps) => {
-  const { reorderActivities, replaceActivity, addActivity, getTripById, dayEntryPoints } = useAppState();
+  const { reorderActivities, replaceActivity, getTripById, dayEntryPoints } = useAppState();
   const [selectedDay, setSelectedDay] = useState(0);
   const [model, setModelState] = useState<Itinerary>(() => normalizeItinerary(itinerary));
   const [isPlanning, setIsPlanning] = useState(false);
@@ -266,48 +266,6 @@ export const ItineraryShell = ({
       setReplacementCandidates([]);
     },
     [tripId, isUsingMock, replacementActivityId, model, selectedDay, replaceActivity],
-  );
-
-  const handleCopy = useCallback(
-    (activityId: string) => {
-      if (!tripId || isUsingMock) return;
-
-      const currentDay = model.days[selectedDay];
-      if (!currentDay) return;
-
-      const activity = currentDay.activities.find((a) => a.id === activityId);
-      if (!activity) return;
-
-      // Create a copy with new ID
-      const copiedActivity: ItineraryActivity = {
-        ...activity,
-        id: `${activity.id}-copy-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      };
-
-      // Find position to insert (after the original)
-      const originalIndex = currentDay.activities.findIndex((a) => a.id === activityId);
-      const insertPosition = originalIndex >= 0 ? originalIndex + 1 : undefined;
-
-      if (tripId && !isUsingMock) {
-        addActivity(tripId, currentDay.id, copiedActivity, insertPosition);
-      }
-
-      // Update local model
-      setModelState((current) => {
-        const nextDays = current.days.map((d) => {
-          if (d.id !== currentDay.id) return d;
-          const activities = [...d.activities];
-          if (insertPosition !== undefined && insertPosition <= activities.length) {
-            activities.splice(insertPosition, 0, copiedActivity);
-          } else {
-            activities.push(copiedActivity);
-          }
-          return { ...d, activities };
-        });
-        return { ...current, days: nextDays };
-      });
-    },
-    [tripId, isUsingMock, model, selectedDay, addActivity],
   );
 
   useEffect(() => {
@@ -681,7 +639,6 @@ export const ItineraryShell = ({
                 tripId={tripId && !isUsingMock ? tripId : undefined}
                 onReorder={handleReorder}
                 onReplace={tripId && !isUsingMock ? handleReplace : undefined}
-                onCopy={tripId && !isUsingMock ? handleCopy : undefined}
                 tripBuilderData={tripBuilderData}
                 suggestions={currentDaySuggestions}
                 onAcceptSuggestion={handleAcceptSuggestion}

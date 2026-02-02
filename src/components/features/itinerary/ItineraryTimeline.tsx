@@ -63,7 +63,6 @@ type ItineraryTimelineProps = {
   tripId?: string;
   onReorder?: (dayId: string, activityIds: string[]) => void;
   onReplace?: (activityId: string) => void;
-  onCopy?: (activityId: string) => void;
   tripBuilderData?: TripBuilderData;
   // Smart suggestions for this day
   suggestions?: DetectedGap[];
@@ -86,7 +85,6 @@ export const ItineraryTimeline = ({
   tripId,
   onReorder,
   onReplace,
-  onCopy,
   tripBuilderData,
   suggestions,
   onAcceptSuggestion,
@@ -665,7 +663,6 @@ export const ItineraryTimeline = ({
                     tripId={tripId}
                     dayId={day.id}
                     onReplace={onReplace ? () => onReplace(activity.id) : undefined}
-                    onCopy={onCopy ? () => onCopy(activity.id) : undefined}
                     conflicts={activityConflicts}
                   />
                 );
