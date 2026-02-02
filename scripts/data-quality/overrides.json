@@ -1,0 +1,105 @@
+{
+  "names": {
+    "biwako-hall-kansai-fc1784f4": "Biwako Hall",
+    "sendai-fishing-rod-tohoku-66864a48": "Carp Road",
+    "ceatec-ceatec-kanto-5da05c4d": "CEATEC",
+    "cova-kakuda-kansai-e563594e": "Cova Kakuda",
+    "eshikoto-where-fukui-s-great-things-happen-chubu-d3f099a4": "Eshikoto",
+    "honen-matsuri-chubu-68cba84d": "Tagata Shrine",
+    "kanda-festival-kanto-f93df14f": "Kanda Myojin Shrine",
+    "oto-matsuri-fire-festival-of-kumano-kansai-30ac0ab6": "Kamikura Shrine",
+    "the-owari-tsushima-tenno-festival-chubu-8cbf22a0": "Tsushima Shrine",
+    "atsuta-festival-chubu-68d2f3e2": "Atsuta Jingu Shrine",
+    "kyoto-gozan-kansai-8b48d0a2": "Jingo-ji Temple",
+    "meoto-iwa-kansai-98e3ca4b": "Futami Okitama Shrine",
+    "oyunohara-kansai-66f11d16": "Oyunohara Sanctuary",
+    "no-70-motoyama-temple-shikoku-4b7c0d1e": "Motoyama Temple",
+    "meoto-iwa-kyushu-9a8d5e2f": "Sakurai Futamigaura Couple Stones",
+    "imamiya-ebisu-jinja-kansai-7d3e9c1a": "Imamiya Ebisu Shrine"
+  },
+  "descriptions": {
+    "awa-washi-awa-traditional-handmade-japanese-paper-shikoku-8cdae3b0": "Awa Washi is a traditional form of Japanese paper (washi) produced in Tokushima Prefecture, known for its durability and beautiful texture. Visitors can learn about the centuries-old papermaking techniques and try their hand at creating their own washi.",
+    "french-restaurant-soin-kansai-b029cf10": "A refined French restaurant in the Kansai region offering elegant cuisine crafted with local seasonal ingredients and traditional French techniques.",
+    "wakayama-meditation-lunch-in-a-1-200-year-old-temple-kansai-4253104a": "Experience mindful meditation followed by a traditional Buddhist vegetarian lunch (shojin ryori) at a historic temple with over 1,200 years of history in Wakayama Prefecture.",
+    "forest-adventure-iya-shikoku-87067ffb": "An outdoor adventure park in the scenic Iya Valley offering treetop courses, zip lines, and obstacle challenges amidst the lush forest landscape of Shikoku.",
+    "apricot-picking-apricot-processing-experience-jam-and-chubu-f1b8c796": "A hands-on agricultural experience in Chubu where visitors can pick fresh apricots and learn to make traditional jam and other preserved goods.",
+    "maiko-dancing-girl-and-geisha-dress-up-experience-chubu-d41c89b5": "A cultural experience in Chubu where visitors can dress up in traditional maiko or geisha attire, complete with makeup and accessories, for memorable photos.",
+    "hakuba-ex-adventure-chubu-7cfa0ce4": "Hakuba EX Adventure offers thrilling outdoor activities including mountain biking, rafting, and hiking in the stunning Japanese Alps of Nagano Prefecture.",
+    "hanamomo-no-sato-peach-blossom-village-kuma-kogen-town-shikoku-7af20222": "A scenic village in Kuma Kogen Town famous for its stunning peach blossom displays during spring, offering beautiful walking paths through the orchards.",
+    "paradise-in-the-sky-a-night-tour-of-the-best-starry-sk-chubu-da80b428": "A guided night tour to one of Japan's best stargazing locations in the Chubu region, offering spectacular views of the Milky Way and constellations.",
+    "higashikagawa-glove-gallery-shikoku-1748e9b1": "A unique museum in Higashikagawa showcasing the city's traditional glove-making industry, which produces over 90% of Japan's leather gloves.",
+    "cycling-chugoku-fdb64358": "Cycle Hiroshima offers cycling tours and rentals to explore Hiroshima Prefecture's scenic coastal routes, islands, and historical sites including the famous Shimanami Kaido cycling path.",
+    "epson-teamlab-kanto-ee41d680": "teamLab Borderless at Azabudai Hills is an immersive digital art museum featuring stunning interactive installations where visitors become part of the artwork in boundary-free spaces.",
+    "bingaki-wall-made-of-sulfuric-acid-bottles-chugoku-5f419fa0": "Gallery Yamaguchi features a unique architectural element - a wall constructed from recycled sulfuric acid bottles, showcasing innovative repurposing of industrial materials into art.",
+    "kimono-week-chugoku-bd9754a8": "Hagi Castle Town is a beautifully preserved samurai district where visitors can rent kimonos and stroll through historic streets lined with white-walled buildings and traditional shops.",
+    "waterfront-caf-s-along-chugoku-73360f54": "Hiroshima Breakfast offers a selection of waterfront cafes along the city's picturesque rivers, perfect for enjoying morning coffee and local breakfast specialties with scenic views."
+  },
+  "duplicates": [
+    {
+      "keep": "aguni-island-okinawa-a5df46d3",
+      "delete": ["aguni-island-coastal-scenery-okinawa-9246f863"],
+      "reason": "Duplicate: coastal scenery entry is a subset of main island entry"
+    },
+    {
+      "keep": "arashiyama-kansai-7ef73f02",
+      "delete": ["arashiyama-kanto-f1d3cdee"],
+      "reason": "Wrong region: Arashiyama is in Kansai (Kyoto), not Kanto"
+    },
+    {
+      "keep": "dotonbori-kansai-31988d77",
+      "delete": ["dotonbori-kanto-0a43c2f9"],
+      "reason": "Wrong region: Dotonbori is in Kansai (Osaka), not Kanto"
+    },
+    {
+      "keep": "hamahiga-island-okinawa-fb37a318",
+      "delete": ["hamahiga-island-scenery-okinawa-84c08d2d"],
+      "reason": "Duplicate: scenery entry is a subset of main island entry"
+    },
+    {
+      "keep": "himeji-castle-kansai-cefd6543",
+      "delete": ["himeji-castle-outing-qr-1day-ticket-kansai-1c3684a5"],
+      "reason": "Duplicate: ticket product entry should not be a separate location"
+    },
+    {
+      "keep": "hirome-market-shikoku-f318fca6",
+      "delete": ["tonkurimabushi-pork-and-chestnut-dish-shikoku-0f0070c1"],
+      "reason": "Duplicate: dish entry is at same location as Hirome Market"
+    },
+    {
+      "keep": "hiroshima-castle-chugoku-607c86d5",
+      "delete": ["hiroshima-chugoku-c9e30bac"],
+      "reason": "Duplicate: generic Hiroshima entry overlaps with Hiroshima Castle"
+    },
+    {
+      "keep": "kasuga-taisha-kansai-12345678",
+      "delete": ["setsubun-mantoro-kansai-87654321"],
+      "reason": "Duplicate: Setsubun Mantoro is an event at Kasuga Taisha"
+    },
+    {
+      "keep": "kofukuji-kansai-abcd1234",
+      "delete": ["takigi-noh-kansai-dcba4321"],
+      "reason": "Duplicate: Takigi Noh is an event at Kofukuji"
+    },
+    {
+      "keep": "zenkoji-chubu-1111aaaa",
+      "delete": ["chibikko-ninja-chubu-2222bbbb"],
+      "reason": "Duplicate: Chibikko event is at Zenko-ji"
+    },
+    {
+      "keep": "nikko-toshogu-kanto-3333cccc",
+      "delete": ["yayoi-festival-kanto-4444dddd"],
+      "reason": "Duplicate: Yayoi Festival is at Nikko Toshogu"
+    },
+    {
+      "keep": "imamiya-ebisu-shrine-kansai-5555eeee",
+      "delete": ["toka-ebisu-kansai-6666ffff"],
+      "reason": "Duplicate: Toka Ebisu is an event at Imamiya Ebisu Shrine"
+    }
+  ],
+  "skip": [],
+  "categories": {
+    "gion-matsuri-kansai-aaaa1111": "culture",
+    "sapporo-snow-festival-hokkaido-bbbb2222": "culture",
+    "nebuta-matsuri-tohoku-cccc3333": "culture"
+  }
+}

@@ -1,0 +1,182 @@
+/**
+ * Unified Data Quality System - Type Definitions
+ */
+
+// Issue types detected by the audit system
+export type IssueType =
+  // Name issues
+  | 'EVENT_NAME_MISMATCH'    // Event name but describes a shrine/temple
+  | 'NAME_ID_MISMATCH'       // ID slug doesn't match name slug
+  | 'ALL_CAPS_NAME'          // Name in all caps
+  | 'BAD_NAME_START'         // Name starts with special character
+  | 'GENERIC_PLURAL_NAME'    // Generic plural like "Ramen Shops"
+  | 'GENERIC_ARTICLE_NAME'   // Names like "The X"
+  // Description issues
+  | 'ADDRESS_AS_DESC'        // Description is just an address/postal code
+  | 'TRUNCATED_DESC'         // Description appears cut off (starts lowercase)
+  | 'MISSING_DESC'           // No description
+  | 'SHORT_INCOMPLETE_DESC'  // Very short, incomplete description
+  | 'GENERIC_DESC'           // Generic placeholder description
+  // Category issues
+  | 'EVENT_WRONG_CATEGORY'   // Event name but wrong category
+  // Duplicate issues
+  | 'DUPLICATE_SAME_CITY'    // Same name in same city
+  | 'DUPLICATE_MANY'         // Same name across multiple cities
+  // Completeness issues
+  | 'MISSING_COORDINATES'    // No lat/lng
+  | 'MISSING_PLACE_ID';      // No Google Place ID
+
+export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
+
+export interface Issue {
+  id: string;
+  type: IssueType;
+  severity: Severity;
+  locationId: string;
+  locationName: string;
+  city: string;
+  region: string;
+  message: string;
+  details?: Record<string, unknown>;
+  suggestedFix?: SuggestedFix;
+}
+
+export type FixAction = 'rename' | 'delete' | 'update_description' | 'update_category' | 'skip';
+
+export interface SuggestedFix {
+  action: FixAction;
+  newValue?: string;
+  reason: string;
+  confidence: number; // 0-100
+  source?: 'override' | 'google_places' | 'editorial_summary' | 'generated' | 'detection';
+}
+
+export interface FixResult {
+  success: boolean;
+  action: FixAction;
+  locationId: string;
+  message: string;
+  previousValue?: string;
+  newValue?: string;
+  error?: string;
+}
+
+// Location data from database
+export interface Location {
+  id: string;
+  name: string;
+  city: string;
+  region: string;
+  category: string;
+  description?: string | null;
+  editorial_summary?: string | null;
+  place_id?: string | null;
+  coordinates?: { lat: number; lng: number } | null;
+}
+
+// Rule system
+export interface RuleContext {
+  locations: Location[];
+  overrides: Overrides;
+  options: AuditOptions;
+}
+
+export interface Rule {
+  id: string;
+  name: string;
+  description: string;
+  category: RuleCategory;
+  issueTypes: IssueType[];
+  detect(ctx: RuleContext): Promise<Issue[]>;
+}
+
+export type RuleCategory = 'names' | 'descriptions' | 'duplicates' | 'categories' | 'completeness';
+
+// Fixer system
+export interface FixerContext {
+  supabase: SupabaseClient;
+  overrides: Overrides;
+  dryRun: boolean;
+  googleApiKey?: string;
+}
+
+export interface Fixer {
+  handles: IssueType[];
+  fix(issue: Issue, ctx: FixerContext): Promise<FixResult>;
+}
+
+// Override configuration
+export interface Overrides {
+  // Name corrections: locationId -> correct name
+  names: Record<string, string>;
+
+  // Description corrections: locationId -> correct description
+  descriptions: Record<string, string>;
+
+  // Duplicate resolutions: keep locationId, delete list of locationIds
+  duplicates: Array<{
+    keep: string;
+    delete: string[];
+    reason?: string;
+  }>;
+
+  // Locations to skip entirely (no issues reported)
+  skip: string[];
+
+  // Category corrections: locationId -> correct category
+  categories: Record<string, string>;
+}
+
+// CLI Options
+export interface AuditOptions {
+  rules?: RuleCategory[];
+  severity?: Severity;
+  json?: boolean;
+  limit?: number;
+  city?: string;
+  region?: string;
+}
+
+export interface FixOptions {
+  dryRun: boolean;
+  types?: IssueType[];
+  limit?: number;
+  city?: string;
+}
+
+export interface ReportOptions {
+  json?: boolean;
+  detailed?: boolean;
+}
+
+// Health report
+export interface HealthReport {
+  timestamp: string;
+  totalLocations: number;
+  issuesByType: Record<IssueType, number>;
+  issuesBySeverity: Record<Severity, number>;
+  healthScore: number; // 0-100
+  topIssues: Issue[];
+  recommendations: string[];
+}
+
+// Supabase client type (simplified)
+export interface SupabaseClient {
+  from(table: string): {
+    select(columns?: string): {
+      eq(column: string, value: string): Promise<{ data: unknown[]; error: unknown }>;
+      ilike(column: string, value: string): Promise<{ data: unknown[]; error: unknown }>;
+      not(column: string, operator: string, value: unknown): Promise<{ data: unknown[]; error: unknown }>;
+      in(column: string, values: string[]): Promise<{ data: unknown[]; error: unknown }>;
+      order(column: string, options?: { ascending?: boolean }): unknown;
+      limit(count: number): unknown;
+      then(resolve: (result: { data: unknown[]; error: unknown }) => void): Promise<{ data: unknown[]; error: unknown }>;
+    };
+    update(data: Record<string, unknown>): {
+      eq(column: string, value: string): Promise<{ data: unknown; error: unknown }>;
+    };
+    delete(): {
+      eq(column: string, value: string): Promise<{ data: unknown; error: unknown }>;
+    };
+  };
+}
