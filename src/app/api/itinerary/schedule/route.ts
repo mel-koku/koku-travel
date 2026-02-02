@@ -49,9 +49,9 @@ export async function POST(request: NextRequest) {
   // Create request context for tracing
   const context = createRequestContext(request);
 
-  // Rate limiting: 30 requests per minute per IP
+  // Rate limiting: 100 requests per minute per IP (increased for development)
   const rateLimitResponse = await checkRateLimit(request, {
-    maxRequests: 30,
+    maxRequests: 100,
     windowMs: 60 * 1000,
   });
   if (rateLimitResponse) {
