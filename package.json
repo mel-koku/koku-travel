@@ -28,6 +28,8 @@
     "seed:jnto": "tsx scripts/seed-jnto-locations.ts",
     "import:ai-locations": "tsx scripts/import-ai-locations.ts",
     "generate:descriptions": "tsx scripts/generate-ai-descriptions.ts",
+    "guidance:seed": "tsx scripts/extract-guidance.ts --seed",
+    "guidance:list": "tsx scripts/extract-guidance.ts --list",
     "enrich:scraped": "tsx scripts/enrich-scraped-data.ts",
     "clean:test-data": "tsx scripts/clean-test-data.ts",
     "supabase:start": "supabase start",
