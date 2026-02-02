@@ -25,7 +25,6 @@ type ActivityRowProps = {
   tripId?: string;
   dayId?: string;
   onReplace?: () => void;
-  onCopy?: () => void;
   conflicts?: ItineraryConflict[];
   /** Hide the drag handle (for entry points) */
   hideDragHandle?: boolean;
@@ -47,7 +46,6 @@ export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
         tripId={props.tripId}
         dayId={props.dayId}
         onReplace={props.onReplace}
-        onCopy={props.onCopy}
         conflicts={props.conflicts}
         hideDragHandle={props.hideDragHandle}
       />

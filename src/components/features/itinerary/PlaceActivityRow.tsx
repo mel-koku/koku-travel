@@ -16,7 +16,6 @@ import type { Location } from "@/types/location";
 import { useActivityLocation } from "@/hooks/useActivityLocations";
 import { DragHandle } from "./DragHandle";
 import { StarIcon } from "./activityIcons";
-import { ActivityActions } from "./ActivityActions";
 import {
   getShortOverview,
   getLocationRating,
@@ -24,7 +23,6 @@ import {
   numberFormatter,
 } from "./activityUtils";
 import { logger } from "@/lib/logger";
-import { recordPreferenceEvent } from "@/lib/learning/preferenceStorage";
 import { generateActivityTips, type ActivityTip } from "@/lib/tips/tipGenerator";
 import { ActivityConflictIndicator } from "./ConflictBadge";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
@@ -194,7 +192,6 @@ type PlaceActivityRowProps = {
   tripId?: string;
   dayId?: string;
   onReplace?: () => void;
-  onCopy?: () => void;
   /** Conflicts detected for this activity */
   conflicts?: ItineraryConflict[];
   /** Hide the drag handle (for entry points) */
@@ -221,7 +218,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       tripId,
       dayId,
       onReplace,
-      onCopy,
       conflicts,
       hideDragHandle,
     },
@@ -407,20 +403,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       onHover?.(activity.id);
     };
 
-    // Handle feedback (thumbs up/down)
-    const handleFeedback = (type: "favorite" | "unfavorite" | "skip") => {
-      // Use the already-fetched location
-      if (!placeLocation) return;
-
-      recordPreferenceEvent({
-        type: type === "favorite" ? "favorite" : type === "skip" ? "skip" : "unfavorite",
-        activityId: activity.id,
-        locationId: placeLocation.id,
-        location: placeLocation,
-        timestamp: new Date().toISOString(),
-      });
-    };
-
     const notesId = `notes-${activity.id}`;
     const noteLabel = `Notes for ${activity.title}`;
     const notesValue = activity.notes ? activity.notes : "";
@@ -556,7 +538,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
           {/* Right: Main Card */}
           <div
-            className={`group relative flex-1 overflow-hidden rounded-2xl border-l-4 ${colorScheme.border} ${colorScheme.background} transition-all duration-200 ${
+            className={`group relative flex-1 overflow-hidden rounded-2xl bg-white transition-all duration-200 ${
               isDragging
                 ? "ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
                 : isSelected
@@ -763,23 +745,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
             {/* Actions Footer */}
             <div className="flex items-center justify-between border-t border-border/30 bg-surface/30 px-3 py-2 sm:px-4">
-              {/* Left: Feedback & Notes */}
+              {/* Left: Notes */}
               <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    handleFeedback("skip");
-                  }}
-                  title="Not interested"
-                >
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                  <span className="hidden sm:inline">Skip</span>
-                </button>
                 <button
                   type="button"
                   onClick={(event) => {
@@ -815,49 +782,22 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     <span className="hidden sm:inline">Replace</span>
                   </button>
                 )}
-                {tripId && dayId && onCopy && (
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      onCopy();
-                    }}
-                    title="Duplicate"
-                  >
-                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    <span className="hidden sm:inline">Copy</span>
-                  </button>
-                )}
-                {tripId && dayId && (onReplace || onCopy) ? (
-                  <ActivityActions
-                    activity={activity}
-                    tripId={tripId}
-                    dayId={dayId}
-                    onReplace={onReplace ?? (() => {})}
-                    onDelete={handleDelete}
-                    onCopy={onCopy ?? (() => {})}
-                  />
-                ) : (
-                  <button
-                    type="button"
-                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-error transition hover:bg-error/10"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      handleDelete();
-                    }}
-                    aria-label={`Delete ${activity.title}`}
-                  >
-                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    <span className="hidden sm:inline">Delete</span>
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    handleDelete();
+                  }}
+                  aria-label={`Delete ${activity.title}`}
+                  title="Remove this activity"
+                >
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  <span className="hidden sm:inline">Delete</span>
+                </button>
               </div>
             </div>
 
