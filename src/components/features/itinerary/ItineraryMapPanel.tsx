@@ -9,7 +9,6 @@ import { ensureLeafletResources, type LeafletMap, type LeafletMarker, type Leafl
 import { ItineraryMap } from "./ItineraryMap";
 import { mapboxService } from "@/lib/mapbox/mapService";
 import { featureFlags } from "@/lib/env/featureFlags";
-import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
 
 const DEFAULT_CENTER = { lat: 35.0116, lng: 135.7681 }; // Kyoto station area
 const DEFAULT_ZOOM = 12;
