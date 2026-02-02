@@ -287,6 +287,84 @@ const genericArticleRule: Rule = {
 };
 
 /**
+ * Words that typically require a suffix (e.g., "Imperial" needs "Palace" or "Villa")
+ */
+const TRUNCATED_NAME_ENDINGS = [
+  'Imperial',   // Imperial Palace, Imperial Villa
+  'National',   // National Park, National Museum
+  'Memorial',   // Memorial Museum, Memorial Park
+  'Peace',      // Peace Memorial, Peace Park
+  'Royal',      // Royal Palace, Royal Garden
+  'Prefectural', // Prefectural Museum, Prefectural Park
+  'Municipal',  // Municipal Museum, Municipal Hall
+  'City',       // City Hall, City Museum (when standalone)
+];
+
+/**
+ * Rule: Detect truncated names that are missing their suffix
+ */
+const truncatedNameRule: Rule = {
+  id: 'truncated-name',
+  name: 'Truncated Name',
+  description: 'Detects names that appear cut off and are missing their suffix',
+  category: 'names',
+  issueTypes: ['TRUNCATED_NAME'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      const words = loc.name.split(/\s+/);
+      const lastWord = words[words.length - 1];
+
+      // Check if name ends with a word that typically needs a suffix
+      if (!TRUNCATED_NAME_ENDINGS.includes(lastWord)) continue;
+
+      // Skip if name is very long (likely complete)
+      if (words.length > 4) continue;
+
+      // Skip if it's just a single word (might be intentional brand name)
+      if (words.length === 1) continue;
+
+      const override = getNameOverride(loc.id);
+
+      issues.push({
+        id: `${loc.id}-truncated-name`,
+        type: 'TRUNCATED_NAME',
+        severity: 'high',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Name "${loc.name}" appears truncated - missing suffix after "${lastWord}"`,
+        details: {
+          truncatedEnding: lastWord,
+          editorialSummary: loc.editorial_summary?.slice(0, 100),
+        },
+        suggestedFix: override
+          ? {
+              action: 'rename',
+              newValue: override,
+              reason: 'Override configured',
+              confidence: 100,
+              source: 'override',
+            }
+          : {
+              action: 'rename',
+              reason: 'Needs Google Places lookup to determine full name',
+              confidence: 50,
+              source: 'detection',
+            },
+      });
+    }
+
+    return issues;
+  },
+};
+
+/**
  * Convert ALL CAPS string to Title Case
  */
 function toTitleCase(str: string): string {
@@ -304,4 +382,5 @@ export const nameRules: Rule[] = [
   badNameStartRule,
   genericPluralRule,
   genericArticleRule,
+  truncatedNameRule,
 ];

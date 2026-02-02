@@ -29,21 +29,36 @@ export function getSupabase(): SupabaseClient {
 }
 
 /**
- * Fetch all locations from the database
+ * Fetch all locations from the database (handles pagination for >1000 records)
  */
 export async function fetchAllLocations(): Promise<Location[]> {
   const supabase = getSupabase();
+  const allLocations: Location[] = [];
+  const pageSize = 1000;
+  let offset = 0;
+  let hasMore = true;
 
-  const { data, error } = await supabase
-    .from('locations')
-    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates')
-    .order('name');
+  while (hasMore) {
+    const { data, error } = await supabase
+      .from('locations')
+      .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates')
+      .order('name')
+      .range(offset, offset + pageSize - 1);
 
-  if (error) {
-    throw new Error(`Failed to fetch locations: ${error.message}`);
+    if (error) {
+      throw new Error(`Failed to fetch locations: ${error.message}`);
+    }
+
+    if (data && data.length > 0) {
+      allLocations.push(...(data as Location[]));
+      offset += pageSize;
+      hasMore = data.length === pageSize;
+    } else {
+      hasMore = false;
+    }
   }
 
-  return (data || []) as Location[];
+  return allLocations;
 }
 
 /**
