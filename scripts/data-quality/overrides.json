@@ -126,7 +126,11 @@
       "reason": "Duplicate: Toka Ebisu is an event at Imamiya Ebisu Shrine"
     }
   ],
-  "skip": [],
+  "skip": [
+    "ceatec-ceatec-kanto-5da05c4d",
+    "kotohiki-shikoku-97b22980",
+    "epson-teamlab-kanto-ee41d680"
+  ],
   "categories": {
     "gion-matsuri-kansai-aaaa1111": "culture",
     "sapporo-snow-festival-hokkaido-bbbb2222": "culture",
