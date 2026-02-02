@@ -29,6 +29,7 @@ import {
 import { REGIONS } from "@/data/regions";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
+import type { AcceptGapResult } from "@/hooks/useSmartPromptActions";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -42,7 +43,7 @@ type ItineraryShellProps = {
   tripBuilderData?: TripBuilderData;
   // Smart suggestions (all days)
   suggestions?: DetectedGap[];
-  onAcceptSuggestion?: (gap: DetectedGap) => void;
+  onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
   onSkipSuggestion?: (gap: DetectedGap) => void;
   loadingSuggestionId?: string | null;
 };
@@ -325,6 +326,8 @@ export const ItineraryShell = ({
   const isMountedRef = useRef(true);
 
   useEffect(() => {
+    // Reset to true on mount (handles React Strict Mode double-mounting)
+    isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
       if (planTimeoutRef.current) {
@@ -485,32 +488,24 @@ export const ItineraryShell = ({
 
     planItineraryClient(nextNormalized, initialPlannerOptions, dayEntryPointsMap)
       .then((planned) => {
-        if (
-          cancelled ||
-          planningRequestRef.current !== runId ||
-          !isMountedRef.current
-        ) {
+        // Always apply the result if component is mounted - newer results will overwrite older ones
+        if (!isMountedRef.current) {
           return;
         }
         skipSyncRef.current = true;
         skipNextPlanRef.current = true;
         setModelState(planned);
-        setSelectedDay(0);
+        // Don't reset selectedDay - preserve user's day selection
         setSelectedActivityId(null);
       })
       .catch((error: unknown) => {
-        if (
-          cancelled ||
-          planningRequestRef.current !== runId ||
-          !isMountedRef.current
-        ) {
+        if (!isMountedRef.current) {
           return;
         }
         logger.error("Failed to plan itinerary", error);
         skipSyncRef.current = true;
         skipNextPlanRef.current = true;
         setModelState(nextNormalized);
-        setSelectedDay(0);
         setPlanningError(error instanceof Error ? error.message : "Unknown error");
       })
       .finally(() => {
@@ -582,6 +577,24 @@ export const ItineraryShell = ({
       element?.focus({ preventScroll: true });
     });
   }, []);
+
+  // Wrapper for onAcceptSuggestion - the prop change from AppState will trigger
+  // replanning via the serializedItinerary effect
+  const handleAcceptSuggestion = useCallback(
+    async (gap: DetectedGap) => {
+      if (!onAcceptSuggestion) return;
+
+      const result = await onAcceptSuggestion(gap);
+
+      // Activity was added to AppState. The itinerary prop will update and trigger
+      // the effect which calls planItineraryClient to recalculate times.
+      if (result.success) {
+        // Force immediate UI update by triggering planning indicator
+        setIsPlanning(true);
+      }
+    },
+    [onAcceptSuggestion],
+  );
 
   return (
     <section className="mx-auto min-h-[calc(100vh-64px)] max-w-screen-2xl">
@@ -671,7 +684,7 @@ export const ItineraryShell = ({
                 onCopy={tripId && !isUsingMock ? handleCopy : undefined}
                 tripBuilderData={tripBuilderData}
                 suggestions={currentDaySuggestions}
-                onAcceptSuggestion={onAcceptSuggestion}
+                onAcceptSuggestion={handleAcceptSuggestion}
                 onSkipSuggestion={onSkipSuggestion}
                 loadingSuggestionId={loadingSuggestionId}
                 conflicts={currentDayConflicts}

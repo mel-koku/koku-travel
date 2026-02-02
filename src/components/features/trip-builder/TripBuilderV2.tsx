@@ -44,12 +44,15 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
 
   const goToStep = useCallback((step: Step) => {
     setCurrentStep(step);
-    // Scroll the content container to top
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
-    }
-    // Also scroll window for mobile/fallback
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Wait for React to render and paint the new content, then scroll
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    });
   }, []);
 
   const handleNext = useCallback(() => {

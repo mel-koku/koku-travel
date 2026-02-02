@@ -258,7 +258,7 @@ async function checkRateLimitInMemory(
 /**
  * Checks if a request should be rate limited
  * Uses Upstash Redis if available, otherwise falls back to in-memory rate limiting
- * 
+ *
  * @param request - Next.js request object
  * @param config - Rate limit configuration (default: 100 requests per minute)
  * @returns null if allowed, or a NextResponse with 429 status if rate limited
@@ -270,7 +270,10 @@ export async function checkRateLimit(
   // Initialize Redis on first call
   initializeRedis();
 
-  const ip = getClientIp(request);
+  const clientIp = getClientIp(request);
+  // Include the endpoint path in the key so different endpoints have separate rate limits
+  const pathname = request.nextUrl.pathname;
+  const ip = `${clientIp}:${pathname}`;
 
   try {
     // Try to use Upstash Redis if available

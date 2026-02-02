@@ -9,7 +9,7 @@ import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 
 type SmartPromptActionsResult = {
-  acceptGap: (gap: DetectedGap) => Promise<boolean>;
+  acceptGap: (gap: DetectedGap) => Promise<AcceptGapResult>;
   isLoading: boolean;
   loadingGapId: string | null;
 };
@@ -21,6 +21,13 @@ type RecommendResponse = {
   };
   activity: ItineraryActivity;
   position: number;
+};
+
+export type AcceptGapResult = {
+  success: boolean;
+  activity?: ItineraryActivity;
+  position?: number;
+  dayId?: string;
 };
 
 /**
@@ -43,22 +50,22 @@ export function useSmartPromptActions(
   const [loadingGapId, setLoadingGapId] = useState<string | null>(null);
 
   const acceptGap = useCallback(
-    async (gap: DetectedGap): Promise<boolean> => {
+    async (gap: DetectedGap): Promise<AcceptGapResult> => {
       if (!tripId) {
         showToast("No trip selected", { variant: "error" });
-        return false;
+        return { success: false };
       }
 
       const day = getDay(gap.dayId);
       if (!day) {
         showToast("Could not find day in itinerary", { variant: "error" });
-        return false;
+        return { success: false };
       }
 
       const cityId = day.cityId;
       if (!cityId) {
         showToast("No city assigned to this day", { variant: "error" });
-        return false;
+        return { success: false };
       }
 
       setIsLoading(true);
@@ -87,7 +94,7 @@ export function useSmartPromptActions(
           const errorData = await response.json().catch(() => ({}));
           const errorMessage = errorData.error || "Failed to get recommendation";
           showToast(errorMessage, { variant: "error" });
-          return false;
+          return { success: false };
         }
 
         const data = (await response.json()) as RecommendResponse;
@@ -101,11 +108,16 @@ export function useSmartPromptActions(
           variant: "success",
         });
 
-        return true;
+        return {
+          success: true,
+          activity: data.activity,
+          position: data.position,
+          dayId: gap.dayId,
+        };
       } catch (error) {
         logger.error("Smart prompt accept error", error instanceof Error ? error : new Error(String(error)));
         showToast("Failed to add recommendation", { variant: "error" });
-        return false;
+        return { success: false };
       } finally {
         setIsLoading(false);
         setLoadingGapId(null);
