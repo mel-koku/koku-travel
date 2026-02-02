@@ -136,10 +136,11 @@ function ItineraryPageContent() {
   );
 
   const handleSmartPromptAccept = useCallback(async (gap: DetectedGap) => {
-    const success = await smartPromptActions.acceptGap(gap);
-    if (success) {
+    const result = await smartPromptActions.acceptGap(gap);
+    if (result.success) {
       smartPrompts.handleAccept(gap);
     }
+    return result;
   }, [smartPromptActions, smartPrompts]);
 
   const handleSmartPromptSkip = useCallback((gap: DetectedGap) => {
