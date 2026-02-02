@@ -12,10 +12,10 @@ import type { RoutingRequest } from "@/lib/routing/types";
 const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 const DEFAULT_ZOOM = 12;
 const DEFAULT_CENTER: [number, number] = [135.7681, 35.0116];
-const ROUTE_LINE = "#6366F1";
-const ROUTE_LINE_HIGHLIGHT = "#4338CA";
-const MARKER_COLOR = "#4F46E5";
-const MARKER_HIGHLIGHT_COLOR = "#10B981";
+const ROUTE_LINE = "#8b7355"; // brand-primary
+const ROUTE_LINE_HIGHLIGHT = "#607263"; // earthy-sage
+const MARKER_COLOR = "#8b7355"; // brand-primary
+const MARKER_HIGHLIGHT_COLOR = "#607263"; // earthy-sage (selected state)
 
 type MapboxModule = typeof import("mapbox-gl");
 

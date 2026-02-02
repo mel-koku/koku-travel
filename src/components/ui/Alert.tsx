@@ -141,7 +141,7 @@ function Alert({
       <div
         role="alert"
         className={cn(
-          "relative flex w-full gap-3 rounded-2xl border-l-4 bg-card p-5 shadow-sm ring-1 ring-border",
+          "relative flex w-full gap-3 rounded-xl border-l-4 bg-card p-5 shadow-sm ring-1 ring-border",
           toneStyle.border,
           className
         )}

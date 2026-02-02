@@ -17,20 +17,20 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
   const [expanded, setExpanded] = useState(false);
 
   const typeStyles: Record<string, { bg: string; text: string }> = {
-    travel: { bg: "bg-blue-50", text: "text-blue-700" },
-    reservation: { bg: "bg-amber-50", text: "text-amber-700" },
-    payment: { bg: "bg-emerald-50", text: "text-emerald-700" },
-    crowd: { bg: "bg-orange-50", text: "text-orange-700" },
-    photo: { bg: "bg-purple-50", text: "text-purple-700" },
-    weather: { bg: "bg-sky-50", text: "text-sky-700" },
-    timing: { bg: "bg-rose-50", text: "text-rose-700" },
-    accessibility: { bg: "bg-teal-50", text: "text-teal-700" },
-    budget: { bg: "bg-lime-50", text: "text-lime-700" },
-    general: { bg: "bg-gray-50", text: "text-gray-700" },
-    etiquette: { bg: "bg-indigo-50", text: "text-indigo-700" },
+    travel: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
+    reservation: { bg: "bg-semantic-warning/10", text: "text-semantic-warning" },
+    payment: { bg: "bg-earthy-sage/10", text: "text-earthy-sage" },
+    crowd: { bg: "bg-brand-secondary/10", text: "text-brand-secondary" },
+    photo: { bg: "bg-earthy-stone/10", text: "text-earthy-warmGray" },
+    weather: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
+    timing: { bg: "bg-semantic-error/10", text: "text-semantic-error" },
+    accessibility: { bg: "bg-earthy-sage/10", text: "text-earthy-sage" },
+    budget: { bg: "bg-semantic-warning/10", text: "text-semantic-warning" },
+    general: { bg: "bg-neutral-surface", text: "text-earthy-warmGray" },
+    etiquette: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
   };
 
-  const defaultStyles = { bg: "bg-gray-50", text: "text-gray-700" };
+  const defaultStyles = { bg: "bg-neutral-surface", text: "text-earthy-warmGray" };
   const styles = typeStyles[tip.type] ?? defaultStyles;
 
   return (

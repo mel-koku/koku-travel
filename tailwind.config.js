@@ -5,6 +5,26 @@ module.exports = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    // Activity color scheme classes (dynamically used in activityColors.ts)
+    'bg-brand-primary',
+    'bg-brand-primary/10',
+    'bg-brand-secondary',
+    'bg-brand-secondary/10',
+    'bg-earthy-sage',
+    'bg-earthy-sage/10',
+    'bg-earthy-stone',
+    'bg-earthy-stone/10',
+    'bg-semantic-warning',
+    'bg-semantic-warning/10',
+    'border-l-brand-primary',
+    'border-l-brand-secondary',
+    'border-l-earthy-sage',
+    'border-l-earthy-stone',
+    'border-l-semantic-warning',
+    // Selection state
+    'ring-earthy-sage',
+  ],
   theme: {
     extend: {
       fontFamily: {

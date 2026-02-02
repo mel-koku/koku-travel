@@ -96,7 +96,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
   }
 
   return (
-    <div className={`rounded-xl border border-indigo-200 bg-indigo-50/50 ${className ?? ""}`}>
+    <div className={`rounded-xl border border-brand-primary/20 bg-brand-primary/5 ${className ?? ""}`}>
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -104,17 +104,17 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
       >
         <div className="flex items-center gap-2">
           <span className="text-lg">🇯🇵</span>
-          <span className="text-sm font-semibold text-indigo-900">
+          <span className="text-sm font-semibold text-earthy-charcoal">
             Travel Tips for Today
           </span>
           {!isLoading && (
-            <span className="rounded-full bg-indigo-200/60 px-1.5 py-0.5 text-[10px] font-medium text-indigo-700">
+            <span className="rounded-full bg-brand-primary/20 px-1.5 py-0.5 text-[10px] font-medium text-brand-primary">
               {tips.length}
             </span>
           )}
         </div>
         <svg
-          className={`h-4 w-4 text-indigo-600 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-brand-primary transition-transform ${isExpanded ? "rotate-180" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -125,9 +125,9 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
       </button>
 
       {isExpanded && (
-        <div className="border-t border-indigo-200/50 px-3 pb-3">
+        <div className="border-t border-brand-primary/10 px-3 pb-3">
           {isLoading ? (
-            <div className="py-2 text-center text-xs text-indigo-600">
+            <div className="py-2 text-center text-xs text-brand-primary">
               Loading tips...
             </div>
           ) : (
@@ -141,10 +141,10 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
                     {tip.icon ?? GUIDANCE_TYPE_ICONS[tip.guidanceType] ?? "💡"}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-indigo-900">
+                    <p className="text-xs font-semibold text-earthy-charcoal">
                       {tip.title}
                     </p>
-                    <p className="mt-0.5 text-xs leading-relaxed text-indigo-700/80">
+                    <p className="mt-0.5 text-xs leading-relaxed text-brand-primary/80">
                       {tip.summary}
                     </p>
                   </div>

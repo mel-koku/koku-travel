@@ -64,7 +64,7 @@ export function HowItWorks() {
             >
               {/* Image */}
               <div className="flex-1">
-                <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-xl">
                   <Image
                     src={step.image}
                     alt={step.alt}
