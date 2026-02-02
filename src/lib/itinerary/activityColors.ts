@@ -9,123 +9,124 @@ export type ActivityColorScheme = {
 
 /**
  * Color schemes for different activity types
+ * Using consistent brand-primary for all badges for visual cohesion
  */
 const COLOR_SCHEMES = {
   // Meals
   breakfast: {
-    border: "border-l-amber-400",
-    background: "bg-amber-50",
-    badge: "bg-amber-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   lunch: {
-    border: "border-l-orange-400",
-    background: "bg-orange-50",
-    badge: "bg-orange-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   dinner: {
-    border: "border-l-purple-400",
-    background: "bg-purple-50",
-    badge: "bg-purple-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   snack: {
-    border: "border-l-yellow-400",
-    background: "bg-yellow-50",
-    badge: "bg-yellow-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   // Activities
   culture: {
-    border: "border-l-rose-400",
-    background: "bg-rose-50",
-    badge: "bg-rose-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   nature: {
-    border: "border-l-emerald-400",
-    background: "bg-emerald-50",
-    badge: "bg-emerald-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   shopping: {
-    border: "border-l-pink-400",
-    background: "bg-pink-50",
-    badge: "bg-pink-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   view: {
-    border: "border-l-sky-400",
-    background: "bg-sky-50",
-    badge: "bg-sky-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   entertainment: {
-    border: "border-l-violet-400",
-    background: "bg-violet-50",
-    badge: "bg-violet-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   // Food (non-meal)
   food: {
-    border: "border-l-orange-400",
-    background: "bg-orange-50",
-    badge: "bg-orange-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   // Travel
   travel: {
-    border: "border-l-blue-400",
-    background: "bg-blue-50",
-    badge: "bg-blue-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   transport: {
-    border: "border-l-blue-400",
-    background: "bg-blue-50",
-    badge: "bg-blue-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   // Notes
   note: {
-    border: "border-l-stone-300",
-    background: "bg-stone-50",
-    badge: "bg-stone-400",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
-  // Entry points
+  // Entry points - keep distinct with earthy-sage for start/end differentiation
   entryPointStart: {
-    border: "border-l-emerald-400",
-    background: "bg-emerald-50",
-    badge: "bg-emerald-500",
+    border: "border-l-earthy-sage",
+    background: "bg-earthy-sage/10",
+    badge: "bg-earthy-sage",
     badgeText: "text-white",
   },
   entryPointEnd: {
-    border: "border-l-rose-400",
-    background: "bg-rose-50",
-    badge: "bg-rose-500",
+    border: "border-l-earthy-sage",
+    background: "bg-earthy-sage/10",
+    badge: "bg-earthy-sage",
     badgeText: "text-white",
   },
   // Default
   default: {
-    border: "border-l-indigo-400",
-    background: "bg-indigo-50/30",
-    badge: "bg-indigo-600",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   // Point of interest
   point_of_interest: {
-    border: "border-l-indigo-400",
-    background: "bg-indigo-50/30",
-    badge: "bg-indigo-600",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
   // Hotel/accommodation
   hotel: {
-    border: "border-l-teal-400",
-    background: "bg-teal-50",
-    badge: "bg-teal-500",
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
     badgeText: "text-white",
   },
 } as const satisfies Record<string, ActivityColorScheme>;
@@ -229,34 +230,30 @@ export function getActivityTypeLabel(activity: ItineraryActivity): string {
 }
 
 /**
- * Hex color mapping for map pins (matches Tailwind colors)
+ * Hex color mapping for map pins (consistent brand-primary for all activities)
  */
 const HEX_COLORS: Record<string, string> = {
-  // Meals
-  breakfast: "#F59E0B", // amber-500
-  lunch: "#F97316", // orange-500
-  dinner: "#A855F7", // purple-500
-  snack: "#EAB308", // yellow-500
-  // Activities
-  culture: "#F43F5E", // rose-500
-  nature: "#10B981", // emerald-500
-  shopping: "#EC4899", // pink-500
-  view: "#0EA5E9", // sky-500
-  entertainment: "#8B5CF6", // violet-500
-  food: "#F97316", // orange-500
-  // Travel
-  travel: "#3B82F6", // blue-500
-  transport: "#3B82F6", // blue-500
-  // Notes
-  note: "#78716C", // stone-500
-  // Entry points
-  entryPointStart: "#10B981", // emerald-500
-  entryPointEnd: "#F43F5E", // rose-500
+  // All activities use brand-primary for consistency
+  breakfast: "#8b7355", // brand-primary
+  lunch: "#8b7355", // brand-primary
+  dinner: "#8b7355", // brand-primary
+  snack: "#8b7355", // brand-primary
+  culture: "#8b7355", // brand-primary
+  nature: "#8b7355", // brand-primary
+  shopping: "#8b7355", // brand-primary
+  view: "#8b7355", // brand-primary
+  entertainment: "#8b7355", // brand-primary
+  food: "#8b7355", // brand-primary
+  travel: "#8b7355", // brand-primary
+  transport: "#8b7355", // brand-primary
+  note: "#8b7355", // brand-primary
+  // Entry points - sage green for start/end markers
+  entryPointStart: "#607263", // earthy-sage
+  entryPointEnd: "#607263", // earthy-sage
   // Default
-  default: "#4F46E5", // indigo-600
-  point_of_interest: "#4F46E5", // indigo-600
-  // Hotel
-  hotel: "#14B8A6", // teal-500
+  default: "#8b7355", // brand-primary
+  point_of_interest: "#8b7355", // brand-primary
+  hotel: "#8b7355", // brand-primary
 };
 
 /**
