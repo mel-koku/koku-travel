@@ -189,3 +189,162 @@ export async function fetchGuidanceForLocation(
   const criteria = buildCriteriaFromLocation(location, activityDate);
   return fetchMatchingGuidance(criteria);
 }
+
+/**
+ * Check if a tip is location-specific (matches a specific location ID).
+ */
+export function isLocationSpecificTip(guidance: TravelGuidance, locationId?: string): boolean {
+  // If the tip has specific location IDs and one matches, it's location-specific
+  if (guidance.locationIds.length > 0 && locationId) {
+    return guidance.locationIds.includes(locationId);
+  }
+  return false;
+}
+
+/**
+ * Fetch only location-specific tips for a location.
+ * These are tips that explicitly match the location ID.
+ */
+export async function fetchLocationSpecificGuidance(
+  location: Location,
+  activityDate?: Date,
+): Promise<TravelGuidance[]> {
+  const allGuidance = await fetchGuidanceForLocation(location, activityDate);
+  // Filter to only tips that are specifically for this location
+  return allGuidance.filter((g) => isLocationSpecificTip(g, location.id));
+}
+
+/**
+ * Criteria for fetching day-level guidance.
+ */
+export type DayGuidanceCriteria = {
+  /** Categories of activities in this day */
+  categories: string[];
+  /** City for this day */
+  city?: string;
+  /** Region for this day */
+  region?: string;
+  /** Current season */
+  season?: "spring" | "summer" | "fall" | "winter";
+  /** Location IDs to exclude (for deduplication with card-level tips) */
+  excludeLocationIds?: string[];
+};
+
+/**
+ * Fetch general tips for a day based on the activities planned.
+ * Returns universal tips + category-based tips that apply broadly.
+ * Excludes location-specific tips (those are shown on cards).
+ */
+export async function fetchDayGuidance(
+  criteria: DayGuidanceCriteria,
+): Promise<TravelGuidance[]> {
+  const supabase = createClient();
+  if (!supabase) {
+    logger.warn("Supabase client not available, skipping guidance fetch");
+    return [];
+  }
+
+  try {
+    const query = supabase
+      .from("travel_guidance")
+      .select("*")
+      .eq("status", "published")
+      .order("priority", { ascending: false });
+
+    const { data, error } = await query;
+
+    if (error) {
+      logger.error("Failed to fetch travel guidance for day", error);
+      return [];
+    }
+
+    if (!data || data.length === 0) {
+      return [];
+    }
+
+    const seenTitles = new Set<string>();
+    const dayGuidance: TravelGuidance[] = [];
+
+    for (const row of data as TravelGuidanceRow[]) {
+      const guidance = rowToTravelGuidance(row);
+
+      // Skip if we've already added a tip with this title (deduplication)
+      if (seenTitles.has(guidance.title.toLowerCase())) {
+        continue;
+      }
+
+      // Skip location-specific tips (they go on cards)
+      if (guidance.locationIds.length > 0) {
+        continue;
+      }
+
+      // EXCLUSION CHECK: If tip has specific cities, ONLY show if current city matches
+      // This prevents Gion tips from showing on Kobe days, etc.
+      if (guidance.cities.length > 0) {
+        if (!criteria.city) {
+          continue; // No city specified, skip city-specific tips
+        }
+        const cityLower = criteria.city.toLowerCase();
+        const cityMatches = guidance.cities.some((c) => c.toLowerCase() === cityLower);
+        if (!cityMatches) {
+          continue; // City doesn't match, skip this tip
+        }
+      }
+
+      // EXCLUSION CHECK: If tip has specific regions, ONLY show if current region matches
+      if (guidance.regions.length > 0) {
+        if (!criteria.region) {
+          continue; // No region specified, skip region-specific tips
+        }
+        const regionLower = criteria.region.toLowerCase();
+        const regionMatches = guidance.regions.some((r) => r.toLowerCase() === regionLower);
+        if (!regionMatches) {
+          continue; // Region doesn't match, skip this tip
+        }
+      }
+
+      // EXCLUSION CHECK: Season-specific tips only show in matching season
+      if (guidance.seasons.length > 0) {
+        if (!criteria.season || !guidance.seasons.includes(criteria.season)) {
+          continue; // Season doesn't match, skip this tip
+        }
+      }
+
+      // Now check if tip is positively relevant
+      let isRelevant = false;
+
+      // Universal tips are always relevant (after passing exclusion checks)
+      if (guidance.isUniversal) {
+        isRelevant = true;
+      }
+
+      // Category match - tip applies if any activity category matches
+      if (!isRelevant && guidance.categories.length > 0 && criteria.categories.length > 0) {
+        const categoriesLower = criteria.categories.map((c) => c.toLowerCase());
+        if (guidance.categories.some((c) => categoriesLower.includes(c.toLowerCase()))) {
+          isRelevant = true;
+        }
+      }
+
+      // City-specific tips that passed the exclusion check are relevant
+      if (!isRelevant && guidance.cities.length > 0) {
+        isRelevant = true; // Already passed city match check above
+      }
+
+      // Region-specific tips that passed the exclusion check are relevant
+      if (!isRelevant && guidance.regions.length > 0) {
+        isRelevant = true; // Already passed region match check above
+      }
+
+      if (isRelevant) {
+        seenTitles.add(guidance.title.toLowerCase());
+        dayGuidance.push(guidance);
+      }
+    }
+
+    return dayGuidance;
+  } catch (error) {
+    logger.error("Error fetching day guidance", error instanceof Error ? error : new Error(String(error)));
+    return [];
+  }
+}

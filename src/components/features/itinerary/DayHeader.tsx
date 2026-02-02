@@ -8,6 +8,7 @@ import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { logger } from "@/lib/logger";
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { DaySuggestions } from "./DaySuggestions";
+import { DayTips } from "./DayTips";
 import { DayConflictSummary } from "./ConflictBadge";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
@@ -263,6 +264,12 @@ export function DayHeader({
               loadingGapId={loadingSuggestionId}
             />
           )}
+          {/* Day-level travel tips */}
+          <DayTips
+            day={day}
+            tripStartDate={tripStartDate}
+            dayIndex={dayIndex}
+          />
           {onRefineDay && (
             <div className="border-t border-border pt-4">
               <p className="mb-2 text-sm font-medium text-warm-gray">Refine this day:</p>

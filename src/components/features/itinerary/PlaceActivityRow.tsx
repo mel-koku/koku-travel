@@ -685,7 +685,12 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </div>
               )}
 
-              {/* Tips Section (collapsible) */}
+              {/* Description */}
+              {summary && (
+                <p className="mt-3 text-xs leading-relaxed text-warm-gray line-clamp-2">{summary}</p>
+              )}
+
+              {/* Tips Section */}
               {tips.length > 0 && (
                 <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
                   <p className="mb-1.5 text-xs font-semibold text-charcoal">Tips</p>
@@ -700,11 +705,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     ))}
                   </div>
                 </div>
-              )}
-
-              {/* Description */}
-              {summary && (
-                <p className="mt-3 text-xs leading-relaxed text-warm-gray line-clamp-2">{summary}</p>
               )}
 
               {/* Why this recommendation */}
