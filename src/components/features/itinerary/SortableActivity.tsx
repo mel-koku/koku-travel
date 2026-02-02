@@ -19,7 +19,6 @@ type SortableActivityProps = {
   tripId?: string;
   dayId?: string;
   onReplace?: () => void;
-  onCopy?: () => void;
   conflicts?: ItineraryConflict[];
 };
 
@@ -36,7 +35,6 @@ export const SortableActivity = memo(function SortableActivity({
   tripId,
   dayId,
   onReplace,
-  onCopy,
   conflicts,
 }: SortableActivityProps) {
   const {
@@ -102,7 +100,6 @@ export const SortableActivity = memo(function SortableActivity({
           tripId={tripId}
           dayId={dayId}
           onReplace={onReplace}
-          onCopy={onCopy}
           conflicts={conflicts}
         />
       )}
