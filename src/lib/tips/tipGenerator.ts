@@ -1,7 +1,7 @@
 import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { WeatherForecast } from "@/types/weather";
-import { fetchGuidanceForLocation } from "./guidanceService";
+import { fetchLocationSpecificGuidance } from "./guidanceService";
 import type { TravelGuidance } from "@/types/travelGuidance";
 
 /**
@@ -118,9 +118,10 @@ export async function generateActivityTipsAsync(
   // Get the base tips synchronously
   const tips = generateActivityTips(activity, location, options);
 
-  // Fetch etiquette tips from database
+  // Fetch location-specific etiquette tips from database
+  // General tips are shown at the day level, not on individual cards
   try {
-    const guidanceTips = await fetchGuidanceForLocation(location, options?.activityDate);
+    const guidanceTips = await fetchLocationSpecificGuidance(location, options?.activityDate);
     const etiquetteTips = guidanceTips.map(guidanceToActivityTip);
     tips.push(...etiquetteTips);
   } catch {
