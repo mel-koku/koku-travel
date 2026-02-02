@@ -11,6 +11,7 @@ export type IssueType =
   | 'BAD_NAME_START'         // Name starts with special character
   | 'GENERIC_PLURAL_NAME'    // Generic plural like "Ramen Shops"
   | 'GENERIC_ARTICLE_NAME'   // Names like "The X"
+  | 'TRUNCATED_NAME'         // Name appears cut off (e.g., "Kyoto Imperial" instead of "Kyoto Imperial Palace")
   // Description issues
   | 'ADDRESS_AS_DESC'        // Description is just an address/postal code
   | 'TRUNCATED_DESC'         // Description appears cut off (starts lowercase)
