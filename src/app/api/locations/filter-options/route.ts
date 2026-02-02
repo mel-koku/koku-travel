@@ -66,9 +66,20 @@ export async function GET(request: NextRequest) {
     const prefectureMap = new Map<string, number>();
     const neighborhoodMap = new Map<string, number>();
 
-    // Helper to normalize prefecture names (remove " Prefecture" suffix)
+    // Helper to normalize prefecture names
+    // Handles various suffixes from different data sources:
+    // - " Prefecture" (English suffix)
+    // - "-ken" (most prefectures)
+    // - "-fu" (Osaka-fu, Kyoto-fu)
+    // - "-to" (Tokyo-to)
+    // Note: "Hokkaido" is kept as-is since "-do" is part of its name
     const normalizePrefecture = (name: string): string => {
-      return name.replace(/\s+Prefecture$/i, '').trim();
+      return name
+        .replace(/\s+Prefecture$/i, '')
+        .replace(/-ken$/i, '')
+        .replace(/-fu$/i, '')
+        .replace(/-to$/i, '')
+        .trim();
     };
 
     for (const location of data || []) {
