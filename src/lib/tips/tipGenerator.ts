@@ -1,6 +1,8 @@
 import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { WeatherForecast } from "@/types/weather";
+import { fetchGuidanceForLocation } from "./guidanceService";
+import type { TravelGuidance } from "@/types/travelGuidance";
 
 /**
  * Contextual tip for an activity
@@ -9,7 +11,7 @@ export type ActivityTip = {
   /**
    * Type of tip
    */
-  type: "crowd" | "photo" | "weather" | "timing" | "accessibility" | "budget" | "general" | "travel" | "payment" | "reservation";
+  type: "crowd" | "photo" | "weather" | "timing" | "accessibility" | "budget" | "general" | "travel" | "payment" | "reservation" | "etiquette";
   /**
    * Tip title
    */
@@ -97,6 +99,56 @@ export function generateActivityTips(
       return bScore - aScore;
     })
     .slice(0, 3);
+}
+
+/**
+ * Generate contextual tips for an activity, including etiquette tips from database.
+ * This is the async version that fetches travel guidance from the database.
+ */
+export async function generateActivityTipsAsync(
+  activity: Extract<ItineraryActivity, { kind: "place" }>,
+  location: Location,
+  options?: {
+    weatherForecast?: WeatherForecast;
+    allActivities?: ItineraryActivity[];
+    dayIndex?: number;
+    activityDate?: Date;
+  },
+): Promise<ActivityTip[]> {
+  // Get the base tips synchronously
+  const tips = generateActivityTips(activity, location, options);
+
+  // Fetch etiquette tips from database
+  try {
+    const guidanceTips = await fetchGuidanceForLocation(location, options?.activityDate);
+    const etiquetteTips = guidanceTips.map(guidanceToActivityTip);
+    tips.push(...etiquetteTips);
+  } catch {
+    // Silently fail - we still have the base tips
+  }
+
+  // Re-sort and limit to top 3
+  return tips
+    .sort((a, b) => {
+      const aScore = a.priority + (a.isImportant ? 5 : 0);
+      const bScore = b.priority + (b.isImportant ? 5 : 0);
+      return bScore - aScore;
+    })
+    .slice(0, 3);
+}
+
+/**
+ * Convert a TravelGuidance entry to an ActivityTip.
+ */
+function guidanceToActivityTip(guidance: TravelGuidance): ActivityTip {
+  return {
+    type: "etiquette",
+    title: guidance.title,
+    message: guidance.summary,
+    priority: guidance.priority,
+    icon: guidance.icon ?? "🙏",
+    isImportant: guidance.priority >= 8,
+  };
 }
 
 /**

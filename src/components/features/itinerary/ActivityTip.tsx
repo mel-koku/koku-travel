@@ -27,6 +27,7 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
     accessibility: { bg: "bg-teal-50", text: "text-teal-700" },
     budget: { bg: "bg-lime-50", text: "text-lime-700" },
     general: { bg: "bg-gray-50", text: "text-gray-700" },
+    etiquette: { bg: "bg-indigo-50", text: "text-indigo-700" },
   };
 
   const defaultStyles = { bg: "bg-gray-50", text: "text-gray-700" };

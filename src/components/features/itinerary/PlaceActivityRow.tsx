@@ -23,7 +23,7 @@ import {
   numberFormatter,
 } from "./activityUtils";
 import { logger } from "@/lib/logger";
-import { generateActivityTips, type ActivityTip } from "@/lib/tips/tipGenerator";
+import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGenerator";
 import { ActivityConflictIndicator } from "./ConflictBadge";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
@@ -363,10 +363,12 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
     useEffect(() => {
       if (placeLocation && activity.kind === "place") {
-        const generatedTips = generateActivityTips(activity, placeLocation, {
+        // Use async tip generation to include etiquette tips from database
+        generateActivityTipsAsync(activity, placeLocation, {
           allActivities,
+        }).then(setTips).catch(() => {
+          // Silently fail - tips are optional
         });
-        setTips(generatedTips);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable IDs to prevent excessive re-computation
     }, [activityId, placeLocationId, allActivityIds]);
