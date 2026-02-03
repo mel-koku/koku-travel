@@ -98,8 +98,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
     {
       status: 200,
       headers: {
-        // Longer cache since data is from DB
-        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+        // 30-day cache since data is from DB (photos don't change frequently)
+        "Cache-Control": "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800",
       },
     },
   );
