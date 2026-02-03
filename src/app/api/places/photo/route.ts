@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
     });
 
     const headers = new Headers(response.headers);
-    headers.set("Cache-Control", "public, max-age=86400, s-maxage=86400, stale-while-revalidate=43200");
+    headers.set("Cache-Control", "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800");
 
     return new Response(response.body, {
       status: response.status,
