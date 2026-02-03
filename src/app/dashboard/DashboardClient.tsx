@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 
 import { useAppState } from "@/state/AppState";
 import { DashboardItineraryPreview } from "@/components/features/itinerary/DashboardItineraryPreview";
@@ -31,7 +31,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
   const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);
   const [pendingUndo, setPendingUndo] = useState<null | { trip: StoredTrip }>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
   const [status, setStatus] = useState<string>("");
   // Only show loading if we don't have initial auth data from server
   const [isLoadingAuth, setIsLoadingAuth] = useState(!initialAuthUser);

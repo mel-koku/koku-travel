@@ -8,10 +8,46 @@ import {
   addRequestContextHeaders,
   requireAuth,
 } from "@/lib/api/middleware";
-import { validateRequestBody } from "@/lib/api/schemas";
+import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { badRequest, internalError } from "@/lib/api/errors";
 import { fetchTrips, saveTrip } from "@/services/sync/tripSync";
 import type { StoredTrip } from "@/services/trip/types";
+
+/**
+ * Schema for itinerary activity (loose validation for creation)
+ * Activities can be place or note kind with various optional fields
+ */
+const itineraryActivitySchemaLoose = z.discriminatedUnion("kind", [
+  z.object({
+    kind: z.literal("place"),
+    id: z.string(),
+    title: z.string().max(500),
+    timeOfDay: z.enum(["morning", "afternoon", "evening"]),
+    locationId: z.string().optional(),
+  }).passthrough(),
+  z.object({
+    kind: z.literal("note"),
+    id: z.string(),
+    title: z.string().max(500),
+    timeOfDay: z.enum(["morning", "afternoon", "evening"]),
+    notes: z.string().max(5000),
+  }).passthrough(),
+]);
+
+/**
+ * Schema for itinerary day (loose validation for creation)
+ */
+const itineraryDaySchemaLoose = z.object({
+  id: z.string(),
+  activities: z.array(itineraryActivitySchemaLoose).max(50).default([]),
+}).passthrough();
+
+/**
+ * Schema for itinerary (loose validation for creation)
+ */
+const itinerarySchemaLoose = z.object({
+  days: z.array(itineraryDaySchemaLoose).max(30).default([]),
+}).passthrough().default({ days: [] });
 
 /**
  * Schema for creating a new trip
@@ -19,10 +55,8 @@ import type { StoredTrip } from "@/services/trip/types";
 const createTripSchema = z.object({
   id: z.string().uuid().optional(), // Allow client-generated UUID
   name: z.string().min(1).max(500).default("Untitled itinerary"),
-  itinerary: z.object({
-    days: z.array(z.any()).default([]),
-  }).passthrough().default({ days: [] }),
-  builderData: z.record(z.any()).default({}),
+  itinerary: itinerarySchemaLoose,
+  builderData: tripBuilderDataSchema.partial().passthrough().default({}),
 });
 
 /**

@@ -8,7 +8,7 @@ import {
   addRequestContextHeaders,
   requireAuth,
 } from "@/lib/api/middleware";
-import { validateRequestBody } from "@/lib/api/schemas";
+import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { badRequest, notFound, internalError } from "@/lib/api/errors";
 import { fetchTripById, saveTrip, deleteTrip } from "@/services/sync/tripSync";
 import type { StoredTrip } from "@/services/trip/types";
@@ -159,7 +159,7 @@ const itinerarySchema = z.object({
 const updateTripSchema = z.object({
   name: z.string().min(1).max(500).optional(),
   itinerary: itinerarySchema.optional(),
-  builderData: z.record(z.any()).optional(),
+  builderData: tripBuilderDataSchema.partial().passthrough().optional(),
 });
 
 type RouteParams = {
