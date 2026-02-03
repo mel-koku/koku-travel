@@ -4,9 +4,15 @@ import { env } from "../env";
 
 type BrowserClient = ReturnType<typeof createBrowserClient>;
 
+let cachedClient: BrowserClient | null = null;
 let hasWarned = false;
 
 export function createClient(): BrowserClient | null {
+  // Return cached instance if available
+  if (cachedClient) {
+    return cachedClient;
+  }
+
   const url = env.supabaseUrl;
   const anonKey = env.supabaseAnonKey;
 
@@ -20,5 +26,6 @@ export function createClient(): BrowserClient | null {
     return null;
   }
 
-  return createBrowserClient(url, anonKey);
+  cachedClient = createBrowserClient(url, anonKey);
+  return cachedClient;
 }

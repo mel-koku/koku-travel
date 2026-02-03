@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { User, AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
@@ -22,7 +22,7 @@ export default function IdentityBadge({
   showChevron?: boolean;
   isOpen?: boolean;
 }) {
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
   const { user } = useAppState();
   const [email, setEmail] = useState<string | null>(null);
   const [_isSignedIn, setIsSignedIn] = useState<boolean>(false);
@@ -75,7 +75,7 @@ export default function IdentityBadge({
 
 // Export a hook to check authentication state
 export function useAuthState() {
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
   const [isSignedIn, setIsSignedIn] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 

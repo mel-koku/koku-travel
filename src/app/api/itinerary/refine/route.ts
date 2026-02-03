@@ -9,7 +9,7 @@ import {
   addRequestContextHeaders,
   getOptionalAuth,
 } from "@/lib/api/middleware";
-import { validateRequestBody } from "@/lib/api/schemas";
+import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { z } from "zod";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -177,12 +177,26 @@ export async function POST(request: NextRequest) {
     // Note: refine endpoint accepts multiple formats (legacy and new), so we validate structure first
     // Using passthrough() to allow additional fields for backward compatibility
     // Schema must match VALID_REFINEMENT_TYPES for consistency
+
+    // Schema for Trip object in refinement requests (loose validation, detailed validation in engine)
+    const tripForRefinementSchema = z.object({
+      id: z.string().optional(),
+      days: z.array(z.object({
+        id: z.string(),
+        cityId: z.string().optional(),
+        activities: z.array(z.object({
+          id: z.string(),
+          locationId: z.string(),
+        }).passthrough()).optional(),
+      }).passthrough()).optional(),
+    }).passthrough().optional();
+
     const refineSchema = z.object({
-      trip: z.any().optional(), // Trip object validation handled separately in refinement engine
+      trip: tripForRefinementSchema, // Trip object with basic structure validation
       refinementType: z.enum(["too_busy", "too_light", "more_food", "more_culture", "more_kid_friendly", "more_rest"]).optional(),
       dayIndex: z.number().int().min(0).max(30).optional(),
       tripId: z.string().max(255).regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters").optional(),
-      builderData: z.any().optional(), // Partial TripBuilderData - validated separately if provided
+      builderData: tripBuilderDataSchema.partial().passthrough().optional(), // Partial TripBuilderData with proper validation
     }).passthrough(); // Allow additional fields for backward compatibility
     
     const bodyValidation = await validateRequestBody(

@@ -290,6 +290,37 @@ const weatherPreferencesSchema = z.object({
 }).strict().optional();
 
 /**
+ * Schema for traveler profile (used in TripBuilderData)
+ * Matches the TravelerProfile type from @/types/traveler.ts
+ */
+const travelerProfileSchema = z.object({
+  pace: z.enum(["relaxed", "balanced", "fast"]),
+  budget: z.object({
+    total: z.number().positive().max(10000000).optional(),
+    perDay: z.number().positive().max(1000000).optional(),
+    level: z.enum(["budget", "moderate", "luxury"]),
+  }).strict(),
+  mobility: z.object({
+    required: z.boolean(),
+    needs: z.array(z.string().max(500)).max(20).optional(),
+  }).strict(),
+  interests: z.array(interestIdSchema).max(20),
+  group: z.object({
+    size: z.number().int().positive().max(100),
+    type: z.enum(["solo", "couple", "family", "friends", "business"]),
+    childrenAges: z.array(z.number().int().min(0).max(18)).max(20).optional(),
+  }).strict(),
+  dietary: z.object({
+    restrictions: z.array(z.string().max(500)).max(50),
+    notes: z.string().max(1000).optional(),
+  }).strict(),
+  experienceLevel: z.enum(["beginner", "intermediate", "advanced"]).optional(),
+  weatherPreferences: z.object({
+    preference: z.enum(["indoor_alternatives", "outdoor_preferred", "no_preference"]),
+  }).strict().optional(),
+}).strict().optional();
+
+/**
  * Comprehensive schema for TripBuilderData
  * Validates all fields with proper types and constraints
  */
@@ -315,7 +346,7 @@ export const tripBuilderDataSchema = z.object({
   group: groupSchema,
   weatherPreferences: weatherPreferencesSchema,
   // travelerProfile is optional and will be built from other fields if not provided
-  travelerProfile: z.any().optional(),
+  travelerProfile: travelerProfileSchema,
   // Day start time in HH:MM format (24-hour)
   dayStartTime: timeSchema,
 }).strict();
