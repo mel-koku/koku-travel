@@ -179,7 +179,7 @@ const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): Us
 const TRIP_SYNC_DEBOUNCE_MS = 2000;
 
 export function AppStateProvider({ children }: { children: React.ReactNode }) {
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
   const [state, setState] = useState<InternalState>({
     user: defaultState.user,
     favorites: [],

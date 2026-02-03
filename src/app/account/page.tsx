@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";  // useMemo kept for saveProfile debouncing
 import type { FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
@@ -10,7 +10,7 @@ import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
 
 export default function AccountPage() {
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
   const { user, setUser, clearAllLocalData, refreshFromSupabase, isLoadingRefresh } = useAppState();
   const [sessionUserId, setSessionUserId] = useState<string | null>(null);
   const [status, setStatus] = useState<string>("");
@@ -207,7 +207,7 @@ export default function AccountPage() {
 }
 
 function EmailForm() {
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("");
   const supabaseUnavailable = !supabase;

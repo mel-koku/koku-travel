@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -117,7 +117,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const prevPathnameRef = useRef(pathname);
-  const supabase = useMemo(() => createClient(), []);
+  const supabase = createClient();
   const { isSignedIn } = useAuthState();
 
   // Close mobile menu when route changes
