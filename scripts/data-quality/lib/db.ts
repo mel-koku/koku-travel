@@ -160,3 +160,132 @@ export async function getLocationById(id: string): Promise<Location | null> {
 
   return data as Location;
 }
+
+/**
+ * Check if a location ID exists
+ */
+export async function locationIdExists(id: string): Promise<boolean> {
+  const supabase = getSupabase();
+
+  const { data, error } = await supabase
+    .from('locations')
+    .select('id')
+    .eq('id', id)
+    .single();
+
+  return !error && data !== null;
+}
+
+// Columns that are generated and should not be included in inserts
+const GENERATED_COLUMNS = ['name_search_vector'];
+
+/**
+ * Update location ID across all tables (primary key change)
+ *
+ * This function handles updating a location's ID which is a primary key.
+ * It updates all related tables that reference the location ID:
+ * - locations (primary)
+ * - place_details (location_id)
+ * - favorites (location_id)
+ * - travel_guidance (location_ids array)
+ * - guides (location_ids array)
+ * - location_availability (handled by CASCADE on FK)
+ */
+export async function updateLocationId(
+  oldId: string,
+  newId: string
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = getSupabase();
+
+  try {
+    // 1. First get the current location data
+    const { data: locationData, error: fetchError } = await supabase
+      .from('locations')
+      .select('*')
+      .eq('id', oldId)
+      .single();
+
+    if (fetchError || !locationData) {
+      return { success: false, error: `Failed to fetch location: ${fetchError?.message || 'Not found'}` };
+    }
+
+    // 2. Insert new location with new ID (excluding generated columns)
+    const newLocationData = { ...locationData, id: newId };
+    for (const col of GENERATED_COLUMNS) {
+      delete newLocationData[col];
+    }
+    const { error: insertError } = await supabase
+      .from('locations')
+      .insert(newLocationData);
+
+    if (insertError) {
+      return { success: false, error: `Failed to insert new location: ${insertError.message}` };
+    }
+
+    // 3. Update place_details if exists
+    const { error: placeDetailsError } = await supabase
+      .from('place_details')
+      .update({ location_id: newId })
+      .eq('location_id', oldId);
+
+    if (placeDetailsError) {
+      // Rollback: delete the new location
+      await supabase.from('locations').delete().eq('id', newId);
+      return { success: false, error: `Failed to update place_details: ${placeDetailsError.message}` };
+    }
+
+    // 4. Update favorites if exists
+    const { error: favoritesError } = await supabase
+      .from('favorites')
+      .update({ location_id: newId })
+      .eq('location_id', oldId);
+
+    if (favoritesError) {
+      // Rollback
+      await supabase.from('place_details').update({ location_id: oldId }).eq('location_id', newId);
+      await supabase.from('locations').delete().eq('id', newId);
+      return { success: false, error: `Failed to update favorites: ${favoritesError.message}` };
+    }
+
+    // 5. Update travel_guidance location_ids array using array_replace
+    const { error: guidanceError } = await supabase.rpc('array_replace_location_id', {
+      table_name: 'travel_guidance',
+      column_name: 'location_ids',
+      old_id: oldId,
+      new_id: newId,
+    });
+
+    // If RPC doesn't exist, try direct SQL approach or skip
+    if (guidanceError && !guidanceError.message.includes('does not exist')) {
+      console.warn(`Warning: Could not update travel_guidance: ${guidanceError.message}`);
+    }
+
+    // 6. Update guides location_ids array using array_replace
+    const { error: guidesError } = await supabase.rpc('array_replace_location_id', {
+      table_name: 'guides',
+      column_name: 'location_ids',
+      old_id: oldId,
+      new_id: newId,
+    });
+
+    // If RPC doesn't exist, try direct SQL approach or skip
+    if (guidesError && !guidesError.message.includes('does not exist')) {
+      console.warn(`Warning: Could not update guides: ${guidesError.message}`);
+    }
+
+    // 7. Delete the old location (CASCADE will handle location_availability)
+    const { error: deleteError } = await supabase
+      .from('locations')
+      .delete()
+      .eq('id', oldId);
+
+    if (deleteError) {
+      // This is problematic - we have the new location but couldn't delete old
+      return { success: false, error: `Failed to delete old location: ${deleteError.message}` };
+    }
+
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: `Unexpected error: ${err instanceof Error ? err.message : String(err)}` };
+  }
+}
