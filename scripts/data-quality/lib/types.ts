@@ -42,7 +42,7 @@ export interface Issue {
   suggestedFix?: SuggestedFix;
 }
 
-export type FixAction = 'rename' | 'delete' | 'update_description' | 'update_category' | 'skip';
+export type FixAction = 'rename' | 'delete' | 'update_description' | 'update_category' | 'update_id' | 'skip';
 
 export interface SuggestedFix {
   action: FixAction;

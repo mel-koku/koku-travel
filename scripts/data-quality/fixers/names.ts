@@ -8,7 +8,7 @@ import { getPlaceDisplayName } from '../lib/googlePlaces';
 import { getNameOverride } from '../lib/overrides';
 
 export const nameFixer: Fixer = {
-  handles: ['EVENT_NAME_MISMATCH', 'ALL_CAPS_NAME', 'BAD_NAME_START', 'NAME_ID_MISMATCH', 'TRUNCATED_NAME'],
+  handles: ['EVENT_NAME_MISMATCH', 'ALL_CAPS_NAME', 'BAD_NAME_START', 'TRUNCATED_NAME'],
 
   async fix(issue: Issue, ctx: FixerContext): Promise<FixResult> {
     // Check for override first

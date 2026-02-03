@@ -108,6 +108,11 @@ const nameIdMismatchRule: Rule = {
       // Skip if it's a short mismatch (often just formatting)
       if (Math.abs(nameSlug.length - idSlug.length) < 5) continue;
 
+      // Extract UUID suffix from current ID and generate new ID
+      const uuidSuffix = loc.id.match(/-([a-f0-9]{8})$/)?.[1] || '';
+      const regionSlug = loc.region.toLowerCase().replace(/\s+/g, '-');
+      const newId = uuidSuffix ? `${nameSlug}-${regionSlug}-${uuidSuffix}` : `${nameSlug}-${regionSlug}`;
+
       issues.push({
         id: `${loc.id}-name-id`,
         type: 'NAME_ID_MISMATCH',
@@ -120,6 +125,14 @@ const nameIdMismatchRule: Rule = {
         details: {
           idSlug,
           nameSlug,
+          newId,
+        },
+        suggestedFix: {
+          action: 'update_id',
+          newValue: newId,
+          reason: 'ID regenerated from current name',
+          confidence: 100,
+          source: 'generated',
         },
       });
     }
