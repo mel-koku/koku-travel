@@ -21,7 +21,9 @@ type LocationDetailsModalProps = {
 
 export function LocationDetailsModal({ location, onClose }: LocationDetailsModalProps) {
   const locationId = location?.id ?? null;
-  const { status, details, errorMessage, retry } = useLocationDetails(locationId);
+  const { status, details, fetchedLocation, errorMessage, retry } = useLocationDetails(locationId);
+  // Use fetchedLocation for sections since it has description; fall back to prop location
+  const locationWithDetails = fetchedLocation ?? location;
   const { isInWishlist, toggleWishlist } = useWishlist();
   const { trips, needsTripPicker, isInItinerary, addToItinerary, removeFromItinerary } = useAddToItinerary();
   const locationInItinerary = locationId ? isInItinerary(locationId) : false;
@@ -101,7 +103,7 @@ export function LocationDetailsModal({ location, onClose }: LocationDetailsModal
               onToggleItinerary={handleToggleItinerary}
             />
 
-            <LocationDetailsSections location={location} details={details} />
+            <LocationDetailsSections location={locationWithDetails} details={details} />
           </div>
         )}
       </Modal>
