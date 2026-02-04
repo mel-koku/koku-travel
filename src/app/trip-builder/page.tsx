@@ -19,7 +19,7 @@ type PlanApiResponse = {
 function TripBuilderV2Content() {
   const router = useRouter();
   const { data, reset } = useTripBuilder();
-  const { createTrip, setDayEntryPoint } = useAppState();
+  const { createTrip } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,13 +60,10 @@ function TripBuilderV2Content() {
         builderData: data as TripBuilderData,
       });
 
-      // Auto-sync Entry Point to Day 1 start
-      if (data.entryPoint && result.itinerary.days.length > 0) {
-        const day1 = result.itinerary.days[0];
-        if (day1?.id) {
-          setDayEntryPoint(tripId, day1.id, "start", data.entryPoint);
-        }
-      }
+      // Note: Entry point is only used for region/city selection during trip building.
+      // It is not used for scheduling - we assume the user is already at the first location
+      // when they start their day. A future feature may allow users to specify a hotel
+      // or station as a daily starting point.
 
       // Reset the builder state
       reset();
@@ -77,7 +74,7 @@ function TripBuilderV2Content() {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setIsGenerating(false);
     }
-  }, [data, createTrip, setDayEntryPoint, reset, router]);
+  }, [data, createTrip, reset, router]);
 
   return (
     <>
