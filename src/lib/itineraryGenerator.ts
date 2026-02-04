@@ -7,8 +7,7 @@ import type { TripWeatherContext, WeatherForecast } from "@/types/weather";
 import { getCategoryDefaultDuration } from "./durationExtractor";
 import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
-import { createClient } from "@/lib/supabase/server";
-import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
+import { fetchAllLocations } from "@/lib/locations/locationService";
 
 // Import from extracted modules
 import { isLocationValidForCity } from "@/lib/geo/validation";
@@ -58,115 +57,6 @@ const DEFAULT_TOTAL_DAYS = 5;
 const DEFAULT_INTEREST_ROTATION: readonly InterestId[] = ["culture", "nature", "shopping"];
 
 type LocationCategory = Location["category"];
-
-/**
- * Fetches locations from Supabase database.
- * In production, throws errors if database is unavailable.
- *
- * City filtering is enabled after ward consolidation (e.g., "Sakyo Ward" → "Kyoto").
- * The database now uses normalized city names that match trip builder city IDs.
- */
-async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
-  try {
-    const supabase = await createClient();
-    const allLocations: Location[] = [];
-    let page = 0;
-    const limit = 100; // Max per page
-    let hasMore = true;
-
-    while (hasMore) {
-      let query = supabase
-        .from("locations")
-        .select(LOCATION_ITINERARY_COLUMNS)
-        .order("name", { ascending: true });
-
-      // Apply city filter if cities are specified
-      // Use case-insensitive matching to handle multi-word cities like "Mount Yoshino"
-      if (cities && cities.length > 0) {
-        // Build OR condition for case-insensitive city matching
-        const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
-        query = query.or(cityFilters);
-      }
-
-      const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
-
-      if (error) {
-        const errorMessage = `Failed to fetch locations from database: ${error.message}`;
-        logger.error(errorMessage, { error: error.message, page });
-        throw new Error(errorMessage);
-      }
-
-      if (!data || data.length === 0) {
-        hasMore = false;
-        break;
-      }
-
-      // Transform Supabase data to Location type
-      const locations: Location[] = (data as unknown as LocationDbRow[]).map((row) => ({
-        id: row.id,
-        name: row.name,
-        region: row.region,
-        city: row.city,
-        neighborhood: row.neighborhood ?? undefined,
-        category: row.category,
-        image: row.image,
-        minBudget: row.min_budget ?? undefined,
-        estimatedDuration: row.estimated_duration ?? undefined,
-        operatingHours: row.operating_hours ?? undefined,
-        recommendedVisit: row.recommended_visit ?? undefined,
-        preferredTransitModes: row.preferred_transit_modes ?? undefined,
-        coordinates: row.coordinates ?? undefined,
-        timezone: row.timezone ?? undefined,
-        shortDescription: row.short_description ?? undefined,
-        rating: row.rating ?? undefined,
-        reviewCount: row.review_count ?? undefined,
-        placeId: row.place_id ?? undefined,
-        isSeasonal: row.is_seasonal ?? undefined,
-        seasonalType: row.seasonal_type ?? undefined,
-        // Google Places enrichment fields
-        priceLevel: (row.price_level as 0 | 1 | 2 | 3 | 4 | null) ?? undefined,
-        goodForChildren: row.good_for_children ?? undefined,
-        goodForGroups: row.good_for_groups ?? undefined,
-        accessibilityOptions: row.accessibility_options ?? undefined,
-        dietaryOptions: row.dietary_options ?? undefined,
-        mealOptions: row.meal_options ?? undefined,
-        outdoorSeating: row.outdoor_seating ?? undefined,
-        reservable: row.reservable ?? undefined,
-      }));
-
-      allLocations.push(...locations);
-
-      // Check if there are more pages
-      hasMore = data.length === limit;
-      page++;
-
-      // Safety limit to prevent infinite loops
-      if (page > 100) {
-        logger.warn("Reached pagination safety limit when fetching locations");
-        break;
-      }
-    }
-
-    if (allLocations.length === 0) {
-      const errorMessage = "No locations found in database. Please ensure locations are seeded.";
-      logger.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-
-    logger.info(`Fetched ${allLocations.length} locations from database`);
-    return allLocations;
-  } catch (error) {
-    // If it's already our custom error, re-throw it
-    if (error instanceof Error) {
-      throw error;
-    }
-
-    // Unknown error - fail loudly
-    const errorMessage = `Failed to fetch locations from database: ${String(error)}`;
-    logger.error(errorMessage, { error });
-    throw new Error(errorMessage);
-  }
-}
 
 /**
  * Builds location maps from an array of locations.
@@ -267,7 +157,7 @@ export async function generateItinerary(
     allLocations = options.locations;
   } else {
     // Fetch locations filtered by selected cities (after ward consolidation)
-    allLocations = await fetchAllLocations(data.cities);
+    allLocations = await fetchAllLocations({ cities: data.cities });
   }
   const { locationsByCityKey, locationsByRegionId } = buildLocationMaps(allLocations);
 

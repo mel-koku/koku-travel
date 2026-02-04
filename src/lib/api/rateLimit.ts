@@ -89,11 +89,10 @@ function initializeRedis(): void {
       redisAvailable = false;
     }
   } else {
-    const isProduction = process.env.NODE_ENV === "production";
+    const envLevel = getEnvironmentLevel();
     const enforceRedis = process.env.ENFORCE_REDIS_RATE_LIMIT !== "false";
-    const isVercelProduction = process.env.VERCEL_ENV === "production";
 
-    if (isProduction && enforceRedis) {
+    if (envLevel === "production" && enforceRedis) {
       // In production, Redis is required for proper rate limiting across instances
       const errorMessage =
         "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production. " +
@@ -102,18 +101,18 @@ function initializeRedis(): void {
         "To temporarily bypass this check, set ENFORCE_REDIS_RATE_LIMIT=false (not recommended).";
       logger.error(errorMessage);
       throw new Error(errorMessage);
-    } else if (isVercelProduction) {
-      // Vercel production with bypass - critical warning
+    } else if (envLevel === "production") {
+      // Production with bypass - critical warning
       logger.error(
-        "CRITICAL: Running Vercel production without Redis rate limiting. " +
+        "CRITICAL: Running production without Redis rate limiting. " +
         "This MUST be resolved. Configure Upstash Redis and set ENFORCE_REDIS_RATE_LIMIT=true.",
-        new Error("Rate limit bypass in Vercel production"),
-        { environment: "production", vercelEnv: process.env.VERCEL_ENV },
+        new Error("Rate limit bypass in production"),
+        { environment: envLevel, vercelEnv: process.env.VERCEL_ENV },
       );
-    } else if (isProduction) {
+    } else if (envLevel === "preview") {
       // Preview/staging with bypass - warning only
       logger.warn(
-        "Running in production without Redis rate limiting (ENFORCE_REDIS_RATE_LIMIT=false). " +
+        "Running in preview without Redis rate limiting (ENFORCE_REDIS_RATE_LIMIT=false). " +
         "Acceptable for preview/staging, not for production.",
         { vercelEnv: process.env.VERCEL_ENV || "unknown" },
       );
@@ -125,6 +124,19 @@ function initializeRedis(): void {
     }
     redisAvailable = false;
   }
+}
+
+/**
+ * Determines the current environment level for rate limiting decisions
+ * @returns 'development', 'preview', or 'production'
+ */
+function getEnvironmentLevel(): "development" | "preview" | "production" {
+  // VERCEL_ENV takes precedence when set
+  if (process.env.VERCEL_ENV === "production") return "production";
+  if (process.env.VERCEL_ENV === "preview") return "preview";
+  // Fall back to NODE_ENV
+  if (process.env.NODE_ENV === "production") return "production";
+  return "development";
 }
 
 /**

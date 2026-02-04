@@ -58,6 +58,13 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
     reviewCount: "review_count" in row ? row.review_count ?? undefined : undefined,
     placeId: row.place_id ?? undefined,
     primaryPhotoUrl: "primary_photo_url" in row ? row.primary_photo_url ?? undefined : undefined,
+    // Google Places enrichment fields (present in both types)
+    googlePrimaryType: "google_primary_type" in row ? row.google_primary_type ?? undefined : undefined,
+    googleTypes: "google_types" in row ? row.google_types ?? undefined : undefined,
+    businessStatus: "business_status" in row ? row.business_status as Location["businessStatus"] ?? undefined : undefined,
+    priceLevel: "price_level" in row ? (row.price_level as 0 | 1 | 2 | 3 | 4 | null) ?? undefined : undefined,
+    accessibilityOptions: "accessibility_options" in row ? row.accessibility_options ?? undefined : undefined,
+    dietaryOptions: "dietary_options" in row ? row.dietary_options ?? undefined : undefined,
   };
 
   // Extended fields only present in full LocationDbRow
@@ -65,11 +72,23 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
     const fullRow = row as LocationDbRow;
     return {
       ...base,
+      neighborhood: fullRow.neighborhood ?? undefined,
+      description: fullRow.description ?? undefined,
       operatingHours: fullRow.operating_hours ?? undefined,
       recommendedVisit: fullRow.recommended_visit ?? undefined,
       preferredTransitModes: fullRow.preferred_transit_modes ?? undefined,
       coordinates: fullRow.coordinates ?? undefined,
       timezone: fullRow.timezone ?? undefined,
+      // Additional Google Places enrichment fields
+      mealOptions: fullRow.meal_options ?? undefined,
+      goodForChildren: fullRow.good_for_children ?? undefined,
+      goodForGroups: fullRow.good_for_groups ?? undefined,
+      outdoorSeating: fullRow.outdoor_seating ?? undefined,
+      reservable: fullRow.reservable ?? undefined,
+      editorialSummary: fullRow.editorial_summary ?? undefined,
+      // Seasonal fields
+      isSeasonal: fullRow.is_seasonal ?? undefined,
+      seasonalType: fullRow.seasonal_type ?? undefined,
     };
   }
 
@@ -363,4 +382,107 @@ export async function fetchTopRatedLocations(
   }
 
   return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
+}
+
+/**
+ * Valid pattern for city names - letters, spaces, and hyphens only
+ * Used to prevent SQL injection in city filter queries
+ */
+const VALID_CITY_PATTERN = /^[A-Za-z\s-]+$/;
+
+/**
+ * Validates city names before building filter strings
+ * @throws Error if any city name contains invalid characters
+ */
+function validateCityNames(cities: string[]): void {
+  for (const city of cities) {
+    if (!VALID_CITY_PATTERN.test(city)) {
+      throw new Error(`Invalid city name: "${city}". City names must contain only letters, spaces, and hyphens.`);
+    }
+  }
+}
+
+/**
+ * Options for fetching all locations
+ */
+export interface FetchAllLocationsOptions {
+  /** Filter by specific cities (case-insensitive) */
+  cities?: string[];
+  /** Maximum number of pages to fetch (default: 100) */
+  maxPages?: number;
+  /** Items per page (default: 100) */
+  pageSize?: number;
+}
+
+/**
+ * Fetches all locations from the database with pagination
+ *
+ * This function handles large datasets by paginating through results.
+ * It validates city names to prevent injection attacks.
+ *
+ * @param options - Filtering and pagination options
+ * @returns Array of all matching locations
+ * @throws Error if database query fails or no locations found
+ */
+export async function fetchAllLocations(
+  options: FetchAllLocationsOptions = {},
+): Promise<Location[]> {
+  const { cities, maxPages = 100, pageSize = 100 } = options;
+
+  // Validate city names if provided
+  if (cities && cities.length > 0) {
+    validateCityNames(cities);
+  }
+
+  const supabase = await createClient();
+  const allLocations: Location[] = [];
+  let page = 0;
+  let hasMore = true;
+
+  while (hasMore) {
+    let query = supabase
+      .from("locations")
+      .select(LOCATION_ITINERARY_COLUMNS)
+      .order("name", { ascending: true });
+
+    // Apply city filter if cities are specified
+    // Use case-insensitive matching to handle multi-word cities like "Mount Yoshino"
+    if (cities && cities.length > 0) {
+      // Build OR condition for case-insensitive city matching
+      const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
+      query = query.or(cityFilters);
+    }
+
+    const { data, error } = await query.range(page * pageSize, (page + 1) * pageSize - 1);
+
+    if (error) {
+      const errorMessage = `Failed to fetch locations from database: ${error.message}`;
+      throw new Error(errorMessage);
+    }
+
+    if (!data || data.length === 0) {
+      hasMore = false;
+      break;
+    }
+
+    // Transform Supabase data to Location type
+    const locations: Location[] = (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+    allLocations.push(...locations);
+
+    // Check if there are more pages
+    hasMore = data.length === pageSize;
+    page++;
+
+    // Safety limit to prevent infinite loops
+    if (page >= maxPages) {
+      break;
+    }
+  }
+
+  if (allLocations.length === 0) {
+    const errorMessage = "No locations found in database. Please ensure locations are seeded.";
+    throw new Error(errorMessage);
+  }
+
+  return allLocations;
 }
