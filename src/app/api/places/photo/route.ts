@@ -47,18 +47,19 @@ export async function GET(request: NextRequest) {
 
   const validatedPhotoName = photoNameValidation.data;
 
-  // Validate dimension parameters
-  const maxWidthParam = searchParams.get("maxWidthPx");
-  const maxHeightParam = searchParams.get("maxHeightPx");
+  // Validate dimension parameters - accept both new (maxWidthPx) and legacy (maxwidth) formats
+  const maxWidthParam = searchParams.get("maxWidthPx") ?? searchParams.get("maxwidth");
+  const maxHeightParam = searchParams.get("maxHeightPx") ?? searchParams.get("maxheight");
 
   // Use existing validation function which is already robust
-  const maxWidthPx = maxWidthParam ? parsePositiveInt(maxWidthParam, MAX_DIMENSION) ?? undefined : undefined;
+  // Default to 800px width if no dimensions provided (required by Google Places API)
+  const maxWidthPx = maxWidthParam ? parsePositiveInt(maxWidthParam, MAX_DIMENSION) ?? 800 : 800;
   const maxHeightPx = maxHeightParam ? parsePositiveInt(maxHeightParam, MAX_DIMENSION) ?? undefined : undefined;
 
   try {
     const response = await fetchPhotoStream(validatedPhotoName, {
-      maxWidthPx: maxWidthPx ?? undefined,
-      maxHeightPx: maxHeightPx ?? undefined,
+      maxWidthPx,
+      maxHeightPx,
     });
 
     const headers = new Headers(response.headers);
