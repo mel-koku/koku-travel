@@ -103,7 +103,7 @@ export function LocationDetailsModal({ location, onClose }: LocationDetailsModal
               onToggleItinerary={handleToggleItinerary}
             />
 
-            <LocationDetailsSections location={locationWithDetails} details={details} />
+            <LocationDetailsSections location={locationWithDetails!} details={details} />
           </div>
         )}
       </Modal>

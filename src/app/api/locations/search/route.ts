@@ -57,11 +57,11 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get("q")?.trim();
-    const limitParam = searchParams.get("limit");
-    const limit = Math.min(
-      Math.max(1, parseInt(limitParam || "", 10) || MAX_RESULTS),
-      MAX_RESULTS
-    );
+    const rawLimit = searchParams.get("limit");
+    const parsedLimit = rawLimit ? parseInt(rawLimit, 10) : MAX_RESULTS;
+    const limit = Number.isNaN(parsedLimit)
+      ? MAX_RESULTS
+      : Math.min(Math.max(1, parsedLimit), MAX_RESULTS);
 
     // Validate query parameter
     if (!query || query.length < MIN_QUERY_LENGTH) {
