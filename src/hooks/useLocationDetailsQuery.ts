@@ -14,11 +14,13 @@ export const locationDetailsKeys = {
 };
 
 type LocationDetailsResponse = {
+  location: import("@/types/location").Location;
   details: LocationDetails;
 };
 
 type PlaceDetailsResponse = {
   details: LocationDetails;
+  location?: import("@/types/location").Location;
 };
 
 /**
@@ -48,9 +50,17 @@ function isGooglePlaceId(locationId: string): boolean {
 }
 
 /**
+ * Result type for location details queries
+ */
+type LocationDetailsResult = {
+  details: LocationDetails;
+  location?: import("@/types/location").Location;
+};
+
+/**
  * Fetches location details from the database API
  */
-async function fetchLocationDetailsFromDb(locationId: string): Promise<LocationDetails> {
+async function fetchLocationDetailsFromDb(locationId: string): Promise<LocationDetailsResult> {
   const response = await fetch(`/api/locations/${locationId}`);
 
   if (!response.ok) {
@@ -67,13 +77,13 @@ async function fetchLocationDetailsFromDb(locationId: string): Promise<LocationD
   }
 
   const payload = (await response.json()) as LocationDetailsResponse;
-  return payload.details;
+  return { details: payload.details, location: payload.location };
 }
 
 /**
  * Fetches location details from Google Places API
  */
-async function fetchLocationDetailsFromGooglePlaces(placeId: string): Promise<LocationDetails> {
+async function fetchLocationDetailsFromGooglePlaces(placeId: string): Promise<LocationDetailsResult> {
   const response = await fetch(`/api/places/details?placeId=${encodeURIComponent(placeId)}`);
 
   if (!response.ok) {
@@ -90,13 +100,13 @@ async function fetchLocationDetailsFromGooglePlaces(placeId: string): Promise<Lo
   }
 
   const payload = (await response.json()) as PlaceDetailsResponse;
-  return payload.details;
+  return { details: payload.details, location: payload.location };
 }
 
 /**
  * Fetches location details from the appropriate API based on ID format
  */
-async function fetchLocationDetails(locationId: string): Promise<LocationDetails> {
+async function fetchLocationDetails(locationId: string): Promise<LocationDetailsResult> {
   if (isGooglePlaceId(locationId)) {
     return fetchLocationDetailsFromGooglePlaces(locationId);
   }
@@ -162,7 +172,8 @@ export function useLocationDetailsQuery(locationId: string | null) {
 
   return {
     status: mappedStatus as "idle" | "loading" | "success" | "error",
-    details: data ?? null,
+    details: data?.details ?? null,
+    fetchedLocation: data?.location ?? null,
     errorMessage: error instanceof Error ? error.message : error ? String(error) : null,
     retry,
   };
