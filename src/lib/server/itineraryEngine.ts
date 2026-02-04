@@ -7,77 +7,9 @@ import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 // Note: insertMealActivities is disabled in favor of post-generation smart prompts
 // import { insertMealActivities } from "@/lib/mealPlanning";
-import { createClient } from "@/lib/supabase/server";
-import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { logger } from "@/lib/logger";
-import { transformDbRowToLocation } from "@/lib/locations/locationService";
-
-/**
- * Fetches locations from Supabase database.
- *
- * City filtering is enabled after ward consolidation (e.g., "Sakyo Ward" → "Kyoto").
- * The database now uses normalized city names that match trip builder city IDs.
- */
-async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
-  const supabase = await createClient();
-  const allLocations: Location[] = [];
-  let page = 0;
-  const limit = 100; // Max per page
-  let hasMore = true;
-
-  while (hasMore) {
-    let query = supabase
-      .from("locations")
-      .select(LOCATION_ITINERARY_COLUMNS)
-      .order("name", { ascending: true });
-
-    // Apply city filter if cities are specified
-    // Use case-insensitive matching to handle multi-word cities like "Mount Yoshino"
-    if (cities && cities.length > 0) {
-      // Build OR condition for case-insensitive city matching
-      const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
-      query = query.or(cityFilters);
-    }
-
-    const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
-
-    if (error) {
-      const errorMessage = `Failed to fetch locations from database: ${error.message}`;
-      logger.error(errorMessage, { error: error.message, page });
-      throw new Error(errorMessage);
-    }
-
-    if (!data || data.length === 0) {
-      hasMore = false;
-      break;
-    }
-
-    // Transform Supabase data to Location type
-    const locations: Location[] = (data as unknown as LocationDbRow[]).map((row) =>
-      transformDbRowToLocation(row),
-    );
-
-    allLocations.push(...locations);
-
-    // Check if there are more pages
-    hasMore = data.length === limit;
-    page++;
-
-    // Safety limit to prevent infinite loops
-    if (page > 100) {
-      logger.warn("Reached pagination safety limit when fetching locations");
-      break;
-    }
-  }
-
-  if (allLocations.length === 0) {
-    const errorMessage = "No locations found in database. Please ensure locations are seeded.";
-    logger.error(errorMessage);
-    throw new Error(errorMessage);
-  }
-
-  return allLocations;
-}
+import { fetchAllLocations } from "@/lib/locations/locationService";
+import { isDiningLocation } from "@/lib/mealFiltering";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -206,7 +138,7 @@ export async function generateTripFromBuilderData(
   tripId: string,
 ): Promise<GeneratedTripResult> {
   // Fetch locations filtered by selected cities (after ward consolidation)
-  const allLocations = await fetchAllLocations(builderData.cities);
+  const allLocations = await fetchAllLocations({ cities: builderData.cities });
 
   // Generate itinerary using existing generator
   const rawItinerary = await generateItinerary(builderData);
@@ -221,76 +153,25 @@ export async function generateTripFromBuilderData(
     daysCount: itinerary.days.length,
   });
 
-  // Get restaurants for meal planning
-  // Filter for actual dining establishments, excluding landmarks and closed locations
-  const DINING_CATEGORIES = ["restaurant", "bar", "market", "food"];
-  const LANDMARK_PATTERNS = /castle|shrine|temple|museum|palace|tower|park|garden|observatory|gate|historic|heritage|ruins|monument|jo\b|jinja|jingu|dera|taisha|-ji\b|城|神社|寺|塔|門/i;
-
-  // Google Places types that indicate dining establishments
-  const DINING_GOOGLE_TYPES = [
-    "restaurant",
-    "cafe",
-    "coffee_shop",
-    "bar",
-    "bakery",
-    "ramen_restaurant",
-    "sushi_restaurant",
-    "japanese_restaurant",
-    "fast_food_restaurant",
-    "meal_takeaway",
-  ];
-
-  const restaurants = allLocations.filter(
-    (loc) => {
-      // Exclude permanently closed locations
-      if (loc.businessStatus === "PERMANENTLY_CLOSED") {
-        return false;
-      }
-
-      // Check Google primary type first (most accurate)
-      if (loc.googlePrimaryType && DINING_GOOGLE_TYPES.includes(loc.googlePrimaryType)) {
-        return true;
-      }
-
-      // Check Google types array
-      if (loc.googleTypes?.some(type => DINING_GOOGLE_TYPES.includes(type))) {
-        return true;
-      }
-
-      // Fallback to category-based filtering
-      // Must be in a dining category
-      const isDiningCategory = DINING_CATEGORIES.includes(loc.category || "");
-      // Must NOT match landmark name patterns (safety check for miscategorized locations)
-      const isLandmark = LANDMARK_PATTERNS.test(loc.name);
-      // Include if it's a restaurant keyword even if category is wrong
-      const hasRestaurantKeyword = /restaurant|ramen|sushi|izakaya|cafe|café|dining/i.test(loc.name);
-
-      return (isDiningCategory && !isLandmark) || (hasRestaurantKeyword && !isLandmark);
-    }
-  );
-
-  // Build sets of already-used locations from the itinerary
-  // This prevents meal recommendations from duplicating existing activities
-  const usedLocationIds = new Set<string>();
-  const usedLocationNames = new Set<string>();
-
-  for (const day of itinerary.days) {
-    for (const activity of day.activities) {
-      if (activity.kind === "place" && activity.locationId) {
-        usedLocationIds.add(activity.locationId);
-      }
-      if (activity.kind === "place" && activity.title) {
-        usedLocationNames.add(activity.title.toLowerCase().trim());
-      }
-    }
-  }
-
   // Auto-meal insertion is disabled in favor of post-generation smart prompts.
   // Users can now choose to add meals via the SmartPromptsDrawer after viewing
   // their generated itinerary. This provides more control and transparency.
   //
   // To re-enable auto-meal insertion, uncomment the following code:
   //
+  // const restaurants = allLocations.filter(isDiningLocation);
+  // const usedLocationIds = new Set<string>();
+  // const usedLocationNames = new Set<string>();
+  // for (const day of itinerary.days) {
+  //   for (const activity of day.activities) {
+  //     if (activity.kind === "place" && activity.locationId) {
+  //       usedLocationIds.add(activity.locationId);
+  //     }
+  //     if (activity.kind === "place" && activity.title) {
+  //       usedLocationNames.add(activity.title.toLowerCase().trim());
+  //     }
+  //   }
+  // }
   // const daysWithMeals: typeof itinerary.days = [];
   // for (const day of itinerary.days) {
   //   const dayWithMeals = await insertMealActivities(
@@ -302,12 +183,8 @@ export async function generateTripFromBuilderData(
   //   );
   //   daysWithMeals.push(dayWithMeals);
   // }
-  //
-  // itinerary = {
-  //   ...itinerary,
-  //   days: daysWithMeals,
-  // };
-  void restaurants; // Silence unused variable warning
+  // itinerary = { ...itinerary, days: daysWithMeals };
+  void isDiningLocation; // Silence unused import warning (used in commented code above)
 
   // Convert to Trip domain model
   const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);
@@ -340,6 +217,101 @@ function parsePriceLevel(minBudget?: string): { level: number; type: "numeric" |
 }
 
 /**
+ * Maximum activity duration per day in minutes (12 hours)
+ */
+const MAX_DAY_DURATION_MINUTES = 12 * 60;
+
+/**
+ * Budget tolerance threshold (10% over budget is acceptable)
+ */
+const BUDGET_TOLERANCE = 1.1;
+
+/**
+ * Validates that a day doesn't exceed the maximum activity duration
+ */
+function validateDayDuration(day: TripDay, dayIndex: number): string[] {
+  const issues: string[] = [];
+  const totalDuration = day.activities.reduce((sum, activity) => sum + activity.duration, 0);
+
+  if (totalDuration > MAX_DAY_DURATION_MINUTES) {
+    issues.push(
+      `Day ${dayIndex + 1} is overpacked (${Math.round(totalDuration / 60)} hours of activities)`,
+    );
+  }
+
+  return issues;
+}
+
+/**
+ * Calculates the cost of a day's activities and validates against per-day budget
+ */
+function validateDayBudget(
+  day: TripDay,
+  dayIndex: number,
+  perDayBudget: number | undefined,
+): { issues: string[]; cost: number } {
+  const issues: string[] = [];
+  let dayCost = 0;
+
+  day.activities.forEach((activity) => {
+    if (activity.location?.minBudget) {
+      const priceInfo = parsePriceLevel(activity.location.minBudget);
+      if (priceInfo.type === "numeric" && priceInfo.level > 0) {
+        dayCost += priceInfo.level;
+      }
+    }
+  });
+
+  if (perDayBudget !== undefined && dayCost > perDayBudget * BUDGET_TOLERANCE) {
+    const percentOver = Math.round((dayCost / perDayBudget - 1) * 100);
+    issues.push(
+      `Day ${dayIndex + 1} exceeds per-day budget (¥${dayCost} vs ¥${perDayBudget} budget, ${percentOver}% over)`,
+    );
+  }
+
+  return { issues, cost: dayCost };
+}
+
+/**
+ * Validates that total trip cost doesn't exceed total budget
+ */
+function validateTotalBudget(totalCost: number, totalBudget: number | undefined): string[] {
+  const issues: string[] = [];
+
+  if (totalBudget !== undefined && totalCost > totalBudget * BUDGET_TOLERANCE) {
+    const percentOver = Math.round((totalCost / totalBudget - 1) * 100);
+    issues.push(
+      `Total trip cost (¥${totalCost}) exceeds total budget (¥${totalBudget}, ${percentOver}% over)`,
+    );
+  }
+
+  return issues;
+}
+
+/**
+ * Validates that activities don't conflict with typical nap times (1pm-3pm)
+ * Only applies when children are present in the travel group
+ */
+function validateNapScheduling(day: TripDay, dayIndex: number): string[] {
+  const issues: string[] = [];
+
+  const conflictingActivities = day.activities.filter((activity) => {
+    if (!activity.startTime) return false;
+    const parts = activity.startTime.split(":");
+    if (parts.length < 1) return false;
+    const hours = Number(parts[0]);
+    if (Number.isNaN(hours)) return false;
+    return hours >= 13 && hours < 15;
+  });
+
+  if (conflictingActivities.length > 0) {
+    issues.push(`Day ${dayIndex + 1} has activities during typical nap time (1pm-3pm)`);
+  }
+
+  return issues;
+}
+
+/**
  * Validates that a trip meets soft constraints
  */
 export function validateTripConstraints(trip: Trip): {
@@ -350,42 +322,21 @@ export function validateTripConstraints(trip: Trip): {
 
   // Check for overpacked days
   trip.days.forEach((day, index) => {
-    const totalDuration = day.activities.reduce((sum, activity) => sum + activity.duration, 0);
-    const maxDuration = 12 * 60; // 12 hours in minutes
-
-    if (totalDuration > maxDuration) {
-      issues.push(`Day ${index + 1} is overpacked (${Math.round(totalDuration / 60)} hours of activities)`);
-    }
+    issues.push(...validateDayDuration(day, index));
   });
 
   // Check budget constraints
   const budget = trip.travelerProfile.budget;
   if (budget.perDay !== undefined || budget.total !== undefined) {
     let totalCost = 0;
-    
-    trip.days.forEach((day, index) => {
-      let dayCost = 0;
-      
-      day.activities.forEach((activity) => {
-        if (activity.location?.minBudget) {
-          const priceInfo = parsePriceLevel(activity.location.minBudget);
-          if (priceInfo.type === "numeric" && priceInfo.level > 0) {
-            dayCost += priceInfo.level;
-            totalCost += priceInfo.level;
-          }
-        }
-      });
 
-      // Check per-day budget
-      if (budget.perDay !== undefined && dayCost > budget.perDay * 1.1) {
-        issues.push(`Day ${index + 1} exceeds per-day budget (¥${dayCost} vs ¥${budget.perDay} budget, ${Math.round((dayCost / budget.perDay - 1) * 100)}% over)`);
-      }
+    trip.days.forEach((day, index) => {
+      const { issues: dayIssues, cost } = validateDayBudget(day, index, budget.perDay);
+      issues.push(...dayIssues);
+      totalCost += cost;
     });
 
-    // Check total budget
-    if (budget.total !== undefined && totalCost > budget.total * 1.1) {
-      issues.push(`Total trip cost (¥${totalCost}) exceeds total budget (¥${budget.total}, ${Math.round((totalCost / budget.total - 1) * 100)}% over)`);
-    }
+    issues.push(...validateTotalBudget(totalCost, budget.total));
   }
 
   // Check for backtracking (simplified - would need routing data)
@@ -394,19 +345,7 @@ export function validateTripConstraints(trip: Trip): {
   // Check nap windows if children present
   if (trip.travelerProfile.group.type === "family" && trip.travelerProfile.group.childrenAges) {
     trip.days.forEach((day, index) => {
-      // Check if activities conflict with typical nap times (1pm-3pm)
-      const conflictingActivities = day.activities.filter((activity) => {
-        if (!activity.startTime) return false;
-        const parts = activity.startTime.split(":");
-        if (parts.length < 1) return false;
-        const hours = Number(parts[0]);
-        if (Number.isNaN(hours)) return false;
-        return hours >= 13 && hours < 15;
-      });
-
-      if (conflictingActivities.length > 0) {
-        issues.push(`Day ${index + 1} has activities during typical nap time (1pm-3pm)`);
-      }
+      issues.push(...validateNapScheduling(day, index));
     });
   }
 
