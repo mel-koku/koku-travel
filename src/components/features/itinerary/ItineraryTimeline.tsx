@@ -478,6 +478,25 @@ export const ItineraryTimeline = ({
     });
   }, [dayIndex, setModel]);
 
+  const handleDayStartTimeChange = useCallback(
+    (startTime: string) => {
+      setModel((current) => {
+        const nextDays = current.days.map((entry, index) => {
+          if (index !== dayIndex) return entry;
+          return {
+            ...entry,
+            bounds: {
+              ...(entry.bounds ?? {}),
+              startTime,
+            },
+          };
+        });
+        return { ...current, days: nextDays };
+      });
+    },
+    [dayIndex, setModel]
+  );
+
   // Get the active activity for DragOverlay
   const activeActivity = activeId
     ? extendedActivities.find((a) => a.id === activeId)
@@ -512,6 +531,7 @@ export const ItineraryTimeline = ({
             onSkipSuggestion={onSkipSuggestion}
             loadingSuggestionId={loadingSuggestionId}
             conflicts={conflicts}
+            onDayStartTimeChange={handleDayStartTimeChange}
           />
 
         {/* City Transition Display */}
