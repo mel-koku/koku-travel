@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const photoNameParam = searchParams.get("photoName");
+  // Accept both 'photoName' (new) and 'reference' (legacy) parameters
+  const photoNameParam = searchParams.get("photoName") ?? searchParams.get("reference");
 
   if (!photoNameParam) {
     return badRequest("Missing required query parameter 'photoName'.");
