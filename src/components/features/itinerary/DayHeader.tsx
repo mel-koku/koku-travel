@@ -10,6 +10,7 @@ import { DayRefinementButtons } from "./DayRefinementButtons";
 import { DaySuggestions } from "./DaySuggestions";
 import { DayTips } from "./DayTips";
 import { DayConflictSummary } from "./ConflictBadge";
+import { DayStartTimePicker } from "./DayStartTimePicker";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 
@@ -28,6 +29,8 @@ type DayHeaderProps = {
   loadingSuggestionId?: string | null;
   // Conflicts for this day
   conflicts?: ItineraryConflict[];
+  // Day start time callback
+  onDayStartTimeChange?: (startTime: string) => void;
 };
 
 export function DayHeader({
@@ -43,6 +46,7 @@ export function DayHeader({
   onSkipSuggestion,
   loadingSuggestionId,
   conflicts,
+  onDayStartTimeChange,
 }: DayHeaderProps) {
 // Calculate the date for this day
   const dayDate = useMemo(() => {
@@ -228,24 +232,35 @@ export function DayHeader({
             </p>
           )}
         </div>
-        <div className="flex items-center gap-2 text-sm text-warm-gray">
-          <svg
-            className="h-4 w-4 text-sage"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span className="font-semibold text-sage">{durationLabel}</span>
-          {totalDuration > 0 && (
-            <span className="text-foreground-secondary">· time at locations only</span>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-warm-gray">
+          <div className="flex items-center gap-2">
+            <svg
+              className="h-4 w-4 text-sage"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span className="font-semibold text-sage">{durationLabel}</span>
+            {totalDuration > 0 && (
+              <span className="text-foreground-secondary">· time at locations only</span>
+            )}
+          </div>
+          {onDayStartTimeChange && (
+            <>
+              <span className="text-border">|</span>
+              <DayStartTimePicker
+                currentTime={day.bounds?.startTime ?? "09:00"}
+                onChange={onDayStartTimeChange}
+              />
+            </>
           )}
         </div>
         {/* Conflict Summary */}
