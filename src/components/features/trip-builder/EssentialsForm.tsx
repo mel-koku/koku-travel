@@ -13,15 +13,6 @@ type EssentialsFormValues = {
   end?: string;
 };
 
-const DAY_START_OPTIONS = [
-  { value: "08:00", label: "8:00 AM" },
-  { value: "09:00", label: "9:00 AM" },
-  { value: "10:00", label: "10:00 AM" },
-  { value: "11:00", label: "11:00 AM" },
-] as const;
-
-const DEFAULT_DAY_START = "09:00";
-
 export type EssentialsFormProps = {
   onValidityChange?: (isValid: boolean) => void;
 };
@@ -93,20 +84,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     },
     [setData]
   );
-
-  // Handle day start time change
-  const handleDayStartTimeChange = useCallback(
-    (time: string) => {
-      setData((prev) => ({
-        ...prev,
-        dayStartTime: time,
-      }));
-    },
-    [setData]
-  );
-
-  // Get current day start time (default to 9:00 AM if not set)
-  const currentDayStartTime = data.dayStartTime ?? DEFAULT_DAY_START;
 
   // Sync form values to context on change
   useEffect(() => {
@@ -206,29 +183,6 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
           value={data.entryPoint}
           onChange={handleEntryPointChange}
         />
-      </div>
-
-      <div>
-        <h4 className="text-sm font-medium text-charcoal">Day Start Time</h4>
-        <p className="mt-1 mb-3 text-xs text-stone">
-          What time do you plan to start each day?
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {DAY_START_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => handleDayStartTimeChange(option.value)}
-              className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                currentDayStartTime === option.value
-                  ? "bg-sage text-white"
-                  : "bg-surface text-charcoal hover:bg-sage/10 border border-border"
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
       </div>
     </div>
   );
