@@ -115,6 +115,7 @@ export const ItineraryShell = ({
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
+  const [isOptimizing, setIsOptimizing] = useState(false);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
   // Ref to store scheduleUserPlanning for use in handleReplaceSelect (avoids initialization order issues)
@@ -536,6 +537,36 @@ export const ItineraryShell = ({
     });
   }, []);
 
+  const handleOptimizeRoute = useCallback(async () => {
+    if (!currentDay || isOptimizing) return;
+
+    setIsOptimizing(true);
+    try {
+      // Use trip entry point as start (same for all days)
+      const startPoint = tripBuilderData?.entryPoint;
+
+      const response = await fetch("/api/itinerary/optimize-route", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ day: currentDay, startPoint }),
+      });
+
+      const data = await response.json();
+      if (data.optimized && data.day) {
+        // Update model with optimized day
+        const nextDays = model.days.map((d, i) =>
+          i === safeSelectedDay ? data.day : d
+        );
+        const nextItinerary = { ...model, days: nextDays };
+        scheduleUserPlanning(nextItinerary);
+      }
+    } catch (error) {
+      logger.error("Failed to optimize route", error);
+    } finally {
+      setIsOptimizing(false);
+    }
+  }, [currentDay, isOptimizing, safeSelectedDay, tripBuilderData, model, scheduleUserPlanning]);
+
   // Wrapper for onAcceptSuggestion - the prop change from AppState will trigger
   // replanning via the serializedItinerary effect
   const handleAcceptSuggestion = useCallback(
@@ -602,14 +633,28 @@ export const ItineraryShell = ({
             )}
 
             {/* Day Selector Dropdown */}
-            <div className="mt-3">
-              <DaySelector
-                totalDays={days.length}
-                selected={safeSelectedDay}
-                onChange={handleSelectDayChange}
-                labels={days.map((day) => day.dateLabel ?? "")}
-                tripStartDate={tripStartDate}
-              />
+            <div className="mt-3 flex items-center gap-2">
+              <div className="flex-1">
+                <DaySelector
+                  totalDays={days.length}
+                  selected={safeSelectedDay}
+                  onChange={handleSelectDayChange}
+                  labels={days.map((day) => day.dateLabel ?? "")}
+                  tripStartDate={tripStartDate}
+                />
+              </div>
+              <button
+                onClick={handleOptimizeRoute}
+                disabled={isOptimizing || !currentDay?.activities?.length}
+                className="rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-charcoal shadow-sm transition hover:bg-stone/5 disabled:opacity-50"
+                title="Optimize route order to minimize travel"
+              >
+                {isOptimizing ? (
+                  <span className="animate-pulse">Optimizing...</span>
+                ) : (
+                  "Optimize Route"
+                )}
+              </button>
             </div>
           </div>
 
