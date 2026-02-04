@@ -10,6 +10,7 @@ import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { isDiningLocation } from "@/lib/mealFiltering";
+import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -122,6 +123,36 @@ function generateDayExplanation(
 }
 
 /**
+ * Optimize activity order for each day independently using nearest-neighbor algorithm.
+ * Each day is optimized starting from the trip's entry point (airport/station).
+ * Days are independent because users typically return to hotels at end of each day.
+ */
+function optimizeItineraryRoutes(
+  itinerary: Itinerary,
+  builderData: TripBuilderData
+): Itinerary {
+  // Use entry point as start for all days (airport/station where trip begins)
+  const startPoint = builderData.entryPoint;
+
+  const optimizedDays = itinerary.days.map((day) => {
+    const result = optimizeRouteOrder(day.activities, startPoint);
+
+    if (!result.orderChanged) {
+      return day;
+    }
+
+    const activityMap = new Map(day.activities.map(a => [a.id, a]));
+    const reorderedActivities = result.order
+      .map(id => activityMap.get(id))
+      .filter((a): a is ItineraryActivity => a !== undefined);
+
+    return { ...day, activities: reorderedActivities };
+  });
+
+  return { ...itinerary, days: optimizedDays };
+}
+
+/**
  * Result from generating a trip, including both domain model and storage format
  */
 export type GeneratedTripResult = {
@@ -143,9 +174,12 @@ export async function generateTripFromBuilderData(
   // Generate itinerary using existing generator
   const rawItinerary = await generateItinerary(builderData);
 
+  // Optimize route order before planning times
+  const optimizedItinerary = optimizeItineraryRoutes(rawItinerary, builderData);
+
   // Schedule the itinerary to add arrival/departure times
   // This uses the dayStartTime from builderData or defaults to 09:00
-  const itinerary = await planItinerary(rawItinerary, {
+  const itinerary = await planItinerary(optimizedItinerary, {
     defaultDayStart: builderData.dayStartTime ?? "09:00",
   });
   logger.info("Scheduled itinerary with times", {
