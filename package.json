@@ -40,6 +40,7 @@
     "dq:report": "tsx scripts/data-quality/dq.ts report",
     "dq:list": "tsx scripts/data-quality/dq.ts list",
     "enrich:scraped": "tsx scripts/enrich-scraped-data.ts",
+    "enrich:missing": "tsx scripts/enrich-missing-places.ts",
     "clean:test-data": "tsx scripts/clean-test-data.ts",
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
@@ -99,6 +100,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.72.1",
     "@next/bundle-analyzer": "^16.1.6",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.1.0",
