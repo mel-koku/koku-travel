@@ -378,6 +378,91 @@ const truncatedNameRule: Rule = {
 };
 
 /**
+ * Categories where single-word names are likely incomplete
+ */
+const CATEGORIES_NEEDING_FULL_NAMES = [
+  'culture',
+  'landmark',
+  'museum',
+  'attraction',
+  'entertainment',
+];
+
+/**
+ * Rule: Detect single-word names for categories that typically need fuller names
+ */
+const shortIncompleteNameRule: Rule = {
+  id: 'short-incomplete-name',
+  name: 'Short Incomplete Name',
+  description: 'Detects single-word names for culture/landmark/museum categories that likely need fuller names',
+  category: 'names',
+  issueTypes: ['SHORT_INCOMPLETE_NAME'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Only check relevant categories
+      if (!CATEGORIES_NEEDING_FULL_NAMES.includes(loc.category?.toLowerCase())) continue;
+
+      // Check if name is a single word (no spaces)
+      const words = loc.name.trim().split(/\s+/);
+      if (words.length > 1) continue;
+
+      // Skip if name is very short (likely abbreviation or special case)
+      if (loc.name.length < 4) continue;
+
+      // Skip common short names that are complete (e.g., proper nouns)
+      const shortNameExceptions = ['spa', 'inn', 'pub', 'bar'];
+      if (shortNameExceptions.includes(loc.name.toLowerCase())) continue;
+
+      const override = getNameOverride(loc.id);
+
+      issues.push({
+        id: `${loc.id}-short-name`,
+        type: 'SHORT_INCOMPLETE_NAME',
+        severity: 'high',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Single-word name "${loc.name}" in ${loc.category} category - likely incomplete`,
+        details: {
+          category: loc.category,
+          wordCount: 1,
+          hasPlaceId: !!loc.place_id,
+        },
+        suggestedFix: override
+          ? {
+              action: 'rename',
+              newValue: override,
+              reason: 'Override configured',
+              confidence: 100,
+              source: 'override',
+            }
+          : loc.place_id
+            ? {
+                action: 'rename',
+                reason: 'Needs Google Places lookup to determine full name',
+                confidence: 70,
+                source: 'detection',
+              }
+            : {
+                action: 'rename',
+                reason: 'Needs manual lookup or place_id for Google verification',
+                confidence: 30,
+                source: 'detection',
+              },
+      });
+    }
+
+    return issues;
+  },
+};
+
+/**
  * Convert ALL CAPS string to Title Case
  */
 function toTitleCase(str: string): string {
@@ -396,4 +481,5 @@ export const nameRules: Rule[] = [
   genericPluralRule,
   genericArticleRule,
   truncatedNameRule,
+  shortIncompleteNameRule,
 ];

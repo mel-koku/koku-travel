@@ -41,7 +41,7 @@ export async function fetchAllLocations(): Promise<Location[]> {
   while (hasMore) {
     const { data, error } = await supabase
       .from('locations')
-      .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates')
+      .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types')
       .order('name')
       .range(offset, offset + pageSize - 1);
 
@@ -74,7 +74,7 @@ export async function fetchLocations(options: {
 
   let query = supabase
     .from('locations')
-    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates');
+    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types');
 
   if (options.city) {
     query = query.ilike('city', options.city);
@@ -150,7 +150,7 @@ export async function getLocationById(id: string): Promise<Location | null> {
 
   const { data, error } = await supabase
     .from('locations')
-    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates')
+    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types')
     .eq('id', id)
     .single();
 

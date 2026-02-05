@@ -9,9 +9,11 @@
  *   npm run dq fix --dry-run            # Preview fixes
  *   npm run dq fix                      # Apply fixes
  *   npm run dq report                   # Generate health report
+ *   npm run dq export                   # Export locations for enrichment
  *   npm run dq list                     # List rules/fixers
  */
 
+import { writeFileSync } from 'fs';
 import { parseArgs, printHelp, colors, formatTable, severityColor } from './lib/cli';
 import { fetchAllLocations, fetchLocations } from './lib/db';
 import { loadOverrides } from './lib/overrides';
@@ -246,9 +248,166 @@ function runList(): void {
   console.log();
 }
 
+/**
+ * Export locations that need Google Places enrichment
+ */
+async function runExport(options: {
+  output?: string;
+  includeAll?: boolean;
+}): Promise<void> {
+  console.log(colors.bold('\nExporting locations for enrichment...\n'));
+
+  const outputFile = options.output || 'enrichment-targets.json';
+
+  // Fetch all locations
+  const locations = await fetchAllLocations();
+  const overrides = loadOverrides();
+
+  console.log(`Analyzing ${locations.length} locations...\n`);
+
+  // Run audit to find issues
+  const allIssues: Issue[] = [];
+  for (const rule of allRules) {
+    try {
+      const issues = await rule.detect({ locations, overrides, options: {} });
+      allIssues.push(...issues);
+    } catch (error) {
+      console.error(`Error running rule ${rule.id}:`, error);
+    }
+  }
+
+  // Issue types that can be fixed with Google Places data
+  const enrichableIssueTypes = [
+    'SHORT_INCOMPLETE_NAME',
+    'TRUNCATED_NAME',
+    'EVENT_NAME_MISMATCH',
+    'GOOGLE_NAME_MISMATCH',
+    'MISSING_DESC',
+    'TRUNCATED_DESC',
+    'ADDRESS_AS_DESC',
+    'MISSING_OPERATING_HOURS',
+    'INVALID_RATING',
+  ];
+
+  // Get unique location IDs from enrichable issues
+  const flaggedLocationIds = new Set(
+    allIssues
+      .filter(i => enrichableIssueTypes.includes(i.type))
+      .map(i => i.locationId)
+  );
+
+  // Build export targets
+  interface EnrichmentTarget {
+    id: string;
+    name: string;
+    city: string;
+    region: string;
+    category: string;
+    placeId: string | null;
+    coordinates: { lat: number; lng: number } | null;
+    issues: string[];
+    priority: 'high' | 'medium' | 'low';
+  }
+
+  const targets: EnrichmentTarget[] = [];
+
+  for (const loc of locations) {
+    const locIssues = allIssues.filter(i => i.locationId === loc.id);
+    const enrichableIssues = locIssues.filter(i => enrichableIssueTypes.includes(i.type));
+
+    // Include if: has enrichable issues, OR includeAll and missing place_id
+    const shouldInclude = enrichableIssues.length > 0 ||
+      (options.includeAll && !loc.place_id);
+
+    if (!shouldInclude) continue;
+
+    // Determine priority
+    let priority: 'high' | 'medium' | 'low' = 'low';
+    if (enrichableIssues.some(i => i.severity === 'critical' || i.severity === 'high')) {
+      priority = 'high';
+    } else if (enrichableIssues.some(i => i.severity === 'medium')) {
+      priority = 'medium';
+    }
+
+    // Higher priority if we have place_id (direct lookup) vs need to search
+    if (!loc.place_id && priority === 'high') {
+      priority = 'medium'; // Downgrade because needs search first
+    }
+
+    targets.push({
+      id: loc.id,
+      name: loc.name,
+      city: loc.city,
+      region: loc.region,
+      category: loc.category,
+      placeId: loc.place_id || null,
+      coordinates: loc.coordinates || null,
+      issues: enrichableIssues.map(i => i.type),
+      priority,
+    });
+  }
+
+  // Sort by priority (high first), then by whether they have place_id
+  targets.sort((a, b) => {
+    const priorityOrder = { high: 0, medium: 1, low: 2 };
+    if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    }
+    // Prefer locations with place_id (direct lookup is cheaper)
+    if (a.placeId && !b.placeId) return -1;
+    if (!a.placeId && b.placeId) return 1;
+    return 0;
+  });
+
+  // Summary statistics
+  const withPlaceId = targets.filter(t => t.placeId).length;
+  const withoutPlaceId = targets.filter(t => !t.placeId).length;
+  const highPriority = targets.filter(t => t.priority === 'high').length;
+  const mediumPriority = targets.filter(t => t.priority === 'medium').length;
+  const lowPriority = targets.filter(t => t.priority === 'low').length;
+
+  // Write output
+  const output = {
+    generatedAt: new Date().toISOString(),
+    summary: {
+      total: targets.length,
+      withPlaceId,
+      withoutPlaceId,
+      byPriority: {
+        high: highPriority,
+        medium: mediumPriority,
+        low: lowPriority,
+      },
+      estimatedApiCalls: {
+        directLookup: withPlaceId,
+        searchThenLookup: withoutPlaceId * 2, // search + details
+        total: withPlaceId + (withoutPlaceId * 2),
+      },
+    },
+    targets,
+  };
+
+  writeFileSync(outputFile, JSON.stringify(output, null, 2));
+
+  console.log(colors.bold('Export Summary:\n'));
+  console.log(`  Total targets: ${colors.bold(String(targets.length))}`);
+  console.log(`  With place_id (direct lookup): ${colors.green(String(withPlaceId))}`);
+  console.log(`  Without place_id (search first): ${colors.yellow(String(withoutPlaceId))}`);
+  console.log();
+  console.log(`  Priority breakdown:`);
+  console.log(`    High: ${colors.red(String(highPriority))}`);
+  console.log(`    Medium: ${colors.yellow(String(mediumPriority))}`);
+  console.log(`    Low: ${colors.blue(String(lowPriority))}`);
+  console.log();
+  console.log(`  Estimated API calls: ${colors.bold(String(output.summary.estimatedApiCalls.total))}`);
+  console.log();
+  console.log(`Output written to: ${colors.green(outputFile)}`);
+  console.log();
+}
+
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  const { command, auditOptions, fixOptions, reportOptions } = parseArgs(args);
+  const { command, auditOptions, fixOptions, reportOptions, exportOptions } = parseArgs(args);
 
   try {
     switch (command) {
@@ -262,6 +421,10 @@ async function main(): Promise<void> {
 
       case 'report':
         await runReport(reportOptions);
+        break;
+
+      case 'export':
+        await runExport(exportOptions);
         break;
 
       case 'list':

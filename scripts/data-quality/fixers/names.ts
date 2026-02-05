@@ -8,7 +8,7 @@ import { getPlaceDisplayName } from '../lib/googlePlaces';
 import { getNameOverride } from '../lib/overrides';
 
 export const nameFixer: Fixer = {
-  handles: ['EVENT_NAME_MISMATCH', 'ALL_CAPS_NAME', 'BAD_NAME_START', 'TRUNCATED_NAME'],
+  handles: ['EVENT_NAME_MISMATCH', 'ALL_CAPS_NAME', 'BAD_NAME_START', 'TRUNCATED_NAME', 'SHORT_INCOMPLETE_NAME', 'GOOGLE_NAME_MISMATCH'],
 
   async fix(issue: Issue, ctx: FixerContext): Promise<FixResult> {
     // Check for override first
@@ -23,7 +23,13 @@ export const nameFixer: Fixer = {
     }
 
     // For name issues that need lookup, try Google Places
-    if ((issue.type === 'EVENT_NAME_MISMATCH' || issue.type === 'TRUNCATED_NAME') && ctx.googleApiKey) {
+    const nameIssuesNeedingLookup = [
+      'EVENT_NAME_MISMATCH',
+      'TRUNCATED_NAME',
+      'SHORT_INCOMPLETE_NAME',
+      'GOOGLE_NAME_MISMATCH',
+    ];
+    if (nameIssuesNeedingLookup.includes(issue.type) && ctx.googleApiKey) {
       // Need to fetch the location to get place_id
       const { getLocationById } = await import('../lib/db');
       const location = await getLocationById(issue.locationId);

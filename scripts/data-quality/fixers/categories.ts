@@ -7,7 +7,7 @@ import { updateLocation } from '../lib/db';
 import { getCategoryOverride } from '../lib/overrides';
 
 export const categoryFixer: Fixer = {
-  handles: ['EVENT_WRONG_CATEGORY'],
+  handles: ['EVENT_WRONG_CATEGORY', 'ACCOMMODATION_MISCATEGORIZED'],
 
   async fix(issue: Issue, ctx: FixerContext): Promise<FixResult> {
     // Check for override first

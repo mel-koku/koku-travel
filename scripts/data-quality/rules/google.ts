@@ -254,8 +254,69 @@ const googleContentMismatchRule: Rule = {
   },
 };
 
+/**
+ * Rule: Flag single-word names that have place_id for verification
+ * These locations can be verified against Google displayName
+ */
+const googleNameVerificationNeededRule: Rule = {
+  id: 'google-name-verification-needed',
+  name: 'Google Name Verification Needed',
+  description: 'Flags single-word names with place_id that should be verified against Google displayName',
+  category: 'google',
+  issueTypes: ['GOOGLE_NAME_MISMATCH'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    // Categories where full names are expected
+    const categoriesNeedingFullNames = ['culture', 'landmark', 'museum', 'attraction', 'entertainment'];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Only check if has place_id (so we can verify)
+      if (!loc.place_id) continue;
+
+      // Only check relevant categories
+      if (!categoriesNeedingFullNames.includes(loc.category?.toLowerCase() || '')) continue;
+
+      // Check if name is single word
+      const words = loc.name.trim().split(/\s+/);
+      if (words.length > 1) continue;
+
+      // Skip very short names (abbreviations)
+      if (loc.name.length < 4) continue;
+
+      issues.push({
+        id: `${loc.id}-name-verification`,
+        type: 'GOOGLE_NAME_MISMATCH',
+        severity: 'medium',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Single-word name "${loc.name}" has place_id - should verify against Google displayName`,
+        details: {
+          category: loc.category,
+          placeId: loc.place_id,
+          wordCount: 1,
+        },
+        suggestedFix: {
+          action: 'rename',
+          reason: 'Use Google Places API to get full displayName',
+          confidence: 70,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
 export const googleRules: Rule[] = [
   googleTypeMismatchRule,
   googleAirportMismatchRule,
   googleContentMismatchRule,
+  googleNameVerificationNeededRule,
 ];
