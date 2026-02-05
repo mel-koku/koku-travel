@@ -176,7 +176,116 @@ const accommodationMiscategorizedRule: Rule = {
   },
 };
 
+/**
+ * Bar/restaurant keywords indicating a location is PRIMARILY a bar/food establishment
+ * These are checked in the NAME only with word boundaries
+ */
+const BAR_FOOD_NAME_PATTERNS = [
+  /\bbar\b/i, /\bbaru\b/i, /\bpub\b/i, /\bizakaya\b/i,
+  /\bbrewery\b/i, /\bdistillery\b/i, /\bwinery\b/i, /\btavern\b/i,
+  /\bramen\b/i, /\bsushi\b/i, /\budon\b/i, /\bsoba\b/i,
+  /\byakitori\b/i, /\btonkatsu\b/i, /\bgyoza\b/i,
+  /\bokonomiyaki\b/i, /\btakoyaki\b/i,
+  /\bbistro\b/i, /\bdiner\b/i, /\beatery\b/i,
+  /\bcafe\b/i, /\bcafé\b/i, /\bcoffee\b/i,
+];
+
+/**
+ * Keywords that indicate it's a legitimate landmark (not food) - checked in name
+ */
+const LANDMARK_KEYWORDS = [
+  'castle', 'temple', 'shrine', 'park', 'garden', 'museum', 'tower',
+  'bridge', 'station', 'monument', 'memorial', 'palace', 'ruins',
+  'mountain', 'falls', 'waterfall', 'beach', 'island', 'lake',
+  'observatory', 'viewpoint', 'street', 'district', 'market', 'cave',
+  'forest', 'shore', 'coast', 'village', 'town', 'complex', 'center',
+  'cruise', 'mound', 'burial', 'onsen', 'bath',
+];
+
+/**
+ * Rule: Detect landmarks that are actually bars/restaurants
+ * Conservative rule - only flags based on NAME keywords (not description)
+ */
+const landmarkMiscategorizedRule: Rule = {
+  id: 'landmark-miscategorized',
+  name: 'Landmark Miscategorized',
+  description: 'Detects locations in landmark category that are actually bars or restaurants',
+  category: 'categories',
+  issueTypes: ['LANDMARK_MISCATEGORIZED'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Only check landmark category
+      if (loc.category?.toLowerCase() !== 'landmark') continue;
+
+      const nameLower = loc.name.toLowerCase();
+
+      // Skip if name clearly indicates a landmark
+      const isLandmark = LANDMARK_KEYWORDS.some(keyword =>
+        nameLower.includes(keyword)
+      );
+      if (isLandmark) continue;
+
+      // Check for bar/food patterns in name using word boundaries
+      const matchedPattern = BAR_FOOD_NAME_PATTERNS.find(pattern =>
+        pattern.test(loc.name)
+      );
+
+      if (!matchedPattern) continue;
+
+      // Extract the matched keyword for reporting
+      const match = loc.name.match(matchedPattern);
+      const matchedKeyword = match ? match[0].toLowerCase() : 'unknown';
+
+      // Determine suggested category
+      const barPatterns = [/\bbar\b/i, /\bbaru\b/i, /\bpub\b/i, /\bizakaya\b/i, /\bbrewery\b/i, /\bdistillery\b/i, /\bwinery\b/i, /\btavern\b/i];
+      const isBar = barPatterns.some(p => p.test(loc.name));
+      const suggestedCategory = isBar ? 'bar' : 'food';
+
+      const override = getCategoryOverride(loc.id);
+
+      issues.push({
+        id: `${loc.id}-landmark-food`,
+        type: 'LANDMARK_MISCATEGORIZED',
+        severity: 'high',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `"${loc.name}" is in landmark category but appears to be a ${suggestedCategory} establishment (keyword: "${matchedKeyword}")`,
+        details: {
+          currentCategory: loc.category,
+          matchedKeyword,
+          suggestedCategory,
+        },
+        suggestedFix: override
+          ? {
+              action: 'update_category',
+              newValue: override,
+              reason: 'Override configured',
+              confidence: 100,
+              source: 'override',
+            }
+          : {
+              action: 'update_category',
+              newValue: suggestedCategory,
+              reason: `Name indicates ${suggestedCategory} establishment`,
+              confidence: 85,
+              source: 'detection',
+            },
+      });
+    }
+
+    return issues;
+  },
+};
+
 export const categoryRules: Rule[] = [
   eventWrongCategoryRule,
   accommodationMiscategorizedRule,
+  landmarkMiscategorizedRule,
 ];
