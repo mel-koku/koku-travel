@@ -51,6 +51,17 @@ export type GapAction =
       };
     }
   | {
+      type: "quick_meal";
+      mealType: "breakfast" | "lunch" | "dinner";
+      timeSlot: "morning" | "afternoon" | "evening";
+      afterActivityId?: string;
+      /** Context for smarter messaging */
+      context?: {
+        previousActivityName?: string;
+        nearbyArea?: string;
+      };
+    }
+  | {
       type: "add_transport";
       fromActivityId: string;
       toActivityId: string;
@@ -117,6 +128,7 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
     const firstActivity = morningActivities[0];
     const cityName = day.cityId ?? "the area";
 
+    // Restaurant breakfast option
     gaps.push({
       id: `meal-breakfast-${day.id}`,
       type: "meal",
@@ -129,6 +141,25 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
       icon: "Coffee",
       action: {
         type: "add_meal",
+        mealType: "breakfast",
+        timeSlot: "morning",
+        context: {
+          nearbyArea: firstActivity?.neighborhood ?? cityName,
+        },
+      },
+    });
+
+    // Konbini quick breakfast option
+    gaps.push({
+      id: `quick-breakfast-${day.id}`,
+      type: "meal",
+      dayIndex,
+      dayId: day.id,
+      title: "Quick breakfast (konbini)",
+      description: "Grab onigiri, sandwiches, or a hot drink from a convenience store",
+      icon: "ShoppingBag",
+      action: {
+        type: "quick_meal",
         mealType: "breakfast",
         timeSlot: "morning",
         context: {
@@ -156,6 +187,7 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
       description = `Add lunch before heading to ${firstAfternoonActivity.title}`;
     }
 
+    // Restaurant lunch option
     gaps.push({
       id: `meal-lunch-${day.id}`,
       type: "meal",
@@ -166,6 +198,27 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
       icon: "Utensils",
       action: {
         type: "add_meal",
+        mealType: "lunch",
+        timeSlot: "afternoon",
+        afterActivityId: lastMorningActivity?.id,
+        context: {
+          previousActivityName: lastMorningActivity?.title,
+          nearbyArea: lastMorningActivity?.neighborhood ?? cityName,
+        },
+      },
+    });
+
+    // Konbini quick lunch option
+    gaps.push({
+      id: `quick-lunch-${day.id}`,
+      type: "meal",
+      dayIndex,
+      dayId: day.id,
+      title: "Quick lunch (konbini)",
+      description: "Save time with bento, onigiri, or noodles from 7-Eleven, Lawson, or FamilyMart",
+      icon: "ShoppingBag",
+      action: {
+        type: "quick_meal",
         mealType: "lunch",
         timeSlot: "afternoon",
         afterActivityId: lastMorningActivity?.id,
@@ -190,6 +243,7 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
       description = `After ${lastAfternoonActivity.title}, find a great dinner spot in ${cityName}`;
     }
 
+    // Restaurant dinner option
     gaps.push({
       id: `meal-dinner-${day.id}`,
       type: "meal",
@@ -200,6 +254,26 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
       icon: "UtensilsCrossed",
       action: {
         type: "add_meal",
+        mealType: "dinner",
+        timeSlot: "evening",
+        context: {
+          previousActivityName: lastAfternoonActivity?.title,
+          nearbyArea: lastAfternoonActivity?.neighborhood ?? cityName,
+        },
+      },
+    });
+
+    // Konbini quick dinner option
+    gaps.push({
+      id: `quick-dinner-${day.id}`,
+      type: "meal",
+      dayIndex,
+      dayId: day.id,
+      title: "Quick dinner (konbini)",
+      description: "Tired? Grab a hot bento or nikuman from a konbini to eat at your hotel",
+      icon: "ShoppingBag",
+      action: {
+        type: "quick_meal",
         mealType: "dinner",
         timeSlot: "evening",
         context: {
