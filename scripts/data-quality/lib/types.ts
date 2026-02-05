@@ -22,6 +22,7 @@ export type IssueType =
   // Category issues
   | 'EVENT_WRONG_CATEGORY'   // Event name but wrong category
   | 'ACCOMMODATION_MISCATEGORIZED' // Accommodation that's actually a restaurant
+  | 'LANDMARK_MISCATEGORIZED' // Landmark that's actually a food/bar establishment
   // Google Places mismatch issues (prevents data corruption)
   | 'GOOGLE_TYPE_MISMATCH'   // Google type doesn't match our category (e.g., airport for restaurant)
   | 'GOOGLE_AIRPORT_MISMATCH' // Google says airport but name doesn't contain "airport"
