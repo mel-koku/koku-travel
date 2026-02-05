@@ -535,6 +535,55 @@ async function enrichLocations(options: {
       continue;
     }
 
+    // VALIDATION: Check for suspicious mismatches that indicate wrong place_id
+    const gType = enrichmentData.primaryType?.toLowerCase() || "";
+    const gTypes = (enrichmentData.types || []).map((t) => t.toLowerCase());
+    const ourCategory = location.category?.toLowerCase() || "";
+
+    // Check for airport mismatch (common source of data corruption)
+    if (
+      (gType === "airport" || gTypes.includes("airport")) &&
+      !location.name.toLowerCase().includes("airport")
+    ) {
+      console.warn(
+        `\n  ⚠️  SKIPPING ${location.name}: Google says it's an airport but name doesn't contain "airport"`
+      );
+      console.warn(`     This place_id may be incorrect: ${location.place_id}`);
+      results.push({
+        id: location.id,
+        name: location.name,
+        success: false,
+        error: `SUSPICIOUS: Google type is "airport" but location name is "${location.name}"`,
+      });
+      failed++;
+      continue;
+    }
+
+    // Check for food/transport mismatch
+    const transportTypes = [
+      "airport",
+      "train_station",
+      "bus_station",
+      "transit_station",
+    ];
+    if (
+      ["food", "restaurant", "cafe", "bar"].includes(ourCategory) &&
+      transportTypes.some((t) => gType === t || gTypes.includes(t))
+    ) {
+      console.warn(
+        `\n  ⚠️  SKIPPING ${location.name}: Category is "${ourCategory}" but Google type is "${gType}"`
+      );
+      console.warn(`     This place_id may be incorrect: ${location.place_id}`);
+      results.push({
+        id: location.id,
+        name: location.name,
+        success: false,
+        error: `SUSPICIOUS: Category "${ourCategory}" but Google type is "${gType}"`,
+      });
+      failed++;
+      continue;
+    }
+
     // Derive new category from Google types
     const newCategory = deriveCategory(enrichmentData, location.category);
     const categoryChanged = newCategory !== location.category;

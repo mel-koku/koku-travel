@@ -8,6 +8,7 @@ import { descriptionRules } from './descriptions';
 import { duplicateRules } from './duplicates';
 import { categoryRules } from './categories';
 import { completenessRules } from './completeness';
+import { googleRules } from './google';
 
 // All available rules
 export const allRules: Rule[] = [
@@ -16,6 +17,7 @@ export const allRules: Rule[] = [
   ...duplicateRules,
   ...categoryRules,
   ...completenessRules,
+  ...googleRules,
 ];
 
 // Rules grouped by category
@@ -25,6 +27,7 @@ export const rulesByCategory: Record<RuleCategory, Rule[]> = {
   duplicates: duplicateRules,
   categories: categoryRules,
   completeness: completenessRules,
+  google: googleRules,
 };
 
 /**
@@ -53,4 +56,4 @@ export function listRules(): Array<{ id: string; name: string; category: RuleCat
   }));
 }
 
-export { nameRules, descriptionRules, duplicateRules, categoryRules, completenessRules };
+export { nameRules, descriptionRules, duplicateRules, categoryRules, completenessRules, googleRules };

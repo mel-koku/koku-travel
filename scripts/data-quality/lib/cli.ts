@@ -13,7 +13,7 @@ export interface ParsedArgs {
   reportOptions: ReportOptions;
 }
 
-const RULE_CATEGORIES: RuleCategory[] = ['names', 'descriptions', 'duplicates', 'categories', 'completeness'];
+const RULE_CATEGORIES: RuleCategory[] = ['names', 'descriptions', 'duplicates', 'categories', 'completeness', 'google'];
 const SEVERITIES: Severity[] = ['critical', 'high', 'medium', 'low', 'info'];
 
 /**
@@ -125,7 +125,7 @@ Commands:
   help      Show this help message
 
 Audit Options:
-  --rules=<category>    Run specific rule categories (names,descriptions,duplicates,categories,completeness)
+  --rules=<category>    Run specific rule categories (names,descriptions,duplicates,categories,completeness,google)
   --severity=<level>    Filter by minimum severity (critical,high,medium,low,info)
   --json                Output in JSON format
   --limit=<n>           Limit number of issues returned

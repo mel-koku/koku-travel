@@ -20,6 +20,10 @@ export type IssueType =
   | 'GENERIC_DESC'           // Generic placeholder description
   // Category issues
   | 'EVENT_WRONG_CATEGORY'   // Event name but wrong category
+  // Google Places mismatch issues (prevents data corruption)
+  | 'GOOGLE_TYPE_MISMATCH'   // Google type doesn't match our category (e.g., airport for restaurant)
+  | 'GOOGLE_AIRPORT_MISMATCH' // Google says airport but name doesn't contain "airport"
+  | 'GOOGLE_CONTENT_MISMATCH' // Short description content conflicts with editorial summary
   // Duplicate issues
   | 'DUPLICATE_SAME_CITY'    // Same name in same city
   | 'DUPLICATE_MANY'         // Same name across multiple cities
@@ -70,9 +74,13 @@ export interface Location {
   region: string;
   category: string;
   description?: string | null;
+  short_description?: string | null;
   editorial_summary?: string | null;
   place_id?: string | null;
   coordinates?: { lat: number; lng: number } | null;
+  // Google Places data
+  google_primary_type?: string | null;
+  google_types?: string[] | null;
 }
 
 // Rule system
@@ -91,7 +99,7 @@ export interface Rule {
   detect(ctx: RuleContext): Promise<Issue[]>;
 }
 
-export type RuleCategory = 'names' | 'descriptions' | 'duplicates' | 'categories' | 'completeness';
+export type RuleCategory = 'names' | 'descriptions' | 'duplicates' | 'categories' | 'completeness' | 'google';
 
 // Fixer system
 export interface FixerContext {
