@@ -12,6 +12,7 @@ export type IssueType =
   | 'GENERIC_PLURAL_NAME'    // Generic plural like "Ramen Shops"
   | 'GENERIC_ARTICLE_NAME'   // Names like "The X"
   | 'TRUNCATED_NAME'         // Name appears cut off (e.g., "Kyoto Imperial" instead of "Kyoto Imperial Palace")
+  | 'SHORT_INCOMPLETE_NAME'  // Single-word name for culture/landmark/museum (e.g., "Kawasaki" instead of "Kawasaki World")
   // Description issues
   | 'ADDRESS_AS_DESC'        // Description is just an address/postal code
   | 'TRUNCATED_DESC'         // Description appears cut off (starts lowercase)
@@ -20,16 +21,21 @@ export type IssueType =
   | 'GENERIC_DESC'           // Generic placeholder description
   // Category issues
   | 'EVENT_WRONG_CATEGORY'   // Event name but wrong category
+  | 'ACCOMMODATION_MISCATEGORIZED' // Accommodation that's actually a restaurant
   // Google Places mismatch issues (prevents data corruption)
   | 'GOOGLE_TYPE_MISMATCH'   // Google type doesn't match our category (e.g., airport for restaurant)
   | 'GOOGLE_AIRPORT_MISMATCH' // Google says airport but name doesn't contain "airport"
   | 'GOOGLE_CONTENT_MISMATCH' // Short description content conflicts with editorial summary
+  | 'GOOGLE_NAME_MISMATCH'   // Single-word name differs from Google displayName
   // Duplicate issues
   | 'DUPLICATE_SAME_CITY'    // Same name in same city
   | 'DUPLICATE_MANY'         // Same name across multiple cities
   // Completeness issues
   | 'MISSING_COORDINATES'    // No lat/lng
-  | 'MISSING_PLACE_ID';      // No Google Place ID
+  | 'MISSING_PLACE_ID'       // No Google Place ID
+  | 'PERMANENTLY_CLOSED'     // Business is permanently closed
+  | 'MISSING_OPERATING_HOURS' // Missing operating hours for categories that need it
+  | 'INVALID_RATING';        // Rating without review_count or out of range
 
 export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 
@@ -81,6 +87,12 @@ export interface Location {
   // Google Places data
   google_primary_type?: string | null;
   google_types?: string[] | null;
+  // Business status and ratings
+  business_status?: string | null;
+  rating?: number | null;
+  review_count?: number | null;
+  // Operating hours
+  operating_hours?: Record<string, unknown> | null;
 }
 
 // Rule system

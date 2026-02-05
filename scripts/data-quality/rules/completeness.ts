@@ -111,7 +111,200 @@ const missingPlaceIdRule: Rule = {
   },
 };
 
+/**
+ * Rule: Detect permanently closed locations
+ */
+const permanentlyClosedRule: Rule = {
+  id: 'permanently-closed',
+  name: 'Permanently Closed',
+  description: 'Detects locations marked as permanently closed',
+  category: 'completeness',
+  issueTypes: ['PERMANENTLY_CLOSED'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Check if business_status is PERMANENTLY_CLOSED
+      if (loc.business_status !== 'PERMANENTLY_CLOSED') continue;
+
+      issues.push({
+        id: `${loc.id}-permanently-closed`,
+        type: 'PERMANENTLY_CLOSED',
+        severity: 'critical',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Location "${loc.name}" is permanently closed`,
+        details: {
+          businessStatus: loc.business_status,
+          category: loc.category,
+        },
+        suggestedFix: {
+          action: 'delete',
+          reason: 'Location is permanently closed and should be removed',
+          confidence: 90,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
+/**
+ * Categories where operating hours are important for trip planning
+ */
+const CATEGORIES_NEEDING_HOURS = [
+  'culture',
+  'landmark',
+  'attraction',
+  'food',
+  'restaurant',
+  'cafe',
+  'bar',
+  'entertainment',
+  'museum',
+  'shopping',
+];
+
+/**
+ * Rule: Detect locations missing operating hours
+ */
+const missingOperatingHoursRule: Rule = {
+  id: 'missing-operating-hours',
+  name: 'Missing Operating Hours',
+  description: 'Detects locations missing operating hours for categories that need them for planning',
+  category: 'completeness',
+  issueTypes: ['MISSING_OPERATING_HOURS'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Only check categories where hours matter
+      const category = loc.category?.toLowerCase() || '';
+      if (!CATEGORIES_NEEDING_HOURS.includes(category)) continue;
+
+      // Skip if has operating_hours
+      if (loc.operating_hours && Object.keys(loc.operating_hours).length > 0) continue;
+
+      issues.push({
+        id: `${loc.id}-missing-hours`,
+        type: 'MISSING_OPERATING_HOURS',
+        severity: 'low',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Location "${loc.name}" (${loc.category}) is missing operating hours`,
+        details: {
+          category: loc.category,
+          hasPlaceId: !!loc.place_id,
+        },
+        suggestedFix: loc.place_id
+          ? {
+              action: 'skip',
+              reason: 'Can fetch operating hours from Google Places API',
+              confidence: 80,
+              source: 'detection',
+            }
+          : {
+              action: 'skip',
+              reason: 'Needs place_id to fetch operating hours',
+              confidence: 0,
+              source: 'detection',
+            },
+      });
+    }
+
+    return issues;
+  },
+};
+
+/**
+ * Rule: Detect invalid ratings
+ */
+const invalidRatingRule: Rule = {
+  id: 'invalid-rating',
+  name: 'Invalid Rating',
+  description: 'Detects ratings without review count or values outside 0-5 range',
+  category: 'completeness',
+  issueTypes: ['INVALID_RATING'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      const hasRating = loc.rating !== null && loc.rating !== undefined;
+      const hasReviewCount = loc.review_count !== null && loc.review_count !== undefined;
+
+      // Case 1: Has rating but no review count
+      if (hasRating && !hasReviewCount) {
+        issues.push({
+          id: `${loc.id}-rating-no-reviews`,
+          type: 'INVALID_RATING',
+          severity: 'low',
+          locationId: loc.id,
+          locationName: loc.name,
+          city: loc.city,
+          region: loc.region,
+          message: `Location "${loc.name}" has rating (${loc.rating}) but no review count`,
+          details: {
+            rating: loc.rating,
+            reviewCount: null,
+          },
+          suggestedFix: {
+            action: 'skip',
+            reason: 'Needs Google Places lookup to get review count',
+            confidence: 50,
+            source: 'detection',
+          },
+        });
+        continue;
+      }
+
+      // Case 2: Rating out of valid range (0-5)
+      if (hasRating && (loc.rating! < 0 || loc.rating! > 5)) {
+        issues.push({
+          id: `${loc.id}-rating-out-of-range`,
+          type: 'INVALID_RATING',
+          severity: 'medium',
+          locationId: loc.id,
+          locationName: loc.name,
+          city: loc.city,
+          region: loc.region,
+          message: `Location "${loc.name}" has invalid rating: ${loc.rating} (must be 0-5)`,
+          details: {
+            rating: loc.rating,
+            reviewCount: loc.review_count,
+          },
+          suggestedFix: {
+            action: 'skip',
+            reason: 'Rating appears corrupted - needs verification',
+            confidence: 30,
+            source: 'detection',
+          },
+        });
+      }
+    }
+
+    return issues;
+  },
+};
+
 export const completenessRules: Rule[] = [
   missingCoordinatesRule,
   missingPlaceIdRule,
+  permanentlyClosedRule,
+  missingOperatingHoursRule,
+  invalidRatingRule,
 ];

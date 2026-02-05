@@ -4,13 +4,19 @@
 
 import type { AuditOptions, FixOptions, ReportOptions, RuleCategory, Severity, IssueType } from './types';
 
-export type Command = 'audit' | 'fix' | 'report' | 'list' | 'help';
+export type Command = 'audit' | 'fix' | 'report' | 'list' | 'export' | 'help';
+
+export interface ExportOptions {
+  output?: string;
+  includeAll?: boolean;
+}
 
 export interface ParsedArgs {
   command: Command;
   auditOptions: AuditOptions;
   fixOptions: FixOptions;
   reportOptions: ReportOptions;
+  exportOptions: ExportOptions;
 }
 
 const RULE_CATEGORIES: RuleCategory[] = ['names', 'descriptions', 'duplicates', 'categories', 'completeness', 'google'];
@@ -39,11 +45,12 @@ export function parseArgs(args: string[]): ParsedArgs {
     auditOptions: parseAuditOptions(parsed),
     fixOptions: parseFixOptions(parsed),
     reportOptions: parseReportOptions(parsed),
+    exportOptions: parseExportOptions(parsed),
   };
 }
 
 function isValidCommand(cmd: string): cmd is Command {
-  return ['audit', 'fix', 'report', 'list', 'help'].includes(cmd);
+  return ['audit', 'fix', 'report', 'list', 'export', 'help'].includes(cmd);
 }
 
 function parseAuditOptions(parsed: Record<string, string | boolean>): AuditOptions {
@@ -108,6 +115,13 @@ function parseReportOptions(parsed: Record<string, string | boolean>): ReportOpt
   };
 }
 
+function parseExportOptions(parsed: Record<string, string | boolean>): ExportOptions {
+  return {
+    output: typeof parsed.output === 'string' ? parsed.output : undefined,
+    includeAll: parsed['include-all'] === true || parsed['include-all'] === 'true',
+  };
+}
+
 /**
  * Print help message
  */
@@ -121,6 +135,7 @@ Commands:
   audit     Run data quality audit
   fix       Apply fixes to detected issues
   report    Generate health report
+  export    Export locations needing enrichment for batch Google Places lookup
   list      List available rules and fixers
   help      Show this help message
 
@@ -142,6 +157,10 @@ Report Options:
   --json                Output report in JSON format
   --detailed            Include detailed breakdowns
 
+Export Options:
+  --output=<file>       Output file path (default: enrichment-targets.json)
+  --include-all         Include all locations missing place_id (not just flagged ones)
+
 Examples:
   npm run dq audit                         # Run full audit
   npm run dq audit --rules=names           # Audit name issues only
@@ -149,6 +168,8 @@ Examples:
   npm run dq fix --dry-run                 # Preview all fixes
   npm run dq fix --type=ALL_CAPS_NAME      # Fix specific issue type
   npm run dq report                        # Generate health report
+  npm run dq export                        # Export locations for enrichment
+  npm run dq export --include-all          # Include all locations without place_id
   npm run dq list                          # List rules and fixers
 `);
 }
