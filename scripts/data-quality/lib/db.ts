@@ -41,7 +41,7 @@ export async function fetchAllLocations(): Promise<Location[]> {
   while (hasMore) {
     const { data, error } = await supabase
       .from('locations')
-      .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types')
+      .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types, estimated_duration, image, primary_photo_url, prefecture, is_seasonal, seasonal_type, meal_options, lat, lng, updated_at')
       .order('name')
       .range(offset, offset + pageSize - 1);
 
@@ -74,7 +74,7 @@ export async function fetchLocations(options: {
 
   let query = supabase
     .from('locations')
-    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types');
+    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types, estimated_duration, image, primary_photo_url, prefecture, is_seasonal, seasonal_type, meal_options, lat, lng, updated_at');
 
   if (options.city) {
     query = query.ilike('city', options.city);
@@ -108,7 +108,7 @@ export async function fetchLocations(options: {
  */
 export async function updateLocation(
   id: string,
-  updates: Partial<Pick<Location, 'name' | 'description' | 'category' | 'editorial_summary'>>
+  updates: Partial<Pick<Location, 'name' | 'description' | 'category' | 'editorial_summary' | 'region' | 'city'>>
 ): Promise<{ success: boolean; error?: string }> {
   const supabase = getSupabase();
 
@@ -150,7 +150,7 @@ export async function getLocationById(id: string): Promise<Location | null> {
 
   const { data, error } = await supabase
     .from('locations')
-    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types')
+    .select('id, name, city, region, category, description, editorial_summary, place_id, coordinates, business_status, rating, review_count, operating_hours, google_primary_type, google_types, estimated_duration, image, primary_photo_url, prefecture, is_seasonal, seasonal_type, meal_options, lat, lng, updated_at')
     .eq('id', id)
     .single();
 

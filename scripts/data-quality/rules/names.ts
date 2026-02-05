@@ -15,6 +15,11 @@ import {
   getSeverityForIssue,
 } from '../lib/utils';
 import { shouldSkipLocation, getNameOverride } from '../lib/overrides';
+import {
+  cityNeedsNormalization,
+  getCityNormalizationSuggestion,
+  findMismatchedCityInName,
+} from '../lib/geography';
 
 /**
  * Rule: Detect event names that should be shrine/temple names
@@ -473,6 +478,101 @@ function toTitleCase(str: string): string {
     .join(' ');
 }
 
+/**
+ * Rule: Detect city spelling variants that need normalization
+ */
+const citySpellingVariantRule: Rule = {
+  id: 'city-spelling-variant',
+  name: 'City Spelling Variant',
+  description: 'Detects city names that need normalization (e.g., "Amakusa, Kumamoto" -> "Amakusa")',
+  category: 'names',
+  issueTypes: ['CITY_SPELLING_VARIANT'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Check if city needs normalization
+      if (!cityNeedsNormalization(loc.city)) continue;
+
+      const suggestion = getCityNormalizationSuggestion(loc.city);
+      if (!suggestion) continue;
+
+      issues.push({
+        id: `${loc.id}-city-variant`,
+        type: 'CITY_SPELLING_VARIANT',
+        severity: 'medium',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `City "${loc.city}" should be normalized to "${suggestion.normalized}"`,
+        details: {
+          currentCity: loc.city,
+          normalizedCity: suggestion.normalized,
+          reason: suggestion.reason,
+        },
+        suggestedFix: {
+          action: 'skip',
+          reason: `Normalize city name: ${suggestion.reason}`,
+          confidence: 80,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
+/**
+ * Rule: Detect location names containing a different city name
+ */
+const nameCityMismatchRule: Rule = {
+  id: 'name-city-mismatch',
+  name: 'Name City Mismatch',
+  description: 'Detects location names that contain a different city name than where they are located',
+  category: 'names',
+  issueTypes: ['NAME_CITY_MISMATCH'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Find mismatched city in name
+      const mismatchedCity = findMismatchedCityInName(loc.name, loc.city);
+      if (!mismatchedCity) continue;
+
+      issues.push({
+        id: `${loc.id}-name-city-mismatch`,
+        type: 'NAME_CITY_MISMATCH',
+        severity: 'medium',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Location "${loc.name}" contains city name "${mismatchedCity}" but is located in ${loc.city}`,
+        details: {
+          actualCity: loc.city,
+          cityInName: mismatchedCity,
+        },
+        suggestedFix: {
+          action: 'skip',
+          reason: 'Needs manual review - may be correct (e.g., "Osaka-style Okonomiyaki" in Kyoto) or data error',
+          confidence: 30,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
 export const nameRules: Rule[] = [
   eventNameMismatchRule,
   nameIdMismatchRule,
@@ -482,4 +582,6 @@ export const nameRules: Rule[] = [
   genericArticleRule,
   truncatedNameRule,
   shortIncompleteNameRule,
+  citySpellingVariantRule,
+  nameCityMismatchRule,
 ];
