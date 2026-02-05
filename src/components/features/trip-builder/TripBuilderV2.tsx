@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { IntroStep } from "./IntroStep";
 import { PlanStep } from "./PlanStep";
@@ -18,17 +18,32 @@ type Step = 0 | 1 | 2 | 3;
 const STEP_LABELS: Record<Step, string> = {
   0: "Welcome",
   1: "Trip Details",
-  2: "Region Selection",
-  3: "Preferences",
+  2: "Destinations",
+  3: "Review & Customize",
 };
+
+const TOTAL_SUB_STEPS = 3; // dates, entry point, vibes
 
 export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   const { reset } = useTripBuilder();
   const [currentStep, setCurrentStep] = useState<Step>(0);
+  const [currentSubStep, setCurrentSubStep] = useState(0);
   const [step1Valid, setStep1Valid] = useState(false);
   const [step2Valid, setStep2Valid] = useState(false);
   const [step3Valid, setStep3Valid] = useState(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handleStep1ValidityChange = useCallback((isValid: boolean) => {
     setStep1Valid(isValid);
@@ -42,8 +57,9 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
     setStep3Valid(isValid);
   }, []);
 
-  const goToStep = useCallback((step: Step) => {
+  const goToStep = useCallback((step: Step, subStep = 0) => {
     setCurrentStep(step);
+    setCurrentSubStep(subStep);
     // Wait for React to render and paint the new content, then scroll
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
@@ -55,67 +71,125 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
     });
   }, []);
 
+  const handleSubStepChange = useCallback((subStep: number) => {
+    setCurrentSubStep(subStep);
+    // Scroll to top when sub-step changes
+    requestAnimationFrame(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    });
+  }, []);
+
+  // Handle Next button - manages both sub-steps and main steps
   const handleNext = useCallback(() => {
     if (currentStep === 0) {
-      goToStep(1);
-    } else if (currentStep === 1 && step1Valid) {
-      goToStep(2);
+      goToStep(1, 0);
+    } else if (currentStep === 1) {
+      // On mobile, navigate through sub-steps
+      if (isMobile && currentSubStep < TOTAL_SUB_STEPS - 1) {
+        handleSubStepChange(currentSubStep + 1);
+      } else if (step1Valid) {
+        // All sub-steps done or on desktop, go to next main step
+        goToStep(2);
+      }
     } else if (currentStep === 2 && step2Valid) {
       goToStep(3);
     } else if (currentStep === 3 && step3Valid) {
       onComplete?.();
     }
-  }, [currentStep, step1Valid, step2Valid, step3Valid, goToStep, onComplete]);
+  }, [
+    currentStep,
+    currentSubStep,
+    isMobile,
+    step1Valid,
+    step2Valid,
+    step3Valid,
+    goToStep,
+    handleSubStepChange,
+    onComplete,
+  ]);
 
+  // Handle Back button - manages both sub-steps and main steps
   const handleBack = useCallback(() => {
     if (currentStep === 1) {
-      goToStep(0);
+      // On mobile, navigate back through sub-steps
+      if (isMobile && currentSubStep > 0) {
+        handleSubStepChange(currentSubStep - 1);
+      } else {
+        goToStep(0);
+      }
     } else if (currentStep === 2) {
-      goToStep(1);
+      goToStep(1, TOTAL_SUB_STEPS - 1); // Go back to last sub-step
     } else if (currentStep === 3) {
       goToStep(2);
     }
-  }, [currentStep, goToStep]);
+  }, [currentStep, currentSubStep, isMobile, goToStep, handleSubStepChange]);
 
   const handleStartOver = useCallback(() => {
-    if (window.confirm("Are you sure you want to start over? All your progress will be lost.")) {
+    if (
+      window.confirm(
+        "Are you sure you want to start over? All your progress will be lost."
+      )
+    ) {
       reset();
       goToStep(0);
     }
   }, [reset, goToStep]);
 
-  const isNextDisabled =
-    (currentStep === 1 && !step1Valid) ||
-    (currentStep === 2 && !step2Valid) ||
-    (currentStep === 3 && !step3Valid);
-
-  const getNextButtonLabel = () => {
-    switch (currentStep) {
-      case 1:
-        return "Continue to Regions";
-      case 2:
-        return "Continue to Preferences";
-      case 3:
-        return "Generate Itinerary";
+  // Determine if next button should be disabled
+  const isNextDisabled = (() => {
+    if (currentStep === 1) {
+      // On mobile, check current sub-step validity
+      if (isMobile) {
+        // For now, always allow navigation (sub-steps handle their own validation)
+        // The final "Continue to Regions" only appears when step is valid
+        return currentSubStep === TOTAL_SUB_STEPS - 1 && !step1Valid;
+      }
+      return !step1Valid;
     }
+    if (currentStep === 2) return !step2Valid;
+    if (currentStep === 3) return !step3Valid;
+    return false;
+  })();
+
+  // Get appropriate label for next button
+  const getNextButtonLabel = () => {
+    if (currentStep === 1) {
+      if (isMobile && currentSubStep < TOTAL_SUB_STEPS - 1) {
+        return "Continue";
+      }
+      return "Continue to Destinations";
+    }
+    if (currentStep === 2) {
+      return "Review & Customize";
+    }
+    if (currentStep === 3) {
+      return "Generate Itinerary";
+    }
+    return "Continue";
   };
 
+  // Get appropriate label for back button
   const getBackButtonLabel = () => {
-    switch (currentStep) {
-      case 1:
-        return "Back to Welcome";
-      case 2:
-        return "Back to Details";
-      case 3:
-        return "Back to Regions";
-      default:
+    if (currentStep === 1) {
+      if (isMobile && currentSubStep > 0) {
         return "Back";
+      }
+      return "Back to Welcome";
     }
+    if (currentStep === 2) {
+      return "Back to Details";
+    }
+    if (currentStep === 3) {
+      return "Back to Destinations";
+    }
+    return "Back";
   };
 
   // Step 0 renders a clean welcome experience without wizard chrome
   if (currentStep === 0) {
-    return <IntroStep onStart={() => goToStep(1)} />;
+    return <IntroStep onStart={() => goToStep(1, 0)} />;
   }
 
   return (
@@ -135,19 +209,25 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
           <div className="flex items-center gap-2">
             {/* Step indicators */}
             <div className="hidden items-center gap-2 sm:flex">
-              <StepIndicator step={1} currentStep={currentStep} onClick={() => goToStep(1)} />
+              <StepIndicator
+                step={1}
+                currentStep={currentStep}
+                onClick={() => goToStep(1, 0)}
+              />
               <div className="h-px w-6 bg-border" />
               <StepIndicator
                 step={2}
                 currentStep={currentStep}
-                onClick={() => step1Valid ? goToStep(2) : undefined}
+                onClick={() => (step1Valid ? goToStep(2) : undefined)}
                 disabled={!step1Valid}
               />
               <div className="h-px w-6 bg-border" />
               <StepIndicator
                 step={3}
                 currentStep={currentStep}
-                onClick={() => step1Valid && step2Valid ? goToStep(3) : undefined}
+                onClick={() =>
+                  step1Valid && step2Valid ? goToStep(3) : undefined
+                }
                 disabled={!step1Valid || !step2Valid}
               />
             </div>
@@ -170,18 +250,26 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
           <div
             ref={scrollContainerRef}
             className={cn(
-            "w-full flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:pb-6",
-            currentStep === 1 && "max-w-3xl",
-            currentStep === 3 && "max-w-5xl"
-          )}>
+              "w-full flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:pb-6",
+              currentStep === 1 && "max-w-3xl",
+              currentStep === 3 && "max-w-5xl"
+            )}
+          >
             {currentStep === 1 && (
-              <PlanStep onValidityChange={handleStep1ValidityChange} />
+              <PlanStep
+                onValidityChange={handleStep1ValidityChange}
+                currentSubStep={currentSubStep}
+                onSubStepChange={handleSubStepChange}
+              />
             )}
             {currentStep === 2 && (
               <RegionStep onValidityChange={handleStep2ValidityChange} />
             )}
             {currentStep === 3 && (
-              <ReviewStep onValidityChange={handleStep3ValidityChange} />
+              <ReviewStep
+                onValidityChange={handleStep3ValidityChange}
+                onGoToStep={(step, subStep) => goToStep(step as 0 | 1 | 2 | 3, subStep)}
+              />
             )}
           </div>
         </div>
@@ -190,7 +278,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
       {/* Mobile Bottom Navigation */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background p-4 lg:hidden">
         <div className="flex items-center gap-3">
-          {currentStep >= 1 && (
+          {(currentStep > 1 || (currentStep === 1 && currentSubStep > 0)) && (
             <button
               type="button"
               onClick={handleBack}
@@ -207,7 +295,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             className={cn(
               "flex-1 rounded-full px-6 py-2.5 text-sm font-semibold transition",
               isNextDisabled
-                ? "bg-surface text-stone cursor-not-allowed"
+                ? "cursor-not-allowed bg-surface text-stone"
                 : "bg-brand-primary text-white hover:bg-brand-primary/90"
             )}
           >
@@ -238,7 +326,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             className={cn(
               "rounded-full px-6 py-2.5 text-sm font-semibold transition",
               isNextDisabled
-                ? "bg-surface text-stone cursor-not-allowed"
+                ? "cursor-not-allowed bg-surface text-stone"
                 : "bg-brand-primary text-white hover:bg-brand-primary/90"
             )}
           >
@@ -246,7 +334,6 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
           </button>
         </div>
       </div>
-
     </div>
   );
 }
@@ -258,7 +345,12 @@ type StepIndicatorProps = {
   disabled?: boolean;
 };
 
-function StepIndicator({ step, currentStep, onClick, disabled }: StepIndicatorProps) {
+function StepIndicator({
+  step,
+  currentStep,
+  onClick,
+  disabled,
+}: StepIndicatorProps) {
   const isActive = step === currentStep;
   const isCompleted = step < currentStep;
   const isClickable = onClick && !disabled;
@@ -278,8 +370,18 @@ function StepIndicator({ step, currentStep, onClick, disabled }: StepIndicatorPr
       )}
     >
       {isCompleted ? (
-        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <svg
+          className="h-4 w-4"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 13l4 4L19 7"
+          />
         </svg>
       ) : (
         step
