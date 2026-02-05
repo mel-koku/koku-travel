@@ -335,6 +335,53 @@ export const MAJOR_CITIES = [
 ];
 
 /**
+ * Map of major cities to their prefectures
+ * Used to detect when city field uses prefecture name instead of city
+ */
+const CITY_TO_PREFECTURE: Record<string, string> = {
+  'sendai': 'miyagi',
+  'kanazawa': 'ishikawa',
+  'matsuyama': 'ehime',
+  'takamatsu': 'kagawa',
+  'nagasaki': 'nagasaki',  // Same name
+  'kumamoto': 'kumamoto',  // Same name
+  'kagoshima': 'kagoshima', // Same name
+  'hiroshima': 'hiroshima', // Same name
+  'okayama': 'okayama', // Same name
+  'niigata': 'niigata', // Same name
+  'nagoya': 'aichi',
+  'sapporo': 'hokkaido',
+  'yokohama': 'kanagawa',
+  'kobe': 'hyogo',
+  'kawasaki': 'kanagawa',
+  'hamamatsu': 'shizuoka',
+  'shizuoka': 'shizuoka', // Same name
+  'chiba': 'chiba', // Same name
+  'sakai': 'osaka',
+};
+
+/**
+ * Patterns in names that indicate the city name is NOT a location reference
+ * (brand names, style references, historical names, known compound names)
+ */
+const NAME_EXCEPTION_PATTERNS = [
+  /\bkawasaki\s+(heavy|industries)/i, // Kawasaki Heavy Industries
+  /\bg\.\s*sakai\b/i, // G. Sakai (brand)
+  /\baji\s+no\s+sapporo\b/i, // Sapporo-style food
+  /\bbitchu\s+matsuyama\b/i, // Historical region name
+  /\bsapporo\b.*\b(ramen|beer|lager|style|stellar)\b/i, // Sapporo products/style
+  /\b(ramen|beer|lager|style)\b.*\bsapporo\b/i, // Sapporo products/style
+  /\bkyoto\s+(style|sushi|cuisine|head\s+shop)\b/i, // Kyoto style/shops
+  /\bosaka\s+(style|okonomiyaki|sushi)\b/i, // Osaka style food
+  /\btokyo\s+(disney|disneyland|disneysea|sea|game|metropolitan|international)/i, // Tokyo brand names in other areas
+  /\bsushi\s+sakai\b/i, // Restaurant name
+  /\btakamatsu\s+park\b/i, // Park name (not city reference)
+  /\bkanazawa\s+district\b/i, // District name in Yokohama
+  /\bnara\s+ikaruga\b/i, // Regional tourism name
+  /\bniigata\s+prefectural\b/i, // Prefecture-level institution
+];
+
+/**
  * Check if a location name contains a different city name than where it's located
  */
 export function findMismatchedCityInName(
@@ -343,6 +390,13 @@ export function findMismatchedCityInName(
 ): string | null {
   const nameLower = locationName.toLowerCase();
   const actualCityLower = actualCity.toLowerCase();
+
+  // Check if name matches any exception patterns (brand names, style references)
+  for (const pattern of NAME_EXCEPTION_PATTERNS) {
+    if (pattern.test(locationName)) {
+      return null;
+    }
+  }
 
   for (const city of MAJOR_CITIES) {
     const cityLower = city.toLowerCase();
@@ -356,6 +410,13 @@ export function findMismatchedCityInName(
     // Use word boundary check to avoid false positives
     const regex = new RegExp(`\\b${cityLower}\\b`, 'i');
     if (regex.test(nameLower)) {
+      // Check if actualCity is the prefecture for this city
+      // e.g., "Sendai" in name with city="Miyagi" is valid (Sendai is in Miyagi)
+      const prefecture = CITY_TO_PREFECTURE[cityLower];
+      if (prefecture && prefecture === actualCityLower) {
+        continue; // Skip - the city in name is in the prefecture listed
+      }
+
       return city;
     }
   }

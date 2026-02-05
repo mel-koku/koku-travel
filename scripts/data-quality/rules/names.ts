@@ -394,6 +394,103 @@ const CATEGORIES_NEEDING_FULL_NAMES = [
 ];
 
 /**
+ * Japanese geographic suffixes that indicate complete place names
+ * These are single words that represent geographic features or areas
+ */
+const JAPANESE_GEOGRAPHIC_SUFFIXES = [
+  'jima', 'shima',  // island (-島)
+  'yama', 'san', 'dake', 'take', // mountain (-山, -岳)
+  'kawa', 'gawa',   // river (-川)
+  'machi', 'cho',   // town/district (-町)
+  'juku', 'shuku',  // post town (-宿)
+  'ji', 'dera', 'in', // temple (-寺, -院)
+  'gu', 'sha', 'jinja', // shrine (-宮, -社, -神社)
+  'ko', 'ike',      // lake/pond (-湖, -池)
+  'hama', 'ura',    // beach/bay (-浜, -浦)
+  'saki', 'zaki', 'misaki', // cape (-崎, -岬)
+  'kyo', 'kei',     // gorge/valley (-峡, -渓)
+  'dori', 'tori',   // street (-通り)
+  'bashi', 'hashi', // bridge (-橋)
+  'mon', 'kaku',    // gate/tower (-門, -閣)
+  'en', 'tei',      // garden (-園, -庭)
+  'onsen',          // hot spring (-温泉)
+  'so', 'sou',      // villa/lodge (-荘)
+  'kan',            // hall/building (-館)
+  'bo',             // cliff/bluff (-坊)
+  'daira', 'taira', // plateau (-平)
+  'taki',           // waterfall (-滝)
+  'hetsuri',        // eroded cliff (specific to Tō-no-Hetsuri)
+  'kogen',          // highland (-高原)
+];
+
+/**
+ * Known Japanese districts, neighborhoods, and areas that are complete single-word names
+ */
+const KNOWN_AREA_NAMES = [
+  // Tokyo districts
+  'shibuya', 'shinjuku', 'harajuku', 'akihabara', 'ginza', 'asakusa', 'roppongi',
+  'ikebukuro', 'ueno', 'akasaka', 'azabu', 'meguro', 'nakameguro', 'shimokitazawa',
+  'kagurazaka', 'kabukicho', 'odaiba', 'shiodome', 'marunouchi', 'nihonbashi',
+  'inokashira', 'kiyosumi', 'sumiyoshi',
+  // Osaka districts
+  'namba', 'dotonbori', 'shinsekai', 'umeda', 'shinsaibashi', 'tennoji',
+  // Kyoto districts
+  'gion', 'arashiyama', 'higashiyama', 'pontocho', 'kitayama', 'naramachi', 'rakusei',
+  // Other city districts
+  'tenjin', 'nakasu', 'motomachi', 'sannomiya', 'sakae', 'chinatown', 'hamaotsu',
+  'sakamoto', 'shuri', 'arimatsu',
+  // Famous islands
+  'naoshima', 'miyajima', 'enoshima', 'hashima', 'gunkanjima', 'yakushima',
+  'iriomote', 'ishigaki', 'taketomi', 'zamami', 'tokashiki', 'okinawa', 'manazuru',
+  // Famous areas/regions
+  'hakone', 'nikko', 'kamakura', 'nara', 'kobe', 'yokohama', 'nagasaki',
+  'hiroshima', 'kanazawa', 'takayama', 'shirakawago', 'tsumago', 'magome',
+  'karuizawa', 'furano', 'biei', 'otaru', 'noboribetsu', 'hakodate',
+  // Other notable single-word places
+  'dorogawa', 'kurokawa', 'kinosaki', 'beppu', 'yufuin', 'ibusuki',
+  // Mountain areas and valleys
+  'kamikochi', 'owakudani', 'shiobara', 'yugawara', 'nagatoro',
+  // Historic towns and areas
+  'sawara', 'mimitsu', 'yuasa', 'soma',
+  // Geographic features (cliffs, etc.)
+  'tojinbo',
+  // Famous landmarks (single word is the full name)
+  'kabukiza', 'tamaudun',
+  // Additional area names
+  'shiraho', 'shizunai', 'mikamine', 'sakitama', 'senbonmatsu', 'kuroshio',
+];
+
+/**
+ * Check if a name ends with a Japanese geographic suffix
+ */
+function hasJapaneseGeographicSuffix(name: string): boolean {
+  // Normalize macrons: ō→o, ū→u, etc.
+  const normalized = name.toLowerCase()
+    .replace(/[ōôó]/g, 'o')
+    .replace(/[ūûú]/g, 'u')
+    .replace(/[āâá]/g, 'a')
+    .replace(/[ēêé]/g, 'e')
+    .replace(/[īîí]/g, 'i');
+  return JAPANESE_GEOGRAPHIC_SUFFIXES.some(suffix =>
+    normalized.endsWith(suffix) && normalized.length > suffix.length
+  );
+}
+
+/**
+ * Check if a name is a known area/district name
+ */
+function isKnownAreaName(name: string): boolean {
+  // Normalize: remove diacritics and convert to lowercase
+  const normalized = name.toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[ōōô]/g, 'o')
+    .replace(/[ūûü]/g, 'u')
+    .replace(/[-]/g, '');
+  return KNOWN_AREA_NAMES.includes(normalized);
+}
+
+/**
  * Rule: Detect single-word names for categories that typically need fuller names
  */
 const shortIncompleteNameRule: Rule = {
@@ -413,7 +510,8 @@ const shortIncompleteNameRule: Rule = {
       if (!CATEGORIES_NEEDING_FULL_NAMES.includes(loc.category?.toLowerCase())) continue;
 
       // Check if name is a single word (no spaces)
-      const words = loc.name.trim().split(/\s+/);
+      // Names with hyphens are considered multi-word (e.g., "Kisouma-no-sato")
+      const words = loc.name.trim().split(/[\s-]+/);
       if (words.length > 1) continue;
 
       // Skip if name is very short (likely abbreviation or special case)
@@ -422,6 +520,15 @@ const shortIncompleteNameRule: Rule = {
       // Skip common short names that are complete (e.g., proper nouns)
       const shortNameExceptions = ['spa', 'inn', 'pub', 'bar'];
       if (shortNameExceptions.includes(loc.name.toLowerCase())) continue;
+
+      // Skip if name matches city (these are district/area entries)
+      if (loc.name.toLowerCase() === loc.city.toLowerCase()) continue;
+
+      // Skip if name has a Japanese geographic suffix (island, mountain, temple, etc.)
+      if (hasJapaneseGeographicSuffix(loc.name)) continue;
+
+      // Skip if it's a known district/area/neighborhood name
+      if (isKnownAreaName(loc.name)) continue;
 
       const override = getNameOverride(loc.id);
 
