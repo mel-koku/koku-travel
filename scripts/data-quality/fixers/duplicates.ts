@@ -7,7 +7,7 @@ import { deleteLocation, getLocationById, updateLocation } from '../lib/db';
 import { getDuplicateResolution } from '../lib/overrides';
 
 export const duplicateFixer: Fixer = {
-  handles: ['DUPLICATE_SAME_CITY', 'DUPLICATE_MANY'],
+  handles: ['DUPLICATE_SAME_CITY', 'DUPLICATE_MANY', 'DUPLICATE_COORDINATES'],
 
   async fix(issue: Issue, ctx: FixerContext): Promise<FixResult> {
     // Check for configured resolution

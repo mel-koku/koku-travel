@@ -254,9 +254,79 @@ const googleContentMismatchRule: Rule = {
   },
 };
 
+// Japanese geographic suffixes that indicate legitimate single-word place names
+const JAPANESE_GEOGRAPHIC_SUFFIXES = [
+  'jima', 'shima',  // island
+  'yama', 'san', 'dake', 'take', // mountain
+  'kawa', 'gawa',   // river
+  'machi', 'cho', 'cho',   // town/district
+  'juku', 'shuku',  // post town
+  'ji', 'dera', 'in', // temple
+  'gu', 'sha', 'jinja', // shrine
+  'ko', 'ike',      // lake/pond
+  'hama', 'ura',    // beach/bay
+  'saki', 'zaki', 'misaki', // cape
+  'kyo', 'kei',     // gorge/valley
+  'dori', 'tori',   // street
+  'bashi', 'hashi', // bridge
+  'mon', 'kaku',    // gate/tower
+  'en', 'tei',      // garden
+  'onsen',          // hot spring
+  'so', 'sou',      // villa/lodge
+  'kan',            // hall/building
+  'daira', 'taira', // plateau
+  'taki',           // waterfall
+  'kogen',          // highland
+  'go',             // village
+];
+
+// Well-known Japanese district/area names that are legitimate single words
+const KNOWN_AREA_NAMES = new Set([
+  // Tokyo districts
+  'arashiyama', 'harajuku', 'shibuya', 'shinjuku', 'ginza', 'asakusa',
+  'ueno', 'akihabara', 'roppongi', 'odaiba', 'ikebukuro', 'shimokitazawa',
+  'nakameguro', 'ebisu', 'daikanyama', 'kagurazaka', 'yanaka', 'koenji',
+  'akasaka', 'shiodome', 'shibaura', 'nakasu', 'sakae',
+  // Kyoto/Kansai districts
+  'gion', 'pontocho', 'higashiyama', 'nishiki', 'maruyama', 'kawaramachi',
+  'dotonbori', 'shinsaibashi', 'namba', 'shinsekai', 'tennoji', 'nakanoshima',
+  'motomachi', 'sannomiya', 'kitanocho', 'harbourland', 'meriken', 'rakusei',
+  // Famous destinations
+  'kamakura', 'enoshima', 'hakone', 'nikko', 'karuizawa', 'naoshima',
+  'miyajima', 'takayama', 'shirakawa', 'kanazawa', 'matsumoto', 'nagano',
+  'nara', 'uji', 'koyasan', 'yoshino', 'kinosaki', 'amanohashidate',
+  'hakodate', 'otaru', 'sapporo', 'furano', 'biei', 'noboribetsu',
+  'kagoshima', 'kumamoto', 'nagasaki', 'beppu', 'yufuin', 'fukuoka',
+  'hiroshima', 'onomichi', 'kurashiki', 'okayama', 'matsuyama', 'takamatsu',
+  'naha', 'okinawa', 'ishigaki', 'taketomi', 'iriomote', 'miyako',
+  // Natural/scenic areas
+  'owakudani', 'kamikochi', 'tojinbo', 'nagatoro', 'shiobara', 'yugawara',
+  'manazuru', 'sawara', 'mimitsu', 'arimatsu', 'hamaotsu', 'sakamoto',
+  // Okinawa areas
+  'shuri', 'tamaudun', 'tokashiki', 'shiraho', 'yuasa',
+  // Other historic towns
+  'soma', 'shizunai', 'senbonmatsu',
+  // Hyphenated compound names (treated as single word due to hyphens)
+  'kisouma-no-sato', 'men-no-ishi', 'sansyu-izutsuyashiki',
+  'to-no-hetsuri', 'tō-no-hetsuri',
+]);
+
+function hasJapaneseGeographicSuffix(name: string): boolean {
+  const normalized = name.toLowerCase()
+    .replace(/[ōôó]/g, 'o')
+    .replace(/[ūûú]/g, 'u')
+    .replace(/[āâá]/g, 'a')
+    .replace(/[ēêé]/g, 'e')
+    .replace(/[īîí]/g, 'i');
+  return JAPANESE_GEOGRAPHIC_SUFFIXES.some(suffix =>
+    normalized.endsWith(suffix) && normalized.length > suffix.length
+  );
+}
+
 /**
  * Rule: Flag single-word names that have place_id for verification
  * These locations can be verified against Google displayName
+ * Skips legitimate Japanese geographic/area names
  */
 const googleNameVerificationNeededRule: Rule = {
   id: 'google-name-verification-needed',
@@ -280,12 +350,25 @@ const googleNameVerificationNeededRule: Rule = {
       // Only check relevant categories
       if (!categoriesNeedingFullNames.includes(loc.category?.toLowerCase() || '')) continue;
 
-      // Check if name is single word
+      // Check if name is single word (treating hyphens as part of the word)
       const words = loc.name.trim().split(/\s+/);
       if (words.length > 1) continue;
 
       // Skip very short names (abbreviations)
       if (loc.name.length < 4) continue;
+
+      const nameLower = loc.name.toLowerCase()
+        .replace(/[ōôó]/g, 'o')
+        .replace(/[ūûú]/g, 'u');
+
+      // Skip if name matches city (district/area entry)
+      if (loc.city && nameLower === loc.city.toLowerCase()) continue;
+
+      // Skip well-known Japanese area names
+      if (KNOWN_AREA_NAMES.has(nameLower)) continue;
+
+      // Skip names with Japanese geographic suffixes
+      if (hasJapaneseGeographicSuffix(loc.name)) continue;
 
       issues.push({
         id: `${loc.id}-name-verification`,
