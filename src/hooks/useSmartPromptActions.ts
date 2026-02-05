@@ -18,7 +18,7 @@ type RecommendResponse = {
   recommendation: {
     id: string;
     name: string;
-  };
+  } | null;
   activity: ItineraryActivity;
   position: number;
 };
@@ -103,10 +103,16 @@ export function useSmartPromptActions(
         addActivity(tripId, gap.dayId, data.activity, data.position);
 
         // Show success toast
-        const actionType = gap.action.type === "add_meal" ? "meal" : "experience";
-        showToast(`Added ${data.recommendation.name} as ${actionType}`, {
-          variant: "success",
-        });
+        if (gap.action.type === "quick_meal") {
+          showToast("Added konbini meal tip", { variant: "success" });
+        } else if (data.recommendation) {
+          const actionType = gap.action.type === "add_meal" ? "meal" : "experience";
+          showToast(`Added ${data.recommendation.name} as ${actionType}`, {
+            variant: "success",
+          });
+        } else {
+          showToast("Added to itinerary", { variant: "success" });
+        }
 
         return {
           success: true,

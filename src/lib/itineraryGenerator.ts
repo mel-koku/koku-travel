@@ -293,7 +293,13 @@ export async function generateItinerary(
       }
       // 5. Geographic validation: ensure location is actually in the correct region
       // This catches data corruption where city="Osaka" but coordinates are in Okinawa
-      return isLocationValidForCity(loc, cityInfo.key, cityInfo.regionId);
+      if (!isLocationValidForCity(loc, cityInfo.key, cityInfo.regionId)) return false;
+
+      // 6. Exclude food categories - meals are optional and added via smart prompts
+      // This allows users to opt into meal recommendations rather than auto-filling them
+      if (isFoodCategory(loc.category)) return false;
+
+      return true;
     });
 
     const dayActivities: Itinerary["days"][number]["activities"] = [];
@@ -310,6 +316,10 @@ export async function generateItinerary(
     const dayCategories: string[] = [];
     const dayNeighborhoods: string[] = [];
     let lastLocation: Location | undefined;
+
+    // Track assigned meal types to prevent multiple lunches/dinners per day
+    // Only one "full meal" per slot (breakfast, lunch, dinner). Additional food places become "snacks"
+    const usedMealTypesForDay = new Set<"breakfast" | "lunch" | "dinner">();
 
     // Track if we've exhausted all available locations for this day
     let locationsExhausted = false;
@@ -459,11 +469,26 @@ export async function generateItinerary(
             } : undefined;
 
             // Build activity object with optional meal info for food locations
+            // Only assign one full meal per slot (breakfast/lunch/dinner). Additional food places become "snacks"
             const isFood = isFoodCategory(location.category);
-            const mealType = isFood ? inferMealTypeFromTimeSlot(timeSlot) : undefined;
-            const mealNote = mealType
-              ? `${mealType.charAt(0).toUpperCase() + mealType.slice(1)} spot`
-              : undefined;
+            const inferredMealType = isFood ? inferMealTypeFromTimeSlot(timeSlot) : undefined;
+
+            // Check if this meal slot is already taken for this day
+            let mealType: "breakfast" | "lunch" | "dinner" | "snack" | undefined;
+            let mealNote: string | undefined;
+
+            if (inferredMealType) {
+              if (usedMealTypesForDay.has(inferredMealType)) {
+                // Meal slot already filled - this becomes a snack/cafe visit
+                mealType = "snack";
+                mealNote = "Cafe / Snack stop";
+              } else {
+                // First meal of this type for the day
+                mealType = inferredMealType;
+                mealNote = `${mealType.charAt(0).toUpperCase() + mealType.slice(1)} spot`;
+                usedMealTypesForDay.add(inferredMealType);
+              }
+            }
 
             const activity: Extract<ItineraryActivity, { kind: "place" }> = {
               kind: "place",

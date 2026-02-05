@@ -28,6 +28,24 @@ const MEAL_DURATIONS: Record<string, number> = {
 };
 
 /**
+ * Konbini tips and recommendations by meal type
+ */
+const KONBINI_INFO: Record<string, { title: string; tips: string }> = {
+  breakfast: {
+    title: "Konbini Breakfast",
+    tips: "Try onigiri (rice balls), tamago sando (egg sandwich), or hot canned coffee. 7-Eleven, Lawson, and FamilyMart are everywhere and open 24/7.",
+  },
+  lunch: {
+    title: "Konbini Lunch",
+    tips: "Bento boxes, yakisoba, udon cups, or seasonal limited items. Most konbinis have a microwave and hot water. Don't miss the premium onigiri!",
+  },
+  dinner: {
+    title: "Konbini Dinner",
+    tips: "Hot nikuman (meat buns), oden in winter, or fresh bento. Perfect for a quick meal at your hotel after a long day of sightseeing.",
+  },
+};
+
+/**
  * Generate a unique activity ID
  */
 function generateActivityId(): string {
@@ -186,6 +204,26 @@ function createMealActivity(
 }
 
 /**
+ * Create a konbini quick meal activity (note-based, no specific location)
+ */
+function createKonbiniActivity(
+  mealType: "breakfast" | "lunch" | "dinner",
+  timeSlot: "morning" | "afternoon" | "evening"
+): ItineraryActivity {
+  const info = KONBINI_INFO[mealType] ?? KONBINI_INFO["lunch"];
+  const infoTitle = info?.title ?? "Konbini Meal";
+  const infoTips = info?.tips ?? "Grab a quick meal from 7-Eleven, Lawson, or FamilyMart.";
+
+  return {
+    kind: "note",
+    id: generateActivityId(),
+    title: "Note",
+    timeOfDay: timeSlot,
+    notes: `**${infoTitle}**\n\n${infoTips}`,
+  };
+}
+
+/**
  * Create an experience activity from a location
  */
 function createExperienceActivity(
@@ -309,6 +347,18 @@ export async function POST(request: NextRequest) {
 
       activity = createMealActivity(recommendation, action.mealType, action.timeSlot);
       position = calculateMealPosition(dayActivities, action.mealType, action.afterActivityId);
+
+    } else if (action.type === "quick_meal") {
+      // Konbini quick meal - no database lookup needed, just create a note activity
+      activity = createKonbiniActivity(action.mealType, action.timeSlot);
+      position = calculateMealPosition(dayActivities, action.mealType, action.afterActivityId);
+
+      // Return early since there's no location recommendation for konbini
+      return NextResponse.json({
+        recommendation: null,
+        activity,
+        position,
+      }, { status: 200 });
 
     } else if (action.type === "add_experience") {
       // Fetch locations for this city (non-restaurants, case-insensitive match)
