@@ -7,6 +7,13 @@ import { findDuplicatesByName, groupBy } from '../lib/utils';
 import { shouldSkipLocation, getDuplicateResolution } from '../lib/overrides';
 
 /**
+ * Generate a coordinate key for grouping (6 decimal places = ~11cm precision)
+ */
+function coordinateKey(lat: number, lng: number): string {
+  return `${lat.toFixed(6)},${lng.toFixed(6)}`;
+}
+
+/**
  * Rule: Detect duplicate locations in the same city
  */
 const duplicateSameCityRule: Rule = {
@@ -192,7 +199,93 @@ function calculateLocationScore(loc: Location): number {
   return score;
 }
 
+/**
+ * Rule: Detect multiple locations at the exact same coordinates
+ */
+const duplicateCoordinatesRule: Rule = {
+  id: 'duplicate-coordinates',
+  name: 'Duplicate Coordinates',
+  description: 'Detects multiple locations at the exact same lat/lng coordinates',
+  category: 'duplicates',
+  issueTypes: ['DUPLICATE_COORDINATES'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    // Group locations by coordinates
+    const byCoords = new Map<string, Location[]>();
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Get coordinates from either field
+      const lat = loc.lat ?? loc.coordinates?.lat;
+      const lng = loc.lng ?? loc.coordinates?.lng;
+
+      // Skip if no coordinates
+      if (lat === null || lat === undefined || lng === null || lng === undefined) {
+        continue;
+      }
+
+      const key = coordinateKey(lat, lng);
+      const existing = byCoords.get(key) || [];
+      existing.push(loc);
+      byCoords.set(key, existing);
+    }
+
+    // Find duplicates (2+ locations at same coordinates)
+    const coordEntries = Array.from(byCoords.entries());
+    for (const [coords, locs] of coordEntries) {
+      if (locs.length < 2) continue;
+
+      // Check for configured resolutions
+      const activeLocations = locs.filter(loc => !shouldSkipLocation(loc.id));
+      if (activeLocations.length < 2) continue;
+
+      // Create an issue for each duplicate
+      for (const loc of activeLocations) {
+        const resolution = getDuplicateResolution(loc.id);
+
+        issues.push({
+          id: `${loc.id}-duplicate-coords`,
+          type: 'DUPLICATE_COORDINATES',
+          severity: 'high',
+          locationId: loc.id,
+          locationName: loc.name,
+          city: loc.city,
+          region: loc.region,
+          message: `${locs.length} locations share coordinates (${coords}): ${locs.map(l => l.name).join(', ')}`,
+          details: {
+            coordinates: coords,
+            duplicateCount: locs.length,
+            otherIds: locs.filter(l => l.id !== loc.id).map(l => l.id),
+            otherNames: locs.filter(l => l.id !== loc.id).map(l => l.name),
+          },
+          suggestedFix: resolution
+            ? resolution.action === 'keep'
+              ? {
+                  action: 'skip',
+                  reason: resolution.reason || 'Configured to keep',
+                  confidence: 100,
+                  source: 'override',
+                }
+              : {
+                  action: 'delete',
+                  reason: resolution.reason || 'Configured to delete',
+                  confidence: 100,
+                  source: 'override',
+                }
+            : determineDuplicateFix(loc, activeLocations),
+        });
+      }
+    }
+
+    return issues;
+  },
+};
+
 export const duplicateRules: Rule[] = [
   duplicateSameCityRule,
   duplicateManyCitiesRule,
+  duplicateCoordinatesRule,
 ];

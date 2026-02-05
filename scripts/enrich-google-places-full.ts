@@ -93,6 +93,8 @@ const ENRICHMENT_FIELD_MASK = [
   "regularOpeningHours",
   // NEW: Editorial summary
   "editorialSummary",
+  // NEW: Coordinates (for precision improvement)
+  "location",
 ].join(",");
 
 // Mapping from Google Places primaryType to our category system
@@ -249,6 +251,8 @@ interface PlaceEnrichmentData {
   };
   // NEW: Editorial summary
   editorialSummary?: { text: string };
+  // NEW: Coordinates
+  location?: { latitude: number; longitude: number };
 }
 
 interface EnrichmentResult {
@@ -270,6 +274,7 @@ interface EnrichmentResult {
   hasGoodForGroups?: boolean;
   hasEditorialSummary?: boolean;
   hasOpeningHours?: boolean;
+  hasCoordinates?: boolean;
   error?: string;
 }
 
@@ -646,6 +651,17 @@ async function enrichLocations(options: {
       editorial_summary: enrichmentData.editorialSummary?.text ?? null,
     };
 
+    // Update coordinates if Google provides them (higher precision)
+    if (enrichmentData.location) {
+      updateData.lat = enrichmentData.location.latitude;
+      updateData.lng = enrichmentData.location.longitude;
+      // Also update the coordinates JSON field for consistency
+      updateData.coordinates = {
+        lat: enrichmentData.location.latitude,
+        lng: enrichmentData.location.longitude,
+      };
+    }
+
     // Only update neighborhood if we extracted one (don't overwrite existing)
     if (extractedNeighborhood) {
       updateData.neighborhood = extractedNeighborhood;
@@ -705,6 +721,7 @@ async function enrichLocations(options: {
       hasGoodForGroups: enrichmentData.goodForGroups !== undefined,
       hasEditorialSummary: enrichmentData.editorialSummary?.text !== undefined,
       hasOpeningHours: convertedHours !== null,
+      hasCoordinates: enrichmentData.location !== undefined,
     });
     successful++;
 
@@ -739,6 +756,7 @@ async function enrichLocations(options: {
   const withGoodForGroups = results.filter((r) => r.hasGoodForGroups).length;
   const withEditorialSummary = results.filter((r) => r.hasEditorialSummary).length;
   const withOpeningHours = results.filter((r) => r.hasOpeningHours).length;
+  const withCoordinates = results.filter((r) => r.hasCoordinates).length;
 
   console.log(`\nData coverage:`);
   console.log(`  - With price level: ${withPriceLevel}`);
@@ -752,6 +770,7 @@ async function enrichLocations(options: {
   console.log(`  - With goodForGroups: ${withGoodForGroups}`);
   console.log(`  - With editorial summary: ${withEditorialSummary}`);
   console.log(`  - With opening hours: ${withOpeningHours}`);
+  console.log(`  - With coordinates: ${withCoordinates}`);
 
   // Write log file
   const logFile: EnrichmentLog = {

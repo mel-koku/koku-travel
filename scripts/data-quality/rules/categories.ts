@@ -5,6 +5,12 @@
 import type { Rule, Issue, RuleContext } from '../lib/types';
 import { containsEventKeyword } from '../lib/utils';
 import { shouldSkipLocation, getCategoryOverride } from '../lib/overrides';
+import {
+  VALID_CATEGORIES,
+  PREFECTURE_REGION_MAP,
+  getExpectedRegion,
+  normalizePrefectureName,
+} from '../lib/geography';
 
 /**
  * Rule: Detect events with wrong category
@@ -284,8 +290,117 @@ const landmarkMiscategorizedRule: Rule = {
   },
 };
 
+/**
+ * Rule: Detect invalid categories
+ */
+const categoryInvalidRule: Rule = {
+  id: 'category-invalid',
+  name: 'Category Invalid',
+  description: 'Detects locations with categories not in the allowed list',
+  category: 'categories',
+  issueTypes: ['CATEGORY_INVALID'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Skip if no category
+      if (!loc.category) continue;
+
+      const category = loc.category.toLowerCase();
+
+      // Check if valid
+      if (VALID_CATEGORIES.includes(category)) continue;
+
+      issues.push({
+        id: `${loc.id}-invalid-category`,
+        type: 'CATEGORY_INVALID',
+        severity: 'critical',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Location "${loc.name}" has invalid category "${loc.category}"`,
+        details: {
+          currentCategory: loc.category,
+          validCategories: VALID_CATEGORIES,
+        },
+        suggestedFix: {
+          action: 'skip',
+          reason: 'Needs manual review to assign correct category',
+          confidence: 0,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
+/**
+ * Rule: Detect prefecture/region mismatches
+ */
+const prefectureRegionMismatchRule: Rule = {
+  id: 'prefecture-region-mismatch',
+  name: 'Prefecture Region Mismatch',
+  description: 'Detects locations where the prefecture does not match the region assignment',
+  category: 'categories',
+  issueTypes: ['PREFECTURE_REGION_MISMATCH'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Skip if no prefecture
+      if (!loc.prefecture) continue;
+
+      const normalizedPrefecture = normalizePrefectureName(loc.prefecture);
+      const expectedRegion = getExpectedRegion(normalizedPrefecture);
+
+      // Skip if we can't determine expected region (unknown prefecture)
+      if (!expectedRegion) continue;
+
+      // Check if region matches
+      if (loc.region.toLowerCase() === expectedRegion.toLowerCase()) continue;
+
+      issues.push({
+        id: `${loc.id}-region-mismatch`,
+        type: 'PREFECTURE_REGION_MISMATCH',
+        severity: 'high',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Location "${loc.name}" in ${loc.prefecture} should be in ${expectedRegion}, not ${loc.region}`,
+        details: {
+          prefecture: loc.prefecture,
+          normalizedPrefecture,
+          currentRegion: loc.region,
+          expectedRegion,
+        },
+        suggestedFix: {
+          action: 'update_region',
+          newValue: expectedRegion,
+          reason: `Prefecture ${normalizedPrefecture} is in ${expectedRegion} region`,
+          confidence: 95,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
 export const categoryRules: Rule[] = [
   eventWrongCategoryRule,
   accommodationMiscategorizedRule,
   landmarkMiscategorizedRule,
+  categoryInvalidRule,
+  prefectureRegionMismatchRule,
 ];

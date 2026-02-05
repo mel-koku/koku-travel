@@ -8,6 +8,7 @@ import { descriptionFixer } from './descriptions';
 import { duplicateFixer } from './duplicates';
 import { categoryFixer } from './categories';
 import { idFixer } from './ids';
+import { geographyFixer } from './geography';
 
 // All available fixers
 export const allFixers: Fixer[] = [
@@ -16,6 +17,7 @@ export const allFixers: Fixer[] = [
   duplicateFixer,
   categoryFixer,
   idFixer,
+  geographyFixer,
 ];
 
 /**
@@ -34,4 +36,4 @@ export function listFixers(): Array<{ handles: IssueType[] }> {
   }));
 }
 
-export { nameFixer, descriptionFixer, duplicateFixer, categoryFixer, idFixer };
+export { nameFixer, descriptionFixer, duplicateFixer, categoryFixer, idFixer, geographyFixer };
