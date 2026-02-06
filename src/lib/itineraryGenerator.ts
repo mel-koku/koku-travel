@@ -142,6 +142,11 @@ export type GenerateItineraryOptions = {
    * When provided, skips database fetch.
    */
   locations?: Location[];
+  /**
+   * Location IDs that the user has saved/queued from the Explore page.
+   * These locations will be prioritized and included in the generated itinerary.
+   */
+  savedLocationIds?: string[];
 };
 
 export async function generateItinerary(
@@ -202,6 +207,28 @@ export async function generateItinerary(
   }
 
   const days: Itinerary["days"] = [];
+
+  // Build map of saved/queued locations by city for prioritization
+  const savedLocationIds = new Set(options?.savedLocationIds ?? []);
+  const savedLocationsByCity = new Map<string, Location[]>();
+  if (savedLocationIds.size > 0) {
+    for (const loc of allLocations) {
+      if (savedLocationIds.has(loc.id)) {
+        const cityKey = normalizeKey(loc.city);
+        const list = savedLocationsByCity.get(cityKey) ?? [];
+        list.push(loc);
+        savedLocationsByCity.set(cityKey, list);
+      }
+    }
+    logger.info("Saved locations to include", {
+      totalSaved: savedLocationIds.size,
+      foundInData: Array.from(savedLocationsByCity.entries()).map(([city, locs]) => ({
+        city,
+        count: locs.length,
+        names: locs.map((l) => l.name),
+      })),
+    });
+  }
 
   // Track consecutive days in each city for day trip suggestions
   const cityDayCounter = new Map<string, number>();
@@ -316,6 +343,53 @@ export async function generateItinerary(
     const dayCategories: string[] = [];
     const dayNeighborhoods: string[] = [];
     let lastLocation: Location | undefined;
+
+    // Add saved/queued locations for this city first (user explicitly requested these)
+    const savedForCity = savedLocationsByCity.get(cityInfo.key) ?? [];
+    for (const savedLoc of savedForCity) {
+      // Skip if already used
+      if (usedLocations.has(savedLoc.id)) continue;
+      const normalizedName = savedLoc.name.toLowerCase().trim();
+      if (usedLocationNames.has(normalizedName)) continue;
+
+      const locationDuration = getLocationDurationMinutes(savedLoc);
+      const isFood = isFoodCategory(savedLoc.category);
+      const timeSlot = "morning" as const; // Saved locations start in morning
+
+      // Build activity for saved location
+      const activity: Extract<ItineraryActivity, { kind: "place" }> = {
+        kind: "place",
+        id: `${savedLoc.id}-${dayIndex + 1}-saved`,
+        title: savedLoc.name,
+        timeOfDay: timeSlot,
+        durationMin: locationDuration,
+        locationId: savedLoc.id,
+        coordinates: savedLoc.coordinates,
+        neighborhood: savedLoc.neighborhood ?? savedLoc.city,
+        tags: savedLoc.category ? [savedLoc.category, "saved"] : ["saved"],
+        notes: "Added from your saved places",
+        ...(isFood && { mealType: inferMealTypeFromTimeSlot(timeSlot) }),
+      };
+
+      dayActivities.push(activity);
+      usedLocations.add(savedLoc.id);
+      usedLocationNames.add(normalizedName);
+
+      // Track for diversity
+      if (savedLoc.category) {
+        dayCategories.push(savedLoc.category);
+      }
+      const locNeighborhood = savedLoc.neighborhood ?? savedLoc.city;
+      if (locNeighborhood) {
+        dayNeighborhoods.push(locNeighborhood);
+      }
+      lastLocation = savedLoc;
+
+      // Update time slot usage
+      timeSlotUsage.set(timeSlot, (timeSlotUsage.get(timeSlot) ?? 0) + locationDuration);
+
+      logger.info(`Day ${dayIndex + 1}: Added saved location "${savedLoc.name}"`);
+    }
 
     // Track assigned meal types to prevent multiple lunches/dinners per day
     // Only one "full meal" per slot (breakfast, lunch, dinner). Additional food places become "snacks"

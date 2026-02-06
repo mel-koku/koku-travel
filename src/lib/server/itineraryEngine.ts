@@ -163,16 +163,21 @@ export type GeneratedTripResult = {
 /**
  * Generates an itinerary from TripBuilderData
  * Returns both a Trip domain model and the raw Itinerary for storage
+ *
+ * @param builderData - Trip configuration data
+ * @param tripId - Unique identifier for the trip
+ * @param savedLocationIds - Optional array of location IDs queued from Explore page
  */
 export async function generateTripFromBuilderData(
   builderData: TripBuilderData,
   tripId: string,
+  savedLocationIds?: string[],
 ): Promise<GeneratedTripResult> {
   // Fetch locations filtered by selected cities (after ward consolidation)
   const allLocations = await fetchAllLocations({ cities: builderData.cities });
 
-  // Generate itinerary using existing generator
-  const rawItinerary = await generateItinerary(builderData);
+  // Generate itinerary using existing generator, including saved locations
+  const rawItinerary = await generateItinerary(builderData, { savedLocationIds });
 
   // Optimize route order before planning times
   const optimizedItinerary = optimizeItineraryRoutes(rawItinerary, builderData);

@@ -8,12 +8,14 @@ import {
   Users,
   Accessibility,
   StickyNote,
+  MapPin,
 } from "lucide-react";
 
 import { TripSummaryCard } from "./TripSummaryCard";
 import { PreferenceRow } from "./PreferenceRow";
 import { PlanningWarningsList } from "./PlanningWarning";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
+import { SavedLocationsPreview } from "./SavedLocationsPreview";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
 import { FormField } from "@/components/ui/FormField";
@@ -72,6 +74,17 @@ export type ReviewStepProps = {
 
 export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
   const { data, setData } = useTripBuilder();
+
+  // Handler to remove a saved location from the queue
+  const handleRemoveSavedLocation = useCallback(
+    (locationId: string) => {
+      setData((prev) => ({
+        ...prev,
+        savedLocationIds: prev.savedLocationIds?.filter((id) => id !== locationId),
+      }));
+    },
+    [setData]
+  );
 
   // Budget mode state
   const [budgetMode, setBudgetMode] = useState<BudgetMode>("perDay");
@@ -249,6 +262,28 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
 
       {/* Planning Warnings */}
       {warnings.length > 0 && <PlanningWarningsList warnings={warnings} />}
+
+      {/* Saved Locations Section */}
+      {(data.savedLocationIds?.length ?? 0) > 0 && (
+        <div>
+          <div className="mb-3 flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-sage" />
+            <div>
+              <h3 className="text-lg font-semibold text-charcoal">
+                Saved Places ({data.savedLocationIds?.length})
+              </h3>
+              <p className="text-sm text-stone">
+                These places will be included in your itinerary
+              </p>
+            </div>
+          </div>
+          <SavedLocationsPreview
+            locationIds={data.savedLocationIds ?? []}
+            selectedCities={data.cities}
+            onRemove={handleRemoveSavedLocation}
+          />
+        </div>
+      )}
 
       {/* Preferences Section */}
       <div>

@@ -20,6 +20,8 @@ export { CityList } from "./CityList";
 export { ReviewStep } from "./ReviewStep";
 export { SelectionReview } from "./SelectionReview";
 export { PreferenceCards } from "./PreferenceCards";
+export { SavedLocationsPreview } from "./SavedLocationsPreview";
+export type { SavedLocationsPreviewProps } from "./SavedLocationsPreview";
 
 // Preview components
 export { LivePreview } from "./LivePreview";

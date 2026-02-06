@@ -34,6 +34,7 @@ const createDefaultData = (): TripBuilderData => ({
   entryPoint: undefined,
   accessibility: undefined,
   dayStartTime: undefined,
+  savedLocationIds: [],
 });
 
 const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
@@ -50,6 +51,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedRegions = sanitizeRegions(raw.regions);
   const normalizedCities = sanitizeCities(raw.cities);
   const normalizedDayStartTime = sanitizeDayStartTime(raw.dayStartTime);
+  const normalizedSavedLocationIds = sanitizeSavedLocationIds(raw.savedLocationIds);
   return {
     ...base,
     ...raw,
@@ -65,6 +67,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     entryPoint: normalizedEntryPoint,
     accessibility: normalizedAccessibility,
     dayStartTime: normalizedDayStartTime,
+    savedLocationIds: normalizedSavedLocationIds,
   };
 };
 
@@ -110,6 +113,7 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
           entryPoint: normalizedStored.entryPoint,
           accessibility: normalizedStored.accessibility,
           dayStartTime: normalizedStored.dayStartTime,
+          savedLocationIds: normalizedStored.savedLocationIds,
         };
       });
     }
@@ -187,6 +191,14 @@ export function useTripBuilder() {
     throw new Error("useTripBuilder must be used within a TripBuilderProvider");
   }
   return context;
+}
+
+/**
+ * Optional version of useTripBuilder that returns null when outside a TripBuilderProvider.
+ * Use this in components that may or may not be within the provider context.
+ */
+export function useTripBuilderOptional(): TripBuilderContextValue | null {
+  return useContext(TripBuilderContext) ?? null;
 }
 
 /**
@@ -374,6 +386,21 @@ function sanitizeDayStartTime(dayStartTime?: string): string | undefined {
 
   // Normalize to HH:MM format
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+}
+
+/**
+ * Sanitize savedLocationIds - deduplicated, trimmed, max 50 items
+ */
+function sanitizeSavedLocationIds(ids?: string[]): string[] {
+  if (!ids || !Array.isArray(ids)) return [];
+  const seen = new Set<string>();
+  return ids
+    .filter((id) => {
+      if (typeof id !== "string" || !id.trim() || seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    })
+    .slice(0, 50);
 }
 
 
