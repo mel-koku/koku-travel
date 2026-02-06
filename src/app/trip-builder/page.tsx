@@ -18,7 +18,7 @@ type PlanApiResponse = {
 
 function TripBuilderV2Content() {
   const router = useRouter();
-  const { data, reset } = useTripBuilder();
+  const { data, reset, setData } = useTripBuilder();
   const { createTrip } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +29,7 @@ function TripBuilderV2Content() {
 
     try {
       // Call the API to generate the itinerary
+      // Pass savedLocationIds separately so they can be prioritized in generation
       const response = await fetch("/api/itinerary/plan", {
         method: "POST",
         headers: {
@@ -36,6 +37,7 @@ function TripBuilderV2Content() {
         },
         body: JSON.stringify({
           builderData: data as TripBuilderData,
+          savedLocationIds: data.savedLocationIds,
         }),
       });
 
@@ -65,6 +67,9 @@ function TripBuilderV2Content() {
       // when they start their day. A future feature may allow users to specify a hotel
       // or station as a daily starting point.
 
+      // Clear the saved locations queue (they've been included in the trip)
+      setData((prev) => ({ ...prev, savedLocationIds: [] }));
+
       // Reset the builder state
       reset();
 
@@ -74,7 +79,7 @@ function TripBuilderV2Content() {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setIsGenerating(false);
     }
-  }, [data, createTrip, reset, router]);
+  }, [data, createTrip, reset, setData, router]);
 
   return (
     <>
