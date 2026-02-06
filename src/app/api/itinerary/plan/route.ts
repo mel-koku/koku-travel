@@ -73,10 +73,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { builderData, tripId } = validation.data;
+  const { builderData, tripId, savedLocationIds } = validation.data;
 
   try {
     // Check cache first (before expensive generation)
+    // Note: savedLocationIds are NOT included in cache key since they're user-specific
     const cachedResult = await getCachedItinerary(builderData);
     if (cachedResult) {
       logger.info("Returning cached itinerary", {
@@ -116,7 +117,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate trip (returns both domain model and raw itinerary)
-    const { trip, itinerary } = await generateTripFromBuilderData(builderData, finalTripId);
+    // Include savedLocationIds if provided (locations queued from Explore page)
+    const { trip, itinerary } = await generateTripFromBuilderData(
+      builderData,
+      finalTripId,
+      savedLocationIds
+    );
 
     // Cache the generated itinerary for future requests
     await cacheItinerary(builderData, trip, itinerary);

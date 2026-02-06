@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { useAppState, type StoredTrip } from "@/state/AppState";
+import { useTripBuilderOptional } from "@/context/TripBuilderContext";
 import { useToast } from "@/context/ToastContext";
 import type { Location } from "@/types/location";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
@@ -73,6 +74,53 @@ function isLocationInItinerary(itinerary: Itinerary, locationId: string): boolea
   );
 }
 
+/**
+ * Finds the best day to place a location based on city matching.
+ * Prioritizes days that already have activities in the same city.
+ */
+function findBestDayForLocation(
+  itinerary: Itinerary,
+  location: Location
+): { dayIndex: number; day: Itinerary["days"][number] } {
+  const locationCity = location.city?.toLowerCase().trim();
+  const days = itinerary.days;
+
+  if (!days || days.length === 0) {
+    throw new Error("Itinerary has no days");
+  }
+
+  // First pass: find a day in the same city
+  if (locationCity) {
+    for (let i = 0; i < days.length; i++) {
+      const day = days[i]!;
+
+      // Check if any activity in this day is in the same city
+      const hasSameCity = day.activities?.some(
+        (a) =>
+          a.kind === "place" &&
+          a.neighborhood?.toLowerCase().trim() === locationCity
+      );
+      if (hasSameCity) {
+        return { dayIndex: i, day };
+      }
+
+      // Also check dateLabel which often contains city (e.g., "Day 1 (Kyoto)")
+      if (day.dateLabel?.toLowerCase().includes(locationCity)) {
+        return { dayIndex: i, day };
+      }
+
+      // Check cityId directly
+      if (day.cityId?.toLowerCase() === locationCity) {
+        return { dayIndex: i, day };
+      }
+    }
+  }
+
+  // Fallback: return last day
+  const lastIndex = days.length - 1;
+  return { dayIndex: lastIndex, day: days[lastIndex]! };
+}
+
 function removeLocationFromItinerary(itinerary: Itinerary, locationId: string): Itinerary {
   if (!itinerary?.days) return itinerary;
 
@@ -85,42 +133,6 @@ function removeLocationFromItinerary(itinerary: Itinerary, locationId: string): 
           (activity) => !(activity.kind === "place" && activity.locationId === locationId)
         ) ?? [],
     })),
-  };
-}
-
-function addLocationToItinerary(itinerary: Itinerary, location: Location): Itinerary {
-  const baseItinerary: Itinerary = {
-    timezone: itinerary?.timezone,
-    days: Array.isArray(itinerary?.days) ? [...itinerary.days] : [],
-  };
-
-  const days = baseItinerary.days;
-
-  // Ensure at least one day exists
-  if (days.length === 0) {
-    days.push({
-      id: `day-${Date.now().toString(36)}`,
-      dateLabel: "Day 1",
-      activities: [],
-    });
-  }
-
-  const activity = createActivityFromLocation(location);
-  const targetDay = days[0]!;
-  const existingActivities = Array.isArray(targetDay.activities)
-    ? [...targetDay.activities]
-    : [];
-
-  existingActivities.push(activity);
-
-  days[0] = {
-    ...targetDay,
-    activities: existingActivities,
-  };
-
-  return {
-    ...baseItinerary,
-    days,
   };
 }
 
@@ -141,8 +153,51 @@ function getNextTripName(trips: StoredTrip[]): string {
   return `Japan Trip ${maxNumber + 1}`;
 }
 
+function addLocationToItinerary(itinerary: Itinerary, location: Location): { itinerary: Itinerary; dayIndex: number } {
+  const baseItinerary: Itinerary = {
+    timezone: itinerary?.timezone,
+    days: Array.isArray(itinerary?.days) ? [...itinerary.days] : [],
+  };
+
+  const days = baseItinerary.days;
+
+  // Ensure at least one day exists
+  if (days.length === 0) {
+    days.push({
+      id: `day-${Date.now().toString(36)}`,
+      dateLabel: "Day 1",
+      activities: [],
+    });
+  }
+
+  // Find best day for this location using smart city matching
+  const { dayIndex, day } = findBestDayForLocation(baseItinerary, location);
+
+  const activity = createActivityFromLocation(location);
+  const existingActivities = Array.isArray(day.activities)
+    ? [...day.activities]
+    : [];
+
+  existingActivities.push(activity);
+
+  days[dayIndex] = {
+    ...day,
+    activities: existingActivities,
+  };
+
+  return {
+    itinerary: {
+      ...baseItinerary,
+      days,
+    },
+    dayIndex,
+  };
+}
+
+
 export function useAddToItinerary(): AddToItineraryResult {
   const { trips, createTrip, updateTripItinerary, isFavorite, toggleFavorite } = useAppState();
+  const tripBuilderContext = useTripBuilderOptional();
   const { showToast } = useToast();
 
   const needsTripPicker = trips.length > 1;
@@ -152,6 +207,17 @@ export function useAddToItinerary(): AddToItineraryResult {
       return trips.some((trip) => isLocationInItinerary(trip.itinerary, locationId));
     },
     [trips]
+  );
+
+  /**
+   * Check if a location is already queued for the trip builder
+   */
+  const isQueued = useCallback(
+    (locationId: string): boolean => {
+      if (!tripBuilderContext) return false;
+      return tripBuilderContext.data.savedLocationIds?.includes(locationId) ?? false;
+    },
+    [tripBuilderContext]
   );
 
   const removeFromItinerary = useCallback(
@@ -177,29 +243,70 @@ export function useAddToItinerary(): AddToItineraryResult {
 
   const addToItinerary = useCallback(
     (locationId: string, location: Location, tripId?: string) => {
-      let targetTrip: StoredTrip | undefined;
+      // Always add to favorites first
+      if (!isFavorite(locationId)) {
+        toggleFavorite(locationId);
+      }
 
-      // Determine which trip to use
+      // If no trips exist
       if (trips.length === 0) {
-        // Auto-create a new trip
+        // If we have TripBuilder context, queue for trip builder
+        if (tripBuilderContext) {
+          // Check if already queued
+          if (isQueued(locationId)) {
+            showToast(`"${location.name}" is already saved for your trip`, {
+              variant: "info",
+            });
+            return;
+          }
+
+          // Queue in TripBuilderContext
+          tripBuilderContext.setData((prev) => ({
+            ...prev,
+            savedLocationIds: [...(prev.savedLocationIds ?? []), locationId],
+          }));
+
+          showToast(`Saved "${location.name}" - will be included when you create a trip`, {
+            variant: "success",
+            actionLabel: "Plan Trip",
+            actionHref: "/trip-builder",
+          });
+          return;
+        }
+
+        // No TripBuilder context - fall back to auto-creating a trip
         const tripName = getNextTripName(trips);
         const newTripId = createTrip({
           name: tripName,
           itinerary: { days: [] },
-          builderData: {
-            dates: {},
-          },
-        });
-        // Get the newly created trip (it's added to state)
-        targetTrip = {
-          id: newTripId,
-          name: tripName,
-          itinerary: { days: [] },
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
           builderData: { dates: {} },
+        });
+
+        // Create activity and add to new trip
+        const activity = createActivityFromLocation(location);
+        const newItinerary: Itinerary = {
+          days: [
+            {
+              id: `day-${Date.now().toString(36)}`,
+              dateLabel: "Day 1",
+              activities: [activity],
+            },
+          ],
         };
-      } else if (trips.length === 1) {
+        updateTripItinerary(newTripId, newItinerary);
+
+        showToast(`Added to ${tripName}`, {
+          variant: "success",
+          actionLabel: "View",
+          actionHref: `/trip-builder/${newTripId}`,
+        });
+        return;
+      }
+
+      // Determine which trip to use
+      let targetTrip: StoredTrip | undefined;
+
+      if (trips.length === 1) {
         targetTrip = trips[0];
       } else if (tripId) {
         targetTrip = trips.find((t) => t.id === tripId);
@@ -210,23 +317,38 @@ export function useAddToItinerary(): AddToItineraryResult {
         return;
       }
 
-      // Add location to itinerary
-      const newItinerary = addLocationToItinerary(targetTrip.itinerary, location);
-      updateTripItinerary(targetTrip.id, newItinerary);
-
-      // Auto-favorite if not already favorited
-      if (!isFavorite(locationId)) {
-        toggleFavorite(locationId);
+      // Check if location is already in the itinerary
+      if (isLocationInItinerary(targetTrip.itinerary, locationId)) {
+        showToast(`"${location.name}" is already in ${targetTrip.name}`, {
+          variant: "info",
+        });
+        return;
       }
 
-      // Show toast notification
-      showToast(`Added to ${targetTrip.name}`, {
+      // Add location to itinerary with smart city matching
+      const { itinerary: newItinerary, dayIndex } = addLocationToItinerary(
+        targetTrip.itinerary,
+        location
+      );
+      updateTripItinerary(targetTrip.id, newItinerary);
+
+      // Show toast notification with day info
+      showToast(`Added to Day ${dayIndex + 1} of ${targetTrip.name}`, {
         variant: "success",
         actionLabel: "View",
         actionHref: `/trip-builder/${targetTrip.id}`,
       });
     },
-    [trips, createTrip, updateTripItinerary, isFavorite, toggleFavorite, showToast]
+    [
+      trips,
+      createTrip,
+      updateTripItinerary,
+      isFavorite,
+      toggleFavorite,
+      isQueued,
+      tripBuilderContext,
+      showToast,
+    ]
   );
 
   return useMemo(
