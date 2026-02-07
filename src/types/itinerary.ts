@@ -109,6 +109,10 @@ export type ItineraryActivity =
        */
       coordinates?: { lat: number; lng: number };
       /**
+       * Short description of the place (from location data).
+       */
+      description?: string;
+      /**
        * Meal type if this is a meal activity (breakfast, lunch, dinner, snack)
        */
       mealType?: "breakfast" | "lunch" | "dinner" | "snack";

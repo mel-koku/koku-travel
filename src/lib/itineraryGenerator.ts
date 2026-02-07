@@ -368,6 +368,7 @@ export async function generateItinerary(
         neighborhood: savedLoc.neighborhood ?? savedLoc.city,
         tags: savedLoc.category ? [savedLoc.category, "saved"] : ["saved"],
         notes: "Added from your saved places",
+        ...(savedLoc.description && { description: savedLoc.description }),
         ...(isFood && { mealType: inferMealTypeFromTimeSlot(timeSlot) }),
       };
 
@@ -575,6 +576,7 @@ export async function generateItinerary(
               neighborhood: location.neighborhood ?? location.city,
               tags: buildTags(interest, location.category),
               recommendationReason,
+              ...(location.description && { description: location.description }),
               ...(mealType && { mealType }),
               ...(mealNote && { notes: mealNote }),
             };
