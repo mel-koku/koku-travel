@@ -18,7 +18,7 @@ jobs:
     if: github.event.workflow_run.conclusion == 'success'
     steps:
       - name: Find Dependabot PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         id: find-pr
         with:
           script: |
@@ -44,7 +44,7 @@ jobs:
 
       - name: Check PR conditions
         if: steps.find-pr.outputs.found == 'true'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         id: check-conditions
         env:
           PR_LABELS: ${{ steps.find-pr.outputs.pr_labels }}
