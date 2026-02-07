@@ -285,6 +285,28 @@ html.lenis-stopped {
   }
 }
 
+/*
+  Z-index stack:
+  z-40  — Dropdown menus (portaled)
+  z-50  — Header bar (fixed)
+  z-[100] — Menu overlay (full-screen)
+  z-[9999] — Custom cursor
+*/
+
+/* Menu panel slow zoom animation */
+@keyframes menu-panel-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+.animate-menu-panel-zoom {
+  animation: menu-panel-zoom 8s ease-out forwards;
+}
+
 /* Respect reduced motion globally */
 @media (prefers-reduced-motion: reduce) {
   *,
