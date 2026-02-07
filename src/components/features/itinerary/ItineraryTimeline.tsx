@@ -16,6 +16,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import {
+  Fragment,
   useState,
   useEffect,
   useCallback,
@@ -34,6 +35,8 @@ import type { TripBuilderData } from "@/types/trip";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
 import { getActivityConflicts } from "@/lib/validation/itineraryConflicts";
+import type { DayGuide } from "@/types/itineraryGuide";
+import { GuideSegmentCard } from "./GuideSegmentCard";
 import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
@@ -72,6 +75,8 @@ type ItineraryTimelineProps = {
   // Conflicts for this day
   conflicts?: ItineraryConflict[];
   conflictsResult?: ItineraryConflictsResult;
+  // Guide segments for this day
+  guide?: DayGuide | null;
 };
 
 export const ItineraryTimeline = ({
@@ -92,6 +97,7 @@ export const ItineraryTimeline = ({
   loadingSuggestionId,
   conflicts,
   conflictsResult,
+  guide,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -594,6 +600,11 @@ export const ItineraryTimeline = ({
             items={extendedActivities.map((activity) => activity.id)}
             strategy={verticalListSortingStrategy}
           >
+            {/* Guide: Day Intro */}
+            {guide?.intro && !activeId && (
+              <GuideSegmentCard segment={guide.intro} className="mb-3" />
+            )}
+
             <ul className="space-y-3">
               {extendedActivities.map((activity, index) => {
                 // Calculate place number (only for place activities, 1-indexed to match map pins)
@@ -668,26 +679,55 @@ export const ItineraryTimeline = ({
                   ? getActivityConflicts(conflictsResult, activity.id)
                   : [];
 
+                // Find guide segments that should appear after this activity
+                const guideSegmentsAfter = guide?.segments.filter(
+                  (seg) => seg.afterActivityId === activity.id,
+                ) ?? [];
+
+                // Find guide segments that should appear before this activity (prep content)
+                const guideSegmentsBefore = guide?.segments.filter(
+                  (seg) => seg.beforeActivityId === activity.id,
+                ) ?? [];
+
+                const fragmentKey = activity.id;
                 return (
-                  <SortableActivity
-                    key={activity.id}
-                    activity={activity}
-                    allActivities={extendedActivities}
-                    dayTimezone={day.timezone}
-                    onDelete={() => handleDelete(activity.id)}
-                    onUpdate={(patch) => handleUpdate(activity.id, patch)}
-                    isSelected={activity.id === selectedActivityId}
-                    onSelect={onSelectActivity}
-                    placeNumber={placeNumber}
-                    travelSegment={travelSegmentElement}
-                    tripId={tripId}
-                    dayId={day.id}
-                    onReplace={onReplace ? () => onReplace(activity.id) : undefined}
-                    conflicts={activityConflicts}
-                  />
+                  <Fragment key={fragmentKey}>
+                    {/* Guide segments before this activity (cultural insights, tips) */}
+                    {!activeId && guideSegmentsBefore.map((seg) => (
+                      <li key={seg.id} className="list-none">
+                        <GuideSegmentCard segment={seg} />
+                      </li>
+                    ))}
+                    <SortableActivity
+                      activity={activity}
+                      allActivities={extendedActivities}
+                      dayTimezone={day.timezone}
+                      onDelete={() => handleDelete(activity.id)}
+                      onUpdate={(patch) => handleUpdate(activity.id, patch)}
+                      isSelected={activity.id === selectedActivityId}
+                      onSelect={onSelectActivity}
+                      placeNumber={placeNumber}
+                      travelSegment={travelSegmentElement}
+                      tripId={tripId}
+                      dayId={day.id}
+                      onReplace={onReplace ? () => onReplace(activity.id) : undefined}
+                      conflicts={activityConflicts}
+                    />
+                    {/* Guide segments after this activity */}
+                    {!activeId && guideSegmentsAfter.map((seg) => (
+                      <li key={seg.id} className="list-none">
+                        <GuideSegmentCard segment={seg} />
+                      </li>
+                    ))}
+                  </Fragment>
                 );
               })}
             </ul>
+
+            {/* Guide: Day Summary */}
+            {guide?.summary && !activeId && (
+              <GuideSegmentCard segment={guide.summary} className="mt-3" />
+            )}
           </SortableContext>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-stone">
