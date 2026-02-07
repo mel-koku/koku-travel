@@ -92,6 +92,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
                 location={location}
                 index={index}
                 onSelect={setSelectedLocation}
+                prefersReducedMotion={prefersReducedMotion}
               />
             ))}
           </motion.div>
@@ -110,17 +111,20 @@ function HorizontalLocationCard({
   location,
   index,
   onSelect,
+  prefersReducedMotion,
 }: {
   location: Location;
   index: number;
   onSelect: (location: Location) => void;
+  prefersReducedMotion: boolean | null;
 }) {
   const imageSrc = location.primaryPhotoUrl ?? location.image;
   const { setCursorState, isEnabled } = useCursor();
   const cardRef = useRef<HTMLButtonElement>(null);
 
+  const skipParallax = !!prefersReducedMotion;
   const { scrollYProgress } = useScroll({
-    target: cardRef,
+    target: skipParallax ? undefined : cardRef,
     offset: ["start end", "end start"],
   });
 
@@ -144,7 +148,7 @@ function HorizontalLocationCard({
       <div className="relative aspect-[3/4]">
         <motion.div
           className="absolute inset-[-10%] h-[120%] w-[120%]"
-          style={{ y: imageY }}
+          style={skipParallax ? {} : { y: imageY }}
         >
           <Image
             src={imageSrc || "/placeholder.jpg"}

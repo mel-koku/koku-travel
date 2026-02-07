@@ -313,22 +313,20 @@ function DesktopSubStepContainer({
               )}
             </button>
 
-            {/* Section Content with smooth animation */}
-            <AnimatePresence initial={false}>
-              {isExpanded && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
-                  className="overflow-hidden"
+            {/* Section Content with CSS grid height transition */}
+            <div
+              className="grid transition-[grid-template-rows] duration-[250ms] ease-out"
+              style={{ gridTemplateRows: isExpanded ? "1fr" : "0fr" }}
+            >
+              <div className="overflow-hidden">
+                <div
+                  className="border-t border-border px-5 pb-5 pt-4 transition-opacity duration-200 ease-out"
+                  style={{ opacity: isExpanded ? 1 : 0 }}
                 >
-                  <div className="border-t border-border px-5 pb-5 pt-4">
-                    {subStep.content}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  {subStep.content}
+                </div>
+              </div>
+            </div>
           </motion.div>
         );
       })}

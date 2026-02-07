@@ -21,6 +21,7 @@ import {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
   type Dispatch,
   type SetStateAction,
 } from "react";
@@ -100,6 +101,13 @@ export const ItineraryTimeline = ({
   guide,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -309,21 +317,36 @@ export const ItineraryTimeline = ({
       // flushSync above ensures the model state is already updated
       if (movedActivity && movedActivity.kind === "place" && oldIndex !== -1 && newIndex !== -1) {
         const capturedActivity = movedActivity as Extract<ItineraryActivity, { kind: "place" }>;
-        // Get current state to find affected activities
-        setModel((current) => {
-            const day = current.days[dayIndex];
-            if (!day) return current;
 
-            const activities = day.activities ?? [];
+        // Read current state to build the list of segments to recalculate
+        // We use a synchronous setModel that returns current unchanged, just to read state
+        const activitiesToUpdate: Array<{
+          activityId: string;
+          previousActivity: Extract<ItineraryActivity, { kind: "place" }>;
+          currentActivity: Extract<ItineraryActivity, { kind: "place" }>;
+          currentTravelSegment: NonNullable<Extract<ItineraryActivity, { kind: "place" }>["travelFromPrevious"]>;
+        }> = [];
+        let dayTimezone: string | undefined;
+
+        setModel((current) => {
+            const currentDay = current.days[dayIndex];
+            if (!currentDay) return current;
+
+            dayTimezone = currentDay.timezone;
+            const activities = currentDay.activities ?? [];
             const movedIndex = activities.findIndex((a) => a.id === capturedActivity.id);
 
             if (movedIndex === -1) return current;
 
-            const activitiesToUpdate: Array<{
-              activityId: string;
-              previousActivity: Extract<ItineraryActivity, { kind: "place" }>;
-              currentTravelSegment: NonNullable<Extract<ItineraryActivity, { kind: "place" }>["travelFromPrevious"]>;
-            }> = [];
+            const defaultSegment = {
+              mode: "transit" as const,
+              durationMinutes: 0,
+              distanceMeters: undefined,
+              departureTime: undefined,
+              arrivalTime: undefined,
+              instructions: undefined,
+              path: undefined,
+            };
 
             // 1. Recalculate travel TO the moved activity (from previous place)
             if (movedIndex > 0) {
@@ -331,20 +354,11 @@ export const ItineraryTimeline = ({
                 const prev = activities[i];
                 const moved = activities[movedIndex];
                 if (prev && prev.kind === "place" && moved && moved.kind === "place") {
-                  // Create default segment if it doesn't exist
-                  const currentSegment = moved.travelFromPrevious ?? {
-                    mode: "transit" as const,
-                    durationMinutes: 0,
-                    distanceMeters: undefined,
-                    departureTime: undefined,
-                    arrivalTime: undefined,
-                    instructions: undefined,
-                    path: undefined,
-                  };
                   activitiesToUpdate.push({
                     activityId: capturedActivity.id,
                     previousActivity: prev,
-                    currentTravelSegment: currentSegment,
+                    currentActivity: moved,
+                    currentTravelSegment: moved.travelFromPrevious ?? defaultSegment,
                   });
                   break;
                 }
@@ -356,20 +370,11 @@ export const ItineraryTimeline = ({
               for (let i = movedIndex + 1; i < activities.length; i++) {
                 const next = activities[i];
                 if (next && next.kind === "place" && capturedActivity && capturedActivity.kind === "place") {
-                  // Create default segment if it doesn't exist
-                  const currentSegment = next.travelFromPrevious ?? {
-                    mode: "transit" as const,
-                    durationMinutes: 0,
-                    distanceMeters: undefined,
-                    departureTime: undefined,
-                    arrivalTime: undefined,
-                    instructions: undefined,
-                    path: undefined,
-                  };
                   activitiesToUpdate.push({
                     activityId: next.id,
                     previousActivity: capturedActivity,
-                    currentTravelSegment: currentSegment,
+                    currentActivity: next,
+                    currentTravelSegment: next.travelFromPrevious ?? defaultSegment,
                   });
                   break;
                 }
@@ -377,28 +382,17 @@ export const ItineraryTimeline = ({
             }
 
             // 3. Recalculate travel for activity that was previously after moved activity
-            // (if it exists and now has a different previous place)
             if (oldIndex < activities.length - 1 && oldIndex !== movedIndex) {
               const activityAfterOldPosition = activities[oldIndex];
               if (activityAfterOldPosition && activityAfterOldPosition.kind === "place") {
-                // Find its new previous place
                 for (let j = oldIndex - 1; j >= 0; j--) {
                   const prev = activities[j];
                   if (prev && prev.kind === "place") {
-                    // Create default segment if it doesn't exist
-                    const currentSegment = activityAfterOldPosition.travelFromPrevious ?? {
-                      mode: "transit" as const,
-                      durationMinutes: 0,
-                      distanceMeters: undefined,
-                      departureTime: undefined,
-                      arrivalTime: undefined,
-                      instructions: undefined,
-                      path: undefined,
-                    };
                     activitiesToUpdate.push({
                       activityId: activityAfterOldPosition.id,
                       previousActivity: prev,
-                      currentTravelSegment: currentSegment,
+                      currentActivity: activityAfterOldPosition,
+                      currentTravelSegment: activityAfterOldPosition.travelFromPrevious ?? defaultSegment,
                     });
                     break;
                   }
@@ -406,49 +400,50 @@ export const ItineraryTimeline = ({
               }
             }
 
-            // Recalculate all affected segments asynchronously
-            if (activitiesToUpdate.length > 0) {
-              Promise.all(
-                activitiesToUpdate.map(async ({ activityId, previousActivity, currentTravelSegment }) => {
-                  const activity = activities.find((a) => a.id === activityId);
-                  if (!activity || activity.kind !== "place" || !previousActivity) {
-                    return;
-                  }
-
-                  const updatedSegment = await recalculateTravelSegment(
-                    previousActivity,
-                    activity,
-                    currentTravelSegment,
-                    day.timezone,
-                  );
-
-                  if (updatedSegment) {
-                    // Update the model with the new segment
-                    setModel((prev) => {
-                      const updatedDays = prev.days.map((d, idx) => {
-                        if (idx !== dayIndex) return d;
-                        return {
-                          ...d,
-                          activities: d.activities.map((a) =>
-                            a.id === activityId && a.kind === "place"
-                              ? { ...a, travelFromPrevious: updatedSegment }
-                              : a,
-                          ),
-                        };
-                      });
-                      return { ...prev, days: updatedDays };
-                    });
-                  }
-                }),
-              ).catch((error) => {
-                // Log warning for debugging - segments will be recalculated on next plan
-                // eslint-disable-next-line no-console
-                console.warn("[ItineraryTimeline] Failed to recalculate travel segments after reorder:", error);
-              });
-            }
-
-            return current;
+            return current; // No mutation — just reading state
           });
+
+        // Run async recalculations outside the state updater
+        if (activitiesToUpdate.length > 0) {
+          Promise.all(
+            activitiesToUpdate.map(async ({ activityId, previousActivity, currentActivity, currentTravelSegment }) => {
+              const updatedSegment = await recalculateTravelSegment(
+                previousActivity,
+                currentActivity,
+                currentTravelSegment,
+                dayTimezone,
+              );
+              return updatedSegment ? { activityId, segment: updatedSegment } : null;
+            }),
+          ).then((results) => {
+            if (!isMountedRef.current) return;
+            const updates = results.filter(
+              (r): r is { activityId: string; segment: NonNullable<typeof r> extends { segment: infer S } ? S : never } => r !== null,
+            );
+            if (updates.length === 0) return;
+
+            // Single batched update for all segments
+            setModel((prev) => {
+              const updatedDays = prev.days.map((d, idx) => {
+                if (idx !== dayIndex) return d;
+                return {
+                  ...d,
+                  activities: d.activities.map((a) => {
+                    const update = updates.find((u) => u.activityId === a.id);
+                    if (update && a.kind === "place") {
+                      return { ...a, travelFromPrevious: update.segment };
+                    }
+                    return a;
+                  }),
+                };
+              });
+              return { ...prev, days: updatedDays };
+            });
+          }).catch((error) => {
+            // eslint-disable-next-line no-console
+            console.warn("[ItineraryTimeline] Failed to recalculate travel segments after reorder:", error);
+          });
+        }
       }
     },
     [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, day],
