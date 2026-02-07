@@ -30,6 +30,8 @@ import { REGIONS } from "@/data/regions";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult } from "@/hooks/useSmartPromptActions";
+import { buildGuide } from "@/lib/guide/guideBuilder";
+import { GuideToggle } from "./GuideToggle";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -116,6 +118,11 @@ export const ItineraryShell = ({
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [guideEnabled, setGuideEnabled] = useState(() => {
+    if (typeof window === "undefined") return true;
+    const stored = localStorage.getItem("koku-guide-visible");
+    return stored === null ? true : stored === "true";
+  });
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
   // Ref to store scheduleUserPlanning for use in handleReplaceSelect (avoids initialization order issues)
@@ -512,6 +519,25 @@ export const ItineraryShell = ({
     return detectItineraryConflicts(model);
   }, [model]);
 
+  // Build guide when enabled
+  const tripGuide = useMemo(() => {
+    if (!guideEnabled) return null;
+    return buildGuide(model, tripBuilderData);
+  }, [guideEnabled, model, tripBuilderData]);
+
+  const currentDayGuide = useMemo(() => {
+    if (!tripGuide || !currentDay) return null;
+    return tripGuide.days.find((dg) => dg.dayId === currentDay.id) ?? null;
+  }, [tripGuide, currentDay]);
+
+  const handleToggleGuide = useCallback(() => {
+    setGuideEnabled((prev) => {
+      const next = !prev;
+      localStorage.setItem("koku-guide-visible", String(next));
+      return next;
+    });
+  }, []);
+
   // Get conflicts for the current day
   const currentDayConflicts = useMemo(() => {
     if (!currentDay) return [];
@@ -643,6 +669,7 @@ export const ItineraryShell = ({
                   tripStartDate={tripStartDate}
                 />
               </div>
+              <GuideToggle enabled={guideEnabled} onToggle={handleToggleGuide} />
               <button
                 onClick={handleOptimizeRoute}
                 disabled={isOptimizing || !currentDay?.activities?.length}
@@ -691,6 +718,7 @@ export const ItineraryShell = ({
                 loadingSuggestionId={loadingSuggestionId}
                 conflicts={currentDayConflicts}
                 conflictsResult={conflictsResult}
+                guide={currentDayGuide}
               />
             ) : (
               <p className="text-sm text-stone">

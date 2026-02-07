@@ -75,7 +75,7 @@ export function DaySuggestions({
   loadingGapId,
   className,
 }: DaySuggestionsProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   if (gaps.length === 0) {
     return null;

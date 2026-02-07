@@ -22,7 +22,7 @@ const GUIDANCE_TYPE_ICONS: Record<string, string> = {
 
 export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProps) {
   const [tips, setTips] = useState<TravelGuidance[]>([]);
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Extract unique categories from the day's activities
