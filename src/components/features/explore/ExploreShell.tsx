@@ -13,7 +13,7 @@ const FiltersModal = dynamic(
 import { LocationGrid } from "./LocationGrid";
 import { StickyExploreHeader } from "./StickyExploreHeader";
 import { ActiveFilterChips } from "./ActiveFilterChips";
-import { FeaturedCarousel } from "./FeaturedCarousel";
+import { ExploreHero } from "./ExploreHero";
 import { useAggregatedLocations, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 
 const DURATION_FILTERS = [
@@ -146,6 +146,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
   const [page, setPage] = useState(1);
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
+  const [isHeroPinned, setIsHeroPinned] = useState(true);
 
   useEffect(() => {
     setPage(1);
@@ -541,17 +542,16 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
         onFiltersClick={() => setIsFiltersModalOpen(true)}
         activeFilterCount={activeFilterCount}
+        hidden={isHeroPinned && activeFilters.length === 0}
       />
 
-      {/* Featured Carousel Hero - Full width, outside max-width container */}
+      {/* Cinematic Hero - Full-bleed, handles its own dark background */}
       {activeFilters.length === 0 && featuredLocations.length > 0 && (
-        <section className="w-full pt-6 pb-10 sm:pt-8 sm:pb-12 bg-gradient-to-b from-surface via-surface/90 to-background relative overflow-hidden">
-          {/* Subtle radial gradient for depth */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sand/30 via-transparent to-transparent pointer-events-none" />
-          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <FeaturedCarousel locations={featuredLocations} totalLocations={total} />
-          </div>
-        </section>
+        <ExploreHero
+          locations={featuredLocations}
+          totalLocations={total}
+          onHeroComplete={(isPast) => setIsHeroPinned(!isPast)}
+        />
       )}
 
       {/* Main Content */}

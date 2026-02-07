@@ -8,6 +8,8 @@ type StickyExploreHeaderProps = {
   resultsCount: number;
   onFiltersClick: () => void;
   activeFilterCount: number;
+  /** When true, the header is completely hidden (e.g. while hero is pinned) */
+  hidden?: boolean;
 };
 
 const SCROLL_THRESHOLD = 300;
@@ -16,6 +18,7 @@ export function StickyExploreHeader({
   resultsCount,
   onFiltersClick,
   activeFilterCount,
+  hidden = false,
 }: StickyExploreHeaderProps) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -31,6 +34,9 @@ export function StickyExploreHeader({
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // If parent says hidden (hero is pinned), don't show regardless of scroll
+  const shouldShow = isVisible && !hidden;
 
   const buttonContent = (
     <>
@@ -68,7 +74,7 @@ export function StickyExploreHeader({
     <div
       className={cn(
         "sticky top-20 z-40 transition-all duration-300 pointer-events-none",
-        isVisible ? "h-auto opacity-100" : "h-0 overflow-hidden opacity-0"
+        shouldShow ? "h-auto opacity-100" : "h-0 overflow-hidden opacity-0"
       )}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
