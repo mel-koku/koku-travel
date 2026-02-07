@@ -174,7 +174,7 @@ const Select = React.forwardRef<HTMLSelectElement, SimpleSelectProps>(
           id={id}
           defaultValue={finalDefaultValue}
           className={cn(
-            "block h-10 w-full appearance-none rounded-lg border border-border bg-background pl-3 pr-10 py-2 text-sm shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
+            "block h-10 w-full appearance-none rounded-xl border border-border bg-background pl-3 pr-10 py-2 text-sm shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
             disabled && "cursor-not-allowed opacity-50",
             error && "border-error focus-visible:ring-error",
             className

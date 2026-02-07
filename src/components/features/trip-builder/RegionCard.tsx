@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
 import { Check, MapPin, Plane, Star } from "lucide-react";
 
 import { cn } from "@/lib/cn";
@@ -32,16 +33,21 @@ export function RegionCard({
   // Get cities for this region
   const regionCities = REGIONS.find((r) => r.id === region.id)?.cities ?? [];
 
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onToggle}
+      whileHover={prefersReducedMotion ? {} : { y: -4, transition: { duration: 0.2 } }}
+      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+      layout
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-2xl border-2 bg-background transition-all duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
         isSelected
           ? "border-brand-primary shadow-lg ring-1 ring-brand-primary/20"
-          : "border-transparent shadow-md hover:shadow-xl hover:-translate-y-1"
+          : "border-transparent shadow-md hover:shadow-xl"
       )}
     >
       {/* Hero Image */}
@@ -87,11 +93,16 @@ export function RegionCard({
           )}
         </div>
 
-        {/* Selected Checkmark - Top Right (overlaps with match on selection) */}
+        {/* Selected stamp ring effect + checkmark */}
         {isSelected && (
-          <div className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg">
+          <motion.div
+            initial={{ scale: 0, rotate: -30 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            className="absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-brand-primary text-white shadow-lg"
+          >
             <Check className="h-5 w-5" strokeWidth={3} />
-          </div>
+          </motion.div>
         )}
 
         {/* Region Name & Tagline Overlay - Bottom */}
@@ -139,6 +150,6 @@ export function RegionCard({
           )}
         </div>
       </div>
-    </button>
+    </motion.button>
   );
 }

@@ -10,7 +10,7 @@ export function GuideToggle({ enabled, onToggle }: GuideToggleProps) {
     <button
       type="button"
       onClick={onToggle}
-      className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium shadow-sm transition ${
+      className={`flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-medium shadow-sm transition ${
         enabled
           ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
           : "border-border bg-background text-charcoal hover:bg-stone/5"

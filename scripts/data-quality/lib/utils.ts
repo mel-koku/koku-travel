@@ -188,7 +188,7 @@ export function getSeverityForIssue(
   }
 
   // High: significant data quality issues
-  if (['ADDRESS_AS_DESC', 'EVENT_NAME_MISMATCH', 'MISSING_COORDINATES'].includes(type)) {
+  if (['ADDRESS_AS_DESC', 'EVENT_NAME_MISMATCH', 'MISSING_COORDINATES', 'MACHINE_TRANSLATED_NAME'].includes(type)) {
     return confidence && confidence >= 80 ? 'high' : 'medium';
   }
 

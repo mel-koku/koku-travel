@@ -15,6 +15,7 @@ export type IssueType =
   | 'SHORT_INCOMPLETE_NAME'  // Single-word name for culture/landmark/museum (e.g., "Kawasaki" instead of "Kawasaki World")
   | 'CITY_SPELLING_VARIANT'  // City name needs normalization (e.g., "Amakusa, Kumamoto" -> "Amakusa")
   | 'NAME_CITY_MISMATCH'     // Location name contains a different city name
+  | 'MACHINE_TRANSLATED_NAME' // Name appears to be a garbled machine translation (e.g., "Mino Washi goods experience store Ishikawa Shigyo")
   // Description issues
   | 'ADDRESS_AS_DESC'        // Description is just an address/postal code
   | 'TRUNCATED_DESC'         // Description appears cut off (starts lowercase)

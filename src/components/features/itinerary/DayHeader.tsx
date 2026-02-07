@@ -218,7 +218,7 @@ export function DayHeader({
             {dateLabel.dayName ? (
               <>
                 {dateLabel.dayName}
-                <span className="ml-2 text-lg font-normal text-foreground-secondary sm:text-xl">
+                <span className="ml-2 text-lg font-normal text-warm-gray sm:text-xl">
                   {dateLabel.date}
                 </span>
               </>
@@ -227,7 +227,7 @@ export function DayHeader({
             )}
           </h2>
           {day.cityId && (
-            <p className="text-sm font-medium text-foreground-secondary capitalize">
+            <p className="text-sm font-medium text-warm-gray capitalize">
               {day.cityId}
             </p>
           )}
@@ -250,12 +250,12 @@ export function DayHeader({
             </svg>
             <span className="font-semibold text-sage">{durationLabel}</span>
             {totalDuration > 0 && (
-              <span className="text-foreground-secondary">· time at locations only</span>
+              <span className="text-warm-gray">· time at locations only</span>
             )}
           </div>
           {onDayStartTimeChange && (
             <>
-              <span className="text-border">|</span>
+              <span className="text-stone">|</span>
               <DayStartTimePicker
                 currentTime={day.bounds?.startTime ?? "09:00"}
                 onChange={onDayStartTimeChange}

@@ -54,7 +54,7 @@ export const GuideCard = memo(function GuideCard({ guide }: GuideCardProps) {
           {/* Reading time */}
           {guide.readingTimeMinutes && (
             <div className="absolute bottom-3 right-3">
-              <span className="inline-flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+              <span className="inline-flex items-center gap-1 rounded-full bg-charcoal/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
                 <ClockIcon className="h-3.5 w-3.5" />
                 {guide.readingTimeMinutes} min read
               </span>
