@@ -45,9 +45,9 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-brand-primary/15 text-brand-primary",
   },
   experience: {
-    bg: "bg-earthy-sage/10",
-    text: "text-earthy-sage",
-    badge: "bg-earthy-sage/15 text-earthy-sage",
+    bg: "bg-sage/10",
+    text: "text-sage",
+    badge: "bg-sage/15 text-sage",
   },
   long_gap: {
     bg: "bg-semantic-warning/10",
@@ -65,9 +65,9 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-brand-primary/15 text-brand-primary",
   },
   category_imbalance: {
-    bg: "bg-earthy-sage/10",
-    text: "text-earthy-sage",
-    badge: "bg-earthy-sage/15 text-earthy-sage",
+    bg: "bg-sage/10",
+    text: "text-sage",
+    badge: "bg-sage/15 text-sage",
   },
 };
 

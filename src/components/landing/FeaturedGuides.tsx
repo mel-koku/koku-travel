@@ -25,16 +25,16 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
         {/* Section Header */}
         <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium uppercase tracking-widest text-earthy-sage">
+            <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
               Travel Guides
             </p>
-            <h2 className="mt-4 font-serif text-4xl font-medium text-earthy-charcoal sm:text-5xl">
+            <h2 className="mt-4 font-serif text-4xl font-medium text-charcoal sm:text-5xl">
               Start planning
             </h2>
           </div>
           <Link
             href="/guides"
-            className="group flex items-center gap-2 text-earthy-charcoal transition-colors hover:text-earthy-sage"
+            className="group flex items-center gap-2 text-charcoal transition-colors hover:text-brand-primary"
           >
             <span className="text-sm font-medium uppercase tracking-wider">
               View all guides
@@ -77,7 +77,7 @@ function FeaturedGuideCard({ guide }: { guide: GuideSummary }) {
 
         {/* Type badge */}
         <div className="absolute top-4 left-4">
-          <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-earthy-charcoal backdrop-blur-sm">
+          <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-charcoal backdrop-blur-sm">
             {typeLabel}
           </span>
         </div>

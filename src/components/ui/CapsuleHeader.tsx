@@ -18,14 +18,14 @@ export default function CapsuleHeader({
       className="
         flex items-center justify-between
         w-full max-w-4xl
-        bg-white rounded-2xl border border-gray-200
+        bg-white rounded-2xl border border-border
         shadow-md backdrop-blur
         px-8 py-4 mx-auto
       "
     >
       <div>
-        <h1 className="text-lg font-semibold text-gray-900">{title}</h1>
-        {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+        <h1 className="text-lg font-semibold text-charcoal">{title}</h1>
+        {subtitle && <p className="text-sm text-stone">{subtitle}</p>}
       </div>
       {rightButton && <div>{rightButton}</div>}
       {children}

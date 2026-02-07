@@ -29,21 +29,21 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
 
   return (
     <>
-    <section className="bg-neutral-surface py-24 sm:py-32">
+    <section className="bg-surface py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium uppercase tracking-widest text-earthy-sage">
+            <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
               Staff Picks
             </p>
-            <h2 className="mt-4 font-serif text-4xl font-medium text-earthy-charcoal sm:text-5xl">
+            <h2 className="mt-4 font-serif text-4xl font-medium text-charcoal sm:text-5xl">
               Worth your time
             </h2>
           </div>
           <Link
             href="/explore"
-            className="group flex items-center gap-2 text-earthy-charcoal transition-colors hover:text-earthy-sage"
+            className="group flex items-center gap-2 text-charcoal transition-colors hover:text-brand-primary"
           >
             <span className="text-sm font-medium uppercase tracking-wider">
               View all locations

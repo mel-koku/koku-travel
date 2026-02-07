@@ -335,7 +335,7 @@ export function Dropdown({
         type="button"
         id={triggerId}
         className={cn(
-          "inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-earthy-charcoal transition hover:bg-neutral-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+          "inline-flex items-center gap-2 rounded-xl bg-background px-4 py-2 text-sm font-semibold text-charcoal transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
           triggerClassName
         )}
         aria-haspopup="menu"
@@ -370,7 +370,7 @@ export function Dropdown({
           aria-labelledby={triggerId}
           className={cn(
             // Always use fixed positioning when portaled to avoid overflow clipping
-            "fixed z-40 w-64 rounded-2xl bg-white p-2 focus:outline-none",
+            "fixed z-40 w-64 rounded-2xl bg-background p-2 focus:outline-none",
             // Only apply alignment classes if we're not using custom positioning
             Object.keys(menuStyle).length === 0 ? alignmentClasses : "",
             // Always add overflow handling if maxHeight is set
@@ -393,18 +393,18 @@ export function Dropdown({
                 aria-disabled={disabled}
                 disabled={disabled}
                 className={cn(
-                  "flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm text-earthy-charcoal transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+                  "flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm text-charcoal transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
                   activeIndex === index && "bg-brand-primary/10 text-brand-primary",
                   disabled
                     ? "cursor-not-allowed opacity-50"
-                    : "hover:bg-neutral-surface focus:bg-neutral-surface focus:text-brand-primary",
+                    : "hover:bg-surface focus:bg-surface focus:text-brand-primary",
                 )}
                 onClick={() => selectItem(index)}
               >
-                {icon ? <span className="mt-0.5 text-earthy-stone">{icon}</span> : null}
+                {icon ? <span className="mt-0.5 text-stone">{icon}</span> : null}
                 <span className="flex flex-col">
                   <span className="font-medium">{itemLabel}</span>
-                  {description ? <span className="text-xs text-earthy-stone">{description}</span> : null}
+                  {description ? <span className="text-xs text-stone">{description}</span> : null}
                 </span>
               </button>
             ))}

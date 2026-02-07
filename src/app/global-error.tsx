@@ -22,17 +22,17 @@ export default function GlobalError({
   return (
     <html>
       <body>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4">
-          <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg text-center">
-            <h2 className="mb-4 text-2xl font-bold text-gray-900">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4">
+          <div className="w-full max-w-md rounded-lg bg-background p-8 shadow-lg text-center">
+            <h2 className="mb-4 text-2xl font-bold text-charcoal">
               Application Error
             </h2>
-            <p className="mb-6 text-sm text-gray-600">
+            <p className="mb-6 text-sm text-warm-gray">
               A critical error occurred. Please refresh the page or contact support if the problem persists.
             </p>
             <button
               onClick={reset}
-              className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700"
+              className="rounded-lg bg-destructive px-4 py-2 text-sm font-medium text-white hover:bg-destructive/90"
             >
               Refresh Page
             </button>

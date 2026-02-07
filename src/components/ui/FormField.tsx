@@ -91,7 +91,7 @@ export const FormField = ({
         <FormError id={errorId}>{error}</FormError>
       ) : (
         help && (
-          <p id={helpId} className="text-sm text-gray-500">
+          <p id={helpId} className="text-sm text-stone">
             {help}
           </p>
         )

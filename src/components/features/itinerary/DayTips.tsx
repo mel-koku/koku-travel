@@ -104,7 +104,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
       >
         <div className="flex items-center gap-2">
           <span className="text-lg">🇯🇵</span>
-          <span className="text-sm font-semibold text-earthy-charcoal">
+          <span className="text-sm font-semibold text-charcoal">
             Travel Tips for Today
           </span>
           {!isLoading && (
@@ -135,13 +135,13 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
               {tips.map((tip) => (
                 <div
                   key={tip.id}
-                  className="flex items-start gap-2 rounded-lg bg-white/70 p-2"
+                  className="flex items-start gap-2 rounded-lg bg-background/70 p-2"
                 >
                   <span className="shrink-0 text-base">
                     {tip.icon ?? GUIDANCE_TYPE_ICONS[tip.guidanceType] ?? "💡"}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-earthy-charcoal">
+                    <p className="text-xs font-semibold text-charcoal">
                       {tip.title}
                     </p>
                     <p className="mt-0.5 text-xs leading-relaxed text-brand-primary/80">
