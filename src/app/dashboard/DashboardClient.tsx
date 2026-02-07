@@ -5,7 +5,10 @@ import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 
 import { useAppState } from "@/state/AppState";
 import { DashboardItineraryPreview } from "@/components/features/itinerary/DashboardItineraryPreview";
-import IdentityBadge from "@/components/ui/IdentityBadge";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { SplitText } from "@/components/ui/SplitText";
+import { Magnetic } from "@/components/ui/Magnetic";
 import { createClient } from "@/lib/supabase/client";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { syncLocalToCloudOnce } from "@/lib/accountSync";
@@ -33,7 +36,6 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const supabase = createClient();
   const [status, setStatus] = useState<string>("");
-  // Only show loading if we don't have initial auth data from server
   const [isLoadingAuth, setIsLoadingAuth] = useState(!initialAuthUser);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [showAccountSection, setShowAccountSection] = useState(false);
@@ -46,7 +48,6 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
     }
     let isActive = true;
 
-    // Only fetch auth if we don't have initial data from server
     if (!initialAuthUser) {
       (async () => {
         try {
@@ -117,7 +118,6 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         }
         await refreshFromSupabase();
         setStatus("Sync complete.");
-        // Show account section after successful sign-in
         setShowAccountSection(true);
       } catch (error) {
         logger.error("Account sync failed", error);
@@ -135,7 +135,6 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         if (!supabase) {
           return;
         }
-        // Sanitize before saving to database
         const sanitizedName = sanitizeString(name, MAX_DISPLAY_NAME_LENGTH);
         if (!sanitizedName) {
           return;
@@ -153,7 +152,6 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
   );
 
   const onNameChange = useCallback((v: string) => {
-    // Sanitize display name to prevent XSS attacks
     const sanitized = v.trim() === "" ? "" : sanitizeString(v, MAX_DISPLAY_NAME_LENGTH) ?? v.substring(0, MAX_DISPLAY_NAME_LENGTH);
     setUser({ displayName: sanitized });
     if (sanitized.trim()) {
@@ -244,79 +242,127 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
   }
 
   const shouldShowAccountSection = showAccountSection || !isAuthenticated;
+  const displayName = user.displayName || "Guest";
 
   return (
-    <div className="min-h-screen bg-surface pb-16 sm:pb-20 md:pb-24">
-      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 md:px-8">
-        <div className="rounded-2xl border border-border bg-background p-4 shadow-md sm:p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-semibold text-charcoal sm:text-xl">Dashboard</h1>
-              <p className="mt-1 text-sm text-stone">
-                {isAuthenticated
-                  ? `Welcome back, ${user.displayName || "Guest"}.`
-                  : `Welcome, ${user.displayName || "Guest"}. Sign in to sync your data across devices.`}
-              </p>
-            </div>
-            {isAuthenticated && (
-              <button
-                onClick={() => setShowAccountSection(!showAccountSection)}
-                className="hidden sm:inline-flex"
-              >
-                <IdentityBadge />
-              </button>
-            )}
-          </div>
+    <div className="min-h-screen bg-background">
+      <PageHeader
+        variant="compact"
+        eyebrow="Welcome back"
+        title={displayName}
+        subtitle="Your trips, favorites, and bookmarks — all in one place."
+      />
 
-          {/* Two-column layout: Account on left, Stats on right */}
-          <div className={`mt-6 grid grid-cols-1 gap-4 ${shouldShowAccountSection ? 'lg:grid-cols-2' : ''}`}>
-            {/* Left Column: Account Management Section */}
-            {shouldShowAccountSection && (
-              <AccountSection
-                isAuthenticated={isAuthenticated}
-                supabase={supabase}
-                supabaseUnavailable={supabaseUnavailable}
-                displayName={user.displayName}
-                isLoadingProfile={isLoadingProfile}
-                isLoadingRefresh={isLoadingRefresh}
-                status={status}
-                onNameChange={onNameChange}
-                onClearLocalData={clearAllLocalData}
-              />
-            )}
-
-            {/* Right Column: Stats Cards */}
+      {/* Stats Section */}
+      <section className="bg-background py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <ScrollReveal>
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Activity</p>
+            <h2 className="mt-2 font-serif text-xl text-charcoal sm:text-2xl">At a Glance</h2>
+          </ScrollReveal>
+          <div className="mt-8">
             <StatsSection
               favoritesCount={favorites.length}
               guideBookmarksCount={guideBookmarks.length}
             />
           </div>
         </div>
-
-        {activeTrip ? (
-          <DashboardItineraryPreview
-            trip={activeTrip}
-            availableTrips={tripsWithItinerary}
-            selectedTripId={activeTrip.id}
-            onSelectTrip={setUserSelectedTripId}
-            onDeleteTrip={handleDeleteTrip}
-          />
-        ) : (
-          <div className="mt-6 rounded-2xl border border-dashed border-border bg-background p-8 text-center shadow-sm">
-            <h2 className="text-lg font-semibold text-charcoal">No itineraries saved yet</h2>
-            <p className="mt-2 text-sm text-stone">
-              Build a trip to generate your first itinerary. Once it&apos;s saved, you&apos;ll see a preview
-              here with quick access to view the full plan.
-            </p>
-            <Link
-              href="/trip-builder"
-              className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
-            >
-              Start planning
-            </Link>
-          </div>
-        )}
       </section>
+
+      {/* Trips Section */}
+      <section className="bg-surface py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <ScrollReveal>
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Recent</p>
+            <h2 className="mt-2 font-serif text-xl text-charcoal sm:text-2xl">Your Trips</h2>
+          </ScrollReveal>
+
+          <div className="mt-8">
+            {activeTrip ? (
+              <ScrollReveal delay={0.1} distance={20}>
+                <DashboardItineraryPreview
+                  trip={activeTrip}
+                  availableTrips={tripsWithItinerary}
+                  selectedTripId={activeTrip.id}
+                  onSelectTrip={setUserSelectedTripId}
+                  onDeleteTrip={handleDeleteTrip}
+                />
+              </ScrollReveal>
+            ) : (
+              <ScrollReveal delay={0.1} distance={20}>
+                <div className="flex flex-col items-center py-16 text-center">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-stone/40">
+                    <svg
+                      className="h-8 w-8 text-stone/50"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+                    </svg>
+                  </div>
+
+                  <SplitText
+                    as="h3"
+                    className="mt-6 justify-center font-serif text-xl text-charcoal sm:text-2xl"
+                    splitBy="word"
+                    animation="clipY"
+                    staggerDelay={0.06}
+                  >
+                    No itineraries yet
+                  </SplitText>
+
+                  <ScrollReveal delay={0.3} distance={15}>
+                    <p className="mt-3 max-w-sm text-sm text-warm-gray">
+                      Build a trip to generate your first itinerary. Once it&apos;s saved,
+                      you&apos;ll see a preview here.
+                    </p>
+                  </ScrollReveal>
+
+                  <ScrollReveal delay={0.5} distance={10}>
+                    <Magnetic>
+                      <Link
+                        href="/trip-builder"
+                        className="mt-6 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                      >
+                        Start planning
+                      </Link>
+                    </Magnetic>
+                  </ScrollReveal>
+                </div>
+              </ScrollReveal>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Account Section (conditional) */}
+      {shouldShowAccountSection && (
+        <section className="bg-background py-12 sm:py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <ScrollReveal>
+              <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Account</p>
+              <h2 className="mt-2 font-serif text-xl text-charcoal sm:text-2xl">Profile & Sync</h2>
+            </ScrollReveal>
+            <div className="mt-8 max-w-2xl">
+              <ScrollReveal delay={0.1} distance={20}>
+                <AccountSection
+                  isAuthenticated={isAuthenticated}
+                  supabase={supabase}
+                  supabaseUnavailable={supabaseUnavailable}
+                  displayName={user.displayName}
+                  isLoadingProfile={isLoadingProfile}
+                  isLoadingRefresh={isLoadingRefresh}
+                  status={status}
+                  onNameChange={onNameChange}
+                  onClearLocalData={clearAllLocalData}
+                />
+              </ScrollReveal>
+            </div>
+          </div>
+        </section>
+      )}
 
       {pendingUndo ? (
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4">
