@@ -680,6 +680,198 @@ const nameCityMismatchRule: Rule = {
   },
 };
 
+/**
+ * Generic descriptor words that indicate a place type — when these appear
+ * mid-name (i.e. with additional words after them), it suggests a word-by-word
+ * machine translation from Japanese rather than a natural English name.
+ *
+ * e.g. "Mino Washi goods experience store Ishikawa Shigyo"
+ *       → "store" at position 5, with "Ishikawa Shigyo" after it
+ */
+const MT_DESCRIPTOR_WORDS = new Set([
+  'store', 'shop', 'experience', 'center', 'centre', 'museum', 'hall',
+  'building', 'factory', 'workshop', 'garden', 'park', 'institute',
+  'facility', 'studio', 'gallery', 'plaza', 'tower', 'house', 'office',
+  'market', 'warehouse', 'theater', 'theatre', 'salon', 'laboratory',
+  'brewery', 'distillery', 'kiln', 'forge', 'mill', 'works',
+]);
+
+/**
+ * Common English articles, prepositions, and connectors. Natural English place
+ * names almost always include at least one of these when the name is 5+ words.
+ * Machine-translated names frequently omit them entirely.
+ */
+const ENGLISH_CONNECTORS = new Set([
+  'the', 'of', 'and', 'at', 'in', 'for', 'by', 'with', 'on', 'to', 'a', 'an',
+  'from', 'near', '&',
+]);
+
+/**
+ * Words that commonly appear in machine-translated names as literal translations
+ * of Japanese descriptors (品, 物, 処, etc.)
+ */
+const MT_FILLER_WORDS = new Set([
+  'goods', 'products', 'items', 'things', 'materials', 'processing',
+  'making', 'manufacturing', 'production', 'technique', 'craft',
+  'traditional', 'local', 'special', 'main', 'general', 'various',
+]);
+
+/**
+ * Strip parenthetical content from a name for scoring purposes.
+ * Parenthetical parts like "(Seal Land)" or "(Main Hall)" are legitimate
+ * clarifiers, not evidence of machine translation.
+ */
+function stripParenthetical(name: string): string {
+  return name.replace(/\s*\([^)]*\)/g, '').trim();
+}
+
+/**
+ * Calculate a machine-translation confidence score for a location name.
+ * Returns 0–100; higher = more likely garbled.
+ */
+function getMachineTranslationScore(name: string): { score: number; reasons: string[] } {
+  // Strip parenthetical clarifiers before scoring
+  const cleaned = stripParenthetical(name);
+  const words = cleaned.split(/\s+/).filter(Boolean);
+  const lowerWords = words.map(w => w.toLowerCase());
+  let score = 0;
+  const reasons: string[] = [];
+
+  // ── Signal 1: Long name (6+ words) with zero English connectors ──
+  const hasConnector = lowerWords.some(w => ENGLISH_CONNECTORS.has(w));
+  if (words.length >= 6 && !hasConnector) {
+    score += 25;
+    reasons.push(`${words.length}-word name with no articles/prepositions`);
+  }
+
+  // ── Signal 2: Descriptor word with non-prepositional trailing words ──
+  // In natural English, descriptor words are typically the LAST word or
+  // followed by a prepositional phrase ("Museum of Art", "Park for Children").
+  // If there are 2+ non-preposition words after the descriptor, it's likely
+  // machine-translated (the Japanese business name was appended literally).
+  for (let i = 0; i < lowerWords.length - 1; i++) {
+    if (MT_DESCRIPTOR_WORDS.has(lowerWords[i])) {
+      const remaining = lowerWords.slice(i + 1);
+      // If the next word is a preposition/connector, it's natural English
+      if (remaining.length > 0 && ENGLISH_CONNECTORS.has(remaining[0])) continue;
+
+      const wordsAfter = remaining.length;
+      if (wordsAfter >= 2) {
+        score += 30;
+        reasons.push(`"${words[i]}" at position ${i + 1} with ${wordsAfter} non-prepositional words after it`);
+        break;
+      }
+    }
+  }
+
+  // ── Signal 3: MT filler words ──
+  const fillerCount = lowerWords.filter(w => MT_FILLER_WORDS.has(w)).length;
+  if (fillerCount >= 2) {
+    score += fillerCount * 12;
+    reasons.push(`${fillerCount} filler word(s): ${lowerWords.filter(w => MT_FILLER_WORDS.has(w)).join(', ')}`);
+  } else if (fillerCount === 1 && score > 0) {
+    // Single filler word only contributes when combined with other signals
+    score += 10;
+    reasons.push(`filler word: ${lowerWords.find(w => MT_FILLER_WORDS.has(w))}`);
+  }
+
+  // ── Signal 4: Lowercase content words mixed with capitalized words ──
+  // e.g. "Mino Washi goods experience store Ishikawa Shigyo"
+  //       → "goods", "experience", "store" are lowercase amid capitalized words
+  // This is a strong signal because natural English titles capitalize all
+  // content words. Only fire when there are 3+ lowercase content words.
+  const lowercaseContentWords = words.filter(
+    w => /^[a-z]/.test(w) && !ENGLISH_CONNECTORS.has(w.toLowerCase())
+  );
+  if (lowercaseContentWords.length >= 3 && words.length >= 5) {
+    score += 20;
+    reasons.push(`${lowercaseContentWords.length} lowercase content words: ${lowercaseContentWords.join(', ')}`);
+  } else if (lowercaseContentWords.length >= 2 && words.length >= 5 && score > 0) {
+    score += 10;
+    reasons.push(`${lowercaseContentWords.length} lowercase content words amid title case`);
+  }
+
+  // ── Signal 5: Starts with lowercase (not a proper name) ──
+  // Machine-translated descriptions sometimes end up as names
+  // e.g. "Traditional cultural experience in a grand hall"
+  if (/^[a-z]/.test(cleaned) && words.length >= 4) {
+    score += 20;
+    reasons.push('name starts with lowercase letter');
+  }
+
+  return { score: Math.min(score, 100), reasons };
+}
+
+/**
+ * Rule: Detect machine-translated names
+ *
+ * Catches garbled names like "Mino Washi goods experience store Ishikawa Shigyo"
+ * that are word-by-word translations from Japanese with no natural English phrasing.
+ */
+const machineTranslatedNameRule: Rule = {
+  id: 'machine-translated-name',
+  name: 'Machine Translated Name',
+  description: 'Detects location names that appear to be garbled machine translations from Japanese',
+  category: 'names',
+  issueTypes: ['MACHINE_TRANSLATED_NAME'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      const words = loc.name.split(/\s+/);
+
+      // Skip short names — machine translation detection needs 4+ words
+      if (words.length < 4) continue;
+
+      // Skip names that are ALL CAPS (handled by another rule)
+      if (isAllCaps(loc.name)) continue;
+
+      const { score, reasons } = getMachineTranslationScore(loc.name);
+
+      // Only flag if score is meaningful (40+ = at least two strong signals)
+      if (score < 40) continue;
+
+      const override = getNameOverride(loc.id);
+
+      issues.push({
+        id: `${loc.id}-machine-translated`,
+        type: 'MACHINE_TRANSLATED_NAME',
+        severity: score >= 60 ? 'high' : 'medium',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Name "${loc.name}" appears to be a garbled machine translation (score: ${score})`,
+        details: {
+          score,
+          reasons,
+          wordCount: words.length,
+          editorialSummary: loc.editorial_summary?.slice(0, 120),
+        },
+        suggestedFix: override
+          ? {
+              action: 'rename',
+              newValue: override,
+              reason: 'Override configured',
+              confidence: 100,
+              source: 'override',
+            }
+          : {
+              action: 'rename',
+              reason: 'Needs manual research to determine correct English name',
+              confidence: score,
+              source: 'detection',
+            },
+      });
+    }
+
+    return issues;
+  },
+};
+
 export const nameRules: Rule[] = [
   eventNameMismatchRule,
   nameIdMismatchRule,
@@ -691,4 +883,5 @@ export const nameRules: Rule[] = [
   shortIncompleteNameRule,
   citySpellingVariantRule,
   nameCityMismatchRule,
+  machineTranslatedNameRule,
 ];
