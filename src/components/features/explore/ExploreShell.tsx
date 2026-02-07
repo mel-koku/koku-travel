@@ -14,7 +14,7 @@ import { LocationGrid } from "./LocationGrid";
 import { StickyExploreHeader } from "./StickyExploreHeader";
 import { ActiveFilterChips } from "./ActiveFilterChips";
 import { FeaturedCarousel } from "./FeaturedCarousel";
-import { useAggregatedLocations, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
+import { useAggregatedLocations, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 
 const DURATION_FILTERS = [
   {
@@ -135,6 +135,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
   const { data: filterMetadata } = useFilterMetadataQuery();
 
   const [query, setQuery] = useState("");
+  const { data: searchResults } = useLocationSearchQuery(query);
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
@@ -160,8 +161,16 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
     selectedSort,
   ]);
 
+  // Merge server-side search results with loaded locations (deduplicated)
+  const mergedLocations = useMemo(() => {
+    if (!searchResults || searchResults.length === 0) return locations;
+    const loadedIds = new Set(locations.map((l) => l.id));
+    const newFromSearch = searchResults.filter((l) => !loadedIds.has(l.id));
+    return newFromSearch.length > 0 ? [...locations, ...newFromSearch] : locations;
+  }, [locations, searchResults]);
+
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
-    return locations.map((location) => {
+    return mergedLocations.map((location) => {
       // Use actual rating if available, otherwise generate deterministic fallback
       const ratingValue = (typeof location.rating === "number" && Number.isFinite(location.rating))
         ? location.rating
@@ -179,7 +188,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         reviewCount: reviewCountValue,
       };
     });
-  }, [locations]);
+  }, [mergedLocations]);
 
   // Use pre-computed filter metadata from server (instant, no client-side processing)
   const prefectureOptions = useMemo(() => {

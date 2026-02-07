@@ -10,6 +10,7 @@ import {
   type RefObject,
   type SetStateAction,
 } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAppState } from "@/state/AppState";
 import { Itinerary, type ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -544,16 +545,77 @@ export const ItineraryShell = ({
     return getDayConflicts(conflictsResult, currentDay.id);
   }, [conflictsResult, currentDay]);
 
+  const [dayTransitionLabel, setDayTransitionLabel] = useState<string | null>(null);
+
+  // Suppression flag: when true, IntersectionObserver won't override selectedActivityId.
+  // This prevents the observer from racing against programmatic scrollIntoView after
+  // an explicit user action (map pin click, card click).
+  const suppressObserverRef = useRef(false);
+
+  // Scroll-linked map panning: observe activity cards in the timeline
+  useEffect(() => {
+    if (typeof IntersectionObserver === "undefined") return;
+
+    const activityListEl = document.querySelector("[data-itinerary-activities]");
+    if (!activityListEl) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Skip if an explicit selection is in progress (scrollIntoView still animating)
+        if (suppressObserverRef.current) return;
+
+        // Find the most visible activity card
+        let bestEntry: IntersectionObserverEntry | null = null;
+        let bestRatio = 0;
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
+            bestRatio = entry.intersectionRatio;
+            bestEntry = entry;
+          }
+        }
+        if (bestEntry?.target) {
+          const activityId = (bestEntry.target as HTMLElement).dataset.activityId;
+          if (activityId && activityId !== selectedActivityId) {
+            setSelectedActivityId(activityId);
+          }
+        }
+      },
+      {
+        root: activityListEl,
+        threshold: [0.3, 0.5, 0.8],
+      }
+    );
+
+    const activityCards = activityListEl.querySelectorAll("[data-activity-id]");
+    activityCards.forEach((card) => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, [selectedActivityId, safeSelectedDay]);
+
   const handleSelectDayChange = useCallback((dayIndex: number) => {
+    // Show brief city interstitial on day change
+    const targetDay = model.days[dayIndex];
+    if (targetDay?.dateLabel) {
+      const cityName = targetDay.dateLabel.replace(/Day \d+\s*(\(([^)]+)\))?/, "$2").trim();
+      if (cityName) {
+        setDayTransitionLabel(cityName);
+        setTimeout(() => setDayTransitionLabel(null), 500);
+      }
+    }
     setSelectedDay(dayIndex);
     setSelectedActivityId(null);
-  }, []);
+  }, [model.days]);
 
   const handleSelectActivity = useCallback((activityId: string | null) => {
     setSelectedActivityId(activityId);
     if (!activityId) {
       return;
     }
+    // Suppress IntersectionObserver during programmatic scroll so it doesn't
+    // immediately override the selection with whichever card is currently visible.
+    suppressObserverRef.current = true;
+    setTimeout(() => { suppressObserverRef.current = false; }, 1000);
+
     window.requestAnimationFrame(() => {
       const element = document.querySelector<HTMLElement>(
         `[data-activity-id="${activityId}"]`,
@@ -686,7 +748,24 @@ export const ItineraryShell = ({
           </div>
 
           {/* Activities List */}
-          <div className="flex-1 overflow-y-auto border-border bg-background p-3 lg:rounded-b-2xl lg:border lg:border-t-0">
+          <div data-itinerary-activities className="relative flex-1 overflow-y-auto border-border bg-background p-3 lg:rounded-b-2xl lg:border lg:border-t-0">
+            {/* Day transition interstitial */}
+            <AnimatePresence>
+              {dayTransitionLabel && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: 0.3 }}
+                  className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm"
+                >
+                  <h2 className="font-serif text-3xl font-medium text-charcoal sm:text-4xl">
+                    {dayTransitionLabel}
+                  </h2>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* What's Next Card */}
             {currentDay && tripStartDate && (
               <WhatsNextCard

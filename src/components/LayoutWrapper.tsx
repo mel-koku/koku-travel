@@ -7,6 +7,10 @@ import { WishlistProvider } from "@/context/WishlistContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { AppStateProvider } from "@/state/AppState";
 import { QueryProvider } from "@/providers/QueryProvider";
+import { LenisProvider } from "@/providers/LenisProvider";
+import { CursorProvider } from "@/providers/CursorProvider";
+import { CustomCursor } from "@/components/ui/CustomCursor";
+import { PageTransition } from "@/components/PageTransition";
 
 export function LayoutWrapper({
   children,
@@ -18,17 +22,23 @@ export function LayoutWrapper({
       <AppStateProvider>
         <ToastProvider>
           <WishlistProvider>
-            <div className="flex min-h-screen flex-col">
-              <Header />
-              <ErrorBoundary>
-                <main className="flex-1">{children}</main>
-              </ErrorBoundary>
-              <Footer />
-            </div>
+            <LenisProvider>
+              <CursorProvider>
+                <div className="flex min-h-screen flex-col">
+                  <Header />
+                  <ErrorBoundary>
+                    <main className="flex-1">
+                      <PageTransition>{children}</PageTransition>
+                    </main>
+                  </ErrorBoundary>
+                  <Footer />
+                </div>
+                <CustomCursor />
+              </CursorProvider>
+            </LenisProvider>
           </WishlistProvider>
         </ToastProvider>
       </AppStateProvider>
     </QueryProvider>
   );
 }
-

@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import { memo, useRef, useState, useCallback, useEffect } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
 import { useAddToItinerary } from "@/hooks/useAddToItinerary";
+import { useCursor } from "@/providers/CursorProvider";
 import type { Location } from "@/types/location";
 import { PlusIcon } from "./PlusIcon";
 import { MinusIcon } from "./MinusIcon";
@@ -14,11 +16,14 @@ import { TripPickerModal } from "./TripPickerModal";
 type LocationCardProps = {
   location: Location;
   onSelect?: (location: Location) => void;
+  variant?: "default" | "tall";
 };
 
-export const LocationCard = memo(function LocationCard({ location, onSelect }: LocationCardProps) {
+export const LocationCard = memo(function LocationCard({ location, onSelect, variant = "default" }: LocationCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const active = isInWishlist(location.id);
+  const { setCursorState, isEnabled: cursorEnabled } = useCursor();
+  const prefersReducedMotion = useReducedMotion();
   // Use location name directly - no need to fetch details just for display name
   const displayName = location.name;
   // Use local data for summary - details are fetched when modal opens
@@ -69,7 +74,15 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
   );
 
   return (
-    <article className="group relative text-charcoal">
+    <motion.article
+      className="group relative text-charcoal"
+      initial={prefersReducedMotion ? {} : { clipPath: "inset(0 0 100% 0)", opacity: 0 }}
+      whileInView={{ clipPath: "inset(0 0 0% 0)", opacity: 1 }}
+      viewport={{ once: true, margin: "-5%" }}
+      transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      onMouseEnter={() => cursorEnabled && setCursorState("view")}
+      onMouseLeave={() => cursorEnabled && setCursorState("default")}
+    >
       {/* Trip picker modal */}
       <TripPickerModal
         isOpen={tripPickerOpen}
@@ -80,7 +93,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
       />
 
       {/* Unified Card Container */}
-      <div className="overflow-hidden rounded-xl border border-border bg-background shadow-sm transition-all duration-300 group-hover:shadow-depth group-hover:-translate-y-1 group-hover:border-sand">
+      <div className={`overflow-hidden rounded-xl border border-border bg-background shadow-sm transition-all duration-300 group-hover:shadow-depth group-hover:-translate-y-1 group-hover:border-sand ${variant === "tall" ? "h-full" : ""}`}>
         {/* Image Area */}
         <div className="relative">
           {/* Clickable image area */}
@@ -92,8 +105,8 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
             ref={buttonRef}
             className="relative block w-full text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-inset"
           >
-            {/* Image - 4:3 aspect ratio for landscape feel */}
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface">
+            {/* Image - 4:3 aspect ratio (tall variant gets taller) */}
+            <div className={`relative w-full overflow-hidden bg-surface ${variant === "tall" ? "aspect-[3/4]" : "aspect-[4/3]"}`}>
               <Image
                 src={imageSrc || FALLBACK_IMAGE_SRC}
                 alt={displayName}
@@ -102,13 +115,13 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
                 sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
                 priority={false}
               />
-              {/* Hover gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-300" />
+              {/* Hover gradient overlay — intensifies on hover */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-500" />
             </div>
           </div>
 
-          {/* Overlay Actions - Positioned outside the clickable div to avoid nesting */}
-          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 sm:transition-all sm:duration-300 pointer-events-none">
+          {/* Overlay Actions - Grouped bottom-right */}
+          <div className="absolute bottom-3 right-3 flex items-center gap-2 sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 sm:transition-all sm:duration-300 pointer-events-none">
             {/* Heart Button */}
             <button
               type="button"
@@ -181,8 +194,12 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
               {estimatedDuration ? (
                 <>
                   <span className="text-border">·</span>
-                  <span className="text-sm text-stone">
-                    {estimatedDuration}
+                  <span className="flex items-center gap-1 text-sm text-stone">
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <circle cx="12" cy="12" r="10" />
+                      <path strokeLinecap="round" d="M12 6v6l4 2" />
+                    </svg>
+                    Est. {estimatedDuration}
                   </span>
                 </>
               ) : null}
@@ -190,7 +207,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect }: L
           </div>
         </button>
       </div>
-    </article>
+    </motion.article>
   );
 });
 
