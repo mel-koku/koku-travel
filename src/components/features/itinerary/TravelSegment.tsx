@@ -85,7 +85,7 @@ export function TravelSegment({
         {/* Spacer to match time column width */}
         <div className="w-14 shrink-0 sm:w-16" />
         {/* Travel segment content */}
-        <div className="flex flex-1 items-center justify-center py-2 px-3 rounded-lg bg-stone-50">
+        <div className="flex flex-1 items-center justify-center py-2 px-3 rounded-lg bg-surface">
           <div className="flex items-center gap-1.5 text-sm text-foreground-secondary">
           {isLoading && (
             <span className="flex items-center gap-1 text-xs text-stone">

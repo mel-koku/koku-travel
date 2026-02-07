@@ -19,14 +19,14 @@ export function PlanningWarningCard({ warning, className }: PlanningWarningCardP
       title: "text-sage-dark",
     },
     warning: {
-      container: "bg-amber-50 border-amber-200",
-      icon: "bg-amber-100",
-      title: "text-amber-800",
+      container: "bg-brand-secondary/5 border-brand-secondary/20",
+      icon: "bg-brand-secondary/10",
+      title: "text-brand-secondary",
     },
     caution: {
-      container: "bg-orange-50 border-orange-200",
-      icon: "bg-orange-100",
-      title: "text-orange-800",
+      container: "bg-semantic-error/5 border-semantic-error/20",
+      icon: "bg-semantic-error/10",
+      title: "text-semantic-error",
     },
   };
 

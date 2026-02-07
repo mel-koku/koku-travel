@@ -11,12 +11,12 @@ export type FormLabelProps = ComponentPropsWithoutRef<"label"> & {
 
 export const FormLabel = ({ className, children, required, ...rest }: FormLabelProps) => (
   <label
-    className={cn("mb-2 block text-sm font-semibold text-gray-900", className)}
+    className={cn("mb-2 block text-sm font-semibold text-charcoal", className)}
     {...rest}
   >
     <span className="inline-flex items-center gap-1">
       {children}
-      {required && <span className="text-red-500" aria-hidden="true">*</span>}
+      {required && <span className="text-destructive" aria-hidden="true">*</span>}
     </span>
   </label>
 );

@@ -21,19 +21,19 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4">
-      <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-md">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4">
+      <div className="w-full max-w-md rounded-2xl border border-border bg-background p-8 shadow-md">
         <div className="text-center">
-          <h1 className="mb-4 text-3xl font-bold text-gray-900">Something went wrong</h1>
-          <p className="mb-6 text-gray-600">
+          <h1 className="mb-4 text-3xl font-bold text-charcoal">Something went wrong</h1>
+          <p className="mb-6 text-warm-gray">
             We encountered an unexpected error. Please try again or return to the home page.
           </p>
           {process.env.NODE_ENV !== "production" && error.message && (
-            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-left">
-              <p className="text-sm font-semibold text-red-900">Error details:</p>
-              <p className="mt-1 text-sm text-red-700">{error.message}</p>
+            <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-left">
+              <p className="text-sm font-semibold text-destructive">Error details:</p>
+              <p className="mt-1 text-sm text-destructive/80">{error.message}</p>
               {error.digest && (
-                <p className="mt-2 text-xs text-red-600">Error ID: {error.digest}</p>
+                <p className="mt-2 text-xs text-destructive">Error ID: {error.digest}</p>
               )}
             </div>
           )}

@@ -19,15 +19,15 @@ export function FeaturedLocationsHero({ locations }: FeaturedLocationsHeroProps)
   }
 
   return (
-    <section className="relative overflow-hidden rounded-3xl border border-stone-200/50 bg-gradient-to-br from-stone-50/80 via-slate-50/70 to-stone-100/80 backdrop-blur-xl px-8 py-12 shadow-lg shadow-stone-900/5 focus-within:outline-none focus-within:ring-2 focus-within:ring-stone-300/30">
+    <section className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-surface/80 via-background/70 to-surface/80 backdrop-blur-xl px-8 py-12 shadow-lg shadow-charcoal/5 focus-within:outline-none focus-within:ring-2 focus-within:ring-border/30">
       <div className="relative z-10 flex flex-col gap-4">
-        <span className="text-xs font-semibold uppercase tracking-[0.4em] text-stone-600">
+        <span className="text-xs font-semibold uppercase tracking-[0.4em] text-warm-gray">
           Featured Picks
         </span>
-        <h1 className="text-3xl font-semibold leading-tight text-stone-900 sm:text-4xl md:text-5xl">
+        <h1 className="text-3xl font-semibold leading-tight text-charcoal sm:text-4xl md:text-5xl">
           Discover our handpicked spots across Japan
         </h1>
-        <p className="max-w-2xl text-base text-stone-700 sm:text-lg">
+        <p className="max-w-2xl text-base text-foreground-secondary sm:text-lg">
           Start your next itinerary with the places travelers love right now—from timeless
           temples to vibrant city nights.
         </p>
@@ -36,9 +36,9 @@ export function FeaturedLocationsHero({ locations }: FeaturedLocationsHeroProps)
         {locations.map((location) => (
           <article
             key={location.id}
-            className="group overflow-hidden rounded-2xl border border-stone-200/40 bg-white/40 backdrop-blur-md transition-all hover:border-stone-300/60 hover:bg-white/60 hover:shadow-lg"
+            className="group overflow-hidden rounded-2xl border border-border/40 bg-background/40 backdrop-blur-md transition-all hover:border-border/60 hover:bg-background/60 hover:shadow-lg"
           >
-            <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-slate-800">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-charcoal">
               {location.image && (
                 <Image
                   src={location.image}
@@ -56,18 +56,18 @@ export function FeaturedLocationsHero({ locations }: FeaturedLocationsHeroProps)
                 <h3 className="mt-2 text-xl font-semibold text-white">{location.name}</h3>
               </div>
             </div>
-            <p className="px-5 pb-5 pt-4 text-sm text-stone-700">
+            <p className="px-5 pb-5 pt-4 text-sm text-foreground-secondary">
               {getHeroSummary(location)}
             </p>
           </article>
         ))}
       </div>
       <div
-        className="absolute -top-20 right-[-10%] h-64 w-64 rounded-full bg-emerald-200/20 blur-3xl"
+        className="absolute -top-20 right-[-10%] h-64 w-64 rounded-full bg-sage/20 blur-3xl"
         aria-hidden="true"
       />
       <div
-        className="absolute -bottom-24 left-[-6%] h-56 w-56 rounded-full bg-stone-300/15 blur-3xl"
+        className="absolute -bottom-24 left-[-6%] h-56 w-56 rounded-full bg-sand/15 blur-3xl"
         aria-hidden="true"
       />
     </section>

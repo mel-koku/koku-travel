@@ -33,7 +33,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         htmlFor={inputId}
         className={cn(
           "group flex min-h-10 cursor-pointer items-start gap-3 rounded-xl border border-transparent px-4 py-3 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-primary focus-within:ring-offset-2",
-          disabled ? "cursor-not-allowed bg-neutral-surface opacity-70" : "hover:bg-neutral-surface",
+          disabled ? "cursor-not-allowed bg-surface opacity-70" : "hover:bg-surface",
           containerClassName,
         )}
       >
@@ -49,15 +49,15 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           />
           <span
             aria-hidden="true"
-            className="flex h-5 w-5 items-center justify-center rounded-full border border-neutral-border bg-white transition peer-checked:border-brand-primary peer-checked:bg-brand-primary/10 peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-brand-primary peer-focus-visible:ring-offset-2 peer-disabled:border-neutral-border peer-disabled:bg-neutral-surface"
+            className="flex h-5 w-5 items-center justify-center rounded-full border border-border bg-background transition peer-checked:border-brand-primary peer-checked:bg-brand-primary/10 peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-brand-primary peer-focus-visible:ring-offset-2 peer-disabled:border-border peer-disabled:bg-surface"
           >
-            <span className="h-2.5 w-2.5 rounded-full bg-brand-primary opacity-0 transition peer-checked:opacity-100 peer-disabled:bg-earthy-stone" />
+            <span className="h-2.5 w-2.5 rounded-full bg-brand-primary opacity-0 transition peer-checked:opacity-100 peer-disabled:bg-stone" />
           </span>
         </span>
         <span className="flex flex-1 flex-col gap-1">
-          <span className="text-sm font-medium text-earthy-charcoal">{label}</span>
+          <span className="text-sm font-medium text-charcoal">{label}</span>
           {description && (
-            <span id={descriptionId} className="text-sm text-earthy-stone">
+            <span id={descriptionId} className="text-sm text-stone">
               {description}
             </span>
           )}
@@ -82,8 +82,8 @@ export const RadioGroup = ({
   ...rest
 }: RadioGroupProps) => (
   <fieldset className={cn("space-y-2", className)} {...rest}>
-    {legend && <legend className="mb-2 text-sm font-semibold text-earthy-charcoal">{legend}</legend>}
-    {helpText && <p className="mb-2 text-sm text-earthy-stone">{helpText}</p>}
+    {legend && <legend className="mb-2 text-sm font-semibold text-charcoal">{legend}</legend>}
+    {helpText && <p className="mb-2 text-sm text-stone">{helpText}</p>}
     <div className="flex flex-col gap-2">{children}</div>
   </fieldset>
 );

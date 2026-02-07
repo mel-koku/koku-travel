@@ -2,7 +2,7 @@ export function StarIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-4 w-4 text-amber-500"
+      className="h-4 w-4 text-semantic-warning"
       viewBox="0 0 24 24"
       fill="currentColor"
     >
@@ -16,7 +16,7 @@ export function GripIcon() {
     <svg
       aria-hidden="true"
       viewBox="0 0 20 20"
-      className="h-4 w-4 text-indigo-500"
+      className="h-4 w-4 text-brand-primary"
       fill="currentColor"
     >
       <path d="M5 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2ZM15 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z" />

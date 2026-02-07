@@ -13,8 +13,8 @@ import { featureFlags } from "@/lib/env/featureFlags";
 const DEFAULT_CENTER = { lat: 35.0116, lng: 135.7681 }; // Kyoto station area
 const DEFAULT_ZOOM = 12;
 const SELECTED_MARKER_CLASS = "koku-map-marker-selected";
-const ROUTE_POLYLINE_COLOR = "#8b7355"; // brand-primary
-const ROUTE_POLYLINE_HIGHLIGHT_COLOR = "#607263"; // earthy-sage
+const ROUTE_POLYLINE_COLOR = "#8c2f2f"; // brand-primary (bathhouse crimson)
+const ROUTE_POLYLINE_HIGHLIGHT_COLOR = "#2d7a6f"; // sage (jade teal)
 
 type MapPoint = {
   id: string;
@@ -343,9 +343,9 @@ export const ItineraryMapPanel = ({
           // Use consistent colors from earthy palette
           let backgroundColor: string;
           if (isStartPoint || isEndPoint) {
-            backgroundColor = "#607263"; // earthy-sage for entry points
+            backgroundColor = "#2d7a6f"; // sage for entry points
           } else {
-            backgroundColor = "#8b7355"; // brand-primary for all activities
+            backgroundColor = "#8c2f2f"; // brand-primary for all activities
           }
 
           // Show "S" for start, "E" for end, otherwise show the number
@@ -380,10 +380,10 @@ export const ItineraryMapPanel = ({
 
           const marker = Leaflet.marker([point.lat, point.lng], { icon: customIcon });
           const popupLabel = isStartPoint
-            ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#607263;">Start</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
+            ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#2d7a6f;">Start</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
             : isEndPoint
-              ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#607263;">End</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
-              : `<div style="text-align:center;padding:4px 8px;"><strong style="color:#8b7355;">${point.placeNumber}. ${point.title}</strong></div>`;
+              ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:#2d7a6f;">End</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
+              : `<div style="text-align:center;padding:4px 8px;"><strong style="color:#8c2f2f;">${point.placeNumber}. ${point.title}</strong></div>`;
           marker.bindPopup(popupLabel, { closeButton: false, offset: [0, -8] });
 
           // Show popup on hover
@@ -592,7 +592,7 @@ export const ItineraryMapPanel = ({
       <style jsx global>{`
         .leaflet-marker-icon.${SELECTED_MARKER_CLASS},
         .leaflet-marker-shadow.${SELECTED_MARKER_CLASS} {
-          filter: drop-shadow(0 2px 6px rgba(96, 114, 99, 0.6));
+          filter: drop-shadow(0 2px 6px rgba(45, 122, 111, 0.6));
         }
       `}</style>
     </>

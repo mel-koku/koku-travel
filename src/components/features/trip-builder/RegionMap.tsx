@@ -13,8 +13,8 @@ const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 const DEFAULT_ZOOM = 4.5;
 const JAPAN_CENTER: [number, number] = [138.2529, 36.2048];
 
-const SELECTED_COLOR = "#4F46E5";
-const UNSELECTED_COLOR = "#9CA3AF";
+const SELECTED_COLOR = "#8c2f2f";
+const UNSELECTED_COLOR = "#9a8d7e";
 
 export function RegionMap() {
   const { data } = useTripBuilder();
