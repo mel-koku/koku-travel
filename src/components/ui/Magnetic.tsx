@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { useRef, useCallback, useEffect, useState, type ReactNode } from "react";
 
 type MagneticProps = {
@@ -20,6 +20,7 @@ export function Magnetic({
 }: MagneticProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -55,7 +56,7 @@ export function Magnetic({
     y.set(0);
   }, [x, y]);
 
-  if (disabled || isTouchDevice) {
+  if (disabled || isTouchDevice || prefersReducedMotion) {
     return <div className={className}>{children}</div>;
   }
 
