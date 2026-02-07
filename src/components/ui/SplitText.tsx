@@ -32,7 +32,7 @@ const motionTags = {
 const animations: Record<string, AnimDef> = {
   clipY: {
     hidden: { clipPath: "inset(100% 0 0 0)", y: 20, opacity: 0 },
-    visible: { clipPath: "inset(0% 0 0 0)", y: 0, opacity: 1 },
+    visible: { clipPath: "inset(-10% 0 -10% 0)", y: 0, opacity: 1 },
   },
   fadeUp: {
     hidden: { opacity: 0, y: 30 },
@@ -84,9 +84,17 @@ export function SplitText({
 
   const items = useMemo(() => {
     if (splitBy === "char") {
-      return children.split("").map((char, i) => ({
-        key: `${char}-${i}`,
-        content: char === " " ? "\u00A0" : char,
+      // Group characters by word so line breaks only happen between words
+      const words = children.split(" ");
+      let globalCharIndex = 0;
+      return words.map((word, wordIdx) => ({
+        wordKey: `word-${wordIdx}`,
+        chars: word.split("").map((char) => ({
+          key: `${char}-${globalCharIndex}`,
+          content: char,
+          index: globalCharIndex++,
+        })),
+        spaceIndex: globalCharIndex++, // space between words counts as a character for timing
       }));
     }
     return children.split(" ").map((word, i) => ({
@@ -104,17 +112,52 @@ export function SplitText({
       animate={shouldAnimate ? "visible" : "hidden"}
       aria-label={children}
     >
-      {items.map((item) => (
-        <motion.span
-          key={item.key}
-          variants={itemVariants}
-          className={splitBy === "word" ? "mr-[0.3em] inline-block" : "inline-block"}
-          style={{ willChange: "transform, opacity" }}
-          aria-hidden
-        >
-          {item.content}
-        </motion.span>
-      ))}
+      {splitBy === "char"
+        ? (items as { wordKey: string; chars: { key: string; content: string; index: number }[]; spaceIndex: number }[]).map(
+            (word, wordIdx, arr) => (
+              <span key={word.wordKey} className="inline-flex" aria-hidden>
+                {word.chars.map((char) => (
+                  <motion.span
+                    key={char.key}
+                    initial={anim!.hidden}
+                    animate={shouldAnimate ? {
+                      ...anim!.visible,
+                      transition: { duration, ease: [0.25, 0.1, 0.25, 1], delay: delay + char.index * staggerDelay },
+                    } : anim!.hidden}
+                    className="inline-block"
+                    style={{ willChange: "transform, opacity" }}
+                  >
+                    {char.content}
+                  </motion.span>
+                ))}
+                {wordIdx < arr.length - 1 && (
+                  <motion.span
+                    key={`space-${wordIdx}`}
+                    initial={anim!.hidden}
+                    animate={shouldAnimate ? {
+                      ...anim!.visible,
+                      transition: { duration, ease: [0.25, 0.1, 0.25, 1], delay: delay + word.spaceIndex * staggerDelay },
+                    } : anim!.hidden}
+                    className="inline-block"
+                    style={{ willChange: "transform, opacity" }}
+                  >
+                    {"\u00A0"}
+                  </motion.span>
+                )}
+              </span>
+            )
+          )
+        : (items as { key: string; content: string }[]).map((item) => (
+            <motion.span
+              key={item.key}
+              variants={itemVariants}
+              className="mr-[0.3em] inline-block"
+              style={{ willChange: "transform, opacity" }}
+              aria-hidden
+            >
+              {item.content}
+            </motion.span>
+          ))}
     </MotionTag>
   );
 }

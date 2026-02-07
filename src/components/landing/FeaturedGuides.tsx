@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 
+import { SplitText } from "@/components/ui/SplitText";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { GuideSummary } from "@/types/guide";
 
 type FeaturedGuidesProps = {
@@ -25,28 +29,40 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
         {/* Section Header */}
         <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
-              Travel Guides
-            </p>
-            <h2 className="mt-4 font-serif text-4xl font-medium text-charcoal sm:text-5xl">
+            <ScrollReveal>
+              <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
+                Travel Guides
+              </p>
+            </ScrollReveal>
+            <SplitText
+              as="h2"
+              className="mt-4 font-serif text-4xl font-medium text-charcoal sm:text-5xl"
+              splitBy="word"
+              animation="clipY"
+              delay={0.1}
+            >
               Start planning
-            </h2>
+            </SplitText>
           </div>
-          <Link
-            href="/guides"
-            className="group flex items-center gap-2 text-charcoal transition-colors hover:text-brand-primary"
-          >
-            <span className="text-sm font-medium uppercase tracking-wider">
-              View all guides
-            </span>
-            <ArrowRightIcon />
-          </Link>
+          <ScrollReveal delay={0.2}>
+            <Link
+              href="/guides"
+              className="group flex items-center gap-2 text-charcoal transition-colors hover:text-brand-primary"
+            >
+              <span className="text-sm font-medium uppercase tracking-wider">
+                View all guides
+              </span>
+              <ArrowRightIcon />
+            </Link>
+          </ScrollReveal>
         </div>
 
         {/* Guides Grid - 3 columns */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {guides.slice(0, 3).map((guide) => (
-            <FeaturedGuideCard key={guide.id} guide={guide} />
+          {guides.slice(0, 3).map((guide, index) => (
+            <ScrollReveal key={guide.id} delay={0.15 + index * 0.12} distance={50}>
+              <FeaturedGuideCard guide={guide} />
+            </ScrollReveal>
           ))}
         </div>
       </div>
