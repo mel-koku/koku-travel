@@ -67,7 +67,7 @@ export function StickyExploreHeader({
   );
 
   const buttonClassName = cn(
-    "flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary transition hover:bg-sand"
+    "flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary shadow-sm transition-all hover:bg-brand-primary/5 hover:shadow-md"
   );
 
   return (
@@ -84,7 +84,7 @@ export function StickyExploreHeader({
           </button>
           <Link
             href="/dashboard"
-            className="hidden sm:flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-foreground-secondary transition hover:border-brand-primary hover:text-brand-primary"
+            className="hidden sm:flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-foreground-secondary shadow-sm transition-all hover:border-brand-primary hover:text-brand-primary hover:shadow-md"
           >
             Dashboard
           </Link>
