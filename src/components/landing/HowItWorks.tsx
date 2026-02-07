@@ -138,8 +138,8 @@ function StepSection({
       {/* Content */}
       <div className="flex-1 lg:max-w-md">
         {/* Watermark number */}
-        <div className="relative">
-          <span className="absolute -left-4 -top-12 select-none font-serif text-[12vw] font-light leading-none text-stone/[0.05] lg:text-[8vw]">
+        <div className="relative overflow-visible">
+          <span className="absolute -left-4 -top-20 select-none font-serif text-[12vw] font-light leading-none text-stone/[0.05] lg:-top-16 lg:text-[8vw]">
             {step.number}
           </span>
         </div>

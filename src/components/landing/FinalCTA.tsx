@@ -80,12 +80,14 @@ export function FinalCTA() {
                 <span className="relative">Start Planning</span>
               </a>
             </Magnetic>
-            <a
-              href="/explore"
-              className="inline-flex h-14 items-center justify-center rounded-full border border-white/30 bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-white/10"
-            >
-              Browse Locations
-            </a>
+            <Magnetic>
+              <a
+                href="/explore"
+                className="inline-flex h-14 items-center justify-center rounded-full border border-white/30 bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:border-white/50 hover:bg-white/15 hover:shadow-lg"
+              >
+                Browse Locations
+              </a>
+            </Magnetic>
           </motion.div>
 
           <motion.p

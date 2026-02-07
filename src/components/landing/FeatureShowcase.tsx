@@ -113,7 +113,7 @@ function Feature70_30() {
       </div>
 
       {/* 30% text — overlaps into image with negative margin */}
-      <div className="relative z-10 flex items-center px-6 py-20 lg:-ml-16 lg:py-32">
+      <div className="relative z-10 flex items-center bg-surface px-6 py-20 lg:-ml-16 lg:py-32">
         <div className="lg:max-w-sm">
           <ScrollReveal>
             <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">

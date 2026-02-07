@@ -247,7 +247,7 @@ export function ExploreHero({
           </h1>
           <button
             onClick={scrollToGrid}
-            className="mt-10 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm transition hover:bg-white/20"
+            className="mt-10 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-sm transition-all hover:border-white/50 hover:bg-white/15 hover:shadow-lg"
           >
             Explore All Locations
             <svg
@@ -437,7 +437,7 @@ export function ExploreHero({
               <Magnetic>
                 <button
                   onClick={scrollToGrid}
-                  className="pointer-events-auto inline-flex items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-7 py-3 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md transition-all hover:bg-white/20 hover:border-white/40"
+                  className="pointer-events-auto inline-flex items-center gap-2.5 rounded-full border border-white/25 bg-white/10 px-7 py-3 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur-md transition-all hover:border-white/50 hover:bg-white/15 hover:shadow-lg"
                 >
                   Explore All Locations
                   <svg

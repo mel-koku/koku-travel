@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
 
@@ -13,6 +13,13 @@ type LandingHeroProps = {
 export function LandingHero({ locationCount }: LandingHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  const [mounted, setMounted] = useState(false);
+
+  // Trigger animations after mount to bypass AnimatePresence initial={false}
+  useEffect(() => {
+    const timer = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(timer);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -52,7 +59,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
         {/* Small stat line */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={mounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-8 text-sm font-medium uppercase tracking-[0.25em] text-white/60"
         >
@@ -60,10 +67,10 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
         </motion.p>
 
         {/* Massive headline: JAPAN */}
-        <div className="overflow-hidden">
+        <div className="overflow-hidden pb-[3vw]">
           <motion.h1
-            initial={{ y: "100%" }}
-            animate={{ y: "0%" }}
+            initial={{ y: "125%" }}
+            animate={mounted ? { y: "0%" } : { y: "125%" }}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
             className="font-serif text-[clamp(4rem,15vw,10rem)] font-medium leading-[0.9] tracking-tight text-white"
           >
@@ -76,7 +83,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           as="p"
           className="mt-6 justify-center font-serif text-xl italic text-white/90 sm:text-2xl"
           splitBy="word"
-          trigger="load"
+          trigger="inView"
           animation="fadeUp"
           staggerDelay={0.08}
           delay={0.8}
@@ -87,7 +94,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
         {/* Subheadline */}
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={mounted ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.6, delay: 1.4 }}
           className="mx-auto mt-8 max-w-md text-base text-white/70"
         >
@@ -97,7 +104,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
         {/* CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          animate={mounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 1.6 }}
           className="mt-12"
         >
@@ -114,7 +121,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
         {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={mounted ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 2, duration: 0.6 }}
           className="absolute bottom-12 left-1/2 -translate-x-1/2"
           style={prefersReducedMotion ? {} : { opacity: lineOpacity }}
