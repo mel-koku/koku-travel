@@ -124,8 +124,6 @@ export const DaySelector = ({
     );
   }
 
-  const selectedDay = days[selected];
-
   return (
     <div className="relative">
       <select
@@ -146,15 +144,6 @@ export const DaySelector = ({
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
-      {/* Today indicator */}
-      {selectedDay?.isToday && (
-        <div className="absolute left-3 top-1/2 -translate-y-1/2">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-sage"></span>
-          </span>
-        </div>
-      )}
     </div>
   );
 };

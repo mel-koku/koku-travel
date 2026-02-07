@@ -2,10 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
 
 import { Location } from "@/types/location";
 
 import { LocationCard } from "./LocationCard";
+import { LocationExpanded } from "./LocationExpanded";
 
 const LocationDetailsModal = dynamic(
   () => import("./LocationDetailsModal").then((m) => ({ default: m.LocationDetailsModal })),
@@ -26,8 +28,11 @@ export function LocationGrid({
   layout = "default",
 }: LocationGridProps) {
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
 
   const handleClose = () => setSelectedLocation(null);
+  const handleExpand = (location: Location) => setExpandedLocation(location);
+  const handleCollapseExpanded = () => setExpandedLocation(null);
 
   return (
     <>
@@ -46,20 +51,34 @@ export function LocationGrid({
           </div>
         ) : (
           <>
+            {/* Masonry-style grid with varied span values */}
             <div
               className={`grid gap-x-5 gap-y-8 sm:gap-x-6 sm:gap-y-10 ${
                 layout === "sidebar"
                   ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
               }`}
+              style={{
+                gridAutoFlow: layout === "default" ? "dense" : undefined,
+              }}
             >
-              {locations.map((location) => (
-                <LocationCard
-                  key={location.id}
-                  location={location}
-                  onSelect={setSelectedLocation}
-                />
-              ))}
+              {locations.map((location, index) => {
+                // Every 5th card is double-height for masonry effect
+                const isDoubleHeight = layout === "default" && index % 5 === 0 && index > 0;
+
+                return (
+                  <div
+                    key={location.id}
+                    className={isDoubleHeight ? "sm:row-span-2" : ""}
+                  >
+                    <LocationCard
+                      location={location}
+                      onSelect={handleExpand}
+                      variant={isDoubleHeight ? "tall" : "default"}
+                    />
+                  </div>
+                );
+              })}
             </div>
 
             {hasMore && (
@@ -86,8 +105,18 @@ export function LocationGrid({
         )}
       </section>
 
+      {/* In-page card expansion */}
+      <AnimatePresence>
+        {expandedLocation && (
+          <LocationExpanded
+            location={expandedLocation}
+            onClose={handleCollapseExpanded}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Fallback modal for programmatic use */}
       <LocationDetailsModal location={selectedLocation} onClose={handleClose} />
     </>
   );
 }
-

@@ -332,7 +332,7 @@ export default function ColorsDemoPage() {
           />
           <CategoryRow
             categories="Shopping"
-            color="semantic-warning"
+            color="warning"
             hex="#d4a017"
             swatchClass="bg-warning"
             rationale="Bright gold — markets, shops, treasure"

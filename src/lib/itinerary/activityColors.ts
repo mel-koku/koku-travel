@@ -53,9 +53,9 @@ const COLOR_SCHEMES = {
   },
   // Shopping — gold
   shopping: {
-    border: "border-l-semantic-warning",
-    background: "bg-semantic-warning/10",
-    badge: "bg-semantic-warning",
+    border: "border-l-warning",
+    background: "bg-warning/10",
+    badge: "bg-warning",
     badgeText: "text-white",
   },
   // View — crimson (cultural)

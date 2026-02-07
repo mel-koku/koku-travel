@@ -13,8 +13,8 @@ const FiltersModal = dynamic(
 import { LocationGrid } from "./LocationGrid";
 import { StickyExploreHeader } from "./StickyExploreHeader";
 import { ActiveFilterChips } from "./ActiveFilterChips";
-import { FeaturedCarousel } from "./FeaturedCarousel";
-import { useAggregatedLocations, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
+import { ExploreHero } from "./ExploreHero";
+import { useAggregatedLocations, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 
 const DURATION_FILTERS = [
   {
@@ -135,6 +135,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
   const { data: filterMetadata } = useFilterMetadataQuery();
 
   const [query, setQuery] = useState("");
+  const { data: searchResults } = useLocationSearchQuery(query);
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
@@ -145,6 +146,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
   const [page, setPage] = useState(1);
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
+  const [isHeroPinned, setIsHeroPinned] = useState(true);
 
   useEffect(() => {
     setPage(1);
@@ -160,8 +162,16 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
     selectedSort,
   ]);
 
+  // Merge server-side search results with loaded locations (deduplicated)
+  const mergedLocations = useMemo(() => {
+    if (!searchResults || searchResults.length === 0) return locations;
+    const loadedIds = new Set(locations.map((l) => l.id));
+    const newFromSearch = searchResults.filter((l) => !loadedIds.has(l.id));
+    return newFromSearch.length > 0 ? [...locations, ...newFromSearch] : locations;
+  }, [locations, searchResults]);
+
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
-    return locations.map((location) => {
+    return mergedLocations.map((location) => {
       // Use actual rating if available, otherwise generate deterministic fallback
       const ratingValue = (typeof location.rating === "number" && Number.isFinite(location.rating))
         ? location.rating
@@ -179,7 +189,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         reviewCount: reviewCountValue,
       };
     });
-  }, [locations]);
+  }, [mergedLocations]);
 
   // Use pre-computed filter metadata from server (instant, no client-side processing)
   const prefectureOptions = useMemo(() => {
@@ -532,17 +542,16 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
         onFiltersClick={() => setIsFiltersModalOpen(true)}
         activeFilterCount={activeFilterCount}
+        hidden={isHeroPinned && activeFilters.length === 0}
       />
 
-      {/* Featured Carousel Hero - Full width, outside max-width container */}
+      {/* Cinematic Hero - Full-bleed, handles its own dark background */}
       {activeFilters.length === 0 && featuredLocations.length > 0 && (
-        <section className="w-full pt-6 pb-10 sm:pt-8 sm:pb-12 bg-gradient-to-b from-surface via-surface/90 to-background relative overflow-hidden">
-          {/* Subtle radial gradient for depth */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-sand/30 via-transparent to-transparent pointer-events-none" />
-          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <FeaturedCarousel locations={featuredLocations} totalLocations={total} />
-          </div>
-        </section>
+        <ExploreHero
+          locations={featuredLocations}
+          totalLocations={total}
+          onHeroComplete={(isPast) => setIsHeroPinned(!isPast)}
+        />
       )}
 
       {/* Main Content */}
