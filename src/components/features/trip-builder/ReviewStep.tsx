@@ -22,6 +22,7 @@ import { FormField } from "@/components/ui/FormField";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { TripStyle } from "@/types/trip";
 
 type PreferenceFormValues = {
@@ -269,7 +270,8 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           <div className="mb-3 flex items-center gap-2">
             <MapPin className="h-5 w-5 text-sage" />
             <div>
-              <h3 className="text-lg font-semibold text-charcoal">
+              <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Queued</p>
+              <h3 className="font-serif text-lg text-charcoal">
                 Saved Places ({data.savedLocationIds?.length})
               </h3>
               <p className="text-sm text-stone">
@@ -288,8 +290,9 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
       {/* Preferences Section */}
       <div>
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-charcoal">
-            Preferences (Optional)
+          <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Customize</p>
+          <h3 className="mt-1 font-serif text-lg text-charcoal">
+            Preferences
           </h3>
           <p className="text-sm text-stone">
             Add details to personalize your recommendations
@@ -298,6 +301,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
 
         <div className="flex flex-col gap-3">
           {/* Budget */}
+          <ScrollReveal delay={0} distance={15}>
           <PreferenceRow
             id="budget"
             icon={<Wallet className="h-4 w-4" />}
@@ -314,8 +318,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
               onModeChange={setBudgetMode}
             />
           </PreferenceRow>
+          </ScrollReveal>
 
           {/* Travel Pace */}
+          <ScrollReveal delay={0.05} distance={15}>
           <PreferenceRow
             id="pace"
             icon={<Gauge className="h-4 w-4" />}
@@ -363,8 +369,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
               )}
             />
           </PreferenceRow>
+          </ScrollReveal>
 
           {/* Group Composition */}
+          <ScrollReveal delay={0.1} distance={15}>
           <PreferenceRow
             id="group"
             icon={<Users className="h-4 w-4" />}
@@ -416,8 +424,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
               />
             </FormField>
           </PreferenceRow>
+          </ScrollReveal>
 
           {/* Accessibility & Dietary */}
+          <ScrollReveal delay={0.15} distance={15}>
           <PreferenceRow
             id="accessibility"
             icon={<Accessibility className="h-4 w-4" />}
@@ -470,8 +480,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
               </FormField>
             )}
           </PreferenceRow>
+          </ScrollReveal>
 
           {/* Additional Notes */}
+          <ScrollReveal delay={0.2} distance={15}>
           <PreferenceRow
             id="notes"
             icon={<StickyNote className="h-4 w-4" />}
@@ -488,6 +500,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
               {...register("additionalNotes")}
             />
           </PreferenceRow>
+          </ScrollReveal>
         </div>
       </div>
     </div>
