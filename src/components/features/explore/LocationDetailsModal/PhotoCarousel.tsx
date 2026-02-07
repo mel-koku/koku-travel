@@ -102,7 +102,7 @@ function ActionBar({
         onClick={onToggleFavorite}
         aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
         className={`rounded-full p-2 transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal ${
-          isFavorite ? "text-red-500" : "text-foreground-secondary"
+          isFavorite ? "text-destructive" : "text-foreground-secondary"
         }`}
       >
         <HeartIcon active={isFavorite} animating={heartAnimating} />

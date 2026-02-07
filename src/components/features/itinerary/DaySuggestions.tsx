@@ -31,32 +31,32 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
   meal: {
-    bg: "bg-orange-50",
-    text: "text-orange-600",
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
   },
   transport: {
-    bg: "bg-blue-50",
-    text: "text-blue-600",
+    bg: "bg-warm-gray/10",
+    text: "text-warm-gray",
   },
   experience: {
-    bg: "bg-purple-50",
-    text: "text-purple-600",
+    bg: "bg-brand-primary/10",
+    text: "text-brand-primary",
   },
   long_gap: {
-    bg: "bg-teal-50",
-    text: "text-teal-600",
+    bg: "bg-sage/10",
+    text: "text-sage",
   },
   early_end: {
-    bg: "bg-amber-50",
-    text: "text-amber-600",
+    bg: "bg-semantic-warning/10",
+    text: "text-semantic-warning",
   },
   late_start: {
-    bg: "bg-sky-50",
-    text: "text-sky-600",
+    bg: "bg-stone/10",
+    text: "text-stone",
   },
   category_imbalance: {
-    bg: "bg-rose-50",
-    text: "text-rose-600",
+    bg: "bg-semantic-error/10",
+    text: "text-semantic-error",
   },
 };
 
@@ -82,7 +82,7 @@ export function DaySuggestions({
   }
 
   return (
-    <div className={cn("rounded-lg border border-amber-200 bg-amber-50/50", className)}>
+    <div className={cn("rounded-lg border border-brand-secondary/20 bg-brand-secondary/5", className)}>
       {/* Header */}
       <button
         type="button"
@@ -90,7 +90,7 @@ export function DaySuggestions({
         className="flex w-full items-center justify-between px-4 py-3"
       >
         <div className="flex items-center gap-2">
-          <Lightbulb className="h-4 w-4 text-amber-600" />
+          <Lightbulb className="h-4 w-4 text-brand-secondary" />
           <span className="text-sm font-medium text-charcoal">
             {gaps.length} suggestion{gaps.length !== 1 ? "s" : ""} for this day
           </span>
@@ -104,7 +104,7 @@ export function DaySuggestions({
 
       {/* Suggestions list */}
       {isExpanded && (
-        <div className="border-t border-amber-200 px-4 py-3">
+        <div className="border-t border-brand-secondary/20 px-4 py-3">
           <div className="space-y-2">
             {gaps.map((gap) => {
               const Icon = ICON_MAP[gap.icon] ?? Plus;
@@ -114,7 +114,7 @@ export function DaySuggestions({
               return (
                 <div
                   key={gap.id}
-                  className="flex items-center gap-3 rounded-lg bg-white p-3 shadow-sm"
+                  className="flex items-center gap-3 rounded-lg bg-background p-3 shadow-sm"
                 >
                   {/* Icon */}
                   <div

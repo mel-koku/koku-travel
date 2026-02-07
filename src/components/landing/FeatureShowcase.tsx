@@ -52,7 +52,7 @@ export function FeatureShowcase() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-sm font-medium uppercase tracking-widest text-sage">
+            <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
               Plan
             </p>
             <h2 className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl">
@@ -96,7 +96,7 @@ export function FeatureShowcase() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <p className="text-sm font-medium uppercase tracking-widest text-sage">
+            <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
               Access
             </p>
             <h2 className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl">

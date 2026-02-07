@@ -39,7 +39,7 @@ export function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="mb-12 max-w-2xl sm:mb-16"
         >
-          <p className="text-sm font-medium uppercase tracking-widest text-sage">
+          <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
             How It Works
           </p>
           <h2 className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl">

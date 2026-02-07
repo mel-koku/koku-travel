@@ -143,11 +143,11 @@ export default function AccountPage() {
       <section className="max-w-3xl mx-auto px-8 pt-8">
         <div className="rounded-2xl border border-border bg-background shadow-md p-6 space-y-6">
           {supabaseUnavailable && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <div className="rounded-xl border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-charcoal">
               Cloud sync is disabled because Supabase credentials are not configured. Set
-              <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
+              <code className="mx-1 rounded bg-brand-secondary/10 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
               and
-              <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">
+              <code className="mx-1 rounded bg-brand-secondary/10 px-1 py-0.5">
                 NEXT_PUBLIC_SUPABASE_ANON_KEY
               </code>
               to enable account features.

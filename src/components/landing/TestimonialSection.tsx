@@ -28,7 +28,7 @@ export function TestimonialSection() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0" style={{ backgroundColor: "rgba(45, 42, 38, 0.75)" }} />
+        <div className="absolute inset-0" style={{ backgroundColor: "rgba(31, 26, 20, 0.75)" }} />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 sm:py-28">

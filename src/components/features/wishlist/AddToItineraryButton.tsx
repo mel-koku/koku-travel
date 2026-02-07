@@ -139,7 +139,7 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
         <Button variant="outline" size="sm" asChild href="/trip-builder">
           Start an itinerary
         </Button>
-        <p className="text-xs text-gray-500">Create a trip to begin adding your favorite places.</p>
+        <p className="text-xs text-stone">Create a trip to begin adding your favorite places.</p>
       </div>
     );
   }
@@ -158,7 +158,7 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
       >
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label htmlFor="favorite-trip-select" className="text-sm font-medium text-gray-700">
+            <label htmlFor="favorite-trip-select" className="text-sm font-medium text-warm-gray">
               Itinerary
             </label>
             <Select
@@ -173,7 +173,7 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="favorite-day-select" className="text-sm font-medium text-gray-700">
+            <label htmlFor="favorite-day-select" className="text-sm font-medium text-warm-gray">
               Day
             </label>
             <Select
@@ -183,14 +183,14 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
               options={dayOptions}
             />
             {currentTrip && currentTrip.itinerary?.days?.length === 0 ? (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-stone">
                 We will create the first day of your itinerary for you.
               </p>
             ) : null}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="favorite-time-select" className="text-sm font-medium text-gray-700">
+            <label htmlFor="favorite-time-select" className="text-sm font-medium text-warm-gray">
               Time of day
             </label>
             <Select
@@ -201,7 +201,7 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
             />
           </div>
 
-          {formError ? <p className="text-sm text-red-600">{formError}</p> : null}
+          {formError ? <p className="text-sm text-destructive">{formError}</p> : null}
 
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
             <Button variant="ghost" size="sm" onClick={handleClose}>

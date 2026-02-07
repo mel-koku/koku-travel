@@ -9,124 +9,128 @@ export type ActivityColorScheme = {
 
 /**
  * Color schemes for different activity types
- * Using consistent brand-primary for all badges for visual cohesion
+ * Category-differentiated for visual distinction on map and cards
  */
 const COLOR_SCHEMES = {
-  // Meals
+  // Meals — amber/gold (food warmth)
   breakfast: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
     badgeText: "text-white",
   },
   lunch: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
     badgeText: "text-white",
   },
   dinner: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
     badgeText: "text-white",
   },
   snack: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
     badgeText: "text-white",
   },
-  // Activities
+  // Activities — crimson (cultural)
   culture: {
     border: "border-l-brand-primary",
     background: "bg-brand-primary/10",
     badge: "bg-brand-primary",
     badgeText: "text-white",
   },
+  // Nature — jade teal
   nature: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
     badgeText: "text-white",
   },
+  // Shopping — gold
   shopping: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-semantic-warning",
+    background: "bg-semantic-warning/10",
+    badge: "bg-semantic-warning",
     badgeText: "text-white",
   },
+  // View — crimson (cultural)
   view: {
     border: "border-l-brand-primary",
     background: "bg-brand-primary/10",
     badge: "bg-brand-primary",
     badgeText: "text-white",
   },
+  // Entertainment — amber
   entertainment: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
     badgeText: "text-white",
   },
-  // Food (non-meal)
+  // Food (non-meal) — amber
   food: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
     badgeText: "text-white",
   },
-  // Travel
+  // Travel — warm gray (utilitarian)
   travel: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-warm-gray",
+    background: "bg-warm-gray/10",
+    badge: "bg-warm-gray",
     badgeText: "text-white",
   },
   transport: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-warm-gray",
+    background: "bg-warm-gray/10",
+    badge: "bg-warm-gray",
     badgeText: "text-white",
   },
-  // Notes
+  // Notes — stone (informational)
   note: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-stone",
+    background: "bg-stone/10",
+    badge: "bg-stone",
     badgeText: "text-white",
   },
-  // Entry points - keep distinct with earthy-sage for start/end differentiation
+  // Entry points — jade teal (journey markers)
   entryPointStart: {
-    border: "border-l-earthy-sage",
-    background: "bg-earthy-sage/10",
-    badge: "bg-earthy-sage",
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
     badgeText: "text-white",
   },
   entryPointEnd: {
-    border: "border-l-earthy-sage",
-    background: "bg-earthy-sage/10",
-    badge: "bg-earthy-sage",
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
     badgeText: "text-white",
   },
-  // Default
+  // Default — crimson
   default: {
     border: "border-l-brand-primary",
     background: "bg-brand-primary/10",
     badge: "bg-brand-primary",
     badgeText: "text-white",
   },
-  // Point of interest
+  // Point of interest — crimson (cultural)
   point_of_interest: {
     border: "border-l-brand-primary",
     background: "bg-brand-primary/10",
     badge: "bg-brand-primary",
     badgeText: "text-white",
   },
-  // Hotel/accommodation
+  // Hotel/accommodation — stone (restful)
   hotel: {
-    border: "border-l-brand-primary",
-    background: "bg-brand-primary/10",
-    badge: "bg-brand-primary",
+    border: "border-l-stone",
+    background: "bg-stone/10",
+    badge: "bg-stone",
     badgeText: "text-white",
   },
 } as const satisfies Record<string, ActivityColorScheme>;
@@ -230,30 +234,38 @@ export function getActivityTypeLabel(activity: ItineraryActivity): string {
 }
 
 /**
- * Hex color mapping for map pins (consistent brand-primary for all activities)
+ * Hex color mapping for map pins — category-differentiated
  */
 const HEX_COLORS: Record<string, string> = {
-  // All activities use brand-primary for consistency
-  breakfast: "#8b7355", // brand-primary
-  lunch: "#8b7355", // brand-primary
-  dinner: "#8b7355", // brand-primary
-  snack: "#8b7355", // brand-primary
-  culture: "#8b7355", // brand-primary
-  nature: "#8b7355", // brand-primary
-  shopping: "#8b7355", // brand-primary
-  view: "#8b7355", // brand-primary
-  entertainment: "#8b7355", // brand-primary
-  food: "#8b7355", // brand-primary
-  travel: "#8b7355", // brand-primary
-  transport: "#8b7355", // brand-primary
-  note: "#8b7355", // brand-primary
-  // Entry points - sage green for start/end markers
-  entryPointStart: "#607263", // earthy-sage
-  entryPointEnd: "#607263", // earthy-sage
-  // Default
-  default: "#8b7355", // brand-primary
-  point_of_interest: "#8b7355", // brand-primary
-  hotel: "#8b7355", // brand-primary
+  // Meals — lantern amber
+  breakfast: "#c6923a",
+  lunch: "#c6923a",
+  dinner: "#c6923a",
+  snack: "#c6923a",
+  // Culture/views — bathhouse crimson
+  culture: "#8c2f2f",
+  view: "#8c2f2f",
+  point_of_interest: "#8c2f2f",
+  // Nature — jade teal
+  nature: "#2d7a6f",
+  // Shopping — gold
+  shopping: "#d4a017",
+  // Entertainment — amber
+  entertainment: "#c6923a",
+  // Food — amber
+  food: "#c6923a",
+  // Travel — warm gray
+  travel: "#5a4f44",
+  transport: "#5a4f44",
+  // Notes — stone
+  note: "#9a8d7e",
+  // Entry points — jade teal
+  entryPointStart: "#2d7a6f",
+  entryPointEnd: "#2d7a6f",
+  // Hotel — stone
+  hotel: "#9a8d7e",
+  // Default — crimson
+  default: "#8c2f2f",
 };
 
 /**

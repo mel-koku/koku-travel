@@ -15,7 +15,7 @@ export function FinalCTA() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0" style={{ backgroundColor: "rgba(45, 42, 38, 0.6)" }} />
+        <div className="absolute inset-0" style={{ backgroundColor: "rgba(31, 26, 20, 0.6)" }} />
       </div>
 
       {/* Content */}
@@ -40,7 +40,7 @@ export function FinalCTA() {
           <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <a
               href="/trip-builder"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-white px-8 text-sm font-semibold text-charcoal shadow-sm transition-all hover:bg-white/90 hover:shadow-md"
+              className="inline-flex h-12 items-center justify-center rounded-full bg-brand-primary px-8 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-primary/90 hover:shadow-md"
             >
               Start Planning
             </a>

@@ -540,19 +540,19 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
           {/* Right: Main Card */}
           <div
-            className={`group relative flex-1 overflow-hidden rounded-2xl bg-white transition-all duration-200 ${
+            className={`group relative flex-1 overflow-hidden rounded-2xl bg-background transition-all duration-200 ${
               isDragging
                 ? "ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
                 : isSelected
                   ? "shadow-lg"
                   : "shadow-sm hover:shadow-lg hover:-translate-y-0.5"
             }`}
-            style={isSelected && !isDragging ? { outline: "2px solid #607263", outlineOffset: "-2px" } : undefined}
+            style={isSelected && !isDragging ? { outline: "2px solid #2d7a6f", outlineOffset: "-2px" } : undefined}
           >
             {/* Large Image Section - 16:9 aspect ratio */}
             <div className="relative aspect-video w-full overflow-hidden">
               {!imageLoaded && !imageError && (
-                <div className="absolute inset-0 animate-pulse bg-stone-200" />
+                <div className="absolute inset-0 animate-pulse bg-surface" />
               )}
               <Image
                 src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
@@ -595,7 +595,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                           ? "text-white"
                           : `${colorScheme.badge} ${colorScheme.badgeText}`
                       }`}
-                      style={isSelected ? { backgroundColor: "#607263" } : undefined}
+                      style={isSelected ? { backgroundColor: "#2d7a6f" } : undefined}
                       title={isStartEntryPoint ? "Starting point" : isEndEntryPoint ? "Ending point" : `Stop ${placeNumber}`}
                     >
                       {displayLabel}
@@ -648,7 +648,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 <button
                   type="button"
                   onClick={handleMoreInfo}
-                  className="inline-flex items-center gap-1 rounded-full border border-sage/30 bg-white px-2 py-0.5 text-[11px] font-semibold text-sage shadow-sm transition hover:bg-sage/10"
+                  className="inline-flex items-center gap-1 rounded-full border border-sage/30 bg-background px-2 py-0.5 text-[11px] font-semibold text-sage shadow-sm transition hover:bg-sage/10"
                 >
                   <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -817,7 +817,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-lg border border-border bg-white px-2.5 py-1.5 text-xs text-warm-gray shadow-sm placeholder:text-stone/50 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                  className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-warm-gray shadow-sm placeholder:text-stone/50 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                   rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}
