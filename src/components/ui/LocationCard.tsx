@@ -35,7 +35,7 @@ export const LocationCard = ({
     className={cn("h-full overflow-hidden", className)}
     {...rest}
   >
-    <div className="relative h-48 bg-gray-200">
+    <div className="relative h-48 bg-surface">
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${imageUrl})` }}
@@ -59,7 +59,7 @@ export const LocationCard = ({
     </div>
 
     <CardContent className="gap-5" padding="md">
-      <p className="text-sm text-gray-600">{description}</p>
+      <p className="text-sm text-warm-gray">{description}</p>
 
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
@@ -72,11 +72,11 @@ export const LocationCard = ({
       )}
 
       {metrics.length > 0 && (
-        <dl className="grid gap-4 rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-600 sm:grid-cols-3">
+        <dl className="grid gap-4 rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-warm-gray sm:grid-cols-3">
           {metrics.map(({ label, value }) => (
             <div key={label} className="flex flex-col">
-              <dt className="text-xs uppercase tracking-wide text-gray-500">{label}</dt>
-              <dd className="text-sm font-semibold text-gray-900">{value}</dd>
+              <dt className="text-xs uppercase tracking-wide text-stone">{label}</dt>
+              <dd className="text-sm font-semibold text-charcoal">{value}</dd>
             </div>
           ))}
         </dl>

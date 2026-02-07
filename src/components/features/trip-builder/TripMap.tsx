@@ -13,8 +13,8 @@ const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 const DEFAULT_ZOOM = 5;
 const JAPAN_CENTER: [number, number] = [138.2529, 36.2048];
 
-const MARKER_COLOR = "#4F46E5";
-const ROUTE_COLOR = "#6366F1";
+const MARKER_COLOR = "#8c2f2f";
+const ROUTE_COLOR = "#c6923a";
 
 export function TripMap() {
   const { data } = useTripBuilder();

@@ -21,7 +21,7 @@ type ToastProps = {
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
   success: "bg-semantic-success text-white",
-  info: "bg-gray-800 text-white",
+  info: "bg-charcoal text-white",
   error: "bg-semantic-error text-white",
 };
 

@@ -15,7 +15,6 @@ import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.
 const navItems = [
   { label: "Explore", href: "/explore" },
   { label: "Guides", href: "/guides" },
-  // { label: "Community", href: "/community" }, // Hidden for future development
   { label: "Trip Builder", href: "/trip-builder" },
 ];
 

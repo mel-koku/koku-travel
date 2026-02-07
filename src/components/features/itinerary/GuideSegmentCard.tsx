@@ -37,9 +37,9 @@ const STYLE_MAP: Record<
     label: "Cultural Insight",
   },
   practical_tip: {
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    iconBg: "bg-amber-100",
+    bg: "bg-brand-secondary/5",
+    border: "border-brand-secondary/20",
+    iconBg: "bg-brand-secondary/10",
     label: "Pro Tip",
   },
   day_summary: {

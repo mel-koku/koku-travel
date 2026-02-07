@@ -14,7 +14,7 @@ export function ValuePropositionBar({ locationCount }: ValuePropositionBarProps)
   ];
 
   return (
-    <section className="py-16 sm:py-20" style={{ backgroundColor: "#2d2a26" }}>
+    <section className="bg-charcoal py-16 sm:py-20">
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

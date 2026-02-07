@@ -77,17 +77,17 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       // Default error UI
       return (
-        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-red-200 bg-red-50 p-8">
+        <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-destructive/20 bg-destructive/10 p-8">
           <div className="text-center">
-            <h2 className="mb-2 text-xl font-semibold text-red-900">
+            <h2 className="mb-2 text-xl font-semibold text-destructive">
               Something went wrong
             </h2>
-            <p className="mb-4 text-sm text-red-700">
+            <p className="mb-4 text-sm text-destructive/80">
               An error occurred while rendering this component.
             </p>
             {process.env.NODE_ENV !== "production" && this.state.error && (
-              <div className="mb-4 rounded border border-red-300 bg-red-100 p-3 text-left">
-                <p className="text-xs font-mono text-red-900">
+              <div className="mb-4 rounded border border-destructive/30 bg-destructive/15 p-3 text-left">
+                <p className="text-xs font-mono text-destructive">
                   {this.state.error.message}
                 </p>
               </div>

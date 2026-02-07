@@ -98,7 +98,7 @@ function TripBuilderV2Content() {
       )}
       {/* Error toast */}
       {error && (
-        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-red-600 px-4 py-3 text-white shadow-lg lg:bottom-8">
+        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-destructive px-4 py-3 text-white shadow-lg lg:bottom-8">
           <div className="flex items-center gap-2">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -107,7 +107,7 @@ function TripBuilderV2Content() {
             <button
               type="button"
               onClick={() => setError(null)}
-              className="ml-2 rounded p-1 hover:bg-red-700"
+              className="ml-2 rounded p-1 hover:bg-destructive/90"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

@@ -90,11 +90,11 @@ export default function UIDemoPage() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-10 py-16">
       <header className="flex flex-col gap-3">
-        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-indigo-600">
-          Phase 1 · UI Kit
+        <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
+          Design System
         </span>
-        <h1 className="text-4xl font-bold leading-tight text-gray-900">Component Gallery</h1>
-        <p className="max-w-2xl text-lg text-gray-600">
+        <h1 className="text-4xl font-bold leading-tight text-charcoal">Component Gallery</h1>
+        <p className="max-w-2xl text-lg text-warm-gray">
           Buttons, form controls, and field wrappers used across Koku. This page doubles as a
           visual smoke test—update components here to validate new states quickly.
         </p>
@@ -102,8 +102,8 @@ export default function UIDemoPage() {
 
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-gray-900">Buttons</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="text-2xl font-semibold text-charcoal">Buttons</h2>
+          <p className="text-sm text-warm-gray">
             Variants cover 90% of our needs. Use icons for directional affordances, and keep loading
             states keyboard accessible.
           </p>
@@ -111,7 +111,7 @@ export default function UIDemoPage() {
         <div className="space-y-8">
           {buttonVariants.map(({ label, variant }) => (
             <div key={variant} className="space-y-3">
-              <p className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+              <p className="text-sm font-semibold uppercase tracking-wide text-stone">
                 {label}
               </p>
               <div className="flex flex-wrap items-center gap-4">
@@ -124,7 +124,7 @@ export default function UIDemoPage() {
             </div>
           ))}
           <div className="space-y-3">
-            <p className="text-sm font-semibold uppercase tracking-wide text-gray-500">
+            <p className="text-sm font-semibold uppercase tracking-wide text-stone">
               States & Mix-ins
             </p>
             <div className="flex flex-col gap-4 md:flex-row md:flex-wrap">
@@ -155,8 +155,8 @@ export default function UIDemoPage() {
 
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-gray-900">Form Inputs</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="text-2xl font-semibold text-charcoal">Form Inputs</h2>
+          <p className="text-sm text-warm-gray">
             Pair each control with a <code>FormField</code> to wire up labels, help text, and errors.
           </p>
         </div>
@@ -235,7 +235,7 @@ export default function UIDemoPage() {
 
       <section className="grid gap-10 md:grid-cols-2">
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-900">Checkboxes</h2>
+          <h2 className="text-2xl font-semibold text-charcoal">Checkboxes</h2>
           <CheckboxGroup
             legend="Interests"
             helpText="Pick all that match your travel vibe."
@@ -269,7 +269,7 @@ export default function UIDemoPage() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-gray-900">Radio buttons</h2>
+          <h2 className="text-2xl font-semibold text-charcoal">Radio buttons</h2>
           <RadioGroup
             legend="Pacing"
             helpText="Choose the pace we should plan around. One selection only."

@@ -19,18 +19,18 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
   const typeStyles: Record<string, { bg: string; text: string }> = {
     travel: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
     reservation: { bg: "bg-semantic-warning/10", text: "text-semantic-warning" },
-    payment: { bg: "bg-earthy-sage/10", text: "text-earthy-sage" },
+    payment: { bg: "bg-sage/10", text: "text-sage" },
     crowd: { bg: "bg-brand-secondary/10", text: "text-brand-secondary" },
-    photo: { bg: "bg-earthy-stone/10", text: "text-earthy-warmGray" },
+    photo: { bg: "bg-stone/10", text: "text-warm-gray" },
     weather: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
     timing: { bg: "bg-semantic-error/10", text: "text-semantic-error" },
-    accessibility: { bg: "bg-earthy-sage/10", text: "text-earthy-sage" },
+    accessibility: { bg: "bg-sage/10", text: "text-sage" },
     budget: { bg: "bg-semantic-warning/10", text: "text-semantic-warning" },
-    general: { bg: "bg-neutral-surface", text: "text-earthy-warmGray" },
+    general: { bg: "bg-surface", text: "text-warm-gray" },
     etiquette: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
   };
 
-  const defaultStyles = { bg: "bg-neutral-surface", text: "text-earthy-warmGray" };
+  const defaultStyles = { bg: "bg-surface", text: "text-warm-gray" };
   const styles = typeStyles[tip.type] ?? defaultStyles;
 
   return (

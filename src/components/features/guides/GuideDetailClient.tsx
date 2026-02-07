@@ -63,7 +63,7 @@ export function GuideDetailClient({ guide, locations }: GuideDetailClientProps) 
             className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all ${
               bookmarked
                 ? "bg-sage text-white hover:bg-sage/90"
-                : "bg-white border border-border text-charcoal hover:border-sage hover:text-sage"
+                : "bg-background border border-border text-charcoal hover:border-sage hover:text-sage"
             } ${!user ? "opacity-50 cursor-not-allowed" : ""}`}
             title={!user ? "Sign in to bookmark" : bookmarked ? "Remove bookmark" : "Bookmark this guide"}
           >

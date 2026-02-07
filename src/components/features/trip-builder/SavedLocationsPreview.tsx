@@ -32,7 +32,7 @@ export function SavedLocationsPreview({
   if (error) {
     return (
       <div className="rounded-lg border border-border bg-surface p-4">
-        <p className="text-sm text-red-600">Failed to load saved places</p>
+        <p className="text-sm text-destructive">Failed to load saved places</p>
       </div>
     );
   }
@@ -61,7 +61,7 @@ export function SavedLocationsPreview({
               "flex items-center gap-3 rounded-lg border p-3",
               isCitySelected
                 ? "border-border bg-background"
-                : "border-amber-200 bg-amber-50"
+                : "border-brand-secondary/20 bg-brand-secondary/5"
             )}
           >
             {/* Location Image */}
@@ -92,7 +92,7 @@ export function SavedLocationsPreview({
                   {location.category && ` \u00b7 ${location.category}`}
                 </span>
                 {!isCitySelected && (
-                  <span className="flex items-center gap-1 text-xs text-amber-700">
+                  <span className="flex items-center gap-1 text-xs text-brand-secondary">
                     <AlertTriangle className="h-3 w-3" />
                     Not in selected cities
                   </span>
