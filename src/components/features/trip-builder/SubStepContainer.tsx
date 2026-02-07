@@ -161,11 +161,11 @@ function MobileSubStepContainer({
             >
               <div className="rounded-xl border border-border bg-background p-5">
                 <div className="mb-4">
-                  <h3 className="text-lg font-semibold text-charcoal">
+                  <h3 className="font-serif text-lg font-semibold text-charcoal">
                     {current.title}
                   </h3>
                   {current.subtitle && (
-                    <p className="mt-1 text-sm text-foreground-secondary">
+                    <p className="mt-1 text-xs uppercase tracking-[0.2em] text-stone">
                       {current.subtitle}
                     </p>
                   )}
@@ -279,7 +279,7 @@ function DesktopSubStepContainer({
                 <div>
                   <h3
                     className={cn(
-                      "text-base font-semibold",
+                      "font-serif text-base font-semibold",
                       isExpanded || isCompleted ? "text-charcoal" : "text-stone"
                     )}
                   >

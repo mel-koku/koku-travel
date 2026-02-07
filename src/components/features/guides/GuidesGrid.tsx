@@ -2,6 +2,8 @@
 
 import type { GuideSummary } from "@/types/guide";
 import { GuideCard } from "./GuideCard";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { SplitText } from "@/components/ui/SplitText";
 
 type GuidesGridProps = {
   guides: GuideSummary[];
@@ -11,15 +13,23 @@ export function GuidesGrid({ guides }: GuidesGridProps) {
   if (guides.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-surface">
-          <BookIcon className="h-8 w-8 text-stone" />
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-stone/40">
+          <BookIcon className="h-8 w-8 text-stone/50" />
         </div>
-        <p className="text-base font-medium text-charcoal mb-1">
+        <SplitText
+          as="p"
+          className="justify-center font-serif text-lg text-charcoal"
+          splitBy="word"
+          animation="clipY"
+          staggerDelay={0.06}
+        >
           No guides available yet
-        </p>
-        <p className="text-sm text-stone text-center max-w-sm">
-          We&apos;re working on curated travel guides. Check back soon!
-        </p>
+        </SplitText>
+        <ScrollReveal delay={0.3} distance={15}>
+          <p className="mt-2 text-sm text-stone text-center max-w-sm">
+            We&apos;re working on curated travel guides. Check back soon!
+          </p>
+        </ScrollReveal>
       </div>
     );
   }
@@ -27,8 +37,10 @@ export function GuidesGrid({ guides }: GuidesGridProps) {
   return (
     <section aria-label="Travel guides">
       <div className="grid gap-x-5 gap-y-8 sm:gap-x-6 sm:gap-y-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {guides.map((guide) => (
-          <GuideCard key={guide.id} guide={guide} />
+        {guides.map((guide, i) => (
+          <ScrollReveal key={guide.id} delay={i * 0.05} distance={20}>
+            <GuideCard guide={guide} />
+          </ScrollReveal>
         ))}
       </div>
     </section>
