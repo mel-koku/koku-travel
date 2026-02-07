@@ -86,7 +86,7 @@ function UserMenu({
             <span className="flex items-center justify-between gap-2">
               <span>Clear local data</span>
               <svg
-                className="h-[1em] w-[1em] flex-shrink-0 text-semantic-warning"
+                className="h-[1em] w-[1em] flex-shrink-0 text-warning"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"

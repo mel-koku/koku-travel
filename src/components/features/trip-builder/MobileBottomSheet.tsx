@@ -140,7 +140,7 @@ export function MobileBottomSheet({
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black/30 transition-opacity lg:hidden"
+          className="fixed inset-0 z-40 bg-charcoal/30 transition-opacity lg:hidden"
           onClick={handleToggle}
         />
       )}

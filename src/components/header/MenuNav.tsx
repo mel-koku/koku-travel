@@ -191,7 +191,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           onClick={handleClearData}
           onMouseEnter={() => setCursorState("link")}
           onMouseLeave={() => setCursorState("default")}
-          className="flex items-center gap-2 text-left text-sm text-stone transition-colors hover:text-semantic-warning"
+          className="flex items-center gap-2 text-left text-sm text-stone transition-colors hover:text-warning"
         >
           <span>Clear local data</span>
           <svg

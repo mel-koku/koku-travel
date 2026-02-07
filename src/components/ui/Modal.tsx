@@ -159,7 +159,7 @@ export function Modal(props: ModalProps) {
       <div
         ref={backdropRef}
         className={cn(
-          "flex min-h-full items-start justify-center bg-black/50 backdrop-blur-sm px-4 py-8 sm:py-12",
+          "flex min-h-full items-start justify-center bg-charcoal/50 backdrop-blur-sm px-4 py-8 sm:py-12",
           className,
         )}
         role="presentation"

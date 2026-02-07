@@ -235,7 +235,7 @@ export function ExploreHero({
             alt={loc.name}
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1f1a14]/80 via-[#1f1a14]/40 to-[#1f1a14]/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/40 to-charcoal/20" />
         </div>
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
           <p className="mb-6 text-sm font-medium uppercase tracking-[0.25em] text-white/60">

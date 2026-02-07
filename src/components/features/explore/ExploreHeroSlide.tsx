@@ -49,7 +49,7 @@ export function ExploreHeroSlide({
       />
 
       {/* Dark gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#1f1a14]/80 via-[#1f1a14]/40 to-[#1f1a14]/20" />
+      <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/40 to-charcoal/20" />
 
       {/* Text overlay — hidden when showText is false (during EXPLORE headline phase) */}
       <AnimatePresence>

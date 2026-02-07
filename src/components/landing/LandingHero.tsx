@@ -44,7 +44,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           sizes="100vw"
         />
         {/* Dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1f1a14]/60 via-[#1f1a14]/50 to-[#1f1a14]/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/50 to-charcoal/80" />
       </motion.div>
 
       {/* Content */}

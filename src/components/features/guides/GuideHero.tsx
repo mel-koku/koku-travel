@@ -33,7 +33,7 @@ export function GuideHero({ guide }: GuideHeroProps) {
           sizes="100vw"
         />
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/30 to-transparent" />
       </div>
 
       {/* Content overlay */}

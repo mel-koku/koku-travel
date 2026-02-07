@@ -326,7 +326,7 @@ function StarIcon() {
   return (
     <svg
       aria-hidden="true"
-      className="h-4 w-4 text-semantic-warning"
+      className="h-4 w-4 text-warning"
       viewBox="0 0 24 24"
       fill="currentColor"
     >

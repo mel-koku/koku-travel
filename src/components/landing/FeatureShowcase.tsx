@@ -47,7 +47,7 @@ function FeatureFullWidth() {
           sizes="100vw"
         />
       </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-r from-[#1f1a14]/80 via-[#1f1a14]/50 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-r from-charcoal/80 via-charcoal/50 to-transparent" />
 
       <div className="absolute inset-0 flex items-center">
         <div className="mx-auto w-full max-w-7xl px-6">

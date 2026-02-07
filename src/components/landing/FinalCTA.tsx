@@ -35,10 +35,7 @@ export function FinalCTA() {
           className="object-cover"
           sizes="100vw"
         />
-        <div
-          className="absolute inset-0"
-          style={{ backgroundColor: "rgba(31, 26, 20, 0.7)" }}
-        />
+        <div className="absolute inset-0 bg-charcoal/70" />
       </motion.div>
 
       {/* Content */}

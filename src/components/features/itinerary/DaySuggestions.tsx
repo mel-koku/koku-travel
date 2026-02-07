@@ -47,8 +47,8 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     text: "text-sage",
   },
   early_end: {
-    bg: "bg-semantic-warning/10",
-    text: "text-semantic-warning",
+    bg: "bg-warning/10",
+    text: "text-warning",
   },
   late_start: {
     bg: "bg-stone/10",
