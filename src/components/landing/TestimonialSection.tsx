@@ -1,72 +1,109 @@
 "use client";
 
-import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 const testimonials = [
   {
-    quote: "We found a tiny ramen shop in a Kyoto backstreet that wasn't in any guidebook. Best meal of our entire trip.",
+    quote:
+      "We found a tiny ramen shop in a Kyoto backstreet that wasn't in any guidebook. Best meal of our entire trip.",
     author: "Sarah Chen",
     location: "San Francisco",
   },
   {
-    quote: "Five trips to Japan and Koku still showed me places I'd never heard of. My friends thought I hired a private guide.",
+    quote:
+      "Five trips to Japan and Koku still showed me places I'd never heard of. My friends thought I hired a private guide.",
     author: "Marcus Johnson",
     location: "London",
+  },
+  {
+    quote:
+      "The itinerary felt personal, not algorithmic. It took me to a hidden garden in Kanazawa I would have walked right past.",
+    author: "Yuki Tanaka",
+    location: "Vancouver",
   },
 ];
 
 export function TestimonialSection() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
+
+  // Auto-rotate testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const current = testimonials[currentIndex]!;
+
   return (
-    <section className="relative overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
-        <Image
-          src="https://images.unsplash.com/photo-1528164344705-47542687000d?w=1920&q=80"
-          alt="Arashiyama bamboo grove in Kyoto"
-          fill
-          className="object-cover"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0" style={{ backgroundColor: "rgba(31, 26, 20, 0.75)" }} />
+    <section className="relative overflow-hidden bg-charcoal">
+      {/* Oversized decorative quotation mark */}
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-serif text-[40vw] leading-none text-white/[0.03]">
+        &ldquo;
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 sm:py-28">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-12 text-center sm:mb-16"
-        >
-          <p className="text-sm font-medium uppercase tracking-widest text-white/60">
+      <div className="relative z-10 mx-auto max-w-5xl px-6 py-24 sm:py-32">
+        {/* Section eyebrow */}
+        <ScrollReveal>
+          <p className="mb-16 text-center text-sm font-medium uppercase tracking-widest text-white/40">
             Traveler Stories
           </p>
-          <h2 className="mt-4 font-serif text-2xl font-medium text-white sm:text-3xl">
-            Don&apos;t just take
-            <br />
-            <span className="italic">our word for it</span>
-          </h2>
-        </motion.div>
+        </ScrollReveal>
 
-        <div className="grid gap-8 md:grid-cols-2">
-          {testimonials.map((testimonial, index) => (
-            <motion.blockquote
-              key={testimonial.author}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="p-8 sm:p-10"
+        {/* Testimonial with crossfade */}
+        <div className="min-h-[300px]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -20 }}
+              transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+              className="text-center"
             >
-              <p className="font-serif text-lg leading-relaxed text-white sm:text-xl">
-                &ldquo;{testimonial.quote}&rdquo;
-              </p>
-              <footer className="mt-8">
-                <p className="font-medium text-white">{testimonial.author}</p>
-                <p className="text-sm text-white/60">{testimonial.location}</p>
-              </footer>
-            </motion.blockquote>
+              <blockquote>
+                <p className="mx-auto max-w-3xl font-serif text-xl leading-relaxed text-white/90 sm:text-2xl lg:text-3xl">
+                  &ldquo;{current.quote}&rdquo;
+                </p>
+              </blockquote>
+
+              <motion.footer
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4, duration: 0.4 }}
+                className="mt-10"
+              >
+                <p className="font-medium text-white">{current.author}</p>
+                <p className="mt-1 text-sm text-white/50">
+                  {current.location}
+                </p>
+              </motion.footer>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* Dots indicator */}
+        <div className="mt-12 flex items-center justify-center gap-3">
+          {testimonials.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              onClick={() => setCurrentIndex(index)}
+              className="relative h-2 w-2 rounded-full bg-white/20 transition-colors"
+              aria-label={`Go to testimonial ${index + 1}`}
+            >
+              {index === currentIndex && (
+                <motion.div
+                  layoutId="testimonial-dot"
+                  className="absolute inset-0 rounded-full bg-white/80"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
+            </button>
           ))}
         </div>
       </div>

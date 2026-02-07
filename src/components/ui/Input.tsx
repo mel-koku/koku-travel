@@ -20,7 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="relative w-full">
         {leadingIcon && (
-          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-muted-foreground">
+          <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-stone">
             {leadingIcon}
           </span>
         )}
@@ -28,7 +28,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           type={type || "text"}
           id={id}
           className={cn(
-            "flex h-12 w-full rounded-xl border border-input bg-transparent px-4 py-2 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-12 w-full rounded-xl border border-input bg-transparent px-4 py-2 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-stone focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             leadingIcon && "pl-11",
             trailingIcon && "pr-11",
             error && "border-destructive focus-visible:ring-destructive",
@@ -41,7 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {...inputProps}
         />
         {trailingIcon && (
-          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-muted-foreground">
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-stone">
             {trailingIcon}
           </span>
         )}

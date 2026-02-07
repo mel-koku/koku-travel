@@ -86,7 +86,7 @@ function TripBuilderV2Content() {
       <TripBuilderV2 onComplete={handleComplete} />
       {/* Loading overlay */}
       {isGenerating && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/50">
           <div className="rounded-lg bg-background p-6 shadow-xl">
             <div className="flex items-center gap-3">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />

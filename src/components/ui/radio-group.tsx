@@ -86,7 +86,7 @@ const Radio = React.forwardRef<HTMLInputElement, RadioProps>(
         <span className="flex flex-1 flex-col gap-1">
           <span className="text-sm font-medium">{label}</span>
           {description && (
-            <span id={descriptionId} className="text-sm text-muted-foreground">
+            <span id={descriptionId} className="text-sm text-stone">
               {description}
             </span>
           )}
@@ -112,7 +112,7 @@ const RadioGroup = ({
 }: RadioGroupProps) => (
   <fieldset className={cn("space-y-2", className)} {...rest}>
     {legend && <legend className="mb-2 text-sm font-semibold">{legend}</legend>}
-    {helpText && <p className="mb-2 text-sm text-muted-foreground">{helpText}</p>}
+    {helpText && <p className="mb-2 text-sm text-stone">{helpText}</p>}
     <div className="flex flex-col gap-2">{children}</div>
   </fieldset>
 )

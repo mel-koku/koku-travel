@@ -3,6 +3,8 @@
 import { useEffect, useMemo } from "react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { SplitText } from "@/components/ui/SplitText";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { RegionSelector } from "./RegionSelector";
 
 export type RegionStepProps = {
@@ -24,14 +26,23 @@ export function RegionStep({ onValidityChange }: RegionStepProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Header */}
+      {/* Header with dramatic typography */}
       <div className="text-center">
-        <h2 className="font-serif text-2xl font-bold text-charcoal sm:text-3xl">
+        <SplitText
+          as="h2"
+          className="justify-center font-serif text-2xl font-bold text-charcoal sm:text-3xl"
+          splitBy="word"
+          trigger="load"
+          animation="clipY"
+          staggerDelay={0.06}
+        >
           Discover Japan&apos;s Regions
-        </h2>
-        <p className="mx-auto mt-2 max-w-2xl text-base text-warm-gray">
-          Each region offers unique experiences, from ancient temples to modern cities.
-        </p>
+        </SplitText>
+        <ScrollReveal delay={0.3} distance={15}>
+          <p className="mx-auto mt-2 max-w-2xl text-base text-warm-gray">
+            Each region offers unique experiences, from ancient temples to modern cities.
+          </p>
+        </ScrollReveal>
       </div>
 
       {/* Region Cards */}

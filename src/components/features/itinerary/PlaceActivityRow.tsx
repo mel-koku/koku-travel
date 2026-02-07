@@ -1,15 +1,11 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { forwardRef, memo, useMemo, useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
 
-const LocationDetailsModal = dynamic(
-  () => import("@/components/features/explore/LocationDetailsModal").then((m) => ({ default: m.LocationDetailsModal })),
-  { ssr: false }
-);
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
@@ -224,7 +220,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     ref,
   ) => {
     const [notesOpen, setNotesOpen] = useState(() => Boolean(activity.notes));
-    const [detailsOpen, setDetailsOpen] = useState(false);
     const [reasoningOpen, setReasoningOpen] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [tempManualTime, setTempManualTime] = useState(activity.manualStartTime ?? "");
@@ -234,6 +229,9 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       reservationRequired?: boolean;
     } | null>(null);
     const [tips, setTips] = useState<ActivityTip[]>([]);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const prefersReducedMotion = useReducedMotion();
+
 
     const durationLabel = useMemo(() => {
       if (!activity.durationMin) return null;
@@ -386,7 +384,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     const handleMoreInfo = (event: MouseEvent<HTMLButtonElement>) => {
       event.preventDefault();
       event.stopPropagation();
-      setDetailsOpen(true);
+      setIsExpanded((prev) => !prev);
     };
 
     const schedule = activity?.schedule;
@@ -539,8 +537,10 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           </div>
 
           {/* Right: Main Card */}
-          <div
-            className={`group relative flex-1 overflow-hidden rounded-2xl bg-background transition-all duration-200 ${
+          <motion.div
+            layout={!prefersReducedMotion && !isDragging}
+            transition={prefersReducedMotion ? { duration: 0 } : { layout: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } }}
+            className={`group relative flex-1 overflow-hidden rounded-2xl bg-background transition-shadow duration-200 ${
               isDragging
                 ? "ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
                 : isSelected
@@ -549,8 +549,11 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             }`}
             style={isSelected && !isDragging ? { outline: "2px solid #2d7a6f", outlineOffset: "-2px" } : undefined}
           >
-            {/* Large Image Section - 16:9 aspect ratio */}
-            <div className="relative aspect-video w-full overflow-hidden">
+            {/* Large Image Section - aspect ratio changes on expand */}
+            <motion.div
+              layout={!prefersReducedMotion && !isDragging}
+              className={`relative w-full overflow-hidden ${isExpanded ? "aspect-[21/9]" : "aspect-video"}`}
+            >
               {!imageLoaded && !imageError && (
                 <div className="absolute inset-0 animate-pulse bg-surface" />
               )}
@@ -603,7 +606,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   )}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Info Section */}
             <div className="p-3 sm:p-4">
@@ -650,10 +653,14 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   onClick={handleMoreInfo}
                   className="inline-flex items-center gap-1 rounded-full border border-sage/30 bg-background px-2 py-0.5 text-[11px] font-semibold text-sage shadow-sm transition hover:bg-sage/10"
                 >
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <svg className={`h-3 w-3 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    {isExpanded ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    )}
                   </svg>
-                  More info
+                  {isExpanded ? "Less info" : "More info"}
                 </button>
               </div>
 
@@ -693,8 +700,72 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
               {/* Description */}
               {summary && (
-                <p className="mt-3 text-xs leading-relaxed text-warm-gray line-clamp-2">{summary}</p>
+                <p className={`mt-3 text-xs leading-relaxed text-warm-gray ${isExpanded ? "" : "line-clamp-2"}`}>{summary}</p>
               )}
+
+              {/* Expanded Detail Content */}
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="overflow-hidden"
+                  >
+                    {/* Full description — prefer location.description (most specific), then shortDescription, then editorialSummary */}
+                    {(() => {
+                      const best =
+                        (placeLocation?.description?.trim() || null) ??
+                        (placeLocation?.shortDescription?.trim() || null) ??
+                        (locationDetails?.editorialSummary?.trim() || null);
+                      return best && best !== summary ? (
+                        <p className="mt-2 text-sm leading-relaxed text-warm-gray">{best}</p>
+                      ) : null;
+                    })()}
+
+                    {/* Operating hours — only show if we have at least 3 days (filters out bad 1-day data for open areas/attractions) */}
+                    {locationDetails?.regularOpeningHours && locationDetails.regularOpeningHours.length >= 3 && (
+                      <div className="mt-3 rounded-lg bg-surface/50 p-2.5">
+                        <p className="mb-1.5 text-xs font-semibold text-charcoal">Hours</p>
+                        <div className="space-y-0.5">
+                          {locationDetails.regularOpeningHours.slice(0, 7).map((hours, idx) => (
+                            <p key={idx} className="text-[11px] text-warm-gray">{hours}</p>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* All tips when expanded (show more than 2) */}
+                    {tips.length > 2 && (
+                      <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
+                        <p className="mb-1.5 text-xs font-semibold text-charcoal">All Tips</p>
+                        <div className="space-y-1">
+                          {tips.slice(2).map((tip, index) => (
+                            <div key={index} className="flex items-start gap-1.5 text-xs text-foreground-secondary">
+                              <span className="shrink-0">{tip.icon ?? "💡"}</span>
+                              <span>
+                                <span className="font-medium">{tip.title}:</span> {tip.message}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Address if available */}
+                    {locationDetails?.formattedAddress && (
+                      <div className="mt-3 flex items-start gap-1.5 text-xs text-warm-gray">
+                        <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>{locationDetails.formattedAddress}</span>
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Tips Section */}
               {tips.length > 0 && (
@@ -826,12 +897,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 />
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
-        <LocationDetailsModal
-          location={detailsOpen ? placeLocation : null}
-          onClose={() => setDetailsOpen(false)}
-        />
       </div>
     );
   },

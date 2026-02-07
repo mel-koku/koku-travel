@@ -50,9 +50,9 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-sage/15 text-sage",
   },
   long_gap: {
-    bg: "bg-semantic-warning/10",
-    text: "text-semantic-warning",
-    badge: "bg-semantic-warning/15 text-semantic-warning",
+    bg: "bg-warning/10",
+    text: "text-warning",
+    badge: "bg-warning/15 text-warning",
   },
   early_end: {
     bg: "bg-semantic-error/10",

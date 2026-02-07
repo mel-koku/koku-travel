@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { IntroStep } from "./IntroStep";
 import { PlanStep } from "./PlanStep";
@@ -28,6 +29,8 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   const { reset } = useTripBuilder();
   const [currentStep, setCurrentStep] = useState<Step>(0);
   const [currentSubStep, setCurrentSubStep] = useState(0);
+  const [direction, setDirection] = useState(1); // 1 = forward, -1 = back
+  const prefersReducedMotion = useReducedMotion();
   const [step1Valid, setStep1Valid] = useState(false);
   const [step2Valid, setStep2Valid] = useState(false);
   const [step3Valid, setStep3Valid] = useState(true);
@@ -58,6 +61,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   }, []);
 
   const goToStep = useCallback((step: Step, subStep = 0) => {
+    setDirection(step > currentStep ? 1 : -1);
     setCurrentStep(step);
     setCurrentSubStep(subStep);
     // Wait for React to render and paint the new content, then scroll
@@ -69,7 +73,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
         window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
-  }, []);
+  }, [currentStep]);
 
   const handleSubStepChange = useCallback((subStep: number) => {
     setCurrentSubStep(subStep);
@@ -255,22 +259,51 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
               currentStep === 3 && "max-w-5xl"
             )}
           >
-            {currentStep === 1 && (
-              <PlanStep
-                onValidityChange={handleStep1ValidityChange}
-                currentSubStep={currentSubStep}
-                onSubStepChange={handleSubStepChange}
-              />
-            )}
-            {currentStep === 2 && (
-              <RegionStep onValidityChange={handleStep2ValidityChange} />
-            )}
-            {currentStep === 3 && (
-              <ReviewStep
-                onValidityChange={handleStep3ValidityChange}
-                onGoToStep={(step, subStep) => goToStep(step as 0 | 1 | 2 | 3, subStep)}
-              />
-            )}
+            <AnimatePresence mode="wait" custom={direction}>
+              {currentStep === 1 && (
+                <motion.div
+                  key="step-1"
+                  custom={direction}
+                  initial={prefersReducedMotion ? {} : { opacity: 0, x: direction * 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={prefersReducedMotion ? {} : { opacity: 0, x: direction * -60 }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  <PlanStep
+                    onValidityChange={handleStep1ValidityChange}
+                    currentSubStep={currentSubStep}
+                    onSubStepChange={handleSubStepChange}
+                  />
+                </motion.div>
+              )}
+              {currentStep === 2 && (
+                <motion.div
+                  key="step-2"
+                  custom={direction}
+                  initial={prefersReducedMotion ? {} : { opacity: 0, x: direction * 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={prefersReducedMotion ? {} : { opacity: 0, x: direction * -60 }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  <RegionStep onValidityChange={handleStep2ValidityChange} />
+                </motion.div>
+              )}
+              {currentStep === 3 && (
+                <motion.div
+                  key="step-3"
+                  custom={direction}
+                  initial={prefersReducedMotion ? {} : { opacity: 0, x: direction * 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={prefersReducedMotion ? {} : { opacity: 0, x: direction * -60 }}
+                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+                >
+                  <ReviewStep
+                    onValidityChange={handleStep3ValidityChange}
+                    onGoToStep={(step, subStep) => goToStep(step as 0 | 1 | 2 | 3, subStep)}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </main>

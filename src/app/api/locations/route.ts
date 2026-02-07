@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
     if (region) countQuery = countQuery.eq("region", region);
     if (category) countQuery = countQuery.eq("category", category);
-    if (search) countQuery = countQuery.ilike("name", `%${search}%`);
+    if (search) countQuery = countQuery.or(`name.ilike.%${search}%,city.ilike.%${search}%,region.ilike.%${search}%`);
     const { count, error: countError } = await countQuery;
 
     if (countError) {
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
     if (region) dataQuery = dataQuery.eq("region", region);
     if (category) dataQuery = dataQuery.eq("category", category);
-    if (search) dataQuery = dataQuery.ilike("name", `%${search}%`);
+    if (search) dataQuery = dataQuery.or(`name.ilike.%${search}%,city.ilike.%${search}%,region.ilike.%${search}%`);
     const { data, error } = await dataQuery
       .order("name", { ascending: true })
       .range(pagination.offset, pagination.offset + pagination.limit - 1);

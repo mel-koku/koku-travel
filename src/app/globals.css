@@ -267,3 +267,54 @@ body {
 .btn-feedback {
   @apply transition-transform active:scale-[0.98];
 }
+
+/* Lenis smooth scrolling */
+html.lenis {
+  height: auto;
+}
+
+html.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Custom cursor — hide native cursor on pointer-fine devices */
+@media (pointer: fine) {
+  html.custom-cursor,
+  html.custom-cursor * {
+    cursor: none !important;
+  }
+}
+
+/*
+  Z-index stack:
+  z-40  — Dropdown menus (portaled)
+  z-50  — Header bar (fixed)
+  z-[100] — Menu overlay (full-screen)
+  z-[9999] — Custom cursor
+*/
+
+/* Menu panel slow zoom animation */
+@keyframes menu-panel-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+.animate-menu-panel-zoom {
+  animation: menu-panel-zoom 8s ease-out forwards;
+}
+
+/* Respect reduced motion globally */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

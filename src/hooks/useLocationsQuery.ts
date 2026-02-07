@@ -233,6 +233,28 @@ export function useAggregatedLocations() {
 }
 
 /**
+ * React Query hook for server-side location search.
+ * Used by the Explore page to find locations not yet loaded client-side.
+ * Only fires when query is at least 2 characters.
+ */
+export function useLocationSearchQuery(query: string) {
+  const trimmed = query.trim();
+  return useQuery({
+    queryKey: [...locationsKeys.all, "search", trimmed],
+    queryFn: async (): Promise<Location[]> => {
+      const res = await fetch(`/api/locations?search=${encodeURIComponent(trimmed)}&limit=50`);
+      if (!res.ok) throw new Error("Search failed");
+      const data = (await res.json()) as PaginatedResponse<Location>;
+      return data.data;
+    },
+    enabled: trimmed.length >= 2,
+    staleTime: 60_000,
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+  });
+}
+
+/**
  * Prefetch all locations into the cache
  * Useful for preloading data before navigation
  */
