@@ -129,6 +129,11 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
     };
   }
 
+  // Include saved locations — different queued locations should produce different itineraries
+  if (data.savedLocationIds && data.savedLocationIds.length > 0) {
+    normalized.savedLocationIds = [...data.savedLocationIds].sort();
+  }
+
   return normalized;
 }
 

@@ -226,8 +226,8 @@ export function useToggleFavoriteMutation() {
       }
       logger.error("Failed to toggle favorite, rolling back", { error: _error });
     },
-    // Always refetch after error or success
-    onSettled: (_data, _error, variables) => {
+    // Only refetch after success to confirm server state (skip on error — already rolled back)
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: favoriteKeys.user(variables.userId) });
     },
   });

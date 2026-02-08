@@ -5,11 +5,11 @@ import { useState, useEffect, useMemo } from "react";
 import type { AutocompletePlace } from "@/lib/googlePlaces";
 import { logger } from "@/lib/logger";
 
-/** Default debounce delay in milliseconds */
-const DEFAULT_DEBOUNCE_MS = 300;
+/** Default debounce delay in milliseconds (500ms reduces API calls vs 300ms) */
+const DEFAULT_DEBOUNCE_MS = 500;
 
-/** Minimum input length before triggering search */
-const MIN_INPUT_LENGTH = 2;
+/** Minimum input length before triggering search (3 chars reduces low-value queries) */
+const MIN_INPUT_LENGTH = 3;
 
 /** Cache time for autocomplete results (5 minutes) */
 const AUTOCOMPLETE_STALE_TIME = 5 * 60 * 1000;

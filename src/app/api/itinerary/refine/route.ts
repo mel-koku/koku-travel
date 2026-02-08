@@ -57,58 +57,57 @@ const VALID_REFINEMENT_TYPES: RefinementType[] = [
  */
 async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
   const supabase = await createClient();
-  const allLocations: Location[] = [];
-  let page = 0;
-  const limit = 100; // Max per page
-  let hasMore = true;
+  const pageSize = 1000; // Larger pages = fewer round trips
 
-  while (hasMore) {
+  // Build base query
+  const buildQuery = () => {
     let query = supabase
       .from("locations")
       .select(LOCATION_ITINERARY_COLUMNS)
       .order("name", { ascending: true });
 
-    // Filter by cities if provided (case-insensitive to handle variations)
     if (cities && cities.length > 0) {
       const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
       query = query.or(cityFilters);
     }
+    return query;
+  };
 
-    const { data, error } = await query.range(page * limit, (page + 1) * limit - 1);
+  // Fetch first page
+  const { data: firstPage, error: firstError } = await buildQuery().range(0, pageSize - 1);
 
-    if (error) {
-      const errorMessage = `Failed to fetch locations from database: ${error.message}`;
-      logger.error(errorMessage, { error: error.message, page });
-      throw new Error(errorMessage);
-    }
-
-    if (!data || data.length === 0) {
-      hasMore = false;
-      break;
-    }
-
-    // Transform Supabase data to Location type
-    const locations: Location[] = (data as unknown as LocationDbRow[]).map((row) =>
-      transformDbRowToLocation(row),
-    );
-
-    allLocations.push(...locations);
-
-    // Check if there are more pages
-    hasMore = data.length === limit;
-    page++;
-
-    // Safety limit to prevent infinite loops
-    if (page > 100) {
-      logger.warn("Reached pagination safety limit when fetching locations");
-      break;
-    }
+  if (firstError) {
+    const msg = `Failed to fetch locations from database: ${firstError.message}`;
+    logger.error(msg, { error: firstError.message });
+    throw new Error(msg);
   }
 
-  if (allLocations.length === 0) {
-    const errorMessage = "No locations found in database. Please ensure locations are seeded.";
-    logger.error(errorMessage);
-    throw new Error(errorMessage);
+  if (!firstPage || firstPage.length === 0) {
+    const msg = "No locations found in database. Please ensure locations are seeded.";
+    logger.error(msg);
+    throw new Error(msg);
+  }
+
+  const allLocations: Location[] = (firstPage as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+
+  // Fetch remaining pages in parallel if needed
+  if (firstPage.length === pageSize) {
+    const maxPages = 10;
+    const pagePromises = Array.from({ length: maxPages }, (_, i) => {
+      const page = i + 1;
+      return buildQuery()
+        .range(page * pageSize, (page + 1) * pageSize - 1)
+        .then(({ data, error }) => {
+          if (error || !data || data.length === 0) return [];
+          return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+        });
+    });
+
+    const results = await Promise.all(pagePromises);
+    for (const locations of results) {
+      if (locations.length === 0) break;
+      allLocations.push(...locations);
+    }
   }
 
   return allLocations;

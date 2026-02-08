@@ -3,6 +3,7 @@
  *
  * This module provides in-memory caching for place IDs and place details
  * to reduce API calls and improve response times.
+ * Caches use LRU eviction to prevent unbounded memory growth.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -14,6 +15,45 @@ export const PLACE_ID_CACHE_TTL = CACHE_TTL_30_DAYS;
 export const PLACE_DETAILS_CACHE_TTL = CACHE_TTL_7_DAYS;
 export const PLACE_DETAILS_TABLE = "place_details";
 export const SUPABASE_DETAILS_COLUMN_SET = "place_id, payload, fetched_at";
+
+/** Max entries for place ID cache (small entries ~100 bytes each) */
+const PLACE_ID_CACHE_MAX = 2000;
+/** Max entries for place details cache (larger entries with photos/reviews) */
+const PLACE_DETAILS_CACHE_MAX = 500;
+
+/**
+ * Simple LRU Map that evicts oldest entries when max size is reached.
+ * Uses Map's insertion-order iteration for LRU tracking.
+ */
+class LruMap<K, V> extends Map<K, V> {
+  constructor(private maxSize: number) {
+    super();
+  }
+
+  override get(key: K): V | undefined {
+    const value = super.get(key);
+    if (value !== undefined) {
+      // Move to end (most recently used) by re-inserting
+      super.delete(key);
+      super.set(key, value);
+    }
+    return value;
+  }
+
+  override set(key: K, value: V): this {
+    // If key already exists, delete first to refresh insertion order
+    if (super.has(key)) {
+      super.delete(key);
+    }
+    super.set(key, value);
+    // Evict oldest entries if over capacity
+    while (super.size > this.maxSize) {
+      const oldest = super.keys().next().value;
+      if (oldest !== undefined) super.delete(oldest);
+    }
+    return this;
+  }
+}
 
 let supabaseServiceWarningLogged = false;
 
@@ -55,8 +95,9 @@ export type SupabaseClientState = {
 
 // Module-level cache instances (initialized once per module load)
 // In Next.js, these persist across requests in the same process but reset on hot reload
-const placeIdCache = new Map<string, PlaceIdCacheEntry>();
-const placeDetailsCache = new Map<string, PlaceDetailsCacheEntry>();
+// LRU eviction prevents unbounded memory growth
+const placeIdCache = new LruMap<string, PlaceIdCacheEntry>(PLACE_ID_CACHE_MAX);
+const placeDetailsCache = new LruMap<string, PlaceDetailsCacheEntry>(PLACE_DETAILS_CACHE_MAX);
 
 /**
  * Get the place ID cache instance.

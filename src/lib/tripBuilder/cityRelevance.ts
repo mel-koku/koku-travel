@@ -6,7 +6,20 @@
  */
 
 import type { InterestId } from "@/types/trip";
-import cityInterestsData from "@/data/cityInterests.json";
+
+// Lazy-load 220KB JSON to keep it out of the initial client bundle.
+// The data is cached after first import so subsequent calls are instant.
+let _cityInterestsData: CityInterestsJson | null = null;
+
+function getCityInterestsData(): CityInterestsJson {
+  if (!_cityInterestsData) {
+    // Dynamic require for synchronous access after first load.
+    // Next.js will code-split this into a separate chunk.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    _cityInterestsData = require("@/data/cityInterests.json") as CityInterestsJson;
+  }
+  return _cityInterestsData;
+}
 
 type CityInterestCounts = Record<string, number>;
 type CityMetadataEntry = {
@@ -38,7 +51,8 @@ export function calculateTotalMatchingLocations(
     return 0;
   }
 
-  const cityData = (cityInterestsData as CityInterestsJson).cities[city];
+  const data = getCityInterestsData();
+  const cityData = data.cities[city];
   if (!cityData) {
     return 0;
   }
@@ -69,7 +83,8 @@ export function calculateCityRelevance(city: string, selectedInterests: Interest
     return 0;
   }
 
-  const cityData = (cityInterestsData as CityInterestsJson).cities[city];
+  const data = getCityInterestsData();
+  const cityData = data.cities[city];
   if (!cityData) {
     return 0;
   }
@@ -103,7 +118,7 @@ export function getCitiesByRelevance(selectedInterests: InterestId[]): Array<{
   region?: string;
   interestCounts: Record<string, number>;
 }> {
-  const data = cityInterestsData as CityInterestsJson;
+  const data = getCityInterestsData();
   const cities = Object.keys(data.cities);
 
   // First pass: calculate matching location counts for all cities
@@ -155,7 +170,7 @@ export function getRelevantCities(
 ): ReturnType<typeof getCitiesByRelevance> {
   if (selectedInterests.length === 0) {
     // Return top cities by location count when no interests selected
-    const data = cityInterestsData as CityInterestsJson;
+    const data = getCityInterestsData();
     return Object.keys(data.cities)
       .map((city) => ({
         city,
@@ -196,7 +211,7 @@ export function getAllCities(): Array<{
   coordinates?: { lat: number; lng: number };
   region?: string;
 }> {
-  const data = cityInterestsData as CityInterestsJson;
+  const data = getCityInterestsData();
   return Object.keys(data.metadata)
     .map((city) => ({
       city,
@@ -215,7 +230,7 @@ export function getCityMetadata(city: string): {
   coordinates?: { lat: number; lng: number };
   region?: string;
 } | null {
-  const data = cityInterestsData as CityInterestsJson;
+  const data = getCityInterestsData();
   const metadata = data.metadata[city];
   if (!metadata) {
     return null;
@@ -235,7 +250,7 @@ export function getCityInterestsStats(): {
   totalCities: number;
   generatedAt: string;
 } {
-  const data = cityInterestsData as CityInterestsJson;
+  const data = getCityInterestsData();
   return {
     totalLocations: data.totalLocations,
     totalCities: data.totalCities,

@@ -297,6 +297,49 @@ export type Location = {
    */
   editorialSummary?: string;
 
+  // ============================================
+  // Contact Info (from Google Places, stored in DB)
+  // ============================================
+
+  /**
+   * Location website URL, sourced from Google Places
+   */
+  websiteUri?: string;
+
+  /**
+   * International phone number, sourced from Google Places
+   */
+  phoneNumber?: string;
+
+  /**
+   * Google Maps URL for this location
+   */
+  googleMapsUri?: string;
+
+  // ============================================
+  // Practical Travel Info (Gemini-enriched)
+  // ============================================
+
+  /**
+   * Japanese name (日本語名) — useful for taxi drivers, signs, Japanese map searches
+   */
+  nameJapanese?: string;
+
+  /**
+   * Nearest train/subway station and walking time, e.g. "Kiyomizu-Gojo Station (5 min walk)"
+   */
+  nearestStation?: string;
+
+  /**
+   * True if the location only accepts cash (no credit cards)
+   */
+  cashOnly?: boolean;
+
+  /**
+   * Reservation status: "required", "recommended", or undefined if not needed/unknown
+   */
+  reservationInfo?: 'required' | 'recommended';
+
   /**
    * Manually curated flag to mark locations for featured carousel display
    * Used for editor-selected featured destinations

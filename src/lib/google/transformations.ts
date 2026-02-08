@@ -8,7 +8,20 @@
 import type { LocationDetails, LocationPhoto, LocationReview } from "@/types/location";
 
 const MAX_REVIEWS = 5;
-const MAX_PHOTOS = 8;
+/** Runtime calls use RUNTIME_FIELD_MASK which only returns photo names (no dimensions/attributions).
+ *  We limit to 1 photo to minimize response size. Enrichment scripts use their own transform. */
+const MAX_PHOTOS = 1;
+
+/**
+ * Rewrites a photo proxy URL to use a different maxWidthPx.
+ * Returns the original string unchanged if it's not a proxy URL.
+ */
+export function resizePhotoUrl(url: string | undefined, maxWidthPx: number): string | undefined {
+  if (!url) return url;
+  if (!url.includes("/api/places/photo")) return url;
+  return url.replace(/maxWidthPx=\d+/, `maxWidthPx=${maxWidthPx}`)
+            .replace(/maxwidth=\d+/, `maxwidth=${maxWidthPx}`);
+}
 
 /**
  * Raw review data from Google Places API.
