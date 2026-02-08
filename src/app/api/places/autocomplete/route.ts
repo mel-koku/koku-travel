@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { autocompletePlaces, fetchPlaceCoordinates } from "@/lib/googlePlaces";
+import type { AutocompletePlace } from "@/lib/googlePlaces";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { checkRateLimit } from "@/lib/api/rateLimit";
@@ -11,6 +12,46 @@ import {
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
+
+// ── Server-side LRU cache for autocomplete results ──────────────────
+const AUTOCOMPLETE_CACHE_MAX = 100;
+const AUTOCOMPLETE_CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+type AutocompleteCacheEntry = {
+  places: AutocompletePlace[];
+  expiresAt: number;
+};
+
+class LruMap<K, V> extends Map<K, V> {
+  constructor(private maxSize: number) {
+    super();
+  }
+  override get(key: K): V | undefined {
+    const value = super.get(key);
+    if (value !== undefined) {
+      super.delete(key);
+      super.set(key, value);
+    }
+    return value;
+  }
+  override set(key: K, value: V): this {
+    if (super.has(key)) super.delete(key);
+    super.set(key, value);
+    while (super.size > this.maxSize) {
+      const oldest = super.keys().next().value;
+      if (oldest !== undefined) super.delete(oldest);
+    }
+    return this;
+  }
+}
+
+const autocompleteCache = new LruMap<string, AutocompleteCacheEntry>(AUTOCOMPLETE_CACHE_MAX);
+
+/** Build a deterministic cache key from the autocomplete request body */
+function buildCacheKey(body: Record<string, unknown>): string {
+  const { input, languageCode, regionCode, includedPrimaryTypes, locationBias, locationRestriction } = body;
+  return JSON.stringify({ input, languageCode, regionCode, includedPrimaryTypes, locationBias, locationRestriction });
+}
 
 /**
  * POST /api/places/autocomplete
@@ -166,6 +207,20 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // Check server-side LRU cache first
+    const cacheKey = buildCacheKey({ input: input.trim(), languageCode, regionCode, includedPrimaryTypes, locationBias, locationRestriction });
+    const cached = autocompleteCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return addRequestContextHeaders(
+        NextResponse.json({ places: cached.places }, {
+          headers: {
+            "Cache-Control": "public, max-age=300, s-maxage=300",
+          },
+        }),
+        finalContext,
+      );
+    }
+
     const places = await autocompletePlaces({
       input: input.trim(),
       languageCode,
@@ -175,10 +230,16 @@ export async function POST(request: NextRequest) {
       locationRestriction,
     });
 
+    // Store in server-side cache
+    autocompleteCache.set(cacheKey, {
+      places,
+      expiresAt: Date.now() + AUTOCOMPLETE_CACHE_TTL,
+    });
+
     return addRequestContextHeaders(
       NextResponse.json({ places }, {
         headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=300", // Cache for 5 minutes
+          "Cache-Control": "public, max-age=300, s-maxage=300",
         },
       }),
       finalContext,

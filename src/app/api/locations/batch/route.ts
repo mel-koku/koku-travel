@@ -53,11 +53,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Parse and validate IDs
-    const ids = idsParam
-      .split(",")
-      .map((id) => id.trim())
-      .filter((id) => id.length > 0);
+    // Parse, validate, and deduplicate IDs
+    const ids = [...new Set(
+      idsParam
+        .split(",")
+        .map((id) => id.trim())
+        .filter((id) => id.length > 0),
+    )];
 
     if (ids.length === 0) {
       return addRequestContextHeaders(

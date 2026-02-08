@@ -233,10 +233,7 @@ export async function fetchLocationsByCity(
   query = query.or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
   if (excludeIds.length > 0) {
-    // Use .not('id', 'in', excludeIds) to exclude specific IDs
-    for (const id of excludeIds) {
-      query = query.neq("id", id);
-    }
+    query = query.not("id", "in", `(${excludeIds.join(",")})`);
   }
 
   const { data, error } = await query.limit(limit);
@@ -298,9 +295,7 @@ export async function fetchLocationsByCategories(
   query = query.or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
   if (excludeIds.length > 0) {
-    for (const id of excludeIds) {
-      query = query.neq("id", id);
-    }
+    query = query.not("id", "in", `(${excludeIds.join(",")})`);
   }
 
   const { data, error } = await query.limit(limit);
@@ -435,53 +430,69 @@ export async function fetchAllLocations(
   }
 
   const supabase = await createClient();
-  const allLocations: Location[] = [];
-  let page = 0;
-  let hasMore = true;
 
-  while (hasMore) {
-    let query = supabase
-      .from("locations")
-      .select(LOCATION_ITINERARY_COLUMNS)
-      .order("name", { ascending: true });
+  // Use larger page size (1000) to reduce round trips — was 100, causing 40+ sequential fetches
+  const effectivePageSize = Math.max(pageSize, 1000);
 
-    // Apply city filter if cities are specified
-    // Use case-insensitive matching to handle multi-word cities like "Mount Yoshino"
-    if (cities && cities.length > 0) {
-      // Build OR condition for case-insensitive city matching
-      const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
-      query = query.or(cityFilters);
-    }
+  // First, fetch page 0 to determine if we need more
+  let baseQuery = supabase
+    .from("locations")
+    .select(LOCATION_ITINERARY_COLUMNS)
+    .order("name", { ascending: true });
 
-    const { data, error } = await query.range(page * pageSize, (page + 1) * pageSize - 1);
-
-    if (error) {
-      const errorMessage = `Failed to fetch locations from database: ${error.message}`;
-      throw new Error(errorMessage);
-    }
-
-    if (!data || data.length === 0) {
-      hasMore = false;
-      break;
-    }
-
-    // Transform Supabase data to Location type
-    const locations: Location[] = (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
-    allLocations.push(...locations);
-
-    // Check if there are more pages
-    hasMore = data.length === pageSize;
-    page++;
-
-    // Safety limit to prevent infinite loops
-    if (page >= maxPages) {
-      break;
-    }
+  if (cities && cities.length > 0) {
+    const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
+    baseQuery = baseQuery.or(cityFilters);
   }
 
-  if (allLocations.length === 0) {
-    const errorMessage = "No locations found in database. Please ensure locations are seeded.";
-    throw new Error(errorMessage);
+  const { data: firstPage, error: firstError } = await baseQuery.range(0, effectivePageSize - 1);
+
+  if (firstError) {
+    throw new Error(`Failed to fetch locations from database: ${firstError.message}`);
+  }
+
+  if (!firstPage || firstPage.length === 0) {
+    throw new Error("No locations found in database. Please ensure locations are seeded.");
+  }
+
+  const allLocations: Location[] = (firstPage as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+
+  // If first page was full, fetch remaining pages in parallel
+  if (firstPage.length === effectivePageSize) {
+    // Estimate total pages needed and fire requests in parallel
+    const pagePromises: Promise<Location[]>[] = [];
+    for (let page = 1; page < maxPages; page++) {
+      pagePromises.push(
+        (async () => {
+          let query = supabase
+            .from("locations")
+            .select(LOCATION_ITINERARY_COLUMNS)
+            .order("name", { ascending: true });
+
+          if (cities && cities.length > 0) {
+            const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
+            query = query.or(cityFilters);
+          }
+
+          const { data, error } = await query.range(
+            page * effectivePageSize,
+            (page + 1) * effectivePageSize - 1,
+          );
+
+          if (error || !data || data.length === 0) {
+            return [];
+          }
+          return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+        })(),
+      );
+    }
+
+    // Resolve all in parallel — empty arrays indicate we've passed the last page
+    const results = await Promise.all(pagePromises);
+    for (const locations of results) {
+      if (locations.length === 0) break;
+      allLocations.push(...locations);
+    }
   }
 
   return allLocations;

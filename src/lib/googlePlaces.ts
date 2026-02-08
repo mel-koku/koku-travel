@@ -32,7 +32,33 @@ import {
 } from "@/lib/google/search";
 
 const PLACES_API_BASE_URL = "https://places.googleapis.com/v1";
-const DETAILS_FIELD_MASK = [
+
+/**
+ * Slim field mask for runtime API calls (location details modal, entry points).
+ * ~13 fields — excludes reviews, photo metadata, enrichment fields (already in DB).
+ * Saves ~60% per Place Details call vs the full mask.
+ */
+const RUNTIME_FIELD_MASK = [
+  "id",
+  "displayName",
+  "formattedAddress",
+  "shortFormattedAddress",
+  "location",
+  "rating",
+  "userRatingCount",
+  "editorialSummary",
+  "websiteUri",
+  "internationalPhoneNumber",
+  "googleMapsUri",
+  "regularOpeningHours.weekdayDescriptions",
+  "photos.name",
+].join(",");
+
+/**
+ * Full field mask for enrichment scripts that need all data.
+ * ~35 fields — includes reviews, photo metadata, categorization, service options.
+ */
+export const FULL_FIELD_MASK = [
   // Basic info
   "id",
   "displayName",
@@ -59,15 +85,15 @@ const DETAILS_FIELD_MASK = [
   "photos.widthPx",
   "photos.heightPx",
   "photos.authorAttributions",
-  // NEW: Categorization (for enrichment)
+  // Categorization (for enrichment)
   "primaryType",
   "types",
-  // NEW: Status & Price
+  // Status & Price
   "businessStatus",
   "priceLevel",
-  // NEW: Accessibility options
+  // Accessibility options
   "accessibilityOptions",
-  // NEW: Restaurant/food service options
+  // Restaurant/food service options
   "servesVegetarianFood",
   "servesBeer",
   "servesWine",
@@ -80,28 +106,6 @@ const DETAILS_FIELD_MASK = [
   "servesDinner",
 ].join(",");
 
-/**
- * Field mask for enrichment script (subset of fields we want to store)
- * Used by scripts/enrich-google-places-full.ts
- */
-export const ENRICHMENT_FIELD_MASK = [
-  "id",
-  "primaryType",
-  "types",
-  "businessStatus",
-  "priceLevel",
-  "accessibilityOptions",
-  "servesVegetarianFood",
-  "servesBeer",
-  "servesWine",
-  "dineIn",
-  "takeout",
-  "delivery",
-  "servesBreakfast",
-  "servesBrunch",
-  "servesLunch",
-  "servesDinner",
-].join(",");
 
 function getApiKey(): string {
   const key = env.googlePlacesApiKey;
@@ -246,7 +250,7 @@ export async function fetchLocationDetails(location: Location): Promise<Location
     {
       headers: {
         "X-Goog-Api-Key": apiKey,
-        "X-Goog-FieldMask": DETAILS_FIELD_MASK,
+        "X-Goog-FieldMask": RUNTIME_FIELD_MASK,
       },
       cache: "no-store",
     },
@@ -330,7 +334,7 @@ export const autocompletePlaces = autocompletePlacesFromSearch;
 export const fetchPlaceCoordinates = fetchPlaceCoordinatesFromSearch;
 
 /**
- * Extended payload type that includes all fields from DETAILS_FIELD_MASK
+ * Extended payload type that includes all fields from FULL_FIELD_MASK
  */
 type FullPlaceDetailsPayload = PlaceDetailsPayload & {
   location?: {
@@ -363,9 +367,11 @@ export type PlaceDetailsWithLocation = {
 };
 
 /**
- * Fetch full place details by Google Place ID.
+ * Fetch place details by Google Place ID using the slim RUNTIME_FIELD_MASK.
  * Returns both a Location object (for display) and LocationDetails (for additional info).
  * This is used for entry points and custom locations not in the database.
+ * Note: Enrichment fields (primaryType, types, businessStatus, meal/service options)
+ * are not requested — the Location object will have those fields as undefined.
  */
 export async function fetchPlaceDetailsByPlaceId(
   placeId: string,
@@ -378,7 +384,7 @@ export async function fetchPlaceDetailsByPlaceId(
     {
       headers: {
         "X-Goog-Api-Key": apiKey,
-        "X-Goog-FieldMask": DETAILS_FIELD_MASK,
+        "X-Goog-FieldMask": RUNTIME_FIELD_MASK,
       },
       cache: "no-store",
     },

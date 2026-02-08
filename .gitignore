@@ -170,9 +170,8 @@ docs/
 # Scraped data (temporary)
 tmp/
 
-# Scripts (one-time migration/maintenance, not needed in production)
+# Scripts (migration/maintenance/DQ tools, not needed in production)
 scripts/
-!scripts/data-quality/
 enrichment-targets.json
 
 # Seed/enrichment data (already imported into DB, not used at runtime)
