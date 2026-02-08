@@ -61,6 +61,7 @@ export function PhotoCarousel({
             src={photoUrl || FALLBACK_IMAGE_SRC}
             alt={imageAlt}
             fill
+            unoptimized
             className="object-cover"
             sizes="(min-width:1024px) 60vw, 100vw"
             priority

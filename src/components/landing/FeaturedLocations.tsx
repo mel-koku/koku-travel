@@ -11,6 +11,7 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { useCursor } from "@/providers/CursorProvider";
+import { resizePhotoUrl } from "@/lib/google/transformations";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
@@ -118,7 +119,7 @@ function HorizontalLocationCard({
   onSelect: (location: Location) => void;
   prefersReducedMotion: boolean | null;
 }) {
-  const imageSrc = location.primaryPhotoUrl ?? location.image;
+  const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
   const { setCursorState, isEnabled } = useCursor();
   const cardRef = useRef<HTMLButtonElement>(null);
 
@@ -138,8 +139,8 @@ function HorizontalLocationCard({
       onClick={() => onSelect(location)}
       className="group relative flex-shrink-0 overflow-hidden rounded-xl text-left"
       style={{ width: "clamp(300px, 50vw, 500px)" }}
-      initial={{ clipPath: "inset(0 100% 0 0)" }}
-      whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+      initial={{ x: -30, opacity: 0 }}
+      whileInView={{ x: 0, opacity: 1 }}
       viewport={{ once: true, margin: "-5%" }}
       transition={{ duration: 0.8, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
       onMouseEnter={() => isEnabled && setCursorState("view")}
@@ -154,6 +155,7 @@ function HorizontalLocationCard({
             src={imageSrc || "/placeholder.jpg"}
             alt={location.name}
             fill
+            unoptimized
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="50vw"
           />

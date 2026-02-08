@@ -142,8 +142,8 @@ export function IntroStep({ onStart }: IntroStepProps) {
           {REGION_IMAGES.map((image, index) => (
             <motion.div
               key={image.src}
-              initial={{ clipPath: "inset(0 0 100% 0)", opacity: 0 }}
-              animate={{ clipPath: "inset(0 0 0% 0)", opacity: 1 }}
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
               transition={{
                 duration: 0.7,
                 delay: 0.4 + index * 0.15,

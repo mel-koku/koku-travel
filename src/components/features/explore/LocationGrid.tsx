@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import { Location } from "@/types/location";
@@ -30,9 +30,9 @@ export function LocationGrid({
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
 
-  const handleClose = () => setSelectedLocation(null);
-  const handleExpand = (location: Location) => setExpandedLocation(location);
-  const handleCollapseExpanded = () => setExpandedLocation(null);
+  const handleClose = useCallback(() => setSelectedLocation(null), []);
+  const handleExpand = useCallback((location: Location) => setExpandedLocation(location), []);
+  const handleCollapseExpanded = useCallback(() => setExpandedLocation(null), []);
 
   return (
     <>

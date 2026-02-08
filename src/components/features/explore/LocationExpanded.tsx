@@ -10,6 +10,7 @@ import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import { useWishlist } from "@/context/WishlistContext";
 import { useAddToItinerary } from "@/hooks/useAddToItinerary";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
+import { resizePhotoUrl } from "@/lib/google/transformations";
 import { HeartIcon } from "./LocationCard";
 import { PlusIcon } from "./PlusIcon";
 import { MinusIcon } from "./MinusIcon";
@@ -38,7 +39,7 @@ function getBestDescription(location: Location, details: LocationDetails | null)
 }
 
 export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
-  const imageSrc = location.primaryPhotoUrl ?? location.image;
+  const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
   const { pause, resume } = useLenis();
   const { status, details, fetchedLocation } = useLocationDetailsQuery(location.id);
   const locationWithDetails = fetchedLocation ?? location;
@@ -160,6 +161,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             src={imageSrc || "/placeholder.jpg"}
             alt={displayName}
             fill
+            unoptimized
             className="object-cover"
             sizes="(min-width: 768px) 896px, 100vw"
             priority
