@@ -85,7 +85,7 @@ export function SavedLocationsPreview({
 
             {/* Location Info */}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-charcoal">
+              <p className="truncate text-sm font-medium text-foreground">
                 {location.name}
               </p>
               <div className="flex items-center gap-2">
@@ -106,7 +106,7 @@ export function SavedLocationsPreview({
             <button
               type="button"
               onClick={() => onRemove(location.id)}
-              className="flex-shrink-0 rounded-full p-1.5 text-stone hover:bg-surface hover:text-charcoal"
+              className="flex-shrink-0 rounded-full p-1.5 text-stone hover:bg-surface hover:text-foreground"
               aria-label={`Remove ${location.name}`}
             >
               <X className="h-4 w-4" />

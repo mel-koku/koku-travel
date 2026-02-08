@@ -17,7 +17,7 @@ export default function WishlistShell() {
   // Show loading state
   if (isLoading && wishlist.length > 0) {
     return (
-      <section className="bg-surface py-12 sm:py-16">
+      <section className="bg-background py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: Math.min(wishlist.length, 8) }).map((_, i) => (
@@ -35,7 +35,7 @@ export default function WishlistShell() {
   // Show error state
   if (error) {
     return (
-      <section className="bg-surface py-12 sm:py-16">
+      <section className="bg-background py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="py-32 text-center text-destructive">
             <p>Failed to load your favorites. Please try again.</p>
@@ -52,7 +52,7 @@ export default function WishlistShell() {
   }
 
   return (
-    <section className="bg-surface py-12 sm:py-16">
+    <section className="bg-background py-12 sm:py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {savedLocations.length === 0 ? (
           <div className="flex flex-col items-center py-24 text-center">
@@ -75,7 +75,7 @@ export default function WishlistShell() {
 
             <SplitText
               as="h2"
-              className="mt-8 justify-center font-serif text-2xl text-charcoal sm:text-3xl"
+              className="mt-8 justify-center font-serif text-2xl text-foreground sm:text-3xl"
               splitBy="word"
               animation="clipY"
               staggerDelay={0.06}
@@ -84,7 +84,7 @@ export default function WishlistShell() {
             </SplitText>
 
             <ScrollReveal delay={0.3} distance={15}>
-              <p className="mt-4 max-w-sm text-base text-warm-gray">
+              <p className="mt-4 max-w-sm text-base text-foreground-secondary">
                 Explore Japan&apos;s hidden gems and save the places that speak to you.
               </p>
             </ScrollReveal>
@@ -93,7 +93,7 @@ export default function WishlistShell() {
               <Magnetic>
                 <Link
                   href="/explore"
-                  className="mt-8 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                  className="mt-8 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                 >
                   Start exploring
                 </Link>

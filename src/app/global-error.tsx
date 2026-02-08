@@ -24,10 +24,10 @@ export default function GlobalError({
       <body>
         <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4">
           <div className="w-full max-w-md rounded-lg bg-background p-8 shadow-lg text-center">
-            <h2 className="mb-4 text-2xl font-bold text-charcoal">
+            <h2 className="mb-4 text-2xl font-bold text-foreground">
               Application Error
             </h2>
-            <p className="mb-6 text-sm text-warm-gray">
+            <p className="mb-6 text-sm text-foreground-secondary">
               A critical error occurred. Please refresh the page or contact support if the problem persists.
             </p>
             <button

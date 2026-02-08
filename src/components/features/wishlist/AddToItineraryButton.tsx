@@ -158,7 +158,7 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
       >
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label htmlFor="favorite-trip-select" className="text-sm font-medium text-warm-gray">
+            <label htmlFor="favorite-trip-select" className="text-sm font-medium text-foreground-secondary">
               Itinerary
             </label>
             <Select
@@ -173,7 +173,7 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="favorite-day-select" className="text-sm font-medium text-warm-gray">
+            <label htmlFor="favorite-day-select" className="text-sm font-medium text-foreground-secondary">
               Day
             </label>
             <Select
@@ -190,7 +190,7 @@ export function AddToItineraryButton({ location }: AddToItineraryButtonProps) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="favorite-time-select" className="text-sm font-medium text-warm-gray">
+            <label htmlFor="favorite-time-select" className="text-sm font-medium text-foreground-secondary">
               Time of day
             </label>
             <Select

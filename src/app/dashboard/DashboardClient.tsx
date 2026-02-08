@@ -247,7 +247,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
-        variant="compact"
+        compact
         eyebrow="Welcome back"
         title={displayName}
         subtitle="Your trips, favorites, and bookmarks — all in one place."
@@ -258,7 +258,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Activity</p>
-            <h2 className="mt-2 font-serif text-xl text-charcoal sm:text-2xl">At a Glance</h2>
+            <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">At a Glance</h2>
           </ScrollReveal>
           <div className="mt-8">
             <StatsSection
@@ -274,7 +274,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Recent</p>
-            <h2 className="mt-2 font-serif text-xl text-charcoal sm:text-2xl">Your Trips</h2>
+            <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">Your Trips</h2>
           </ScrollReveal>
 
           <div className="mt-8">
@@ -305,7 +305,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
 
                   <SplitText
                     as="h3"
-                    className="mt-6 justify-center font-serif text-xl text-charcoal sm:text-2xl"
+                    className="mt-6 justify-center font-serif text-xl text-foreground sm:text-2xl"
                     splitBy="word"
                     animation="clipY"
                     staggerDelay={0.06}
@@ -314,7 +314,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
                   </SplitText>
 
                   <ScrollReveal delay={0.3} distance={15}>
-                    <p className="mt-3 max-w-sm text-sm text-warm-gray">
+                    <p className="mt-3 max-w-sm text-sm text-foreground-secondary">
                       Build a trip to generate your first itinerary. Once it&apos;s saved,
                       you&apos;ll see a preview here.
                     </p>
@@ -324,7 +324,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
                     <Magnetic>
                       <Link
                         href="/trip-builder"
-                        className="mt-6 inline-flex items-center justify-center rounded-full bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                        className="mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                       >
                         Start planning
                       </Link>
@@ -343,7 +343,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ScrollReveal>
               <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Account</p>
-              <h2 className="mt-2 font-serif text-xl text-charcoal sm:text-2xl">Profile & Sync</h2>
+              <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">Profile & Sync</h2>
             </ScrollReveal>
             <div className="mt-8 max-w-2xl">
               <ScrollReveal delay={0.1} distance={20}>
@@ -368,7 +368,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4">
           <div className="pointer-events-auto flex flex-col gap-3 rounded-2xl border border-border bg-background p-4 shadow-lg ring-1 ring-brand-primary/20">
             <div>
-              <p className="text-sm font-semibold text-charcoal">Itinerary deleted</p>
+              <p className="text-sm font-semibold text-foreground">Itinerary deleted</p>
               <p className="text-xs text-foreground-secondary">
                 {pendingUndo.trip.name} was removed. Undo within 8 seconds to restore.
               </p>
@@ -376,7 +376,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
             <button
               type="button"
               onClick={handleUndo}
-              className="self-start rounded-full bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+              className="self-start rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
             >
               Undo
             </button>

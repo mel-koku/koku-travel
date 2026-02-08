@@ -111,7 +111,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           <Magnetic>
             <a
               href="/trip-builder"
-              className="inline-flex h-14 items-center justify-center rounded-full bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
+              className="inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
             >
               Start Planning
             </a>

@@ -18,7 +18,7 @@ export function GuidesGrid({ guides }: GuidesGridProps) {
         </div>
         <SplitText
           as="p"
-          className="justify-center font-serif text-lg text-charcoal"
+          className="justify-center font-serif text-lg text-foreground"
           splitBy="word"
           animation="clipY"
           staggerDelay={0.06}

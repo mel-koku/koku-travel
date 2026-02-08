@@ -195,12 +195,12 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   }
 
   return (
-    <div className="flex h-full min-h-screen flex-col bg-surface">
+    <div className="flex h-full min-h-screen flex-col bg-background">
       {/* Header */}
       <header className="sticky top-20 z-20 border-b border-border bg-background">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <div>
-            <h1 className="text-lg font-bold text-charcoal sm:text-xl">
+            <h1 className="text-lg font-bold text-foreground sm:text-xl">
               Plan Your Trip
             </h1>
             <p className="text-xs text-stone sm:text-sm">
@@ -237,7 +237,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             <button
               type="button"
               onClick={handleStartOver}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-sand"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-surface"
             >
               Start Over
             </button>
@@ -313,7 +313,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-warm-gray hover:bg-sand"
+              className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground-secondary hover:bg-surface"
             >
               Back
             </button>
@@ -343,7 +343,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
               <button
                 type="button"
                 onClick={handleBack}
-                className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-warm-gray hover:bg-sand"
+                className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground-secondary hover:bg-surface"
               >
                 {getBackButtonLabel()}
               </button>

@@ -202,7 +202,7 @@ function SearchInput({
       <input
         id="guides-search"
         type="text"
-        className="w-full h-10 rounded-full border border-border bg-surface text-charcoal placeholder-stone pl-9 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+        className="w-full h-10 rounded-xl border border-border bg-surface text-foreground placeholder-stone pl-9 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -211,7 +211,7 @@ function SearchInput({
         <button
           type="button"
           onClick={() => onChange("")}
-          className="absolute inset-y-0 right-2 flex items-center text-stone hover:text-warm-gray focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-full p-1"
+          className="absolute inset-y-0 right-2 flex items-center text-stone hover:text-foreground-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-full p-1"
           aria-label="Clear search"
         >
           <XIcon className="h-4 w-4" />
@@ -234,10 +234,10 @@ function FilterButton({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 border ${
+      className={`inline-flex items-center rounded-xl px-3 py-1.5 text-sm font-medium transition-all duration-200 border ${
         isActive
-          ? "bg-sage text-white border-sage"
-          : "bg-background text-charcoal border-border hover:border-stone"
+          ? "bg-brand-primary text-white border-brand-primary"
+          : "bg-background text-foreground border-border hover:border-stone"
       }`}
     >
       {label}
@@ -265,17 +265,17 @@ function ActiveFilterChips({
           <button
             key={`${filter.type}-${filter.value}-${index}`}
             onClick={() => onRemove(filter)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-sm font-medium text-warm-gray hover:bg-sand border border-border/50 transition-all duration-200 group active:scale-[0.97]"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-surface border border-border/50 transition-all duration-200 group active:scale-[0.97]"
             aria-label={`Remove ${filter.label} filter`}
           >
             <span>{filter.label}</span>
-            <XIcon className="h-3.5 w-3.5 text-stone group-hover:text-warm-gray transition" />
+            <XIcon className="h-3.5 w-3.5 text-stone group-hover:text-foreground-secondary transition" />
           </button>
         ))}
         {filters.length > 1 && (
           <button
             onClick={onClearAll}
-            className="text-sm font-medium text-stone hover:text-warm-gray underline underline-offset-2 transition ml-1"
+            className="text-sm font-medium text-stone hover:text-foreground-secondary underline underline-offset-2 transition ml-1"
           >
             Clear all
           </button>

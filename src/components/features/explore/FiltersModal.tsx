@@ -221,7 +221,7 @@ export function FiltersModal({
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-sand transition"
+            className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-surface transition"
             aria-label="Close filters"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -252,12 +252,12 @@ export function FiltersModal({
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search destinations..."
-              className="w-full rounded-full border border-border bg-background py-3 pl-12 pr-4 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="w-full rounded-xl border border-border bg-background py-3 pl-12 pr-4 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
             />
             {query && (
               <button
                 onClick={() => onQueryChange("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-sand"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-surface"
                 aria-label="Clear search"
               >
                 <svg className="h-4 w-4 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -272,11 +272,11 @@ export function FiltersModal({
             <p className="text-sm text-foreground-secondary">
               {query ? (
                 <>
-                  Showing <span className="font-semibold text-charcoal">{resultsCount.toLocaleString()}</span> places for &ldquo;<span className="font-medium">{query}</span>&rdquo;
+                  Showing <span className="font-semibold text-foreground">{resultsCount.toLocaleString()}</span> places for &ldquo;<span className="font-medium">{query}</span>&rdquo;
                 </>
               ) : (
                 <>
-                  <span className="font-semibold text-charcoal">{resultsCount.toLocaleString()}</span> places to explore
+                  <span className="font-semibold text-foreground">{resultsCount.toLocaleString()}</span> places to explore
                 </>
               )}
             </p>
@@ -304,7 +304,7 @@ export function FiltersModal({
               {selectedPrefectures.length > 0 && (
                 <button
                   onClick={() => onPrefecturesChange([])}
-                  className="text-xs text-stone hover:text-charcoal underline underline-offset-2"
+                  className="text-xs text-stone hover:text-foreground underline underline-offset-2"
                 >
                   Clear
                 </button>
@@ -337,10 +337,10 @@ export function FiltersModal({
                     key={category.id}
                     onClick={() => toggleCategory(category.id)}
                     className={cn(
-                      "flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition",
+                      "flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition",
                       isSelected
                         ? "border-brand-primary bg-brand-primary text-white"
-                        : "border-border bg-background text-warm-gray hover:border-brand-primary"
+                        : "border-border bg-background text-foreground-secondary hover:border-brand-primary"
                     )}
                   >
                     <span className={cn(isSelected ? "text-white" : "text-stone")}>
@@ -405,7 +405,7 @@ export function FiltersModal({
               <div className="mt-4 space-y-6">
                 {/* Duration */}
                 <div>
-                  <h4 className="text-sm font-medium text-charcoal mb-2">Duration</h4>
+                  <h4 className="text-sm font-medium text-foreground mb-2">Duration</h4>
                   <div className="flex flex-wrap gap-2">
                     <FilterChip
                       label="Any"
@@ -427,7 +427,7 @@ export function FiltersModal({
 
                 {/* Price */}
                 <div>
-                  <h4 className="text-sm font-medium text-charcoal mb-2">Price</h4>
+                  <h4 className="text-sm font-medium text-foreground mb-2">Price</h4>
                   <div className="flex flex-wrap gap-2">
                     <FilterChip
                       label="Any"
@@ -480,7 +480,7 @@ export function FiltersModal({
             className={cn(
               "text-sm font-medium underline underline-offset-2 transition",
               hasActiveFilters
-                ? "text-charcoal hover:text-warm-gray"
+                ? "text-foreground hover:text-foreground-secondary"
                 : "text-stone cursor-not-allowed"
             )}
             disabled={!hasActiveFilters}
@@ -489,7 +489,7 @@ export function FiltersModal({
           </button>
           <button
             onClick={onClose}
-            className="rounded-full bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 transition"
+            className="rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 transition"
           >
             Show {resultsCount.toLocaleString()} places
           </button>
@@ -511,11 +511,11 @@ function FilterChip({ label, isSelected, onClick, size = "default" }: FilterChip
     <button
       onClick={onClick}
       className={cn(
-        "rounded-full border font-medium transition",
+        "rounded-xl border font-medium transition",
         size === "small" ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm",
         isSelected
           ? "border-brand-primary bg-brand-primary text-white"
-          : "border-border bg-background text-warm-gray hover:border-brand-primary"
+          : "border-border bg-background text-foreground-secondary hover:border-brand-primary"
       )}
     >
       {label}
@@ -542,7 +542,7 @@ function ToggleOption({ label, description, checked, onChange }: ToggleOptionPro
         />
         <div className={cn(
           "w-10 h-6 rounded-full transition-colors",
-          checked ? "bg-brand-primary" : "bg-sand group-hover:bg-border"
+          checked ? "bg-brand-primary" : "bg-surface group-hover:bg-border"
         )}>
           <div className={cn(
             "absolute top-1 w-4 h-4 bg-background rounded-full transition-transform shadow-sm",
@@ -551,7 +551,7 @@ function ToggleOption({ label, description, checked, onChange }: ToggleOptionPro
         </div>
       </div>
       <div className="flex-1">
-        <span className="text-sm font-medium text-charcoal">{label}</span>
+        <span className="text-sm font-medium text-foreground">{label}</span>
         <p className="text-xs text-stone mt-0.5">{description}</p>
       </div>
     </label>

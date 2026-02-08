@@ -137,7 +137,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
             value={value?.amount?.toLocaleString("ja-JP") ?? ""}
             onChange={handleAmountChange}
             className={cn(
-              "block w-full rounded-xl border border-border bg-background text-base text-charcoal placeholder:text-stone shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+              "block w-full rounded-xl border border-border bg-background text-base text-foreground placeholder:text-stone shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
               "h-12 pl-9 pr-4",
               !hasDuration && "cursor-not-allowed bg-surface text-stone opacity-80"
             )}
@@ -148,7 +148,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
             <button
               type="button"
               onClick={handleClear}
-              className="absolute inset-y-0 right-3 flex items-center text-stone hover:text-warm-gray transition-colors"
+              className="absolute inset-y-0 right-3 flex items-center text-stone hover:text-foreground-secondary transition-colors"
               aria-label="Clear budget"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,7 +165,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
             onChange={handleModeChange}
             disabled={!hasDuration}
             className={cn(
-              "block appearance-none rounded-xl border border-border bg-background pl-4 pr-10 text-base text-charcoal shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+              "block appearance-none rounded-xl border border-border bg-background pl-4 pr-10 text-base text-foreground shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
               "h-12",
               !hasDuration && "cursor-not-allowed bg-surface text-stone opacity-80"
             )}

@@ -12,7 +12,7 @@ export function SearchHeader({ query, onQueryChange, totalCount }: SearchHeaderP
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-charcoal sm:text-3xl">
+            <h1 className="text-2xl font-semibold text-foreground sm:text-3xl">
               Explore Japan
             </h1>
             <p className="mt-1 text-sm text-stone">
@@ -42,12 +42,12 @@ export function SearchHeader({ query, onQueryChange, totalCount }: SearchHeaderP
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search destinations..."
-              className="w-full rounded-full border border-border bg-background py-3 pl-12 pr-4 text-sm text-charcoal placeholder:text-stone shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 hover:shadow-md"
+              className="w-full rounded-full border border-border bg-background py-3 pl-12 pr-4 text-sm text-foreground placeholder:text-stone shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 hover:shadow-md"
             />
             {query && (
               <button
                 onClick={() => onQueryChange("")}
-                className="absolute inset-y-0 right-0 flex items-center pr-4 text-stone hover:text-charcoal"
+                className="absolute inset-y-0 right-0 flex items-center pr-4 text-stone hover:text-foreground"
                 aria-label="Clear search"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

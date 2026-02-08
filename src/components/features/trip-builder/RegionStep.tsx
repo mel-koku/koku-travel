@@ -30,7 +30,7 @@ export function RegionStep({ onValidityChange }: RegionStepProps) {
       <div className="text-center">
         <SplitText
           as="h2"
-          className="justify-center font-serif text-2xl font-bold text-charcoal sm:text-3xl"
+          className="justify-center font-serif text-2xl font-bold text-foreground sm:text-3xl"
           splitBy="word"
           trigger="load"
           animation="clipY"
@@ -39,7 +39,7 @@ export function RegionStep({ onValidityChange }: RegionStepProps) {
           Discover Japan&apos;s Regions
         </SplitText>
         <ScrollReveal delay={0.3} distance={15}>
-          <p className="mx-auto mt-2 max-w-2xl text-base text-warm-gray">
+          <p className="mx-auto mt-2 max-w-2xl text-base text-foreground-secondary">
             Each region offers unique experiences, from ancient temples to modern cities.
           </p>
         </ScrollReveal>

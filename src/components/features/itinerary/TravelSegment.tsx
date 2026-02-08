@@ -176,7 +176,7 @@ export function TravelSegment({
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-sage/10 text-xs font-semibold text-sage">
                     {index + 1}
                   </span>
-                  <span className="flex-1 pt-0.5 text-warm-gray">{instruction}</span>
+                  <span className="flex-1 pt-0.5 text-foreground-secondary">{instruction}</span>
                 </li>
               ))}
             </ol>

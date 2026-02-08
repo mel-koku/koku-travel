@@ -70,7 +70,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
           <svg className="h-4 w-4 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
-          <span className="text-sm font-medium text-charcoal">Trip Summary</span>
+          <span className="text-sm font-medium text-foreground">Trip Summary</span>
         </div>
         <svg
           className={cn("h-4 w-4 text-stone transition-transform", isExpanded && "rotate-180")}
@@ -90,7 +90,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
           {(tripData.duration || formattedDates) && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-stone">When</span>
-              <span className="font-medium text-charcoal">
+              <span className="font-medium text-foreground">
                 {tripData.duration ? `${tripData.duration} days` : ""}{tripData.duration && formattedDates ? " · " : ""}{formattedDates ?? ""}
               </span>
             </div>
@@ -100,7 +100,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
           {tripData.entryPoint && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-stone">Entry</span>
-              <span className="font-medium text-charcoal truncate ml-2 max-w-[180px]">
+              <span className="font-medium text-foreground truncate ml-2 max-w-[180px]">
                 {tripData.entryPoint.name}
               </span>
             </div>
@@ -110,7 +110,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
           {budgetLabel && (
             <div className="flex items-center justify-between text-xs">
               <span className="text-stone">Budget</span>
-              <span className="font-medium text-charcoal">{budgetLabel}</span>
+              <span className="font-medium text-foreground">{budgetLabel}</span>
             </div>
           )}
 
@@ -122,7 +122,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
                 {tripData.vibes?.slice(0, 3).map((vibe) => (
                   <span
                     key={vibe}
-                    className="inline-block rounded-full bg-brand-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-primary"
+                    className="inline-block rounded-xl bg-brand-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-brand-primary"
                   >
                     {vibeLabels.get(vibe) ?? vibe}
                   </span>
@@ -142,7 +142,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
                 {tripData.regions?.slice(0, 2).map((region) => (
                   <span
                     key={region}
-                    className="inline-block rounded-full bg-sage/10 px-1.5 py-0.5 text-[10px] font-medium text-sage"
+                    className="inline-block rounded-xl bg-sage/10 px-1.5 py-0.5 text-[10px] font-medium text-sage"
                   >
                     {regionLabels.get(region) ?? region}
                   </span>

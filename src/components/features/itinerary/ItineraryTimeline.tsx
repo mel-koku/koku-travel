@@ -557,7 +557,7 @@ export const ItineraryTimeline = ({
                 </svg>
               </div>
               <div className="flex-1">
-                <h4 className="text-sm font-semibold text-charcoal">
+                <h4 className="text-sm font-semibold text-foreground">
                   Traveling from {formatCityName(day.cityTransition.fromCityId)} to{" "}
                   {formatCityName(day.cityTransition.toCityId)}
                 </h4>
@@ -753,7 +753,7 @@ export const ItineraryTimeline = ({
                 </div>
                 {/* Activity info */}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-charcoal">
+                  <p className="truncate text-sm font-semibold text-foreground">
                     {activeActivity.title}
                   </p>
                   <div className="flex items-center gap-2">

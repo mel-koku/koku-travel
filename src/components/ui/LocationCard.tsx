@@ -42,7 +42,7 @@ export const LocationCard = ({
         role="presentation"
         aria-hidden="true"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/10 to-transparent" />
 
       <div className="absolute inset-x-0 bottom-4 flex items-center justify-between px-6">
         <div>
@@ -59,7 +59,7 @@ export const LocationCard = ({
     </div>
 
     <CardContent className="gap-5" padding="md">
-      <p className="text-sm text-warm-gray">{description}</p>
+      <p className="text-sm text-foreground-secondary">{description}</p>
 
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2">
@@ -72,11 +72,11 @@ export const LocationCard = ({
       )}
 
       {metrics.length > 0 && (
-        <dl className="grid gap-4 rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-warm-gray sm:grid-cols-3">
+        <dl className="grid gap-4 rounded-2xl border border-border bg-surface px-4 py-3 text-sm text-foreground-secondary sm:grid-cols-3">
           {metrics.map(({ label, value }) => (
             <div key={label} className="flex flex-col">
               <dt className="text-xs uppercase tracking-wide text-stone">{label}</dt>
-              <dd className="text-sm font-semibold text-charcoal">{value}</dd>
+              <dd className="text-sm font-semibold text-foreground">{value}</dd>
             </div>
           ))}
         </dl>

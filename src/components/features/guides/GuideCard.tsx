@@ -29,7 +29,7 @@ export const GuideCard = memo(function GuideCard({ guide }: GuideCardProps) {
     <article className="group relative">
       <Link
         href={`/guides/${guide.id}`}
-        className="block overflow-hidden rounded-xl border border-border bg-background shadow-sm transition-all duration-300 hover:shadow-depth hover:-translate-y-1 hover:border-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        className="block overflow-hidden rounded-xl border border-border/50 bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(196,80,79,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
       >
         {/* Image */}
         <div className="relative aspect-[16/9] w-full overflow-hidden bg-surface">
@@ -42,11 +42,11 @@ export const GuideCard = memo(function GuideCard({ guide }: GuideCardProps) {
             priority={false}
           />
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
 
           {/* Type badge */}
           <div className="absolute top-3 left-3">
-            <span className="inline-flex items-center rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-charcoal backdrop-blur-sm">
+            <span className="inline-flex items-center rounded-xl bg-surface/90 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
               {typeLabel}
             </span>
           </div>
@@ -54,7 +54,7 @@ export const GuideCard = memo(function GuideCard({ guide }: GuideCardProps) {
           {/* Reading time */}
           {guide.readingTimeMinutes && (
             <div className="absolute bottom-3 right-3">
-              <span className="inline-flex items-center gap-1 rounded-full bg-charcoal/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+              <span className="inline-flex items-center gap-1 rounded-full bg-surface/80 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
                 <ClockIcon className="h-3.5 w-3.5" />
                 {guide.readingTimeMinutes} min read
               </span>
@@ -73,7 +73,7 @@ export const GuideCard = memo(function GuideCard({ guide }: GuideCardProps) {
           )}
 
           {/* Title */}
-          <h3 className="font-semibold text-charcoal line-clamp-2 transition-colors group-hover:text-brand-primary">
+          <h3 className="font-semibold text-foreground line-clamp-2 transition-colors group-hover:text-brand-primary">
             {guide.title}
           </h3>
 
@@ -91,7 +91,7 @@ export const GuideCard = memo(function GuideCard({ guide }: GuideCardProps) {
               {guide.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="inline-flex items-center rounded-full bg-surface px-2 py-0.5 text-xs text-warm-gray"
+                  className="inline-flex items-center rounded-full bg-surface px-2 py-0.5 text-xs text-foreground-secondary"
                 >
                   {tag}
                 </span>

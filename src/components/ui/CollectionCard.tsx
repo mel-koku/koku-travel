@@ -33,8 +33,8 @@ export const CollectionCard = ({
 
     <CardContent padded={false} className="gap-5">
       <div className="space-y-3">
-        <h3 className="text-2xl font-semibold text-charcoal">{title}</h3>
-        <p className="text-sm text-warm-gray">{description}</p>
+        <h3 className="text-2xl font-semibold text-foreground">{title}</h3>
+        <p className="text-sm text-foreground-secondary">{description}</p>
       </div>
 
       {tags.length > 0 && (
@@ -49,7 +49,7 @@ export const CollectionCard = ({
     </CardContent>
 
     <CardFooter padded={false} className="items-center justify-between gap-3 pt-0">
-      <div className="flex items-center gap-2 text-sm text-warm-gray">
+      <div className="flex items-center gap-2 text-sm text-foreground-secondary">
         {tripCount !== undefined && (
           <>
             <span

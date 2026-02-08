@@ -74,17 +74,17 @@ export function FinalCTA() {
             <Magnetic>
               <a
                 href="/trip-builder"
-                className="relative inline-flex h-14 items-center justify-center rounded-full bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
+                className="relative inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
               >
                 {/* Pulsing glow */}
-                <span className="absolute inset-0 animate-pulse rounded-full bg-brand-primary/30 blur-xl" />
+                <span className="absolute inset-0 animate-pulse rounded-xl bg-brand-primary/30 blur-xl" />
                 <span className="relative">Start Planning</span>
               </a>
             </Magnetic>
             <Magnetic>
               <a
                 href="/explore"
-                className="inline-flex h-14 items-center justify-center rounded-full border border-white/30 bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:border-white/50 hover:bg-white/15 hover:shadow-lg"
+                className="inline-flex h-14 items-center justify-center rounded-xl border border-white/30 bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:border-white/50 hover:bg-white/15 hover:shadow-lg"
               >
                 Browse Locations
               </a>

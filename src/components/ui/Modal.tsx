@@ -182,7 +182,7 @@ export function Modal(props: ModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="absolute right-4 top-4 rounded-full p-2 text-stone transition hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+            className="absolute right-4 top-4 rounded-full p-2 text-stone transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
             aria-label="Close dialog"
           >
             <svg
@@ -200,11 +200,11 @@ export function Modal(props: ModalProps) {
 
           {title ? (
             <div className="flex flex-col gap-2">
-              <h2 id={titleId} className="text-2xl font-semibold text-charcoal">
+              <h2 id={titleId} className="text-2xl font-semibold text-foreground">
                 {title}
               </h2>
               {description ? (
-                <p id={descriptionId} className="text-sm text-warm-gray">
+                <p id={descriptionId} className="text-sm text-foreground-secondary">
                   {description}
                 </p>
               ) : null}

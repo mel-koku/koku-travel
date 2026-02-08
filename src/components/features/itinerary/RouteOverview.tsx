@@ -60,13 +60,13 @@ export function RouteOverview({
         return (
           <li
             key={activity.id}
-            className="rounded-lg border border-sage/20 bg-sage/10 p-3 text-sm text-charcoal"
+            className="rounded-lg border border-sage/20 bg-sage/10 p-3 text-sm text-foreground"
           >
             <div className="flex items-start gap-3">
               <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
                 {placeNumber}
               </div>
-              <div className="flex-1 space-y-1 text-charcoal">
+              <div className="flex-1 space-y-1 text-foreground">
                 <p className="font-semibold">{activity.title}</p>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-sage">
                   <span>{TIME_OF_DAY_LABEL[activity.timeOfDay]}</span>

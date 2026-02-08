@@ -178,7 +178,7 @@ function DayCard({
           <span className="flex h-6 w-6 items-center justify-center rounded-full bg-sage/10 text-xs font-semibold text-sage">
             {day.dayNumber}
           </span>
-          <span className="text-sm font-medium text-charcoal">{day.dateLabel}</span>
+          <span className="text-sm font-medium text-foreground">{day.dateLabel}</span>
         </div>
 
         {day.city && (

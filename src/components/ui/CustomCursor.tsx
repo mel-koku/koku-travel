@@ -40,7 +40,7 @@ export function CustomCursor() {
         <AnimatePresence>
           {config.label && (
             <motion.span
-              className="text-[10px] font-medium uppercase tracking-wider text-charcoal"
+              className="text-[10px] font-medium uppercase tracking-wider text-foreground"
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
