@@ -147,7 +147,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-charcoal shadow-md backdrop-blur-sm transition-transform hover:scale-105"
+          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-foreground shadow-md backdrop-blur-sm transition-transform hover:scale-105"
           aria-label="Close"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -166,7 +166,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             sizes="(min-width: 768px) 896px, 100vw"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent" />
 
           {/* Bottom bar: title left, actions right */}
           <div className="absolute inset-x-0 bottom-0 flex items-end justify-between p-4 sm:px-6 sm:pb-5">
@@ -191,7 +191,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             <button
               type="button"
               onClick={handleToggleItinerary}
-              className="flex items-center gap-1.5 rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-charcoal shadow-md backdrop-blur-sm transition-transform hover:scale-105"
+              className="flex items-center gap-1.5 rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-foreground shadow-md backdrop-blur-sm transition-transform hover:scale-105"
               aria-label={locationInItinerary ? "Remove from itinerary" : "Add to itinerary"}
             >
               {locationInItinerary ? (
@@ -215,11 +215,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Category, rating, duration */}
           <ScrollReveal distance={20} duration={0.4}>
             <div className="flex flex-wrap items-center gap-3 text-sm">
-              <span className="rounded-full bg-surface px-3 py-1 font-medium capitalize text-warm-gray">
+              <span className="rounded-xl bg-surface px-3 py-1 font-medium capitalize text-foreground-secondary">
                 {location.category}
               </span>
               {(details?.rating ?? location.rating) ? (
-                <span className="flex items-center gap-1 text-charcoal">
+                <span className="flex items-center gap-1 text-foreground">
                   <svg className="h-4 w-4 text-warning" viewBox="0 0 24 24" fill="currentColor">
                     <path d="m12 17.27 5.18 3.11-1.64-5.81L20.9 9.9l-6-0.52L12 4 9.1 9.38l-6 .52 5.36 4.67L6.82 20.38 12 17.27z" />
                   </svg>
@@ -250,7 +250,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
                   Overview
                 </h3>
-                <p className="text-sm leading-relaxed text-warm-gray">{description}</p>
+                <p className="text-sm leading-relaxed text-foreground-secondary">{description}</p>
               </section>
             </ScrollReveal>
           )}
@@ -270,7 +270,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
                   Address
                 </h3>
-                <p className="text-sm text-warm-gray">{details.formattedAddress}</p>
+                <p className="text-sm text-foreground-secondary">{details.formattedAddress}</p>
               </section>
             </ScrollReveal>
           )}
@@ -283,7 +283,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                   Opening hours
                 </h3>
                 {hasOpeningHours ? (
-                  <ul className="space-y-1 text-sm text-warm-gray">
+                  <ul className="space-y-1 text-sm text-foreground-secondary">
                     {(details!.currentOpeningHours ?? details!.regularOpeningHours ?? []).map(
                       (entry) => (
                         <li key={entry}>{entry}</li>
@@ -291,7 +291,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                     )}
                   </ul>
                 ) : (
-                  <p className="text-sm text-warm-gray">Open 24 hours or hours not listed</p>
+                  <p className="text-sm text-foreground-secondary">Open 24 hours or hours not listed</p>
                 )}
               </section>
             </ScrollReveal>
@@ -318,7 +318,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                     </li>
                   )}
                   {details!.internationalPhoneNumber && (
-                    <li className="text-warm-gray">{details!.internationalPhoneNumber}</li>
+                    <li className="text-foreground-secondary">{details!.internationalPhoneNumber}</li>
                   )}
                   {details!.googleMapsUri && (
                     <li>

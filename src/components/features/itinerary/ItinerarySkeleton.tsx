@@ -77,7 +77,7 @@ function MapSkeleton() {
           <Skeleton className="h-6 w-32" />
           <Skeleton className="h-4 w-48" />
         </div>
-        <div className="relative flex-1 rounded-xl border border-border bg-sand/30">
+        <div className="relative flex-1 rounded-xl border border-border bg-surface/30">
           <div className="absolute inset-0 flex items-center justify-center">
             <Skeleton className="h-8 w-8 rounded-full" />
           </div>

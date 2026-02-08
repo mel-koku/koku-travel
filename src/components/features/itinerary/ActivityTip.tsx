@@ -21,16 +21,16 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
     reservation: { bg: "bg-warning/10", text: "text-warning" },
     payment: { bg: "bg-sage/10", text: "text-sage" },
     crowd: { bg: "bg-brand-secondary/10", text: "text-brand-secondary" },
-    photo: { bg: "bg-stone/10", text: "text-warm-gray" },
+    photo: { bg: "bg-stone/10", text: "text-foreground-secondary" },
     weather: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
     timing: { bg: "bg-semantic-error/10", text: "text-semantic-error" },
     accessibility: { bg: "bg-sage/10", text: "text-sage" },
     budget: { bg: "bg-warning/10", text: "text-warning" },
-    general: { bg: "bg-surface", text: "text-warm-gray" },
+    general: { bg: "bg-surface", text: "text-foreground-secondary" },
     etiquette: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
   };
 
-  const defaultStyles = { bg: "bg-surface", text: "text-warm-gray" };
+  const defaultStyles = { bg: "bg-surface", text: "text-foreground-secondary" };
   const styles = typeStyles[tip.type] ?? defaultStyles;
 
   return (
@@ -67,7 +67,7 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
               <p className={cn("text-xs font-semibold", styles.text)}>
                 {tip.title}
               </p>
-              <p className="mt-0.5 text-xs text-warm-gray leading-relaxed">
+              <p className="mt-0.5 text-xs text-foreground-secondary leading-relaxed">
                 {tip.message}
               </p>
             </div>
@@ -114,7 +114,7 @@ export function ActivityTipsList({
             e.stopPropagation();
             setShowAll(true);
           }}
-          className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-medium text-stone hover:bg-sand transition"
+          className="rounded-full bg-surface px-2 py-0.5 text-[11px] font-medium text-stone hover:bg-surface transition"
         >
           +{hiddenCount} more
         </button>
@@ -136,8 +136,8 @@ export function CompactTip({ tip, className }: CompactTipProps) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-0.5 text-[11px] text-warm-gray",
-        tip.isImportant && "font-medium text-charcoal",
+        "inline-flex items-center gap-0.5 text-[11px] text-foreground-secondary",
+        tip.isImportant && "font-medium text-foreground",
         className
       )}
       title={`${tip.title}: ${tip.message}`}

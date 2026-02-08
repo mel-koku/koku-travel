@@ -36,7 +36,7 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
             </ScrollReveal>
             <SplitText
               as="h2"
-              className="mt-4 font-serif text-4xl font-medium text-charcoal sm:text-5xl"
+              className="mt-4 font-serif text-4xl font-medium text-foreground sm:text-5xl"
               splitBy="word"
               animation="clipY"
               delay={0.1}
@@ -47,7 +47,7 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
           <ScrollReveal delay={0.2}>
             <Link
               href="/guides"
-              className="group flex items-center gap-2 text-charcoal transition-colors hover:text-brand-primary"
+              className="group flex items-center gap-2 text-foreground transition-colors hover:text-brand-primary"
             >
               <span className="text-sm font-medium uppercase tracking-wider">
                 View all guides
@@ -89,11 +89,11 @@ function FeaturedGuideCard({ guide }: { guide: GuideSummary }) {
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         />
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/40 to-transparent" />
 
         {/* Type badge */}
         <div className="absolute top-4 left-4">
-          <span className="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-charcoal backdrop-blur-sm">
+          <span className="inline-flex items-center rounded-xl bg-surface/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
             {typeLabel}
           </span>
         </div>

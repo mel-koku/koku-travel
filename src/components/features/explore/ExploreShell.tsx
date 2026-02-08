@@ -13,7 +13,7 @@ const FiltersModal = dynamic(
 import { LocationGrid } from "./LocationGrid";
 import { StickyExploreHeader } from "./StickyExploreHeader";
 import { ActiveFilterChips } from "./ActiveFilterChips";
-import { ExploreHero } from "./ExploreHero";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { useAggregatedLocations, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 
 const DURATION_FILTERS = [
@@ -116,12 +116,7 @@ function generateFallbackReviewCount(locationId: string): number {
   return 50 + (hash % 450); // 50-500 range
 }
 
-type ExploreShellProps = {
-  /** Server-side pre-fetched featured locations for instant carousel display */
-  initialFeaturedLocations?: Location[];
-};
-
-export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProps) {
+export function ExploreShell() {
   // Use React Query hooks for data fetching
   const {
     locations,
@@ -146,7 +141,6 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
   const [page, setPage] = useState(1);
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
   const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
-  const [isHeroPinned, setIsHeroPinned] = useState(true);
 
   useEffect(() => {
     setPage(1);
@@ -328,23 +322,6 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
     }
   }, [filteredLocations, selectedSort]);
 
-  // Featured locations: use server-side pre-fetched data for instant display
-  // Falls back to client-computed data if server data unavailable
-  const featuredLocations = useMemo(() => {
-    // Prefer server-side data for instant display (no hydration wait)
-    if (initialFeaturedLocations.length > 0) {
-      return initialFeaturedLocations;
-    }
-    // Fallback: compute client-side (same Bayesian scoring as server)
-    return [...enhancedLocations]
-      .sort((a, b) => {
-        const scoreA = calculatePopularityScore(a.ratingValue, a.reviewCount);
-        const scoreB = calculatePopularityScore(b.ratingValue, b.reviewCount);
-        return scoreB - scoreA;
-      })
-      .slice(0, 12);
-  }, [initialFeaturedLocations, enhancedLocations]);
-
   const visibleLocations = useMemo(
     () => sortedLocations.slice(0, page * PAGE_SIZE),
     [sortedLocations, page]
@@ -525,7 +502,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
             <p className="text-sm text-error/80 mb-6">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="rounded-full bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
+              className="rounded-xl bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
             >
               Try again
             </button>
@@ -542,15 +519,16 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
         onFiltersClick={() => setIsFiltersModalOpen(true)}
         activeFilterCount={activeFilterCount}
-        hidden={isHeroPinned && activeFilters.length === 0}
+        hidden={activeFilters.length === 0}
       />
 
-      {/* Cinematic Hero - Full-bleed, handles its own dark background */}
-      {activeFilters.length === 0 && featuredLocations.length > 0 && (
-        <ExploreHero
-          locations={featuredLocations}
-          totalLocations={total}
-          onHeroComplete={(isPast) => setIsHeroPinned(!isPast)}
+      {/* Page Hero */}
+      {activeFilters.length === 0 && (
+        <PageHeader
+          eyebrow={`${total.toLocaleString()}+ Curated Places`}
+          title="Explore"
+          subtitle="Discover handpicked destinations across Japan — from hidden temples to local food spots."
+          imageUrl="/images/regions/kansai-hero.jpg"
         />
       )}
 
@@ -567,27 +545,18 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
           </div>
         )}
 
-        {/* Decorative Section Divider - only when showing all destinations */}
-        {activeFilters.length === 0 && (
-          <div className="flex items-center gap-4 mb-8 pt-8">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-sand to-transparent" />
-            <span className="text-xs font-medium uppercase tracking-wider text-stone">Discover</span>
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-sand to-transparent" />
-          </div>
-        )}
-
         {/* Section Header for Main Grid with Inline Filter Button */}
         <div className="mb-6">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-lg font-semibold text-charcoal">
+              <h2 className="text-lg font-semibold text-foreground">
                 {activeFilters.length > 0 ? "Search Results" : "All Destinations"}
               </h2>
               <p className="text-sm text-stone mt-1">
                 {(activeFilters.length === 0 ? total : filteredLocations.length).toLocaleString()} places to explore
               </p>
               {activeFilters.length > 0 && hasNextPage && (
-                <p className="text-xs text-warm-gray mt-1">
+                <p className="text-xs text-foreground-secondary mt-1">
                   Searching {locations.length.toLocaleString()} of {total.toLocaleString()} locations{" "}
                   <button
                     onClick={() => fetchNextPage()}
@@ -601,7 +570,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
             </div>
             <button
               onClick={() => setIsFiltersModalOpen(true)}
-              className="flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary transition hover:bg-sand shrink-0"
+              className="flex items-center gap-2 rounded-xl border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary transition hover:bg-surface shrink-0"
             >
               <svg
                 className="h-4 w-4"
@@ -643,7 +612,7 @@ export function ExploreShell({ initialFeaturedLocations = [] }: ExploreShellProp
         <div className="fixed bottom-4 right-4 bg-background px-4 py-2 rounded-full shadow-lg border border-border z-50">
           <div className="flex items-center gap-2">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-primary" />
-            <p className="text-sm text-warm-gray">
+            <p className="text-sm text-foreground-secondary">
               Loading more... {locations.length} / {total}
             </p>
           </div>

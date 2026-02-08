@@ -101,7 +101,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
 
         <div className="mt-4 flex flex-col gap-3">
           <div className="flex flex-col gap-2 rounded-xl bg-background/60 p-3 shadow-sm">
-            <span className="text-sm font-medium text-warm-gray">Time (optional)</span>
+            <span className="text-sm font-medium text-foreground-secondary">Time (optional)</span>
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex flex-col gap-1">
                 <label htmlFor={noteStartId} className="text-xs font-medium text-foreground-secondary">
@@ -156,12 +156,12 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor={notesId} className="text-sm font-semibold text-warm-gray">
+            <label htmlFor={notesId} className="text-sm font-semibold text-foreground-secondary">
               {noteLabel}
             </label>
             <textarea
               id={notesId}
-              className="w-full rounded-xl border border-border px-3 py-2 text-sm text-warm-gray shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+              className="w-full rounded-xl border border-border px-3 py-2 text-sm text-foreground-secondary shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
               rows={3}
               value={notesValue}
               onChange={handleNotesChange}

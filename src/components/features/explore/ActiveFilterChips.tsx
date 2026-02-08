@@ -24,12 +24,12 @@ export function ActiveFilterChips({
           <button
             key={`${filter.type}-${filter.value}-${index}`}
             onClick={() => onRemove(filter)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-background px-3 py-1.5 text-sm font-medium text-warm-gray hover:bg-sand border border-border/50 transition-all duration-200 group active:scale-[0.97]"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-surface border border-border/50 transition-all duration-200 group active:scale-[0.97]"
             aria-label={`Remove ${filter.label} filter`}
           >
             <span>{filter.label}</span>
             <svg
-              className="h-3.5 w-3.5 text-stone group-hover:text-warm-gray transition"
+              className="h-3.5 w-3.5 text-stone group-hover:text-foreground-secondary transition"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -46,7 +46,7 @@ export function ActiveFilterChips({
         {filters.length > 1 && (
           <button
             onClick={onClearAll}
-            className="text-sm font-medium text-stone hover:text-warm-gray underline underline-offset-2 transition ml-1"
+            className="text-sm font-medium text-stone hover:text-foreground-secondary underline underline-offset-2 transition ml-1"
           >
             Clear all
           </button>

@@ -64,7 +64,7 @@ export function RegionCard({
         />
 
         {/* Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/40 to-charcoal/10" />
 
         {/* Selected Tint Overlay */}
         {isSelected && (
@@ -119,7 +119,7 @@ export function RegionCard({
       {/* Content Below Image */}
       <div className="flex flex-1 flex-col gap-3 p-4">
         {/* Description */}
-        <p className="text-left text-sm leading-relaxed text-warm-gray">
+        <p className="text-left text-sm leading-relaxed text-foreground-secondary">
           {region.description}
         </p>
 
@@ -127,7 +127,7 @@ export function RegionCard({
         {regionCities.length > 0 && (
           <div className="flex items-center gap-2 text-sm">
             <MapPin className="h-4 w-4 shrink-0 text-brand-primary" />
-            <span className="text-charcoal">
+            <span className="text-foreground">
               {regionCities.map((city) => city.name).join(", ")}
             </span>
           </div>
@@ -138,13 +138,13 @@ export function RegionCard({
           {bestForVibes.slice(0, 3).map((vibe) => (
             <span
               key={vibe!.id}
-              className="rounded-full bg-sand/80 px-2 py-0.5 text-xs font-medium text-warm-gray"
+              className="rounded-xl bg-surface/70 px-2 py-0.5 text-xs font-medium text-foreground-secondary"
             >
               {vibe!.name}
             </span>
           ))}
           {bestForVibes.length > 3 && (
-            <span className="rounded-full bg-sand/80 px-2 py-0.5 text-xs font-medium text-stone">
+            <span className="rounded-xl bg-surface/70 px-2 py-0.5 text-xs font-medium text-stone">
               +{bestForVibes.length - 3}
             </span>
           )}

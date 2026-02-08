@@ -90,7 +90,7 @@ function TripBuilderV2Content() {
           <div className="rounded-lg bg-background p-6 shadow-xl">
             <div className="flex items-center gap-3">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
-              <span className="text-lg font-medium text-charcoal">Generating your itinerary...</span>
+              <span className="text-lg font-medium text-foreground">Generating your itinerary...</span>
             </div>
             <p className="mt-2 text-sm text-stone">This may take a moment</p>
           </div>

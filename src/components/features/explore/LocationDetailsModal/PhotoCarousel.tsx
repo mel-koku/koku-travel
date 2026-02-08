@@ -102,7 +102,7 @@ function ActionBar({
         type="button"
         onClick={onToggleFavorite}
         aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
-        className={`rounded-full p-2 transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal ${
+        className={`rounded-full p-2 transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal ${
           isFavorite ? "text-destructive" : "text-foreground-secondary"
         }`}
       >
@@ -113,7 +113,7 @@ function ActionBar({
         type="button"
         onClick={onToggleItinerary}
         aria-label={isInItinerary ? "Remove from itinerary" : "Add to itinerary"}
-        className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors hover:bg-sand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal ${
+        className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium transition-colors hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal ${
           isInItinerary ? "text-sage" : "text-foreground-secondary"
         }`}
       >

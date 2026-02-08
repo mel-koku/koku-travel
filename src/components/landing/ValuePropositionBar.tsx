@@ -26,7 +26,7 @@ export function ValuePropositionBar({
             <ScrollReveal key={stat.label} delay={index * 0.1} direction="up" distance={20}>
               <div className="text-center">
                 <motion.p
-                  className="font-serif text-3xl font-medium text-white sm:text-4xl"
+                  className="font-mono text-3xl font-medium text-white sm:text-4xl"
                   initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}

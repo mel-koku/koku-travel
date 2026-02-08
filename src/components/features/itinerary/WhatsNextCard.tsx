@@ -175,8 +175,8 @@ export function WhatsNextCard({
         <div className="flex items-center gap-3">
           <span className="text-2xl">🌙</span>
           <div>
-            <p className="text-sm font-semibold text-charcoal">Day complete!</p>
-            <p className="text-xs text-warm-gray">
+            <p className="text-sm font-semibold text-foreground">Day complete!</p>
+            <p className="text-xs text-foreground-secondary">
               All activities for today are done. Enjoy your evening!
             </p>
           </div>
@@ -201,15 +201,15 @@ export function WhatsNextCard({
               <p className="text-xs font-medium text-sage uppercase tracking-wide">
                 You&apos;re at
               </p>
-              <p className="text-sm font-semibold text-charcoal truncate">
+              <p className="text-sm font-semibold text-foreground truncate">
                 {current.title}
               </p>
             </div>
           </div>
           {current.schedule?.departureTime && (
             <div className="text-right shrink-0">
-              <p className="text-xs text-warm-gray">Until</p>
-              <p className="text-sm font-semibold text-charcoal">
+              <p className="text-xs text-foreground-secondary">Until</p>
+              <p className="text-sm font-semibold text-foreground">
                 {current.schedule.departureTime}
               </p>
             </div>
@@ -245,12 +245,12 @@ export function WhatsNextCard({
             <button
               type="button"
               onClick={() => next && onActivityClick?.(next.id)}
-              className="text-sm font-semibold text-charcoal truncate hover:text-brand-primary transition"
+              className="text-sm font-semibold text-foreground truncate hover:text-brand-primary transition"
             >
               {next?.title}
             </button>
             {next?.neighborhood && (
-              <p className="text-xs text-warm-gray">{next.neighborhood}</p>
+              <p className="text-xs text-foreground-secondary">{next.neighborhood}</p>
             )}
           </div>
         </div>
@@ -261,7 +261,7 @@ export function WhatsNextCard({
                 {next.schedule.arrivalTime}
               </p>
               {minutesUntilNext !== null && (
-                <p className="text-xs text-warm-gray">
+                <p className="text-xs text-foreground-secondary">
                   {formatRelativeTime(minutesUntilNext)}
                 </p>
               )}
@@ -273,7 +273,7 @@ export function WhatsNextCard({
       {/* Running late option */}
       {minutesUntilNext !== null && minutesUntilNext <= 15 && minutesUntilNext > -15 && (
         <div className="mt-3 pt-3 border-t border-brand-primary/20">
-          <p className="text-xs text-warm-gray">
+          <p className="text-xs text-foreground-secondary">
             Running late? You can adjust the schedule or skip this activity.
           </p>
         </div>

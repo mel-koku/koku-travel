@@ -47,7 +47,7 @@ const toneStyles: Record<
 }
 
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center rounded-xl px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {
@@ -81,7 +81,7 @@ function Badge({ className, variant = "soft", tone = "brand", ...props }: BadgeP
     return (
       <div
         className={cn(
-          "inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors",
+          "inline-flex items-center rounded-xl px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors",
           toneStyles[tone][variant],
           className
         )}
@@ -121,7 +121,7 @@ const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
     <span
       ref={ref}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
+        "inline-flex items-center gap-1.5 rounded-xl border px-3 py-1 text-xs font-medium transition-colors",
         tagToneClasses[tone],
         className
       )}

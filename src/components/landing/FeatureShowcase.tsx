@@ -8,7 +8,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export function FeatureShowcase() {
   return (
-    <section className="bg-cream">
+    <section className="bg-background">
       {/* Feature 1: Full-width with parallax image + overlapping text */}
       <FeatureFullWidth />
 
@@ -122,7 +122,7 @@ function Feature70_30() {
           </ScrollReveal>
           <SplitText
             as="h2"
-            className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl"
+            className="mt-4 font-serif text-2xl font-medium text-foreground sm:text-3xl"
             splitBy="word"
             animation="clipY"
             delay={0.1}
@@ -130,7 +130,7 @@ function Feature70_30() {
             Drag, drop, done
           </SplitText>
           <ScrollReveal delay={0.2}>
-            <p className="mt-6 text-base leading-relaxed text-warm-gray">
+            <p className="mt-6 text-base leading-relaxed text-foreground-secondary">
               Building your itinerary should feel like play, not homework. Our
               editor lets you arrange your days effortlessly, with smart
               suggestions and real-time travel times.
@@ -168,7 +168,7 @@ function Feature40_60() {
           </ScrollReveal>
           <SplitText
             as="h2"
-            className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl"
+            className="mt-4 font-serif text-2xl font-medium text-foreground sm:text-3xl"
             splitBy="word"
             animation="clipY"
             delay={0.1}
@@ -176,7 +176,7 @@ function Feature40_60() {
             Your trip, everywhere
           </SplitText>
           <ScrollReveal delay={0.2}>
-            <p className="mt-6 text-base leading-relaxed text-warm-gray">
+            <p className="mt-6 text-base leading-relaxed text-foreground-secondary">
               Start planning on your laptop, check it on the train, share it
               with friends. Your itinerary lives in the cloud, ready whenever
               you are.

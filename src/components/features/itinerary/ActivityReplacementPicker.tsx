@@ -89,7 +89,7 @@ export function ActivityReplacementPicker({
       <div className="space-y-4">
         {/* Sort controls */}
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-warm-gray">Sort by:</span>
+          <span className="text-sm font-medium text-foreground-secondary">Sort by:</span>
           <div className="flex gap-1 rounded-lg border border-border p-1">
             {(["score", "rating", "distance"] as const).map((option) => (
               <button
@@ -98,7 +98,7 @@ export function ActivityReplacementPicker({
                 className={`rounded-md px-3 py-1 text-xs font-medium transition ${
                   sortBy === option
                     ? "bg-brand-primary text-white"
-                    : "text-warm-gray hover:bg-sand"
+                    : "text-foreground-secondary hover:bg-surface"
                 }`}
               >
                 {option.charAt(0).toUpperCase() + option.slice(1)}
@@ -147,22 +147,22 @@ export function ActivityReplacementPicker({
                           />
                         )}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-semibold text-charcoal">
+                          <h3 className="text-base font-semibold text-foreground">
                             {location.name}
                           </h3>
-                          <p className="text-sm text-warm-gray">
+                          <p className="text-sm text-foreground-secondary">
                             {location.city}
                             {location.region && `, ${location.region}`}
                           </p>
                           {location.category && (
-                            <span className="mt-1 inline-block rounded-full bg-surface px-2 py-0.5 text-xs text-warm-gray">
+                            <span className="mt-1 inline-block rounded-full bg-surface px-2 py-0.5 text-xs text-foreground-secondary">
                               {location.category}
                             </span>
                           )}
                           {location.shortDescription && (
                             <div className="mt-2">
                               <p
-                                className={`text-sm text-warm-gray ${
+                                className={`text-sm text-foreground-secondary ${
                                   expandedDescriptions.has(location.id) ? "" : "line-clamp-2"
                                 }`}
                               >
@@ -193,7 +193,7 @@ export function ActivityReplacementPicker({
                             >
                               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                             </svg>
-                            <span className="text-sm font-semibold text-charcoal">
+                            <span className="text-sm font-semibold text-foreground">
                               {rating.toFixed(1)}
                             </span>
                             {reviewCount > 0 && (
@@ -212,9 +212,9 @@ export function ActivityReplacementPicker({
 
                       {/* Reasoning */}
                       {candidate.reasoning.length > 0 && (
-                        <div className="mt-2 text-xs text-warm-gray">
+                        <div className="mt-2 text-xs text-foreground-secondary">
                           <details className="cursor-pointer">
-                            <summary className="font-medium text-charcoal">
+                            <summary className="font-medium text-foreground">
                               Why this match?
                             </summary>
                             <ul className="mt-1 ml-4 list-disc space-y-0.5">

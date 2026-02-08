@@ -72,13 +72,13 @@ module.exports = {
       },
       colors: {
         brand: {
-          primary: "#8c2f2f",
-          secondary: "#c6923a",
+          primary: "#c4504f",
+          secondary: "#daa54e",
         },
         semantic: {
-          success: "#2d7a6f",
-          warning: "#d4a017",
-          error: "#b33025",
+          success: "#3da193",
+          warning: "#d4b83d",
+          error: "#d44535",
         },
       },
     },

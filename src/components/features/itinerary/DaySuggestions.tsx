@@ -36,7 +36,7 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
   },
   transport: {
     bg: "bg-warm-gray/10",
-    text: "text-warm-gray",
+    text: "text-foreground-secondary",
   },
   experience: {
     bg: "bg-brand-primary/10",
@@ -91,7 +91,7 @@ export function DaySuggestions({
       >
         <div className="flex items-center gap-2">
           <Lightbulb className="h-4 w-4 text-brand-secondary" />
-          <span className="text-sm font-medium text-charcoal">
+          <span className="text-sm font-medium text-foreground">
             {gaps.length} suggestion{gaps.length !== 1 ? "s" : ""} for this day
           </span>
         </div>
@@ -128,7 +128,7 @@ export function DaySuggestions({
 
                   {/* Content */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-charcoal">{gap.title}</p>
+                    <p className="text-sm font-medium text-foreground">{gap.title}</p>
                     <p className="text-xs text-stone truncate">{gap.description}</p>
                   </div>
 
@@ -162,7 +162,7 @@ export function DaySuggestions({
                         "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-stone transition",
                         isLoading
                           ? "cursor-not-allowed opacity-50"
-                          : "hover:bg-sand"
+                          : "hover:bg-surface"
                       )}
                     >
                       Skip

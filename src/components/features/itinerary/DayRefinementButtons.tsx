@@ -115,7 +115,7 @@ export function DayRefinementButtons({
             type="button"
             onClick={() => handleRefine(option.type)}
             disabled={isRefining}
-            className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-warm-gray transition hover:border-sage/30 hover:bg-sage/10 hover:text-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground-secondary transition hover:border-sage/30 hover:bg-sage/10 hover:text-sage focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary disabled:cursor-not-allowed disabled:opacity-50"
             title={option.description}
           >
             <span>{option.icon}</span>

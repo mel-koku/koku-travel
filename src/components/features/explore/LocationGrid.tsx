@@ -44,7 +44,7 @@ export function LocationGrid({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </div>
-            <p className="text-base font-medium text-charcoal mb-1">No places found</p>
+            <p className="text-base font-medium text-foreground mb-1">No places found</p>
             <p className="text-sm text-stone text-center max-w-sm">
               Try adjusting your filters or search to find what you&apos;re looking for.
             </p>
@@ -86,7 +86,7 @@ export function LocationGrid({
                 <button
                   type="button"
                   onClick={onLoadMore}
-                  className="group/btn flex items-center gap-2 rounded-full bg-brand-primary px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-brand-primary/90 hover:shadow-md hover:px-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 active:scale-[0.98]"
+                  className="group/btn flex items-center gap-2 rounded-xl bg-brand-primary px-8 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-300 hover:bg-brand-primary/90 hover:shadow-md hover:px-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 active:scale-[0.98]"
                 >
                   <span>Show more</span>
                   <svg

@@ -28,8 +28,8 @@ export default function LayoutShowcasePage() {
           {Array.from({ length: 3 }, (_, index) => (
             <div key={`feature-${index}`} className="space-y-3">
               <div className="h-24 rounded-xl border border-border bg-background" />
-              <div className="h-2 w-24 rounded bg-sand" />
-              <div className="h-2 w-32 rounded bg-sand" />
+              <div className="h-2 w-24 rounded bg-surface" />
+              <div className="h-2 w-32 rounded bg-surface" />
             </div>
           ))}
         </Grid>
@@ -46,11 +46,11 @@ export default function LayoutShowcasePage() {
               className="rounded-2xl border border-dashed border-border bg-background/70 p-4"
             >
               <Container size={size}>
-                <div className="rounded-xl border border-border bg-background p-6 text-sm text-warm-gray sm:p-4">
+                <div className="rounded-xl border border-border bg-background p-6 text-sm text-foreground-secondary sm:p-4">
                   <p className="font-medium uppercase tracking-wide text-stone">
                     size={size}
                   </p>
-                  <p className="mt-2 text-warm-gray">
+                  <p className="mt-2 text-foreground-secondary">
                     The Container constrains content to {size.toUpperCase()}{" "}
                     widths on desktop, then eases padding on tablet and mobile.
                   </p>

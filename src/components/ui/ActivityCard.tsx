@@ -73,14 +73,14 @@ export const ActivityCard = ({
     >
       <div className="space-y-2">
         <div className="flex flex-wrap items-baseline gap-2">
-          <h3 className="text-xl font-semibold text-charcoal">{title}</h3>
+          <h3 className="text-xl font-semibold text-foreground">{title}</h3>
           {location && <span className="text-sm font-medium text-brand-primary">{location}</span>}
         </div>
-        {description && <p className="text-sm text-warm-gray">{description}</p>}
+        {description && <p className="text-sm text-foreground-secondary">{description}</p>}
       </div>
 
       {highlights.length > 0 && (
-        <ul className="grid gap-2 text-sm text-warm-gray sm:grid-cols-2">
+        <ul className="grid gap-2 text-sm text-foreground-secondary sm:grid-cols-2">
           {highlights.map((item) => (
             <li key={item} className="flex items-center gap-2">
               <span
