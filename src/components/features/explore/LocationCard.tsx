@@ -133,7 +133,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 toggleWishlist(location.id);
               }}
               aria-label={active ? "Remove from favorites" : "Add to favorites"}
-              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-lg transition-all hover:bg-white hover:scale-105 active:scale-95"
+              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-surface/90 backdrop-blur-md shadow-lg transition-all hover:bg-surface hover:scale-105 active:scale-95"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
             </button>
@@ -146,7 +146,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
               className={`pointer-events-auto flex h-10 items-center gap-1.5 rounded-full px-3 backdrop-blur-sm shadow-lg transition-all hover:scale-105 active:scale-95 ${
                 locationInItinerary
                   ? "bg-sage/90 text-white hover:bg-sage"
-                  : "bg-white/90 text-foreground hover:bg-white"
+                  : "bg-surface/90 text-foreground hover:bg-surface"
               }`}
             >
               {locationInItinerary ? (
@@ -191,7 +191,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
 
             {/* Category Pill and Duration */}
             <div className="flex items-center gap-2 pt-1">
-              <span className="text-xs font-medium capitalize bg-surface text-foreground-secondary px-2.5 py-1 rounded-xl">
+              <span className="text-xs font-medium capitalize bg-sand/50 text-foreground-secondary px-2.5 py-1 rounded-xl">
                 {location.category}
               </span>
               {estimatedDuration ? (

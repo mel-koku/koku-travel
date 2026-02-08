@@ -327,13 +327,12 @@ html.lenis-stopped {
 .divider-glow {
   height: 1px;
   background: linear-gradient(
-    to right,
+    90deg,
     transparent,
-    var(--brand-primary) 20%,
-    var(--brand-primary) 80%,
+    rgba(196, 80, 79, 0.15),
+    rgba(218, 165, 78, 0.1),
     transparent
   );
-  opacity: 0.2;
 }
 
 /*

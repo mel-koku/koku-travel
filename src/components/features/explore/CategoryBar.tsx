@@ -89,7 +89,7 @@ export function CategoryBar({
   };
 
   return (
-    <div className="sticky top-0 z-40 bg-background border-b border-border">
+    <div className="sticky top-0 z-40 bg-background border-b border-border shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-4 py-4">
           {/* Scroll left button */}
@@ -124,7 +124,7 @@ export function CategoryBar({
                     className={cn(
                       "flex flex-col items-center gap-2 pb-3 pt-1 border-b-2 transition-all min-w-[56px]",
                       isSelected
-                        ? "border-charcoal text-foreground"
+                        ? "border-brand-primary text-foreground"
                         : "border-transparent text-stone hover:text-foreground hover:border-border"
                     )}
                   >

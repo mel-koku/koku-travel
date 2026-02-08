@@ -14,9 +14,9 @@ export default async function GuidesPage() {
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
-        eyebrow="Curated"
-        title="Travel Guides"
-        subtitle="Hidden gems, seasonal highlights, and local insights for your perfect Japan trip."
+        eyebrow="Read"
+        title="Guides"
+        subtitle="Local knowledge, seasonal intel, and the stories behind the places."
         imageUrl="/images/regions/kansai-hero.jpg"
       />
 

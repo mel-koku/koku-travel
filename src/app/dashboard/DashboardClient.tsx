@@ -248,9 +248,9 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
     <div className="min-h-screen bg-background">
       <PageHeader
         compact
-        eyebrow="Welcome back"
+        eyebrow="Home base"
         title={displayName}
-        subtitle="Your trips, favorites, and bookmarks — all in one place."
+        subtitle="Your trips, saved places, and everything in between."
       />
 
       {/* Stats Section */}
@@ -291,7 +291,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
             ) : (
               <ScrollReveal delay={0.1} distance={20}>
                 <div className="flex flex-col items-center py-16 text-center">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-stone/40">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-border">
                     <svg
                       className="h-8 w-8 text-stone/50"
                       fill="none"

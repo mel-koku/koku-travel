@@ -61,9 +61,9 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={mounted ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mb-8 text-sm font-medium uppercase tracking-[0.25em] text-white/60"
+          className="mb-8 text-sm font-medium uppercase tracking-[0.3em] text-white/60"
         >
-          {locationCount.toLocaleString()}+ curated spots
+          {locationCount.toLocaleString()}+ places worth knowing
         </motion.p>
 
         {/* Massive headline: JAPAN */}
@@ -88,7 +88,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           staggerDelay={0.08}
           delay={0.8}
         >
-          Experience it like a local
+          Beyond the guidebook
         </SplitText>
 
         {/* Subheadline */}
@@ -98,7 +98,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           transition={{ duration: 0.6, delay: 1.4 }}
           className="mx-auto mt-8 max-w-md text-base text-white/70"
         >
-          Every place handpicked by people who call Japan home.
+          A collection of places you won&apos;t find on the tourist trail — each one discovered and verified by locals.
         </motion.p>
 
         {/* CTA */}

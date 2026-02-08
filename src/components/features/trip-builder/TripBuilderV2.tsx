@@ -196,14 +196,19 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
 
   return (
     <div className="flex h-full min-h-screen flex-col bg-background">
+      {/* Dark zone behind header */}
+      <div className="-mt-20 bg-charcoal pt-20">
+        <div className="texture-grain pointer-events-none absolute inset-x-0 top-0 h-40" />
+      </div>
+
       {/* Header */}
-      <header className="sticky top-20 z-20 border-b border-border bg-background">
+      <header className="sticky top-20 z-20 border-b border-white/10 bg-charcoal/80 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <div>
-            <h1 className="text-lg font-bold text-foreground sm:text-xl">
+            <h1 className="text-lg font-bold text-white sm:text-xl">
               Plan Your Trip
             </h1>
-            <p className="text-xs text-stone sm:text-sm">
+            <p className="text-xs text-white/50 sm:text-sm">
               Step {currentStep} of 3: {STEP_LABELS[currentStep]}
             </p>
           </div>
@@ -216,14 +221,14 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
                 currentStep={currentStep}
                 onClick={() => goToStep(1, 0)}
               />
-              <div className="h-px w-6 bg-border" />
+              <div className="h-px w-6 bg-white/20" />
               <StepIndicator
                 step={2}
                 currentStep={currentStep}
                 onClick={() => (step1Valid ? goToStep(2) : undefined)}
                 disabled={!step1Valid}
               />
-              <div className="h-px w-6 bg-border" />
+              <div className="h-px w-6 bg-white/20" />
               <StepIndicator
                 step={3}
                 currentStep={currentStep}
@@ -237,7 +242,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             <button
               type="button"
               onClick={handleStartOver}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-surface"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium text-white/50 hover:bg-white/10 hover:text-error"
             >
               Start Over
             </button>
@@ -313,7 +318,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground-secondary hover:bg-surface"
+              className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-foreground-secondary hover:bg-surface"
             >
               Back
             </button>
@@ -324,7 +329,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
             onClick={handleNext}
             disabled={isNextDisabled}
             className={cn(
-              "flex-1 rounded-full px-6 py-2.5 text-sm font-semibold transition",
+              "flex-1 rounded-xl px-6 py-2.5 text-sm font-semibold transition",
               isNextDisabled
                 ? "cursor-not-allowed bg-surface text-stone"
                 : "bg-brand-primary text-white hover:bg-brand-primary/90"

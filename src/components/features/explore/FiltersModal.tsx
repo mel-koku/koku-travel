@@ -207,7 +207,7 @@ export function FiltersModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-charcoal/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-charcoal/50 backdrop-blur-md"
       onClick={handleBackdropClick}
     >
       <div
@@ -354,7 +354,7 @@ export function FiltersModal({
 
             {/* Sub-types - shown when categories are selected */}
             {availableSubTypes.length > 0 && (
-              <div className="pl-4 border-l-2 border-border">
+              <div className="bg-surface/50 p-3 rounded-xl">
                 <p className="text-xs text-stone mb-2">Narrow down by type:</p>
                 <div className="flex flex-wrap gap-2">
                   {availableSubTypes.map((subType) => (

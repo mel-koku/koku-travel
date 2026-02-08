@@ -23,10 +23,13 @@ export default async function Home() {
     <main className="flex flex-col">
       <LandingHero locationCount={locationCount} />
       <ValuePropositionBar locationCount={locationCount} />
+      <div className="divider-glow" />
       <HowItWorks />
       <FeatureShowcase />
+      <div className="divider-glow" />
       <FeaturedGuides guides={featuredGuides} />
       <FeaturedLocations locations={featuredLocations} />
+      <div className="divider-glow" />
       <TestimonialSection />
       <FinalCTA />
     </main>

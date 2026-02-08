@@ -31,7 +31,7 @@ export function GuideDetailClient({ guide, locations }: GuideDetailClientProps) 
           <div className="flex items-center gap-4">
             {/* Author */}
             <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-sage/20 flex items-center justify-center">
+              <div className="h-10 w-10 rounded-full bg-sage/30 flex items-center justify-center">
                 <span className="text-sm font-medium text-sage">
                   {guide.author.charAt(0)}
                 </span>
@@ -46,7 +46,7 @@ export function GuideDetailClient({ guide, locations }: GuideDetailClientProps) 
                 {guide.tags.slice(0, 3).map((tag) => (
                   <span
                     key={tag}
-                    className="inline-flex items-center rounded-full bg-surface px-2.5 py-0.5 text-xs font-medium text-foreground-secondary"
+                    className="inline-flex items-center rounded-xl bg-sand/50 px-2.5 py-0.5 text-xs font-medium text-foreground-secondary"
                   >
                     {tag}
                   </span>
@@ -63,7 +63,7 @@ export function GuideDetailClient({ guide, locations }: GuideDetailClientProps) 
             className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all ${
               bookmarked
                 ? "bg-sage text-white hover:bg-sage/90"
-                : "bg-background border border-border text-foreground hover:border-sage hover:text-sage"
+                : "bg-surface border border-border text-foreground hover:border-sage hover:text-sage"
             } ${!user ? "opacity-50 cursor-not-allowed" : ""}`}
             title={!user ? "Sign in to bookmark" : bookmarked ? "Remove bookmark" : "Bookmark this guide"}
           >
@@ -73,7 +73,7 @@ export function GuideDetailClient({ guide, locations }: GuideDetailClientProps) 
         </div>
 
         {/* Summary */}
-        <p className="text-lg text-stone mb-8 leading-relaxed">
+        <p className="text-lg text-foreground-secondary mb-8 leading-relaxed">
           {guide.summary}
         </p>
 
