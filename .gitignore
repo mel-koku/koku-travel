@@ -170,9 +170,10 @@ docs/
 # Scraped data (temporary)
 tmp/
 
-# Migration logs
-scripts/*-log-*.json
-scripts/*.db
+# Scripts (one-time migration/maintenance, not needed in production)
+scripts/
+!scripts/data-quality/
+enrichment-targets.json
 
-# Script output (internal audit reports, generated SQL, etc.)
-scripts/output/
+# Seed/enrichment data (already imported into DB, not used at runtime)
+data/
