@@ -654,6 +654,101 @@ const coordinatesPrecisionLowRule: Rule = {
   },
 };
 
+/**
+ * Rule: Detect photos still pointing to Google proxy
+ */
+const photoStillProxiedRule: Rule = {
+  id: 'photo-still-proxied',
+  name: 'Photo Still Proxied',
+  description: 'Detects locations where primary_photo_url still points to the Google proxy endpoint',
+  category: 'completeness',
+  issueTypes: ['PHOTO_STILL_PROXIED'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      if (!loc.primary_photo_url) continue;
+
+      if (!loc.primary_photo_url.includes('/api/places/photo')) continue;
+
+      issues.push({
+        id: `${loc.id}-photo-proxied`,
+        type: 'PHOTO_STILL_PROXIED',
+        severity: 'medium',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Location "${loc.name}" still uses Google proxy for photo`,
+        details: {
+          url: loc.primary_photo_url,
+        },
+        suggestedFix: {
+          action: 'skip',
+          reason: 'Re-run photo download script to store in Supabase Storage',
+          confidence: 80,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
+/**
+ * Rule: Detect locations missing primary photo
+ */
+const missingPrimaryPhotoRule: Rule = {
+  id: 'missing-primary-photo',
+  name: 'Missing Primary Photo',
+  description: 'Detects locations without a primary_photo_url (excludes transport category)',
+  category: 'completeness',
+  issueTypes: ['MISSING_PRIMARY_PHOTO'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      // Skip transport category (airports, stations don't need photos)
+      if (loc.category?.toLowerCase() === 'transport') continue;
+
+      // Skip if has primary_photo_url
+      if (loc.primary_photo_url) continue;
+
+      issues.push({
+        id: `${loc.id}-missing-photo`,
+        type: 'MISSING_PRIMARY_PHOTO',
+        severity: 'low',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Location "${loc.name}" has no primary photo`,
+        details: {
+          category: loc.category,
+          hasPlaceId: !!loc.place_id,
+        },
+        suggestedFix: {
+          action: 'skip',
+          reason: loc.place_id
+            ? 'Has place_id - can fetch photo from Google Places'
+            : 'Needs place_id or manual photo upload',
+          confidence: loc.place_id ? 70 : 20,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
 export const completenessRules: Rule[] = [
   missingCoordinatesRule,
   missingPlaceIdRule,
@@ -666,4 +761,6 @@ export const completenessRules: Rule[] = [
   seasonalMissingTypeRule,
   foodMissingMealOptionsRule,
   coordinatesPrecisionLowRule,
+  photoStillProxiedRule,
+  missingPrimaryPhotoRule,
 ];

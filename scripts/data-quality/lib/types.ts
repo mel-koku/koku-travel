@@ -28,6 +28,7 @@ export type IssueType =
   | 'LANDMARK_MISCATEGORIZED' // Landmark that's actually a food/bar establishment
   | 'CATEGORY_INVALID'       // Category not in allowed list
   | 'PREFECTURE_REGION_MISMATCH' // Prefecture doesn't match region assignment
+  | 'CITY_IS_PREFECTURE'    // City field contains prefecture name instead of city
   // Google Places mismatch issues (prevents data corruption)
   | 'GOOGLE_TYPE_MISMATCH'   // Google type doesn't match our category (e.g., airport for restaurant)
   | 'GOOGLE_AIRPORT_MISMATCH' // Google says airport but name doesn't contain "airport"
@@ -37,9 +38,12 @@ export type IssueType =
   | 'DUPLICATE_SAME_CITY'    // Same name in same city
   | 'DUPLICATE_MANY'         // Same name across multiple cities
   | 'DUPLICATE_COORDINATES'  // Multiple locations at exact same lat/lng
+  | 'DUPLICATE_NEARBY_COORDINATES' // Same name + coordinates within 1km
   // Completeness issues
   | 'MISSING_COORDINATES'    // No lat/lng
   | 'MISSING_PLACE_ID'       // No Google Place ID
+  | 'PHOTO_STILL_PROXIED'   // primary_photo_url still points to Google proxy
+  | 'MISSING_PRIMARY_PHOTO'  // No primary_photo_url
   | 'PERMANENTLY_CLOSED'     // Business is permanently closed
   | 'MISSING_OPERATING_HOURS' // Missing operating hours for categories that need it
   | 'INVALID_RATING'         // Rating without review_count or out of range

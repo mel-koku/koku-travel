@@ -397,10 +397,74 @@ const prefectureRegionMismatchRule: Rule = {
   },
 };
 
+/**
+ * Prefectures that are also valid city names (skip these)
+ */
+const PREFECTURE_CITY_EXCEPTIONS = ['tokyo', 'osaka', 'kyoto'];
+
+/**
+ * Rule: Detect city field containing prefecture name instead of actual city
+ */
+const cityIsPrefectureRule: Rule = {
+  id: 'city-is-prefecture',
+  name: 'City Is Prefecture',
+  description: 'Detects locations where city field contains a prefecture name instead of the actual city',
+  category: 'categories',
+  issueTypes: ['CITY_IS_PREFECTURE'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+
+    const prefectureNames = Object.keys(PREFECTURE_REGION_MAP).map(p => p.toLowerCase());
+
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+
+      const cityLower = loc.city.toLowerCase().trim();
+
+      // Skip exceptions (Tokyo, Osaka, Kyoto are both prefecture and city)
+      if (PREFECTURE_CITY_EXCEPTIONS.includes(cityLower)) continue;
+
+      // Check if city matches a prefecture name
+      if (!prefectureNames.includes(cityLower)) continue;
+
+      // Find the matched prefecture (properly cased)
+      const matchedPrefecture = Object.keys(PREFECTURE_REGION_MAP).find(
+        p => p.toLowerCase() === cityLower
+      );
+
+      issues.push({
+        id: `${loc.id}-city-prefecture`,
+        type: 'CITY_IS_PREFECTURE',
+        severity: 'medium',
+        locationId: loc.id,
+        locationName: loc.name,
+        city: loc.city,
+        region: loc.region,
+        message: `Location "${loc.name}" has city "${loc.city}" which is a prefecture name, not a city`,
+        details: {
+          city: loc.city,
+          prefecture: matchedPrefecture,
+          expectedRegion: matchedPrefecture ? PREFECTURE_REGION_MAP[matchedPrefecture] : undefined,
+        },
+        suggestedFix: {
+          action: 'skip',
+          reason: 'City should be the specific city, not the prefecture',
+          confidence: 80,
+          source: 'detection',
+        },
+      });
+    }
+
+    return issues;
+  },
+};
+
 export const categoryRules: Rule[] = [
   eventWrongCategoryRule,
   accommodationMiscategorizedRule,
   landmarkMiscategorizedRule,
   categoryInvalidRule,
   prefectureRegionMismatchRule,
+  cityIsPrefectureRule,
 ];
