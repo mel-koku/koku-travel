@@ -81,7 +81,8 @@
     "bingaki-wall-made-of-sulfuric-acid-bottles-chugoku-5f419fa0": "Gallery Yamaguchi features a unique architectural element - a wall constructed from recycled sulfuric acid bottles, showcasing innovative repurposing of industrial materials into art.",
     "kimono-week-chugoku-bd9754a8": "Hagi Castle Town is a beautifully preserved samurai district where visitors can rent kimonos and stroll through historic streets lined with white-walled buildings and traditional shops.",
     "waterfront-caf-s-along-chugoku-73360f54": "Hiroshima Breakfast offers a selection of waterfront cafes along the city's picturesque rivers, perfect for enjoying morning coffee and local breakfast specialties with scenic views.",
-    "hiyoshiya-kansai-defe1a7a": "Hiyoshiya is a historic Kyoto workshop specializing in traditional wagasa (Japanese oil-paper umbrellas). Visitors can observe artisans crafting these beautiful parasols using centuries-old techniques and purchase handmade umbrellas."
+    "hiyoshiya-kansai-defe1a7a": "Hiyoshiya is a historic Kyoto workshop specializing in traditional wagasa (Japanese oil-paper umbrellas). Visitors can observe artisans crafting these beautiful parasols using centuries-old techniques and purchase handmade umbrellas.",
+    "zuih-den-mausoleum-of-date-masamune-tohoku-611b8021": "The ornate mausoleum of Date Masamune, the one-eyed dragon who founded Sendai, glitters with black lacquer and gold leaf in the extravagant Momoyama style. Destroyed in World War II and meticulously reconstructed, the buildings house the remains of three generations of Date lords amid a cypress forest. The adjacent museum displays actual artifacts recovered from the original structures."
   },
   "duplicates": [
     {
@@ -413,9 +414,9 @@
       "reason": "Duplicate: shorter name without redundant 'Festival'"
     },
     {
-      "keep": "nakagusuku-jo-site-nakagusuku-castle-ruins-okinawa-96873032",
-      "delete": ["world-heritage-okinawa-9a4da12e"],
-      "reason": "Duplicate: specific castle ruins name over generic 'World Heritage'"
+      "keep": "nakagusuku-castle-ruins-okinawa-63c8aa82",
+      "delete": ["world-heritage-okinawa-9a4da12e", "nakagusuku-jo-site-nakagusuku-castle-ruins-okinawa-96873032"],
+      "reason": "Duplicate: keep Kitanakagusuku entry with correct city, delete generic World Heritage and Nakagusuku prefecture-city entry"
     },
     {
       "keep": "nametoko-valley-shikoku-ac36c044",
@@ -617,6 +618,56 @@
       "keep": "zuigan-ji-temple-tohoku-5b802c09",
       "delete": ["zuiganji-temple-tohoku-118754b9"],
       "reason": "Duplicate: proper hyphenated romanization preferred"
+    },
+    {
+      "keep": "nagoya-city-science-museum-chubu-f054b17b",
+      "delete": ["nagoya-city-science-museum-chubu-94e593c5"],
+      "reason": "Duplicate: keep Nagoya city entry, delete Aichi prefecture-as-city entry (merge rating/reviews data)"
+    },
+    {
+      "keep": "kabushima-shrine-tohoku-92fa2b3d",
+      "delete": ["kabushima-shrine-tohoku-bb4c75d7"],
+      "reason": "Duplicate: keep Hachinohe city entry, delete Aomori prefecture-as-city entry"
+    },
+    {
+      "keep": "yaegaki-shrine-chugoku-b920e52e",
+      "delete": ["yaegaki-shrine-fortune-telling-chugoku-cbf05d7d"],
+      "reason": "Duplicate: keep Matsue city entry, delete Shimane prefecture-as-city entry"
+    },
+    {
+      "keep": "ogamiyama-shrine-okunomiya-chugoku-b2cc5a30",
+      "delete": ["ogamiyama-shrine-chugoku-40281937"],
+      "reason": "Duplicate: keep Daisen city entry, delete Tottori prefecture-as-city entry"
+    },
+    {
+      "keep": "zuih-den-mausoleum-of-date-masamune-tohoku-611b8021",
+      "delete": ["zuih-den-mausoleum-of-date-masamune-tohoku-240deb99"],
+      "reason": "Duplicate: keep Sendai city entry (with corrected description), delete Miyagi prefecture-as-city entry"
+    },
+    {
+      "keep": "oki-islands-chugoku-a4a82e8a",
+      "delete": ["oki-islands-chubu-e7a15955"],
+      "reason": "Duplicate: keep Chugoku entry (correct region), delete Chubu entry (wrong region, describes boat tour not islands)"
+    },
+    {
+      "keep": "ramen-sen-no-kaze-hokkaido-d22c4f3e",
+      "delete": ["ramen-sen-no-kaze-kansai-3f5bfa7b"],
+      "reason": "Duplicate: identical place_id, keep Sapporo entry whose coordinates match Google Places"
+    },
+    {
+      "keep": "senjojiki-chugoku-50ca49ed",
+      "delete": ["senjojiki-1-000-tatami-straw-mats-grassland-chugoku-02759a66"],
+      "reason": "Duplicate: identical place_id, keep Nagato entry with better description and cleaner ID"
+    },
+    {
+      "keep": "takayama-inari-shrine-tohoku-b4bc4130",
+      "delete": ["takayama-inari-shrine-tohoku-ea286ad4"],
+      "reason": "Duplicate: identical place_id, keep Tsugaru entry (correct city), delete Aomori (prefecture-as-city)"
+    },
+    {
+      "keep": "ueno-farm-hokkaido-d5fdff7d",
+      "delete": ["ueno-farm-kanto-23332028"],
+      "reason": "Duplicate: keep real Ueno Farm in Asahikawa, delete corrupted entry (region=Kanto, city=Kyoto, 4 reviews)"
     }
   ],
   "skip": [
@@ -627,7 +678,37 @@
     "chichibu-night-festival-kanto-843deb61",
     "seven-stars-inn-kyushu-0f40ca2e",
     "eshikoto-where-fukui-s-great-things-happen-chubu-d3f099a4",
-    "kioi-art-gallery-edo-ise-katagami-kimono-museum-kansai-362885fa"
+    "kioi-art-gallery-edo-ise-katagami-kimono-museum-kansai-362885fa",
+    "amerikamura-kanto-ed603e2d",
+    "american-village-okinawa-70dd3ca8",
+    "enishi-chugoku-20ecc108",
+    "enishi-kansai-7e1db693",
+    "hajime-kansai-0dde23e4",
+    "hajime-kyushu-4ee4749c",
+    "hasedera-kansai-88c84cab",
+    "hasedera-kanto-397c33be",
+    "kirin-brewery-kansai-2a68d082",
+    "kirin-brewery-kanto-a0fa7568",
+    "nagahama-kansai-db1c893b",
+    "nagahama-kyushu-e6e6d4a8",
+    "okinoshima-kanto-a7084a6c",
+    "okinoshima-kyushu-3948bacf",
+    "seki-chubu-3fdb094d",
+    "seki-tohoku-80704c00",
+    "senjojiki-chugoku-50ca49ed",
+    "senjojiki-kansai-338576bd",
+    "shirahama-chubu-797731ef",
+    "shirahama-kansai-eba40190",
+    "shiraito-chubu-e850f4bd",
+    "shiraito-kyushu-a2510d0e",
+    "sapporo-beer-museum-hokkaido-1bc495ff",
+    "sapporo-beer-kanto-c408555f",
+    "tsuruya-kanto-737f9dca",
+    "tsuruya-shikoku-16a33d1b",
+    "the-owari-chubu-f41442d3",
+    "tsushima-shrine-shikoku-7e19c634",
+    "ueno-park-chugoku-7b7f1b4d",
+    "ueno-park-kanto-12b612af"
   ],
   "categories": {
     "gion-matsuri-kansai-aaaa1111": "culture",

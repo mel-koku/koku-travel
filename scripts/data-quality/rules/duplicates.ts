@@ -284,8 +284,127 @@ const duplicateCoordinatesRule: Rule = {
   },
 };
 
+/**
+ * Calculate haversine distance between two coordinates in meters
+ */
+function haversineDistance(
+  lat1: number, lng1: number,
+  lat2: number, lng2: number,
+): number {
+  const R = 6371e3; // Earth's radius in meters
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lng2 - lng1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+}
+
+/**
+ * Rule: Detect same-name locations with coordinates within 1km
+ * Catches near-duplicates that exact coordinate matching misses
+ */
+const duplicateNearbyCoordinatesRule: Rule = {
+  id: 'duplicate-nearby-coordinates',
+  name: 'Duplicate Nearby Coordinates',
+  description: 'Detects locations with the same name and coordinates within 1km',
+  category: 'duplicates',
+  issueTypes: ['DUPLICATE_NEARBY_COORDINATES'],
+
+  async detect(ctx: RuleContext): Promise<Issue[]> {
+    const issues: Issue[] = [];
+    const reported = new Set<string>();
+
+    // Group locations by normalized name
+    const byName = new Map<string, Location[]>();
+    for (const loc of ctx.locations) {
+      if (shouldSkipLocation(loc.id)) continue;
+      const normalizedName = loc.name.toLowerCase().trim();
+      const existing = byName.get(normalizedName) || [];
+      existing.push(loc);
+      byName.set(normalizedName, existing);
+    }
+
+    for (const [name, locs] of byName) {
+      if (locs.length < 2) continue;
+
+      // Compare all pairs
+      for (let i = 0; i < locs.length; i++) {
+        for (let j = i + 1; j < locs.length; j++) {
+          const a = locs[i];
+          const b = locs[j];
+
+          const aLat = a.lat ?? a.coordinates?.lat;
+          const aLng = a.lng ?? a.coordinates?.lng;
+          const bLat = b.lat ?? b.coordinates?.lat;
+          const bLng = b.lng ?? b.coordinates?.lng;
+
+          // Both need coordinates
+          if (aLat == null || aLng == null || bLat == null || bLng == null) continue;
+
+          // Skip exact matches (handled by DUPLICATE_COORDINATES rule)
+          if (coordinateKey(aLat, aLng) === coordinateKey(bLat, bLng)) continue;
+
+          const distance = haversineDistance(aLat, aLng, bLat, bLng);
+          if (distance > 1000) continue; // > 1km apart
+
+          // Create issues for both locations
+          for (const loc of [a, b]) {
+            const other = loc === a ? b : a;
+            const pairKey = [a.id, b.id].sort().join('|');
+
+            if (reported.has(`${loc.id}|${pairKey}`)) continue;
+            reported.add(`${loc.id}|${pairKey}`);
+
+            const resolution = getDuplicateResolution(loc.id);
+
+            issues.push({
+              id: `${loc.id}-duplicate-nearby`,
+              type: 'DUPLICATE_NEARBY_COORDINATES',
+              severity: 'high',
+              locationId: loc.id,
+              locationName: loc.name,
+              city: loc.city,
+              region: loc.region,
+              message: `"${loc.name}" in ${loc.city} is ${Math.round(distance)}m from same-named location in ${other.city}`,
+              details: {
+                distance: Math.round(distance),
+                otherCity: other.city,
+                otherId: other.id,
+              },
+              suggestedFix: resolution
+                ? resolution.action === 'keep'
+                  ? {
+                      action: 'skip',
+                      reason: resolution.reason || 'Configured to keep',
+                      confidence: 100,
+                      source: 'override',
+                    }
+                  : {
+                      action: 'delete',
+                      reason: resolution.reason || 'Configured to delete',
+                      confidence: 100,
+                      source: 'override',
+                    }
+                : determineDuplicateFix(loc, [a, b]),
+            });
+          }
+        }
+      }
+    }
+
+    return issues;
+  },
+};
+
 export const duplicateRules: Rule[] = [
   duplicateSameCityRule,
   duplicateManyCitiesRule,
   duplicateCoordinatesRule,
+  duplicateNearbyCoordinatesRule,
 ];
