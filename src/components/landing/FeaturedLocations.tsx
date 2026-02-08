@@ -4,16 +4,9 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-} from "framer-motion";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
-import { SplitText } from "@/components/ui/SplitText";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 import type { Location } from "@/types/location";
 
@@ -40,63 +33,78 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"],
+    // tracking starts when section top hits viewport top, ends when section bottom hits viewport bottom
+    offset: ["start start", "end end"],
   });
 
-  // Horizontal scroll: vertical scroll maps to horizontal card movement
-  const xTranslate = useTransform(scrollYProgress, [0.1, 0.9], ["0%", "-60%"]);
+  // Horizontal scroll: cards stay still for the first 15% (intro readable),
+  // then slide left through the rest of the scroll range
+  const xTranslate = useTransform(scrollYProgress, [0.05, 0.9], ["0%", "-60%"]);
+  // Progress bar width
+  const progressScale = useTransform(scrollYProgress, [0.05, 0.9], [0, 1]);
 
   if (locations.length === 0) return null;
 
   return (
     <>
-      <section ref={containerRef} className="relative bg-background py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6">
-          {/* Section Header */}
-          <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <ScrollReveal>
-                <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
-                  Editor&apos;s Picks
-                </p>
-              </ScrollReveal>
-              <SplitText
-                as="h2"
-                className="mt-4 font-serif text-3xl font-medium text-foreground sm:text-4xl"
-                splitBy="word"
-                animation="clipY"
-              >
-                Places that stay with you
-              </SplitText>
-            </div>
-            <Link
-              href="/explore"
-              className="group flex items-center gap-2 text-foreground transition-colors hover:text-brand-primary"
-            >
-              <span className="text-sm font-medium uppercase tracking-wider">
-                View all locations
-              </span>
-              <ArrowRightIcon />
-            </Link>
-          </div>
-        </div>
-
-        {/* Horizontal scroll gallery */}
-        <div className="relative overflow-hidden">
+      {/* Tall outer container — the user scrolls through this height
+          while the gallery stays pinned and slides horizontally */}
+      <section ref={containerRef} className="relative h-[200vh] bg-background">
+        {/* Sticky viewport — stays visible while user scrolls the 250vh */}
+        <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-12">
+          {/* Gallery row */}
           <motion.div
             className="flex gap-6 px-6"
             style={prefersReducedMotion ? {} : { x: xTranslate }}
           >
-            {locations.slice(0, 8).map((location, index) => (
+            {/* Intro text card */}
+            <div
+              className="flex flex-shrink-0 flex-col justify-between rounded-xl bg-surface p-8"
+              style={{ width: "clamp(320px, 40vw, 450px)" }}
+            >
+              <div>
+                <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
+                  Editor&apos;s Picks
+                </p>
+                <h2 className="mt-4 font-serif text-2xl font-medium tracking-heading text-foreground sm:text-3xl">
+                  Places that stay with you
+                </h2>
+                <p className="mt-4 text-base text-foreground-secondary">
+                  Handpicked locations that represent the best of Japan — from hidden
+                  shrines to neighborhood favorites.
+                </p>
+              </div>
+              <Link
+                href="/explore"
+                className="link-reveal mt-8 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
+              >
+                View all
+                <ArrowRightIcon />
+              </Link>
+            </div>
+
+            {locations.slice(0, 8).map((location) => (
               <HorizontalLocationCard
                 key={location.id}
                 location={location}
-                index={index}
                 onSelect={setSelectedLocation}
-                prefersReducedMotion={prefersReducedMotion}
               />
             ))}
           </motion.div>
+
+          {/* Scroll progress indicator */}
+          <div className="mx-6 mt-8">
+            <div className="h-[2px] w-full bg-border">
+              <motion.div
+                className="h-full origin-left bg-brand-primary"
+                style={
+                  prefersReducedMotion
+                    ? {}
+                    : { scaleX: progressScale }
+                }
+              />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -110,62 +118,43 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
 
 function HorizontalLocationCard({
   location,
-  index,
   onSelect,
-  prefersReducedMotion,
 }: {
   location: Location;
-  index: number;
   onSelect: (location: Location) => void;
-  prefersReducedMotion: boolean | null;
 }) {
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
   const { setCursorState, isEnabled } = useCursor();
-  const cardRef = useRef<HTMLButtonElement>(null);
-
-  const skipParallax = !!prefersReducedMotion;
-  const { scrollYProgress } = useScroll({
-    target: skipParallax ? undefined : cardRef,
-    offset: ["start end", "end start"],
-  });
-
-  // Subtle parallax on the image within the card
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
 
   return (
-    <motion.button
-      ref={cardRef}
+    <button
       type="button"
       onClick={() => onSelect(location)}
       className="group relative flex-shrink-0 overflow-hidden rounded-xl text-left"
-      style={{ width: "clamp(300px, 50vw, 500px)" }}
-      initial={{ x: -30, opacity: 0 }}
-      whileInView={{ x: 0, opacity: 1 }}
-      viewport={{ once: true, margin: "-5%" }}
-      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+      style={{ width: "clamp(320px, 40vw, 450px)" }}
       onMouseEnter={() => isEnabled && setCursorState("view")}
       onMouseLeave={() => isEnabled && setCursorState("default")}
     >
-      <div className="relative aspect-[3/4]">
-        <motion.div
-          className="absolute inset-[-10%] h-[120%] w-[120%]"
-          style={skipParallax ? {} : { y: imageY }}
-        >
+      <div className="relative aspect-[4/5]">
+        <div className="absolute inset-0">
           <Image
             src={imageSrc || "/placeholder.jpg"}
             alt={location.name}
             fill
             unoptimized
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="object-cover transition-transform duration-700 group-hover:-translate-y-2"
             sizes="50vw"
           />
-        </motion.div>
+        </div>
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
 
+        {/* Bottom accent line on hover */}
+        <div className="absolute inset-x-0 bottom-0 h-[2px] scale-x-0 bg-brand-primary/60 transition-transform duration-500 group-hover:scale-x-100" />
+
         {/* Content */}
         <div className="absolute inset-x-0 bottom-0 p-6">
-          <p className="text-xs font-medium uppercase tracking-wider text-white/70">
+          <p className="text-xs font-medium uppercase tracking-wider text-white/70 transition-colors duration-500 group-hover:text-brand-secondary">
             {location.city}
           </p>
           <h3 className="mt-1 font-serif text-xl text-white sm:text-2xl">
@@ -179,7 +168,7 @@ function HorizontalLocationCard({
           )}
         </div>
       </div>
-    </motion.button>
+    </button>
   );
 }
 
