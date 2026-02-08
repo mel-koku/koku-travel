@@ -216,9 +216,9 @@
   --color-warm-gray: var(--warm-gray);
 
   /* Fonts */
-  --font-sans: var(--font-dm-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-instrument-serif);
+  --font-sans: var(--font-dm-sans), "system-ui", "sans-serif";
+  --font-mono: var(--font-geist-mono), "ui-monospace", "monospace";
+  --font-serif: var(--font-instrument-serif), "Georgia", "serif";
 
   /* Radius tokens */
   --radius-sm: calc(var(--radius) - 4px);
