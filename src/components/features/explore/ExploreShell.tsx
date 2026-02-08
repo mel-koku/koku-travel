@@ -514,21 +514,19 @@ export function ExploreShell() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Sticky Header */}
-      <StickyExploreHeader
-        resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
-        onFiltersClick={() => setIsFiltersModalOpen(true)}
-        activeFilterCount={activeFilterCount}
-        hidden={activeFilters.length === 0}
-      />
-
-      {/* Page Hero */}
-      {activeFilters.length === 0 && (
+      {/* Page Hero — rendered first so -mt-20 pulls up correctly behind header */}
+      {activeFilters.length === 0 ? (
         <PageHeader
-          eyebrow={`${total.toLocaleString()}+ Curated Places`}
+          eyebrow={`${total.toLocaleString()}+ Places`}
           title="Explore"
-          subtitle="Discover handpicked destinations across Japan — from hidden temples to local food spots."
+          subtitle="Temples, backstreets, and the restaurants your guidebook missed."
           imageUrl="/images/regions/kansai-hero.jpg"
+        />
+      ) : (
+        <StickyExploreHeader
+          resultsCount={filteredLocations.length}
+          onFiltersClick={() => setIsFiltersModalOpen(true)}
+          activeFilterCount={activeFilterCount}
         />
       )}
 

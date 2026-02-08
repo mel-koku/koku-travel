@@ -42,7 +42,7 @@ export function SearchHeader({ query, onQueryChange, totalCount }: SearchHeaderP
               value={query}
               onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search destinations..."
-              className="w-full rounded-full border border-border bg-background py-3 pl-12 pr-4 text-sm text-foreground placeholder:text-stone shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 hover:shadow-md"
+              className="w-full rounded-xl border border-border bg-background py-3 pl-12 pr-4 text-sm text-foreground placeholder:text-stone shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 hover:shadow-md"
             />
             {query && (
               <button

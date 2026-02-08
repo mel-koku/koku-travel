@@ -23,6 +23,7 @@ export function FinalCTA() {
       ref={containerRef}
       className="relative min-h-[80vh] overflow-hidden"
     >
+      <div className="pointer-events-none absolute inset-0 z-20 opacity-[0.03]" style={{ backgroundImage: 'url("/grain.svg")' }} />
       {/* Background Image with slow zoom */}
       <motion.div
         className="absolute inset-0"
@@ -50,7 +51,7 @@ export function FinalCTA() {
             animation="clipY"
             staggerDelay={0.02}
           >
-            Your Japan story starts here
+            Ready when you are
           </SplitText>
 
           <motion.p
@@ -60,8 +61,7 @@ export function FinalCTA() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="mx-auto mt-8 max-w-md text-base text-white/80"
           >
-            Join thousands of travelers who discovered the Japan that locals
-            actually experience.
+            Every trip starts with a single place. Find yours.
           </motion.p>
 
           <motion.div
@@ -77,7 +77,7 @@ export function FinalCTA() {
                 className="relative inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
               >
                 {/* Pulsing glow */}
-                <span className="absolute inset-0 animate-pulse rounded-xl bg-brand-primary/30 blur-xl" />
+                <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
                 <span className="relative">Start Planning</span>
               </a>
             </Magnetic>

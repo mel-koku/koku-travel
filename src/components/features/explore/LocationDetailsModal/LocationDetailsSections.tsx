@@ -39,7 +39,7 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
   return (
     <>
       <div className="flex flex-wrap items-center gap-3">
-        <span className="rounded-full bg-sage/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sage">
+        <span className="rounded-full bg-sage/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sage border border-sage/30">
           {location.category}
         </span>
         {details.rating ? (
@@ -79,7 +79,7 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
             <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
               Details
             </h3>
-            <ul className="space-y-1 text-sm text-sage">
+            <ul className="space-y-1 text-sm text-brand-primary">
               {details.websiteUri ? (
                 <li>
                   <a

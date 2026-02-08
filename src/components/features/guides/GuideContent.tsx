@@ -8,7 +8,7 @@ type GuideContentProps = {
 
 export function GuideContent({ body }: GuideContentProps) {
   return (
-    <article className="prose prose-lg max-w-none prose-headings:text-foreground prose-headings:font-semibold prose-p:text-stone prose-a:text-brand-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:text-stone prose-ol:text-stone prose-li:marker:text-sage">
+    <article className="prose prose-lg max-w-none prose-headings:text-foreground prose-headings:font-semibold prose-p:text-foreground-secondary prose-a:text-brand-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:text-foreground-secondary prose-ol:text-foreground-secondary prose-li:marker:text-sage">
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
@@ -27,19 +27,19 @@ export function GuideContent({ body }: GuideContentProps) {
             </h3>
           ),
           p: ({ children }) => (
-            <p className="text-stone leading-relaxed mb-4">{children}</p>
+            <p className="text-foreground-secondary leading-relaxed mb-4">{children}</p>
           ),
           ul: ({ children }) => (
-            <ul className="list-disc list-outside ml-6 mb-4 space-y-2 text-stone">
+            <ul className="list-disc list-outside ml-6 mb-4 space-y-2 text-foreground-secondary">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal list-outside ml-6 mb-4 space-y-2 text-stone">
+            <ol className="list-decimal list-outside ml-6 mb-4 space-y-2 text-foreground-secondary">
               {children}
             </ol>
           ),
-          li: ({ children }) => <li className="text-stone">{children}</li>,
+          li: ({ children }) => <li className="text-foreground-secondary">{children}</li>,
           a: ({ href, children }) => (
             <a
               href={href}
@@ -51,7 +51,7 @@ export function GuideContent({ body }: GuideContentProps) {
             </a>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-sage/30 pl-4 py-1 my-4 italic text-stone bg-surface/50 rounded-r">
+            <blockquote className="border-l-4 border-sage/50 pl-4 py-1 my-4 italic text-foreground-secondary bg-surface rounded-r">
               {children}
             </blockquote>
           ),

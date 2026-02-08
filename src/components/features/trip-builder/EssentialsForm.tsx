@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 
+import { Calendar } from "lucide-react";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { EntryPointSelector } from "./EntryPointSelector";
@@ -165,7 +166,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
       {calculatedDuration !== null && calculatedDuration >= MIN_DURATION && calculatedDuration <= MAX_DURATION && (
         <div className="rounded-lg border border-border bg-surface px-4 py-3">
           <p className="text-sm text-foreground-secondary">
-            <span className="mr-2">📅</span>
+            <Calendar className="mr-2 inline h-5 w-5" />
             <span className="font-medium text-foreground">
               {calculatedDuration}-day trip
             </span>

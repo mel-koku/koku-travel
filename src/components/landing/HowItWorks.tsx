@@ -9,27 +9,27 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 const steps = [
   {
     number: "01",
-    title: "Choose Your Cities",
+    title: "Pick your cities",
     description:
-      "Tokyo, Kyoto, Osaka, or somewhere off the beaten path. Pick the places that call to you.",
+      "Tokyo, Kyoto, Osaka — or somewhere the crowds haven't found yet.",
     image:
       "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=800&q=80",
     alt: "Tokyo cityscape at night",
   },
   {
     number: "02",
-    title: "Share Your Interests",
+    title: "Set your pace",
     description:
-      "Temples and shrines? Street food adventures? Hidden nature spots? We'll match your vibe.",
+      "Temples at dawn? Street food crawls? Tell us what moves you.",
     image:
       "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80",
     alt: "Traditional Japanese street",
   },
   {
     number: "03",
-    title: "Get Your Itinerary",
+    title: "Get your plan",
     description:
-      "A day-by-day plan filled with spots our local guides personally recommend.",
+      "A day-by-day itinerary built from places locals actually go.",
     image:
       "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&q=80",
     alt: "Cherry blossoms in Japan",
@@ -64,7 +64,7 @@ export function HowItWorks() {
               animation="clipY"
               delay={0.1}
             >
-              Three steps to your perfect trip
+              From idea to itinerary
             </SplitText>
           </div>
         </div>
@@ -136,7 +136,7 @@ function StepSection({
       <div className="flex-1 lg:max-w-md">
         {/* Watermark number */}
         <div className="relative overflow-visible">
-          <span className="absolute -left-4 -top-20 select-none font-serif text-[12vw] font-light leading-none text-stone/[0.05] lg:-top-16 lg:text-[8vw]">
+          <span className="absolute -left-4 -top-20 select-none font-serif text-[12vw] font-light leading-none text-foreground/[0.03] lg:-top-16 lg:text-[8vw]">
             {step.number}
           </span>
         </div>

@@ -24,7 +24,7 @@ export function IntroStep({ onStart }: IntroStepProps) {
   return (
     <div
       ref={containerRef}
-      className="relative flex min-h-[calc(100vh-80px)] items-center justify-center overflow-hidden bg-charcoal"
+      className="relative -mt-20 flex min-h-screen items-center justify-center overflow-hidden bg-charcoal pt-20"
     >
       {/* Parallax background image */}
       <motion.div
@@ -61,7 +61,7 @@ export function IntroStep({ onStart }: IntroStepProps) {
           staggerDelay={0.04}
           delay={0.15}
         >
-          Plan Your Trip
+          Your Japan
         </SplitText>
 
         <SplitText
@@ -72,13 +72,13 @@ export function IntroStep({ onStart }: IntroStepProps) {
           staggerDelay={0.03}
           delay={0.5}
         >
-          to Japan
+          starts here
         </SplitText>
 
         <ScrollReveal delay={0.7} distance={15}>
           <p className="mx-auto mt-6 max-w-xl text-base text-white/70 sm:text-lg">
-            Create your perfect itinerary in a few steps. Our intelligent trip
-            builder crafts a personalized travel plan based on your preferences.
+            Tell us where you want to go and what you love — we&apos;ll build a
+            day-by-day plan from places locals actually recommend.
           </p>
         </ScrollReveal>
 

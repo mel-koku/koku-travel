@@ -146,7 +146,7 @@ export default function AccountPage() {
         compact
         eyebrow="Settings"
         title="Account"
-        subtitle="Manage your profile and preferences."
+        subtitle="Profile, sync, and preferences."
       />
 
       <section className="bg-background py-12 sm:py-16">
@@ -169,7 +169,7 @@ export default function AccountPage() {
                 {signedIn && supabase && (
                   <button
                     onClick={() => supabase.auth.signOut()}
-                    className="h-10 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface transition"
+                    className="h-10 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface hover:text-foreground transition"
                   >
                     Sign out
                   </button>
