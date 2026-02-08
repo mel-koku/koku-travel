@@ -398,9 +398,36 @@ const prefectureRegionMismatchRule: Rule = {
 };
 
 /**
- * Prefectures that are also valid city names (skip these)
+ * Prefectures whose capital city shares the same name (skip these).
+ * e.g., Nara city is the capital of Nara prefecture — "Nara" is a valid city value.
+ *
+ * Excluded (capital differs from prefecture):
+ *   Hokkaido→Sapporo, Iwate→Morioka, Miyagi→Sendai, Ibaraki→Mito,
+ *   Tochigi→Utsunomiya, Gunma→Maebashi, Kanagawa→Yokohama,
+ *   Ishikawa→Kanazawa, Yamanashi→Kofu, Aichi→Nagoya, Mie→Tsu,
+ *   Shiga→Otsu, Hyogo→Kobe, Shimane→Matsue, Kagawa→Takamatsu,
+ *   Ehime→Matsuyama, Okinawa→Naha
  */
-const PREFECTURE_CITY_EXCEPTIONS = ['tokyo', 'osaka', 'kyoto'];
+const PREFECTURE_CITY_EXCEPTIONS = [
+  // Already excepted
+  'tokyo', 'osaka', 'kyoto',
+  // Tohoku
+  'aomori', 'akita', 'yamagata', 'fukushima',
+  // Kanto
+  'saitama', 'chiba',
+  // Chubu
+  'niigata', 'toyama', 'fukui', 'nagano', 'gifu', 'shizuoka',
+  // Kansai
+  'nara', 'wakayama',
+  // Chugoku
+  'tottori', 'okayama', 'hiroshima', 'yamaguchi',
+  // Shikoku
+  'tokushima', 'kochi',
+  // Kyushu
+  'fukuoka', 'saga', 'nagasaki', 'kumamoto', 'oita', 'miyazaki', 'kagoshima',
+  // Okinawa — Okinawa City (沖縄市) is a real city distinct from Naha
+  'okinawa',
+];
 
 /**
  * Rule: Detect city field containing prefecture name instead of actual city
