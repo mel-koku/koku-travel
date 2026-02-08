@@ -32,6 +32,24 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 - **Scripts** (gitignored): `export-city-fix-batches.ts`, `import-city-fix-results.ts`
 - **npm scripts**: `city-fix:export`, `city-fix:import`, `city-fix:import:dry`
 
+### Category Audit & Fix (243 locations recategorized)
+- **Problem**: Many locations miscategorized — waterfalls/gorges/caves/onsen as "landmark", nature spots as "entertainment", restaurants as "bar", "attraction" used as catch-all
+- **Approach**: Comprehensive audit of all 3,941 locations using keyword analysis (name + description), Google primary type cross-referencing, and manual review of edge cases
+- **Results**: 243 category corrections applied
+  - landmark → nature: 92 (gorges, waterfalls, caves, onsen, ski resorts)
+  - attraction → nature: 40 (onsen, outdoor adventure, ski resorts, scenic routes)
+  - culture → nature: 21 (onsen towns — Arima, Kusatsu, Hakone, Dogo, etc.)
+  - attraction → culture: 15 (craft workshops, art islands, festivals, museums)
+  - attraction → landmark: 15 (area guides, scenic railways, viewpoints)
+  - attraction → food: 11 (breweries, distilleries, farms)
+  - bar → food: 8 (restaurants miscategorized as bars)
+  - landmark → shopping: 8 (shopping streets and markets)
+  - landmark → culture: 7 (shrines, temples, museums)
+  - Others: 26 (entertainment, experience, culture → shopping/food)
+- **"attraction" and "experience" categories eliminated** — fully redistributed to proper categories
+- **False positives excluded**: Huis Ten Bosch (theme park), Glover Garden (historic), Miharu Takizakura (cherry tree), Sonohyan-utaki (shrine gate), Hof Brau (beer hall)
+- **Script** (gitignored): `scripts/fix-categories.ts` — keyword rules + manual overrides + dry-run mode
+
 ### Data Quality Status
 - **Health Score**: 100/100
 - **Remaining issues** (low/info only): `COORDINATES_PRECISION_LOW` (468 info), `MISSING_PRIMARY_PHOTO` (83 low), `NAME_CITY_MISMATCH` (2 medium)
