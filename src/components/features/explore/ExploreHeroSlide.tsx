@@ -43,6 +43,7 @@ export function ExploreHeroSlide({
         src={imageSrc}
         alt={location.name}
         fill
+        unoptimized
         className="object-cover"
         sizes="100vw"
         priority={index < 2}
@@ -74,8 +75,8 @@ export function ExploreHeroSlide({
 
             {/* Location name */}
             <motion.h2
-              initial={{ opacity: 0, y: 20, clipPath: "inset(100% 0 0 0)" }}
-              animate={{ opacity: 1, y: 0, clipPath: "inset(0% 0 0 0)" }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{
                 duration: 0.7,

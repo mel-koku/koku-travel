@@ -17,6 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 import {
   Fragment,
+  memo,
   useState,
   useEffect,
   useCallback,
@@ -665,7 +666,7 @@ export const ItineraryTimeline = ({
                       originCoordinates={originCoordinates!}
                       destinationCoordinates={destinationCoordinates!}
                       dayTimezone={day.timezone}
-                      onUpdate={(activityId, patch) => handleUpdate(activityId, patch)}
+                      onUpdate={handleUpdate}
                     />
                   ) : undefined;
 
@@ -792,7 +793,7 @@ type TravelSegmentWrapperProps = {
   onUpdate: (activityId: string, patch: Partial<ItineraryActivity>) => void;
 };
 
-function TravelSegmentWrapper({
+const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
   activity,
   previousActivity,
   travelFromPrevious,
@@ -896,5 +897,5 @@ function TravelSegmentWrapper({
       isRecalculating={isRecalculatingRoute}
     />
   );
-}
+});
 

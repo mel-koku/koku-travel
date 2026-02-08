@@ -31,8 +31,8 @@ const motionTags = {
 
 const animations: Record<string, AnimDef> = {
   clipY: {
-    hidden: { clipPath: "inset(100% 0 0 0)", y: 20, opacity: 0 },
-    visible: { clipPath: "inset(-10% 0 -10% 0)", y: 0, opacity: 1 },
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1 },
   },
   fadeUp: {
     hidden: { opacity: 0, y: 30 },

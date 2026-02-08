@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { X, AlertTriangle, MapPin } from "lucide-react";
 import { useWishlistLocations } from "@/hooks/useWishlistLocations";
+import { resizePhotoUrl } from "@/lib/google/transformations";
 import { cn } from "@/lib/cn";
 
 export type SavedLocationsPreviewProps = {
@@ -68,9 +69,10 @@ export function SavedLocationsPreview({
             {location.image ? (
               <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
                 <Image
-                  src={location.image}
+                  src={resizePhotoUrl(location.image, 400) ?? location.image}
                   alt={location.name}
                   fill
+                  unoptimized
                   className="object-cover"
                   sizes="48px"
                 />

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { resizePhotoUrl } from "@/lib/google/transformations";
 import type { Location } from "@/types/location";
 
 type LinkedLocationsProps = {
@@ -32,7 +33,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
 }
 
 function LocationMiniCard({ location }: { location: Location }) {
-  const imageSrc = location.primaryPhotoUrl || location.image || FALLBACK_IMAGE;
+  const imageSrc = resizePhotoUrl(location.primaryPhotoUrl || location.image, 400) || FALLBACK_IMAGE;
 
   return (
     <Link
@@ -45,6 +46,7 @@ function LocationMiniCard({ location }: { location: Location }) {
           src={imageSrc}
           alt={location.name}
           fill
+          unoptimized
           className="object-cover transition-transform group-hover:scale-105"
           sizes="80px"
         />

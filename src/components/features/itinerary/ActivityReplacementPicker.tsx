@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import Image from "next/image";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
+import { resizePhotoUrl } from "@/lib/google/transformations";
 import type { ReplacementCandidate } from "@/hooks/useReplacementCandidates";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { numberFormatter } from "./activityUtils";
@@ -29,7 +30,7 @@ export function ActivityReplacementPicker({
   const [sortBy, setSortBy] = useState<"score" | "rating" | "distance">("score");
   const [expandedDescriptions, setExpandedDescriptions] = useState<Set<string>>(new Set());
 
-  const toggleDescription = (locationId: string) => {
+  const toggleDescription = useCallback((locationId: string) => {
     setExpandedDescriptions((prev) => {
       const next = new Set(prev);
       if (next.has(locationId)) {
@@ -39,7 +40,7 @@ export function ActivityReplacementPicker({
       }
       return next;
     });
-  };
+  }, []);
 
   const sortedCandidates = useMemo(() => {
     const sorted = [...candidates];
@@ -65,10 +66,10 @@ export function ActivityReplacementPicker({
     return sorted;
   }, [candidates, sortBy]);
 
-  const handleSelect = (candidate: ReplacementCandidate) => {
+  const handleSelect = useCallback((candidate: ReplacementCandidate) => {
     onSelect(candidate);
     setSelectedIndex(null);
-  };
+  }, [onSelect]);
 
   const getScoreColor = (score: number) => {
     if (score >= 80) return "text-success bg-success/10";
@@ -137,10 +138,11 @@ export function ActivityReplacementPicker({
                       <div className="flex items-start gap-3">
                         {location.image && (
                           <Image
-                            src={location.image}
+                            src={resizePhotoUrl(location.image, 400) ?? location.image}
                             alt={location.name}
                             width={80}
                             height={80}
+                            unoptimized
                             className="h-20 w-20 shrink-0 rounded-lg object-cover"
                           />
                         )}
