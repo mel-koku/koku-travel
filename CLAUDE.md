@@ -3,6 +3,34 @@
 ## Project Overview
 Koku Travel is a Next.js trip planning application for Japan travel. It includes a trip builder, itinerary generation, and smart prompts for meal/experience suggestions.
 
+## Recent Work (2026-02-09)
+
+### Landing Page Redesign
+- **Typography**: Fraunces + Plus Jakarta Sans → Instrument Serif + DM Sans (Geist Mono kept for data/stats)
+- **Font rule**: Instrument Serif (italic) for display headings (`text-xl`+); DM Sans for body/functional UI (`text-lg` and below)
+- **Tailwind v4 note**: `tailwind.config.js` `fontFamily` is ignored — fonts must be defined in `@theme` block in `globals.css` with fallbacks
+- **Hero**: Scroll-pinned typographic mask reveal — "KOKU" on dark bg, clip-path expands to full-bleed image on scroll, CTA fades in
+- **Philosophy**: Full-bleed cinematic image (80vh) with centered stats (AnimatedNumber count-up)
+- **ImmersiveShowcase**: 300vh scroll-pinned 3-act section replacing HowItWorks + FeatureShowcase
+- **FeaturedLocations**: 200vh horizontal scroll gallery with intro text card and progress bar
+- **TestimonialTheater**: Three editorial spreads (50/50 image/quote split, alternating layout)
+- **FeaturedGuides**: Asymmetric grid (featured guide spans 2 cols)
+- **FinalCTA**: Single CTA + text link, refined copy
+- **Header**: Hidden on landing page load, fades in after hero scroll (~2.5% page scroll); stays visible through hero zone
+- **Logo**: "Koku" in Instrument Serif italic + "Travel" in DM Sans light uppercase
+- **New components**: `HeroOpening.tsx`, `Philosophy.tsx`, `ImmersiveShowcase.tsx`, `TestimonialTheater.tsx`, `AnimatedNumber.tsx`, `ScrollProgressBar.tsx`
+- **Removed sections**: `LandingHero`, `ValuePropositionBar`, `HowItWorks`, `FeatureShowcase`, `TestimonialSection`, divider-glow elements
+- **Animation additions**: `clipX` in SplitText, `explore`/`read` cursor states, `.link-reveal` CSS underline, scroll progress bar
+- **Font consistency pass**: `font-serif` on display headings across all pages; placeholder colors unified to `text-stone`
+- **Key files**:
+  - `src/app/layout.tsx` — Instrument Serif + DM Sans + Geist Mono imports
+  - `src/app/globals.css` — `@theme` font definitions with fallbacks, `.link-reveal` utility
+  - `tailwind.config.js` — letter-spacing tokens (display, heading, wide, ultra)
+  - `src/components/Header.tsx` — logo redesign, landing page header reveal logic
+  - `src/components/landing/*.tsx` — all new/redesigned landing sections
+
+---
+
 ## Recent Work (2026-02-08)
 
 ### Google API Cost Mitigation
