@@ -7,19 +7,19 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 const testimonials = [
   {
     quote:
-      "We found a tiny ramen shop in a Kyoto backstreet that wasn't in any guidebook. Best meal of our entire trip.",
+      "We ducked into a ramen shop down a Kyoto backstreet — no English sign, six seats, steam everywhere. Best bowl of our lives.",
     author: "Sarah Chen",
     location: "San Francisco",
   },
   {
     quote:
-      "Five trips to Japan and Koku still showed me places I'd never heard of. My friends thought I hired a private guide.",
+      "Five trips to Japan and Koku still found places I'd never heard of. A cedar forest shrine at dawn, completely alone. My friends thought I'd hired a private guide.",
     author: "Marcus Johnson",
     location: "London",
   },
   {
     quote:
-      "The itinerary felt personal, not algorithmic. It took me to a hidden garden in Kanazawa I would have walked right past.",
+      "The itinerary didn't feel algorithmic — it felt like someone who actually lives there planned it for us. A moss garden in Kanazawa I would have walked right past.",
     author: "Yuki Tanaka",
     location: "Vancouver",
   },
@@ -41,8 +41,9 @@ export function TestimonialSection() {
 
   return (
     <section className="relative overflow-hidden bg-charcoal">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("/grain.svg")' }} />
       {/* Oversized decorative quotation mark */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-serif text-[40vw] leading-none text-white/[0.03]">
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-serif text-[40vw] leading-none text-foreground/[0.04]">
         &ldquo;
       </div>
 

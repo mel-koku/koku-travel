@@ -67,7 +67,7 @@ export function StickyExploreHeader({
   );
 
   const buttonClassName = cn(
-    "flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary shadow-sm transition-all hover:bg-brand-primary/5 hover:shadow-md"
+    "flex items-center gap-2 rounded-full border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary shadow-sm transition-all hover:bg-surface hover:shadow-md"
   );
 
   return (

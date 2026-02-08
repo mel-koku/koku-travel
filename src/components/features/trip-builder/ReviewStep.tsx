@@ -290,12 +290,12 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
       {/* Preferences Section */}
       <div>
         <div className="mb-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Customize</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Almost there</p>
           <h3 className="mt-1 font-serif text-lg text-foreground">
-            Preferences
+            Fine-tune your trip
           </h3>
           <p className="text-sm text-stone">
-            Add details to personalize your recommendations
+            These details help us build a better plan for you
           </p>
         </div>
 

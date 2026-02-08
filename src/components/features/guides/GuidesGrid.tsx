@@ -13,7 +13,7 @@ export function GuidesGrid({ guides }: GuidesGridProps) {
   if (guides.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
-        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-stone/40">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed border-border">
           <BookIcon className="h-8 w-8 text-stone/50" />
         </div>
         <SplitText

@@ -36,11 +36,11 @@ export function RegionStep({ onValidityChange }: RegionStepProps) {
           animation="clipY"
           staggerDelay={0.06}
         >
-          Discover Japan&apos;s Regions
+          Where are you headed?
         </SplitText>
         <ScrollReveal delay={0.3} distance={15}>
           <p className="mx-auto mt-2 max-w-2xl text-base text-foreground-secondary">
-            Each region offers unique experiences, from ancient temples to modern cities.
+            Pick one region or several — each one opens up a different side of Japan.
           </p>
         </ScrollReveal>
       </div>

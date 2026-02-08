@@ -693,53 +693,78 @@ export const ItineraryShell = ({
 
   return (
     <section className="mx-auto min-h-[calc(100vh-64px)] max-w-screen-2xl">
+      {/* Dark banner — merges with transparent header */}
+      <div className="relative -mt-20 bg-charcoal pt-24 pb-6">
+        <div className="texture-grain absolute inset-0" />
+        <div className="relative z-10 mx-auto max-w-screen-2xl px-4 lg:px-8">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="flex items-center gap-3">
+                <h1
+                  ref={finalHeadingRef}
+                  tabIndex={-1}
+                  className="font-serif text-2xl font-medium text-white focus:outline-none sm:text-3xl"
+                >
+                  Your Itinerary
+                </h1>
+                {isUsingMock && (
+                  <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                    Mock
+                  </span>
+                )}
+              </div>
+              {createdLabel && (
+                <p className="mt-1 text-[11px] text-white/50">
+                  Saved {createdLabel}
+                  {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
+                </p>
+              )}
+              {/* Cities chips */}
+              {selectedCityNames.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {selectedCityNames.map((cityName) => (
+                    <span
+                      key={cityName}
+                      className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white/80"
+                    >
+                      {cityName}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+            {/* Action buttons */}
+            <div className="flex items-center gap-2">
+              <GuideToggle enabled={guideEnabled} onToggle={handleToggleGuide} />
+              <button
+                onClick={handleOptimizeRoute}
+                disabled={isOptimizing || !currentDay?.activities?.length}
+                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-50"
+                title="Optimize route order to minimize travel"
+              >
+                {isOptimizing ? (
+                  <span className="animate-pulse">Optimizing...</span>
+                ) : (
+                  "Optimize Route"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
           {/* Header */}
           <div className="border-b border-border bg-background p-3 lg:rounded-t-2xl lg:border lg:border-b-0">
-            <div className="flex items-center justify-between">
-              <h1
-                ref={finalHeadingRef}
-                tabIndex={-1}
-                className="text-lg font-semibold text-foreground focus:outline-none"
-              >
-                Your Itinerary
-              </h1>
-              {isUsingMock && (
-                <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
-                  Mock
-                </span>
-              )}
-            </div>
-            {createdLabel && (
-              <p className="mt-0.5 text-[11px] text-stone">
-                Saved {createdLabel}
-                {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
-              </p>
-            )}
-
-            {/* Cities chips */}
-            {selectedCityNames.length > 0 && (
-              <div className="mt-2 flex flex-wrap gap-1">
-                {selectedCityNames.map((cityName) => (
-                  <span
-                    key={cityName}
-                    className="inline-flex items-center rounded-full bg-sage/15 px-2 py-0.5 text-[11px] font-medium text-sage"
-                  >
-                    {cityName}
-                  </span>
-                ))}
-              </div>
-            )}
-
             {/* Trip Summary Accordion */}
             {tripBuilderData && (
-              <TripSummary tripData={tripBuilderData} className="mt-2" defaultCollapsed />
+              <TripSummary tripData={tripBuilderData} className="mb-2" defaultCollapsed />
             )}
 
             {/* Day Selector Dropdown */}
-            <div className="mt-3 flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <div className="flex-1">
                 <DaySelector
                   totalDays={days.length}
@@ -749,19 +774,6 @@ export const ItineraryShell = ({
                   tripStartDate={tripStartDate}
                 />
               </div>
-              <GuideToggle enabled={guideEnabled} onToggle={handleToggleGuide} />
-              <button
-                onClick={handleOptimizeRoute}
-                disabled={isOptimizing || !currentDay?.activities?.length}
-                className="rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-stone/5 disabled:opacity-50"
-                title="Optimize route order to minimize travel"
-              >
-                {isOptimizing ? (
-                  <span className="animate-pulse">Optimizing...</span>
-                ) : (
-                  "Optimize Route"
-                )}
-              </button>
             </div>
           </div>
 

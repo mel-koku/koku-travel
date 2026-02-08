@@ -548,7 +548,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   ? "shadow-lg"
                   : "shadow-sm hover:shadow-lg hover:-translate-y-0.5"
             }`}
-            style={isSelected && !isDragging ? { outline: "2px solid #2d7a6f", outlineOffset: "-2px" } : undefined}
+            style={isSelected && !isDragging ? { outline: "2px solid var(--color-sage)", outlineOffset: "-2px" } : undefined}
           >
             {/* Large Image Section - aspect ratio changes on expand */}
             <motion.div
@@ -578,7 +578,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
                 {/* Drag Handle */}
                 {!hideDragHandle && (
-                  <div className="rounded-lg bg-white/90 p-1 shadow-sm backdrop-blur-sm">
+                  <div className="rounded-lg bg-surface/90 border border-border/50 p-1 shadow-sm backdrop-blur-sm">
                     <DragHandle
                       variant="place"
                       label={dragHandleLabel}
@@ -600,7 +600,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                           ? "text-white"
                           : `${colorScheme.badge} ${colorScheme.badgeText}`
                       }`}
-                      style={isSelected ? { backgroundColor: "#2d7a6f" } : undefined}
+                      style={isSelected ? { backgroundColor: "var(--color-sage)" } : undefined}
                       title={isStartEntryPoint ? "Starting point" : isEndEntryPoint ? "Ending point" : `Stop ${placeNumber}`}
                     >
                       {displayLabel}
@@ -641,7 +641,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               {/* Tags Row */}
               <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
                 {placeLocation.category ? (
-                  <span className="inline-block rounded-full bg-surface px-2 py-0.5 text-[11px] font-medium text-foreground-secondary capitalize">
+                  <span className="inline-block rounded-xl bg-sand/50 px-2 py-0.5 text-[11px] font-medium text-foreground-secondary capitalize">
                     {placeLocation.category}
                   </span>
                 ) : null}
@@ -728,7 +728,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
                     {/* Operating hours — only show if we have at least 3 days (filters out bad 1-day data for open areas/attractions) */}
                     {locationDetails?.regularOpeningHours && locationDetails.regularOpeningHours.length >= 3 && (
-                      <div className="mt-3 rounded-lg bg-surface/50 p-2.5">
+                      <div className="mt-3 rounded-lg bg-surface/70 p-2.5">
                         <p className="mb-1.5 text-xs font-semibold text-foreground">Hours</p>
                         <div className="space-y-0.5">
                           {locationDetails.regularOpeningHours.slice(0, 7).map((hours, idx) => (
@@ -804,7 +804,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     </svg>
                   </button>
                   {reasoningOpen && (
-                    <div className="mt-2 rounded-lg bg-surface/50 p-2 text-xs text-foreground-secondary">
+                    <div className="mt-2 rounded-lg bg-surface/70 p-2 text-xs text-foreground-secondary">
                       <p className="font-medium">{activity.recommendationReason.primaryReason}</p>
                       {activity.recommendationReason.factors && activity.recommendationReason.factors.length > 0 && (
                         <ul className="mt-1 space-y-0.5 pl-3">
@@ -890,7 +890,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground-secondary shadow-sm placeholder:text-stone/50 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                  className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground-secondary shadow-sm placeholder:text-stone focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                   rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}

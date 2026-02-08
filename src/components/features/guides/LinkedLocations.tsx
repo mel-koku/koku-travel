@@ -62,7 +62,7 @@ function LocationMiniCard({ location }: { location: Location }) {
           {location.region && location.city !== location.region && `, ${location.region}`}
         </p>
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-xs font-medium capitalize bg-surface text-foreground-secondary px-2 py-0.5 rounded-full">
+          <span className="text-xs font-medium capitalize bg-sand/50 text-foreground-secondary px-2 py-0.5 rounded-xl">
             {location.category}
           </span>
           {location.estimatedDuration && (

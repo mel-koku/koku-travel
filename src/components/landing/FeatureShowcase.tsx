@@ -64,13 +64,13 @@ function FeatureFullWidth() {
               animation="clipY"
               delay={0.1}
             >
-              The places guidebooks don&apos;t know about
+              The places locals keep to themselves
             </SplitText>
             <ScrollReveal delay={0.3}>
               <p className="mt-6 text-base leading-relaxed text-white/80">
-                Every spot in our collection has been personally visited and
-                approved by locals who know the difference between tourist-trap
-                and treasure.
+                Every place in our collection was found the same way you&apos;d
+                find it if you lived here — word of mouth, wandering, and years
+                of knowing where to look.
               </p>
             </ScrollReveal>
           </div>
@@ -127,13 +127,13 @@ function Feature70_30() {
             animation="clipY"
             delay={0.1}
           >
-            Drag, drop, done
+            Build your days, your way
           </SplitText>
           <ScrollReveal delay={0.2}>
             <p className="mt-6 text-base leading-relaxed text-foreground-secondary">
-              Building your itinerary should feel like play, not homework. Our
-              editor lets you arrange your days effortlessly, with smart
-              suggestions and real-time travel times.
+              Drag activities into place, swap things around, and watch
+              travel times update in real time. Planning should feel like
+              anticipation, not homework.
             </p>
           </ScrollReveal>
         </div>
@@ -173,13 +173,12 @@ function Feature40_60() {
             animation="clipY"
             delay={0.1}
           >
-            Your trip, everywhere
+            Your itinerary, everywhere
           </SplitText>
           <ScrollReveal delay={0.2}>
             <p className="mt-6 text-base leading-relaxed text-foreground-secondary">
-              Start planning on your laptop, check it on the train, share it
-              with friends. Your itinerary lives in the cloud, ready whenever
-              you are.
+              Start on your laptop, check it on the Shinkansen, share it
+              with friends. Your plan lives in the cloud, ready when you are.
             </p>
           </ScrollReveal>
         </div>

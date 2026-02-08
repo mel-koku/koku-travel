@@ -163,7 +163,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
                 key={airport.id}
                 type="button"
                 onClick={() => selectAirport(airport)}
-                className="rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:border-brand-primary hover:text-sage transition-colors"
+                className="rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:border-brand-primary hover:text-brand-primary transition-colors"
               >
                 {airport.shortName}
               </button>

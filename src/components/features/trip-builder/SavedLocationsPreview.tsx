@@ -62,7 +62,7 @@ export function SavedLocationsPreview({
               "flex items-center gap-3 rounded-lg border p-3",
               isCitySelected
                 ? "border-border bg-background"
-                : "border-brand-secondary/20 bg-brand-secondary/5"
+                : "border-warning/20 bg-warning/5"
             )}
           >
             {/* Location Image */}
@@ -94,7 +94,7 @@ export function SavedLocationsPreview({
                   {location.category && ` \u00b7 ${location.category}`}
                 </span>
                 {!isCitySelected && (
-                  <span className="flex items-center gap-1 text-xs text-brand-secondary">
+                  <span className="flex items-center gap-1 text-xs text-warning">
                     <AlertTriangle className="h-3 w-3" />
                     Not in selected cities
                   </span>

@@ -13,13 +13,14 @@ export function ValuePropositionBar({
   const prefersReducedMotion = useReducedMotion();
 
   const stats = [
-    { value: locationCount.toLocaleString(), label: "Curated Locations" },
-    { value: "47", label: "Prefectures Covered" },
-    { value: "100%", label: "Local Verified" },
+    { value: locationCount.toLocaleString(), label: "Places Worth Knowing" },
+    { value: "47", label: "Prefectures Mapped" },
+    { value: "100%", label: "Locally Verified" },
   ];
 
   return (
-    <section className="bg-charcoal py-16 sm:py-20">
+    <section className="relative overflow-hidden bg-charcoal py-16 sm:py-20">
+      <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("/grain.svg")' }} />
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-12 sm:grid-cols-3">
           {stats.map((stat, index) => (
@@ -27,8 +28,8 @@ export function ValuePropositionBar({
               <div className="text-center">
                 <motion.p
                   className="font-mono text-3xl font-medium text-white sm:text-4xl"
-                  initial={prefersReducedMotion ? {} : { opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={prefersReducedMotion ? {} : { opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
                 >

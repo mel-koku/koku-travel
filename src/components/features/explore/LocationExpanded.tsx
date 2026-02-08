@@ -147,7 +147,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-foreground shadow-md backdrop-blur-sm transition-transform hover:scale-105"
+          className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-md backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
           aria-label="Close"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -183,7 +183,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             <button
               type="button"
               onClick={handleToggleFavorite}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-md backdrop-blur-sm transition-transform hover:scale-105"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-surface/90 shadow-md backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
               aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
             >
               <HeartIcon active={isFavorite} animating={heartAnimating} variant="overlay" />
@@ -191,7 +191,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             <button
               type="button"
               onClick={handleToggleItinerary}
-              className="flex items-center gap-1.5 rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-foreground shadow-md backdrop-blur-sm transition-transform hover:scale-105"
+              className="flex items-center gap-1.5 rounded-full bg-surface/90 px-4 py-2 text-sm font-medium text-foreground shadow-md backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
               aria-label={locationInItinerary ? "Remove from itinerary" : "Add to itinerary"}
             >
               {locationInItinerary ? (

@@ -11,12 +11,12 @@ export default function FavoritesPage() {
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
-        eyebrow="Your Collection"
+        eyebrow="Saved"
         title="Favorites"
         subtitle={
           count > 0
-            ? `${count} handpicked ${count === 1 ? "location" : "locations"} waiting for your next adventure.`
-            : "Save the places that inspire you most."
+            ? `${count} ${count === 1 ? "place" : "places"} on your list.`
+            : "Bookmark the places that catch your eye."
         }
         imageUrl="/images/regions/kyushu-hero.jpg"
       />

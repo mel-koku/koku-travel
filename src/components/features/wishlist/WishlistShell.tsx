@@ -22,8 +22,8 @@ export default function WishlistShell() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: Math.min(wishlist.length, 8) }).map((_, i) => (
               <div key={i} className="space-y-3">
-                <div className="h-64 animate-pulse rounded-xl bg-background" />
-                <div className="h-10 animate-pulse rounded bg-background" />
+                <div className="h-64 animate-pulse rounded-xl bg-surface/50" />
+                <div className="h-10 animate-pulse rounded bg-surface/50" />
               </div>
             ))}
           </div>
@@ -57,7 +57,7 @@ export default function WishlistShell() {
         {savedLocations.length === 0 ? (
           <div className="flex flex-col items-center py-24 text-center">
             {/* Dashed circle with heart icon */}
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-stone/40">
+            <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-border">
               <svg
                 className="h-10 w-10 text-stone/50"
                 fill="none"

@@ -88,7 +88,7 @@ export function InterestChips({
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
                 isSelected
                   ? "border-brand-primary bg-brand-primary text-white hover:bg-brand-primary/90"
-                  : "border-border bg-background text-foreground-secondary hover:bg-surface",
+                  : "border-border bg-background text-foreground-secondary hover:bg-surface hover:border-brand-primary/30",
                 isDisabled && "cursor-not-allowed opacity-50 hover:bg-background"
               )}
             >

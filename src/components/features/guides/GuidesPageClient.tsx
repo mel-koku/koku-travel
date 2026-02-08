@@ -202,7 +202,7 @@ function SearchInput({
       <input
         id="guides-search"
         type="text"
-        className="w-full h-10 rounded-xl border border-border bg-surface text-foreground placeholder-stone pl-9 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+        className="w-full h-10 rounded-xl border border-border bg-surface text-foreground placeholder-stone pl-9 pr-10 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-primary focus:shadow-md"
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}

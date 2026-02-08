@@ -18,7 +18,7 @@ export function ActiveFilterChips({
   }
 
   return (
-    <div className="bg-surface/50 rounded-2xl px-4 py-3">
+    <div className="bg-surface border border-border/30 rounded-2xl px-4 py-3">
       <div className="flex flex-wrap items-center justify-center gap-2">
         {filters.map((filter, index) => (
           <button

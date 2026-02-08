@@ -39,14 +39,13 @@ export default function Footer() {
           <div className="lg:col-span-5">
             <h3 className="font-serif text-3xl sm:text-4xl">Koku Travel</h3>
             <p className="mt-4 max-w-md text-base text-white/60">
-              Experience Japan like a local. Every location handpicked,
-              every itinerary crafted with care.
+              Curated by people who know Japan from the inside.
             </p>
 
             {/* Newsletter */}
             <div className="mt-8">
               <label className="text-xs uppercase tracking-[0.3em] text-white/40">
-                Stay Inspired
+                Stay in the loop
               </label>
               <div className="mt-3 flex gap-2">
                 <input

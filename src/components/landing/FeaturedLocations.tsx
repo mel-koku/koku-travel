@@ -57,7 +57,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
             <div>
               <ScrollReveal>
                 <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
-                  Staff Picks
+                  Editor&apos;s Picks
                 </p>
               </ScrollReveal>
               <SplitText
@@ -66,7 +66,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
                 splitBy="word"
                 animation="clipY"
               >
-                Worth your time
+                Places that stay with you
               </SplitText>
             </div>
             <Link
