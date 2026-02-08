@@ -32,7 +32,10 @@ const LOCATION_DETAIL_API_COLUMNS = `
   place_id,
   preferred_transit_modes,
   primary_photo_url,
-  editorial_summary
+  editorial_summary,
+  website_uri,
+  phone_number,
+  google_maps_uri
 `.replace(/\s+/g, "");
 
 /**
@@ -59,6 +62,9 @@ type LocationDetailApiRow = {
   preferred_transit_modes: Location["preferredTransitModes"] | null;
   primary_photo_url: string | null;
   editorial_summary: string | null;
+  website_uri: string | null;
+  phone_number: string | null;
+  google_maps_uri: string | null;
 };
 
 type RouteContext = {
@@ -135,6 +141,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
     placeId: row.place_id ?? undefined,
     primaryPhotoUrl: row.primary_photo_url ?? undefined,
     editorialSummary: row.editorial_summary ?? undefined,
+    websiteUri: row.website_uri ?? undefined,
+    phoneNumber: row.phone_number ?? undefined,
+    googleMapsUri: row.google_maps_uri ?? undefined,
   };
 
   // Build LocationDetails from database data (no Google API call)
@@ -146,8 +155,11 @@ export async function GET(request: NextRequest, context: RouteContext) {
     rating: row.rating ?? undefined,
     userRatingCount: row.review_count ?? undefined,
     editorialSummary: getBestSummary(location, row.editorial_summary ?? undefined),
+    websiteUri: row.website_uri ?? undefined,
+    internationalPhoneNumber: row.phone_number ?? undefined,
+    googleMapsUri: row.google_maps_uri ?? undefined,
     regularOpeningHours: formatOperatingHoursForDisplay(row.operating_hours),
-    reviews: [], // Reviews removed to reduce API costs
+    reviews: [],
     photos: row.primary_photo_url
       ? [{ name: "primary", proxyUrl: row.primary_photo_url, attributions: [] }]
       : [],

@@ -37,14 +37,11 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Exclude permanently closed locations but include null business_status
-    const baseFilter = supabase
+    // Fetch only the columns needed for aggregation (not select("*"))
+    const { data, error } = await supabase
       .from("locations")
-      .select("*")
+      .select("city, category, region, prefecture, neighborhood")
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
-
-    // Fetch all locations for aggregation (use column projections for efficiency)
-    const { data, error } = await baseFilter.select("city, category, region, prefecture, neighborhood");
 
     if (error) {
       logger.error("Failed to fetch locations for filter metadata", {
