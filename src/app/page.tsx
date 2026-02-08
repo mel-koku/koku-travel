@@ -1,11 +1,10 @@
 import {
-  LandingHero,
-  ValuePropositionBar,
-  HowItWorks,
-  FeatureShowcase,
-  FeaturedGuides,
+  HeroOpening,
+  Philosophy,
+  ImmersiveShowcase,
   FeaturedLocations,
-  TestimonialSection,
+  TestimonialTheater,
+  FeaturedGuides,
   FinalCTA,
 } from "@/components/landing";
 import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locationService";
@@ -21,16 +20,12 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col">
-      <LandingHero locationCount={locationCount} />
-      <ValuePropositionBar locationCount={locationCount} />
-      <div className="divider-glow" />
-      <HowItWorks />
-      <FeatureShowcase />
-      <div className="divider-glow" />
-      <FeaturedGuides guides={featuredGuides} />
+      <HeroOpening locationCount={locationCount} />
+      <Philosophy locationCount={locationCount} />
+      <ImmersiveShowcase />
       <FeaturedLocations locations={featuredLocations} />
-      <div className="divider-glow" />
-      <TestimonialSection />
+      <TestimonialTheater />
+      <FeaturedGuides guides={featuredGuides} />
       <FinalCTA />
     </main>
   );

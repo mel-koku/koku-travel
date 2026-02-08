@@ -154,7 +154,7 @@ export const DashboardItineraryPreview = ({
           <p className="text-sm font-semibold uppercase tracking-wide text-brand-primary">
             Active Itinerary
           </p>
-          <h2 className="text-xl font-semibold text-foreground">{trip.name}</h2>
+          <h2 className="font-serif text-xl font-semibold text-foreground">{trip.name}</h2>
           {createdLabel ? (
             <p className="text-xs text-stone">
               Saved {createdLabel}

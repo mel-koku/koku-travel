@@ -11,6 +11,7 @@ import { QueryProvider } from "@/providers/QueryProvider";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { CursorProvider } from "@/providers/CursorProvider";
 import { PageTransition } from "@/components/PageTransition";
+import { ScrollProgressBar } from "@/components/ui/ScrollProgressBar";
 
 // Lazy-load CustomCursor (~40KB) — only needed on desktop, not critical path
 const CustomCursor = dynamic(
@@ -30,6 +31,7 @@ export function LayoutWrapper({
           <WishlistProvider>
             <LenisProvider>
               <CursorProvider>
+                <ScrollProgressBar />
                 <div className="flex min-h-screen flex-col">
                   <Header />
                   <ErrorBoundary>

@@ -131,6 +131,9 @@ export default function Header() {
 
   const isLandingPage = pathname === "/";
 
+  // On landing page, header starts hidden and reveals after hero scroll
+  const [heroRevealed, setHeroRevealed] = useState(!isLandingPage);
+
   // Scroll-aware visibility with debounce
   useEffect(() => {
     if (isMenuOpen) {
@@ -138,8 +141,27 @@ export default function Header() {
       return;
     }
 
-    // Always visible at top
-    if (scrollProgress < 0.01) {
+    // Landing page: stay hidden until user scrolls past hero title
+    if (isLandingPage && scrollProgress < 0.025) {
+      setHeroRevealed(false);
+      setIsVisible(true);
+      return;
+    }
+
+    // Landing page: just revealed — keep visible through the hero section
+    // Don't let scroll-down-to-hide kick in while still in the hero zone
+    if (isLandingPage && scrollProgress < 0.08) {
+      if (!heroRevealed) setHeroRevealed(true);
+      setIsVisible(true);
+      return;
+    }
+
+    if (isLandingPage && !heroRevealed) {
+      setHeroRevealed(true);
+    }
+
+    // Always visible at top (non-landing pages)
+    if (!isLandingPage && scrollProgress < 0.01) {
       setIsVisible(true);
       return;
     }
@@ -163,7 +185,7 @@ export default function Header() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [scrollProgress, direction, isMenuOpen]);
+  }, [scrollProgress, direction, isMenuOpen, isLandingPage, heroRevealed]);
 
   const handleMenuToggle = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -191,6 +213,7 @@ export default function Header() {
         )}
         animate={{
           y: isVisible || isMenuOpen ? 0 : -100,
+          opacity: isLandingPage && !heroRevealed ? 0 : 1,
         }}
         transition={headerSpring}
       >
@@ -199,15 +222,15 @@ export default function Header() {
           <Magnetic strength={0.15}>
             <Link
               href="/"
-              className="flex flex-col"
+              className="flex items-baseline gap-1.5"
               onMouseEnter={() => setCursorState("link")}
               onMouseLeave={() => setCursorState("default")}
             >
-              <span className="text-xl font-semibold text-foreground sm:text-2xl">
-                Koku Travel
+              <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
+                Koku
               </span>
-              <span className="text-[10px] uppercase tracking-[0.2em] text-foreground-secondary/60 sm:text-xs">
-                Japan Planner
+              <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
+                Travel
               </span>
             </Link>
           </Magnetic>

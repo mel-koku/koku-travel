@@ -23,7 +23,7 @@ export function FinalCTA() {
       ref={containerRef}
       className="relative min-h-[80vh] overflow-hidden"
     >
-      <div className="pointer-events-none absolute inset-0 z-20 opacity-[0.03]" style={{ backgroundImage: 'url("/grain.svg")' }} />
+      <div className="texture-grain pointer-events-none absolute inset-0 z-20" />
       {/* Background Image with slow zoom */}
       <motion.div
         className="absolute inset-0"
@@ -33,25 +33,24 @@ export function FinalCTA() {
           src="https://images.unsplash.com/photo-1718166130977-41caff62724e?w=1920&q=80"
           alt="Floating torii gate over water"
           fill
-          className="object-cover"
+          className="object-cover saturate-[0.7] brightness-[0.6]"
           sizes="100vw"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-charcoal/70" />
+        <div className="absolute inset-0 bg-charcoal/50" />
       </motion.div>
 
       {/* Content */}
       <div className="relative z-10 flex min-h-[80vh] items-center justify-center px-6 py-20 text-center">
         <div className="max-w-2xl">
-          {/* Character-by-character headline on scroll */}
           <SplitText
             as="h2"
-            className="justify-center font-serif text-2xl font-medium text-white sm:text-3xl lg:text-4xl"
+            className="justify-center font-serif text-2xl font-medium tracking-heading text-white sm:text-3xl lg:text-4xl"
             splitBy="char"
             animation="clipY"
             staggerDelay={0.02}
           >
-            Ready when you are
+            Your Japan is waiting
           </SplitText>
 
           <motion.p
@@ -69,26 +68,23 @@ export function FinalCTA() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            className="mt-12 flex flex-col items-center"
           >
             <Magnetic>
               <a
                 href="/trip-builder"
                 className="relative inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
               >
-                {/* Pulsing glow */}
                 <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
                 <span className="relative">Start Planning</span>
               </a>
             </Magnetic>
-            <Magnetic>
-              <a
-                href="/explore"
-                className="inline-flex h-14 items-center justify-center rounded-xl border border-white/30 bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-white transition-all hover:border-white/50 hover:bg-white/15 hover:shadow-lg"
-              >
-                Browse Locations
-              </a>
-            </Magnetic>
+            <a
+              href="/explore"
+              className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"
+            >
+              Browse Locations
+            </a>
           </motion.div>
 
           <motion.p
@@ -96,7 +92,7 @@ export function FinalCTA() {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 1 }}
-            className="mt-10 text-sm text-white/40"
+            className="mt-10 text-sm uppercase tracking-wide text-foreground-secondary"
           >
             Free to use. No account required.
           </motion.p>

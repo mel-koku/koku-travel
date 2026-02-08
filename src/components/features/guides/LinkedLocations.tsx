@@ -20,7 +20,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
 
   return (
     <section className="mt-12">
-      <h2 className="text-xl font-semibold text-foreground mb-4">
+      <h2 className="font-serif text-xl font-semibold text-foreground mb-4">
         Featured Places
       </h2>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

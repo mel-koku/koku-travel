@@ -11,7 +11,7 @@ import {
 } from "react";
 import { useMotionValue, useSpring } from "framer-motion";
 
-export type CursorState = "default" | "link" | "view" | "drag" | "hidden";
+export type CursorState = "default" | "link" | "view" | "explore" | "read" | "drag" | "hidden";
 
 type CursorContextValue = {
   cursorState: CursorState;
