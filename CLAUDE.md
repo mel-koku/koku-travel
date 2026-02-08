@@ -3,6 +3,43 @@
 ## Project Overview
 Koku Travel is a Next.js trip planning application for Japan travel. It includes a trip builder, itinerary generation, and smart prompts for meal/experience suggestions.
 
+## Recent Work (2026-02-08)
+
+### Google API Cost Mitigation
+- **Slim field mask**: Runtime Google Places API uses 13 fields (was 35), ~60% cost reduction per call
+- **Contact info from DB**: `website_uri`, `phone_number`, `google_maps_uri` columns added to locations table; served directly from DB instead of Google API
+- **Autocomplete cache**: Server-side LRU cache (100 entries, 10min TTL) + client-side debounce 500ms, min 3 chars
+- **Photo storage**: 3,855 photos stored in Supabase Storage; UI serves `primary_photo_url` from DB, no more Google proxy calls
+- **Parallel pagination**: Refine and filter-options endpoints fetch location pages in parallel instead of sequentially
+- **Key files**:
+  - `src/lib/googlePlaces.ts` — slim field mask, reduced API calls
+  - `src/lib/google/cache.ts` — server-side autocomplete LRU cache
+  - `src/app/api/places/autocomplete/route.ts` — cache integration
+  - `src/app/api/locations/[id]/route.ts` — serves contact info from DB
+  - `src/types/location.ts` — added `websiteUri`, `phoneNumber`, `googleMapsUri`, `primaryPhotoUrl`
+
+### Gemini Enrichment (40 batches — COMPLETE)
+- **Fields**: `name_japanese` (3,540), `nearest_station` (3,395), `cash_only` (2,360), `reservation_info` (577)
+- **Partial fills**: `website_uri`, `phone_number`, `min_budget` (null-only, don't overwrite existing)
+- **Scripts** (gitignored): `export-enrichment-gaps.ts`, `import-gemini-enrichment-v2.ts`
+
+### CITY_IS_PREFECTURE Fix (DQ score 94 → 100)
+- **Problem**: 1,044 locations had prefecture name in `city` field instead of actual city
+- **Solution**: Gemini batch pipeline — export locations with coordinates, Gemini resolves correct city
+- **Results**: 430 cities corrected, 617 confirmed same-name (prefecture = capital city), 1 not found
+- **Manual fixes**: Bank of Iwate Red Brick Building (Iwate → Morioka), Okinawa City added as exception
+- **DQ rule update**: `PREFECTURE_CITY_EXCEPTIONS` expanded from 3 → 28 same-name capitals
+- **Scripts** (gitignored): `export-city-fix-batches.ts`, `import-city-fix-results.ts`
+- **npm scripts**: `city-fix:export`, `city-fix:import`, `city-fix:import:dry`
+
+### Data Quality Status
+- **Health Score**: 100/100
+- **Remaining issues** (low/info only): `COORDINATES_PRECISION_LOW` (468 info), `MISSING_PRIMARY_PHOTO` (83 low), `NAME_CITY_MISMATCH` (2 medium)
+- **DQ scripts**: Now fully gitignored under `scripts/` (local-only tooling, not needed in production)
+- **43 rules** across 6 categories: names, descriptions, duplicates, categories, completeness, google
+
+---
+
 ## Recent Work (2026-02-07)
 
 ### Features
