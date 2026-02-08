@@ -32,23 +32,21 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 - **Scripts** (gitignored): `export-city-fix-batches.ts`, `import-city-fix-results.ts`
 - **npm scripts**: `city-fix:export`, `city-fix:import`, `city-fix:import:dry`
 
-### Category Audit & Fix (243 locations recategorized)
-- **Problem**: Many locations miscategorized — waterfalls/gorges/caves/onsen as "landmark", nature spots as "entertainment", restaurants as "bar", "attraction" used as catch-all
-- **Approach**: Comprehensive audit of all 3,941 locations using keyword analysis (name + description), Google primary type cross-referencing, and manual review of edge cases
-- **Results**: 243 category corrections applied
-  - landmark → nature: 92 (gorges, waterfalls, caves, onsen, ski resorts)
-  - attraction → nature: 40 (onsen, outdoor adventure, ski resorts, scenic routes)
-  - culture → nature: 21 (onsen towns — Arima, Kusatsu, Hakone, Dogo, etc.)
-  - attraction → culture: 15 (craft workshops, art islands, festivals, museums)
-  - attraction → landmark: 15 (area guides, scenic railways, viewpoints)
-  - attraction → food: 11 (breweries, distilleries, farms)
-  - bar → food: 8 (restaurants miscategorized as bars)
-  - landmark → shopping: 8 (shopping streets and markets)
-  - landmark → culture: 7 (shrines, temples, museums)
-  - Others: 26 (entertainment, experience, culture → shopping/food)
-- **"attraction" and "experience" categories eliminated** — fully redistributed to proper categories
-- **False positives excluded**: Huis Ten Bosch (theme park), Glover Garden (historic), Miharu Takizakura (cherry tree), Sonohyan-utaki (shrine gate), Hof Brau (beer hall)
-- **Script** (gitignored): `scripts/fix-categories.ts` — keyword rules + manual overrides + dry-run mode
+### Category Audit & Fix (334 locations recategorized in 2 rounds)
+- **Round 1** (keyword analysis): 243 fixes — eliminated "attraction" and "experience" categories
+  - landmark → nature: 92, attraction → nature: 40, culture → nature: 21, attraction → culture: 15, attraction → landmark: 15, attraction → food: 11, bar → food: 8, landmark → shopping: 8, landmark → culture: 7, others: 26
+- **Round 2** (deep audit — beaches, bridges, mountains, onsen, theme parks, museums): 91 fixes
+  - 52 → nature (18 beaches, 13 flower parks/highlands, 4 mountains, 6 rivers/lakes, vine bridge, 5 forests/volcano/coast, 5 misc nature)
+  - 10 → landmark (9 bridges, Ishikawa Gate)
+  - 7 → wellness (6 onsen towns + Manza Onsen)
+  - 6 → entertainment (Huis Ten Bosch, Kamogawa Seaworld, Senbonmatsu, ski resort, paragliding, Mini Train Park)
+  - 5 → culture (2 sekibutsu, Gion AYA, sake brewery street, Omihachiman)
+  - 3 → museum (Wooden Bridge Museum, Manga Museum, Toyama Art Museum)
+  - 3 → shopping (Kyu-Karuizawa Ginza, Oharaimachi, Orange Street)
+  - 2 → viewpoint (Mount Moiwa Ropeway, Mt. Hachiman Ropeway)
+  - 1 → food, 1 → transport, 1 → park
+- **Final distribution**: restaurant 1040, nature 639, landmark 584, culture 340, shrine 264, museum 237, park 215, temple 151, shopping 147, food 110, entertainment 57, market 50, wellness 45, viewpoint 44, bar 16, transport 2
+- **Scripts** (gitignored): `scripts/fix-categories.ts` (Round 1)
 
 ### Data Quality Status
 - **Health Score**: 100/100
