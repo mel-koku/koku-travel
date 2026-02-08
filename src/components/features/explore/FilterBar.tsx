@@ -134,11 +134,11 @@ function FilterSelect({
   placeholder,
 }: FilterSelectProps) {
   return (
-    <label className="flex flex-col gap-1 text-sm text-warm-gray sm:gap-2">
+    <label className="flex flex-col gap-1 text-sm text-foreground-secondary sm:gap-2">
       <span className="font-medium sm:text-base">{label}</span>
       <div className="relative">
         <select
-          className="min-h-[44px] w-full appearance-none rounded-full border border-border bg-background py-2.5 pl-4 pr-11 text-sm text-charcoal shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 sm:py-3 sm:text-base"
+          className="min-h-[44px] w-full appearance-none rounded-full border border-border bg-background py-2.5 pl-4 pr-11 text-sm text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 sm:py-3 sm:text-base"
           value={value}
           onChange={(event) => onChange(event.target.value)}
         >

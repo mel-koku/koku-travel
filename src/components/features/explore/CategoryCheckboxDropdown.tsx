@@ -71,7 +71,7 @@ export function CategoryCheckboxDropdown({
         : `${selectedValues.length} selected`;
 
   return (
-    <label className="flex flex-col gap-1 text-sm text-warm-gray lg:gap-2">
+    <label className="flex flex-col gap-1 text-sm text-foreground-secondary lg:gap-2">
       <span className="font-medium lg:text-base">{label}</span>
       <div className="relative">
         <button
@@ -79,7 +79,7 @@ export function CategoryCheckboxDropdown({
           type="button"
           id={triggerId}
           className={cn(
-            "w-full appearance-none rounded-full border border-border bg-background py-2 pl-4 pr-11 text-left text-sm text-charcoal shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 lg:py-3 lg:text-base",
+            "w-full appearance-none rounded-xl border border-border bg-background py-2 pl-4 pr-11 text-left text-sm text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/50 lg:py-3 lg:text-base",
             selectedValues.length > 0 && "font-medium",
           )}
           aria-haspopup="listbox"
@@ -118,7 +118,7 @@ export function CategoryCheckboxDropdown({
                     key={option.value}
                     role="option"
                     aria-selected={isChecked}
-                    className="rounded-xl transition hover:bg-sand"
+                    className="rounded-xl transition hover:bg-surface"
                   >
                     <Checkbox
                       label={option.label}

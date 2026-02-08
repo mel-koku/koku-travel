@@ -47,7 +47,7 @@ export function TripPickerModal({
     >
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-2">
-          <label htmlFor="trip-picker-select" className="text-sm font-medium text-warm-gray">
+          <label htmlFor="trip-picker-select" className="text-sm font-medium text-foreground-secondary">
             Select trip
           </label>
           <Select

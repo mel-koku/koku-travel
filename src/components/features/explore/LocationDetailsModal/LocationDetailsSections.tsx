@@ -43,7 +43,7 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
           {location.category}
         </span>
         {details.rating ? (
-          <span className="flex items-center gap-1 text-sm font-medium text-warm-gray">
+          <span className="flex items-center gap-1 text-sm font-medium text-foreground-secondary">
             <StarIcon />
             {details.rating.toFixed(1)}
             {details.userRatingCount ? (
@@ -61,7 +61,7 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
             <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
               Overview
             </h3>
-            <p className="text-sm text-warm-gray leading-relaxed">{description}</p>
+            <p className="text-sm text-foreground-secondary leading-relaxed">{description}</p>
           </section>
         ) : null}
 
@@ -70,7 +70,7 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
             <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
               Address
             </h3>
-            <p className="text-sm text-warm-gray">{details.formattedAddress}</p>
+            <p className="text-sm text-foreground-secondary">{details.formattedAddress}</p>
           </section>
         ) : null}
 
@@ -93,7 +93,7 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
                 </li>
               ) : null}
               {details.internationalPhoneNumber ? (
-                <li className="text-warm-gray">{details.internationalPhoneNumber}</li>
+                <li className="text-foreground-secondary">{details.internationalPhoneNumber}</li>
               ) : null}
               {details.googleMapsUri ? (
                 <li>
@@ -117,7 +117,7 @@ export function LocationDetailsSections({ location, details }: LocationDetailsSe
             <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
               Opening hours
             </h3>
-            <ul className="space-y-1 text-sm text-warm-gray">
+            <ul className="space-y-1 text-sm text-foreground-secondary">
               {(details.currentOpeningHours ?? details.regularOpeningHours ?? []).map(
                 (entry) => (
                   <li key={entry}>{entry}</li>

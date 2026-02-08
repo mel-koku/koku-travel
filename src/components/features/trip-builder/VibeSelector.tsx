@@ -80,7 +80,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="text-base font-semibold text-charcoal">
+          <h4 className="text-base font-semibold text-foreground">
             Travel Style
           </h4>
           <p className="text-sm text-stone">
@@ -110,7 +110,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
                 isSelected
                   ? "border-brand-primary bg-brand-primary/5"
-                  : "border-border bg-background hover:border-brand-primary/30 hover:bg-sand/50",
+                  : "border-border bg-background hover:border-brand-primary/30 hover:bg-surface/50",
                 isDisabled && "cursor-not-allowed opacity-50 hover:border-border hover:bg-background"
               )}
             >
@@ -119,7 +119,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
                   "flex h-12 w-12 items-center justify-center rounded-full transition-colors",
                   isSelected
                     ? "bg-brand-primary text-white"
-                    : "bg-sand text-warm-gray group-hover:bg-brand-primary/10 group-hover:text-brand-primary"
+                    : "bg-surface text-foreground-secondary group-hover:bg-brand-primary/10 group-hover:text-brand-primary"
                 )}
               >
                 <Icon className="h-6 w-6" />
@@ -128,7 +128,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
                 <span
                   className={cn(
                     "block text-sm font-medium transition-colors",
-                    isSelected ? "text-brand-primary" : "text-charcoal"
+                    isSelected ? "text-brand-primary" : "text-foreground"
                   )}
                 >
                   {vibe.name}

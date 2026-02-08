@@ -161,7 +161,7 @@ function MobileSubStepContainer({
             >
               <div className="rounded-xl border border-border bg-background p-5">
                 <div className="mb-4">
-                  <h3 className="font-serif text-lg font-semibold text-charcoal">
+                  <h3 className="font-serif text-lg font-semibold text-foreground">
                     {current.title}
                   </h3>
                   {current.subtitle && (
@@ -254,7 +254,7 @@ function DesktopSubStepContainer({
               disabled={!canExpand}
               className={cn(
                 "flex w-full items-center justify-between p-5 text-left transition-colors",
-                canExpand && "cursor-pointer hover:bg-sand/50",
+                canExpand && "cursor-pointer hover:bg-surface/50",
                 !canExpand && "cursor-not-allowed"
               )}
             >
@@ -280,7 +280,7 @@ function DesktopSubStepContainer({
                   <h3
                     className={cn(
                       "font-serif text-base font-semibold",
-                      isExpanded || isCompleted ? "text-charcoal" : "text-stone"
+                      isExpanded || isCompleted ? "text-foreground" : "text-stone"
                     )}
                   >
                     {subStep.title}

@@ -200,7 +200,7 @@ export function TravelModeSelector({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-1.5 text-sm text-warm-gray hover:text-charcoal transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+        className="inline-flex items-center gap-1.5 text-sm text-foreground-secondary hover:text-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
@@ -238,7 +238,7 @@ export function TravelModeSelector({
                     "w-full flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-xs transition",
                     isCurrentMode
                       ? `${option.bgColor} ${option.color} font-semibold`
-                      : "text-warm-gray hover:bg-sand",
+                      : "text-foreground-secondary hover:bg-surface",
                   )}
                 >
                   <div className="flex items-center gap-2 min-w-0">

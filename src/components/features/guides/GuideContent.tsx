@@ -8,21 +8,21 @@ type GuideContentProps = {
 
 export function GuideContent({ body }: GuideContentProps) {
   return (
-    <article className="prose prose-lg max-w-none prose-headings:text-charcoal prose-headings:font-semibold prose-p:text-stone prose-a:text-brand-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-charcoal prose-ul:text-stone prose-ol:text-stone prose-li:marker:text-sage">
+    <article className="prose prose-lg max-w-none prose-headings:text-foreground prose-headings:font-semibold prose-p:text-stone prose-a:text-brand-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:text-stone prose-ol:text-stone prose-li:marker:text-sage">
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
-            <h1 className="text-2xl font-bold text-charcoal mt-8 mb-4 first:mt-0">
+            <h1 className="text-2xl font-bold text-foreground mt-8 mb-4 first:mt-0">
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-xl font-semibold text-charcoal mt-8 mb-3">
+            <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-lg font-semibold text-charcoal mt-6 mb-2">
+            <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">
               {children}
             </h3>
           ),
@@ -57,7 +57,7 @@ export function GuideContent({ body }: GuideContentProps) {
           ),
           hr: () => <hr className="my-8 border-border" />,
           strong: ({ children }) => (
-            <strong className="font-semibold text-charcoal">{children}</strong>
+            <strong className="font-semibold text-foreground">{children}</strong>
           ),
           em: ({ children }) => <em className="italic">{children}</em>,
         }}

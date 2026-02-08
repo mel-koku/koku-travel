@@ -702,7 +702,7 @@ export const ItineraryShell = ({
               <h1
                 ref={finalHeadingRef}
                 tabIndex={-1}
-                className="text-lg font-semibold text-charcoal focus:outline-none"
+                className="text-lg font-semibold text-foreground focus:outline-none"
               >
                 Your Itinerary
               </h1>
@@ -753,7 +753,7 @@ export const ItineraryShell = ({
               <button
                 onClick={handleOptimizeRoute}
                 disabled={isOptimizing || !currentDay?.activities?.length}
-                className="rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-charcoal shadow-sm transition hover:bg-stone/5 disabled:opacity-50"
+                className="rounded-lg border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-stone/5 disabled:opacity-50"
                 title="Optimize route order to minimize travel"
               >
                 {isOptimizing ? (
@@ -777,7 +777,7 @@ export const ItineraryShell = ({
                   transition={{ duration: 0.3 }}
                   className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm"
                 >
-                  <h2 className="font-serif text-3xl font-medium text-charcoal sm:text-4xl">
+                  <h2 className="font-serif text-3xl font-medium text-foreground sm:text-4xl">
                     {dayTransitionLabel}
                   </h2>
                 </motion.div>

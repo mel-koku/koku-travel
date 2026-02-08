@@ -52,7 +52,7 @@ export function Section({
               <h2 className="text-3xl font-semibold tracking-tight">{title}</h2>
             )}
             {description && (
-              <p className="text-warm-gray max-w-2xl">{description}</p>
+              <p className="text-foreground-secondary max-w-2xl">{description}</p>
             )}
           </div>
         )}

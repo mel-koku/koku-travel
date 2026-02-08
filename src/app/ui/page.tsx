@@ -93,8 +93,8 @@ export default function UIDemoPage() {
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
           Design System
         </span>
-        <h1 className="text-4xl font-bold leading-tight text-charcoal">Component Gallery</h1>
-        <p className="max-w-2xl text-lg text-warm-gray">
+        <h1 className="text-4xl font-bold leading-tight text-foreground">Component Gallery</h1>
+        <p className="max-w-2xl text-lg text-foreground-secondary">
           Buttons, form controls, and field wrappers used across Koku. This page doubles as a
           visual smoke test—update components here to validate new states quickly.
         </p>
@@ -102,8 +102,8 @@ export default function UIDemoPage() {
 
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">Buttons</h2>
-          <p className="text-sm text-warm-gray">
+          <h2 className="text-2xl font-semibold text-foreground">Buttons</h2>
+          <p className="text-sm text-foreground-secondary">
             Variants cover 90% of our needs. Use icons for directional affordances, and keep loading
             states keyboard accessible.
           </p>
@@ -155,8 +155,8 @@ export default function UIDemoPage() {
 
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">Form Inputs</h2>
-          <p className="text-sm text-warm-gray">
+          <h2 className="text-2xl font-semibold text-foreground">Form Inputs</h2>
+          <p className="text-sm text-foreground-secondary">
             Pair each control with a <code>FormField</code> to wire up labels, help text, and errors.
           </p>
         </div>
@@ -235,7 +235,7 @@ export default function UIDemoPage() {
 
       <section className="grid gap-10 md:grid-cols-2">
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-charcoal">Checkboxes</h2>
+          <h2 className="text-2xl font-semibold text-foreground">Checkboxes</h2>
           <CheckboxGroup
             legend="Interests"
             helpText="Pick all that match your travel vibe."
@@ -269,7 +269,7 @@ export default function UIDemoPage() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-2xl font-semibold text-charcoal">Radio buttons</h2>
+          <h2 className="text-2xl font-semibold text-foreground">Radio buttons</h2>
           <RadioGroup
             legend="Pacing"
             helpText="Choose the pace we should plan around. One selection only."

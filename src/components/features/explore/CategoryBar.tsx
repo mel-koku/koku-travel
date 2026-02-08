@@ -124,8 +124,8 @@ export function CategoryBar({
                     className={cn(
                       "flex flex-col items-center gap-2 pb-3 pt-1 border-b-2 transition-all min-w-[56px]",
                       isSelected
-                        ? "border-charcoal text-charcoal"
-                        : "border-transparent text-stone hover:text-charcoal hover:border-border"
+                        ? "border-charcoal text-foreground"
+                        : "border-transparent text-stone hover:text-foreground hover:border-border"
                     )}
                   >
                     <span className={cn(
@@ -166,7 +166,7 @@ export function CategoryBar({
               "shrink-0 flex items-center gap-2 rounded-full border px-4 py-3 text-sm font-medium transition hover:shadow-md",
               activeFilterCount > 0
                 ? "border-brand-primary bg-brand-primary text-white"
-                : "border-border bg-background text-warm-gray hover:border-charcoal"
+                : "border-border bg-background text-foreground-secondary hover:border-charcoal"
             )}
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -174,7 +174,7 @@ export function CategoryBar({
             </svg>
             <span>Filters</span>
             {activeFilterCount > 0 && (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-background text-xs font-semibold text-charcoal">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-background text-xs font-semibold text-foreground">
                 {activeFilterCount}
               </span>
             )}

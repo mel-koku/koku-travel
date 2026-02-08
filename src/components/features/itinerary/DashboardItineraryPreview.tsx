@@ -70,12 +70,12 @@ const ActivityPreviewCard = ({ activity }: { activity: ItineraryActivity }) => {
     <li className="rounded-xl border border-border bg-background p-4 shadow-sm transition hover:border-brand-primary/20 hover:shadow-md">
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-1 flex-col gap-1">
-          <p className="text-sm font-semibold text-charcoal">{activity.title}</p>
+          <p className="text-sm font-semibold text-foreground">{activity.title}</p>
           {place?.neighborhood ? (
             <p className="text-xs text-stone">{place.neighborhood}</p>
           ) : null}
           {isNote && activity.notes ? (
-            <p className="text-xs text-warm-gray">{activity.notes}</p>
+            <p className="text-xs text-foreground-secondary">{activity.notes}</p>
           ) : null}
         </div>
         {place?.durationMin ? (
@@ -89,7 +89,7 @@ const ActivityPreviewCard = ({ activity }: { activity: ItineraryActivity }) => {
           {place.tags.map((tag) => (
             <span
               key={tag}
-              className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-warm-gray"
+              className="rounded-full bg-surface px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-foreground-secondary"
             >
               {tag}
             </span>
@@ -154,7 +154,7 @@ export const DashboardItineraryPreview = ({
           <p className="text-sm font-semibold uppercase tracking-wide text-brand-primary">
             Active Itinerary
           </p>
-          <h2 className="text-xl font-semibold text-charcoal">{trip.name}</h2>
+          <h2 className="text-xl font-semibold text-foreground">{trip.name}</h2>
           {createdLabel ? (
             <p className="text-xs text-stone">
               Saved {createdLabel}
@@ -174,7 +174,7 @@ export const DashboardItineraryPreview = ({
               <div className="relative w-full sm:w-auto">
                 <select
                   id="dashboard-trip-selector"
-                  className="w-full appearance-none rounded-full border border-border bg-background py-2 pl-4 pr-10 text-sm font-medium text-charcoal shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary sm:min-w-[220px]"
+                  className="w-full appearance-none rounded-full border border-border bg-background py-2 pl-4 pr-10 text-sm font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary sm:min-w-[220px]"
                   value={selectedTripId ?? trip.id}
                   onChange={handleTripChange}
                 >
@@ -239,7 +239,7 @@ export const DashboardItineraryPreview = ({
                     className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4"
                   >
                     <header className="space-y-1">
-                      <h3 className="text-base font-semibold text-charcoal">
+                      <h3 className="text-base font-semibold text-foreground">
                         {meta.title}
                       </h3>
                       <p className="text-sm text-stone">{meta.description}</p>
@@ -267,7 +267,7 @@ export const DashboardItineraryPreview = ({
               })}
             </div>
           ) : (
-            <p className="rounded-lg bg-surface p-6 text-sm text-warm-gray">
+            <p className="rounded-lg bg-surface p-6 text-sm text-foreground-secondary">
               No activities planned for the selected day yet.
             </p>
           )}

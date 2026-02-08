@@ -86,7 +86,7 @@ export function AvailabilityAlert({
             <p className={cn("text-sm font-semibold", styles.title)}>
               {issues.summary.total} {issues.summary.total === 1 ? "activity" : "activities"} may be affected
             </p>
-            <p className="text-xs text-warm-gray">
+            <p className="text-xs text-foreground-secondary">
               {summaryText()}
             </p>
           </div>
@@ -146,7 +146,7 @@ function AvailabilityIssueItem({ issue, onFindAlternative }: AvailabilityIssueIt
         <div className="flex items-start gap-2 min-w-0">
           <span className="text-sm">{statusIcons[issue.status]}</span>
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-warm-gray">
+            <p className="text-xs text-foreground-secondary">
               {issue.message}
             </p>
             {issue.operatingHours && (

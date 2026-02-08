@@ -46,7 +46,7 @@ export function HowItWorks() {
   });
 
   return (
-    <section ref={containerRef} className="relative bg-surface">
+    <section ref={containerRef} className="relative bg-background">
       {/* Sticky scroll-pinned container */}
       <div className="relative">
         {/* Section header */}
@@ -59,7 +59,7 @@ export function HowItWorks() {
             </ScrollReveal>
             <SplitText
               as="h2"
-              className="mt-4 font-serif text-2xl font-medium text-charcoal sm:text-3xl"
+              className="mt-4 font-serif text-2xl font-medium text-foreground sm:text-3xl"
               splitBy="word"
               animation="clipY"
               delay={0.1}
@@ -149,7 +149,7 @@ function StepSection({
 
         <SplitText
           as="h3"
-          className="mt-4 font-serif text-xl font-medium text-charcoal"
+          className="mt-4 font-serif text-xl font-medium text-foreground"
           splitBy="word"
           animation="fadeUp"
           delay={0.15}
@@ -158,7 +158,7 @@ function StepSection({
         </SplitText>
 
         <ScrollReveal delay={0.25}>
-          <p className="mt-4 text-base leading-relaxed text-warm-gray">
+          <p className="mt-4 text-base leading-relaxed text-foreground-secondary">
             {step.description}
           </p>
         </ScrollReveal>

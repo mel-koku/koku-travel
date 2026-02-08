@@ -271,7 +271,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
             <MapPin className="h-5 w-5 text-sage" />
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Queued</p>
-              <h3 className="font-serif text-lg text-charcoal">
+              <h3 className="font-serif text-lg text-foreground">
                 Saved Places ({data.savedLocationIds?.length})
               </h3>
               <p className="text-sm text-stone">
@@ -291,7 +291,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
       <div>
         <div className="mb-4">
           <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Customize</p>
-          <h3 className="mt-1 font-serif text-lg text-charcoal">
+          <h3 className="mt-1 font-serif text-lg text-foreground">
             Preferences
           </h3>
           <p className="text-sm text-stone">
@@ -344,7 +344,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                         "flex items-start gap-3 rounded-lg border p-3 text-left transition",
                         field.value === option.value
                           ? "border-sage/20 bg-sage/10 ring-1 ring-brand-primary"
-                          : "border-border hover:bg-sand"
+                          : "border-border hover:bg-surface"
                       )}
                     >
                       <div
@@ -356,7 +356,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                         )}
                       />
                       <div className="min-w-0">
-                        <span className="text-sm font-medium text-charcoal">
+                        <span className="text-sm font-medium text-foreground">
                           {option.label}
                         </span>
                         <span className="ml-2 text-xs text-stone">
@@ -442,13 +442,13 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                 className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
                 {...register("mobilityAssistance")}
               />
-              <span className="text-sm text-warm-gray">
+              <span className="text-sm text-foreground-secondary">
                 Need mobility assistance
               </span>
             </label>
 
             <div className="mt-3">
-              <p className="mb-2 text-sm font-medium text-warm-gray">
+              <p className="mb-2 text-sm font-medium text-foreground-secondary">
                 Dietary Restrictions
               </p>
               <div className="grid grid-cols-2 gap-2">
@@ -463,7 +463,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                       className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
                       {...register("dietary")}
                     />
-                    <span className="text-sm text-warm-gray">{option.label}</span>
+                    <span className="text-sm text-foreground-secondary">{option.label}</span>
                   </label>
                 ))}
               </div>

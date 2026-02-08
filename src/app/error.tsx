@@ -24,8 +24,8 @@ export default function Error({
     <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4">
       <div className="w-full max-w-md rounded-2xl border border-border bg-background p-8 shadow-md">
         <div className="text-center">
-          <h1 className="mb-4 text-3xl font-bold text-charcoal">Something went wrong</h1>
-          <p className="mb-6 text-warm-gray">
+          <h1 className="mb-4 text-3xl font-bold text-foreground">Something went wrong</h1>
+          <p className="mb-6 text-foreground-secondary">
             We encountered an unexpected error. Please try again or return to the home page.
           </p>
           {process.env.NODE_ENV !== "production" && error.message && (

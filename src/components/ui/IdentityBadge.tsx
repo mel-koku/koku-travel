@@ -53,12 +53,12 @@ export default function IdentityBadge({
   const initial = (label?.[0] ?? "G").toUpperCase();
 
   return (
-    <span className={`inline-flex items-center gap-2 rounded-full border border-border bg-background px-3 py-2 ${className}`}>
+    <span className={`inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 ${className}`}>
       {circle(initial)}
-      <span className="text-sm font-medium text-charcoal">{label}</span>
+      <span className="text-sm font-medium text-foreground">{label}</span>
       {showChevron && (
         <svg
-          className={`h-4 w-4 text-warm-gray transform transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-foreground-secondary transform transition-transform ${isOpen ? "rotate-180" : ""}`}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 20 20"

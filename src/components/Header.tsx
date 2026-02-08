@@ -173,8 +173,8 @@ export default function Header() {
     setIsMenuOpen(false);
   }, []);
 
-  // Determine header styling based on page and scroll
-  const isTransparent = isLandingPage && scrollProgress < 0.02 && !isMenuOpen;
+  // Header is always transparent with blur on dark site
+  const isAtTop = scrollProgress < 0.02 && !isMenuOpen;
 
   const headerSpring = prefersReducedMotion
     ? { duration: 0 }
@@ -185,9 +185,9 @@ export default function Header() {
       <motion.header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
-          isTransparent
+          isAtTop
             ? "bg-transparent"
-            : "border-b border-border bg-background/90 backdrop-blur"
+            : "bg-background/60 backdrop-blur-xl border-b border-border/30"
         )}
         animate={{
           y: isVisible || isMenuOpen ? 0 : -100,
@@ -203,20 +203,10 @@ export default function Header() {
               onMouseEnter={() => setCursorState("link")}
               onMouseLeave={() => setCursorState("default")}
             >
-              <span
-                className={cn(
-                  "text-xl font-semibold sm:text-2xl",
-                  isTransparent ? "text-white" : "text-charcoal"
-                )}
-              >
+              <span className="text-xl font-semibold text-foreground sm:text-2xl">
                 Koku Travel
               </span>
-              <span
-                className={cn(
-                  "text-[10px] uppercase tracking-[0.2em] sm:text-xs",
-                  isTransparent ? "text-white/70" : "text-stone"
-                )}
-              >
+              <span className="text-[10px] uppercase tracking-[0.2em] text-foreground-secondary/60 sm:text-xs">
                 Japan Planner
               </span>
             </Link>
@@ -234,11 +224,9 @@ export default function Header() {
                     onMouseLeave={() => setCursorState("default")}
                     className={cn(
                       "group relative py-1 transition-colors",
-                      isTransparent
-                        ? "text-white/80 hover:text-white"
-                        : isActive
-                          ? "text-brand-primary"
-                          : "text-warm-gray hover:text-charcoal"
+                      isActive
+                        ? "text-brand-primary"
+                        : "text-foreground-secondary hover:text-foreground"
                     )}
                   >
                     {item.label}
@@ -246,7 +234,7 @@ export default function Header() {
                     <span
                       className={cn(
                         "absolute -bottom-0.5 left-0 h-[2px] w-full origin-left transition-transform duration-300 ease-out",
-                        isTransparent ? "bg-white" : "bg-brand-primary",
+                        "bg-brand-primary",
                         isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                       )}
                       aria-hidden="true"
@@ -273,7 +261,7 @@ export default function Header() {
               <MenuTrigger
                 isOpen={isMenuOpen}
                 onToggle={handleMenuToggle}
-                color={isTransparent ? "white" : "charcoal"}
+                color="white"
               />
             </div>
           </div>

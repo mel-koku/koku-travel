@@ -119,10 +119,10 @@ function ConflictItem({ conflict }: ConflictItemProps) {
       <div className="flex items-start gap-2">
         <span className="text-sm">{conflict.icon}</span>
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-semibold text-charcoal">
+          <p className="text-xs font-semibold text-foreground">
             {conflict.title}
           </p>
-          <p className="text-xs text-warm-gray">
+          <p className="text-xs text-foreground-secondary">
             {conflict.activityTitle}: {conflict.message}
           </p>
         </div>

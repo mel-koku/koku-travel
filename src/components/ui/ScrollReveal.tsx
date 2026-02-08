@@ -13,6 +13,8 @@ type ScrollRevealProps = {
   once?: boolean;
   margin?: string;
   scale?: number;
+  /** Stagger offset — use with grid children (each card adds stagger * index) */
+  stagger?: number;
 };
 
 const directionMap = {
@@ -33,6 +35,7 @@ export function ScrollReveal({
   once = true,
   margin = "-10%",
   scale,
+  stagger = 0,
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -67,8 +70,8 @@ export function ScrollReveal({
       animate={isInView ? visible : hidden}
       transition={{
         duration,
-        delay,
-        ease: [0.25, 0.1, 0.25, 1],
+        delay: delay + stagger,
+        ease: [0.33, 1, 0.68, 1],
       }}
     >
       {children}

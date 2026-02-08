@@ -24,7 +24,7 @@ export default function CapsuleHeader({
       "
     >
       <div>
-        <h1 className="text-lg font-semibold text-charcoal">{title}</h1>
+        <h1 className="text-lg font-semibold text-foreground">{title}</h1>
         {subtitle && <p className="text-sm text-stone">{subtitle}</p>}
       </div>
       {rightButton && <div>{rightButton}</div>}

@@ -214,11 +214,11 @@ export function DayHeader({
     <div className="mb-6 rounded-xl border border-border bg-surface p-4 sm:p-5">
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold text-charcoal sm:text-2xl">
+          <h2 className="text-xl font-semibold text-foreground sm:text-2xl">
             {dateLabel.dayName ? (
               <>
                 {dateLabel.dayName}
-                <span className="ml-2 text-lg font-normal text-warm-gray sm:text-xl">
+                <span className="ml-2 text-lg font-normal text-foreground-secondary sm:text-xl">
                   {dateLabel.date}
                 </span>
               </>
@@ -227,12 +227,12 @@ export function DayHeader({
             )}
           </h2>
           {day.cityId && (
-            <p className="text-sm font-medium text-warm-gray capitalize">
+            <p className="text-sm font-medium text-foreground-secondary capitalize">
               {day.cityId}
             </p>
           )}
         </div>
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-warm-gray">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-foreground-secondary">
           <div className="flex items-center gap-2">
             <svg
               className="h-4 w-4 text-sage"
@@ -250,7 +250,7 @@ export function DayHeader({
             </svg>
             <span className="font-semibold text-sage">{durationLabel}</span>
             {totalDuration > 0 && (
-              <span className="text-warm-gray">· time at locations only</span>
+              <span className="text-foreground-secondary">· time at locations only</span>
             )}
           </div>
           {onDayStartTimeChange && (
@@ -287,7 +287,7 @@ export function DayHeader({
           />
           {onRefineDay && (
             <div className="border-t border-border pt-4">
-              <p className="mb-2 text-sm font-medium text-warm-gray">Refine this day:</p>
+              <p className="mb-2 text-sm font-medium text-foreground-secondary">Refine this day:</p>
               <DayRefinementButtons
                 dayIndex={dayIndex}
                 tripId={tripId}

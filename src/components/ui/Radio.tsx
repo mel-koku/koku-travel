@@ -55,7 +55,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           </span>
         </span>
         <span className="flex flex-1 flex-col gap-1">
-          <span className="text-sm font-medium text-charcoal">{label}</span>
+          <span className="text-sm font-medium text-foreground">{label}</span>
           {description && (
             <span id={descriptionId} className="text-sm text-stone">
               {description}
@@ -82,7 +82,7 @@ export const RadioGroup = ({
   ...rest
 }: RadioGroupProps) => (
   <fieldset className={cn("space-y-2", className)} {...rest}>
-    {legend && <legend className="mb-2 text-sm font-semibold text-charcoal">{legend}</legend>}
+    {legend && <legend className="mb-2 text-sm font-semibold text-foreground">{legend}</legend>}
     {helpText && <p className="mb-2 text-sm text-stone">{helpText}</p>}
     <div className="flex flex-col gap-2">{children}</div>
   </fieldset>

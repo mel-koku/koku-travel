@@ -53,7 +53,7 @@ export function PlanningWarningCard({ warning, className }: PlanningWarningCardP
           <h4 className={cn("font-semibold", styles.title)}>
             {warning.title}
           </h4>
-          <p className="mt-1 text-sm text-warm-gray leading-relaxed">
+          <p className="mt-1 text-sm text-foreground-secondary leading-relaxed">
             {warning.message}
           </p>
         </div>
@@ -84,8 +84,8 @@ export function PlanningWarningsList({ warnings, className }: PlanningWarningsLi
   return (
     <div className={cn("space-y-3", className)}>
       <div className="flex items-center gap-2">
-        <h3 className="font-semibold text-charcoal">Travel Tips</h3>
-        <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-medium text-warm-gray">
+        <h3 className="font-semibold text-foreground">Travel Tips</h3>
+        <span className="rounded-full bg-surface px-2 py-0.5 text-xs font-medium text-foreground-secondary">
           {warnings.length}
         </span>
       </div>

@@ -32,7 +32,7 @@ export function AccountSection({
   return (
     <div className="rounded-xl border border-border bg-surface p-6 space-y-6">
       {supabaseUnavailable && (
-        <div className="rounded-xl border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-charcoal">
+        <div className="rounded-xl border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-foreground">
           Cloud sync is disabled because Supabase credentials are not configured. Set
           <code className="mx-1 rounded bg-brand-secondary/10 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
           and
@@ -43,11 +43,11 @@ export function AccountSection({
         </div>
       )}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-charcoal">Account</h2>
+        <h2 className="text-lg font-semibold text-foreground">Account</h2>
         {isAuthenticated && supabase && (
           <button
             onClick={() => supabase.auth.signOut()}
-            className="h-10 rounded-lg border border-border bg-background px-4 text-sm text-warm-gray hover:bg-sand"
+            className="h-10 rounded-lg border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface"
           >
             Sign out
           </button>
@@ -57,7 +57,7 @@ export function AccountSection({
       {isAuthenticated ? (
         <>
           <IdentityBadge />
-          <label className="text-sm text-warm-gray block">
+          <label className="text-sm text-foreground-secondary block">
             Display name
             <input
               className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
@@ -136,7 +136,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
 
   return (
     <form className="grid grid-cols-1 gap-4" onSubmit={sendMagicLink}>
-      <label className="text-sm text-warm-gray">
+      <label className="text-sm text-foreground-secondary">
         Email for magic link
         <input
           type="email"

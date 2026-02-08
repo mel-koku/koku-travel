@@ -129,7 +129,7 @@ export const DaySelector = ({
       <select
         value={selected}
         onChange={handleChange}
-        className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm font-medium text-charcoal shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+        className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
         aria-label="Select day"
       >
         {days.map(({ index, label, isToday }) => (

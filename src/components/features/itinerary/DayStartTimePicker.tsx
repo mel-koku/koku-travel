@@ -64,7 +64,7 @@ export function DayStartTimePicker({ currentTime, onChange }: DayStartTimePicker
           />
         </svg>
         <span className="font-medium">
-          Starts <span className="text-charcoal">{currentLabel}</span>
+          Starts <span className="text-foreground">{currentLabel}</span>
         </span>
       </span>
     ),

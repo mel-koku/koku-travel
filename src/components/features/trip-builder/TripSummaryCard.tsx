@@ -89,7 +89,7 @@ export function TripSummaryCard({
     >
       {/* Header */}
       <div className="bg-gradient-to-r from-brand-primary/5 to-sage/5 px-5 py-4 border-b border-border">
-        <h3 className="text-lg font-semibold text-charcoal">Trip Summary</h3>
+        <h3 className="text-lg font-semibold text-foreground">Trip Summary</h3>
         <p className="text-sm text-stone">Review your selections</p>
       </div>
 
@@ -205,14 +205,14 @@ function SummaryRow({ icon, label, value, onEdit }: SummaryRowProps) {
           <p className="text-xs font-medium uppercase tracking-wide text-stone">
             {label}
           </p>
-          <div className="mt-1 text-sm text-charcoal">{value}</div>
+          <div className="mt-1 text-sm text-foreground">{value}</div>
         </div>
       </div>
       {onEdit && (
         <button
           type="button"
           onClick={onEdit}
-          className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-stone hover:bg-sand hover:text-warm-gray"
+          className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-stone hover:bg-surface hover:text-foreground-secondary"
         >
           <Pencil className="h-3 w-3" />
           Edit

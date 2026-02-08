@@ -481,7 +481,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
                   }}
                   className={`text-sm font-bold transition hover:text-brand-primary ${
-                    hasManualTime ? "text-sage" : "text-charcoal"
+                    hasManualTime ? "text-sage" : "text-foreground"
                   }`}
                   title={hasManualTime ? "Manual time - click to edit" : "Click to set time"}
                 >
@@ -508,7 +508,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-3 shadow-lg"
                 onClick={(e) => e.stopPropagation()}
               >
-                <p className="mb-2 text-xs font-medium text-warm-gray">Set time</p>
+                <p className="mb-2 text-xs font-medium text-foreground-secondary">Set time</p>
                 <div className="flex items-center gap-2">
                   <input
                     type="time"
@@ -572,7 +572,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 }}
               />
               {/* Gradient overlay for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent" />
 
               {/* Top overlay: Drag handle left, badges right */}
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
@@ -615,7 +615,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               {/* Title Row */}
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-semibold leading-tight text-charcoal sm:text-lg">
+                  <h3 className="text-base font-semibold leading-tight text-foreground sm:text-lg">
                     {placeLocation.name}
                   </h3>
                   <div className="mt-1 flex flex-wrap items-center gap-1.5">
@@ -624,7 +624,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                       {placeLocation.city && placeLocation.region && placeLocation.city !== placeLocation.region ? `, ${placeLocation.region}` : ""}
                     </span>
                     {rating ? (
-                      <div className="flex items-center gap-0.5 text-[11px] font-medium text-charcoal">
+                      <div className="flex items-center gap-0.5 text-[11px] font-medium text-foreground">
                         <StarIcon />
                         <span>{rating.toFixed(1)}</span>
                         {reviewCount ? (
@@ -641,7 +641,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               {/* Tags Row */}
               <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
                 {placeLocation.category ? (
-                  <span className="inline-block rounded-full bg-surface px-2 py-0.5 text-[11px] font-medium text-warm-gray capitalize">
+                  <span className="inline-block rounded-full bg-surface px-2 py-0.5 text-[11px] font-medium text-foreground-secondary capitalize">
                     {placeLocation.category}
                   </span>
                 ) : null}
@@ -702,7 +702,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
               {/* Description */}
               {summary && (
-                <p className={`mt-3 text-xs leading-relaxed text-warm-gray ${isExpanded ? "" : "line-clamp-2"}`}>{summary}</p>
+                <p className={`mt-3 text-xs leading-relaxed text-foreground-secondary ${isExpanded ? "" : "line-clamp-2"}`}>{summary}</p>
               )}
 
               {/* Expanded Detail Content */}
@@ -722,17 +722,17 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                         (placeLocation?.shortDescription?.trim() || null) ??
                         (locationDetails?.editorialSummary?.trim() || null);
                       return best && best !== summary ? (
-                        <p className="mt-2 text-sm leading-relaxed text-warm-gray">{best}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-foreground-secondary">{best}</p>
                       ) : null;
                     })()}
 
                     {/* Operating hours — only show if we have at least 3 days (filters out bad 1-day data for open areas/attractions) */}
                     {locationDetails?.regularOpeningHours && locationDetails.regularOpeningHours.length >= 3 && (
                       <div className="mt-3 rounded-lg bg-surface/50 p-2.5">
-                        <p className="mb-1.5 text-xs font-semibold text-charcoal">Hours</p>
+                        <p className="mb-1.5 text-xs font-semibold text-foreground">Hours</p>
                         <div className="space-y-0.5">
                           {locationDetails.regularOpeningHours.slice(0, 7).map((hours, idx) => (
-                            <p key={idx} className="text-[11px] text-warm-gray">{hours}</p>
+                            <p key={idx} className="text-[11px] text-foreground-secondary">{hours}</p>
                           ))}
                         </div>
                       </div>
@@ -741,7 +741,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     {/* All tips when expanded (show more than 2) */}
                     {tips.length > 2 && (
                       <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
-                        <p className="mb-1.5 text-xs font-semibold text-charcoal">All Tips</p>
+                        <p className="mb-1.5 text-xs font-semibold text-foreground">All Tips</p>
                         <div className="space-y-1">
                           {tips.slice(2).map((tip, index) => (
                             <div key={index} className="flex items-start gap-1.5 text-xs text-foreground-secondary">
@@ -757,7 +757,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
                     {/* Address if available */}
                     {locationDetails?.formattedAddress && (
-                      <div className="mt-3 flex items-start gap-1.5 text-xs text-warm-gray">
+                      <div className="mt-3 flex items-start gap-1.5 text-xs text-foreground-secondary">
                         <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -772,7 +772,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               {/* Tips Section */}
               {tips.length > 0 && (
                 <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
-                  <p className="mb-1.5 text-xs font-semibold text-charcoal">Tips</p>
+                  <p className="mb-1.5 text-xs font-semibold text-foreground">Tips</p>
                   <div className="space-y-1">
                     {tips.slice(0, 2).map((tip, index) => (
                       <div key={index} className="flex items-start gap-1.5 text-xs text-foreground-secondary">
@@ -804,7 +804,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     </svg>
                   </button>
                   {reasoningOpen && (
-                    <div className="mt-2 rounded-lg bg-surface/50 p-2 text-xs text-warm-gray">
+                    <div className="mt-2 rounded-lg bg-surface/50 p-2 text-xs text-foreground-secondary">
                       <p className="font-medium">{activity.recommendationReason.primaryReason}</p>
                       {activity.recommendationReason.factors && activity.recommendationReason.factors.length > 0 && (
                         <ul className="mt-1 space-y-0.5 pl-3">
@@ -890,7 +890,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-warm-gray shadow-sm placeholder:text-stone/50 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                  className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground-secondary shadow-sm placeholder:text-stone/50 focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                   rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}

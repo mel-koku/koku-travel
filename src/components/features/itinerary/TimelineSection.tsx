@@ -149,7 +149,7 @@ export function TimelineSection({
     >
       <header className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
         <div>
-          <h2 id={headingId} className="text-lg font-semibold text-charcoal">
+          <h2 id={headingId} className="text-lg font-semibold text-foreground">
             {meta.title}
           </h2>
           <p className="text-sm text-stone">{meta.description}</p>

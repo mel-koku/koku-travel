@@ -78,19 +78,19 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
           "mx-auto flex max-w-2xl items-center gap-3 rounded-xl px-5 py-4 text-center transition-colors",
           hasSelection
             ? "bg-brand-primary/5 border border-brand-primary/20"
-            : "bg-sand/50"
+            : "bg-surface/50"
         )}
       >
         <Info className={cn(
           "h-5 w-5 shrink-0",
-          hasSelection ? "text-brand-primary" : "text-warm-gray"
+          hasSelection ? "text-brand-primary" : "text-foreground-secondary"
         )} />
-        <p className="text-sm text-charcoal">
+        <p className="text-sm text-foreground">
           {hasSelection ? (
             <>
               <span className="font-semibold text-brand-primary">{selectedRegions.length}</span>{" "}
               {selectedRegions.length === 1 ? "region" : "regions"} selected.{" "}
-              <span className="text-warm-gray">
+              <span className="text-foreground-secondary">
                 Click to add more or remove. Cities will be auto-selected based on your trip duration.
               </span>
             </>

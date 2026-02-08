@@ -70,7 +70,7 @@ export function SmartPromptsDrawer({
           >
             <div className="flex items-center gap-2">
               <Lightbulb className="h-5 w-5 text-brand-primary" />
-              <span className="text-sm font-semibold text-charcoal">
+              <span className="text-sm font-semibold text-foreground">
                 {gaps.length} suggestion{gaps.length !== 1 ? "s" : ""}
               </span>
             </div>
@@ -81,7 +81,7 @@ export function SmartPromptsDrawer({
                   e.stopPropagation();
                   handleDismiss();
                 }}
-                className="rounded-full p-1 text-stone hover:bg-sand"
+                className="rounded-full p-1 text-stone hover:bg-surface"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -124,7 +124,7 @@ export function SmartPromptsDrawer({
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
           <div className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-brand-primary" />
-            <span className="text-sm font-semibold text-charcoal">
+            <span className="text-sm font-semibold text-foreground">
               Smart Suggestions
             </span>
             <span className="rounded-full bg-brand-primary/10 px-2 py-0.5 text-xs font-medium text-brand-primary">
@@ -134,7 +134,7 @@ export function SmartPromptsDrawer({
           <button
             type="button"
             onClick={handleDismiss}
-            className="rounded-full p-1 text-stone hover:bg-sand"
+            className="rounded-full p-1 text-stone hover:bg-surface"
           >
             <X className="h-4 w-4" />
           </button>

@@ -50,7 +50,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
 
   return (
     <>
-      <section ref={containerRef} className="relative bg-surface py-24 sm:py-32">
+      <section ref={containerRef} className="relative bg-background py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6">
           {/* Section Header */}
           <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
@@ -62,7 +62,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
               </ScrollReveal>
               <SplitText
                 as="h2"
-                className="mt-4 font-serif text-3xl font-medium text-charcoal sm:text-4xl"
+                className="mt-4 font-serif text-3xl font-medium text-foreground sm:text-4xl"
                 splitBy="word"
                 animation="clipY"
               >
@@ -71,7 +71,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
             </div>
             <Link
               href="/explore"
-              className="group flex items-center gap-2 text-charcoal transition-colors hover:text-brand-primary"
+              className="group flex items-center gap-2 text-foreground transition-colors hover:text-brand-primary"
             >
               <span className="text-sm font-medium uppercase tracking-wider">
                 View all locations
@@ -161,7 +161,7 @@ function HorizontalLocationCard({
           />
         </motion.div>
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
 
         {/* Content */}
         <div className="absolute inset-x-0 bottom-0 p-6">

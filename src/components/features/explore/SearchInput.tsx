@@ -22,7 +22,7 @@ export function SearchInput({
       <input
         id="explore-search"
         type="text"
-        className="w-full h-10 rounded-full border border-border bg-surface text-charcoal placeholder-stone pl-9 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+        className="w-full h-10 rounded-xl border border-border bg-surface text-foreground placeholder-stone pl-9 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -31,7 +31,7 @@ export function SearchInput({
         <button
           type="button"
           onClick={() => onChange("")}
-          className="absolute inset-y-0 right-2 flex items-center text-stone hover:text-warm-gray focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-full p-1"
+          className="absolute inset-y-0 right-2 flex items-center text-stone hover:text-foreground-secondary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-full p-1"
           aria-label="Clear search"
         >
           <svg

@@ -129,7 +129,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
                   <span className="relative">
                     <span
                       className={`font-serif text-5xl font-light tracking-tight transition-colors md:text-6xl lg:text-7xl ${
-                        isActive ? "text-brand-primary" : "text-charcoal group-hover:text-charcoal/80"
+                        isActive ? "text-brand-primary" : "text-foreground group-hover:text-foreground/80"
                       }`}
                     >
                       {item.label}
@@ -157,7 +157,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           onClick={onClose}
           onMouseEnter={() => setCursorState("link")}
           onMouseLeave={() => setCursorState("default")}
-          className="text-base font-medium text-warm-gray transition-colors hover:text-charcoal"
+          className="text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
         >
           Dashboard
         </Link>
@@ -171,7 +171,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
             }}
             onMouseEnter={() => setCursorState("link")}
             onMouseLeave={() => setCursorState("default")}
-            className="text-left text-base font-medium text-warm-gray transition-colors hover:text-charcoal"
+            className="text-left text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign out
           </button>
@@ -181,7 +181,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
             onClick={onClose}
             onMouseEnter={() => setCursorState("link")}
             onMouseLeave={() => setCursorState("default")}
-            className="text-base font-medium text-warm-gray transition-colors hover:text-charcoal"
+            className="text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign in
           </Link>

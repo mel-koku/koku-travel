@@ -14,8 +14,8 @@ function ModalDemo() {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-charcoal">Modal</h2>
-        <p className="text-sm text-warm-gray">
+        <h2 className="text-2xl font-semibold text-foreground">Modal</h2>
+        <p className="text-sm text-foreground-secondary">
           Centered overlay with focus trap, escape-to-close, and blurred backdrop. Use for key actions that
           pause page interaction.
         </p>
@@ -35,7 +35,7 @@ function ModalDemo() {
         description="Share your travel goals and we’ll build a bespoke itinerary in 24 hours."
       >
         <div className="space-y-5">
-          <p className="text-sm text-warm-gray">
+          <p className="text-sm text-foreground-secondary">
             We’ll pair you with a destination specialist. Expect a 30-minute call, a curated activity list,
             and transit guidance tailored to your pace.
           </p>
@@ -55,8 +55,8 @@ function TooltipDemo() {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-charcoal">Tooltip</h2>
-        <p className="text-sm text-warm-gray">
+        <h2 className="text-2xl font-semibold text-foreground">Tooltip</h2>
+        <p className="text-sm text-foreground-secondary">
           Hover or focus to reveal supplemental guidance. Tooltips fade in with a brief delay to avoid
           surprise.
         </p>
@@ -109,8 +109,8 @@ function DropdownDemo() {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-charcoal">Dropdown</h2>
-        <p className="text-sm text-warm-gray">
+        <h2 className="text-2xl font-semibold text-foreground">Dropdown</h2>
+        <p className="text-sm text-foreground-secondary">
           Use for compact menus. Supports arrow-key navigation, escape-to-close, and outside click
           dismissal.
         </p>
@@ -119,7 +119,7 @@ function DropdownDemo() {
       <div className="flex flex-col gap-3 md:flex-row md:items-center">
         <Dropdown label="Select itinerary theme" items={items} />
         <p className="text-sm text-stone">
-          Selected: <span className="font-medium text-charcoal">{selection}</span>
+          Selected: <span className="font-medium text-foreground">{selection}</span>
         </p>
       </div>
     </section>
@@ -130,8 +130,8 @@ function AlertDemo() {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-charcoal">Alerts</h2>
-        <p className="text-sm text-warm-gray">
+        <h2 className="text-2xl font-semibold text-foreground">Alerts</h2>
+        <p className="text-sm text-foreground-secondary">
           Inline feedback with calm color accents. Use dismissible alerts sparingly so critical messages stay
           visible.
         </p>
@@ -142,7 +142,7 @@ function AlertDemo() {
           tone="info"
           title="Heads up"
         >
-          <p className="text-sm text-warm-gray">
+          <p className="text-sm text-foreground-secondary">
             Tokyo booking windows open six months ahead. Add reminders so you don’t miss flagship ryokans.
           </p>
         </Alert>
@@ -175,8 +175,8 @@ export default function OverlaysDemoPage() {
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
           Design System
         </span>
-        <h1 className="text-4xl font-bold leading-tight text-charcoal">Overlay Components</h1>
-        <p className="max-w-2xl text-lg text-warm-gray">
+        <h1 className="text-4xl font-bold leading-tight text-foreground">Overlay Components</h1>
+        <p className="max-w-2xl text-lg text-foreground-secondary">
           Modals, tooltips, dropdown menus, and alerts built with headless behavior. Each example highlights
           accessible keyboard flows and calm motion tuned to the Koku aesthetic.
         </p>

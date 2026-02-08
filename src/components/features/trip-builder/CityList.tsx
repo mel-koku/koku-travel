@@ -270,7 +270,7 @@ export function CityList({ onCitySelect }: CityListProps) {
               "rounded-full border px-3 py-1.5 text-sm transition",
               filterMode === "all"
                 ? "border-sage/30 bg-sage/10 text-sage"
-                : "border-border text-foreground-secondary hover:bg-sand"
+                : "border-border text-foreground-secondary hover:bg-surface"
             )}
           >
             All
@@ -283,7 +283,7 @@ export function CityList({ onCitySelect }: CityListProps) {
               "rounded-full border px-3 py-1.5 text-sm transition",
               filterMode === "highMatch"
                 ? "border-sage/30 bg-sage/10 text-sage"
-                : "border-border text-foreground-secondary hover:bg-sand",
+                : "border-border text-foreground-secondary hover:bg-surface",
               !hasInterests && "cursor-not-allowed opacity-50"
             )}
             title={!hasInterests ? "Select interests first to filter by match" : undefined}
@@ -298,7 +298,7 @@ export function CityList({ onCitySelect }: CityListProps) {
               "rounded-full border px-3 py-1.5 text-sm transition",
               filterMode === "selected"
                 ? "border-sage/30 bg-sage/10 text-sage"
-                : "border-border text-foreground-secondary hover:bg-sand",
+                : "border-border text-foreground-secondary hover:bg-surface",
               selectedCities.size === 0 && "cursor-not-allowed opacity-50"
             )}
             title={selectedCities.size === 0 ? "No cities selected" : undefined}
@@ -379,7 +379,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                   <button
                     type="button"
                     onClick={() => toggleRegion(region)}
-                    className="flex w-full items-center justify-between px-4 py-2 text-left hover:bg-sand"
+                    className="flex w-full items-center justify-between px-4 py-2 text-left hover:bg-surface"
                   >
                     <div className="flex items-center gap-2">
                       {/* Chevron */}
@@ -399,7 +399,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                           d="M9 5l7 7-7 7"
                         />
                       </svg>
-                      <span className="text-sm font-semibold text-warm-gray">
+                      <span className="text-sm font-semibold text-foreground-secondary">
                         {region}
                       </span>
                       <span className="text-xs text-stone">
@@ -424,7 +424,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                             type="button"
                             onClick={() => toggleCity(city.city)}
                             className={cn(
-                              "flex w-full items-center justify-between px-4 py-2.5 pl-10 text-left transition hover:bg-sand",
+                              "flex w-full items-center justify-between px-4 py-2.5 pl-10 text-left transition hover:bg-surface",
                               isSelected && "bg-sage/10 hover:bg-sage/20"
                             )}
                           >
@@ -459,7 +459,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                                 <span
                                   className={cn(
                                     "font-medium",
-                                    isSelected ? "text-charcoal" : "text-charcoal"
+                                    isSelected ? "text-foreground" : "text-foreground"
                                   )}
                                 >
                                   {city.city}

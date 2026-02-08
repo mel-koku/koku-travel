@@ -77,7 +77,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
 
   return (
     <motion.article
-      className="group relative text-charcoal"
+      className="group relative text-foreground"
       initial={prefersReducedMotion ? {} : { y: 24, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, margin: "-5%" }}
@@ -95,7 +95,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
       />
 
       {/* Unified Card Container */}
-      <div className={`overflow-hidden rounded-xl border border-border bg-background shadow-sm transition-all duration-300 group-hover:shadow-depth group-hover:-translate-y-1 group-hover:border-sand ${variant === "tall" ? "h-full" : ""}`}>
+      <div className={`overflow-hidden rounded-xl border border-border/50 bg-surface shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_32px_rgba(196,80,79,0.1)] ${variant === "tall" ? "h-full" : ""}`}>
         {/* Image Area */}
         <div className="relative">
           {/* Clickable image area */}
@@ -119,7 +119,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 priority={false}
               />
               {/* Hover gradient overlay — intensifies on hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-charcoal/10 to-transparent opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-500" />
             </div>
           </div>
 
@@ -146,7 +146,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
               className={`pointer-events-auto flex h-10 items-center gap-1.5 rounded-full px-3 backdrop-blur-sm shadow-lg transition-all hover:scale-105 active:scale-95 ${
                 locationInItinerary
                   ? "bg-sage/90 text-white hover:bg-sage"
-                  : "bg-white/90 text-charcoal hover:bg-white"
+                  : "bg-white/90 text-foreground hover:bg-white"
               }`}
             >
               {locationInItinerary ? (
@@ -169,13 +169,13 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
         >
           <div className="space-y-2">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="font-medium text-charcoal line-clamp-1 transition-colors duration-200 group-hover:text-brand-primary">
+              <h3 className="font-medium text-foreground line-clamp-1 transition-colors duration-200 group-hover:text-brand-primary">
                 {displayName}
               </h3>
               {rating ? (
                 <div className="flex shrink-0 items-center gap-1 text-sm">
                   <StarIcon />
-                  <span className="text-charcoal">{rating.toFixed(1)}</span>
+                  <span className="text-foreground">{rating.toFixed(1)}</span>
                   {reviewCount ? (
                     <span className="text-stone">({formatReviewCount(reviewCount)})</span>
                   ) : null}
@@ -191,7 +191,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
 
             {/* Category Pill and Duration */}
             <div className="flex items-center gap-2 pt-1">
-              <span className="text-xs font-medium capitalize bg-surface text-warm-gray px-2.5 py-1 rounded-full">
+              <span className="text-xs font-medium capitalize bg-surface text-foreground-secondary px-2.5 py-1 rounded-xl">
                 {location.category}
               </span>
               {estimatedDuration ? (

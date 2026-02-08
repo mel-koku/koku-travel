@@ -143,7 +143,7 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
-        variant="compact"
+        compact
         eyebrow="Settings"
         title="Account"
         subtitle="Manage your profile and preferences."
@@ -154,7 +154,7 @@ export default function AccountPage() {
           <ScrollReveal distance={20}>
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm space-y-6">
               {supabaseUnavailable && (
-                <div className="rounded-xl border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-charcoal">
+                <div className="rounded-xl border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-foreground">
                   Cloud sync is disabled because Supabase credentials are not configured. Set
                   <code className="mx-1 rounded bg-brand-secondary/10 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
                   and
@@ -165,11 +165,11 @@ export default function AccountPage() {
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <h2 className="font-serif text-xl text-charcoal sm:text-2xl">Profile</h2>
+                <h2 className="font-serif text-xl text-foreground sm:text-2xl">Profile</h2>
                 {signedIn && supabase && (
                   <button
                     onClick={() => supabase.auth.signOut()}
-                    className="h-10 rounded-full border border-border bg-background px-4 text-sm text-warm-gray hover:bg-sand transition"
+                    className="h-10 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface transition"
                   >
                     Sign out
                   </button>
@@ -179,7 +179,7 @@ export default function AccountPage() {
               {signedIn ? (
                 <>
                   <IdentityBadge />
-                  <label className="text-sm text-warm-gray block">
+                  <label className="text-sm text-foreground-secondary block">
                     Display name
                     <input
                       className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
@@ -202,7 +202,7 @@ export default function AccountPage() {
                     <button
                       onClick={clearAllLocalData}
                       disabled={isLoadingProfile || isLoadingRefresh}
-                      className="h-10 rounded-full border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      className="h-10 rounded-xl border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
                       Clear local data
                     </button>
@@ -253,7 +253,7 @@ function EmailForm() {
 
   return (
     <form className="grid grid-cols-1 gap-4" onSubmit={sendMagicLink}>
-    <label className="text-sm text-warm-gray">
+    <label className="text-sm text-foreground-secondary">
       Email for magic link
       <input
         type="email"
@@ -268,7 +268,7 @@ function EmailForm() {
     <button
       type="submit"
       disabled={supabaseUnavailable}
-      className="h-10 rounded-full bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90 transition"
+      className="h-10 rounded-xl bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90 transition"
     >
       Send sign-in link
     </button>

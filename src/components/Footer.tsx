@@ -31,7 +31,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-charcoal text-white">
+    <footer className="bg-charcoal text-white border-t border-white/10">
       <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
         {/* Top: Brand + Navigation */}
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
@@ -52,12 +52,12 @@ export default function Footer() {
                 <input
                   type="email"
                   placeholder="Your email"
-                  className="flex-1 rounded-full border border-white/20 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/20"
+                  className="flex-1 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/20"
                 />
                 <Magnetic>
                   <button
                     type="button"
-                    className="rounded-full bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
+                    className="rounded-xl bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
                   >
                     Subscribe
                   </button>

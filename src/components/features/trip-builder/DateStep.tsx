@@ -163,7 +163,7 @@ export function DateStep({ onValidityChange }: DateStepProps) {
         calculatedDuration <= MAX_DURATION && (
           <div className="rounded-lg border border-sage/20 bg-sage/5 px-4 py-3">
             <p className="text-sm text-foreground-secondary">
-              <span className="font-medium text-charcoal">
+              <span className="font-medium text-foreground">
                 {calculatedDuration}-day trip
               </span>{" "}
               ({calculatedDuration - 1} night

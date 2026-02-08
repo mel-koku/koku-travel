@@ -108,7 +108,7 @@ export function JapanMapPicker({
                 <Plane className="h-4 w-4" />
               </div>
               <div>
-                <p className="font-medium text-charcoal">{value.name}</p>
+                <p className="font-medium text-foreground">{value.name}</p>
                 {value.iataCode && (
                   <p className="text-xs text-stone">{value.iataCode}</p>
                 )}
@@ -117,7 +117,7 @@ export function JapanMapPicker({
             <button
               type="button"
               onClick={handleClear}
-              className="rounded-lg px-3 py-1 text-sm text-stone hover:bg-surface hover:text-warm-gray"
+              className="rounded-lg px-3 py-1 text-sm text-stone hover:bg-surface hover:text-foreground-secondary"
             >
               Change
             </button>
@@ -149,7 +149,7 @@ export function JapanMapPicker({
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone hover:text-warm-gray"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone hover:text-foreground-secondary"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -163,12 +163,12 @@ export function JapanMapPicker({
                     key={airport.id}
                     type="button"
                     onClick={() => handleSelectAirport(airport)}
-                    className="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-sand"
+                    className="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-surface"
                   >
                     <div className="flex items-center gap-3">
                       <Plane className="h-4 w-4 text-stone" />
                       <div>
-                        <p className="text-sm font-medium text-charcoal">
+                        <p className="text-sm font-medium text-foreground">
                           {airport.name}
                         </p>
                         <p className="text-xs text-stone">
@@ -202,7 +202,7 @@ export function JapanMapPicker({
                   key={airport.id}
                   type="button"
                   onClick={() => handleSelectAirport(airport)}
-                  className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-warm-gray transition-colors hover:border-brand-primary hover:bg-brand-primary/5 hover:text-sage"
+                  className="flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary transition-colors hover:border-brand-primary hover:bg-brand-primary/5 hover:text-sage"
                 >
                   <Plane className="h-3 w-3" />
                   {airport.shortName}

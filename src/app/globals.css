@@ -6,7 +6,132 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* shadcn/ui variables mapped to warm palette */
+  /* Dark-dominant palette (Locomotive-inspired) */
+  --background: #1a1714;
+  --foreground: #f0e8dc;
+  --card: #242019;
+  --card-foreground: #f0e8dc;
+  --popover: #242019;
+  --popover-foreground: #f0e8dc;
+  --primary: #c4504f;
+  --primary-foreground: #ffffff;
+  --secondary: #242019;
+  --secondary-foreground: #f0e8dc;
+  --muted: #242019;
+  --muted-foreground: #9a8d7e;
+  --accent: #3da193;
+  --accent-foreground: #ffffff;
+  --destructive: #d44535;
+  --destructive-foreground: #ffffff;
+  --border: #3a332a;
+  --input: #3a332a;
+  --ring: #c4504f;
+  --radius: 0.75rem;
+
+  /* Chart colors */
+  --chart-1: #c4504f;
+  --chart-2: #3da193;
+  --chart-3: #daa54e;
+  --chart-4: #d4b83d;
+  --chart-5: #9a8d7e;
+
+  /* Sidebar */
+  --sidebar: #1a1714;
+  --sidebar-foreground: #f0e8dc;
+  --sidebar-primary: #c4504f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #242019;
+  --sidebar-accent-foreground: #f0e8dc;
+  --sidebar-border: #3a332a;
+  --sidebar-ring: #c4504f;
+
+  /* Extended palette (for custom components) */
+  --foreground-secondary: #b8ad9e;
+  --surface: #242019;
+  --brand-primary: #c4504f;
+  --brand-secondary: #daa54e;
+  --success: #3da193;
+  --warning: #d4b83d;
+  --error: #d44535;
+  --stone: #9a8d7e;
+  --cream: #242019;
+  --sage: #3da193;
+  --terracotta: #daa54e;
+  --charcoal: #1f1a14;
+  --sand: #3a332a;
+  --warm-gray: #b8ad9e;
+
+  /* Layout spacing */
+  --space-section: clamp(4rem, 8vw, 8rem);
+  --space-gutter: clamp(1rem, 3vw, 2rem);
+
+  /* Type scale (augmented fourth, ratio 1.414) */
+  --text-caption: 0.5rem;
+  --text-small: 0.707rem;
+  --text-base: 1rem;
+  --text-lg: 1.414rem;
+  --text-xl: 2rem;
+  --text-2xl: 2.828rem;
+  --text-3xl: 4rem;
+  --text-4xl: 5.657rem;
+  --text-display: 8rem;
+
+  /* Layout */
+  --header-h: 80px;
+  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h) + 10px);
+}
+
+.dark {
+  /* Deeper dark (for contrast sections) */
+  --background: #131110;
+  --foreground: #f0e8dc;
+  --card: #1c1915;
+  --card-foreground: #f0e8dc;
+  --popover: #1c1915;
+  --popover-foreground: #f0e8dc;
+  --primary: #c4504f;
+  --primary-foreground: #ffffff;
+  --secondary: #1c1915;
+  --secondary-foreground: #f0e8dc;
+  --muted: #1c1915;
+  --muted-foreground: #9a8d7e;
+  --accent: #3da193;
+  --accent-foreground: #ffffff;
+  --destructive: #d44535;
+  --destructive-foreground: #ffffff;
+  --border: #2e2820;
+  --input: #2e2820;
+  --ring: #c4504f;
+
+  /* Chart colors (dark) */
+  --chart-1: #c4504f;
+  --chart-2: #3da193;
+  --chart-3: #daa54e;
+  --chart-4: #d4b83d;
+  --chart-5: #9a8d7e;
+
+  /* Sidebar (dark) */
+  --sidebar: #131110;
+  --sidebar-foreground: #f0e8dc;
+  --sidebar-primary: #c4504f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1c1915;
+  --sidebar-accent-foreground: #f0e8dc;
+  --sidebar-border: #2e2820;
+  --sidebar-ring: #c4504f;
+
+  /* Extended palette (dark) */
+  --foreground-secondary: #9a8d7e;
+  --surface: #1c1915;
+  --brand-primary: #c4504f;
+  --brand-secondary: #daa54e;
+  --success: #3da193;
+  --warning: #d4b83d;
+  --error: #d44535;
+}
+
+/* Light theme option (original warm palette) */
+[data-theme="light"] {
   --background: #faf5ef;
   --foreground: #1f1a14;
   --card: #faf5ef;
@@ -26,26 +151,7 @@
   --border: #e3d5c3;
   --input: #e3d5c3;
   --ring: #8c2f2f;
-  --radius: 0.75rem;
 
-  /* Chart colors */
-  --chart-1: #8c2f2f;
-  --chart-2: #2d7a6f;
-  --chart-3: #c6923a;
-  --chart-4: #d4a017;
-  --chart-5: #9a8d7e;
-
-  /* Sidebar */
-  --sidebar: #faf5ef;
-  --sidebar-foreground: #1f1a14;
-  --sidebar-primary: #8c2f2f;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f2ebe0;
-  --sidebar-accent-foreground: #1f1a14;
-  --sidebar-border: #e3d5c3;
-  --sidebar-ring: #8c2f2f;
-
-  /* Extended palette (for custom components) */
   --foreground-secondary: #5a4f44;
   --surface: #f2ebe0;
   --brand-primary: #8c2f2f;
@@ -53,77 +159,9 @@
   --success: #2d7a6f;
   --warning: #d4a017;
   --error: #b33025;
-  --stone: #9a8d7e;
   --cream: #f2ebe0;
-  --sage: #2d7a6f;
-  --terracotta: #c6923a;
-  --charcoal: #1f1a14;
   --sand: #e3d5c3;
   --warm-gray: #5a4f44;
-
-  /* Type scale (augmented fourth, ratio 1.414) */
-  --text-caption: 0.5rem;
-  --text-small: 0.707rem;
-  --text-base: 1rem;
-  --text-lg: 1.414rem;
-  --text-xl: 2rem;
-  --text-2xl: 2.828rem;
-  --text-3xl: 4rem;
-  --text-4xl: 5.657rem;
-  --text-display: 8rem;
-
-  /* Layout */
-  --header-h: 80px;
-  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h) + 10px);
-}
-
-.dark {
-  /* Dark mode */
-  --background: #151210;
-  --foreground: #f0e8dc;
-  --card: #221e1a;
-  --card-foreground: #f0e8dc;
-  --popover: #221e1a;
-  --popover-foreground: #f0e8dc;
-  --primary: #c4504f;
-  --primary-foreground: #151210;
-  --secondary: #221e1a;
-  --secondary-foreground: #f0e8dc;
-  --muted: #221e1a;
-  --muted-foreground: #9a8d7e;
-  --accent: #3da193;
-  --accent-foreground: #151210;
-  --destructive: #d44535;
-  --destructive-foreground: #ffffff;
-  --border: #352f29;
-  --input: #352f29;
-  --ring: #c4504f;
-
-  /* Chart colors (dark) */
-  --chart-1: #c4504f;
-  --chart-2: #3da193;
-  --chart-3: #daa54e;
-  --chart-4: #d4b83d;
-  --chart-5: #9a8d7e;
-
-  /* Sidebar (dark) */
-  --sidebar: #151210;
-  --sidebar-foreground: #f0e8dc;
-  --sidebar-primary: #c4504f;
-  --sidebar-primary-foreground: #151210;
-  --sidebar-accent: #221e1a;
-  --sidebar-accent-foreground: #f0e8dc;
-  --sidebar-border: #352f29;
-  --sidebar-ring: #c4504f;
-
-  /* Extended palette (dark) */
-  --foreground-secondary: #9a8d7e;
-  --surface: #221e1a;
-  --brand-primary: #c4504f;
-  --brand-secondary: #daa54e;
-  --success: #3da193;
-  --warning: #d4b83d;
-  --error: #d44535;
 }
 
 @theme inline {
@@ -283,6 +321,19 @@ html.lenis-stopped {
   html.custom-cursor * {
     cursor: none !important;
   }
+}
+
+/* Section divider gradient line */
+.divider-glow {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--brand-primary) 20%,
+    var(--brand-primary) 80%,
+    transparent
+  );
+  opacity: 0.2;
 }
 
 /*

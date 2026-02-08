@@ -105,7 +105,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-lg font-semibold text-charcoal">Trip Essentials</h3>
+        <h3 className="text-lg font-semibold text-foreground">Trip Essentials</h3>
         <p className="mt-1 text-sm text-foreground-secondary">
           Set the basics for your Japan adventure.
         </p>
@@ -166,7 +166,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
         <div className="rounded-lg border border-border bg-surface px-4 py-3">
           <p className="text-sm text-foreground-secondary">
             <span className="mr-2">📅</span>
-            <span className="font-medium text-charcoal">
+            <span className="font-medium text-foreground">
               {calculatedDuration}-day trip
             </span>
             {" "}({calculatedDuration - 1} night{calculatedDuration - 1 !== 1 ? "s" : ""})
@@ -175,7 +175,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
       )}
 
       <div>
-        <h4 className="text-sm font-medium text-charcoal">Entry Point (Optional)</h4>
+        <h4 className="text-sm font-medium text-foreground">Entry Point (Optional)</h4>
         <p className="mt-1 mb-3 text-xs text-stone">
           Where will you start your trip? Search for airports, train stations, cities, or hotels.
         </p>

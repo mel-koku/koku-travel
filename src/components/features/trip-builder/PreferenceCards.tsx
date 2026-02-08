@@ -179,7 +179,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
                     "flex items-start gap-3 rounded-lg border p-3 text-left transition",
                     field.value === option.value
                       ? "border-sage/20 bg-sage/10 ring-1 ring-brand-primary"
-                      : "border-border hover:bg-sand"
+                      : "border-border hover:bg-surface"
                   )}
                 >
                   <div
@@ -191,7 +191,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
                     )}
                   />
                   <div className="min-w-0">
-                    <span className="text-sm font-medium text-charcoal">
+                    <span className="text-sm font-medium text-foreground">
                       {option.label}
                     </span>
                     <span className="ml-2 text-xs text-stone">
@@ -265,11 +265,11 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
             className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
             {...register("mobilityAssistance")}
           />
-          <span className="text-sm text-warm-gray">Need mobility assistance</span>
+          <span className="text-sm text-foreground-secondary">Need mobility assistance</span>
         </label>
 
         <div className="mt-2">
-          <p className="text-sm font-medium text-warm-gray mb-2">
+          <p className="text-sm font-medium text-foreground-secondary mb-2">
             Dietary Restrictions
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -284,7 +284,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
                   className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
                   {...register("dietary")}
                 />
-                <span className="text-sm text-warm-gray">{option.label}</span>
+                <span className="text-sm text-foreground-secondary">{option.label}</span>
               </label>
             ))}
           </div>
@@ -330,7 +330,7 @@ function PreferenceCard({ title, description, className, children }: PreferenceC
   return (
     <div className={cn("rounded-xl border border-border bg-background p-4", className)}>
       <div className="mb-3">
-        <h4 className="text-sm font-semibold text-charcoal">{title}</h4>
+        <h4 className="text-sm font-semibold text-foreground">{title}</h4>
         {description && (
           <p className="mt-0.5 text-xs text-stone">{description}</p>
         )}

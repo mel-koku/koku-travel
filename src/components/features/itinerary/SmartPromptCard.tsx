@@ -109,7 +109,7 @@ export function SmartPromptCard({
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h4 className="text-sm font-medium text-charcoal">{gap.title}</h4>
+          <h4 className="text-sm font-medium text-foreground">{gap.title}</h4>
           <span
             className={cn(
               "rounded-full px-2 py-0.5 text-[10px] font-medium",
@@ -151,7 +151,7 @@ export function SmartPromptCard({
               "rounded-full border border-border px-3 py-1 text-xs font-medium text-stone transition",
               isLoading
                 ? "cursor-not-allowed opacity-50"
-                : "hover:bg-sand"
+                : "hover:bg-surface"
             )}
           >
             Skip

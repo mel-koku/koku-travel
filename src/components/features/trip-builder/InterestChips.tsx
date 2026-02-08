@@ -65,7 +65,7 @@ export function InterestChips({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between">
-        <h4 className="text-sm font-medium text-charcoal">Interests</h4>
+        <h4 className="text-sm font-medium text-foreground">Interests</h4>
         <span className="text-xs text-stone">
           {selectedInterests.length}/{maxSelection}
         </span>
@@ -88,7 +88,7 @@ export function InterestChips({
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
                 isSelected
                   ? "border-brand-primary bg-brand-primary text-white hover:bg-brand-primary/90"
-                  : "border-border bg-background text-warm-gray hover:bg-sand",
+                  : "border-border bg-background text-foreground-secondary hover:bg-surface",
                 isDisabled && "cursor-not-allowed opacity-50 hover:bg-background"
               )}
             >

@@ -9,9 +9,8 @@ export default function FavoritesPage() {
   const count = wishlist.length;
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-background">
       <PageHeader
-        variant="rich"
         eyebrow="Your Collection"
         title="Favorites"
         subtitle={

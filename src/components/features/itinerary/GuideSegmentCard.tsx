@@ -102,7 +102,7 @@ export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardPr
       </button>
       {!isCollapsed && (
         <div className="px-3 pb-3 pt-0">
-          <p className="text-sm leading-relaxed text-warm-gray">
+          <p className="text-sm leading-relaxed text-foreground-secondary">
             {segment.content}
           </p>
         </div>

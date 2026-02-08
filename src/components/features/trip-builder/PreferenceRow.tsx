@@ -49,7 +49,7 @@ export function PreferenceRow({
       <button
         type="button"
         onClick={toggleExpanded}
-        className="flex w-full items-center justify-between p-4 text-left hover:bg-sand/50"
+        className="flex w-full items-center justify-between p-4 text-left hover:bg-surface/50"
         aria-expanded={isExpanded}
         aria-controls={`${id}-content`}
       >
@@ -67,7 +67,7 @@ export function PreferenceRow({
             )}
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-charcoal">{title}</h4>
+            <h4 className="text-sm font-semibold text-foreground">{title}</h4>
             {!isExpanded && value && (
               <p className="mt-0.5 text-xs text-stone">{value}</p>
             )}

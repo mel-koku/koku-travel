@@ -12,9 +12,8 @@ export default async function GuidesPage() {
   const guides = await getPublishedGuides();
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-background">
       <PageHeader
-        variant="rich"
         eyebrow="Curated"
         title="Travel Guides"
         subtitle="Hidden gems, seasonal highlights, and local insights for your perfect Japan trip."
