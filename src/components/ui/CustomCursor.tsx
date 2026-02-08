@@ -7,6 +7,8 @@ const cursorConfig = {
   default: { size: 8, opacity: 1, label: "" },
   link: { size: 40, opacity: 0.5, label: "" },
   view: { size: 80, opacity: 0.9, label: "View" },
+  explore: { size: 80, opacity: 0.9, label: "Explore" },
+  read: { size: 60, opacity: 0.9, label: "Read" },
   drag: { size: 20, opacity: 0.7, label: "" },
   hidden: { size: 0, opacity: 0, label: "" },
 };

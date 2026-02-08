@@ -110,6 +110,22 @@ export function MenuNav({ onClose }: MenuNavProps) {
       animate="visible"
       exit="exit"
     >
+      {/* Logo */}
+      <motion.div className="mb-8" variants={itemVariants}>
+        <Link
+          href="/"
+          onClick={onClose}
+          className="flex items-baseline gap-1.5"
+        >
+          <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
+            Koku
+          </span>
+          <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
+            Travel
+          </span>
+        </Link>
+      </motion.div>
+
       <div className="flex flex-col gap-2 sm:gap-4">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");

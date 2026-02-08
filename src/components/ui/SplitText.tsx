@@ -8,7 +8,7 @@ type SplitTextProps = {
   className?: string;
   splitBy?: "word" | "char";
   trigger?: "inView" | "load";
-  animation?: "clipY" | "fadeUp" | "fadeIn";
+  animation?: "clipY" | "clipX" | "fadeUp" | "fadeIn";
   staggerDelay?: number;
   duration?: number;
   delay?: number;
@@ -33,6 +33,10 @@ const animations: Record<string, AnimDef> = {
   clipY: {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1 },
+  },
+  clipX: {
+    hidden: { x: -20, opacity: 0, clipPath: "inset(0 100% 0 0)" },
+    visible: { x: 0, opacity: 1, clipPath: "inset(0 0% 0 0)" },
   },
   fadeUp: {
     hidden: { opacity: 0, y: 30 },

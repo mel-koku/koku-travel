@@ -31,7 +31,14 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        serif: ["var(--font-playfair)", "Georgia", "serif"],
+        serif: ["var(--font-instrument-serif)", "Georgia", "serif"],
+        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+      },
+      letterSpacing: {
+        display: "-0.04em",
+        heading: "-0.02em",
+        wide: "0.15em",
+        ultra: "0.3em",
       },
       fontSize: {
         'caption': ['0.5rem', { lineHeight: '1.4' }],     // 8px - Legal, fine print

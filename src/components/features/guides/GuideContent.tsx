@@ -17,12 +17,12 @@ export function GuideContent({ body }: GuideContentProps) {
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-xl font-semibold text-foreground mt-8 mb-3">
+            <h2 className="font-serif text-xl font-semibold text-foreground mt-8 mb-3">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="text-lg font-semibold text-foreground mt-6 mb-2">
+            <h3 className="font-serif text-lg font-semibold text-foreground mt-6 mb-2">
               {children}
             </h3>
           ),
