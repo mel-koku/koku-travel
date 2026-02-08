@@ -103,12 +103,9 @@ function StepSection({
     offset: ["start end", "center center"],
   });
 
-  // Image clip-path reveal: circle expands as section enters view
-  const clipRadius = useTransform(sectionProgress, [0, 0.8], [0, 100]);
-  const clipPath = useTransform(
-    clipRadius,
-    (r: number) => `circle(${r}% at 50% 50%)`
-  );
+  // Image reveal: scale + opacity as section enters view (GPU-accelerated)
+  const imageScale = useTransform(sectionProgress, [0, 0.8], [0.6, 1]);
+  const imageOpacity = useTransform(sectionProgress, [0, 0.5], [0, 1]);
 
   const isReversed = index % 2 === 1;
 
@@ -123,7 +120,7 @@ function StepSection({
       <div className="flex-1">
         <motion.div
           className="relative aspect-[4/3] overflow-hidden rounded-xl"
-          style={reducedMotion ? {} : { clipPath }}
+          style={reducedMotion ? {} : { scale: imageScale, opacity: imageOpacity }}
         >
           <Image
             src={step.image}

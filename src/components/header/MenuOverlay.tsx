@@ -89,13 +89,13 @@ export function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
         exit: { opacity: 0 },
       }
     : {
-        hidden: { clipPath: "inset(0 0 100% 0)" },
+        hidden: { y: "-100%" },
         visible: {
-          clipPath: "inset(0 0 0% 0)",
+          y: "0%",
           transition: { duration: 0.5, ease: EASE_OUT_EXPO },
         },
         exit: {
-          clipPath: "inset(0 0 100% 0)",
+          y: "-100%",
           transition: { duration: 0.4, ease: EASE_OUT_EXPO },
         },
       };

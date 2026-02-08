@@ -23,6 +23,7 @@ import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGener
 import { ActivityConflictIndicator } from "./ConflictBadge";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
+import { resizePhotoUrl } from "@/lib/google/transformations";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -431,9 +432,9 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     const activityImage = useMemo(() => {
       // Try location's primary photo first
       const primaryPhoto = (placeLocation as Location & { primaryPhotoUrl?: string })?.primaryPhotoUrl;
-      if (primaryPhoto) return primaryPhoto;
+      if (primaryPhoto) return resizePhotoUrl(primaryPhoto, 800) ?? primaryPhoto;
       // Then fall back to location image
-      if (placeLocation?.image) return placeLocation.image;
+      if (placeLocation?.image) return resizePhotoUrl(placeLocation.image, 800) ?? placeLocation.image;
       // Finally use category fallback
       const category = placeLocation?.category ?? activity.tags?.[0] ?? "culture";
       return FALLBACK_IMAGES[category] ?? DEFAULT_FALLBACK_IMAGE;
@@ -561,6 +562,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
                 alt={activity.title}
                 fill
+                unoptimized
                 sizes="(max-width: 640px) 100vw, 600px"
                 className={`object-cover transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
                 onLoad={() => setImageLoaded(true)}

@@ -64,14 +64,12 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
     setDirection(step > currentStep ? 1 : -1);
     setCurrentStep(step);
     setCurrentSubStep(subStep);
-    // Wait for React to render and paint the new content, then scroll
+    // Wait for React to render the new content, then scroll
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (scrollContainerRef.current) {
-          scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
-        }
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
     });
   }, [currentStep]);
 

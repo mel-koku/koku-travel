@@ -31,8 +31,10 @@ import { REGIONS } from "@/data/regions";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult } from "@/hooks/useSmartPromptActions";
-import { buildGuide } from "@/lib/guide/guideBuilder";
 import { GuideToggle } from "./GuideToggle";
+
+// Lazy-load guide builder to keep ~90KB of template data out of the main bundle
+const buildGuideAsync = () => import("@/lib/guide/guideBuilder").then((m) => m.buildGuide);
 
 type ItineraryShellProps = {
   tripId: string;
@@ -282,8 +284,14 @@ export const ItineraryShell = ({
       finalHeadingRef.current.focus();
     }
   }, [finalHeadingRef]);
-  const serializedItinerary = useMemo(() => JSON.stringify(itinerary), [itinerary]);
-  const previousSerializedRef = useRef<string | null>(null);
+  // Shallow fingerprint instead of full JSON.stringify (~O(days*activities) vs O(entire tree))
+  const itineraryFingerprint = useMemo(() => {
+    const days = itinerary.days ?? [];
+    return days
+      .map((d) => `${d.id}:${d.activities?.length ?? 0}:${d.activities?.map((a) => a.id).join(",")}`)
+      .join("|");
+  }, [itinerary]);
+  const previousFingerprintRef = useRef<string | null>(null);
   const skipSyncRef = useRef(true);
   const skipNextPlanRef = useRef(false);
   const planTimeoutRef = useRef<number | null>(null);
@@ -409,10 +417,10 @@ export const ItineraryShell = ({
   );
 
   useEffect(() => {
-    if (previousSerializedRef.current === serializedItinerary) {
+    if (previousFingerprintRef.current === itineraryFingerprint) {
       return;
     }
-    previousSerializedRef.current = serializedItinerary;
+    previousFingerprintRef.current = itineraryFingerprint;
     const nextNormalized = normalizeItinerary(itinerary);
     if (planTimeoutRef.current) {
       clearTimeout(planTimeoutRef.current);
@@ -492,7 +500,7 @@ export const ItineraryShell = ({
         planWatchdogRef.current = null;
       }
     };
-  }, [serializedItinerary, itinerary, tripId, buildDayEntryPointsMap, tripBuilderData]);
+  }, [itineraryFingerprint, itinerary, tripId, buildDayEntryPointsMap, tripBuilderData]);
 
   useEffect(() => {
     if (skipSyncRef.current) {
@@ -520,10 +528,20 @@ export const ItineraryShell = ({
     return detectItineraryConflicts(model);
   }, [model]);
 
-  // Build guide when enabled
-  const tripGuide = useMemo(() => {
-    if (!guideEnabled) return null;
-    return buildGuide(model, tripBuilderData);
+  // Build guide when enabled (lazy-loaded to avoid bundling ~90KB of template data)
+  const [tripGuide, setTripGuide] = useState<Awaited<ReturnType<typeof import("@/lib/guide/guideBuilder").buildGuide>> | null>(null);
+  useEffect(() => {
+    if (!guideEnabled) {
+      setTripGuide(null);
+      return;
+    }
+    let cancelled = false;
+    buildGuideAsync().then((buildGuide) => {
+      if (!cancelled) {
+        setTripGuide(buildGuide(model, tripBuilderData));
+      }
+    });
+    return () => { cancelled = true; };
   }, [guideEnabled, model, tripBuilderData]);
 
   const currentDayGuide = useMemo(() => {

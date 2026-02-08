@@ -8,6 +8,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
 import { useAddToItinerary } from "@/hooks/useAddToItinerary";
 import { useCursor } from "@/providers/CursorProvider";
+import { resizePhotoUrl } from "@/lib/google/transformations";
 import type { Location } from "@/types/location";
 import { PlusIcon } from "./PlusIcon";
 import { MinusIcon } from "./MinusIcon";
@@ -33,7 +34,8 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
   const reviewCount = getLocationReviewCount(location);
   const buttonRef = useRef<HTMLDivElement | null>(null);
   // Use primary photo URL from database if available, otherwise fall back to image field
-  const imageSrc = location.primaryPhotoUrl ?? location.image;
+  // Request 800px for card thumbnails instead of 1600px (saves bandwidth)
+  const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
 
   // Add to itinerary state
   const { trips, needsTripPicker, isInItinerary, addToItinerary, removeFromItinerary } = useAddToItinerary();
@@ -76,8 +78,8 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
   return (
     <motion.article
       className="group relative text-charcoal"
-      initial={prefersReducedMotion ? {} : { clipPath: "inset(0 0 100% 0)", opacity: 0 }}
-      whileInView={{ clipPath: "inset(0 0 0% 0)", opacity: 1 }}
+      initial={prefersReducedMotion ? {} : { y: 24, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, margin: "-5%" }}
       transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
       onMouseEnter={() => cursorEnabled && setCursorState("view")}
@@ -111,6 +113,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 src={imageSrc || FALLBACK_IMAGE_SRC}
                 alt={displayName}
                 fill
+                unoptimized
                 className="object-cover transition-transform duration-300 group-hover:scale-105"
                 sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
                 priority={false}

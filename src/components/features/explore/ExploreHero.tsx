@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import { AnimatePresence } from "framer-motion";
 import { useRef, useState, useMemo, useCallback, useEffect } from "react";
+import Image from "next/image";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { useCursor } from "@/hooks/useCursor";
@@ -229,11 +230,14 @@ export function ExploreHero({
     return (
       <section className="relative h-screen w-full overflow-hidden bg-charcoal">
         <div className="absolute inset-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={imgSrc}
             alt={loc.name}
-            className="h-full w-full object-cover"
+            fill
+            unoptimized
+            priority
+            className="object-cover"
+            sizes="100vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/40 to-charcoal/20" />
         </div>
