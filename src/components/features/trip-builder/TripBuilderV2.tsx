@@ -161,7 +161,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
           key={`step-${currentStep}`}
           custom={direction}
           variants={variants}
-          initial="enter"
+          initial={currentStep === 0 ? false : "enter"}
           animate="center"
           exit="exit"
           className="min-h-[calc(100dvh-5rem)]"
