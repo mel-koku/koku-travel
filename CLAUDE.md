@@ -3,6 +3,28 @@
 ## Project Overview
 Koku Travel is a Next.js trip planning application for Japan travel. It includes a trip builder, itinerary generation, and smart prompts for meal/experience suggestions.
 
+## Recent Work (2026-02-10)
+
+### Description Quality Audit & Fix (291 locations)
+- **Trigger**: Gion Corner had Gion District's description copied into it; led to full database audit
+- **5 tiers of issues found and fixed**:
+  - **Tier 1** (8 locations): Description described a completely different place (e.g., castle ruins had a restaurant's description)
+  - **Tier 2** (5 locations): Description about a hotel/property instead of the attraction itself
+  - **Tier 3** (12 locations): Generic boilerplate auto-generated text ("a notable landmark representing an important cultural site")
+  - **Tier 4** (14 locations): Truncated descriptions cut off at ~50 characters without ending punctuation
+  - **Tier 5** (252 locations): `description` identical to `short_description` — expanded each to 2-4 sentence paragraphs (60-200 words)
+- **Category fixes** (5 locations): Gion Corner (landmark→entertainment), Suigetsu (park→food), Sunset Live (restaurant→entertainment), OkutsuSo (museum→wellness), Kiyonoya (food→wellness)
+- **Writing approach**: Warm, knowledgeable voice; signature dishes for restaurants, best seasons for nature, founding history for temples, practical tips throughout; no marketing cliches
+- **Verification**: Post-fix query confirms 0 remaining `description === short_description` matches
+- **Scripts** (one-time use, in `scripts/`):
+  - `find-desc-issues.js` — Detects Tier 3 (boilerplate patterns) and Tier 4 (truncated) locations
+  - `export-tier5.js` — Exports Tier 5 locations to JSON for batch processing
+  - `fix-descriptions-t1-t4.js` — Applied 35 fixes for Tiers 1-4 + category corrections
+  - `fix-tier5-batch1.js`, `fix-tier5-batch2.js`, `fix-tier5-batch3.js` — Applied 252 Tier 5 expanded descriptions (84 each)
+- **All fixes applied directly to Supabase** via service role key (no local data files changed)
+
+---
+
 ## Recent Work (2026-02-09)
 
 ### Guide Article Page Redesign
