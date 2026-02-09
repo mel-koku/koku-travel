@@ -1,10 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Magnetic } from "@/components/ui/Magnetic";
 
 type IntroStepProps = {
@@ -21,21 +20,44 @@ export function IntroStep({ onStart }: IntroStepProps) {
 
   const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
 
+  // Phased load animation states
+  const [phase, setPhase] = useState(0);
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      setPhase(3);
+      return;
+    }
+    // Phase 1: SplitText reveals (immediate — handled by SplitText delay)
+    setPhase(1);
+    // Phase 2: Background image fades in at 1.5s
+    const t2 = setTimeout(() => setPhase(2), 1500);
+    // Phase 3: Subtitle + CTA fade in at 2s
+    const t3 = setTimeout(() => setPhase(3), 2000);
+    return () => {
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [prefersReducedMotion]);
+
   return (
     <div
       ref={containerRef}
       className="relative -mt-20 flex min-h-screen items-center justify-center overflow-hidden bg-charcoal pt-20"
     >
-      {/* Parallax background image */}
+      {/* Parallax background image — fades in at phase 2 */}
       <motion.div
         className="absolute inset-0"
         style={prefersReducedMotion ? {} : { y: imageY }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase >= 2 ? 1 : 0 }}
+        transition={{ duration: 1.2, ease: "easeOut" }}
       >
         <Image
           src="/images/regions/kansai-hero.jpg"
           alt=""
           fill
-          className="object-cover opacity-30"
+          className="object-cover opacity-25"
           priority
           sizes="100vw"
         />
@@ -47,17 +69,12 @@ export function IntroStep({ onStart }: IntroStepProps) {
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
-        <ScrollReveal distance={10} delay={0}>
-          <p className="text-xs uppercase tracking-[0.3em] text-white/60">
-            Trip Builder
-          </p>
-        </ScrollReveal>
-
         <SplitText
           as="h1"
-          className="mt-4 justify-center font-serif text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
+          className="justify-center font-serif text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
           splitBy="word"
           animation="clipY"
+          trigger="load"
           staggerDelay={0.04}
           delay={0.15}
         >
@@ -69,32 +86,36 @@ export function IntroStep({ onStart }: IntroStepProps) {
           className="mt-2 justify-center font-serif text-[clamp(1.5rem,5vw,3rem)] italic text-brand-primary"
           splitBy="char"
           animation="fadeUp"
+          trigger="load"
           staggerDelay={0.03}
           delay={0.5}
         >
           starts here
         </SplitText>
 
-        <ScrollReveal delay={0.7} distance={15}>
+        {/* Subtitle + CTA — fade in at phase 3 */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={phase >= 3 ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+        >
           <p className="mx-auto mt-6 max-w-xl text-base text-white/70 sm:text-lg">
             Tell us where you want to go and what you love — we&apos;ll build a
             day-by-day plan from places locals actually recommend.
           </p>
-        </ScrollReveal>
 
-        <ScrollReveal delay={0.9} distance={10}>
           <div className="mt-10">
             <Magnetic>
               <button
                 type="button"
                 onClick={onStart}
-                className="rounded-xl bg-brand-primary px-10 py-3.5 text-sm font-semibold text-white transition hover:bg-brand-primary/90 sm:px-12"
+                className="h-14 cursor-pointer rounded-xl bg-brand-primary px-12 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-brand-primary/90"
               >
                 Start Planning
               </button>
             </Magnetic>
           </div>
-        </ScrollReveal>
+        </motion.div>
       </div>
     </div>
   );
