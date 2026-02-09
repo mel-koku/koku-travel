@@ -116,7 +116,7 @@ export function SelectionReview({ onEdit }: SelectionReviewProps) {
         {/* Vibes */}
         <div className="px-4 py-3">
           <div className="flex items-start justify-between">
-            <span className="text-sm text-stone">Vibes</span>
+            <span className="text-sm text-stone">Travel Style</span>
             <div className="flex-1 ml-4 text-right">
               {data.vibes && data.vibes.length > 0 ? (
                 <div className="flex flex-wrap justify-end gap-1">
