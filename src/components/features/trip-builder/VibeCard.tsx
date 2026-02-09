@@ -6,7 +6,7 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { LucideIcon } from "lucide-react";
 
-const LOCOMOTIVE_EASE: [number, number, number, number] = [0.215, 0.61, 0.355, 1];
+const CINEMATIC_EASE: [number, number, number, number] = [0.215, 0.61, 0.355, 1];
 
 type VibeCardProps = {
   name: string;
@@ -56,7 +56,7 @@ export function VibeCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: 0.6,
-        ease: LOCOMOTIVE_EASE,
+        ease: CINEMATIC_EASE,
         delay: index * 0.12,
       }}
     >
