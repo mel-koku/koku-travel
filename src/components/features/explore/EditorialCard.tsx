@@ -8,6 +8,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { useAddToItinerary } from "@/hooks/useAddToItinerary";
 import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { easeReveal, durationBase, easeCinematicCSS } from "@/lib/motion";
 import type { Location } from "@/types/location";
 import { PlusIcon } from "./PlusIcon";
 import { MinusIcon } from "./MinusIcon";
@@ -88,7 +89,7 @@ export const EditorialCard = memo(function EditorialCard({
       initial={prefersReducedMotion ? {} : { y: 24, opacity: 0 }}
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, margin: "-5%" }}
-      transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: durationBase, ease: easeReveal }}
       onMouseEnter={() => cursorEnabled && setCursorState("view")}
       onMouseLeave={() => cursorEnabled && setCursorState("default")}
     >
@@ -115,7 +116,8 @@ export const EditorialCard = memo(function EditorialCard({
             alt={location.name}
             fill
             unoptimized
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.04]"
+            style={{ transitionTimingFunction: easeCinematicCSS }}
             sizes={
               isFeature
                 ? "(min-width:1280px) 1200px, 100vw"

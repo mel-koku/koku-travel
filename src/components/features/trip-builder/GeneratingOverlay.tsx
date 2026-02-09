@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
+import { staggerWord, easeReveal } from "@/lib/motion";
 
 const STATUS_MESSAGES = [
   "Analyzing your preferences...",
@@ -41,7 +42,7 @@ export function GeneratingOverlay() {
           splitBy="word"
           trigger="load"
           animation="clipY"
-          staggerDelay={0.06}
+          staggerDelay={staggerWord}
           delay={0.1}
         >
           Crafting your journey
@@ -53,7 +54,7 @@ export function GeneratingOverlay() {
             className="h-full bg-brand-primary"
             initial={{ width: "0%" }}
             animate={{ width: "90%" }}
-            transition={{ duration: 8, ease: "easeOut" }}
+            transition={{ duration: 8, ease: easeReveal }}
           />
         </div>
 
