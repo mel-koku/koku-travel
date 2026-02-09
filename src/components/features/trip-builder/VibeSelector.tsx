@@ -167,7 +167,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
 
       {isMaxSelected && (
         <p className="text-sm text-warning">
-          Maximum {MAX_VIBE_SELECTION} vibes selected. Deselect one to choose another.
+          Maximum {MAX_VIBE_SELECTION} styles selected. Deselect one to choose another.
         </p>
       )}
     </div>
