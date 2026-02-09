@@ -6,14 +6,20 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { LucideIcon } from "lucide-react";
 
+const LOCOMOTIVE_EASE: [number, number, number, number] = [0.215, 0.61, 0.355, 1];
+
 type VibeCardProps = {
   name: string;
   description: string;
   image: string;
   icon: LucideIcon | React.ComponentType<{ className?: string }>;
+  index: number;
   isSelected: boolean;
   isDisabled: boolean;
+  isHovered: boolean;
   onToggle: () => void;
+  onHover: () => void;
+  onLeave: () => void;
 };
 
 export function VibeCard({
@@ -21,9 +27,13 @@ export function VibeCard({
   description,
   image,
   icon: Icon,
+  index,
   isSelected,
   isDisabled,
+  isHovered,
   onToggle,
+  onHover,
+  onLeave,
 }: VibeCardProps) {
   const prefersReducedMotion = useReducedMotion();
 
@@ -31,71 +41,105 @@ export function VibeCard({
     <motion.button
       type="button"
       onClick={onToggle}
+      onMouseEnter={onHover}
+      onMouseLeave={onLeave}
       aria-pressed={isSelected}
       aria-disabled={isDisabled}
       disabled={isDisabled}
       className={cn(
-        "group relative w-full cursor-pointer overflow-hidden rounded-2xl transition-all",
-        "aspect-[3/4]",
+        "group relative h-full w-full cursor-pointer overflow-hidden text-left",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        isSelected && "border-2 border-brand-primary",
-        !isSelected && "border-2 border-transparent",
-        isDisabled && "pointer-events-none opacity-40"
+        isSelected && "ring-2 ring-inset ring-brand-primary/80",
+        isDisabled && "pointer-events-none opacity-30"
       )}
-      whileHover={
-        prefersReducedMotion
-          ? {}
-          : { y: -8, transition: { duration: 0.3, ease: [0.25, 0.1, 0.25, 1] } }
-      }
-      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.6,
+        ease: LOCOMOTIVE_EASE,
+        delay: index * 0.12,
+      }}
     >
-      {/* Background image */}
+      {/* Background image with Ken Burns zoom */}
       <div className="absolute inset-0">
         <Image
           src={image}
           alt={name}
           fill
           className={cn(
-            "object-cover transition-all duration-500",
-            isSelected ? "brightness-110" : "group-hover:brightness-110"
+            "object-cover transition-transform duration-[1.4s]",
+            isHovered || isSelected ? "scale-110" : "scale-100"
           )}
-          sizes="(max-width: 640px) 50vw, 200px"
+          style={{
+            transitionTimingFunction: "cubic-bezier(0.215, 0.61, 0.355, 1)",
+          }}
+          sizes="(max-width: 1024px) 72vw, 33vw"
         />
       </div>
 
-      {/* Dark gradient overlay */}
+      {/* Gradient overlay — more dramatic, lightens on hover */}
       <div
         className={cn(
-          "absolute inset-0 transition-colors duration-300",
-          isSelected
-            ? "bg-gradient-to-t from-charcoal/90 via-brand-primary/20 to-charcoal/10"
-            : "bg-gradient-to-t from-charcoal/90 via-charcoal/40 to-charcoal/10"
+          "absolute inset-0 transition-all duration-700",
+          isHovered
+            ? "bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-charcoal/5"
+            : "bg-gradient-to-t from-charcoal/90 via-charcoal/50 to-charcoal/15"
         )}
+        style={{
+          transitionTimingFunction: "cubic-bezier(0.215, 0.61, 0.355, 1)",
+        }}
       />
 
-      {/* Warm shadow on hover */}
-      <div className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ boxShadow: "inset 0 -60px 40px -20px rgba(196,80,79,0.1)" }}
-      />
-
-      {/* Content at bottom */}
-      <div className="absolute inset-x-0 bottom-0 p-4">
-        <Icon className="h-8 w-8 text-white/80" />
-        <h3 className="mt-2 font-serif text-xl italic text-white">{name}</h3>
-        <p className="mt-0.5 text-xs leading-relaxed text-white/60">{description}</p>
+      {/* Editorial index number — top left, fades in on hover */}
+      <div
+        className={cn(
+          "absolute left-4 top-4 font-mono text-xs text-white/40 transition-opacity duration-500",
+          isHovered ? "opacity-100" : "opacity-0"
+        )}
+      >
+        {String(index + 1).padStart(2, "0")}
       </div>
 
-      {/* Selected check badge */}
+      {/* Selected check badge — top right */}
       {isSelected && (
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ type: "spring", stiffness: 400, damping: 20 }}
-          className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg"
+          className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg"
         >
           <Check className="h-4 w-4" strokeWidth={3} />
         </motion.div>
       )}
+
+      {/* Content at bottom */}
+      <div className="absolute inset-x-0 bottom-0 p-4 lg:p-5">
+        {/* Accent line — expands + turns brand-primary on hover */}
+        <div
+          className={cn(
+            "mb-3 h-px transition-all duration-700",
+            isHovered || isSelected
+              ? "w-12 bg-brand-primary"
+              : "w-6 bg-white/30"
+          )}
+          style={{
+            transitionTimingFunction: "cubic-bezier(0.215, 0.61, 0.355, 1)",
+          }}
+        />
+
+        {/* Icon — subtle */}
+        <Icon className="h-5 w-5 text-white/60" />
+
+        {/* Name — large serif italic */}
+        <h3 className="mt-2 font-serif text-xl italic text-white lg:text-2xl">
+          {name}
+        </h3>
+
+        {/* Description */}
+        <p className="mt-1 text-xs leading-relaxed text-white/50 lg:text-sm">
+          {description}
+        </p>
+      </div>
     </motion.button>
   );
 }

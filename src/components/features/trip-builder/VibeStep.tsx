@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Camera,
   Mountain,
@@ -45,7 +45,6 @@ const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
 };
 
 // Vibe images — using existing region hero images as placeholders
-// These map each vibe to a thematically appropriate image
 const VIBE_IMAGES: Record<VibeId, string> = {
   cultural_heritage: "/images/regions/kansai-hero.jpg",
   foodie_paradise: "/images/regions/kyushu-hero.jpg",
@@ -60,6 +59,7 @@ export type VibeStepProps = {
 
 export function VibeStep({ onValidityChange }: VibeStepProps) {
   const { data, setData } = useTripBuilder();
+  const [hoveredId, setHoveredId] = useState<VibeId | null>(null);
 
   const selectedVibes = useMemo(() => data.vibes ?? [], [data.vibes]);
   const isMaxSelected = selectedVibes.length >= MAX_VIBE_SELECTION;
@@ -112,62 +112,89 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
         </p>
       </div>
 
-      {/* Vibe cards — horizontal row on desktop, 2-col grid on mobile */}
-      <div className="relative z-10 mx-auto mt-8 w-full max-w-5xl px-6 pb-32 lg:mt-10 lg:pb-8">
-        {/* Desktop: centered horizontal row */}
-        <div className="hidden justify-center gap-4 lg:flex">
-          {VIBES.map((vibe) => {
-            const isSelected = selectedVibes.includes(vibe.id);
-            const isDisabled = isMaxSelected && !isSelected;
-            const Icon = VIBE_ICONS[vibe.icon] ?? Mountain;
-
-            return (
-              <div key={vibe.id} className="w-[200px]">
-                <VibeCard
-                  name={vibe.name}
-                  description={vibe.description}
-                  image={VIBE_IMAGES[vibe.id]}
-                  icon={Icon}
-                  isSelected={isSelected}
-                  isDisabled={isDisabled}
-                  onToggle={() => toggleVibe(vibe.id)}
-                />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Mobile: 2-column grid, 5th card spans full width */}
-        <div className="grid grid-cols-2 gap-3 lg:hidden">
+      {/* Desktop: Expanding columns */}
+      <div className="relative z-10 mt-8 hidden flex-1 px-8 pb-8 lg:flex lg:mt-10 lg:px-12">
+        <div className="flex w-full gap-[3px]">
           {VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;
             const Icon = VIBE_ICONS[vibe.icon] ?? Mountain;
-            const isLast = i === VIBES.length - 1;
+            const isHovered = hoveredId === vibe.id;
+
+            // Dynamic flex: hovered expands to 2, siblings contract to 0.75, default is 1
+            let flexValue = 1;
+            if (hoveredId !== null) {
+              flexValue = isHovered ? 2.0 : 0.75;
+            }
 
             return (
-              <div key={vibe.id} className={isLast ? "col-span-2 mx-auto max-w-[200px]" : ""}>
+              <div
+                key={vibe.id}
+                className="min-w-0 overflow-hidden rounded-xl"
+                style={{
+                  flex: flexValue,
+                  transition:
+                    "flex 0.7s cubic-bezier(0.215, 0.61, 0.355, 1)",
+                }}
+              >
                 <VibeCard
                   name={vibe.name}
                   description={vibe.description}
                   image={VIBE_IMAGES[vibe.id]}
                   icon={Icon}
+                  index={i}
                   isSelected={isSelected}
                   isDisabled={isDisabled}
+                  isHovered={isHovered}
                   onToggle={() => toggleVibe(vibe.id)}
+                  onHover={() => setHoveredId(vibe.id)}
+                  onLeave={() => setHoveredId(null)}
                 />
               </div>
             );
           })}
         </div>
-
-        {/* Warning when max reached */}
-        {isMaxSelected && (
-          <p className="mt-6 text-center text-sm text-warning">
-            Maximum {MAX_VIBE_SELECTION} vibes selected. Deselect one to choose another.
-          </p>
-        )}
       </div>
+
+      {/* Mobile: Horizontal scroll with snap */}
+      <div className="relative z-10 mt-8 pb-32 lg:hidden">
+        <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto px-6">
+          {VIBES.map((vibe, i) => {
+            const isSelected = selectedVibes.includes(vibe.id);
+            const isDisabled = isMaxSelected && !isSelected;
+            const Icon = VIBE_ICONS[vibe.icon] ?? Mountain;
+
+            return (
+              <div
+                key={vibe.id}
+                className="h-[55vh] w-[72vw] flex-shrink-0 snap-center overflow-hidden rounded-xl"
+              >
+                <VibeCard
+                  name={vibe.name}
+                  description={vibe.description}
+                  image={VIBE_IMAGES[vibe.id]}
+                  icon={Icon}
+                  index={i}
+                  isSelected={isSelected}
+                  isDisabled={isDisabled}
+                  isHovered={false}
+                  onToggle={() => toggleVibe(vibe.id)}
+                  onHover={() => {}}
+                  onLeave={() => {}}
+                />
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Warning when max reached */}
+      {isMaxSelected && (
+        <p className="relative z-10 pb-8 text-center text-sm text-warning lg:pb-4">
+          Maximum {MAX_VIBE_SELECTION} vibes selected. Deselect one to choose
+          another.
+        </p>
+      )}
     </div>
   );
 }
