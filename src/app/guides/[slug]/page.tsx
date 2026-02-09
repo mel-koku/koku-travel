@@ -1,7 +1,11 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
-import { getGuideWithLocations } from "@/lib/guides/guideService";
+import {
+  getGuideWithLocations,
+  getGuidesByCity,
+  getGuidesByType,
+} from "@/lib/guides/guideService";
 import { GuideDetailClient } from "@/components/features/guides/GuideDetailClient";
 
 type Props = {
@@ -45,5 +49,20 @@ export default async function GuideDetailPage({ params }: Props) {
 
   const { guide, locations } = result;
 
-  return <GuideDetailClient guide={guide} locations={locations} />;
+  // Fetch one related guide: prefer same city, fallback to same type
+  let relatedGuides = guide.city
+    ? await getGuidesByCity(guide.city, guide.id, 1)
+    : [];
+  if (relatedGuides.length === 0) {
+    relatedGuides = await getGuidesByType(guide.guideType, guide.id, 1);
+  }
+  const relatedGuide = relatedGuides[0] ?? null;
+
+  return (
+    <GuideDetailClient
+      guide={guide}
+      locations={locations}
+      relatedGuide={relatedGuide}
+    />
+  );
 }
