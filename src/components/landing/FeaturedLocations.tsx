@@ -90,7 +90,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
                 href="/explore"
                 className="link-reveal mt-8 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
               >
-                View all
+                Explore all
                 <ArrowRightIcon />
               </Link>
             </div>

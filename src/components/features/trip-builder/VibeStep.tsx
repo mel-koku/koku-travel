@@ -109,7 +109,7 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
         </SplitText>
 
         <p className="mt-2 text-sm text-stone">
-          Your vibes shape which places, restaurants, and experiences we prioritize.
+          Pick what excites you — we&apos;ll find places that match.
         </p>
 
         <p className="mt-2 font-mono text-sm text-stone">
@@ -196,8 +196,7 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
       {/* Warning when max reached */}
       {isMaxSelected && (
         <p className="relative z-10 pb-8 text-center text-sm text-warning lg:pb-4">
-          Maximum {MAX_VIBE_SELECTION} vibes selected. Deselect one to choose
-          another.
+          You&apos;ve picked {MAX_VIBE_SELECTION} — swap one out to add another.
         </p>
       )}
     </div>

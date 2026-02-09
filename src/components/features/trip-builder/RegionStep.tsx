@@ -179,7 +179,7 @@ export function RegionStep({ onValidityChange }: RegionStepProps) {
           </SplitText>
 
           <p className="mt-3 text-sm text-white/50 lg:text-base">
-            Regions define which cities appear in your itinerary. We&apos;ll auto-suggest based on your vibes.
+            Choose your destinations. We&apos;ve highlighted the best matches for your vibes.
           </p>
         </div>
 

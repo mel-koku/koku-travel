@@ -91,8 +91,8 @@ export function DayRefinementButtons({
       });
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: "Failed to refine day" }));
-        throw new Error(error.message ?? "Failed to refine day");
+        const error = await response.json().catch(() => ({ message: "Couldn't adjust this day — try again." }));
+        throw new Error(error.message ?? "Couldn't adjust this day — try again.");
       }
 
       const data = await response.json();
@@ -100,7 +100,7 @@ export function DayRefinementButtons({
         onRefine(data.refinedDay);
       }
     } catch (error) {
-      setRefinementError(error instanceof Error ? error.message : "Failed to refine day");
+      setRefinementError(error instanceof Error ? error.message : "Couldn't adjust this day — try again.");
     } finally {
       setIsRefining(false);
     }

@@ -160,7 +160,7 @@ function ItineraryPageContent() {
   if (!activeItinerary) {
     return (
       <div className="p-16 text-center text-foreground-secondary">
-        <p>No saved itineraries yet. Confirm a trip in the builder to see it here.</p>
+        <p>No itineraries yet. Build a trip and it&apos;ll show up here.</p>
         <Link href="/trip-builder" className="text-sage underline">
           Go to Trip Builder
         </Link>

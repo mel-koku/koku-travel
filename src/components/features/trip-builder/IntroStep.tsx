@@ -72,8 +72,8 @@ export function IntroStep({ onStart }: IntroStepProps) {
 
         <ScrollReveal delay={0.8} distance={15} duration={0.6}>
           <p className="mx-auto mt-6 max-w-xl text-base text-white/70 sm:text-lg">
-            Tell us where you want to go and what you love — we&apos;ll build a
-            day-by-day plan from places locals actually recommend.
+            Share what moves you, and we&apos;ll plan the rest — day by day,
+            from places locals actually go.
           </p>
 
           <div className="mt-10">

@@ -38,14 +38,9 @@ function UserMenu({
 
   const handleClearData = () => {
     const confirmed = window.confirm(
-      "\u26a0\ufe0f WARNING: Clear All Local Data?\n\n" +
-        "This action cannot be undone. You will permanently lose:\n" +
-        "\u2022 All saved trips and itineraries\n" +
-        "\u2022 All favorites/bookmarks\n" +
-        "\u2022 Trip builder preferences\n" +
-        "\u2022 Your display name and local profile\n\n" +
-        "If you're signed in, your cloud data will remain safe.\n\n" +
-        "Are you sure you want to continue?"
+      "Start fresh?\n\n" +
+        "This removes all trips, favorites, and preferences from this device.\n\n" +
+        "Your account data stays safe in the cloud."
     );
 
     if (confirmed) {

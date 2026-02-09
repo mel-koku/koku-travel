@@ -6,10 +6,10 @@ import { SplitText } from "@/components/ui/SplitText";
 import { staggerWord, easeReveal } from "@/lib/motion";
 
 const STATUS_MESSAGES = [
-  "Analyzing your preferences...",
-  "Finding the best routes...",
-  "Optimizing your schedule...",
-  "Almost ready...",
+  "Reading your travel style...",
+  "Mapping the best routes...",
+  "Fitting the pieces together...",
+  "Adding the finishing touches...",
 ];
 
 const MESSAGE_INTERVAL = 2500;
