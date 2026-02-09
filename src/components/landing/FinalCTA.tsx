@@ -46,7 +46,7 @@ export function FinalCTA() {
         <div className="max-w-2xl">
           <SplitText
             as="h2"
-            className="justify-center font-serif text-2xl font-medium tracking-heading text-white sm:text-3xl lg:text-4xl"
+            className="justify-center font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
             splitBy="char"
             animation="clipY"
             staggerDelay={0.02}

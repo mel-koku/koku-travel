@@ -75,7 +75,7 @@ export const GuideEditorialRow = memo(function GuideEditorialRow({
             </p>
 
             {/* Title */}
-            <h3 className="mt-3 font-serif text-2xl sm:text-3xl text-foreground transition-colors duration-300 group-hover:text-brand-primary">
+            <h3 className="mt-3 font-serif italic text-2xl sm:text-3xl text-foreground transition-colors duration-300 group-hover:text-brand-primary">
               {guide.title}
             </h3>
 

@@ -61,7 +61,7 @@ export function GuidesPageClient({ guides }: GuidesPageClientProps) {
       <div className="flex flex-col items-center justify-center py-32 px-4">
         <SplitText
           as="p"
-          className="justify-center font-serif text-lg text-foreground"
+          className="justify-center font-serif italic text-lg text-foreground"
           splitBy="word"
           animation="clipY"
           staggerDelay={0.06}
@@ -108,7 +108,7 @@ export function GuidesPageClient({ guides }: GuidesPageClientProps) {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
-            <p className="font-serif text-lg text-foreground">
+            <p className="font-serif italic text-lg text-foreground">
               Nothing here yet
             </p>
             <p className="mt-2 text-sm text-stone">

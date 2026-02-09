@@ -37,7 +37,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           {/* Brand Column */}
           <div className="lg:col-span-5">
-            <h3 className="font-serif text-3xl sm:text-4xl">Koku Travel</h3>
+            <h3 className="font-serif italic text-3xl sm:text-4xl">Koku Travel</h3>
             <p className="mt-4 max-w-md text-base text-white/60">
               Curated by people who know Japan from the inside.
             </p>

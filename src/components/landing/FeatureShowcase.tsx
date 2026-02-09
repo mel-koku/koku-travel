@@ -59,7 +59,7 @@ function FeatureFullWidth() {
             </ScrollReveal>
             <SplitText
               as="h2"
-              className="mt-4 font-serif text-2xl font-medium text-white sm:text-3xl"
+              className="mt-4 font-serif italic text-2xl text-white sm:text-3xl"
               splitBy="word"
               animation="clipY"
               delay={0.1}
@@ -122,7 +122,7 @@ function Feature70_30() {
           </ScrollReveal>
           <SplitText
             as="h2"
-            className="mt-4 font-serif text-2xl font-medium text-foreground sm:text-3xl"
+            className="mt-4 font-serif italic text-2xl text-foreground sm:text-3xl"
             splitBy="word"
             animation="clipY"
             delay={0.1}
@@ -168,7 +168,7 @@ function Feature40_60() {
           </ScrollReveal>
           <SplitText
             as="h2"
-            className="mt-4 font-serif text-2xl font-medium text-foreground sm:text-3xl"
+            className="mt-4 font-serif italic text-2xl text-foreground sm:text-3xl"
             splitBy="word"
             animation="clipY"
             delay={0.1}

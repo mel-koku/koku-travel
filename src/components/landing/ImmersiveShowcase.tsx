@@ -145,7 +145,7 @@ function Act({
               <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
                 {act.eyebrow}
               </p>
-              <h2 className="mt-4 font-serif text-2xl font-medium tracking-heading text-white sm:text-3xl lg:text-4xl">
+              <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl">
                 {act.title}
               </h2>
               <p className="mt-6 text-base leading-relaxed text-white/80">
@@ -168,7 +168,7 @@ function Act({
               <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
                 {act.eyebrow}
               </p>
-              <h2 className="mt-4 font-serif text-2xl font-medium tracking-heading text-foreground sm:text-3xl">
+              <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
                 {act.title}
               </h2>
               <p className="mt-6 text-base leading-relaxed text-foreground-secondary">
@@ -197,7 +197,7 @@ function Act({
               <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
                 {act.eyebrow}
               </p>
-              <h2 className="mt-4 font-serif text-2xl font-medium tracking-heading text-foreground sm:text-3xl">
+              <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
                 {act.title}
               </h2>
               <p className="mt-6 text-base leading-relaxed text-foreground-secondary">
@@ -237,7 +237,7 @@ function ImmersiveShowcaseMobile() {
               </ScrollReveal>
               <SplitText
                 as="h2"
-                className="mt-4 font-serif text-xl font-medium tracking-heading text-foreground sm:text-2xl"
+                className="mt-4 font-serif italic text-xl tracking-heading text-foreground sm:text-2xl"
                 splitBy="word"
                 animation="clipY"
                 delay={0.2}

@@ -165,7 +165,7 @@ export default function AccountPage() {
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <h2 className="font-serif text-xl text-foreground sm:text-2xl">Profile</h2>
+                <h2 className="font-serif italic text-xl text-foreground sm:text-2xl">Profile</h2>
                 {signedIn && supabase && (
                   <button
                     onClick={() => supabase.auth.signOut()}

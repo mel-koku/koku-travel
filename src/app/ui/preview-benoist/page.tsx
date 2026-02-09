@@ -103,7 +103,7 @@ export default function PreviewBenoistPage() {
       <div className="bg-[#faf5ef] pt-24 pb-16 sm:pt-32 sm:pb-20">
         <div className="mx-auto max-w-6xl px-[clamp(1rem,3vw,2rem)]">
           <p className="text-[0.75rem] font-medium uppercase tracking-[0.15em] text-[#5a4f44]">3,952+ Curated Places</p>
-          <h1 className="mt-3 font-serif text-[clamp(2.5rem,5vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[#1f1a14]">
+          <h1 className="mt-3 font-serif italic text-[clamp(2.5rem,5vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[#1f1a14]">
             Explore
           </h1>
           <p className="mt-4 max-w-2xl text-[1.125rem] leading-[1.7] text-[#5a4f44]">
@@ -118,7 +118,7 @@ export default function PreviewBenoistPage() {
       <Section label="Section 2 — Navigation">
         <div className="rounded-lg border border-[#e3d5c3]/50 bg-[#faf5ef]/90 px-6 py-4 backdrop-blur-md">
           <div className="flex items-center justify-between">
-            <div className="font-serif text-xl text-[#1f1a14]">Koku Travel</div>
+            <div className="font-serif italic text-xl text-[#1f1a14]">Koku Travel</div>
             <nav className="hidden items-center gap-8 sm:flex">
               {["Explore", "Guides", "Trip Builder", "Favorites"].map((item, i) => (
                 <span
@@ -146,7 +146,7 @@ export default function PreviewBenoistPage() {
           ══════════════════════════════════════════════ */}
       <Section label="Section 3 — Card Grid (3 columns)">
         <div className="mb-4">
-          <h2 className="font-serif text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] text-[#1f1a14]">Location Cards</h2>
+          <h2 className="font-serif italic text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] text-[#1f1a14]">Location Cards</h2>
           <p className="mt-2 text-sm text-[#5a4f44]">Shadow change only on hover. No translate-y, no image scale. Rounded-lg corners.</p>
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
@@ -156,7 +156,7 @@ export default function PreviewBenoistPage() {
         </div>
 
         <div className="mt-16 mb-4">
-          <h2 className="font-serif text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] text-[#1f1a14]">Guide Cards</h2>
+          <h2 className="font-serif italic text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] text-[#1f1a14]">Guide Cards</h2>
           <p className="mt-2 text-sm text-[#5a4f44]">Same family as location cards. 4:3 aspect ratio. Rounded-lg badges.</p>
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
@@ -197,11 +197,11 @@ export default function PreviewBenoistPage() {
         <div className="space-y-8">
           <div>
             <p className="text-[0.75rem] font-medium uppercase tracking-[0.15em] text-[#9a8d7e] mb-1">heading-page — clamp(2.5rem, 5vw, 4rem)</p>
-            <h1 className="font-serif text-[clamp(2.5rem,5vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[#1f1a14]">Discover Japan</h1>
+            <h1 className="font-serif italic text-[clamp(2.5rem,5vw,4rem)] leading-[1.05] tracking-[-0.02em] text-[#1f1a14]">Discover Japan</h1>
           </div>
           <div>
             <p className="text-[0.75rem] font-medium uppercase tracking-[0.15em] text-[#9a8d7e] mb-1">heading-section — clamp(1.75rem, 3vw, 2.5rem)</p>
-            <h2 className="font-serif text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] text-[#1f1a14]">Popular Destinations</h2>
+            <h2 className="font-serif italic text-[clamp(1.75rem,3vw,2.5rem)] leading-[1.1] text-[#1f1a14]">Popular Destinations</h2>
           </div>
           <div>
             <p className="text-[0.75rem] font-medium uppercase tracking-[0.15em] text-[#9a8d7e] mb-1">heading-card — 1.25rem / font-medium</p>
@@ -236,7 +236,7 @@ export default function PreviewBenoistPage() {
               { num: "9", label: "Regions" },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="font-serif text-3xl text-[#1f1a14]">{stat.num}</div>
+                <div className="font-mono text-3xl text-[#1f1a14]">{stat.num}</div>
                 <div className="mt-1 text-sm text-[#5a4f44]">{stat.label}</div>
               </div>
             ))}
