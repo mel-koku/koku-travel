@@ -1,19 +1,21 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence } from "framer-motion";
 import { Location } from "@/types/location";
 import { ActiveFilter } from "@/types/filters";
-import { locationMatchesSubTypes, getCategoryById, getSubTypeById, getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
+import { locationMatchesSubTypes, getCategoryById, getSubTypeById, getParentCategoryForDatabaseCategory, CATEGORY_HIERARCHY } from "@/data/categoryHierarchy";
 
-const FiltersModal = dynamic(
-  () => import("./FiltersModal").then((m) => ({ default: m.FiltersModal })),
+const FilterPanel = dynamic(
+  () => import("./FilterPanel").then((m) => ({ default: m.FilterPanel })),
   { ssr: false }
 );
-import { LocationGrid } from "./LocationGrid";
-import { StickyExploreHeader } from "./StickyExploreHeader";
-import { ActiveFilterChips } from "./ActiveFilterChips";
-import { PageHeader } from "@/components/ui/PageHeader";
+
+import { LocationEditorialGrid } from "./LocationEditorialGrid";
+import { CategoryBar } from "./CategoryBar";
+import { ExploreIntro } from "./ExploreIntro";
+import { LocationExpanded } from "./LocationExpanded";
 import { useAggregatedLocations, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
 
 const DURATION_FILTERS = [
@@ -24,7 +26,7 @@ const DURATION_FILTERS = [
   },
   {
     id: "medium",
-    label: "1–3 hours",
+    label: "1\u20133 hours",
     predicate: (value: number | null) =>
       value !== null && value >= 60 && value <= 180,
   },
@@ -47,20 +49,14 @@ const SORT_OPTIONS = [
   { id: "duration_short" as const, label: "Duration (Short to Long)" },
 ] as const;
 
-/**
- * Calculate popularity score using Bayesian weighted average
- * Balances rating quality with review quantity to produce fair rankings
- * A 4.8★ location with 500 reviews ranks higher than a 5.0★ with 3 reviews
- */
 function calculatePopularityScore(rating: number | null, reviewCount: number | null): number {
   const r = rating ?? 0;
   const v = reviewCount ?? 0;
   if (r === 0 || v === 0) return 0;
 
-  const m = 50;   // minimum reviews threshold (smoothing factor)
-  const C = 4.2;  // global average rating
+  const m = 50;
+  const C = 4.2;
 
-  // Bayesian weighted average + log boost for volume
   const score = (v / (v + m)) * r + (m / (v + m)) * C;
   const reviewBoost = Math.log10(v + 1) / 10;
 
@@ -69,8 +65,8 @@ function calculatePopularityScore(rating: number | null, reviewCount: number | n
 
 type EnhancedLocation = Location & {
   durationMinutes: number | null;
-  ratingValue: number; // Always has a value (real or fallback)
-  reviewCount: number; // Always has a value (real or fallback)
+  ratingValue: number;
+  reviewCount: number;
 };
 
 function parseDuration(value?: string): number | null {
@@ -83,20 +79,12 @@ function parseDuration(value?: string): number | null {
   const amount = Number.parseFloat(match[1]);
   if (Number.isNaN(amount)) return null;
   const unit = match[2];
-  if (unit.startsWith("day")) {
-    return amount * 24 * 60;
-  }
-  if (unit.startsWith("hour") || unit.startsWith("hr")) {
-    return amount * 60;
-  }
-  if (unit.startsWith("minute")) {
-    return amount;
-  }
+  if (unit.startsWith("day")) return amount * 24 * 60;
+  if (unit.startsWith("hour") || unit.startsWith("hr")) return amount * 60;
+  if (unit.startsWith("minute")) return amount;
   return null;
 }
 
-// Fallback rating/review generation (deterministic based on location ID)
-// Used when database doesn't have Google Places rating data
 function hashString(value: string): number {
   let hash = 0;
   for (let index = 0; index < value.length; index += 1) {
@@ -108,16 +96,21 @@ function hashString(value: string): number {
 
 function generateFallbackRating(locationId: string): number {
   const hash = hashString(locationId);
-  return 3.9 + (hash % 18) / 20; // 3.9 - 4.8 range
+  return 3.9 + (hash % 18) / 20;
 }
 
 function generateFallbackReviewCount(locationId: string): number {
   const hash = hashString(locationId + "-reviews");
-  return 50 + (hash % 450); // 50-500 range
+  return 50 + (hash % 450);
 }
 
+// Category tabs for the CategoryBar
+const CATEGORY_TABS = CATEGORY_HIERARCHY.map((c) => ({
+  value: c.id,
+  label: c.label,
+}));
+
 export function ExploreShell() {
-  // Use React Query hooks for data fetching
   const {
     locations,
     total,
@@ -140,7 +133,11 @@ export function ExploreShell() {
   const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
   const [page, setPage] = useState(1);
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
-  const [isFiltersModalOpen, setIsFiltersModalOpen] = useState(false);
+  const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
+  const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
+
+  // IntersectionObserver for progressive loading
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setPage(1);
@@ -156,7 +153,6 @@ export function ExploreShell() {
     selectedSort,
   ]);
 
-  // Merge server-side search results with loaded locations (deduplicated)
   const mergedLocations = useMemo(() => {
     if (!searchResults || searchResults.length === 0) return locations;
     const loadedIds = new Set(locations.map((l) => l.id));
@@ -166,12 +162,10 @@ export function ExploreShell() {
 
   const enhancedLocations = useMemo<EnhancedLocation[]>(() => {
     return mergedLocations.map((location) => {
-      // Use actual rating if available, otherwise generate deterministic fallback
       const ratingValue = (typeof location.rating === "number" && Number.isFinite(location.rating))
         ? location.rating
         : generateFallbackRating(location.id);
 
-      // Use actual review count if available, otherwise generate deterministic fallback
       const reviewCountValue = (typeof location.reviewCount === "number" && location.reviewCount > 0)
         ? location.reviewCount
         : generateFallbackReviewCount(location.id);
@@ -185,7 +179,6 @@ export function ExploreShell() {
     });
   }, [mergedLocations]);
 
-  // Use pre-computed filter metadata from server (instant, no client-side processing)
   const prefectureOptions = useMemo(() => {
     return filterMetadata?.prefectures || [];
   }, [filterMetadata]);
@@ -196,13 +189,6 @@ export function ExploreShell() {
       ? DURATION_FILTERS.find((filter) => filter.id === selectedDuration) ?? null
       : null;
 
-    // Helper to normalize prefecture names
-    // Handles various suffixes from different data sources:
-    // - " Prefecture" (English suffix)
-    // - "-ken" (most prefectures)
-    // - "-fu" (Osaka-fu, Kyoto-fu)
-    // - "-to" (Tokyo-to)
-    // Note: "Hokkaido" is kept as-is since "-do" is part of its name
     const normalizePrefecture = (name: string | undefined): string => {
       if (!name) return '';
       return name
@@ -225,7 +211,6 @@ export function ExploreShell() {
         ? true
         : selectedPrefectures.includes(normalizePrefecture(location.prefecture));
 
-      // Price filter: "Free" (0) matches locations with priceLevel 0 or no priceLevel
       const matchesPriceLevel = selectedPriceLevel === null
         ? true
         : selectedPriceLevel === 0
@@ -243,17 +228,14 @@ export function ExploreShell() {
             return parentCategory !== null && selectedCategories.includes(parentCategory);
           })();
 
-      // Sub-type matching using the helper from categoryHierarchy
       const matchesSubType = selectedSubTypes.length === 0
         ? true
         : locationMatchesSubTypes(location, selectedSubTypes);
 
-      // Wheelchair accessible filter
       const matchesWheelchair = !wheelchairAccessible
         ? true
         : location.accessibilityOptions?.wheelchairAccessibleEntrance === true;
 
-      // Vegetarian friendly filter
       const matchesVegetarian = !vegetarianFriendly
         ? true
         : location.dietaryOptions?.servesVegetarianFood === true;
@@ -276,7 +258,6 @@ export function ExploreShell() {
 
     switch (selectedSort) {
       case "recommended":
-        // Sort by popularity score (Bayesian weighted rating + review count)
         return sorted.sort((a, b) => {
           const scoreA = calculatePopularityScore(a.ratingValue, a.reviewCount);
           const scoreB = calculatePopularityScore(b.ratingValue, b.reviewCount);
@@ -285,21 +266,18 @@ export function ExploreShell() {
         });
 
       case "highest_rated":
-        // Sort by rating DESC, then name ASC
         return sorted.sort((a, b) => {
           if (a.ratingValue === b.ratingValue) return a.name.localeCompare(b.name);
           return b.ratingValue - a.ratingValue;
         });
 
       case "most_reviews":
-        // Sort by review count DESC, then name ASC
         return sorted.sort((a, b) => {
           if (a.reviewCount === b.reviewCount) return a.name.localeCompare(b.name);
           return b.reviewCount - a.reviewCount;
         });
 
       case "price_low":
-        // Sort by price level ASC (free first), then name ASC
         return sorted.sort((a, b) => {
           const priceA = a.priceLevel ?? 0;
           const priceB = b.priceLevel ?? 0;
@@ -308,8 +286,6 @@ export function ExploreShell() {
         });
 
       case "duration_short":
-        // Sort by duration ASC (shortest first), then name ASC
-        // Locations without duration go to the end
         return sorted.sort((a, b) => {
           const durA = a.durationMinutes ?? Infinity;
           const durB = b.durationMinutes ?? Infinity;
@@ -328,6 +304,24 @@ export function ExploreShell() {
   );
 
   const hasMore = visibleLocations.length < sortedLocations.length;
+
+  // IntersectionObserver for progressive loading
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setPage((current) => current + 1);
+        }
+      },
+      { rootMargin: "0px 0px 200% 0px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, visibleLocations.length]);
 
   // Build active filters list for chips
   const activeFilters = useMemo<ActiveFilter[]>(() => {
@@ -417,10 +411,8 @@ export function ExploreShell() {
     vegetarianFriendly,
   ]);
 
-  // Count active filters for badge (excluding search)
-  const activeFilterCount = activeFilters.filter((f) => f.type !== "search").length;
+  const activeFilterCount = activeFilters.filter((f) => f.type !== "search" && f.type !== "category").length;
 
-  // Remove a specific filter
   const removeFilter = useCallback((filter: ActiveFilter) => {
     switch (filter.type) {
       case "search":
@@ -461,148 +453,114 @@ export function ExploreShell() {
     setVegetarianFriendly(false);
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
-        {/* Skeleton header - centered button */}
-        <div className="bg-background">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-center">
-              <div className="h-10 w-40 rounded-full shimmer" />
-            </div>
-          </div>
-        </div>
-        {/* Skeleton grid */}
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 gap-x-5 gap-y-8 sm:gap-x-6 sm:gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div key={index} className="space-y-3">
-                <div className="aspect-[4/3] rounded-xl shimmer" />
-                <div className="h-4 w-3/4 rounded shimmer" />
-                <div className="h-3 w-1/2 rounded shimmer" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleSelectLocation = useCallback((location: Location) => {
+    setExpandedLocation(location);
+  }, []);
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="mx-auto max-w-md px-4 py-12 text-center">
-          <div className="rounded-2xl border border-error/30 bg-error/10 p-8">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-error/20">
-              <svg className="h-6 w-6 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-              </svg>
-            </div>
-            <p className="text-base font-semibold text-error mb-2">Unable to load destinations</p>
-            <p className="text-sm text-error/80 mb-6">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="rounded-xl bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
-            >
-              Try again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const handleCloseExpanded = useCallback(() => {
+    setExpandedLocation(null);
+  }, []);
+
+  // Determine active category for interstitials
+  const activeCategory = selectedCategories.length === 1 ? selectedCategories[0]! : null;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Page Hero — rendered first so -mt-20 pulls up correctly behind header */}
-      {activeFilters.length === 0 ? (
-        <PageHeader
-          eyebrow={`${total.toLocaleString()}+ Places`}
-          title="Explore"
-          subtitle="Temples, backstreets, and the restaurants your guidebook missed."
-          imageUrl="/images/regions/kansai-hero.jpg"
-        />
+      {/* Typographic Intro — always renders immediately for entrance animation */}
+      <ExploreIntro totalCount={total} />
+
+      {isLoading ? (
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
+          <div className="h-10 w-full rounded shimmer mb-8" />
+          <div className="space-y-10">
+            <div className="aspect-[16/9] rounded-xl shimmer" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="aspect-[3/4] rounded-xl shimmer" />
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : error ? (
+        <div className="flex-1 flex items-center justify-center py-20">
+          <div className="mx-auto max-w-md px-4 text-center">
+            <div className="rounded-2xl border border-error/30 bg-error/10 p-8">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-error/20">
+                <svg className="h-6 w-6 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <p className="text-base font-semibold text-error mb-2">Unable to load destinations</p>
+              <p className="text-sm text-error/80 mb-6">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="rounded-xl bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        </div>
       ) : (
-        <StickyExploreHeader
-          resultsCount={filteredLocations.length}
-          onFiltersClick={() => setIsFiltersModalOpen(true)}
-          activeFilterCount={activeFilterCount}
-        />
-      )}
+      <>
+      {/* Sticky Category Bar */}
+      <CategoryBar
+        categories={CATEGORY_TABS}
+        selectedCategories={selectedCategories}
+        onCategoriesChange={setSelectedCategories}
+        onFiltersClick={() => setIsFilterPanelOpen(true)}
+        activeFilterCount={activeFilterCount}
+        totalCount={total}
+        activeFilters={activeFilters}
+        onRemoveFilter={removeFilter}
+        onClearAllFilters={clearAllFilters}
+        query={query}
+        onQueryChange={setQuery}
+      />
 
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Active filter chips */}
-        {activeFilters.length > 0 && (
-          <div className="mb-6 pt-6">
-            <ActiveFilterChips
-              filters={activeFilters}
-              onRemove={removeFilter}
-              onClearAll={clearAllFilters}
-            />
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+        {/* Loading more indicator */}
+        {activeFilters.length > 0 && hasNextPage && (
+          <div className="mb-6">
+            <p className="text-xs text-foreground-secondary">
+              Searching {locations.length.toLocaleString()} of {total.toLocaleString()} locations{" "}
+              <button
+                onClick={() => fetchNextPage()}
+                disabled={isLoadingMore}
+                className="text-brand-primary hover:underline disabled:opacity-50"
+              >
+                {isLoadingMore ? "Loading..." : "Load more from server"}
+              </button>
+            </p>
           </div>
         )}
 
-        {/* Section Header for Main Grid with Inline Filter Button */}
-        <div className="mb-6">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">
-                {activeFilters.length > 0 ? "Search Results" : "All Destinations"}
-              </h2>
-              <p className="text-sm text-stone mt-1">
-                {(activeFilters.length === 0 ? total : filteredLocations.length).toLocaleString()} places to explore
-              </p>
-              {activeFilters.length > 0 && hasNextPage && (
-                <p className="text-xs text-foreground-secondary mt-1">
-                  Searching {locations.length.toLocaleString()} of {total.toLocaleString()} locations{" "}
-                  <button
-                    onClick={() => fetchNextPage()}
-                    disabled={isLoadingMore}
-                    className="text-brand-primary hover:underline disabled:opacity-50"
-                  >
-                    {isLoadingMore ? "Loading..." : "Load more"}
-                  </button>
-                </p>
-              )}
-            </div>
-            <button
-              onClick={() => setIsFiltersModalOpen(true)}
-              className="flex items-center gap-2 rounded-xl border border-brand-primary bg-background px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand-primary transition hover:bg-surface shrink-0"
-            >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <span>Filters</span>
-              <span className="text-brand-primary/70">
-                ({(activeFilters.length === 0 ? total : filteredLocations.length).toLocaleString()})
-              </span>
-              {activeFilterCount > 0 && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
-                  {activeFilterCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Location Grid */}
-        <LocationGrid
+        {/* Editorial Grid */}
+        <LocationEditorialGrid
           locations={visibleLocations}
-          hasMore={hasMore}
-          onLoadMore={() => setPage((current) => current + 1)}
-          layout="default"
+          onSelect={handleSelectLocation}
+          totalCount={total}
+          activeCategory={activeCategory}
         />
+
+        {/* Progressive loading sentinel */}
+        {hasMore && (
+          <div ref={sentinelRef} className="py-8 flex justify-center">
+            <div className="h-[2px] w-32 bg-brand-primary/30 rounded-full overflow-hidden">
+              <div className="h-full w-1/3 bg-brand-primary rounded-full animate-pulse" />
+            </div>
+          </div>
+        )}
+
+        {/* End state */}
+        {!hasMore && visibleLocations.length > 0 && (
+          <div className="py-16 text-center">
+            <p className="font-serif italic text-lg text-stone">
+              That&apos;s all {sortedLocations.length.toLocaleString()} places. For now.
+            </p>
+          </div>
+        )}
       </main>
 
       {/* Background Loading Indicator */}
@@ -617,10 +575,10 @@ export function ExploreShell() {
         </div>
       )}
 
-      {/* Filters Modal */}
-      <FiltersModal
-        isOpen={isFiltersModalOpen}
-        onClose={() => setIsFiltersModalOpen(false)}
+      {/* Filter Panel (right slide) */}
+      <FilterPanel
+        isOpen={isFilterPanelOpen}
+        onClose={() => setIsFilterPanelOpen(false)}
         query={query}
         onQueryChange={setQuery}
         prefectureOptions={prefectureOptions}
@@ -648,6 +606,18 @@ export function ExploreShell() {
         selectedSort={selectedSort}
         onSortChange={setSelectedSort}
       />
+
+      {/* Location Detail Panel */}
+      <AnimatePresence>
+        {expandedLocation && (
+          <LocationExpanded
+            location={expandedLocation}
+            onClose={handleCloseExpanded}
+          />
+        )}
+      </AnimatePresence>
+      </>
+      )}
     </div>
   );
 }
