@@ -11,8 +11,8 @@ import {
   MapPin,
 } from "lucide-react";
 
-import { TripSummaryCard } from "./TripSummaryCard";
-import { PreferenceRow } from "./PreferenceRow";
+import { TripSummaryEditorial } from "./TripSummaryEditorial";
+import { PreferenceCard } from "./PreferenceCard";
 import { PlanningWarningsList } from "./PlanningWarning";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { SavedLocationsPreview } from "./SavedLocationsPreview";
@@ -22,7 +22,6 @@ import { FormField } from "@/components/ui/FormField";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { TripStyle } from "@/types/trip";
 
 type PreferenceFormValues = {
@@ -55,28 +54,19 @@ const GROUP_TYPE_OPTIONS = [
 ];
 
 const PACE_OPTIONS = [
-  {
-    label: "Relaxed",
-    value: "relaxed",
-    description: "Slow mornings, gentle pacing",
-  },
-  {
-    label: "Balanced",
-    value: "balanced",
-    description: "Mix of highlights and downtime",
-  },
+  { label: "Relaxed", value: "relaxed", description: "Slow mornings, gentle pacing" },
+  { label: "Balanced", value: "balanced", description: "Mix of highlights and downtime" },
   { label: "Fast", value: "fast", description: "Packed schedules, see everything" },
 ];
 
 export type ReviewStepProps = {
   onValidityChange?: (isValid: boolean) => void;
-  onGoToStep?: (step: number, subStep?: number) => void;
+  onGoToStep?: (step: number) => void;
 };
 
 export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
   const { data, setData } = useTripBuilder();
 
-  // Handler to remove a saved location from the queue
   const handleRemoveSavedLocation = useCallback(
     (locationId: string) => {
       setData((prev) => ({
@@ -87,30 +77,18 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
     [setData]
   );
 
-  // Budget mode state
   const [budgetMode, setBudgetMode] = useState<BudgetMode>("perDay");
 
-  // Budget value
   const budgetValue = useMemo<BudgetValue | undefined>(() => {
     const perDay = data.budget?.perDay;
     const total = data.budget?.total;
-
-    if (budgetMode === "perDay" && perDay !== undefined) {
-      return { amount: perDay, mode: "perDay" };
-    }
-    if (budgetMode === "total" && total !== undefined) {
-      return { amount: total, mode: "total" };
-    }
-    if (perDay !== undefined) {
-      return { amount: perDay, mode: "perDay" };
-    }
-    if (total !== undefined) {
-      return { amount: total, mode: "total" };
-    }
+    if (budgetMode === "perDay" && perDay !== undefined) return { amount: perDay, mode: "perDay" };
+    if (budgetMode === "total" && total !== undefined) return { amount: total, mode: "total" };
+    if (perDay !== undefined) return { amount: perDay, mode: "perDay" };
+    if (total !== undefined) return { amount: total, mode: "total" };
     return undefined;
   }, [data.budget?.perDay, data.budget?.total, budgetMode]);
 
-  // Form setup
   const defaultValues = useMemo<PreferenceFormValues>(
     () => ({
       groupSize: data.group?.size,
@@ -132,22 +110,16 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
 
   const formValues = useWatch({ control });
 
-  // Handle budget change
   const handleBudgetChange = useCallback(
     (budget: { total?: number; perDay?: number }) => {
       setData((prev) => ({
         ...prev,
-        budget: {
-          ...prev.budget,
-          total: budget.total,
-          perDay: budget.perDay,
-        },
+        budget: { ...prev.budget, total: budget.total, perDay: budget.perDay },
       }));
     },
     [setData]
   );
 
-  // Sync form values to context
   const syncToContext = useCallback(() => {
     const childrenAges =
       formValues.childrenAges
@@ -164,9 +136,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           : undefined,
         childrenAges: childrenAges.length > 0 ? childrenAges : undefined,
       },
-      style: formValues.travelStyle
-        ? (formValues.travelStyle as TripStyle)
-        : undefined,
+      style: formValues.travelStyle ? (formValues.travelStyle as TripStyle) : undefined,
       accessibility: {
         mobility: formValues.mobilityAssistance,
         dietary: formValues.dietary,
@@ -176,85 +146,23 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
     }));
   }, [formValues, setData]);
 
-  // Sync on form changes
   useEffect(() => {
     syncToContext();
     onValidityChange?.(true);
   }, [syncToContext, onValidityChange]);
 
-  // Detect planning warnings
   const warnings = useMemo(() => detectPlanningWarnings(data), [data]);
 
-  // Check if preferences are set
-  const isBudgetSet = Boolean(data.budget?.perDay || data.budget?.total);
-  const isPaceSet = Boolean(data.style);
-  const isGroupSet = Boolean(data.group?.type || data.group?.size);
-  const isAccessibilitySet = Boolean(
-    data.accessibility?.mobility ||
-      (data.accessibility?.dietary?.length ?? 0) > 0
-  );
-  const isNotesSet = Boolean(data.accessibility?.notes?.trim());
-
-  // Value displays for collapsed state
-  const budgetDisplay = useMemo(() => {
-    if (data.budget?.perDay) {
-      return `~${data.budget.perDay.toLocaleString()} per day`;
-    }
-    if (data.budget?.total) {
-      return `${data.budget.total.toLocaleString()} total`;
-    }
-    return undefined;
-  }, [data.budget]);
-
-  const paceDisplay = useMemo(() => {
-    const option = PACE_OPTIONS.find((o) => o.value === data.style);
-    return option?.label;
-  }, [data.style]);
-
-  const groupDisplay = useMemo(() => {
-    const parts: string[] = [];
-    if (data.group?.type) {
-      const option = GROUP_TYPE_OPTIONS.find((o) => o.value === data.group?.type);
-      parts.push(option?.label ?? data.group.type);
-    }
-    if (data.group?.size) {
-      parts.push(`${data.group.size} travelers`);
-    }
-    return parts.length > 0 ? parts.join(", ") : undefined;
-  }, [data.group]);
-
-  const accessibilityDisplay = useMemo(() => {
-    const parts: string[] = [];
-    if (data.accessibility?.mobility) {
-      parts.push("Mobility assistance");
-    }
-    if ((data.accessibility?.dietary?.length ?? 0) > 0) {
-      parts.push(`${data.accessibility?.dietary?.length} dietary`);
-    }
-    return parts.length > 0 ? parts.join(", ") : undefined;
-  }, [data.accessibility]);
-
-  // Navigation handlers
-  const handleEditDates = useCallback(() => {
-    onGoToStep?.(1, 0);
-  }, [onGoToStep]);
-
-  const handleEditEntryPoint = useCallback(() => {
-    onGoToStep?.(1, 1);
-  }, [onGoToStep]);
-
-  const handleEditVibes = useCallback(() => {
-    onGoToStep?.(1, 2);
-  }, [onGoToStep]);
-
-  const handleEditRegions = useCallback(() => {
-    onGoToStep?.(2);
-  }, [onGoToStep]);
+  // Navigation handlers (flat steps: 1=dates, 2=entry, 3=vibes, 4=regions)
+  const handleEditDates = useCallback(() => onGoToStep?.(1), [onGoToStep]);
+  const handleEditEntryPoint = useCallback(() => onGoToStep?.(2), [onGoToStep]);
+  const handleEditVibes = useCallback(() => onGoToStep?.(3), [onGoToStep]);
+  const handleEditRegions = useCallback(() => onGoToStep?.(4), [onGoToStep]);
 
   return (
-    <div className="flex h-full flex-col gap-6">
-      {/* Trip Summary */}
-      <TripSummaryCard
+    <div className="flex flex-col gap-8 pb-32 lg:pb-8">
+      {/* Trip Summary — Editorial */}
+      <TripSummaryEditorial
         onEditDates={handleEditDates}
         onEditEntryPoint={handleEditEntryPoint}
         onEditVibes={handleEditVibes}
@@ -264,19 +172,16 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
       {/* Planning Warnings */}
       {warnings.length > 0 && <PlanningWarningsList warnings={warnings} />}
 
-      {/* Saved Locations Section */}
+      {/* Saved Locations */}
       {(data.savedLocationIds?.length ?? 0) > 0 && (
         <div>
           <div className="mb-3 flex items-center gap-2">
             <MapPin className="h-5 w-5 text-sage" />
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Queued</p>
-              <h3 className="font-serif text-lg text-foreground">
+              <h3 className="font-serif text-lg italic text-foreground">
                 Saved Places ({data.savedLocationIds?.length})
               </h3>
-              <p className="text-sm text-stone">
-                These places will be included in your itinerary
-              </p>
             </div>
           </div>
           <SavedLocationsPreview
@@ -287,29 +192,20 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
         </div>
       )}
 
-      {/* Preferences Section */}
+      {/* Preferences — Horizontal scroll row */}
       <div>
-        <div className="mb-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Almost there</p>
-          <h3 className="mt-1 font-serif text-lg text-foreground">
-            Fine-tune your trip
-          </h3>
-          <p className="text-sm text-stone">
-            These details help us build a better plan for you
-          </p>
-        </div>
+        <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Almost there</p>
+        <h3 className="mt-1 font-serif text-lg italic text-foreground">
+          Fine-tune your trip
+        </h3>
+        <p className="text-sm text-stone">
+          These details help us build a better plan for you
+        </p>
 
-        <div className="flex flex-col gap-3">
+        {/* Responsive grid */}
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {/* Budget */}
-          <ScrollReveal delay={0} distance={15}>
-          <PreferenceRow
-            id="budget"
-            icon={<Wallet className="h-4 w-4" />}
-            title="Budget"
-            description="Set your travel budget"
-            value={budgetDisplay}
-            isSet={isBudgetSet}
-          >
+          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title="Budget" optional info="Helps us match restaurants and experiences to your spending comfort.">
             <BudgetInput
               id="budget-input"
               duration={data.duration}
@@ -317,19 +213,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
               onChange={handleBudgetChange}
               onModeChange={setBudgetMode}
             />
-          </PreferenceRow>
-          </ScrollReveal>
+          </PreferenceCard>
 
           {/* Travel Pace */}
-          <ScrollReveal delay={0.05} distance={15}>
-          <PreferenceRow
-            id="pace"
-            icon={<Gauge className="h-4 w-4" />}
-            title="Travel Pace"
-            description="How do you like to travel?"
-            value={paceDisplay}
-            isSet={isPaceSet}
-          >
+          <PreferenceCard icon={<Gauge className="h-5 w-5" />} title="Pace" optional info="Controls how many activities we plan per day. Defaults to balanced.">
             <Controller
               control={control}
               name="travelStyle"
@@ -341,10 +228,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                       type="button"
                       onClick={() => field.onChange(option.value)}
                       className={cn(
-                        "flex items-start gap-3 rounded-lg border p-3 text-left transition",
+                        "flex items-start gap-3 rounded-xl border p-3 text-left transition",
                         field.value === option.value
                           ? "border-sage/20 bg-sage/10 ring-1 ring-brand-primary"
-                          : "border-border hover:bg-surface"
+                          : "border-border hover:bg-background"
                       )}
                     >
                       <div
@@ -368,21 +255,12 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                 </div>
               )}
             />
-          </PreferenceRow>
-          </ScrollReveal>
+          </PreferenceCard>
 
-          {/* Group Composition */}
-          <ScrollReveal delay={0.1} distance={15}>
-          <PreferenceRow
-            id="group"
-            icon={<Users className="h-4 w-4" />}
-            title="Group Composition"
-            description="Tell us about your travel group"
-            value={groupDisplay}
-            isSet={isGroupSet}
-          >
+          {/* Group */}
+          <PreferenceCard icon={<Users className="h-5 w-5" />} title="Group" optional info="Family trips get kid-friendly suggestions. Solo trips focus on personal exploration.">
             <div className="grid grid-cols-2 gap-3">
-              <FormField id="group-type" label="Group Type">
+              <FormField id="group-type" label="Type">
                 <Controller
                   control={control}
                   name="groupType"
@@ -397,8 +275,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                   )}
                 />
               </FormField>
-
-              <FormField id="group-size" label="Group Size">
+              <FormField id="group-size" label="Size">
                 <Input
                   id="group-size"
                   type="number"
@@ -410,11 +287,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                 />
               </FormField>
             </div>
-
             <FormField
               id="children-ages"
               label="Children Ages"
-              help="Comma-separated (e.g., 5, 8, 12)"
+              help="Comma-separated"
             >
               <Input
                 id="children-ages"
@@ -423,18 +299,14 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                 {...register("childrenAges")}
               />
             </FormField>
-          </PreferenceRow>
-          </ScrollReveal>
+          </PreferenceCard>
 
-          {/* Accessibility & Dietary */}
-          <ScrollReveal delay={0.15} distance={15}>
-          <PreferenceRow
-            id="accessibility"
-            icon={<Accessibility className="h-4 w-4" />}
-            title="Accessibility & Dietary"
-            description="Special requirements to consider"
-            value={accessibilityDisplay}
-            isSet={isAccessibilitySet}
+          {/* Accessibility */}
+          <PreferenceCard
+            icon={<Accessibility className="h-5 w-5" />}
+            title="Access"
+            optional
+            info="We'll filter for accessible venues and respect dietary needs."
           >
             <label className="flex cursor-pointer items-center gap-2">
               <input
@@ -443,15 +315,15 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                 {...register("mobilityAssistance")}
               />
               <span className="text-sm text-foreground-secondary">
-                Need mobility assistance
+                Mobility assistance
               </span>
             </label>
 
-            <div className="mt-3">
-              <p className="mb-2 text-sm font-medium text-foreground-secondary">
-                Dietary Restrictions
+            <div>
+              <p className="mb-2 text-xs font-medium text-foreground-secondary">
+                Dietary
               </p>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-col gap-1.5">
                 {DIETARY_OPTIONS.map((option) => (
                   <label
                     key={option.id}
@@ -460,17 +332,17 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                     <input
                       type="checkbox"
                       value={option.id}
-                      className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
+                      className="h-3.5 w-3.5 rounded border-border text-brand-primary focus:ring-brand-primary"
                       {...register("dietary")}
                     />
-                    <span className="text-sm text-foreground-secondary">{option.label}</span>
+                    <span className="text-xs text-foreground-secondary">{option.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             {formValues.dietary?.includes("other") && (
-              <FormField id="dietary-other" label="Other Dietary Requirements">
+              <FormField id="dietary-other" label="Other">
                 <Input
                   id="dietary-other"
                   placeholder="Please specify..."
@@ -479,28 +351,18 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
                 />
               </FormField>
             )}
-          </PreferenceRow>
-          </ScrollReveal>
+          </PreferenceCard>
 
-          {/* Additional Notes */}
-          <ScrollReveal delay={0.2} distance={15}>
-          <PreferenceRow
-            id="notes"
-            icon={<StickyNote className="h-4 w-4" />}
-            title="Additional Notes"
-            description="Anything else we should know?"
-            value={isNotesSet ? "Notes added" : undefined}
-            isSet={isNotesSet}
-          >
+          {/* Notes */}
+          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title="Notes" optional info="Anything specific — a must-visit spot, an allergy, a celebration.">
             <textarea
               id="additional-notes"
               placeholder="Special requests, specific places you want to visit, etc."
-              className="w-full rounded-lg border border-border px-3 py-2 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               rows={4}
               {...register("additionalNotes")}
             />
-          </PreferenceRow>
-          </ScrollReveal>
+          </PreferenceCard>
         </div>
       </div>
     </div>

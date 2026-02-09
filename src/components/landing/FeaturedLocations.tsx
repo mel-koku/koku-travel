@@ -38,8 +38,18 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
   });
 
   // Horizontal scroll: cards stay still for the first 15% (intro readable),
-  // then slide left through the rest of the scroll range
-  const xTranslate = useTransform(scrollYProgress, [0.05, 0.9], ["0%", "-60%"]);
+  // then slide left through the rest of the scroll range.
+  // Compute exact pixel translation so the last card is always fully visible.
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const xTranslate = useTransform(scrollYProgress, (progress) => {
+    if (!galleryRef.current) return 0;
+    const contentWidth = galleryRef.current.scrollWidth;
+    const viewportWidth = window.innerWidth;
+    if (contentWidth <= viewportWidth) return 0;
+    const maxShift = contentWidth - viewportWidth + 24; // 24px right margin
+    const t = Math.max(0, Math.min(1, (progress - 0.05) / 0.85));
+    return -t * maxShift;
+  });
   // Progress bar width
   const progressScale = useTransform(scrollYProgress, [0.05, 0.9], [0, 1]);
 
@@ -54,6 +64,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
         <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-12">
           {/* Gallery row */}
           <motion.div
+            ref={galleryRef}
             className="flex gap-6 px-6"
             style={prefersReducedMotion ? {} : { x: xTranslate }}
           >
