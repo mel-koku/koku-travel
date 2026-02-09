@@ -2,6 +2,7 @@
 
 import { motion, useInView, type Variants, type TargetAndTransition } from "framer-motion";
 import { useRef, useMemo } from "react";
+import { easeReveal, durationBase } from "@/lib/motion";
 
 type SplitTextProps = {
   children: string;
@@ -55,7 +56,7 @@ export function SplitText({
   trigger = "inView",
   animation = "clipY",
   staggerDelay = 0.04,
-  duration = 0.5,
+  duration = durationBase,
   delay = 0,
   once = true,
   as: Tag = "div",
@@ -80,7 +81,7 @@ export function SplitText({
     hidden: anim!.hidden,
     visible: {
       ...anim!.visible,
-      transition: { duration, ease: [0.25, 0.1, 0.25, 1] },
+      transition: { duration, ease: easeReveal },
     },
   };
 
@@ -126,7 +127,7 @@ export function SplitText({
                     initial={anim!.hidden}
                     animate={shouldAnimate ? {
                       ...anim!.visible,
-                      transition: { duration, ease: [0.25, 0.1, 0.25, 1], delay: delay + char.index * staggerDelay },
+                      transition: { duration, ease: easeReveal, delay: delay + char.index * staggerDelay },
                     } : anim!.hidden}
                     className="inline-block"
                     style={{ willChange: "transform, opacity" }}
@@ -140,7 +141,7 @@ export function SplitText({
                     initial={anim!.hidden}
                     animate={shouldAnimate ? {
                       ...anim!.visible,
-                      transition: { duration, ease: [0.25, 0.1, 0.25, 1], delay: delay + word.spaceIndex * staggerDelay },
+                      transition: { duration, ease: easeReveal, delay: delay + word.spaceIndex * staggerDelay },
                     } : anim!.hidden}
                     className="inline-block"
                     style={{ willChange: "transform, opacity" }}

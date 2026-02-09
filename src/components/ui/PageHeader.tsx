@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { parallaxSubtle } from "@/lib/motion";
 
 type PageHeaderProps = {
   eyebrow?: string;
@@ -33,7 +34,7 @@ export function PageHeader({
     offset: ["start start", "end start"],
   });
 
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+  const imageY = useTransform(scrollYProgress, [0, 1], [parallaxSubtle.from, parallaxSubtle.to]);
 
   const minHeight = compact
     ? "min-h-[30vh] sm:min-h-[35vh]"

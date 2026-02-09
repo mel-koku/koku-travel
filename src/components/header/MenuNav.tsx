@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { easeReveal, staggerItem } from "@/lib/motion";
 import { useCursor } from "@/providers/CursorProvider";
 import { useAuthState } from "@/components/ui/IdentityBadge";
 import { createClient } from "@/lib/supabase/client";
@@ -34,7 +35,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: 0.08,
+            staggerChildren: staggerItem,
             delayChildren: 0.15,
           },
         },
@@ -55,7 +56,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           y: 0,
           transition: {
             duration: 0.6,
-            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+            ease: [...easeReveal] as [number, number, number, number],
           },
         },
         exit: {
@@ -75,7 +76,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           transition: {
             duration: 0.5,
             delay: 0.4,
-            ease: [0.22, 1, 0.36, 1] as [number, number, number, number],
+            ease: [...easeReveal] as [number, number, number, number],
           },
         },
         exit: {

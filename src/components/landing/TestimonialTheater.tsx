@@ -10,6 +10,7 @@ import {
 import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { parallaxSection, staggerWord } from "@/lib/motion";
 
 const testimonials = [
   {
@@ -73,8 +74,7 @@ function TestimonialSpread({
     offset: ["start end", "end start"],
   });
 
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.08, 1]);
-  const imageY = useTransform(scrollYProgress, [0, 1], ["-3%", "3%"]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [parallaxSection.from, parallaxSection.to]);
 
   return (
     <div
@@ -94,7 +94,7 @@ function TestimonialSpread({
           style={
             prefersReducedMotion
               ? {}
-              : { scale: imageScale, y: imageY }
+              : { scale: imageScale }
           }
         >
           <Image
@@ -139,7 +139,7 @@ function TestimonialSpread({
               className="font-serif text-xl leading-relaxed text-white/90 sm:text-2xl"
               splitBy="word"
               animation="fadeUp"
-              staggerDelay={0.03}
+              staggerDelay={staggerWord}
               delay={0.1}
             >
               {testimonial.quote}

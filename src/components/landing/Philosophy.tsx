@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
+import { parallaxSection } from "@/lib/motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 
@@ -20,7 +21,7 @@ export function Philosophy({ locationCount }: PhilosophyProps) {
     offset: ["start end", "end start"],
   });
 
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.1, 1]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [parallaxSection.from, parallaxSection.to]);
 
   return (
     <section

@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { parallaxZoomIn, durationBase } from "@/lib/motion";
 
 export function FinalCTA() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -16,7 +17,7 @@ export function FinalCTA() {
   });
 
   // Slow zoom parallax on background
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [parallaxZoomIn.from, parallaxZoomIn.to]);
 
   return (
     <section
@@ -57,7 +58,7 @@ export function FinalCTA() {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 }}
+            transition={{ duration: durationBase, delay: 0.5 }}
             className="mx-auto mt-8 max-w-md text-base text-white/80"
           >
             Every trip starts with a single place. Find yours.
@@ -67,7 +68,7 @@ export function FinalCTA() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.7 }}
+            transition={{ duration: durationBase, delay: 0.7 }}
             className="mt-12 flex flex-col items-center"
           >
             <Magnetic>

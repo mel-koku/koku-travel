@@ -4,6 +4,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { useLenis } from "@/providers/LenisProvider";
+import { easePageTransition } from "@/lib/motion";
 import { MenuNav } from "./MenuNav";
 import { MenuPanel } from "./MenuPanel";
 
@@ -12,7 +13,7 @@ type MenuOverlayProps = {
   onClose: () => void;
 };
 
-const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const;
+const EASE_OUT_EXPO = easePageTransition;
 
 function focusTrigger() {
   const trigger = document.querySelector<HTMLButtonElement>('[data-menu-trigger]');

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { parallaxHero, durationEpic } from "@/lib/motion";
 
 import type { Guide } from "@/types/guide";
 
@@ -29,7 +30,7 @@ export function GuideHero({ guide }: GuideHeroProps) {
   });
 
   // Subtle zoom-out on scroll
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.05, 1]);
+  const imageScale = useTransform(scrollYProgress, [0, 1], [parallaxHero.from, parallaxHero.to]);
   // Scroll indicator fades out
   const scrollIndicatorOpacity = useTransform(
     scrollYProgress,
@@ -133,7 +134,7 @@ export function GuideHero({ guide }: GuideHeroProps) {
               <motion.div
                 animate={{ y: [0, 48, 0] }}
                 transition={{
-                  duration: 2.5,
+                  duration: durationEpic,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}

@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { cn } from "@/lib/cn";
+import { easeReveal, durationFast } from "@/lib/motion";
 
 type ArrowLineCTAProps = {
   label: string;
@@ -45,7 +46,7 @@ export function ArrowLineCTA({
                 : { width: disabled ? 24 : 40 }
             }
             whileHover={prefersReducedMotion ? {} : { width: 64 }}
-            transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: durationFast, ease: easeReveal }}
           />
           <svg
             className="h-3 w-3 -ml-px text-foreground-secondary transition-colors group-hover:text-foreground"

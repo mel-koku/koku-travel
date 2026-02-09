@@ -13,6 +13,7 @@ import { useLenis } from "@/providers/LenisProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
 import { cn } from "@/lib/cn";
+import { springNavigation } from "@/lib/motion";
 import { MenuTrigger } from "@/components/header/MenuTrigger";
 import { MenuOverlay } from "@/components/header/MenuOverlay";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -206,7 +207,7 @@ export default function Header() {
 
   const headerSpring = prefersReducedMotion
     ? { duration: 0 }
-    : { type: "spring" as const, stiffness: 300, damping: 30 };
+    : { type: "spring" as const, ...springNavigation };
 
   return (
     <>

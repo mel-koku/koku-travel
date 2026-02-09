@@ -12,6 +12,7 @@ import {
 import { SplitText } from "@/components/ui/SplitText";
 import { VibeCard } from "./VibeCard";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { staggerWord, easeCinematicCSS } from "@/lib/motion";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
 
 // Custom Torii icon since Lucide doesn't have one
@@ -102,7 +103,7 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
           splitBy="word"
           trigger="load"
           animation="clipY"
-          staggerDelay={0.06}
+          staggerDelay={staggerWord}
         >
           What moves you?
         </SplitText>
@@ -138,7 +139,7 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
                 style={{
                   flex: flexValue,
                   transition:
-                    "flex 0.7s cubic-bezier(0.215, 0.61, 0.355, 1)",
+                    `flex 0.7s ${easeCinematicCSS}`,
                 }}
               >
                 <VibeCard

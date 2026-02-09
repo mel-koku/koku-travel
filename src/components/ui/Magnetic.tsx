@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { useRef, useCallback, useEffect, useState, type ReactNode } from "react";
+import { springInteraction } from "@/lib/motion";
 
 type MagneticProps = {
   children: ReactNode;
@@ -24,8 +25,8 @@ export function Magnetic({
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 300, damping: 20 });
-  const springY = useSpring(y, { stiffness: 300, damping: 20 });
+  const springX = useSpring(x, springInteraction);
+  const springY = useSpring(y, springInteraction);
 
   useEffect(() => {
     setIsTouchDevice(window.matchMedia("(pointer: coarse)").matches);
