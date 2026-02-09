@@ -202,8 +202,8 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           These details help us build a better plan for you
         </p>
 
-        {/* Horizontal scroll on desktop, stacked on mobile */}
-        <div className="mt-6 flex gap-5 overflow-x-auto pb-4 lg:flex-nowrap">
+        {/* Responsive grid */}
+        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {/* Budget */}
           <PreferenceCard icon={<Wallet className="h-5 w-5" />} title="Budget">
             <BudgetInput
