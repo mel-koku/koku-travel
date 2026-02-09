@@ -129,7 +129,7 @@ export default function CardsDemoPage() {
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
           Design System
         </span>
-        <h1 className="text-4xl font-bold leading-tight text-foreground">Card Library</h1>
+        <h1 className="font-serif italic text-4xl leading-tight text-foreground">Card Library</h1>
         <p className="max-w-2xl text-lg text-foreground-secondary">
           Base surfaces and their feature variants. Use these to showcase activities, explorer grid
           items, and curated collections across the app.
@@ -138,7 +138,7 @@ export default function CardsDemoPage() {
 
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-foreground">Base Elements</h2>
+          <h2 className="font-serif italic text-2xl text-foreground">Base Elements</h2>
           <p className="text-sm text-foreground-secondary">
             The building blocks—mix badges and tags to compose rich hierarchies inside cards.
           </p>
@@ -158,7 +158,7 @@ export default function CardsDemoPage() {
 
       <section className="space-y-8">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-foreground">Activity Cards</h2>
+          <h2 className="font-serif italic text-2xl text-foreground">Activity Cards</h2>
           <p className="text-sm text-foreground-secondary">
             Designed for itinerary timelines—pair time blocks with location context and highlights.
           </p>
@@ -172,7 +172,7 @@ export default function CardsDemoPage() {
 
       <section className="space-y-8">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-foreground">Location Cards</h2>
+          <h2 className="font-serif italic text-2xl text-foreground">Location Cards</h2>
           <p className="text-sm text-foreground-secondary">
             Grid-friendly hero cards for the Explore surfaces. Imagery, travel stats, and category
             tags surface the vibe instantly.
@@ -187,7 +187,7 @@ export default function CardsDemoPage() {
 
       <section className="space-y-8">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-foreground">Collection Cards</h2>
+          <h2 className="font-serif italic text-2xl text-foreground">Collection Cards</h2>
           <p className="text-sm text-foreground-secondary">
             Themed guide surfaces that bundle activities by mood, pace, and season. Use CTAs to drive
             deeper exploration.

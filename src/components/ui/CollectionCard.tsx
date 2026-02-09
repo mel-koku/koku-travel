@@ -33,7 +33,7 @@ export const CollectionCard = ({
 
     <CardContent padded={false} className="gap-5">
       <div className="space-y-3">
-        <h3 className="text-2xl font-semibold text-foreground">{title}</h3>
+        <h3 className="font-serif italic text-2xl text-foreground">{title}</h3>
         <p className="text-sm text-foreground-secondary">{description}</p>
       </div>
 

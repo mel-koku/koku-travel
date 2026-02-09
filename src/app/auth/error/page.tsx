@@ -71,7 +71,7 @@ function AuthErrorContent() {
           <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full border-4 border-dashed border-error text-2xl font-bold text-error">
             !
           </div>
-          <h1 className="mb-4 text-3xl font-bold text-foreground">{error.title}</h1>
+          <h1 className="mb-4 font-serif italic text-3xl text-foreground">{error.title}</h1>
           <p className="mb-8 text-foreground-secondary">{error.description}</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button variant="primary" href="/">

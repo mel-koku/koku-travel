@@ -59,7 +59,7 @@ export function HowItWorks() {
             </ScrollReveal>
             <SplitText
               as="h2"
-              className="mt-4 font-serif text-2xl font-medium text-foreground sm:text-3xl"
+              className="mt-4 font-serif italic text-2xl text-foreground sm:text-3xl"
               splitBy="word"
               animation="clipY"
               delay={0.1}
@@ -136,20 +136,20 @@ function StepSection({
       <div className="flex-1 lg:max-w-md">
         {/* Watermark number */}
         <div className="relative overflow-visible">
-          <span className="absolute -left-4 -top-20 select-none font-serif text-[12vw] font-light leading-none text-foreground/[0.03] lg:-top-16 lg:text-[8vw]">
+          <span className="absolute -left-4 -top-20 select-none font-serif italic text-[12vw] leading-none text-foreground/[0.03] lg:-top-16 lg:text-[8vw]">
             {step.number}
           </span>
         </div>
 
         <ScrollReveal delay={0.1}>
-          <span className="font-serif text-3xl font-light text-stone/40 sm:text-4xl">
+          <span className="font-serif italic text-3xl text-stone/40 sm:text-4xl">
             {step.number}
           </span>
         </ScrollReveal>
 
         <SplitText
           as="h3"
-          className="mt-4 font-serif text-xl font-medium text-foreground"
+          className="mt-4 font-serif italic text-xl text-foreground"
           splitBy="word"
           animation="fadeUp"
           delay={0.15}

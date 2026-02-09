@@ -78,7 +78,7 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
                 <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
                   Editor&apos;s Picks
                 </p>
-                <h2 className="mt-4 font-serif text-2xl font-medium tracking-heading text-foreground sm:text-3xl">
+                <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
                   Places that stay with you
                 </h2>
                 <p className="mt-4 text-base text-foreground-secondary">
@@ -174,7 +174,7 @@ function HorizontalLocationCard({
           <p className="text-xs font-medium uppercase tracking-wider text-white/70 transition-colors duration-500 group-hover:text-brand-secondary">
             {location.city}
           </p>
-          <h3 className="mt-1 font-serif text-xl text-white sm:text-2xl">
+          <h3 className="mt-1 font-serif italic text-xl text-white sm:text-2xl">
             {location.name}
           </h3>
           {location.rating && (

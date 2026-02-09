@@ -72,7 +72,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
             initial={{ y: "125%" }}
             animate={mounted ? { y: "0%" } : { y: "125%" }}
             transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
-            className="font-serif text-[clamp(4rem,15vw,10rem)] font-medium leading-[0.9] tracking-tight text-white"
+            className="font-serif italic text-[clamp(4rem,15vw,10rem)] leading-[0.9] tracking-tight text-white"
           >
             JAPAN
           </motion.h1>

@@ -83,7 +83,7 @@ export function PageHeader({
 
         <SplitText
           as="h1"
-          className="mt-4 justify-center font-serif text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
+          className="mt-4 justify-center font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
           splitBy="word"
           animation="clipY"
           staggerDelay={0.04}

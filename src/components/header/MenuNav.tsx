@@ -140,7 +140,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
                   </span>
                   <span className="relative">
                     <span
-                      className={`font-serif text-5xl font-light tracking-tight transition-colors md:text-6xl lg:text-7xl ${
+                      className={`font-serif italic text-5xl tracking-tight transition-colors md:text-6xl lg:text-7xl ${
                         isActive ? "text-brand-primary" : "text-foreground group-hover:text-foreground/80"
                       }`}
                     >

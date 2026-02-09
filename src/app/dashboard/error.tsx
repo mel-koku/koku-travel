@@ -37,7 +37,7 @@ export default function DashboardError({ error, reset }: ErrorProps) {
           </svg>
         </div>
 
-        <h2 className="mb-2 text-xl font-semibold text-foreground">
+        <h2 className="mb-2 font-serif italic text-xl text-foreground">
           Something went wrong
         </h2>
         <p className="mb-6 text-sm text-stone">

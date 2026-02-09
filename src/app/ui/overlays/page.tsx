@@ -14,7 +14,7 @@ function ModalDemo() {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-foreground">Modal</h2>
+        <h2 className="font-serif italic text-2xl text-foreground">Modal</h2>
         <p className="text-sm text-foreground-secondary">
           Centered overlay with focus trap, escape-to-close, and blurred backdrop. Use for key actions that
           pause page interaction.
@@ -55,7 +55,7 @@ function TooltipDemo() {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-foreground">Tooltip</h2>
+        <h2 className="font-serif italic text-2xl text-foreground">Tooltip</h2>
         <p className="text-sm text-foreground-secondary">
           Hover or focus to reveal supplemental guidance. Tooltips fade in with a brief delay to avoid
           surprise.
@@ -109,7 +109,7 @@ function DropdownDemo() {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-foreground">Dropdown</h2>
+        <h2 className="font-serif italic text-2xl text-foreground">Dropdown</h2>
         <p className="text-sm text-foreground-secondary">
           Use for compact menus. Supports arrow-key navigation, escape-to-close, and outside click
           dismissal.
@@ -130,7 +130,7 @@ function AlertDemo() {
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h2 className="text-2xl font-semibold text-foreground">Alerts</h2>
+        <h2 className="font-serif italic text-2xl text-foreground">Alerts</h2>
         <p className="text-sm text-foreground-secondary">
           Inline feedback with calm color accents. Use dismissible alerts sparingly so critical messages stay
           visible.
@@ -175,7 +175,7 @@ export default function OverlaysDemoPage() {
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
           Design System
         </span>
-        <h1 className="text-4xl font-bold leading-tight text-foreground">Overlay Components</h1>
+        <h1 className="font-serif italic text-4xl leading-tight text-foreground">Overlay Components</h1>
         <p className="max-w-2xl text-lg text-foreground-secondary">
           Modals, tooltips, dropdown menus, and alerts built with headless behavior. Each example highlights
           accessible keyboard flows and calm motion tuned to the Koku aesthetic.

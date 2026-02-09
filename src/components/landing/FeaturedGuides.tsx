@@ -41,7 +41,7 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
             </ScrollReveal>
             <SplitText
               as="h2"
-              className="mt-4 font-serif text-3xl font-medium tracking-heading text-foreground sm:text-4xl"
+              className="mt-4 font-serif italic text-3xl tracking-heading text-foreground sm:text-4xl"
               splitBy="word"
               animation="clipY"
               delay={0.1}
@@ -150,7 +150,7 @@ function GuideCard({
             </p>
           )}
           <h3
-            className={`mt-1 font-serif text-white transition-transform duration-500 group-hover:-translate-y-1 ${
+            className={`mt-1 font-serif italic text-white transition-transform duration-500 group-hover:-translate-y-1 ${
               featured ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl"
             }`}
           >

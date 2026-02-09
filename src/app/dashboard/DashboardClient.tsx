@@ -258,7 +258,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Activity</p>
-            <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">At a Glance</h2>
+            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">At a Glance</h2>
           </ScrollReveal>
           <div className="mt-8">
             <StatsSection
@@ -274,7 +274,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Recent</p>
-            <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">Your Trips</h2>
+            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">Your Trips</h2>
           </ScrollReveal>
 
           <div className="mt-8">
@@ -305,7 +305,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
 
                   <SplitText
                     as="h3"
-                    className="mt-6 justify-center font-serif text-xl text-foreground sm:text-2xl"
+                    className="mt-6 justify-center font-serif italic text-xl text-foreground sm:text-2xl"
                     splitBy="word"
                     animation="clipY"
                     staggerDelay={0.06}
@@ -343,7 +343,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ScrollReveal>
               <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Account</p>
-              <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">Profile & Sync</h2>
+              <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">Profile & Sync</h2>
             </ScrollReveal>
             <div className="mt-8 max-w-2xl">
               <ScrollReveal delay={0.1} distance={20}>

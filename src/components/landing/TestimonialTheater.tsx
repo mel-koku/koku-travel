@@ -129,14 +129,14 @@ function TestimonialSpread({
       >
         <div className="max-w-lg">
           {/* Oversized quotation mark */}
-          <span className="block select-none font-serif text-[6rem] leading-none text-foreground/[0.06]">
+          <span className="block select-none font-serif italic text-[6rem] leading-none text-foreground/[0.06]">
             &ldquo;
           </span>
 
           <blockquote className="-mt-12">
             <SplitText
               as="p"
-              className="font-serif text-xl leading-relaxed text-white/90 sm:text-2xl"
+              className="font-serif italic text-xl leading-relaxed text-white/90 sm:text-2xl"
               splitBy="word"
               animation="fadeUp"
               staggerDelay={staggerWord}

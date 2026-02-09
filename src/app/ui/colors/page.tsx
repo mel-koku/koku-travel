@@ -53,7 +53,7 @@ export default function ColorsDemoPage() {
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
           Design System
         </span>
-        <h1 className="text-4xl font-bold leading-tight text-charcoal">
+        <h1 className="font-serif italic text-4xl leading-tight text-charcoal">
           Color Palette
         </h1>
         <p className="max-w-2xl text-lg text-warm-gray">
@@ -65,14 +65,14 @@ export default function ColorsDemoPage() {
       {/* Color Distribution */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">Color Distribution</h2>
+          <h2 className="font-serif italic text-2xl text-charcoal">Color Distribution</h2>
           <p className="text-sm text-warm-gray">
             Dominant atmosphere, secondary structure, accent focal points.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-border/40 bg-surface/60 p-5">
-            <p className="text-3xl font-bold text-charcoal">60%</p>
+            <p className="font-mono text-3xl font-bold text-charcoal">60%</p>
             <p className="mt-1 text-sm font-medium text-charcoal">Atmosphere</p>
             <p className="mt-2 text-xs text-warm-gray">
               Warm parchment backgrounds, cream surfaces, gilded sand borders. Sets the
@@ -80,7 +80,7 @@ export default function ColorsDemoPage() {
             </p>
           </div>
           <div className="rounded-2xl border border-brand-primary/20 bg-brand-primary/5 p-5">
-            <p className="text-3xl font-bold text-brand-primary">30%</p>
+            <p className="font-mono text-3xl font-bold text-brand-primary">30%</p>
             <p className="mt-1 text-sm font-medium text-charcoal">Structure</p>
             <p className="mt-2 text-xs text-warm-gray">
               Deep crimson, lantern amber, dark wood text. Provides hierarchy, headings,
@@ -88,7 +88,7 @@ export default function ColorsDemoPage() {
             </p>
           </div>
           <div className="rounded-2xl border border-sage/20 bg-sage/5 p-5">
-            <p className="text-3xl font-bold text-sage">10%</p>
+            <p className="font-mono text-3xl font-bold text-sage">10%</p>
             <p className="mt-1 text-sm font-medium text-charcoal">Accent</p>
             <p className="mt-2 text-xs text-warm-gray">
               Jade teal, bright gold, vermillion. Draws the eye to CTAs, success states,
@@ -101,7 +101,7 @@ export default function ColorsDemoPage() {
       {/* 60% Dominant */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">
+          <h2 className="font-serif italic text-2xl text-charcoal">
             Dominant &mdash; Atmosphere
           </h2>
           <p className="text-sm text-warm-gray">
@@ -147,7 +147,7 @@ export default function ColorsDemoPage() {
       {/* 30% Secondary */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">
+          <h2 className="font-serif italic text-2xl text-charcoal">
             Secondary &mdash; Structure &amp; Depth
           </h2>
           <p className="text-sm text-warm-gray">
@@ -196,7 +196,7 @@ export default function ColorsDemoPage() {
       {/* 10% Accent */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">
+          <h2 className="font-serif italic text-2xl text-charcoal">
             Accent &mdash; Focal Points
           </h2>
           <p className="text-sm text-warm-gray">
@@ -231,7 +231,7 @@ export default function ColorsDemoPage() {
       {/* Dark Mode */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">Dark Mode</h2>
+          <h2 className="font-serif italic text-2xl text-charcoal">Dark Mode</h2>
           <p className="text-sm text-warm-gray">
             Colors shift to glow against inky backgrounds while preserving
             the warm atmosphere.
@@ -300,7 +300,7 @@ export default function ColorsDemoPage() {
       {/* Activity Category Colors */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">
+          <h2 className="font-serif italic text-2xl text-charcoal">
             Activity Category Colors
           </h2>
           <p className="text-sm text-warm-gray">
@@ -371,7 +371,7 @@ export default function ColorsDemoPage() {
       {/* Token Reference */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">Token Reference</h2>
+          <h2 className="font-serif italic text-2xl text-charcoal">Token Reference</h2>
           <p className="text-sm text-warm-gray">
             Use design tokens instead of raw Tailwind colors (no <code className="rounded bg-surface px-1.5 py-0.5 font-mono text-xs">gray-*</code>,{" "}
             <code className="rounded bg-surface px-1.5 py-0.5 font-mono text-xs">indigo-*</code>,{" "}
@@ -452,7 +452,7 @@ export default function ColorsDemoPage() {
       {/* Box Shadows */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">Box Shadows</h2>
+          <h2 className="font-serif italic text-2xl text-charcoal">Box Shadows</h2>
           <p className="text-sm text-warm-gray">
             Warm-tinted shadows using <code className="rounded bg-surface px-1.5 py-0.5 font-mono text-xs">rgba(31, 26, 20, ...)</code> instead
             of pure black for cohesion with the parchment aesthetic.
@@ -486,7 +486,7 @@ export default function ColorsDemoPage() {
       {/* WCAG Contrast */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-charcoal">Contrast Check</h2>
+          <h2 className="font-serif italic text-2xl text-charcoal">Contrast Check</h2>
           <p className="text-sm text-warm-gray">
             Key foreground/background pairs meet WCAG AA contrast requirements.
           </p>

@@ -43,7 +43,7 @@ export function TestimonialSection() {
     <section className="relative overflow-hidden bg-charcoal">
       <div className="pointer-events-none absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'url("/grain.svg")' }} />
       {/* Oversized decorative quotation mark */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-serif text-[40vw] leading-none text-foreground/[0.04]">
+      <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none font-serif italic text-[40vw] leading-none text-foreground/[0.04]">
         &ldquo;
       </div>
 
@@ -67,7 +67,7 @@ export function TestimonialSection() {
               className="text-center"
             >
               <blockquote>
-                <p className="mx-auto max-w-3xl font-serif text-xl leading-relaxed text-white/90 sm:text-2xl lg:text-3xl">
+                <p className="mx-auto max-w-3xl font-serif italic text-xl leading-relaxed text-white/90 sm:text-2xl lg:text-3xl">
                   &ldquo;{current.quote}&rdquo;
                 </p>
               </blockquote>
