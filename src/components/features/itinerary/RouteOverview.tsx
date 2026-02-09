@@ -68,7 +68,7 @@ export function RouteOverview({
               </div>
               <div className="flex-1 space-y-1 text-foreground">
                 <p className="font-semibold">{activity.title}</p>
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-sage">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs text-sage">
                   <span>{TIME_OF_DAY_LABEL[activity.timeOfDay]}</span>
                   {activity.schedule?.arrivalTime ? (
                     <span>

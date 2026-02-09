@@ -112,7 +112,7 @@ export function SmartPromptCard({
           <h4 className="text-sm font-medium text-foreground">{gap.title}</h4>
           <span
             className={cn(
-              "rounded-full px-2 py-0.5 text-[10px] font-medium",
+              "rounded-full px-2 py-0.5 font-mono text-[10px] font-medium",
               colors.badge
             )}
           >

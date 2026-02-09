@@ -149,7 +149,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
               </p>
             ) : null}
             {noteStartTime && noteEndTime ? (
-              <p className="text-sm font-medium text-foreground-secondary">
+              <p className="font-mono text-sm font-medium text-foreground-secondary">
                 {`${noteStartTime} – ${noteEndTime}`}
               </p>
             ) : null}

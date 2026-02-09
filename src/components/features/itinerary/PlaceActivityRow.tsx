@@ -480,7 +480,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     setShowTimePicker(!showTimePicker);
                     setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
                   }}
-                  className={`text-sm font-bold transition hover:text-brand-primary ${
+                  className={`font-mono text-sm font-bold transition hover:text-brand-primary ${
                     hasManualTime ? "text-sage" : "text-foreground"
                   }`}
                   title={hasManualTime ? "Manual time - click to edit" : "Click to set time"}
@@ -490,7 +490,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 {schedule?.departureTime && (
                   <>
                     <div className="my-0.5 h-4 w-px bg-border/50" />
-                    <span className="text-[11px] text-stone">
+                    <span className="font-mono text-[11px] text-stone">
                       {schedule.departureTime}
                     </span>
                   </>
@@ -624,7 +624,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                       {placeLocation.city && placeLocation.region && placeLocation.city !== placeLocation.region ? `, ${placeLocation.region}` : ""}
                     </span>
                     {rating ? (
-                      <div className="flex items-center gap-0.5 text-[11px] font-medium text-foreground">
+                      <div className="flex items-center gap-0.5 font-mono text-[11px] font-medium text-foreground">
                         <StarIcon />
                         <span>{rating.toFixed(1)}</span>
                         {reviewCount ? (
@@ -646,7 +646,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   </span>
                 ) : null}
                 {durationLabel ? (
-                  <span className="inline-block rounded-full bg-sage/10 px-2 py-0.5 text-[11px] font-semibold text-sage">
+                  <span className="inline-block rounded-full bg-sage/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-sage">
                     {durationLabel.replace("~", "")}
                   </span>
                 ) : null}

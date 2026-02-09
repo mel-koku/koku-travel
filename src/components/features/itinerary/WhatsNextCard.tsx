@@ -198,7 +198,7 @@ export function WhatsNextCard({
           <div className="flex items-center gap-3 min-w-0">
             <span className="text-2xl">📍</span>
             <div className="min-w-0">
-              <p className="text-xs font-medium text-sage uppercase tracking-wide">
+              <p className="font-mono text-xs font-medium text-sage uppercase tracking-wide">
                 You&apos;re at
               </p>
               <p className="text-sm font-semibold text-foreground truncate">
@@ -209,7 +209,7 @@ export function WhatsNextCard({
           {current.schedule?.departureTime && (
             <div className="text-right shrink-0">
               <p className="text-xs text-foreground-secondary">Until</p>
-              <p className="text-sm font-semibold text-foreground">
+              <p className="font-mono text-sm font-semibold text-foreground">
                 {current.schedule.departureTime}
               </p>
             </div>
@@ -239,7 +239,7 @@ export function WhatsNextCard({
             )}
           </div>
           <div className="min-w-0">
-            <p className="text-xs font-medium text-brand-primary uppercase tracking-wide">
+            <p className="font-mono text-xs font-medium text-brand-primary uppercase tracking-wide">
               What&apos;s next
             </p>
             <button
@@ -257,11 +257,11 @@ export function WhatsNextCard({
         <div className="text-right shrink-0">
           {next?.schedule?.arrivalTime && (
             <>
-              <p className="text-lg font-bold text-brand-primary">
+              <p className="font-mono text-lg font-bold text-brand-primary">
                 {next.schedule.arrivalTime}
               </p>
               {minutesUntilNext !== null && (
-                <p className="text-xs text-foreground-secondary">
+                <p className="font-mono text-xs text-foreground-secondary">
                   {formatRelativeTime(minutesUntilNext)}
                 </p>
               )}

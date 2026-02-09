@@ -135,7 +135,7 @@ export function TravelSegment({
           {segment.distanceMeters && (
             <>
               <span className="text-stone">•</span>
-              <span className="text-sm text-foreground-secondary">{formatDistance(segment.distanceMeters)}</span>
+              <span className="font-mono text-sm text-foreground-secondary">{formatDistance(segment.distanceMeters)}</span>
             </>
           )}
           <span className="text-stone">•</span>
