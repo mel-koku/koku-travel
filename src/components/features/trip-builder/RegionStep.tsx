@@ -179,7 +179,7 @@ export function RegionStep({ onValidityChange }: RegionStepProps) {
           </SplitText>
 
           <p className="mt-3 text-sm text-white/50 lg:text-base">
-            Choose your destinations. We&apos;ve highlighted the best matches for your vibes.
+            Choose your destinations. We&apos;ve highlighted the best matches for your travel style.
           </p>
         </div>
 

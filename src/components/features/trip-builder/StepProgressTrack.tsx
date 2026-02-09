@@ -9,7 +9,7 @@ const STEP_LABELS = [
   "Intro",
   "Dates",
   "Arrival",
-  "Vibes",
+  "Travel Style",
   "Regions",
   "Review",
 ];
