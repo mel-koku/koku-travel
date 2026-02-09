@@ -18,7 +18,6 @@ import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { WhatsNextCard } from "./WhatsNextCard";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
-import { TripSummary } from "./TripSummary";
 import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { logger } from "@/lib/logger";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
@@ -733,21 +732,16 @@ export const ItineraryShell = ({
                 </div>
               )}
             </div>
-            {/* Action buttons */}
-            <div className="flex items-center gap-2">
-              <GuideToggle enabled={guideEnabled} onToggle={handleToggleGuide} />
-              <button
-                onClick={handleOptimizeRoute}
-                disabled={isOptimizing || !currentDay?.activities?.length}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-50"
-                title="Optimize route order to minimize travel"
-              >
-                {isOptimizing ? (
-                  <span className="animate-pulse">Optimizing...</span>
-                ) : (
-                  "Optimize Route"
-                )}
-              </button>
+            {/* Day picker */}
+            <div className="w-full sm:w-auto sm:min-w-[280px]">
+              <DaySelector
+                totalDays={days.length}
+                selected={safeSelectedDay}
+                onChange={handleSelectDayChange}
+                labels={days.map((day) => day.dateLabel ?? "")}
+                tripStartDate={tripStartDate}
+                variant="dark"
+              />
             </div>
           </div>
         </div>
@@ -756,25 +750,21 @@ export const ItineraryShell = ({
       <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
-          {/* Header */}
-          <div className="border-b border-border bg-background p-3 lg:rounded-t-2xl lg:border lg:border-b-0">
-            {/* Trip Summary Accordion */}
-            {tripBuilderData && (
-              <TripSummary tripData={tripBuilderData} className="mb-2" defaultCollapsed />
-            )}
-
-            {/* Day Selector Dropdown */}
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <DaySelector
-                  totalDays={days.length}
-                  selected={safeSelectedDay}
-                  onChange={handleSelectDayChange}
-                  labels={days.map((day) => day.dateLabel ?? "")}
-                  tripStartDate={tripStartDate}
-                />
-              </div>
-            </div>
+          {/* Day-level actions */}
+          <div className="flex items-center gap-2 border-b border-border bg-background p-3 lg:rounded-t-2xl lg:border lg:border-b-0">
+            <GuideToggle enabled={guideEnabled} onToggle={handleToggleGuide} />
+            <button
+              onClick={handleOptimizeRoute}
+              disabled={isOptimizing || !currentDay?.activities?.length}
+              className="rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-surface disabled:opacity-50"
+              title="Optimize route order to minimize travel"
+            >
+              {isOptimizing ? (
+                <span className="animate-pulse">Optimizing...</span>
+              ) : (
+                "Optimize Route"
+              )}
+            </button>
           </div>
 
           {/* Activities List */}
