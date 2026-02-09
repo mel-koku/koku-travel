@@ -682,7 +682,7 @@ export const ItineraryShell = ({
                 <h1
                   ref={finalHeadingRef}
                   tabIndex={-1}
-                  className="font-serif text-2xl font-medium text-white focus:outline-none sm:text-3xl"
+                  className="font-serif italic text-2xl font-medium text-white focus:outline-none sm:text-3xl"
                 >
                   Your Itinerary
                 </h1>
@@ -693,7 +693,7 @@ export const ItineraryShell = ({
                 )}
               </div>
               {createdLabel && (
-                <p className="mt-1 text-[11px] text-white/50">
+                <p className="mt-1 font-mono text-[11px] text-white/50">
                   Saved {createdLabel}
                   {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
                 </p>
@@ -742,7 +742,7 @@ export const ItineraryShell = ({
                   transition={{ duration: 0.3 }}
                   className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm"
                 >
-                  <h2 className="font-serif text-3xl font-medium text-foreground sm:text-4xl">
+                  <h2 className="font-serif italic text-3xl font-medium text-foreground sm:text-4xl">
                     {dayTransitionLabel}
                   </h2>
                 </motion.div>

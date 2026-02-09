@@ -538,7 +538,7 @@ export const ItineraryMapPanel = ({
     <>
       <aside className="flex h-full flex-col p-4">
       <header className="mb-4">
-        <h2 className="text-lg font-semibold text-foreground">{dayDateLabel}</h2>
+        <h2 className="font-mono text-lg font-semibold text-foreground">{dayDateLabel}</h2>
         <p className="text-sm text-stone">
           Visualize the stops planned for this day and preview travel flow.
         </p>

@@ -100,7 +100,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
           {(tripData.duration || formattedDates) && (
             <div className="flex items-center justify-between text-xs">
               <span className={isDark ? "text-white/50" : "text-stone"}>When</span>
-              <span className={cn("font-medium", isDark ? "text-white" : "text-foreground")}>
+              <span className={cn("font-mono font-medium", isDark ? "text-white" : "text-foreground")}>
                 {tripData.duration ? `${tripData.duration} days` : ""}{tripData.duration && formattedDates ? " · " : ""}{formattedDates ?? ""}
               </span>
             </div>

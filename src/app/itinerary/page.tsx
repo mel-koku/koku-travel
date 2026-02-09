@@ -169,7 +169,7 @@ function ItineraryPageContent() {
   }
 
   return (
-    <div className="bg-surface py-6 sm:py-8 md:py-10">
+    <div className="bg-surface pb-6 sm:pb-8 md:pb-10">
       <ErrorBoundary>
         <ItineraryShell
           key={selectedTrip?.id ?? "mock-itinerary"}

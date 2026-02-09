@@ -574,7 +574,7 @@ export const ItineraryTimeline = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="font-medium">Duration:</span>
-                    <span>
+                    <span className="font-mono">
                       {day.cityTransition.durationMinutes} minute
                       {day.cityTransition.durationMinutes !== 1 ? "s" : ""}
                     </span>
@@ -582,7 +582,7 @@ export const ItineraryTimeline = ({
                   {day.cityTransition.departureTime && day.cityTransition.arrivalTime && (
                     <div className="flex items-center gap-2">
                       <span className="font-medium">Time:</span>
-                      <span>
+                      <span className="font-mono">
                         {day.cityTransition.departureTime} → {day.cityTransition.arrivalTime}
                       </span>
                     </div>
@@ -764,7 +764,7 @@ export const ItineraryTimeline = ({
                   </p>
                   <div className="flex items-center gap-2">
                     {activeActivity.schedule?.arrivalTime && (
-                      <span className="text-xs text-sage">
+                      <span className="font-mono text-xs text-sage">
                         {activeActivity.schedule.arrivalTime}
                       </span>
                     )}

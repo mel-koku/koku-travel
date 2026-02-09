@@ -79,7 +79,7 @@ const ActivityPreviewCard = ({ activity }: { activity: ItineraryActivity }) => {
           ) : null}
         </div>
         {place?.durationMin ? (
-          <span className="rounded-full bg-brand-primary/10 px-2 py-1 text-xs font-medium text-brand-primary">
+          <span className="rounded-full bg-brand-primary/10 px-2 py-1 font-mono text-xs font-medium text-brand-primary">
             ~{place.durationMin >= 60 ? `${Math.round((place.durationMin / 60) * 10) / 10}h` : `${place.durationMin}m`}
           </span>
         ) : null}
@@ -97,7 +97,7 @@ const ActivityPreviewCard = ({ activity }: { activity: ItineraryActivity }) => {
         </div>
       ) : null}
       {isNote && activity.startTime && activity.endTime ? (
-        <p className="mt-3 text-xs font-medium text-stone">
+        <p className="mt-3 font-mono text-xs font-medium text-stone">
           {activity.startTime}–{activity.endTime}
         </p>
       ) : null}
@@ -151,12 +151,12 @@ export const DashboardItineraryPreview = ({
     <section className="mt-8">
       <header className="flex flex-col gap-4 rounded-2xl border border-border bg-background p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-semibold uppercase tracking-wide text-brand-primary">
+          <p className="font-mono text-xs font-semibold uppercase tracking-wide text-brand-primary">
             Active Itinerary
           </p>
-          <h2 className="font-serif text-xl font-semibold text-foreground">{trip.name}</h2>
+          <h2 className="font-serif italic text-xl font-medium text-foreground">{trip.name}</h2>
           {createdLabel ? (
-            <p className="text-xs text-stone">
+            <p className="font-mono text-xs text-stone">
               Saved {createdLabel}
               {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
             </p>
@@ -167,7 +167,7 @@ export const DashboardItineraryPreview = ({
             <div className="flex w-full flex-col items-center gap-1 sm:w-auto sm:self-end sm:items-center">
               <label
                 htmlFor="dashboard-trip-selector"
-                className="text-xs font-medium uppercase tracking-wide text-stone text-center"
+                className="font-mono text-xs font-medium uppercase tracking-wide text-stone text-center"
               >
                 Select itinerary
               </label>
