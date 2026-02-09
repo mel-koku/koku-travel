@@ -5,6 +5,29 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 
 ## Recent Work (2026-02-09)
 
+### Guide Article Page Redesign
+- **Hero**: Full-viewport cinematic hero with sticky parallax (scale 1.05→1 on scroll), radial vignette + strong bottom gradient, title visible on first paint (no animation delay)
+- **Preamble**: Breathing zone between hero and body — serif italic summary, decorative `brand-primary/40` rule, author/date in mono, bookmark icon button, tag pills with `ScrollReveal`
+- **Body**: Editorial rhythm with variable-width markdown elements — h2 at `max-w-3xl` with `ScrollReveal`, body text at `max-w-2xl`, images break out to `max-w-5xl` with lazy `next/Image`, pull-quote blockquotes with decorative rule
+- **Locations**: Asymmetric editorial grid — first card tall `3:4` spanning 2 rows, remaining `4:3`, gradient overlays, hover scale `1.03`, cursor integration (`"explore"`), staggered `ScrollReveal`
+- **Footer**: Sign-off with author/date in mono, next guide card (full-width image with gradient, hover scale, `"read"` cursor state), back-to-guides `link-reveal` link
+- **Progress bar**: Article-scoped 2px `brand-primary` bar tracking only body zone via `useScroll({ target: contentRef })`, hidden outside viewport, disabled for reduced motion
+- **Scroll indicator**: Hidden on mobile (`hidden sm:block`), fades out on scroll (`scrollYProgress [0.3, 0.5]`)
+- **Related guide**: `page.tsx` fetches one related guide (same city → fallback to same type), `getGuidesByType` now accepts optional `excludeId`
+- **Page background**: Changed from `bg-surface` to `bg-background` (darker, cinematic)
+- **New components**: `GuidePreamble.tsx`, `GuideFooter.tsx`, `GuideProgressBar.tsx`
+- **Removed from GuideDetailClient**: `bg-surface` wrapper, `max-w-4xl` container, inline action bar, inline summary, old footer
+- **Key files**:
+  - `src/app/guides/[slug]/page.tsx` — related guide fetching
+  - `src/components/features/guides/GuideDetailClient.tsx` — 5-zone layout orchestrator
+  - `src/components/features/guides/GuideHero.tsx` — cinematic sticky parallax hero
+  - `src/components/features/guides/GuidePreamble.tsx` — breathing zone (summary, author, bookmark, tags)
+  - `src/components/features/guides/GuideContent.tsx` — editorial rhythm variable-width markdown
+  - `src/components/features/guides/LinkedLocations.tsx` — asymmetric editorial grid
+  - `src/components/features/guides/GuideFooter.tsx` — sign-off + next guide card
+  - `src/components/features/guides/GuideProgressBar.tsx` — article-scoped reading progress
+  - `src/lib/guides/guideService.ts` — `excludeId` param on `getGuidesByType`
+
 ### Landing Page Redesign
 - **Typography**: Fraunces + Plus Jakarta Sans → Instrument Serif + DM Sans (Geist Mono kept for data/stats)
 - **Font rule**: Instrument Serif (italic) for display headings (`text-xl`+); DM Sans for body/functional UI (`text-lg` and below)

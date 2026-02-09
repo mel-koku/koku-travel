@@ -218,20 +218,28 @@ export async function getGuidesByCity(
  * Fetches guides by type.
  *
  * @param guideType - Type of guide to filter by
+ * @param excludeId - Guide ID to exclude (current guide)
  * @param limit - Maximum number of guides to return
  * @returns Array of guide summaries
  */
 export async function getGuidesByType(
   guideType: Guide["guideType"],
+  excludeId?: string,
   limit: number = 10
 ): Promise<GuideSummary[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("guides")
     .select(GUIDE_SUMMARY_COLUMNS)
     .eq("status", "published")
-    .eq("guide_type", guideType)
+    .eq("guide_type", guideType);
+
+  if (excludeId) {
+    query = query.neq("id", excludeId);
+  }
+
+  const { data, error } = await query
     .order("sort_order", { ascending: true })
     .limit(limit);
 

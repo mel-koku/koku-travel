@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import ReactMarkdown from "react-markdown";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 type GuideContentProps = {
   body: string;
@@ -8,42 +10,91 @@ type GuideContentProps = {
 
 export function GuideContent({ body }: GuideContentProps) {
   return (
-    <article className="prose prose-lg max-w-none prose-headings:text-foreground prose-headings:font-semibold prose-p:text-foreground-secondary prose-a:text-brand-primary prose-a:no-underline hover:prose-a:underline prose-strong:text-foreground prose-ul:text-foreground-secondary prose-ol:text-foreground-secondary prose-li:marker:text-sage">
+    <article className="py-12 sm:py-16">
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
-            <h1 className="text-2xl font-bold text-foreground mt-8 mb-4 first:mt-0">
-              {children}
-            </h1>
+            <ScrollReveal className="mx-auto max-w-3xl px-6" distance={30}>
+              <h1 className="font-serif text-2xl italic text-foreground mt-20 mb-6 first:mt-0 sm:text-3xl">
+                {children}
+              </h1>
+            </ScrollReveal>
           ),
           h2: ({ children }) => (
-            <h2 className="font-serif text-xl font-semibold text-foreground mt-8 mb-3">
-              {children}
-            </h2>
+            <ScrollReveal className="mx-auto max-w-3xl px-6" distance={30}>
+              <h2 className="font-serif text-2xl italic text-foreground mt-20 mb-6 sm:text-3xl">
+                {children}
+              </h2>
+            </ScrollReveal>
           ),
           h3: ({ children }) => (
-            <h3 className="font-serif text-lg font-semibold text-foreground mt-6 mb-2">
-              {children}
-            </h3>
+            <div className="mx-auto max-w-2xl px-6">
+              <h3 className="font-serif text-xl italic text-foreground mt-12 mb-4">
+                {children}
+              </h3>
+            </div>
           ),
-          p: ({ children }) => (
-            <p className="text-foreground-secondary leading-relaxed mb-4">{children}</p>
-          ),
+          p: ({ children, node }) => {
+            // Check if this paragraph contains only an image
+            const hasOnlyImage =
+              node?.children?.length === 1 &&
+              node.children[0]?.type === "element" &&
+              node.children[0]?.tagName === "img";
+            if (hasOnlyImage) {
+              return <>{children}</>;
+            }
+            return (
+              <div className="mx-auto max-w-2xl px-6">
+                <p className="text-lg leading-[1.8] text-foreground-secondary mb-6">
+                  {children}
+                </p>
+              </div>
+            );
+          },
+          img: ({ src, alt }) => {
+            const imgSrc = typeof src === "string" ? src : "";
+            return (
+              <ScrollReveal className="mx-auto max-w-5xl px-4 my-12" distance={40}>
+                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl">
+                  <Image
+                    src={imgSrc}
+                    alt={alt || ""}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                    sizes="(min-width: 1280px) 80vw, 95vw"
+                    loading="lazy"
+                  />
+                </div>
+                {alt && (
+                  <p className="mt-3 text-center font-mono text-xs text-stone">
+                    {alt}
+                  </p>
+                )}
+              </ScrollReveal>
+            );
+          },
           ul: ({ children }) => (
-            <ul className="list-disc list-outside ml-6 mb-4 space-y-2 text-foreground-secondary">
-              {children}
-            </ul>
+            <div className="mx-auto max-w-2xl px-6">
+              <ul className="list-disc list-outside ml-6 mb-6 space-y-2 text-lg leading-[1.8] text-foreground-secondary">
+                {children}
+              </ul>
+            </div>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal list-outside ml-6 mb-4 space-y-2 text-foreground-secondary">
-              {children}
-            </ol>
+            <div className="mx-auto max-w-2xl px-6">
+              <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 text-lg leading-[1.8] text-foreground-secondary">
+                {children}
+              </ol>
+            </div>
           ),
-          li: ({ children }) => <li className="text-foreground-secondary">{children}</li>,
+          li: ({ children }) => (
+            <li className="text-foreground-secondary">{children}</li>
+          ),
           a: ({ href, children }) => (
             <a
               href={href}
-              className="text-brand-primary hover:underline"
+              className="link-reveal text-brand-primary"
               target={href?.startsWith("http") ? "_blank" : undefined}
               rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
             >
@@ -51,11 +102,18 @@ export function GuideContent({ body }: GuideContentProps) {
             </a>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l-4 border-sage/50 pl-4 py-1 my-4 italic text-foreground-secondary bg-surface rounded-r">
-              {children}
-            </blockquote>
+            <div className="mx-auto max-w-3xl px-6 my-12">
+              <div className="h-px w-12 bg-brand-primary/40 mb-8" />
+              <blockquote className="font-serif italic text-xl text-foreground py-4 sm:text-2xl">
+                {children}
+              </blockquote>
+            </div>
           ),
-          hr: () => <hr className="my-8 border-border" />,
+          hr: () => (
+            <div className="mx-auto max-w-2xl px-6">
+              <hr className="border-border/50 my-16" />
+            </div>
+          ),
           strong: ({ children }) => (
             <strong className="font-semibold text-foreground">{children}</strong>
           ),
