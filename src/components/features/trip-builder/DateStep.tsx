@@ -133,7 +133,11 @@ export function DateStep({ onValidityChange }: DateStepProps) {
             When are you going?
           </SplitText>
 
-          <div className="mt-10 flex flex-col gap-6">
+          <p className="mt-2 text-sm text-stone">
+            Your dates determine seasonal highlights, festivals, and weather-appropriate activities. Up to 14 days.
+          </p>
+
+          <div className="mt-8 flex flex-col gap-6">
             <Controller
               control={control}
               name="start"
