@@ -22,7 +22,7 @@ export function PreferenceCard({
   return (
     <div
       className={cn(
-        "w-[280px] shrink-0 rounded-2xl border border-border bg-surface p-6",
+        "rounded-2xl border border-border bg-surface p-6",
         className
       )}
     >
