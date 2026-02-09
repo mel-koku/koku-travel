@@ -4,17 +4,17 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 
 import type { Location } from "@/types/location";
 
-const LocationDetailsModal = dynamic(
+const LocationExpanded = dynamic(
   () =>
-    import("@/components/features/explore/LocationDetailsModal").then(
+    import("@/components/features/explore/LocationExpanded").then(
       (m) => ({
-        default: m.LocationDetailsModal,
+        default: m.LocationExpanded,
       })
     ),
   { ssr: false }
@@ -119,10 +119,14 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
         </div>
       </section>
 
-      <LocationDetailsModal
-        location={selectedLocation}
-        onClose={handleClose}
-      />
+      <AnimatePresence>
+        {selectedLocation && (
+          <LocationExpanded
+            location={selectedLocation}
+            onClose={handleClose}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

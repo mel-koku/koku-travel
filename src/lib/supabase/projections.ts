@@ -79,7 +79,7 @@ export type LocationDbRow = {
 
 /**
  * Columns needed for location listings/grids (21 columns)
- * Used by: ExploreShell, LocationGrid, search results
+ * Used by: ExploreShell, search results
  * Includes Google Places enrichment fields for filtering
  */
 // Note: is_featured column requires migration 20260124_add_is_featured_column.sql
@@ -110,7 +110,7 @@ export const LOCATION_LISTING_COLUMNS = `
 
 /**
  * Columns needed for location detail views (18 columns)
- * Used by: LocationDetailsModal, /api/locations/[id]
+ * Used by: LocationExpanded, /api/locations/[id]
  */
 export const LOCATION_DETAIL_COLUMNS = `
   id,
