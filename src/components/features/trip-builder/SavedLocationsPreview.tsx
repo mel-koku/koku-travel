@@ -33,7 +33,7 @@ export function SavedLocationsPreview({
   if (error) {
     return (
       <div className="rounded-lg border border-border bg-surface p-4">
-        <p className="text-sm text-destructive">Failed to load saved places</p>
+        <p className="text-sm text-destructive">Couldn&apos;t load your saved places — try refreshing.</p>
       </div>
     );
   }

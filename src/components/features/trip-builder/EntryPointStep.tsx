@@ -112,7 +112,7 @@ export function EntryPointStep() {
           </SplitText>
 
           <p className="mt-1 text-sm text-stone">
-            Optional — helps us optimize travel routes and suggest nearby regions.
+            Optional — helps us plan smarter routes from your arrival.
           </p>
 
           {/* Selected airport display */}
@@ -210,7 +210,7 @@ export function EntryPointStep() {
               </AnimatePresence>
 
               {searchQuery && filteredAirports.length === 0 && (
-                <p className="mt-2 text-center text-sm text-stone">No airports found</p>
+                <p className="mt-2 text-center text-sm text-stone">No airports match that search</p>
               )}
 
               {/* Popular airports grid — shown when not searching */}

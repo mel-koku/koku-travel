@@ -250,7 +250,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         compact
         eyebrow="Home base"
         title={displayName}
-        subtitle="Your trips, saved places, and everything in between."
+        subtitle="Your trips, saved places, and plans in progress."
       />
 
       {/* Stats Section */}
@@ -310,13 +310,13 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
                     animation="clipY"
                     staggerDelay={0.06}
                   >
-                    No itineraries yet
+                    No trips yet
                   </SplitText>
 
                   <ScrollReveal delay={0.3} distance={15}>
                     <p className="mt-3 max-w-sm text-sm text-foreground-secondary">
-                      Build a trip to generate your first itinerary. Once it&apos;s saved,
-                      you&apos;ll see a preview here.
+                      Head to the trip builder to plan your first adventure.
+                      It&apos;ll appear here once it&apos;s ready.
                     </p>
                   </ScrollReveal>
 

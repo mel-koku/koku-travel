@@ -23,15 +23,15 @@ const SECTION_ORDER: SectionKey[] = ["morning", "afternoon", "evening"];
 const SECTION_META: Record<SectionKey, { title: string; description: string }> = {
   morning: {
     title: "Morning",
-    description: "Ease into the day with energizing plans.",
+    description: "How the day begins.",
   },
   afternoon: {
     title: "Afternoon",
-    description: "Keep the momentum going with midday highlights.",
+    description: "The heart of the day.",
   },
   evening: {
     title: "Evening",
-    description: "Wind down with memorable night activities.",
+    description: "How the day winds down.",
   },
 };
 
@@ -130,7 +130,7 @@ export const DashboardItineraryPreview = ({
       return;
     }
     const confirmed = window.confirm(
-      `Delete the itinerary "${trip.name}"? This action cannot be undone.`,
+      `Delete "${trip.name}"? This can't be undone.`,
     );
     if (!confirmed) {
       return;
@@ -253,7 +253,7 @@ export const DashboardItineraryPreview = ({
                       </ul>
                     ) : (
                       <p className="rounded-lg border border-dashed border-stone/30 bg-background p-4 text-sm text-stone">
-                        No activities yet. Add plans in the itinerary builder.
+                        Nothing planned yet.
                       </p>
                     )}
 
@@ -268,7 +268,7 @@ export const DashboardItineraryPreview = ({
             </div>
           ) : (
             <p className="rounded-lg bg-surface p-6 text-sm text-foreground-secondary">
-              No activities planned for the selected day yet.
+              Nothing planned for this day yet.
             </p>
           )}
         </div>

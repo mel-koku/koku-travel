@@ -8,7 +8,7 @@ import { easeReveal, durationFast } from "@/lib/motion";
 const STEP_LABELS = [
   "Intro",
   "Dates",
-  "Entry",
+  "Arrival",
   "Vibes",
   "Regions",
   "Review",

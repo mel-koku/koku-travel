@@ -66,11 +66,11 @@ export function GuidesPageClient({ guides }: GuidesPageClientProps) {
           animation="clipY"
           staggerDelay={0.06}
         >
-          No guides available yet
+          Guides are on the way
         </SplitText>
         <ScrollReveal delay={0.3} distance={15}>
           <p className="mt-2 text-sm text-stone text-center max-w-sm">
-            We&apos;re working on curated travel guides. Check back soon!
+            We&apos;re writing curated travel guides. Check back soon.
           </p>
         </ScrollReveal>
       </div>
@@ -109,7 +109,7 @@ export function GuidesPageClient({ guides }: GuidesPageClientProps) {
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="font-serif text-lg text-foreground">
-              No guides match this filter
+              Nothing here yet
             </p>
             <p className="mt-2 text-sm text-stone">
               Try selecting a different category above.

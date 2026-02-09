@@ -115,7 +115,7 @@ export function TripSummaryEditorial({
                   )}
                 </span>
               ) : (
-                <span className="text-stone">Not set</span>
+                <span className="text-stone">None yet</span>
               )
             }
             onEdit={onEditDates}
@@ -134,7 +134,7 @@ export function TripSummaryEditorial({
                   </span>
                 </span>
               ) : (
-                <span className="text-stone">Not selected</span>
+                <span className="text-stone">None yet</span>
               )
             }
             onEdit={onEditEntryPoint}
@@ -157,7 +157,7 @@ export function TripSummaryEditorial({
                   ))}
                 </div>
               ) : (
-                <span className="text-stone">Not selected</span>
+                <span className="text-stone">None yet</span>
               )
             }
             onEdit={onEditVibes}
@@ -180,7 +180,7 @@ export function TripSummaryEditorial({
                   ))}
                 </div>
               ) : (
-                <span className="text-stone">Not selected</span>
+                <span className="text-stone">None yet</span>
               )
             }
             onEdit={onEditRegions}

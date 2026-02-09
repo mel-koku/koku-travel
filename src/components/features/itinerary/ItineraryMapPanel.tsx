@@ -540,7 +540,7 @@ export const ItineraryMapPanel = ({
       <header className="mb-4">
         <h2 className="font-mono text-lg font-semibold text-foreground">{dayDateLabel}</h2>
         <p className="text-sm text-stone">
-          Visualize the stops planned for this day and preview travel flow.
+          Your stops for the day, mapped out.
         </p>
         {endPoint && (
           <p className="text-xs text-stone/70">Ending at {endPoint.name}</p>
@@ -574,8 +574,8 @@ export const ItineraryMapPanel = ({
             ) : null}
             {mapReady && points.length === 0 ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-stone">
-                <p>No mappable activities yet.</p>
-                <p className="mt-1">Add places with known locations to see them here.</p>
+                <p>No places on the map yet.</p>
+                <p className="mt-1">Add activities to see them here.</p>
               </div>
             ) : null}
           </>
