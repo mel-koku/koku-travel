@@ -99,7 +99,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
   const handleStartOver = useCallback(() => {
     if (
       window.confirm(
-        "Are you sure you want to start over? All your progress will be lost."
+        "Start over? Your current selections will be cleared."
       )
     ) {
       reset();

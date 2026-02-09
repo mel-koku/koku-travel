@@ -733,7 +733,7 @@ export const ItineraryTimeline = ({
           </SortableContext>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-stone">
-            <p className="text-sm">No activities yet for this day.</p>
+            <p className="text-sm">This day is wide open. Add a note to get started.</p>
             <button
               type="button"
               onClick={handleAddNote}

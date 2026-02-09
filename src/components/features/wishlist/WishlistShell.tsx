@@ -38,7 +38,7 @@ export default function WishlistShell() {
       <section className="bg-background py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="py-32 text-center text-destructive">
-            <p>Failed to load your favorites. Please try again.</p>
+            <p>Couldn&apos;t load your favorites — try refreshing.</p>
             <button
               onClick={() => window.location.reload()}
               className="mt-4 inline-block font-medium text-brand-primary hover:text-brand-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"

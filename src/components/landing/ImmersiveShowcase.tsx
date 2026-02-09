@@ -27,7 +27,7 @@ const acts = [
     eyebrow: "PLAN",
     title: "Build your days, your way",
     description:
-      "Drag activities into place, swap things around, and watch travel times update in real time. Planning should feel like anticipation, not homework.",
+      "Planning should feel like anticipation, not homework. Rearrange your days, adjust the pace, see travel times between every stop.",
     image:
       "https://images.unsplash.com/photo-1624253321171-1be53e12f5f4?w=1920&q=80",
     alt: "Peaceful Japanese garden",
@@ -37,7 +37,7 @@ const acts = [
     eyebrow: "GO",
     title: "Your itinerary, everywhere",
     description:
-      "Start on your laptop, check it on the Shinkansen, share it with friends. Your plan lives in the cloud, ready when you are.",
+      "Check it on the Shinkansen, share it with friends. Your plan goes where you go.",
     image:
       "https://images.unsplash.com/photo-1551641506-ee5bf4cb45f1?w=1920&q=80",
     alt: "Japanese train station",

@@ -54,9 +54,9 @@ const GROUP_TYPE_OPTIONS = [
 ];
 
 const PACE_OPTIONS = [
-  { label: "Relaxed", value: "relaxed", description: "Slow mornings, gentle pacing" },
-  { label: "Balanced", value: "balanced", description: "Mix of highlights and downtime" },
-  { label: "Fast", value: "fast", description: "Packed schedules, see everything" },
+  { label: "Relaxed", value: "relaxed", description: "Slow mornings, long lunches" },
+  { label: "Balanced", value: "balanced", description: "A bit of everything, room to breathe" },
+  { label: "Fast", value: "fast", description: "Dawn to dusk, see it all" },
 ];
 
 export type ReviewStepProps = {
@@ -194,18 +194,18 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
 
       {/* Preferences — Horizontal scroll row */}
       <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Almost there</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Optional</p>
         <h3 className="mt-1 font-serif text-lg italic text-foreground">
           Fine-tune your trip
         </h3>
         <p className="text-sm text-stone">
-          These details help us build a better plan for you
+          The more we know, the better your days will feel.
         </p>
 
         {/* Responsive grid */}
         <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {/* Budget */}
-          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title="Budget" optional info="Helps us match restaurants and experiences to your spending comfort.">
+          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title="Budget" optional info="Sets the price range for food and activities.">
             <BudgetInput
               id="budget-input"
               duration={data.duration}
@@ -216,7 +216,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Travel Pace */}
-          <PreferenceCard icon={<Gauge className="h-5 w-5" />} title="Pace" optional info="Controls how many activities we plan per day. Defaults to balanced.">
+          <PreferenceCard icon={<Gauge className="h-5 w-5" />} title="Pace" optional info="How packed should each day be?">
             <Controller
               control={control}
               name="travelStyle"
@@ -258,7 +258,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Group */}
-          <PreferenceCard icon={<Users className="h-5 w-5" />} title="Group" optional info="Family trips get kid-friendly suggestions. Solo trips focus on personal exploration.">
+          <PreferenceCard icon={<Users className="h-5 w-5" />} title="Group" optional info="Helps us pick the right kind of places.">
             <div className="grid grid-cols-2 gap-3">
               <FormField id="group-type" label="Type">
                 <Controller
@@ -306,7 +306,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
             icon={<Accessibility className="h-5 w-5" />}
             title="Access"
             optional
-            info="We'll filter for accessible venues and respect dietary needs."
+            info="We'll only suggest places that work for you."
           >
             <label className="flex cursor-pointer items-center gap-2">
               <input
@@ -354,10 +354,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Notes */}
-          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title="Notes" optional info="Anything specific — a must-visit spot, an allergy, a celebration.">
+          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title="Notes" optional info="Anything we should know — a birthday, an allergy, a must-visit spot.">
             <textarea
               id="additional-notes"
-              placeholder="Special requests, specific places you want to visit, etc."
+              placeholder="A birthday dinner in Kyoto, avoiding steep stairs, must-see spots..."
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               rows={4}
               {...register("additionalNotes")}

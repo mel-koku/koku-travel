@@ -557,7 +557,7 @@ export function ExploreShell() {
         {!hasMore && visibleLocations.length > 0 && (
           <div className="py-16 text-center">
             <p className="font-serif italic text-lg text-stone">
-              That&apos;s all {sortedLocations.length.toLocaleString()} places. For now.
+              All {sortedLocations.length.toLocaleString()} places. More coming soon.
             </p>
           </div>
         )}

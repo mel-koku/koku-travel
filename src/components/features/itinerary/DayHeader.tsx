@@ -195,7 +195,7 @@ export function DayHeader({
   // Format duration
   const durationLabel = useMemo(() => {
     if (totalDuration === 0) {
-      return "No activities planned";
+      return "Your day is wide open";
     }
 
     const hours = Math.floor(totalDuration / 60);
@@ -250,7 +250,7 @@ export function DayHeader({
             </svg>
             <span className="font-mono font-semibold text-sage">{durationLabel}</span>
             {totalDuration > 0 && (
-              <span className="text-foreground-secondary">· time at locations only</span>
+              <span className="text-foreground-secondary">· at locations</span>
             )}
           </div>
           {onDayStartTimeChange && (
@@ -287,7 +287,7 @@ export function DayHeader({
           />
           {onRefineDay && (
             <div className="border-t border-border pt-4">
-              <p className="mb-2 text-sm font-medium text-foreground-secondary">Refine this day:</p>
+              <p className="mb-2 text-sm font-medium text-foreground-secondary">Adjust this day</p>
               <DayRefinementButtons
                 dayIndex={dayIndex}
                 tripId={tripId}

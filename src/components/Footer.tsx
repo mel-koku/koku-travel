@@ -45,7 +45,7 @@ export default function Footer() {
             {/* Newsletter */}
             <div className="mt-8">
               <label className="text-xs uppercase tracking-[0.3em] text-white/40">
-                Stay in the loop
+                Get the inside track
               </label>
               <div className="mt-3 flex gap-2">
                 <input
@@ -58,7 +58,7 @@ export default function Footer() {
                     type="button"
                     className="rounded-xl bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
                   >
-                    Subscribe
+                    Sign me up
                   </button>
                 </Magnetic>
               </div>

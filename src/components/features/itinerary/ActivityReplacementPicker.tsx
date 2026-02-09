@@ -114,7 +114,7 @@ export function ActivityReplacementPicker({
           </div>
         ) : sortedCandidates.length === 0 ? (
           <div className="flex items-center justify-center py-12">
-            <div className="text-sm text-stone">No alternatives found</div>
+            <div className="text-sm text-stone">No alternatives nearby</div>
           </div>
         ) : (
           <div className="space-y-3 max-h-[60vh] overflow-y-auto">

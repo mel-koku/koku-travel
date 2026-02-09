@@ -116,9 +116,9 @@ export function LocationEditorialGrid({
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <p className="text-base font-medium text-foreground mb-1">No places found</p>
+        <p className="text-base font-medium text-foreground mb-1">No places match</p>
         <p className="text-sm text-stone text-center max-w-sm">
-          Try adjusting your filters or search to find what you&apos;re looking for.
+          Try adjusting your filters or broadening your search.
         </p>
       </div>
     );

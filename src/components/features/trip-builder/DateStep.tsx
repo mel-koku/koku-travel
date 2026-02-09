@@ -135,7 +135,7 @@ export function DateStep({ onValidityChange }: DateStepProps) {
           </SplitText>
 
           <p className="mt-2 text-sm text-stone">
-            Your dates determine seasonal highlights, festivals, and weather-appropriate activities. Up to 14 days.
+            Cherry blossom season, summer festivals, autumn leaves — your dates shape the whole trip. Up to 14 days.
           </p>
 
           <div className="mt-8 flex flex-col gap-6">

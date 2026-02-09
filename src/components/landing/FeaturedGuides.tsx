@@ -61,7 +61,7 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
               className="link-reveal group flex items-center gap-2 text-foreground transition-colors hover:text-brand-primary"
             >
               <span className="text-sm font-medium uppercase tracking-wider">
-                View all guides
+                Read all guides
               </span>
               <ArrowRightIcon />
             </Link>

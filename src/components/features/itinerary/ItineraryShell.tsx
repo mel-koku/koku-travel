@@ -785,7 +785,7 @@ export const ItineraryShell = ({
               />
             ) : (
               <p className="text-sm text-stone">
-                We could not find this itinerary day. Please select another.
+                This day couldn&apos;t be loaded. Try selecting another.
               </p>
             )}
 
@@ -799,7 +799,7 @@ export const ItineraryShell = ({
             {/* Planning error */}
             {planningError && (
               <div className="mt-3 rounded-lg border border-error/30 bg-error/10 p-2.5 text-xs text-error">
-                <p className="font-medium">Planning error</p>
+                <p className="font-medium">Something went wrong</p>
                 <p className="mt-0.5 text-error/80">{planningError}</p>
                 <button
                   type="button"
