@@ -2,10 +2,12 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { TripBuilderProvider, useTripBuilder } from "@/context/TripBuilderContext";
 import { TripBuilderV2 } from "@/components/features/trip-builder";
+import { GeneratingOverlay } from "@/components/features/trip-builder/GeneratingOverlay";
 import { useAppState } from "@/state/AppState";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -28,13 +30,9 @@ function TripBuilderV2Content() {
     setError(null);
 
     try {
-      // Call the API to generate the itinerary
-      // Pass savedLocationIds separately so they can be prioritized in generation
       const response = await fetch("/api/itinerary/plan", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           builderData: data as TripBuilderData,
           savedLocationIds: data.savedLocationIds,
@@ -48,32 +46,20 @@ function TripBuilderV2Content() {
 
       const result: PlanApiResponse = await response.json();
 
-      // Generate a trip name from cities and dates
       const cityNames = data.cities?.slice(0, 2).join(" & ") || "Japan";
       const startDate = data.dates?.start
         ? new Date(data.dates.start).toLocaleDateString("en-US", { month: "short", day: "numeric" })
         : "";
       const tripName = startDate ? `${cityNames} Trip - ${startDate}` : `${cityNames} Trip`;
 
-      // Create the trip in AppState
       const tripId = createTrip({
         name: tripName,
         itinerary: result.itinerary,
         builderData: data as TripBuilderData,
       });
 
-      // Note: Entry point is only used for region/city selection during trip building.
-      // It is not used for scheduling - we assume the user is already at the first location
-      // when they start their day. A future feature may allow users to specify a hotel
-      // or station as a daily starting point.
-
-      // Clear the saved locations queue (they've been included in the trip)
       setData((prev) => ({ ...prev, savedLocationIds: [] }));
-
-      // Reset the builder state
       reset();
-
-      // Navigate to the itinerary page
       router.push(`/itinerary?trip=${tripId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
@@ -84,30 +70,24 @@ function TripBuilderV2Content() {
   return (
     <>
       <TripBuilderV2 onComplete={handleComplete} />
-      {/* Loading overlay */}
-      {isGenerating && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/50">
-          <div className="rounded-lg bg-background p-6 shadow-xl">
-            <div className="flex items-center gap-3">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
-              <span className="text-lg font-medium text-foreground">Generating your itinerary...</span>
-            </div>
-            <p className="mt-2 text-sm text-stone">This may take a moment</p>
-          </div>
-        </div>
-      )}
+
+      {/* Cinematic generating overlay */}
+      <AnimatePresence>
+        {isGenerating && <GeneratingOverlay />}
+      </AnimatePresence>
+
       {/* Error toast */}
       {error && (
-        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-lg bg-destructive px-4 py-3 text-white shadow-lg lg:bottom-8">
+        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-error px-4 py-3 text-white shadow-lg lg:bottom-8">
           <div className="flex items-center gap-2">
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>{error}</span>
+            <span className="text-sm">{error}</span>
             <button
               type="button"
               onClick={() => setError(null)}
-              className="ml-2 rounded p-1 hover:bg-destructive/90"
+              className="ml-2 rounded p-1 hover:bg-error/80"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

@@ -11,6 +11,8 @@ type DaySelectorProps = {
   tripStartDate?: string;
   /** Auto-scroll to today on mount */
   autoScrollToToday?: boolean;
+  /** Visual variant — "default" for light bg, "dark" for charcoal banner */
+  variant?: "default" | "dark";
 };
 
 /**
@@ -50,7 +52,9 @@ export const DaySelector = ({
   labels = [],
   tripStartDate,
   autoScrollToToday = true,
+  variant = "default",
 }: DaySelectorProps) => {
+  const isDark = variant === "dark";
   const hasAutoScrolled = useRef(false);
 
   const todayIndex = useMemo(
@@ -129,7 +133,11 @@ export const DaySelector = ({
       <select
         value={selected}
         onChange={handleChange}
-        className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+        className={
+          isDark
+            ? "w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-3 py-2 pr-10 text-sm font-medium text-white shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+            : "w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+        }
         aria-label="Select day"
       >
         {days.map(({ index, label, isToday }) => (
@@ -140,7 +148,7 @@ export const DaySelector = ({
       </select>
       {/* Dropdown arrow */}
       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-        <svg className="h-4 w-4 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <svg className={`h-4 w-4 ${isDark ? "text-white/50" : "text-stone"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
