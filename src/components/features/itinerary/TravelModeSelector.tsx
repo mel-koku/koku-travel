@@ -204,7 +204,7 @@ export function TravelModeSelector({
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <span>{formatDurationWithMode(durationMinutes, currentMode)}</span>
+        <span className="font-mono">{formatDurationWithMode(durationMinutes, currentMode)}</span>
         <svg
           className={cn("h-4 w-4 transition-transform text-stone", isOpen && "rotate-180")}
           fill="none"
@@ -269,7 +269,7 @@ export function TravelModeSelector({
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     {hasEstimate && (
-                      <span className={cn("text-[11px] font-medium", isCurrentMode ? option.color : "text-stone")}>
+                      <span className={cn("font-mono text-[11px] font-medium", isCurrentMode ? option.color : "text-stone")}>
                         {formatDuration(estimateDuration)}
                       </span>
                     )}

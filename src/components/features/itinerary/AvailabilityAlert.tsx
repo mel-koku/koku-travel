@@ -150,7 +150,7 @@ function AvailabilityIssueItem({ issue, onFindAlternative }: AvailabilityIssueIt
               {issue.message}
             </p>
             {issue.operatingHours && (
-              <p className="text-[11px] text-stone mt-0.5">
+              <p className="font-mono text-[11px] text-stone mt-0.5">
                 Hours: {issue.operatingHours.opensAt} - {issue.operatingHours.closesAt}
               </p>
             )}
@@ -199,7 +199,7 @@ export function InlineAvailabilityStatus({
             className
           )}
         >
-          Open {operatingHours.opensAt}-{operatingHours.closesAt}
+          Open <span className="font-mono">{operatingHours.opensAt}-{operatingHours.closesAt}</span>
         </span>
       );
     }
@@ -241,7 +241,7 @@ export function InlineAvailabilityStatus({
         {config.icon} {config.label}
       </span>
       {operatingHours && (
-        <span className="text-[11px] text-stone">
+        <span className="font-mono text-[11px] text-stone">
           Hours: {operatingHours.opensAt}-{operatingHours.closesAt}
         </span>
       )}

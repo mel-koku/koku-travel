@@ -141,8 +141,8 @@ export default function Header() {
       return;
     }
 
-    // Explore page: always keep header visible (CategoryBar is sticky below it)
-    if (pathname === "/explore") {
+    // Explore/Guides/Itinerary: always keep header visible (sticky sub-nav/map panels depend on it)
+    if (pathname === "/explore" || pathname === "/guides" || pathname.startsWith("/itinerary")) {
       setIsVisible(true);
       return;
     }

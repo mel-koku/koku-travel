@@ -214,7 +214,7 @@ export function DayHeader({
     <div className="mb-6 rounded-xl border border-border bg-surface p-4 sm:p-5">
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="font-serif text-xl font-semibold text-foreground sm:text-2xl">
+          <h2 className="font-serif italic text-xl font-medium text-foreground sm:text-2xl">
             {dateLabel.dayName ? (
               <>
                 {dateLabel.dayName}
@@ -248,7 +248,7 @@ export function DayHeader({
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               />
             </svg>
-            <span className="font-semibold text-sage">{durationLabel}</span>
+            <span className="font-mono font-semibold text-sage">{durationLabel}</span>
             {totalDuration > 0 && (
               <span className="text-foreground-secondary">· time at locations only</span>
             )}
