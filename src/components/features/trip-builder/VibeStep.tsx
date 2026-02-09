@@ -107,7 +107,11 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
           What moves you?
         </SplitText>
 
-        <p className="mt-3 font-mono text-sm text-stone">
+        <p className="mt-2 text-sm text-stone">
+          Your vibes shape which places, restaurants, and experiences we prioritize.
+        </p>
+
+        <p className="mt-2 font-mono text-sm text-stone">
           {selectedVibes.length} / {MAX_VIBE_SELECTION} selected
         </p>
       </div>

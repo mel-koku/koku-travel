@@ -7,6 +7,8 @@ export type PreferenceCardProps = {
   title: string;
   children: React.ReactNode;
   className?: string;
+  optional?: boolean;
+  info?: string;
 };
 
 /**
@@ -18,6 +20,8 @@ export function PreferenceCard({
   title,
   children,
   className,
+  optional,
+  info,
 }: PreferenceCardProps) {
   return (
     <div
@@ -26,13 +30,23 @@ export function PreferenceCard({
         className
       )}
     >
-      <div className="mb-4 flex items-center gap-3">
+      <div className="mb-1 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-charcoal text-foreground-secondary">
           {icon}
         </div>
-        <h4 className="font-serif text-lg italic text-foreground">{title}</h4>
+        <div>
+          <div className="flex items-center gap-2">
+            <h4 className="font-serif text-lg italic text-foreground">{title}</h4>
+            {optional && (
+              <span className="text-xs text-stone">(optional)</span>
+            )}
+          </div>
+          {info && (
+            <p className="text-xs text-stone">{info}</p>
+          )}
+        </div>
       </div>
-      <div className="space-y-3">{children}</div>
+      <div className="mt-4 space-y-3">{children}</div>
     </div>
   );
 }

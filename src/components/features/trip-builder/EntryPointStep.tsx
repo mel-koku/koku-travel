@@ -111,8 +111,8 @@ export function EntryPointStep() {
             Where will you land?
           </SplitText>
 
-          <p className="mt-1 text-sm italic text-stone">
-            Optional — skip if you&apos;re not sure yet
+          <p className="mt-1 text-sm text-stone">
+            Optional — helps us optimize travel routes and suggest nearby regions.
           </p>
 
           {/* Selected airport display */}

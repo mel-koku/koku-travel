@@ -205,7 +205,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
         {/* Responsive grid */}
         <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {/* Budget */}
-          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title="Budget">
+          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title="Budget" optional info="Helps us match restaurants and experiences to your spending comfort.">
             <BudgetInput
               id="budget-input"
               duration={data.duration}
@@ -216,7 +216,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Travel Pace */}
-          <PreferenceCard icon={<Gauge className="h-5 w-5" />} title="Pace">
+          <PreferenceCard icon={<Gauge className="h-5 w-5" />} title="Pace" optional info="Controls how many activities we plan per day. Defaults to balanced.">
             <Controller
               control={control}
               name="travelStyle"
@@ -258,7 +258,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Group */}
-          <PreferenceCard icon={<Users className="h-5 w-5" />} title="Group">
+          <PreferenceCard icon={<Users className="h-5 w-5" />} title="Group" optional info="Family trips get kid-friendly suggestions. Solo trips focus on personal exploration.">
             <div className="grid grid-cols-2 gap-3">
               <FormField id="group-type" label="Type">
                 <Controller
@@ -305,6 +305,8 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           <PreferenceCard
             icon={<Accessibility className="h-5 w-5" />}
             title="Access"
+            optional
+            info="We'll filter for accessible venues and respect dietary needs."
           >
             <label className="flex cursor-pointer items-center gap-2">
               <input
@@ -352,7 +354,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Notes */}
-          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title="Notes">
+          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title="Notes" optional info="Anything specific — a must-visit spot, an allergy, a celebration.">
             <textarea
               id="additional-notes"
               placeholder="Special requests, specific places you want to visit, etc."
