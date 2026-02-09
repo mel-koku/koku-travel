@@ -47,6 +47,12 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
             >
               Start reading
             </SplitText>
+            <ScrollReveal delay={0.2}>
+              <p className="mt-4 max-w-md text-base text-foreground-secondary">
+                Local insights, seasonal tips, and curated itineraries to help
+                you plan a trip that goes beyond the surface.
+              </p>
+            </ScrollReveal>
           </div>
           <ScrollReveal delay={0.2}>
             <Link

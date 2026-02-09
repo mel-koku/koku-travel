@@ -79,6 +79,8 @@ type ItineraryTimelineProps = {
   conflictsResult?: ItineraryConflictsResult;
   // Guide segments for this day
   guide?: DayGuide | null;
+  // Called before a drag-reorder is applied to the model
+  onBeforeDragReorder?: () => void;
 };
 
 export const ItineraryTimeline = ({
@@ -100,6 +102,7 @@ export const ItineraryTimeline = ({
   conflicts,
   conflictsResult,
   guide,
+  onBeforeDragReorder,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMountedRef = useRef(true);
@@ -245,6 +248,9 @@ export const ItineraryTimeline = ({
       const overId = String(over.id);
 
       if (activeId === overId) return;
+
+      // Signal to skip auto-optimization for this drag reorder (respect user intent)
+      onBeforeDragReorder?.();
 
       let oldIndex = -1;
       let newIndex = -1;
@@ -447,7 +453,7 @@ export const ItineraryTimeline = ({
         }
       }
     },
-    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, day],
+    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, day, onBeforeDragReorder],
   );
 
   const handleAddNote = useCallback(() => {

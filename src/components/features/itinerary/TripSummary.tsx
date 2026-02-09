@@ -12,9 +12,12 @@ export type TripSummaryProps = {
   className?: string;
   /** Start collapsed */
   defaultCollapsed?: boolean;
+  /** Visual variant — "default" for light bg, "dark" for charcoal banner */
+  variant?: "default" | "dark";
 };
 
-export function TripSummary({ tripData, className, defaultCollapsed = true }: TripSummaryProps) {
+export function TripSummary({ tripData, className, defaultCollapsed = true, variant = "default" }: TripSummaryProps) {
+  const isDark = variant === "dark";
   const [isExpanded, setIsExpanded] = useState(!defaultCollapsed);
 
   const formattedDates = useMemo(() => {
@@ -59,21 +62,28 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
   const hasRegions = (tripData.regions?.length ?? 0) > 0;
 
   return (
-    <div className={cn("rounded-lg border border-border bg-background/80 backdrop-blur-sm", className)}>
+    <div className={cn(
+      "rounded-lg border backdrop-blur-sm",
+      isDark ? "border-white/10 bg-white/5" : "border-border bg-background/80",
+      className,
+    )}>
       {/* Header - always visible */}
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="flex w-full items-center justify-between px-3 py-2 text-left transition hover:bg-surface/50"
+        className={cn(
+          "flex w-full items-center justify-between px-3 py-2 text-left transition",
+          isDark ? "hover:bg-white/10" : "hover:bg-surface/50",
+        )}
       >
         <div className="flex items-center gap-2">
           <svg className="h-4 w-4 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
-          <span className="text-sm font-medium text-foreground">Trip Summary</span>
+          <span className={cn("text-sm font-medium", isDark ? "text-white" : "text-foreground")}>Trip Summary</span>
         </div>
         <svg
-          className={cn("h-4 w-4 text-stone transition-transform", isExpanded && "rotate-180")}
+          className={cn("h-4 w-4 transition-transform", isDark ? "text-white/50" : "text-stone", isExpanded && "rotate-180")}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -85,12 +95,12 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
 
       {/* Expandable content */}
       {isExpanded && (
-        <div className="border-t border-border px-3 py-2 space-y-2">
+        <div className={cn("border-t px-3 py-2 space-y-2", isDark ? "border-white/10" : "border-border")}>
           {/* Duration & Dates */}
           {(tripData.duration || formattedDates) && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-stone">When</span>
-              <span className="font-medium text-foreground">
+              <span className={isDark ? "text-white/50" : "text-stone"}>When</span>
+              <span className={cn("font-medium", isDark ? "text-white" : "text-foreground")}>
                 {tripData.duration ? `${tripData.duration} days` : ""}{tripData.duration && formattedDates ? " · " : ""}{formattedDates ?? ""}
               </span>
             </div>
@@ -99,8 +109,8 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
           {/* Entry Point */}
           {tripData.entryPoint && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-stone">Entry</span>
-              <span className="font-medium text-foreground truncate ml-2 max-w-[180px]">
+              <span className={isDark ? "text-white/50" : "text-stone"}>Entry</span>
+              <span className={cn("font-medium truncate ml-2 max-w-[180px]", isDark ? "text-white" : "text-foreground")}>
                 {tripData.entryPoint.name}
               </span>
             </div>
@@ -109,15 +119,15 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
           {/* Budget */}
           {budgetLabel && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-stone">Budget</span>
-              <span className="font-medium text-foreground">{budgetLabel}</span>
+              <span className={isDark ? "text-white/50" : "text-stone"}>Budget</span>
+              <span className={cn("font-medium", isDark ? "text-white" : "text-foreground")}>{budgetLabel}</span>
             </div>
           )}
 
           {/* Vibes */}
           {hasVibes && (
             <div className="flex items-start justify-between text-xs">
-              <span className="text-stone pt-0.5">Vibes</span>
+              <span className={cn("pt-0.5", isDark ? "text-white/50" : "text-stone")}>Vibes</span>
               <div className="flex flex-wrap justify-end gap-1 ml-2">
                 {tripData.vibes?.slice(0, 3).map((vibe) => (
                   <span
@@ -128,7 +138,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
                   </span>
                 ))}
                 {(tripData.vibes?.length ?? 0) > 3 && (
-                  <span className="text-[10px] text-stone">+{(tripData.vibes?.length ?? 0) - 3}</span>
+                  <span className={cn("text-[10px]", isDark ? "text-white/50" : "text-stone")}>+{(tripData.vibes?.length ?? 0) - 3}</span>
                 )}
               </div>
             </div>
@@ -137,7 +147,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
           {/* Regions */}
           {hasRegions && (
             <div className="flex items-start justify-between text-xs">
-              <span className="text-stone pt-0.5">Regions</span>
+              <span className={cn("pt-0.5", isDark ? "text-white/50" : "text-stone")}>Regions</span>
               <div className="flex flex-wrap justify-end gap-1 ml-2">
                 {tripData.regions?.slice(0, 2).map((region) => (
                   <span
@@ -148,7 +158,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true }: Tr
                   </span>
                 ))}
                 {(tripData.regions?.length ?? 0) > 2 && (
-                  <span className="text-[10px] text-stone">+{(tripData.regions?.length ?? 0) - 2}</span>
+                  <span className={cn("text-[10px]", isDark ? "text-white/50" : "text-stone")}>+{(tripData.regions?.length ?? 0) - 2}</span>
                 )}
               </div>
             </div>

@@ -18,7 +18,6 @@ import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { WhatsNextCard } from "./WhatsNextCard";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
-import { TripSummary } from "./TripSummary";
 import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { logger } from "@/lib/logger";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
@@ -28,10 +27,10 @@ import {
   type ReplacementCandidate,
 } from "@/hooks/useReplacementCandidates";
 import { REGIONS } from "@/data/regions";
+import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult } from "@/hooks/useSmartPromptActions";
-import { GuideToggle } from "./GuideToggle";
 
 // Lazy-load guide builder to keep ~90KB of template data out of the main bundle
 const buildGuideAsync = () => import("@/lib/guide/guideBuilder").then((m) => m.buildGuide);
@@ -120,16 +119,12 @@ export const ItineraryShell = ({
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
-  const [isOptimizing, setIsOptimizing] = useState(false);
-  const [guideEnabled, setGuideEnabled] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const stored = localStorage.getItem("koku-guide-visible");
-    return stored === null ? true : stored === "true";
-  });
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
   // Ref to store scheduleUserPlanning for use in handleReplaceSelect (avoids initialization order issues)
   const scheduleUserPlanningRef = useRef<((next: Itinerary) => void) | null>(null);
+  // When true, skip auto-optimization in scheduleUserPlanning (e.g. after drag reorder)
+  const skipAutoOptimizeRef = useRef(false);
 
   // Mutation hook for fetching replacement candidates
   const replacementMutation = useReplacementCandidates();
@@ -328,7 +323,7 @@ export const ItineraryShell = ({
 
       planTimeoutRef.current = window.setTimeout(() => {
         planTimeoutRef.current = null;
-        const target = pendingPlanRef.current;
+        let target = pendingPlanRef.current;
         if (!target) {
           if (planningRequestRef.current === runId && isMountedRef.current) {
             setIsPlanning(false);
@@ -351,6 +346,32 @@ export const ItineraryShell = ({
 
         setPlanningError(null);
         setIsPlanning(true);
+
+        // Auto-optimize route order before replanning (unless skipped for drag reorder)
+        if (skipAutoOptimizeRef.current) {
+          skipAutoOptimizeRef.current = false;
+        } else {
+          const startPoint = tripBuilderData?.entryPoint;
+          if (startPoint) {
+            let optimized = false;
+            const nextDays = target.days.map((day) => {
+              const result = optimizeRouteOrder(day.activities, startPoint);
+              if (!result.orderChanged) return day;
+              optimized = true;
+              const activityMap = new Map(day.activities.map((a) => [a.id, a]));
+              const reordered = result.order
+                .map((id) => activityMap.get(id))
+                .filter((a): a is ItineraryActivity => a !== undefined);
+              return { ...day, activities: reordered };
+            });
+            if (optimized) {
+              target = { ...target, days: nextDays };
+              pendingPlanRef.current = target;
+              // Also update the visual model immediately so user sees the reorder
+              setModelState(target);
+            }
+          }
+        }
 
         const dayEntryPointsMap = buildDayEntryPointsMap(target);
         const plannerOptions = tripBuilderData?.dayStartTime
@@ -528,13 +549,9 @@ export const ItineraryShell = ({
     return detectItineraryConflicts(model);
   }, [model]);
 
-  // Build guide when enabled (lazy-loaded to avoid bundling ~90KB of template data)
+  // Build guide (lazy-loaded to avoid bundling ~90KB of template data)
   const [tripGuide, setTripGuide] = useState<Awaited<ReturnType<typeof import("@/lib/guide/guideBuilder").buildGuide>> | null>(null);
   useEffect(() => {
-    if (!guideEnabled) {
-      setTripGuide(null);
-      return;
-    }
     let cancelled = false;
     buildGuideAsync().then((buildGuide) => {
       if (!cancelled) {
@@ -542,20 +559,12 @@ export const ItineraryShell = ({
       }
     });
     return () => { cancelled = true; };
-  }, [guideEnabled, model, tripBuilderData]);
+  }, [model, tripBuilderData]);
 
   const currentDayGuide = useMemo(() => {
     if (!tripGuide || !currentDay) return null;
     return tripGuide.days.find((dg) => dg.dayId === currentDay.id) ?? null;
   }, [tripGuide, currentDay]);
-
-  const handleToggleGuide = useCallback(() => {
-    setGuideEnabled((prev) => {
-      const next = !prev;
-      localStorage.setItem("koku-guide-visible", String(next));
-      return next;
-    });
-  }, []);
 
   // Get conflicts for the current day
   const currentDayConflicts = useMemo(() => {
@@ -643,36 +652,6 @@ export const ItineraryShell = ({
     });
   }, []);
 
-  const handleOptimizeRoute = useCallback(async () => {
-    if (!currentDay || isOptimizing) return;
-
-    setIsOptimizing(true);
-    try {
-      // Use trip entry point as start (same for all days)
-      const startPoint = tripBuilderData?.entryPoint;
-
-      const response = await fetch("/api/itinerary/optimize-route", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ day: currentDay, startPoint }),
-      });
-
-      const data = await response.json();
-      if (data.optimized && data.day) {
-        // Update model with optimized day
-        const nextDays = model.days.map((d, i) =>
-          i === safeSelectedDay ? data.day : d
-        );
-        const nextItinerary = { ...model, days: nextDays };
-        scheduleUserPlanning(nextItinerary);
-      }
-    } catch (error) {
-      logger.error("Failed to optimize route", error);
-    } finally {
-      setIsOptimizing(false);
-    }
-  }, [currentDay, isOptimizing, safeSelectedDay, tripBuilderData, model, scheduleUserPlanning]);
-
   // Wrapper for onAcceptSuggestion - the prop change from AppState will trigger
   // replanning via the serializedItinerary effect
   const handleAcceptSuggestion = useCallback(
@@ -733,21 +712,16 @@ export const ItineraryShell = ({
                 </div>
               )}
             </div>
-            {/* Action buttons */}
-            <div className="flex items-center gap-2">
-              <GuideToggle enabled={guideEnabled} onToggle={handleToggleGuide} />
-              <button
-                onClick={handleOptimizeRoute}
-                disabled={isOptimizing || !currentDay?.activities?.length}
-                className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white disabled:opacity-50"
-                title="Optimize route order to minimize travel"
-              >
-                {isOptimizing ? (
-                  <span className="animate-pulse">Optimizing...</span>
-                ) : (
-                  "Optimize Route"
-                )}
-              </button>
+            {/* Day picker */}
+            <div className="w-full sm:w-auto sm:min-w-[280px]">
+              <DaySelector
+                totalDays={days.length}
+                selected={safeSelectedDay}
+                onChange={handleSelectDayChange}
+                labels={days.map((day) => day.dateLabel ?? "")}
+                tripStartDate={tripStartDate}
+                variant="dark"
+              />
             </div>
           </div>
         </div>
@@ -756,29 +730,8 @@ export const ItineraryShell = ({
       <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
-          {/* Header */}
-          <div className="border-b border-border bg-background p-3 lg:rounded-t-2xl lg:border lg:border-b-0">
-            {/* Trip Summary Accordion */}
-            {tripBuilderData && (
-              <TripSummary tripData={tripBuilderData} className="mb-2" defaultCollapsed />
-            )}
-
-            {/* Day Selector Dropdown */}
-            <div className="flex items-center gap-2">
-              <div className="flex-1">
-                <DaySelector
-                  totalDays={days.length}
-                  selected={safeSelectedDay}
-                  onChange={handleSelectDayChange}
-                  labels={days.map((day) => day.dateLabel ?? "")}
-                  tripStartDate={tripStartDate}
-                />
-              </div>
-            </div>
-          </div>
-
           {/* Activities List */}
-          <div data-itinerary-activities className="relative flex-1 overflow-y-auto border-border bg-background p-3 lg:rounded-b-2xl lg:border lg:border-t-0">
+          <div data-itinerary-activities className="relative flex-1 overflow-y-auto border-border bg-background p-3 lg:rounded-2xl lg:border">
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
@@ -828,6 +781,7 @@ export const ItineraryShell = ({
                 conflicts={currentDayConflicts}
                 conflictsResult={conflictsResult}
                 guide={currentDayGuide}
+                onBeforeDragReorder={() => { skipAutoOptimizeRef.current = true; }}
               />
             ) : (
               <p className="text-sm text-stone">

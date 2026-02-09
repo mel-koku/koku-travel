@@ -1,132 +1,99 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useCallback, useMemo, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { IntroStep } from "./IntroStep";
-import { PlanStep } from "./PlanStep";
+import { DateStep } from "./DateStep";
+import { EntryPointStep } from "./EntryPointStep";
+import { VibeStep } from "./VibeStep";
 import { RegionStep } from "./RegionStep";
 import { ReviewStep } from "./ReviewStep";
+import { StepProgressTrack } from "./StepProgressTrack";
+import { ArrowLineCTA } from "./ArrowLineCTA";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { cn } from "@/lib/cn";
+import { ChevronLeft } from "lucide-react";
 
 export type TripBuilderV2Props = {
   onComplete?: () => void;
 };
 
-type Step = 0 | 1 | 2 | 3;
+type Step = 0 | 1 | 2 | 3 | 4 | 5;
 
-const STEP_LABELS: Record<Step, string> = {
-  0: "Welcome",
-  1: "Trip Details",
-  2: "Destinations",
-  3: "Review & Customize",
+const STEP_COUNT = 6;
+
+const stepVariants: Variants = {
+  enter: (dir: number) => ({
+    clipPath: dir > 0 ? "inset(100% 0 0 0)" : "inset(0 0 100% 0)",
+  }),
+  center: {
+    clipPath: "inset(0 0 0 0)",
+    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as const },
+  },
+  exit: (dir: number) => ({
+    clipPath: dir > 0 ? "inset(0 0 100% 0)" : "inset(100% 0 0 0)",
+    transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] as const },
+  }),
 };
 
-const TOTAL_SUB_STEPS = 3; // dates, entry point, vibes
+const reducedMotionVariants: Variants = {
+  enter: { opacity: 0 },
+  center: { opacity: 1, transition: { duration: 0.3 } },
+  exit: { opacity: 0, transition: { duration: 0.2 } },
+};
 
 export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
-  const { reset } = useTripBuilder();
+  const { data, reset } = useTripBuilder();
   const [currentStep, setCurrentStep] = useState<Step>(0);
-  const [currentSubStep, setCurrentSubStep] = useState(0);
-  const [direction, setDirection] = useState(1); // 1 = forward, -1 = back
+  const [direction, setDirection] = useState(1);
   const prefersReducedMotion = useReducedMotion();
-  const [step1Valid, setStep1Valid] = useState(false);
-  const [step2Valid, setStep2Valid] = useState(false);
-  const [step3Valid, setStep3Valid] = useState(true);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
-  // Detect mobile viewport
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
+  // Step validity
+  const [datesValid, setDatesValid] = useState(false);
+  const [vibesValid, setVibesValid] = useState(false);
+  const [regionsValid, setRegionsValid] = useState(false);
+  const [reviewValid, setReviewValid] = useState(true);
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+  // Track completed steps
+  const completedSteps = useMemo(() => {
+    const set = new Set<number>();
+    // Step 0 (intro) is always completed once you move past it
+    if (currentStep > 0) set.add(0);
+    if (datesValid) set.add(1);
+    // Entry point is optional, mark complete if user has been there
+    if (currentStep > 2 || data.entryPoint) set.add(2);
+    if (vibesValid) set.add(3);
+    if (regionsValid) set.add(4);
+    if (reviewValid && currentStep === 5) set.add(5);
+    return set;
+  }, [currentStep, datesValid, data.entryPoint, vibesValid, regionsValid, reviewValid]);
 
-  const handleStep1ValidityChange = useCallback((isValid: boolean) => {
-    setStep1Valid(isValid);
-  }, []);
+  const goToStep = useCallback(
+    (step: Step) => {
+      setDirection(step > currentStep ? 1 : -1);
+      setCurrentStep(step);
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    },
+    [currentStep]
+  );
 
-  const handleStep2ValidityChange = useCallback((isValid: boolean) => {
-    setStep2Valid(isValid);
-  }, []);
-
-  const handleStep3ValidityChange = useCallback((isValid: boolean) => {
-    setStep3Valid(isValid);
-  }, []);
-
-  const goToStep = useCallback((step: Step, subStep = 0) => {
-    setDirection(step > currentStep ? 1 : -1);
-    setCurrentStep(step);
-    setCurrentSubStep(subStep);
-    // Wait for React to render the new content, then scroll
-    requestAnimationFrame(() => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
-      }
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    });
-  }, [currentStep]);
-
-  const handleSubStepChange = useCallback((subStep: number) => {
-    setCurrentSubStep(subStep);
-    // Scroll to top when sub-step changes
-    requestAnimationFrame(() => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTo({ top: 0, behavior: "smooth" });
-      }
-    });
-  }, []);
-
-  // Handle Next button - manages both sub-steps and main steps
   const handleNext = useCallback(() => {
-    if (currentStep === 0) {
-      goToStep(1, 0);
-    } else if (currentStep === 1) {
-      // On mobile, navigate through sub-steps
-      if (isMobile && currentSubStep < TOTAL_SUB_STEPS - 1) {
-        handleSubStepChange(currentSubStep + 1);
-      } else if (step1Valid) {
-        // All sub-steps done or on desktop, go to next main step
-        goToStep(2);
-      }
-    } else if (currentStep === 2 && step2Valid) {
-      goToStep(3);
-    } else if (currentStep === 3 && step3Valid) {
-      onComplete?.();
-    }
-  }, [
-    currentStep,
-    currentSubStep,
-    isMobile,
-    step1Valid,
-    step2Valid,
-    step3Valid,
-    goToStep,
-    handleSubStepChange,
-    onComplete,
-  ]);
+    if (currentStep === 0) goToStep(1);
+    else if (currentStep === 1 && datesValid) goToStep(2);
+    else if (currentStep === 2) goToStep(3); // Entry point is optional
+    else if (currentStep === 3 && vibesValid) goToStep(4);
+    else if (currentStep === 4 && regionsValid) goToStep(5);
+    else if (currentStep === 5 && reviewValid) onComplete?.();
+  }, [currentStep, datesValid, vibesValid, regionsValid, reviewValid, goToStep, onComplete]);
 
-  // Handle Back button - manages both sub-steps and main steps
   const handleBack = useCallback(() => {
-    if (currentStep === 1) {
-      // On mobile, navigate back through sub-steps
-      if (isMobile && currentSubStep > 0) {
-        handleSubStepChange(currentSubStep - 1);
-      } else {
-        goToStep(0);
-      }
-    } else if (currentStep === 2) {
-      goToStep(1, TOTAL_SUB_STEPS - 1); // Go back to last sub-step
-    } else if (currentStep === 3) {
-      goToStep(2);
+    if (currentStep > 0) {
+      goToStep((currentStep - 1) as Step);
     }
-  }, [currentStep, currentSubStep, isMobile, goToStep, handleSubStepChange]);
+  }, [currentStep, goToStep]);
 
   const handleStartOver = useCallback(() => {
     if (
@@ -139,289 +106,219 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
     }
   }, [reset, goToStep]);
 
-  // Determine if next button should be disabled
-  const isNextDisabled = (() => {
-    if (currentStep === 1) {
-      // On mobile, check current sub-step validity
-      if (isMobile) {
-        // For now, always allow navigation (sub-steps handle their own validation)
-        // The final "Continue to Regions" only appears when step is valid
-        return currentSubStep === TOTAL_SUB_STEPS - 1 && !step1Valid;
+  const handleStepClick = useCallback(
+    (step: number) => {
+      if (step < currentStep || completedSteps.has(step)) {
+        goToStep(step as Step);
       }
-      return !step1Valid;
-    }
-    if (currentStep === 2) return !step2Valid;
-    if (currentStep === 3) return !step3Valid;
+    },
+    [currentStep, completedSteps, goToStep]
+  );
+
+  // Determine if next is disabled
+  const isNextDisabled = (() => {
+    if (currentStep === 1) return !datesValid;
+    if (currentStep === 3) return !vibesValid;
+    if (currentStep === 4) return !regionsValid;
+    if (currentStep === 5) return !reviewValid;
     return false;
   })();
 
-  // Get appropriate label for next button
-  const getNextButtonLabel = () => {
-    if (currentStep === 1) {
-      if (isMobile && currentSubStep < TOTAL_SUB_STEPS - 1) {
-        return "Continue";
-      }
-      return "Continue to Destinations";
-    }
-    if (currentStep === 2) {
-      return "Review & Customize";
-    }
-    if (currentStep === 3) {
-      return "Generate Itinerary";
-    }
+  // Get next button label
+  const getNextLabel = () => {
+    if (currentStep === 0) return "Start Planning";
+    if (currentStep === 2) return data.entryPoint ? "Continue" : "Skip";
+    if (currentStep === 5) return "Generate Itinerary";
     return "Continue";
   };
 
-  // Get appropriate label for back button
-  const getBackButtonLabel = () => {
-    if (currentStep === 1) {
-      if (isMobile && currentSubStep > 0) {
-        return "Back";
-      }
-      return "Back to Welcome";
-    }
-    if (currentStep === 2) {
-      return "Back to Details";
-    }
-    if (currentStep === 3) {
-      return "Back to Destinations";
-    }
-    return "Back";
-  };
+  // Navigation handlers for ReviewStep to go to specific steps
+  const handleGoToStep = useCallback(
+    (step: number) => {
+      goToStep(step as Step);
+    },
+    [goToStep]
+  );
 
-  // Step 0 renders a clean welcome experience without wizard chrome
-  if (currentStep === 0) {
-    return <IntroStep onStart={() => goToStep(1, 0)} />;
-  }
+  const variants = prefersReducedMotion ? reducedMotionVariants : stepVariants;
 
   return (
-    <div className="flex h-full min-h-screen flex-col bg-background">
-      {/* Dark zone behind header */}
-      <div className="-mt-20 bg-charcoal pt-20">
-        <div className="texture-grain pointer-events-none absolute inset-x-0 top-0 h-40" />
-      </div>
+    <div className="relative bg-background">
+      {/* Progress Track — hidden on Step 0 */}
+      {currentStep > 0 && (
+        <StepProgressTrack
+          currentStep={currentStep}
+          totalSteps={STEP_COUNT}
+          onStepClick={handleStepClick}
+          onStartOver={handleStartOver}
+          completedSteps={completedSteps}
+        />
+      )}
 
-      {/* Header */}
-      <header className="sticky top-20 z-20 border-b border-white/10 bg-charcoal/80 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <div>
-            <h1 className="text-lg font-bold text-white sm:text-xl">
-              Plan Your Trip
-            </h1>
-            <p className="text-xs text-white/50 sm:text-sm">
-              Step {currentStep} of 3: {STEP_LABELS[currentStep]}
-            </p>
-          </div>
+      {/* Step Content */}
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={`step-${currentStep}`}
+          custom={direction}
+          variants={variants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          className="min-h-[calc(100dvh-5rem)]"
+        >
+          {currentStep === 0 && <IntroStep onStart={() => goToStep(1)} />}
 
-          <div className="flex items-center gap-2">
-            {/* Step indicators */}
-            <div className="hidden items-center gap-2 sm:flex">
-              <StepIndicator
-                step={1}
-                currentStep={currentStep}
-                onClick={() => goToStep(1, 0)}
-              />
-              <div className="h-px w-6 bg-white/20" />
-              <StepIndicator
-                step={2}
-                currentStep={currentStep}
-                onClick={() => (step1Valid ? goToStep(2) : undefined)}
-                disabled={!step1Valid}
-              />
-              <div className="h-px w-6 bg-white/20" />
-              <StepIndicator
-                step={3}
-                currentStep={currentStep}
-                onClick={() =>
-                  step1Valid && step2Valid ? goToStep(3) : undefined
-                }
-                disabled={!step1Valid || !step2Valid}
-              />
-            </div>
-
-            <button
-              type="button"
-              onClick={handleStartOver}
-              className="rounded-lg px-3 py-1.5 text-sm font-medium text-white/50 hover:bg-white/10 hover:text-error"
+          {currentStep === 1 && (
+            <StepShell
+              eyebrow="STEP 01"
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={getNextLabel()}
+              nextDisabled={isNextDisabled}
             >
-              Start Over
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex flex-1">
-        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col items-center">
-          {/* Form Panel */}
-          <div
-            ref={scrollContainerRef}
-            className={cn(
-              "w-full flex-1 overflow-y-auto p-4 pb-24 sm:p-6 lg:pb-6",
-              currentStep === 1 && "max-w-3xl",
-              currentStep === 3 && "max-w-5xl"
-            )}
-          >
-            <AnimatePresence mode="wait" custom={direction}>
-              {currentStep === 1 && (
-                <motion.div
-                  key="step-1"
-                  custom={direction}
-                  initial={prefersReducedMotion ? {} : { opacity: 0, x: direction * 60 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={prefersReducedMotion ? {} : { opacity: 0, x: direction * -60 }}
-                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                >
-                  <PlanStep
-                    onValidityChange={handleStep1ValidityChange}
-                    currentSubStep={currentSubStep}
-                    onSubStepChange={handleSubStepChange}
-                  />
-                </motion.div>
-              )}
-              {currentStep === 2 && (
-                <motion.div
-                  key="step-2"
-                  custom={direction}
-                  initial={prefersReducedMotion ? {} : { opacity: 0, x: direction * 60 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={prefersReducedMotion ? {} : { opacity: 0, x: direction * -60 }}
-                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                >
-                  <RegionStep onValidityChange={handleStep2ValidityChange} />
-                </motion.div>
-              )}
-              {currentStep === 3 && (
-                <motion.div
-                  key="step-3"
-                  custom={direction}
-                  initial={prefersReducedMotion ? {} : { opacity: 0, x: direction * 60 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={prefersReducedMotion ? {} : { opacity: 0, x: direction * -60 }}
-                  transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                >
-                  <ReviewStep
-                    onValidityChange={handleStep3ValidityChange}
-                    onGoToStep={(step, subStep) => goToStep(step as 0 | 1 | 2 | 3, subStep)}
-                  />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </main>
-
-      {/* Mobile Bottom Navigation */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background p-4 lg:hidden">
-        <div className="flex items-center gap-3">
-          {(currentStep > 1 || (currentStep === 1 && currentSubStep > 0)) && (
-            <button
-              type="button"
-              onClick={handleBack}
-              className="rounded-xl border border-border px-5 py-2.5 text-sm font-medium text-foreground-secondary hover:bg-surface"
-            >
-              Back
-            </button>
+              <DateStep onValidityChange={setDatesValid} />
+            </StepShell>
           )}
 
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={isNextDisabled}
-            className={cn(
-              "flex-1 rounded-xl px-6 py-2.5 text-sm font-semibold transition",
-              isNextDisabled
-                ? "cursor-not-allowed bg-surface text-stone"
-                : "bg-brand-primary text-white hover:bg-brand-primary/90"
-            )}
-          >
-            {getNextButtonLabel()}
-          </button>
-        </div>
-      </div>
+          {currentStep === 2 && (
+            <StepShell
+              eyebrow="STEP 02"
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={getNextLabel()}
+              nextDisabled={false}
+            >
+              <EntryPointStep />
+            </StepShell>
+          )}
 
-      {/* Desktop Bottom Navigation */}
-      <div className="sticky bottom-0 hidden border-t border-border bg-background lg:block">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-          <div>
-            {currentStep >= 1 && (
-              <button
-                type="button"
-                onClick={handleBack}
-                className="rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground-secondary hover:bg-surface"
-              >
-                {getBackButtonLabel()}
-              </button>
-            )}
-          </div>
+          {currentStep === 3 && (
+            <StepShell
+              eyebrow="STEP 03"
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={getNextLabel()}
+              nextDisabled={isNextDisabled}
+              fullBleed
+            >
+              <VibeStep onValidityChange={setVibesValid} />
+            </StepShell>
+          )}
 
-          <button
-            type="button"
-            onClick={handleNext}
-            disabled={isNextDisabled}
-            className={cn(
-              "rounded-full px-6 py-2.5 text-sm font-semibold transition",
-              isNextDisabled
-                ? "cursor-not-allowed bg-surface text-stone"
-                : "bg-brand-primary text-white hover:bg-brand-primary/90"
-            )}
-          >
-            {getNextButtonLabel()}
-          </button>
-        </div>
-      </div>
+          {currentStep === 4 && (
+            <StepShell
+              eyebrow="STEP 04"
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={getNextLabel()}
+              nextDisabled={isNextDisabled}
+              fullBleed
+            >
+              <RegionStep onValidityChange={setRegionsValid} />
+            </StepShell>
+          )}
+
+          {currentStep === 5 && (
+            <StepShell
+              eyebrow="STEP 05"
+              onBack={handleBack}
+              onNext={handleNext}
+              nextLabel={getNextLabel()}
+              nextDisabled={isNextDisabled}
+            >
+              <ReviewStep
+                onValidityChange={setReviewValid}
+                onGoToStep={handleGoToStep}
+              />
+            </StepShell>
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
 
-type StepIndicatorProps = {
-  step: Step;
-  currentStep: Step;
-  onClick?: () => void;
-  disabled?: boolean;
+/**
+ * StepShell wraps each step with consistent desktop/mobile navigation.
+ * Desktop: ArrowLineCTA at bottom-right, back link at bottom-left.
+ * Mobile: Fixed bottom bar with back + forward buttons.
+ */
+type StepShellProps = {
+  eyebrow: string;
+  children: React.ReactNode;
+  onBack: () => void;
+  onNext: () => void;
+  nextLabel: string;
+  nextDisabled?: boolean;
+  fullBleed?: boolean;
 };
 
-function StepIndicator({
-  step,
-  currentStep,
-  onClick,
-  disabled,
-}: StepIndicatorProps) {
-  const isActive = step === currentStep;
-  const isCompleted = step < currentStep;
-  const isClickable = onClick && !disabled;
-
+function StepShell({
+  children,
+  onBack,
+  onNext,
+  nextLabel,
+  nextDisabled = false,
+  fullBleed = false,
+}: StepShellProps) {
   return (
-    <button
-      type="button"
-      onClick={isClickable ? onClick : undefined}
-      disabled={disabled}
-      className={cn(
-        "flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition",
-        isActive && "bg-brand-primary text-white",
-        isCompleted && "bg-sage/10 text-sage",
-        !isActive && !isCompleted && "bg-surface text-stone",
-        isClickable && "cursor-pointer hover:opacity-80",
-        disabled && "cursor-not-allowed opacity-50"
-      )}
-    >
-      {isCompleted ? (
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 13l4 4L19 7"
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
+      {/* Content area — grows to fill, page scrolls naturally */}
+      <div
+        className={cn(
+          "flex flex-1 flex-col",
+          !fullBleed && "mx-auto w-full max-w-7xl px-4 pt-24 sm:px-6 lg:px-8 lg:pr-24"
+        )}
+      >
+        {children}
+      </div>
+
+      {/* Navigation — sticky to viewport bottom, detaches at section end */}
+      <div className="sticky bottom-0 z-30 hidden border-t border-border/10 bg-background lg:block">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8 lg:pr-24">
+          <button
+            type="button"
+            onClick={onBack}
+            className="link-reveal cursor-pointer text-xs font-medium uppercase tracking-wide text-stone transition-colors hover:text-foreground-secondary"
+          >
+            Back
+          </button>
+
+          <ArrowLineCTA
+            label={nextLabel}
+            onClick={onNext}
+            disabled={nextDisabled}
           />
-        </svg>
-      ) : (
-        step
-      )}
-    </button>
+        </div>
+      </div>
+
+      {/* Mobile Bottom Bar — sticky */}
+      <div className="sticky bottom-0 z-30 border-t border-border/20 bg-background p-4 lg:hidden">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border text-foreground-secondary transition-colors hover:bg-surface"
+            aria-label="Go back"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={onNext}
+            disabled={nextDisabled}
+            className={cn(
+              "h-12 flex-1 rounded-xl text-sm font-medium uppercase tracking-wider transition",
+              nextDisabled
+                ? "cursor-not-allowed bg-surface text-stone"
+                : "cursor-pointer bg-brand-primary text-white hover:bg-brand-primary/90"
+            )}
+          >
+            {nextLabel}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
