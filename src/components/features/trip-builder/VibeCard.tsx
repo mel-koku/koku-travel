@@ -4,9 +4,8 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { easeCinematic, easeCinematicCSS, staggerSection, springInteraction } from "@/lib/motion";
 import type { LucideIcon } from "lucide-react";
-
-const CINEMATIC_EASE: [number, number, number, number] = [0.215, 0.61, 0.355, 1];
 
 type VibeCardProps = {
   name: string;
@@ -56,8 +55,8 @@ export function VibeCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{
         duration: 0.6,
-        ease: CINEMATIC_EASE,
-        delay: index * 0.12,
+        ease: [...easeCinematic],
+        delay: index * staggerSection,
       }}
     >
       {/* Background image with Ken Burns zoom */}
@@ -67,11 +66,11 @@ export function VibeCard({
           alt={name}
           fill
           className={cn(
-            "object-cover transition-transform duration-[1.4s]",
+            "object-cover transition-transform duration-[1200ms]",
             isHovered || isSelected ? "scale-110" : "scale-100"
           )}
           style={{
-            transitionTimingFunction: "cubic-bezier(0.215, 0.61, 0.355, 1)",
+            transitionTimingFunction: easeCinematicCSS,
           }}
           sizes="(max-width: 1024px) 72vw, 33vw"
         />
@@ -105,7 +104,7 @@ export function VibeCard({
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          transition={{ type: "spring", ...springInteraction }}
           className="absolute right-3 top-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg"
         >
           <Check className="h-4 w-4" strokeWidth={3} />
@@ -123,7 +122,7 @@ export function VibeCard({
               : "w-6 bg-white/30"
           )}
           style={{
-            transitionTimingFunction: "cubic-bezier(0.215, 0.61, 0.355, 1)",
+            transitionTimingFunction: easeCinematicCSS,
           }}
         />
 

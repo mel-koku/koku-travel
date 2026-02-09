@@ -12,6 +12,7 @@ import { ReviewStep } from "./ReviewStep";
 import { StepProgressTrack } from "./StepProgressTrack";
 import { ArrowLineCTA } from "./ArrowLineCTA";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { easePageTransition, durationSlow } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { ChevronLeft } from "lucide-react";
 
@@ -29,11 +30,11 @@ const stepVariants: Variants = {
   }),
   center: {
     clipPath: "inset(0 0 0 0)",
-    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as const },
+    transition: { duration: durationSlow, ease: [...easePageTransition] },
   },
   exit: (dir: number) => ({
     clipPath: dir > 0 ? "inset(0 0 100% 0)" : "inset(100% 0 0 0)",
-    transition: { duration: 0.5, ease: [0.76, 0, 0.24, 1] as const },
+    transition: { duration: 0.5, ease: [...easePageTransition] },
   }),
 };
 

@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { SplitText } from "@/components/ui/SplitText";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { staggerWord } from "@/lib/motion";
 
 type DateFormValues = {
   start?: string;
@@ -128,7 +129,7 @@ export function DateStep({ onValidityChange }: DateStepProps) {
             splitBy="word"
             trigger="load"
             animation="clipY"
-            staggerDelay={0.06}
+            staggerDelay={staggerWord}
           >
             When are you going?
           </SplitText>

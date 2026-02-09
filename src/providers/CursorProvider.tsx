@@ -10,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import { useMotionValue, useSpring } from "framer-motion";
+import { springCursor } from "@/lib/motion";
 
 export type CursorState = "default" | "link" | "view" | "explore" | "read" | "drag" | "hidden";
 
@@ -32,8 +33,8 @@ export function CursorProvider({ children }: { children: ReactNode }) {
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  const smoothX = useSpring(cursorX, { stiffness: 10000, damping: 500, mass: 0.1 });
-  const smoothY = useSpring(cursorY, { stiffness: 10000, damping: 500, mass: 0.1 });
+  const smoothX = useSpring(cursorX, springCursor);
+  const smoothY = useSpring(cursorY, springCursor);
 
   useEffect(() => {
     const isPointerFine = window.matchMedia("(pointer: fine)").matches;

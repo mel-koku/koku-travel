@@ -6,6 +6,7 @@ import Link from "next/link";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useCursor } from "@/providers/CursorProvider";
+import { staggerItem, easeCinematicCSS } from "@/lib/motion";
 import type { Location } from "@/types/location";
 
 type LinkedLocationsProps = {
@@ -53,7 +54,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                     ? "lg:col-span-1 lg:row-span-2"
                     : ""
                 }
-                stagger={i * 0.1}
+                stagger={i * staggerItem}
                 distance={30}
               >
                 <Link
@@ -78,7 +79,8 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                       alt={location.name}
                       fill
                       unoptimized
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                      className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
+                      style={{ transitionTimingFunction: easeCinematicCSS }}
                       sizes={
                         isFeatured
                           ? "(min-width: 1024px) 33vw, 95vw"

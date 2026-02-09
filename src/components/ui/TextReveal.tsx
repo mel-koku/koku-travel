@@ -1,6 +1,7 @@
 "use client";
 
 import { SplitText } from "./SplitText";
+import { staggerWord, durationBase } from "@/lib/motion";
 
 type TextRevealProps = {
   children: string;
@@ -17,7 +18,7 @@ export function TextReveal({
   className = "",
   splitBy = "word",
   animation = "clipY",
-  staggerDelay = 0.05,
+  staggerDelay = staggerWord,
   delay = 0,
   as = "h2",
 }: TextRevealProps) {
@@ -30,7 +31,7 @@ export function TextReveal({
       animation={animation}
       staggerDelay={staggerDelay}
       delay={delay}
-      duration={0.6}
+      duration={durationBase}
     >
       {children}
     </SplitText>

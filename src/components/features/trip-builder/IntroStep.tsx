@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { parallaxSubtle, staggerChar } from "@/lib/motion";
 
 type IntroStepProps = {
   onStart: () => void;
@@ -19,7 +20,7 @@ export function IntroStep({ onStart }: IntroStepProps) {
     offset: ["start start", "end start"],
   });
 
-  const imageY = useTransform(scrollYProgress, [0, 1], ["0%", "15%"]);
+  const imageY = useTransform(scrollYProgress, [0, 1], [parallaxSubtle.from, parallaxSubtle.to]);
 
   return (
     <div
@@ -63,7 +64,7 @@ export function IntroStep({ onStart }: IntroStepProps) {
           className="mt-2 justify-center font-serif text-[clamp(1.5rem,5vw,3rem)] italic text-brand-primary"
           splitBy="char"
           animation="fadeUp"
-          staggerDelay={0.03}
+          staggerDelay={staggerChar}
           delay={0.5}
         >
           starts here

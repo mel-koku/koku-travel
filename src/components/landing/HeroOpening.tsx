@@ -10,6 +10,15 @@ import {
 } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Magnetic } from "@/components/ui/Magnetic";
+import {
+  easeReveal,
+  easePageTransition,
+  parallaxHero,
+  durationSlow,
+  durationBase,
+  durationCinematic,
+  durationEpic,
+} from "@/lib/motion";
 
 type HeroOpeningProps = {
   locationCount: number;
@@ -30,7 +39,7 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
   });
 
   // Image scale: starts zoomed in, scales to fill
-  const imageScale = useTransform(scrollYProgress, [0, 0.4], [1.3, 1]);
+  const imageScale = useTransform(scrollYProgress, [0, 0.4], [parallaxHero.from, parallaxHero.to]);
   // Clip-path: starts fully hidden (50 = zero visible area), expands to full
   const clipInset = useTransform(scrollYProgress, [0, 0.4], [50, 0]);
   // Text opacity: "KOKU" fades out during reveal
@@ -58,8 +67,8 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
       // scrollYProgress 0.4 = full reveal; container is 200vh, scroll range is 200vh
       const targetScroll = window.innerHeight * 0.8;
       animate(window.scrollY, targetScroll, {
-        duration: 1.4,
-        ease: [0.45, 0, 0.15, 1],
+        duration: durationCinematic,
+        ease: easePageTransition,
         onUpdate: (v) => window.scrollTo(0, v),
         onComplete: () => {
           isAutoScrolling.current = false;
@@ -196,8 +205,8 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
               initial={{ y: "125%" }}
               animate={mounted ? { y: "0%" } : { y: "125%" }}
               transition={{
-                duration: 0.9,
-                ease: [0.25, 0.1, 0.25, 1],
+                duration: durationSlow,
+                ease: easeReveal,
                 delay: 0.3,
               }}
               className="font-serif text-[clamp(5rem,25vw,16rem)] italic leading-[0.85] tracking-display text-foreground"
@@ -212,8 +221,8 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
               initial={{ y: "100%" }}
               animate={mounted ? { y: "0%" } : { y: "100%" }}
               transition={{
-                duration: 0.7,
-                ease: [0.25, 0.1, 0.25, 1],
+                duration: durationBase,
+                ease: easeReveal,
                 delay: 1.1,
               }}
               className="text-lg text-foreground-secondary sm:text-xl"
@@ -288,7 +297,7 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
               <motion.div
                 animate={{ y: [0, 48, 0] }}
                 transition={{
-                  duration: 2.5,
+                  duration: durationEpic,
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}

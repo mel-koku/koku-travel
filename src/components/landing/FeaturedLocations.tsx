@@ -7,6 +7,7 @@ import { useRef, useState } from "react";
 import { AnimatePresence, motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { easeCinematicCSS } from "@/lib/motion";
 
 import type { Location } from "@/types/location";
 
@@ -157,7 +158,8 @@ function HorizontalLocationCard({
             alt={location.name}
             fill
             unoptimized
-            className="object-cover transition-transform duration-700 group-hover:-translate-y-2"
+            className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
+            style={{ transitionTimingFunction: easeCinematicCSS }}
             sizes="50vw"
           />
         </div>

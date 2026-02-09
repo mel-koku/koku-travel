@@ -7,6 +7,7 @@ import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useCursor } from "@/providers/CursorProvider";
 import type { GuideSummary } from "@/types/guide";
+import { staggerItem, easeCinematicCSS } from "@/lib/motion";
 
 type FeaturedGuidesProps = {
   guides: GuideSummary[];
@@ -76,7 +77,7 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
 
           {/* Stacked guides */}
           {rest.map((guide, idx) => (
-            <ScrollReveal key={guide.id} delay={0.25 + idx * 0.12} distance={50}>
+            <ScrollReveal key={guide.id} delay={0.25 + idx * staggerItem} distance={50}>
               <GuideCard guide={guide} index={idx + 1} />
             </ScrollReveal>
           ))}
@@ -116,7 +117,8 @@ function GuideCard({
           src={imageSrc || "/placeholder.jpg"}
           alt={guide.title}
           fill
-          className="object-cover transition-all duration-700 group-hover:brightness-110"
+          className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
+          style={{ transitionTimingFunction: easeCinematicCSS }}
           sizes={
             featured
               ? "(min-width: 1024px) 66vw, 100vw"

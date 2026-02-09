@@ -2,6 +2,7 @@
 
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef, type ReactNode } from "react";
+import { easeReveal, durationSlow } from "@/lib/motion";
 
 type ScrollRevealProps = {
   children: ReactNode;
@@ -30,7 +31,7 @@ export function ScrollReveal({
   className = "",
   direction = "up",
   distance = 40,
-  duration = 0.7,
+  duration = durationSlow,
   delay = 0,
   once = true,
   margin = "-10%",
@@ -71,7 +72,7 @@ export function ScrollReveal({
       transition={{
         duration,
         delay: delay + stagger,
-        ease: [0.33, 1, 0.68, 1],
+        ease: easeReveal,
       }}
     >
       {children}

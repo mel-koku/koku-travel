@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCursor } from "@/providers/CursorProvider";
+import { easeCinematicCSS } from "@/lib/motion";
 import type { Guide } from "@/types/guide";
 import type { GuideSummary } from "@/types/guide";
 
@@ -59,7 +60,8 @@ export function GuideFooter({ guide, relatedGuide }: GuideFooterProps) {
                 src={relatedGuide.featuredImage}
                 alt={relatedGuide.title}
                 fill
-                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
+                style={{ transitionTimingFunction: easeCinematicCSS }}
                 sizes="(min-width: 1280px) 80vw, 95vw"
               />
               {/* Gradient overlay */}

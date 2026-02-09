@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useCallback, useState, useRef, useMemo } from "react";
+import { easeReveal, durationFast } from "@/lib/motion";
 import type { Location, LocationDetails } from "@/types/location";
 import { useLenis } from "@/providers/LenisProvider";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
@@ -140,7 +141,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         initial={{ x: "100%" }}
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
-        transition={{ duration: 0.3, ease: [0.33, 1, 0.68, 1] }}
+        transition={{ duration: durationFast, ease: easeReveal }}
       >
         {/* Close button */}
         <button

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useInView, animate } from "framer-motion";
+import { easeReveal } from "@/lib/motion";
 
 type AnimatedNumberProps = {
   value: number;
@@ -25,7 +26,7 @@ export function AnimatedNumber({
 
     const controls = animate(0, value, {
       duration,
-      ease: [0.25, 0.1, 0.25, 1],
+      ease: easeReveal,
       onUpdate: (latest) => setDisplayValue(Math.round(latest)),
     });
 
