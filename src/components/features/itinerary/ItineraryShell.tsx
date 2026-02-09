@@ -27,6 +27,7 @@ import {
   type ReplacementCandidate,
 } from "@/hooks/useReplacementCandidates";
 import { REGIONS } from "@/data/regions";
+import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult } from "@/hooks/useSmartPromptActions";
@@ -118,11 +119,12 @@ export const ItineraryShell = ({
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
-  const [isOptimizing, setIsOptimizing] = useState(false);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
   // Ref to store scheduleUserPlanning for use in handleReplaceSelect (avoids initialization order issues)
   const scheduleUserPlanningRef = useRef<((next: Itinerary) => void) | null>(null);
+  // When true, skip auto-optimization in scheduleUserPlanning (e.g. after drag reorder)
+  const skipAutoOptimizeRef = useRef(false);
 
   // Mutation hook for fetching replacement candidates
   const replacementMutation = useReplacementCandidates();
@@ -321,7 +323,7 @@ export const ItineraryShell = ({
 
       planTimeoutRef.current = window.setTimeout(() => {
         planTimeoutRef.current = null;
-        const target = pendingPlanRef.current;
+        let target = pendingPlanRef.current;
         if (!target) {
           if (planningRequestRef.current === runId && isMountedRef.current) {
             setIsPlanning(false);
@@ -344,6 +346,32 @@ export const ItineraryShell = ({
 
         setPlanningError(null);
         setIsPlanning(true);
+
+        // Auto-optimize route order before replanning (unless skipped for drag reorder)
+        if (skipAutoOptimizeRef.current) {
+          skipAutoOptimizeRef.current = false;
+        } else {
+          const startPoint = tripBuilderData?.entryPoint;
+          if (startPoint) {
+            let optimized = false;
+            const nextDays = target.days.map((day) => {
+              const result = optimizeRouteOrder(day.activities, startPoint);
+              if (!result.orderChanged) return day;
+              optimized = true;
+              const activityMap = new Map(day.activities.map((a) => [a.id, a]));
+              const reordered = result.order
+                .map((id) => activityMap.get(id))
+                .filter((a): a is ItineraryActivity => a !== undefined);
+              return { ...day, activities: reordered };
+            });
+            if (optimized) {
+              target = { ...target, days: nextDays };
+              pendingPlanRef.current = target;
+              // Also update the visual model immediately so user sees the reorder
+              setModelState(target);
+            }
+          }
+        }
 
         const dayEntryPointsMap = buildDayEntryPointsMap(target);
         const plannerOptions = tripBuilderData?.dayStartTime
@@ -624,36 +652,6 @@ export const ItineraryShell = ({
     });
   }, []);
 
-  const handleOptimizeRoute = useCallback(async () => {
-    if (!currentDay || isOptimizing) return;
-
-    setIsOptimizing(true);
-    try {
-      // Use trip entry point as start (same for all days)
-      const startPoint = tripBuilderData?.entryPoint;
-
-      const response = await fetch("/api/itinerary/optimize-route", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ day: currentDay, startPoint }),
-      });
-
-      const data = await response.json();
-      if (data.optimized && data.day) {
-        // Update model with optimized day
-        const nextDays = model.days.map((d, i) =>
-          i === safeSelectedDay ? data.day : d
-        );
-        const nextItinerary = { ...model, days: nextDays };
-        scheduleUserPlanning(nextItinerary);
-      }
-    } catch (error) {
-      logger.error("Failed to optimize route", error);
-    } finally {
-      setIsOptimizing(false);
-    }
-  }, [currentDay, isOptimizing, safeSelectedDay, tripBuilderData, model, scheduleUserPlanning]);
-
   // Wrapper for onAcceptSuggestion - the prop change from AppState will trigger
   // replanning via the serializedItinerary effect
   const handleAcceptSuggestion = useCallback(
@@ -732,24 +730,8 @@ export const ItineraryShell = ({
       <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
-          {/* Day-level actions */}
-          <div className="flex items-center gap-2 border-b border-border bg-background p-3 lg:rounded-t-2xl lg:border lg:border-b-0">
-            <button
-              onClick={handleOptimizeRoute}
-              disabled={isOptimizing || !currentDay?.activities?.length}
-              className="rounded-xl border border-border bg-background px-3 py-2 text-sm font-medium text-foreground shadow-sm transition hover:bg-surface disabled:opacity-50"
-              title="Optimize route order to minimize travel"
-            >
-              {isOptimizing ? (
-                <span className="animate-pulse">Optimizing...</span>
-              ) : (
-                "Optimize Route"
-              )}
-            </button>
-          </div>
-
           {/* Activities List */}
-          <div data-itinerary-activities className="relative flex-1 overflow-y-auto border-border bg-background p-3 lg:rounded-b-2xl lg:border lg:border-t-0">
+          <div data-itinerary-activities className="relative flex-1 overflow-y-auto border-border bg-background p-3 lg:rounded-2xl lg:border">
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
@@ -799,6 +781,7 @@ export const ItineraryShell = ({
                 conflicts={currentDayConflicts}
                 conflictsResult={conflictsResult}
                 guide={currentDayGuide}
+                onBeforeDragReorder={() => { skipAutoOptimizeRef.current = true; }}
               />
             ) : (
               <p className="text-sm text-stone">
