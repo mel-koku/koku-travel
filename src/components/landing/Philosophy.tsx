@@ -58,7 +58,7 @@ export function Philosophy({ locationCount }: PhilosophyProps) {
         {/* Short statement */}
         <SplitText
           as="h2"
-          className="mx-auto mt-6 max-w-2xl justify-center font-serif text-2xl font-medium leading-snug tracking-heading text-white sm:text-3xl lg:text-4xl"
+          className="mx-auto mt-6 max-w-2xl justify-center font-serif italic text-2xl leading-snug tracking-heading text-white sm:text-3xl lg:text-4xl"
           splitBy="word"
           animation="clipY"
           staggerDelay={0.04}

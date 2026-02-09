@@ -49,7 +49,7 @@ export function Section({
         {(title || description) && (
           <div className={headingBlockSpacing}>
             {title && (
-              <h2 className="text-3xl font-semibold tracking-tight">{title}</h2>
+              <h2 className="font-serif italic text-3xl tracking-tight">{title}</h2>
             )}
             {description && (
               <p className="text-foreground-secondary max-w-2xl">{description}</p>

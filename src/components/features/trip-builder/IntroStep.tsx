@@ -50,7 +50,7 @@ export function IntroStep({ onStart }: IntroStepProps) {
       <div className="relative z-10 mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
         <SplitText
           as="h1"
-          className="justify-center font-serif text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
+          className="justify-center font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
           splitBy="word"
           animation="clipY"
           staggerDelay={0.04}

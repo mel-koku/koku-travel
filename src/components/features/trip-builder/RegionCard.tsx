@@ -109,7 +109,7 @@ export function RegionCard({
 
         {/* Region Name & Tagline Overlay - Bottom */}
         <div className="absolute inset-x-0 bottom-0 p-4">
-          <h3 className="font-serif text-xl font-bold text-white drop-shadow-lg sm:text-2xl">
+          <h3 className="font-serif italic text-xl text-white drop-shadow-lg sm:text-2xl">
             {region.name}
           </h3>
           <p className="mt-0.5 text-sm text-white/90 drop-shadow-md">

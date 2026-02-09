@@ -75,7 +75,7 @@ export default function WishlistShell() {
 
             <SplitText
               as="h2"
-              className="mt-8 justify-center font-serif text-2xl text-foreground sm:text-3xl"
+              className="mt-8 justify-center font-serif italic text-2xl text-foreground sm:text-3xl"
               splitBy="word"
               animation="clipY"
               staggerDelay={0.06}

@@ -94,7 +94,7 @@ export function GuideHeroSpread({ guide }: GuideHeroSpreadProps) {
             {/* Title */}
             <SplitText
               as="h2"
-              className="mt-4 font-serif text-3xl leading-snug text-white/90 sm:text-4xl lg:text-5xl"
+              className="mt-4 font-serif italic text-3xl leading-snug text-white/90 sm:text-4xl lg:text-5xl"
               splitBy="word"
               animation="clipY"
               staggerDelay={0.04}
