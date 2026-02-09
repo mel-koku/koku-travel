@@ -212,6 +212,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
               onNext={handleNext}
               nextLabel={getNextLabel()}
               nextDisabled={isNextDisabled}
+              fullBleed
             >
               <RegionStep onValidityChange={setRegionsValid} />
             </StepShell>
