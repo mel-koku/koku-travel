@@ -141,6 +141,12 @@ export default function Header() {
       return;
     }
 
+    // Explore page: always keep header visible (CategoryBar is sticky below it)
+    if (pathname === "/explore") {
+      setIsVisible(true);
+      return;
+    }
+
     // Landing page: stay hidden until user scrolls past hero title
     if (isLandingPage && scrollProgress < 0.025) {
       setHeroRevealed(false);
@@ -185,7 +191,7 @@ export default function Header() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [scrollProgress, direction, isMenuOpen, isLandingPage, heroRevealed]);
+  }, [scrollProgress, direction, isMenuOpen, isLandingPage, pathname, heroRevealed]);
 
   const handleMenuToggle = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
