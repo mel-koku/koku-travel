@@ -30,7 +30,6 @@ import { REGIONS } from "@/data/regions";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult } from "@/hooks/useSmartPromptActions";
-import { GuideToggle } from "./GuideToggle";
 
 // Lazy-load guide builder to keep ~90KB of template data out of the main bundle
 const buildGuideAsync = () => import("@/lib/guide/guideBuilder").then((m) => m.buildGuide);
@@ -120,11 +119,6 @@ export const ItineraryShell = ({
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
   const [isOptimizing, setIsOptimizing] = useState(false);
-  const [guideEnabled, setGuideEnabled] = useState(() => {
-    if (typeof window === "undefined") return true;
-    const stored = localStorage.getItem("koku-guide-visible");
-    return stored === null ? true : stored === "true";
-  });
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
   // Ref to store scheduleUserPlanning for use in handleReplaceSelect (avoids initialization order issues)
@@ -527,13 +521,9 @@ export const ItineraryShell = ({
     return detectItineraryConflicts(model);
   }, [model]);
 
-  // Build guide when enabled (lazy-loaded to avoid bundling ~90KB of template data)
+  // Build guide (lazy-loaded to avoid bundling ~90KB of template data)
   const [tripGuide, setTripGuide] = useState<Awaited<ReturnType<typeof import("@/lib/guide/guideBuilder").buildGuide>> | null>(null);
   useEffect(() => {
-    if (!guideEnabled) {
-      setTripGuide(null);
-      return;
-    }
     let cancelled = false;
     buildGuideAsync().then((buildGuide) => {
       if (!cancelled) {
@@ -541,20 +531,12 @@ export const ItineraryShell = ({
       }
     });
     return () => { cancelled = true; };
-  }, [guideEnabled, model, tripBuilderData]);
+  }, [model, tripBuilderData]);
 
   const currentDayGuide = useMemo(() => {
     if (!tripGuide || !currentDay) return null;
     return tripGuide.days.find((dg) => dg.dayId === currentDay.id) ?? null;
   }, [tripGuide, currentDay]);
-
-  const handleToggleGuide = useCallback(() => {
-    setGuideEnabled((prev) => {
-      const next = !prev;
-      localStorage.setItem("koku-guide-visible", String(next));
-      return next;
-    });
-  }, []);
 
   // Get conflicts for the current day
   const currentDayConflicts = useMemo(() => {
@@ -752,7 +734,6 @@ export const ItineraryShell = ({
         <div className="flex flex-col lg:w-1/2">
           {/* Day-level actions */}
           <div className="flex items-center gap-2 border-b border-border bg-background p-3 lg:rounded-t-2xl lg:border lg:border-b-0">
-            <GuideToggle enabled={guideEnabled} onToggle={handleToggleGuide} />
             <button
               onClick={handleOptimizeRoute}
               disabled={isOptimizing || !currentDay?.activities?.length}
