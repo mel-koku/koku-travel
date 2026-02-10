@@ -176,3 +176,4 @@ enrichment-targets.json
 
 # Seed/enrichment data (already imported into DB, not used at runtime)
 data/
+!src/data/
