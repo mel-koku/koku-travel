@@ -173,6 +173,28 @@ export const tripBuilderConfig = defineType({
       options: { hotspot: true },
       fieldset: "introStep",
     }),
+    defineField({
+      name: "introEyebrow",
+      title: "Eyebrow Text",
+      type: "string",
+      fieldset: "introStep",
+      initialValue: "TRIP BUILDER",
+    }),
+    defineField({
+      name: "introAccentImage",
+      title: "Accent Panel Image",
+      type: "image",
+      options: { hotspot: true },
+      fieldset: "introStep",
+      description: "Featured image displayed in the right panel on desktop.",
+    }),
+    defineField({
+      name: "introImageCaption",
+      title: "Image Caption",
+      type: "string",
+      fieldset: "introStep",
+      initialValue: "Kansai, Japan",
+    }),
 
     // ── Date Step ───────────────────────────────
     defineField({

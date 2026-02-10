@@ -97,6 +97,9 @@ export type TripBuilderConfig = {
   introDescription?: string;
   introCtaText?: string;
   introBackgroundImage?: SanityImageAsset & { url?: string };
+  introEyebrow?: string;
+  introAccentImage?: SanityImageAsset & { url?: string };
+  introImageCaption?: string;
 
   // Date Step
   dateStepHeading?: string;
