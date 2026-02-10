@@ -4,10 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCursor } from "@/providers/CursorProvider";
 import { easeCinematicCSS } from "@/lib/motion";
-import type { Guide } from "@/types/guide";
+import type { GuideType } from "@/types/guide";
 import type { GuideSummary } from "@/types/guide";
 
-const GUIDE_TYPE_LABELS: Record<Guide["guideType"], string> = {
+const GUIDE_TYPE_LABELS: Record<GuideType, string> = {
   itinerary: "Itinerary",
   listicle: "Top Picks",
   deep_dive: "Deep Dive",
@@ -15,11 +15,12 @@ const GUIDE_TYPE_LABELS: Record<Guide["guideType"], string> = {
 };
 
 type GuideFooterProps = {
-  guide: Guide;
+  authorName: string;
+  publishedAt?: string;
   relatedGuide: GuideSummary | null;
 };
 
-export function GuideFooter({ guide, relatedGuide }: GuideFooterProps) {
+export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFooterProps) {
   const { setCursorState, isEnabled } = useCursor();
 
   return (
@@ -28,11 +29,11 @@ export function GuideFooter({ guide, relatedGuide }: GuideFooterProps) {
       <div className="mx-auto max-w-2xl px-6">
         <div className="border-t border-border/50 pt-8">
           <p className="font-mono text-xs uppercase tracking-wide text-stone">
-            Written by {guide.author}
-            {guide.publishedAt && (
+            Written by {authorName}
+            {publishedAt && (
               <>
                 {" \u00b7 "}
-                {new Date(guide.publishedAt).toLocaleDateString("en-US", {
+                {new Date(publishedAt).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
