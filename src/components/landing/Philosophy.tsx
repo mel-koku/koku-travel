@@ -47,7 +47,7 @@ export function Philosophy({ locationCount }: PhilosophyProps) {
       <div className="texture-grain pointer-events-none absolute inset-0" />
 
       {/* Content — centered, compact */}
-      <div className="relative z-10 flex min-h-[80vh] flex-col items-center justify-center px-6 py-24 text-center">
+      <div className="relative z-10 flex min-h-[80vh] flex-col items-center justify-center px-6 py-24 sm:py-32 text-center">
         {/* Eyebrow */}
         <ScrollReveal>
           <p className="text-xs font-medium uppercase tracking-ultra text-white/50">
