@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { CATEGORY_HIERARCHY, getSubTypesForCategories } from "@/data/categoryHierarchy";
@@ -90,6 +90,28 @@ export function FilterPanel({
 
   const isFoodCategorySelected = selectedCategories.includes("food");
   const availableSubTypes = getSubTypesForCategories(selectedCategories);
+
+  // Section expand/collapse state
+  const [expandedSections, setExpandedSections] = useState({
+    sort: true,
+    where: false,
+    what: true,
+    duration: false,
+    price: false,
+    toggles: false,
+  });
+
+  const toggleSection = (key: keyof typeof expandedSections) => {
+    setExpandedSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  // Active filter counts for badges
+  const sortActiveCount = selectedSort !== "recommended" ? 1 : 0;
+  const whereActiveCount = selectedPrefectures.length;
+  const whatActiveCount = selectedCategories.length + selectedSubTypes.length;
+  const durationActiveCount = selectedDuration ? 1 : 0;
+  const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
+  const togglesActiveCount = (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
 
   // Close on escape key
   useEffect(() => {
@@ -193,11 +215,11 @@ export function FilterPanel({
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
-              {/* Search */}
-              <div className="relative">
+            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-1">
+              {/* Search — always visible */}
+              <div className="relative pb-4">
                 <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone"
+                  className="absolute left-3 top-1/2 -translate-y-[calc(50%+8px)] h-4 w-4 text-stone"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -215,7 +237,7 @@ export function FilterPanel({
                 {query && (
                   <button
                     onClick={() => onQueryChange("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-surface"
+                    className="absolute right-3 top-1/2 -translate-y-[calc(50%+8px)] p-1 rounded-full hover:bg-surface"
                     aria-label="Clear search"
                   >
                     <svg className="h-3.5 w-3.5 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -226,8 +248,12 @@ export function FilterPanel({
               </div>
 
               {/* Sort by */}
-              <div>
-                <h3 className="text-xs font-semibold text-stone uppercase tracking-wider mb-3">Sort by</h3>
+              <FilterSection
+                label="Sort by"
+                activeCount={sortActiveCount}
+                isExpanded={expandedSections.sort}
+                onToggle={() => toggleSection("sort")}
+              >
                 <div className="flex flex-wrap gap-2">
                   {sortOptions.map((option) => (
                     <PanelChip
@@ -238,21 +264,16 @@ export function FilterPanel({
                     />
                   ))}
                 </div>
-              </div>
+              </FilterSection>
 
               {/* Where */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-xs font-semibold text-stone uppercase tracking-wider">Where</h3>
-                  {selectedPrefectures.length > 0 && (
-                    <button
-                      onClick={() => onPrefecturesChange([])}
-                      className="text-xs text-stone hover:text-foreground underline underline-offset-2"
-                    >
-                      Clear
-                    </button>
-                  )}
-                </div>
+              <FilterSection
+                label="Where"
+                activeCount={whereActiveCount}
+                isExpanded={expandedSections.where}
+                onToggle={() => toggleSection("where")}
+                onClear={whereActiveCount > 0 ? () => onPrefecturesChange([]) : undefined}
+              >
                 <div className="flex flex-wrap gap-2">
                   {prefectureOptions.map((option) => (
                     <PanelChip
@@ -263,11 +284,15 @@ export function FilterPanel({
                     />
                   ))}
                 </div>
-              </div>
+              </FilterSection>
 
               {/* What type */}
-              <div>
-                <h3 className="text-xs font-semibold text-stone uppercase tracking-wider mb-3">What type</h3>
+              <FilterSection
+                label="What type"
+                activeCount={whatActiveCount}
+                isExpanded={expandedSections.what}
+                onToggle={() => toggleSection("what")}
+              >
                 <div className="flex flex-wrap gap-2 mb-3">
                   {CATEGORY_HIERARCHY.map((category) => (
                     <PanelChip
@@ -295,11 +320,15 @@ export function FilterPanel({
                     </div>
                   </div>
                 )}
-              </div>
+              </FilterSection>
 
               {/* Duration */}
-              <div>
-                <h3 className="text-xs font-semibold text-stone uppercase tracking-wider mb-3">Duration</h3>
+              <FilterSection
+                label="Duration"
+                activeCount={durationActiveCount}
+                isExpanded={expandedSections.duration}
+                onToggle={() => toggleSection("duration")}
+              >
                 <div className="flex flex-wrap gap-2">
                   <PanelChip
                     label="Any"
@@ -317,11 +346,15 @@ export function FilterPanel({
                     />
                   ))}
                 </div>
-              </div>
+              </FilterSection>
 
               {/* Price */}
-              <div>
-                <h3 className="text-xs font-semibold text-stone uppercase tracking-wider mb-3">Price</h3>
+              <FilterSection
+                label="Price"
+                activeCount={priceActiveCount}
+                isExpanded={expandedSections.price}
+                onToggle={() => toggleSection("price")}
+              >
                 <div className="flex flex-wrap gap-2">
                   <PanelChip
                     label="Any"
@@ -339,26 +372,33 @@ export function FilterPanel({
                     />
                   ))}
                 </div>
-              </div>
+              </FilterSection>
 
               {/* Toggles */}
-              <div className="space-y-4">
-                <ToggleOption
-                  label="Wheelchair accessible"
-                  description="Only show places with wheelchair accessible entrance"
-                  checked={wheelchairAccessible}
-                  onChange={onWheelchairAccessibleChange}
-                />
-
-                {isFoodCategorySelected && (
+              <FilterSection
+                label="Accessibility"
+                activeCount={togglesActiveCount}
+                isExpanded={expandedSections.toggles}
+                onToggle={() => toggleSection("toggles")}
+              >
+                <div className="space-y-4">
                   <ToggleOption
-                    label="Vegetarian friendly"
-                    description="Only show restaurants that serve vegetarian food"
-                    checked={vegetarianFriendly}
-                    onChange={onVegetarianFriendlyChange}
+                    label="Wheelchair accessible"
+                    description="Only show places with wheelchair accessible entrance"
+                    checked={wheelchairAccessible}
+                    onChange={onWheelchairAccessibleChange}
                   />
-                )}
-              </div>
+
+                  {isFoodCategorySelected && (
+                    <ToggleOption
+                      label="Vegetarian friendly"
+                      description="Only show restaurants that serve vegetarian food"
+                      checked={vegetarianFriendly}
+                      onChange={onVegetarianFriendlyChange}
+                    />
+                  )}
+                </div>
+              </FilterSection>
             </div>
 
             {/* Footer */}
@@ -386,6 +426,86 @@ export function FilterPanel({
         </>
       )}
     </AnimatePresence>
+  );
+}
+
+type FilterSectionProps = {
+  label: string;
+  activeCount: number;
+  isExpanded: boolean;
+  onToggle: () => void;
+  onClear?: () => void;
+  children: React.ReactNode;
+};
+
+function FilterSection({ label, activeCount, isExpanded, onToggle, onClear, children }: FilterSectionProps) {
+  return (
+    <div className="border-b border-border/50 last:border-b-0">
+      <button
+        onClick={onToggle}
+        className="flex items-center justify-between w-full py-3.5 group"
+        aria-expanded={isExpanded}
+      >
+        <div className="flex items-center gap-2">
+          <h3 className="text-xs font-semibold text-stone uppercase tracking-wider group-hover:text-foreground-secondary transition">
+            {label}
+          </h3>
+          {activeCount > 0 && !isExpanded && (
+            <span className="flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-brand-primary text-white text-[10px] font-bold">
+              {activeCount}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          {onClear && isExpanded && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClear();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.stopPropagation();
+                  onClear();
+                }
+              }}
+              className="text-xs text-stone hover:text-foreground underline underline-offset-2"
+            >
+              Clear
+            </span>
+          )}
+          <svg
+            className={cn(
+              "h-4 w-4 text-stone transition-transform duration-200",
+              isExpanded && "rotate-180"
+            )}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </div>
+      </button>
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.33, 1, 0.68, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="pb-4">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
