@@ -28,7 +28,7 @@ export function MenuTrigger({ isOpen, onToggle, color = "charcoal" }: MenuTrigge
         onClick={onToggle}
         onMouseEnter={() => setCursorState("link")}
         onMouseLeave={() => setCursorState("default")}
-        className="relative flex h-11 w-11 items-center justify-center lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-lg"
+        className="relative flex h-11 w-11 items-center justify-center lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary rounded-xl"
         aria-label={isOpen ? "Close menu" : "Open menu"}
         aria-expanded={isOpen}
       >

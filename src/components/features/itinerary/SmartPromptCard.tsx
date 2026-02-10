@@ -3,7 +3,6 @@
 import {
   Clock,
   Coffee,
-  Loader2,
   Moon,
   Plus,
   ShoppingBag,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
 import type { DetectedGap, GapType } from "@/lib/smartPrompts/gapDetection";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -123,39 +123,23 @@ export function SmartPromptCard({
 
         {/* Actions */}
         <div className="mt-2 flex gap-2">
-          <button
-            type="button"
+          <Button
+            variant="primary"
+            size="chip"
             onClick={() => onAccept(gap)}
             disabled={isLoading}
-            className={cn(
-              "flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1.5 text-xs font-medium text-white transition",
-              isLoading
-                ? "cursor-not-allowed opacity-70"
-                : "hover:bg-brand-primary/90"
-            )}
+            isLoading={isLoading}
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-3 w-3 animate-spin" />
-                Adding...
-              </>
-            ) : (
-              "Add"
-            )}
-          </button>
-          <button
-            type="button"
+            {isLoading ? "Adding..." : "Add"}
+          </Button>
+          <Button
+            variant="brand-ghost"
+            size="chip"
             onClick={() => onSkip(gap)}
             disabled={isLoading}
-            className={cn(
-              "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-stone transition",
-              isLoading
-                ? "cursor-not-allowed opacity-50"
-                : "hover:bg-surface"
-            )}
           >
             Skip
-          </button>
+          </Button>
         </div>
       </div>
     </div>
