@@ -54,7 +54,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
   // CTA fades in early — overlaps with title so user sees it before scrolling past
   const ctaOpacity = useTransform(scrollYProgress, [0.15, 0.28], [0, 1]);
   // Overlay darkens
-  const overlayOpacity = useTransform(scrollYProgress, [0.1, 0.28], [0, 0.7]);
+  const overlayOpacity = useTransform(scrollYProgress, [0.1, 0.28], [0, 0.85]);
   // Derived clip-path string
   const clipPathStyle = useTransform(clipInset, (v) => `inset(${v}% ${v * 0.5}% ${v}% ${v * 0.5}%)`);
   // Scroll indicator fade
@@ -209,27 +209,29 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             priority
             sizes="100vw"
           />
-          {/* Radial vignette — dark center for text, transparent edges for image vibrancy */}
-          <div
-            ref={overlayVignetteRef}
-            className="absolute inset-0"
-            style={{
-              opacity: 0,
-              background:
-                "radial-gradient(ellipse 70% 60% at 50% 55%, rgba(31,26,20,0.85) 0%, rgba(31,26,20,0.40) 50%, rgba(31,26,20,0.10) 100%)",
-            }}
-          />
-          {/* Bottom gradient — grounds the lower edge */}
-          <div
-            ref={overlayGradientRef}
-            className="absolute inset-0"
-            style={{
-              opacity: 0,
-              background:
-                "linear-gradient(to top, rgba(31,26,20,0.60) 0%, transparent 40%)",
-            }}
-          />
         </motion.div>
+
+        {/* Overlay layers — outside clip-path container to avoid WAAPI interference */}
+        {/* Radial vignette — dark center for text, transparent edges for image vibrancy */}
+        <div
+          ref={overlayVignetteRef}
+          className="absolute inset-0"
+          style={{
+            opacity: 0,
+            background:
+              "radial-gradient(ellipse 70% 60% at 50% 55%, rgba(31,26,20,0.92) 0%, rgba(31,26,20,0.55) 50%, rgba(31,26,20,0.15) 100%)",
+          }}
+        />
+        {/* Bottom gradient — grounds the lower edge */}
+        <div
+          ref={overlayGradientRef}
+          className="absolute inset-0"
+          style={{
+            opacity: 0,
+            background:
+              "linear-gradient(to top, rgba(31,26,20,0.75) 0%, transparent 45%)",
+          }}
+        />
 
         {/* Layer 2: Typography wall */}
         <div
@@ -290,7 +292,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             className="flex flex-col items-center"
             style={{
               background:
-                "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(31,26,20,0.25) 0%, transparent 70%)",
+                "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(31,26,20,0.50) 0%, transparent 70%)",
               padding: "3rem 2rem",
             }}
           >
