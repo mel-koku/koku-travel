@@ -1,4 +1,5 @@
 import { ComponentPropsWithoutRef } from "react";
+import Image from "next/image";
 
 import { Badge, BadgeTone, Tag } from "@/components/ui/Badge";
 import { Card, CardContent } from "@/components/ui/Card";
@@ -36,11 +37,12 @@ export const LocationCard = ({
     {...rest}
   >
     <div className="relative h-48 bg-surface">
-      <div
-        className="absolute inset-0 bg-cover bg-center"
-        style={{ backgroundImage: `url(${imageUrl})` }}
-        role="presentation"
-        aria-hidden="true"
+      <Image
+        src={imageUrl}
+        alt={title}
+        fill
+        className="object-cover"
+        sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/10 to-transparent" />
 

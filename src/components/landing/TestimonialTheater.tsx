@@ -51,6 +51,7 @@ export function TestimonialTheater() {
           testimonial={testimonial}
           index={index}
           flip={index % 2 === 1}
+          priority={index === 0}
         />
       ))}
     </section>
@@ -61,10 +62,12 @@ function TestimonialSpread({
   testimonial,
   index,
   flip,
+  priority = false,
 }: {
   testimonial: (typeof testimonials)[number];
   index: number;
   flip: boolean;
+  priority?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -103,6 +106,7 @@ function TestimonialSpread({
             fill
             className="object-cover"
             sizes="(min-width: 1024px) 50vw, 100vw"
+            priority={priority}
           />
         </motion.div>
         {/* Subtle edge gradient toward the text side */}

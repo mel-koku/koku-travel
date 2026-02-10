@@ -130,43 +130,52 @@ export default function Header() {
   // On landing page, header starts hidden and reveals after hero scroll
   const [heroRevealed, setHeroRevealed] = useState(!isLandingPage);
 
-  // Scroll-aware visibility with debounce
+  // Track scroll progress and direction refs for stable access
+  const lastDirectionRef = useRef(direction);
+  const scrollProgressRef = useRef(scrollProgress);
+  useEffect(() => { scrollProgressRef.current = scrollProgress; }, [scrollProgress]);
+
+  // Hero reveal tracking (separate from direction-based hide/show)
+  useEffect(() => {
+    if (!isLandingPage) {
+      if (!heroRevealed) setHeroRevealed(true);
+      return;
+    }
+    if (scrollProgress < 0.025) {
+      setHeroRevealed(false);
+    } else if (!heroRevealed) {
+      setHeroRevealed(true);
+    }
+  }, [isLandingPage, scrollProgress, heroRevealed]);
+
+  // Direction-based hide/show — only fires when direction actually changes
   useEffect(() => {
     if (isMenuOpen) {
       setIsVisible(true);
       return;
     }
 
-    // Explore/Guides/Itinerary: always keep header visible (sticky sub-nav/map panels depend on it)
+    // Pages with sticky sub-nav: always visible
     if (pathname === "/explore" || pathname === "/guides" || pathname.startsWith("/itinerary")) {
       setIsVisible(true);
       return;
     }
 
-    // Landing page: stay hidden until user scrolls past hero title
-    if (isLandingPage && scrollProgress < 0.025) {
-      setHeroRevealed(false);
+    // Landing page hero zone: keep visible
+    if (isLandingPage && scrollProgressRef.current < 0.08) {
       setIsVisible(true);
       return;
-    }
-
-    // Landing page: just revealed — keep visible through the hero section
-    // Don't let scroll-down-to-hide kick in while still in the hero zone
-    if (isLandingPage && scrollProgress < 0.08) {
-      if (!heroRevealed) setHeroRevealed(true);
-      setIsVisible(true);
-      return;
-    }
-
-    if (isLandingPage && !heroRevealed) {
-      setHeroRevealed(true);
     }
 
     // Always visible at top (non-landing pages)
-    if (!isLandingPage && scrollProgress < 0.01) {
+    if (!isLandingPage && scrollProgressRef.current < 0.01) {
       setIsVisible(true);
       return;
     }
+
+    // Only act when direction actually changes
+    if (direction === lastDirectionRef.current) return;
+    lastDirectionRef.current = direction;
 
     if (debounceRef.current) {
       clearTimeout(debounceRef.current);
@@ -174,10 +183,8 @@ export default function Header() {
 
     debounceRef.current = setTimeout(() => {
       if (direction === 1) {
-        // Scrolling down → hide
         setIsVisible(false);
       } else if (direction === -1) {
-        // Scrolling up → show
         setIsVisible(true);
       }
     }, 50);
@@ -187,7 +194,7 @@ export default function Header() {
         clearTimeout(debounceRef.current);
       }
     };
-  }, [scrollProgress, direction, isMenuOpen, isLandingPage, pathname, heroRevealed]);
+  }, [direction, isMenuOpen, isLandingPage, pathname]);
 
   const handleMenuToggle = useCallback(() => {
     setIsMenuOpen((prev) => !prev);

@@ -115,7 +115,6 @@ export const EditorialCard = memo(function EditorialCard({
             src={imageSrc || FALLBACK_IMAGE}
             alt={location.name}
             fill
-            unoptimized
             className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.04]"
             style={{ transitionTimingFunction: easeCinematicCSS }}
             sizes={

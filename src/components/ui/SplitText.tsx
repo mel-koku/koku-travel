@@ -130,7 +130,6 @@ export function SplitText({
                       transition: { duration, ease: easeReveal, delay: delay + char.index * staggerDelay },
                     } : anim!.hidden}
                     className="inline-block"
-                    style={{ willChange: "transform, opacity" }}
                   >
                     {char.content}
                   </motion.span>
@@ -144,7 +143,6 @@ export function SplitText({
                       transition: { duration, ease: easeReveal, delay: delay + word.spaceIndex * staggerDelay },
                     } : anim!.hidden}
                     className="inline-block"
-                    style={{ willChange: "transform, opacity" }}
                   >
                     {"\u00A0"}
                   </motion.span>
@@ -157,7 +155,6 @@ export function SplitText({
               key={item.key}
               variants={itemVariants}
               className="mr-[0.3em] inline-block"
-              style={{ willChange: "transform, opacity" }}
               aria-hidden
             >
               {item.content}
