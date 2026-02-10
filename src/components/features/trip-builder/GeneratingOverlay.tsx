@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { staggerWord, easeReveal } from "@/lib/motion";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
-const STATUS_MESSAGES = [
+const DEFAULT_STATUS_MESSAGES = [
   "Reading your travel style...",
   "Mapping the best routes...",
   "Fitting the pieces together...",
@@ -14,15 +15,22 @@ const STATUS_MESSAGES = [
 
 const MESSAGE_INTERVAL = 2500;
 
-export function GeneratingOverlay() {
+type GeneratingOverlayProps = {
+  sanityConfig?: TripBuilderConfig;
+};
+
+export function GeneratingOverlay({ sanityConfig }: GeneratingOverlayProps) {
   const [messageIndex, setMessageIndex] = useState(0);
+  const messages = sanityConfig?.generatingMessages?.length
+    ? sanityConfig.generatingMessages
+    : DEFAULT_STATUS_MESSAGES;
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setMessageIndex((prev) => (prev + 1) % STATUS_MESSAGES.length);
+      setMessageIndex((prev) => (prev + 1) % messages.length);
     }, MESSAGE_INTERVAL);
     return () => clearInterval(interval);
-  }, []);
+  }, [messages.length]);
 
   return (
     <motion.div
@@ -45,7 +53,7 @@ export function GeneratingOverlay() {
           staggerDelay={staggerWord}
           delay={0.1}
         >
-          Crafting your journey
+          {sanityConfig?.generatingHeading ?? "Crafting your journey"}
         </SplitText>
 
         {/* Progress bar */}
@@ -69,7 +77,7 @@ export function GeneratingOverlay() {
               transition={{ duration: 0.3 }}
               className="text-sm text-white/60"
             >
-              {STATUS_MESSAGES[messageIndex]}
+              {messages[messageIndex]}
             </motion.p>
           </AnimatePresence>
         </div>

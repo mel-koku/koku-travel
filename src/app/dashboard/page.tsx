@@ -1,5 +1,6 @@
 import { getAuthUser } from "@/lib/auth/middleware";
 import { DashboardClient } from "./DashboardClient";
+import { getPagesContent } from "@/lib/sanity/contentService";
 
 // Force dynamic rendering because we use server-side authentication
 export const dynamic = "force-dynamic";
@@ -9,12 +10,15 @@ export const dynamic = "force-dynamic";
  * Shows appropriate content based on authentication state without redirecting.
  */
 export default async function DashboardPage() {
-  // Check auth state without redirecting - allows guests to view dashboard
-  const authUser = await getAuthUser();
+  const [authUser, content] = await Promise.all([
+    getAuthUser(),
+    getPagesContent(),
+  ]);
 
   return (
     <DashboardClient
       initialAuthUser={authUser ? { id: authUser.id, email: authUser.email } : null}
+      content={content ?? undefined}
     />
   );
 }

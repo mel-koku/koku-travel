@@ -4,6 +4,7 @@ const SINGLETON_IDS: Record<string, string> = {
   siteSettings: "siteSettings",
   landingPage: "landingPage",
   tripBuilderConfig: "tripBuilderConfig",
+  pagesContent: "pagesContent",
 };
 
 function singletonEditor(S: StructureBuilder, typeName: string, title: string) {
@@ -31,6 +32,7 @@ export const deskStructure = (S: StructureBuilder) =>
               singletonEditor(S, "landingPage", "Landing Page"),
               singletonEditor(S, "siteSettings", "Footer & Settings"),
               singletonEditor(S, "tripBuilderConfig", "Trip Builder Config"),
+              singletonEditor(S, "pagesContent", "Pages Content"),
             ])
         ),
 

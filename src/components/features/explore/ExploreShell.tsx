@@ -17,6 +17,7 @@ import { CategoryBar } from "./CategoryBar";
 import { ExploreIntro } from "./ExploreIntro";
 import { LocationExpanded } from "./LocationExpanded";
 import { useAggregatedLocations, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
+import type { PagesContent } from "@/types/sanitySiteContent";
 
 const DURATION_FILTERS = [
   {
@@ -110,7 +111,11 @@ const CATEGORY_TABS = CATEGORY_HIERARCHY.map((c) => ({
   label: c.label,
 }));
 
-export function ExploreShell() {
+type ExploreShellProps = {
+  content?: PagesContent;
+};
+
+export function ExploreShell({ content }: ExploreShellProps) {
   const {
     locations,
     total,
@@ -467,7 +472,7 @@ export function ExploreShell() {
   return (
     <div className="min-h-screen bg-background">
       {/* Typographic Intro — always renders immediately for entrance animation */}
-      <ExploreIntro totalCount={total} />
+      <ExploreIntro totalCount={total} content={content} />
 
       {isLoading ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
@@ -490,13 +495,13 @@ export function ExploreShell() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <p className="text-base font-semibold text-error mb-2">Unable to load destinations</p>
+              <p className="text-base font-semibold text-error mb-2">{content?.exploreErrorMessage ?? "Unable to load destinations"}</p>
               <p className="text-sm text-error/80 mb-6">{error}</p>
               <button
                 onClick={() => window.location.reload()}
                 className="rounded-xl bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
               >
-                Try again
+                {content?.exploreRetryText ?? "Try again"}
               </button>
             </div>
           </div>
@@ -557,7 +562,7 @@ export function ExploreShell() {
         {!hasMore && visibleLocations.length > 0 && (
           <div className="py-16 text-center">
             <p className="font-serif italic text-lg text-stone">
-              All {sortedLocations.length.toLocaleString()} places. More coming soon.
+              {(content?.exploreEndMessage ?? "All {count} places. More coming soon.").replace("{count}", sortedLocations.length.toLocaleString())}
             </p>
           </div>
         )}

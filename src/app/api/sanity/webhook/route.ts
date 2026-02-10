@@ -45,6 +45,16 @@ export async function POST(request: NextRequest) {
       return handleSingletonRevalidation(body._type, ["/"]);
     case "tripBuilderConfig":
       return handleSingletonRevalidation(body._type, ["/trip-builder"]);
+    case "pagesContent":
+      return handleSingletonRevalidation(body._type, [
+        "/explore",
+        "/guides",
+        "/guides/authors",
+        "/favorites",
+        "/dashboard",
+        "/account",
+        "/itinerary",
+      ]);
     default:
       return NextResponse.json({ skipped: true, reason: `Unknown type: ${body._type}` });
   }

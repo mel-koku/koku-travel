@@ -7,12 +7,14 @@ import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { parallaxSubtle, staggerChar } from "@/lib/motion";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type IntroStepProps = {
   onStart: () => void;
+  sanityConfig?: TripBuilderConfig;
 };
 
-export function IntroStep({ onStart }: IntroStepProps) {
+export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
@@ -33,7 +35,7 @@ export function IntroStep({ onStart }: IntroStepProps) {
         style={prefersReducedMotion ? {} : { y: imageY }}
       >
         <Image
-          src="/images/regions/kansai-hero.jpg"
+          src={sanityConfig?.introBackgroundImage?.url ?? "/images/regions/kansai-hero.jpg"}
           alt=""
           fill
           className="object-cover opacity-25"
@@ -56,7 +58,7 @@ export function IntroStep({ onStart }: IntroStepProps) {
           staggerDelay={0.04}
           delay={0.15}
         >
-          Your Japan
+          {sanityConfig?.introHeading ?? "Your Japan"}
         </SplitText>
 
         <SplitText
@@ -67,13 +69,12 @@ export function IntroStep({ onStart }: IntroStepProps) {
           staggerDelay={staggerChar}
           delay={0.5}
         >
-          starts here
+          {sanityConfig?.introSubheading ?? "starts here"}
         </SplitText>
 
         <ScrollReveal delay={0.8} distance={15} duration={0.6}>
           <p className="mx-auto mt-6 max-w-xl text-base text-white/70 sm:text-lg">
-            Share what moves you, and we&apos;ll plan the rest — day by day,
-            from places locals actually go.
+            {sanityConfig?.introDescription ?? "Share what moves you, and we'll plan the rest \u2014 day by day, from places locals actually go."}
           </p>
 
           <div className="mt-10">
@@ -83,7 +84,7 @@ export function IntroStep({ onStart }: IntroStepProps) {
                 onClick={onStart}
                 className="h-14 cursor-pointer rounded-xl bg-brand-primary px-12 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-brand-primary/90"
               >
-                Start Planning
+                {sanityConfig?.introCtaText ?? "Start Planning"}
               </button>
             </Magnetic>
           </div>

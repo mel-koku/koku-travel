@@ -9,12 +9,14 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getVibeById } from "@/data/vibes";
 import { REGIONS } from "@/data/regions";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type TripSummaryEditorialProps = {
   onEditDates?: () => void;
   onEditEntryPoint?: () => void;
   onEditVibes?: () => void;
   onEditRegions?: () => void;
+  sanityConfig?: TripBuilderConfig;
 };
 
 export function TripSummaryEditorial({
@@ -22,6 +24,7 @@ export function TripSummaryEditorial({
   onEditEntryPoint,
   onEditVibes,
   onEditRegions,
+  sanityConfig: _sanityConfig,
 }: TripSummaryEditorialProps) {
   const { data } = useTripBuilder();
 

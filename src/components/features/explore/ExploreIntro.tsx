@@ -2,12 +2,14 @@
 
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import type { PagesContent } from "@/types/sanitySiteContent";
 
 type ExploreIntroProps = {
   totalCount: number;
+  content?: PagesContent;
 };
 
-export function ExploreIntro({ totalCount }: ExploreIntroProps) {
+export function ExploreIntro({ totalCount, content }: ExploreIntroProps) {
   return (
     <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-32 pb-4 sm:pt-36 sm:pb-6">
       <p className="font-mono text-xs uppercase tracking-ultra text-stone mb-4">
@@ -23,12 +25,12 @@ export function ExploreIntro({ totalCount }: ExploreIntroProps) {
         duration={0.5}
         delay={0.1}
       >
-        Every temple, backstreet, and the restaurants your guidebook missed.
+        {content?.exploreHeading ?? "Every temple, backstreet, and the restaurants your guidebook missed."}
       </SplitText>
 
       <ScrollReveal delay={0.3} distance={20} duration={0.5}>
         <p className="text-base text-foreground-secondary max-w-2xl mt-6">
-          Filter by what matters. Tap any place to learn more.
+          {content?.exploreSubtitle ?? "Filter by what matters. Tap any place to learn more."}
         </p>
       </ScrollReveal>
     </section>

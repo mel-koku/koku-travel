@@ -101,13 +101,13 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
   const handleStartOver = useCallback(() => {
     if (
       window.confirm(
-        "Start over? Your current selections will be cleared."
+        sanityConfig?.navStartOverConfirmation ?? "Start over? Your current selections will be cleared."
       )
     ) {
       reset();
       goToStep(0);
     }
-  }, [reset, goToStep]);
+  }, [reset, goToStep, sanityConfig?.navStartOverConfirmation]);
 
   const handleStepClick = useCallback(
     (step: number) => {
@@ -129,10 +129,10 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
 
   // Get next button label
   const getNextLabel = () => {
-    if (currentStep === 0) return "Start Planning";
-    if (currentStep === 2) return data.entryPoint ? "Continue" : "Skip";
-    if (currentStep === 5) return "Generate Itinerary";
-    return "Continue";
+    if (currentStep === 0) return sanityConfig?.navStartPlanningLabel ?? "Start Planning";
+    if (currentStep === 2) return data.entryPoint ? (sanityConfig?.navContinueLabel ?? "Continue") : (sanityConfig?.navSkipLabel ?? "Skip");
+    if (currentStep === 5) return sanityConfig?.navGenerateLabel ?? "Generate Itinerary";
+    return sanityConfig?.navContinueLabel ?? "Continue";
   };
 
   // Navigation handlers for ReviewStep to go to specific steps
@@ -169,7 +169,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
           exit="exit"
           className="min-h-[calc(100dvh-5rem)]"
         >
-          {currentStep === 0 && <IntroStep onStart={() => goToStep(1)} />}
+          {currentStep === 0 && <IntroStep onStart={() => goToStep(1)} sanityConfig={sanityConfig} />}
 
           {currentStep === 1 && (
             <StepShell
@@ -177,9 +177,10 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               onBack={handleBack}
               onNext={handleNext}
               nextLabel={getNextLabel()}
+              backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
             >
-              <DateStep onValidityChange={setDatesValid} />
+              <DateStep onValidityChange={setDatesValid} sanityConfig={sanityConfig} />
             </StepShell>
           )}
 
@@ -189,9 +190,10 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               onBack={handleBack}
               onNext={handleNext}
               nextLabel={getNextLabel()}
+              backLabel={sanityConfig?.navBackLabel}
               nextDisabled={false}
             >
-              <EntryPointStep />
+              <EntryPointStep sanityConfig={sanityConfig} />
             </StepShell>
           )}
 
@@ -201,6 +203,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               onBack={handleBack}
               onNext={handleNext}
               nextLabel={getNextLabel()}
+              backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
               fullBleed
             >
@@ -214,6 +217,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               onBack={handleBack}
               onNext={handleNext}
               nextLabel={getNextLabel()}
+              backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
               fullBleed
             >
@@ -227,11 +231,13 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               onBack={handleBack}
               onNext={handleNext}
               nextLabel={getNextLabel()}
+              backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
             >
               <ReviewStep
                 onValidityChange={setReviewValid}
                 onGoToStep={handleGoToStep}
+                sanityConfig={sanityConfig}
               />
             </StepShell>
           )}
@@ -252,6 +258,7 @@ type StepShellProps = {
   onBack: () => void;
   onNext: () => void;
   nextLabel: string;
+  backLabel?: string;
   nextDisabled?: boolean;
   fullBleed?: boolean;
 };
@@ -261,6 +268,7 @@ function StepShell({
   onBack,
   onNext,
   nextLabel,
+  backLabel = "Back",
   nextDisabled = false,
   fullBleed = false,
 }: StepShellProps) {
@@ -284,7 +292,7 @@ function StepShell({
             onClick={onBack}
             className="link-reveal cursor-pointer text-xs font-medium uppercase tracking-wide text-stone transition-colors hover:text-foreground-secondary"
           >
-            Back
+            {backLabel}
           </button>
 
           <ArrowLineCTA
