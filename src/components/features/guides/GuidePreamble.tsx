@@ -1,10 +1,15 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import type { Guide } from "@/types/guide";
+import type { SanityAuthor } from "@/types/sanityGuide";
 
 type GuidePreambleProps = {
-  guide: Guide;
+  summary: string;
+  author: string | SanityAuthor;
+  publishedAt?: string;
+  tags: string[];
   user: { id: string } | null;
   bookmarked: boolean;
   isToggling: boolean;
@@ -12,19 +17,27 @@ type GuidePreambleProps = {
 };
 
 export function GuidePreamble({
-  guide,
+  summary,
+  author,
+  publishedAt,
+  tags,
   user,
   bookmarked,
   isToggling,
   onToggleBookmark,
 }: GuidePreambleProps) {
+  const isAuthorObject = typeof author !== "string";
+  const authorName = isAuthorObject ? author.name : author;
+  const authorPhoto = isAuthorObject ? author.photo?.url : undefined;
+  const authorSlug = isAuthorObject ? author.slug : undefined;
+
   return (
     <section className="py-20 sm:py-28">
       <div className="mx-auto max-w-2xl px-6">
         {/* Summary */}
         <ScrollReveal distance={30} delay={0.1}>
           <p className="font-serif italic text-xl leading-relaxed text-foreground sm:text-2xl">
-            {guide.summary}
+            {summary}
           </p>
         </ScrollReveal>
 
@@ -36,13 +49,35 @@ export function GuidePreamble({
         {/* Author + date + bookmark */}
         <ScrollReveal distance={15} delay={0.3}>
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              {/* Author avatar (Sanity authors only) */}
+              {authorPhoto && (
+                <div className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                  <Image
+                    src={authorPhoto}
+                    alt={authorName}
+                    fill
+                    className="object-cover"
+                    sizes="32px"
+                  />
+                </div>
+              )}
+
               <p className="font-mono text-xs uppercase tracking-wide text-stone">
-                {guide.author}
-                {guide.publishedAt && (
+                {authorSlug ? (
+                  <Link
+                    href={`/guides/authors/${authorSlug}`}
+                    className="link-reveal hover:text-foreground transition-colors"
+                  >
+                    {authorName}
+                  </Link>
+                ) : (
+                  authorName
+                )}
+                {publishedAt && (
                   <>
                     {" \u00b7 "}
-                    {new Date(guide.publishedAt).toLocaleDateString("en-US", {
+                    {new Date(publishedAt).toLocaleDateString("en-US", {
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -88,10 +123,10 @@ export function GuidePreamble({
         </ScrollReveal>
 
         {/* Tags */}
-        {guide.tags.length > 0 && (
+        {tags.length > 0 && (
           <ScrollReveal distance={10} delay={0.4}>
             <div className="mt-6 flex flex-wrap gap-2">
-              {guide.tags.map((tag) => (
+              {tags.map((tag) => (
                 <span
                   key={tag}
                   className="inline-flex items-center rounded-xl border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone"

@@ -5,22 +5,34 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { parallaxHero, durationEpic } from "@/lib/motion";
 
-import type { Guide } from "@/types/guide";
+import type { GuideType } from "@/types/guide";
 
 type GuideHeroProps = {
-  guide: Guide;
+  title: string;
+  featuredImage: string;
+  guideType: GuideType;
+  city?: string;
+  region?: string;
+  readingTimeMinutes?: number;
 };
 
-const GUIDE_TYPE_LABELS: Record<Guide["guideType"], string> = {
+const GUIDE_TYPE_LABELS: Record<GuideType, string> = {
   itinerary: "Itinerary",
   listicle: "Top Picks",
   deep_dive: "Deep Dive",
   seasonal: "Seasonal",
 };
 
-export function GuideHero({ guide }: GuideHeroProps) {
-  const typeLabel = GUIDE_TYPE_LABELS[guide.guideType];
-  const location = guide.city || guide.region || "";
+export function GuideHero({
+  title,
+  featuredImage,
+  guideType,
+  city,
+  region,
+  readingTimeMinutes,
+}: GuideHeroProps) {
+  const typeLabel = GUIDE_TYPE_LABELS[guideType];
+  const location = city || region || "";
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
@@ -42,7 +54,7 @@ export function GuideHero({ guide }: GuideHeroProps) {
   const metaParts = [
     typeLabel,
     location,
-    guide.readingTimeMinutes ? `${guide.readingTimeMinutes} min` : "",
+    readingTimeMinutes ? `${readingTimeMinutes} min` : "",
   ].filter(Boolean);
   const metaLine = metaParts.join(" \u00b7 ");
 
@@ -71,7 +83,7 @@ export function GuideHero({ guide }: GuideHeroProps) {
     <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-20 sm:px-8">
       <div className="mx-auto w-full max-w-5xl">
         <h1 className="font-serif text-3xl italic leading-[1.05] tracking-display text-white sm:text-4xl lg:text-5xl">
-          {guide.title}
+          {title}
         </h1>
         <p className="mt-4 font-mono text-xs uppercase tracking-ultra text-white/50">
           {metaLine}
@@ -85,8 +97,8 @@ export function GuideHero({ guide }: GuideHeroProps) {
       <section className="relative -mt-20 h-screen w-full overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src={guide.featuredImage}
-            alt={guide.title}
+            src={featuredImage}
+            alt={title}
             fill
             className="object-cover"
             priority
@@ -109,8 +121,8 @@ export function GuideHero({ guide }: GuideHeroProps) {
         {/* Image with subtle scale */}
         <motion.div className="absolute inset-0" style={{ scale: imageScale }}>
           <Image
-            src={guide.featuredImage}
-            alt={guide.title}
+            src={featuredImage}
+            alt={title}
             fill
             className="object-cover"
             priority
