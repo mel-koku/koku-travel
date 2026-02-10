@@ -100,7 +100,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
 
   return (
     <motion.nav
-      className="flex h-full flex-col justify-between px-8 py-12 sm:px-12 md:px-16 lg:px-20"
+      className="flex h-full flex-col justify-between px-4 py-12 sm:px-8 md:px-12 lg:px-20"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -140,7 +140,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
                   </span>
                   <span className="relative">
                     <span
-                      className={`font-serif italic text-5xl tracking-tight transition-colors md:text-6xl lg:text-7xl ${
+                      className={`font-serif italic text-3xl sm:text-5xl tracking-tight transition-colors md:text-6xl lg:text-7xl ${
                         isActive ? "text-brand-primary" : "text-foreground group-hover:text-foreground/80"
                       }`}
                     >

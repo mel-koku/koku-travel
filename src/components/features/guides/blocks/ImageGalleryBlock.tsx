@@ -24,12 +24,12 @@ export function ImageGalleryBlock({ value }: ImageGalleryProps) {
 
   const layoutClass =
     layout === "side-by-side"
-      ? "grid grid-cols-2 gap-4"
+      ? "grid grid-cols-1 sm:grid-cols-2 gap-4"
       : layout === "masonry"
         ? "columns-2 gap-4 space-y-4"
         : images.length === 2
-          ? "grid grid-cols-2 gap-4"
-          : "grid grid-cols-2 lg:grid-cols-3 gap-4";
+          ? "grid grid-cols-1 sm:grid-cols-2 gap-4"
+          : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4";
 
   return (
     <ScrollReveal className="mx-auto my-12 max-w-5xl px-4" distance={40}>

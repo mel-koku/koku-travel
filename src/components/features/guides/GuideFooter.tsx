@@ -24,7 +24,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
   const { setCursorState, isEnabled } = useCursor();
 
   return (
-    <footer className="pb-20 sm:pb-28">
+    <footer className="pb-12 sm:pb-20 lg:pb-28">
       {/* Sign-off */}
       <div className="mx-auto max-w-2xl px-6">
         <div className="border-t border-border/50 pt-8">

@@ -82,7 +82,7 @@ export function GuideHeroSpread({ guide }: GuideHeroSpreadProps) {
         </div>
 
         {/* Text half */}
-        <div className="flex items-center bg-charcoal px-8 py-16 sm:px-12 lg:px-16 lg:py-24">
+        <div className="flex items-center bg-charcoal px-4 py-12 sm:px-8 sm:py-16 lg:px-16 lg:py-24">
           <div className="max-w-lg">
             {/* Eyebrow */}
             <ScrollReveal distance={10} delay={0}>

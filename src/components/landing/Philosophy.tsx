@@ -50,7 +50,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
       <div className="texture-grain pointer-events-none absolute inset-0" />
 
       {/* Content — centered, compact */}
-      <div className="relative z-10 flex min-h-[80vh] flex-col items-center justify-center px-6 py-24 sm:py-32 text-center">
+      <div className="relative z-10 flex min-h-[80vh] flex-col items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
         {/* Eyebrow */}
         <ScrollReveal>
           <p className="text-xs font-medium uppercase tracking-ultra text-white/50">
@@ -72,7 +72,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
 
         {/* Inline stats */}
         <ScrollReveal delay={0.3}>
-          <div className="mt-12 flex items-center gap-8 sm:gap-12">
+          <div className="mt-12 flex items-center gap-4 sm:gap-8 md:gap-12">
             <div className="text-center">
               <div className="flex items-baseline justify-center gap-0.5">
                 <AnimatedNumber

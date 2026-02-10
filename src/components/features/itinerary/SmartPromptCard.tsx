@@ -128,7 +128,7 @@ export function SmartPromptCard({
             onClick={() => onAccept(gap)}
             disabled={isLoading}
             className={cn(
-              "flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1 text-xs font-medium text-white transition",
+              "flex items-center gap-1.5 rounded-full bg-brand-primary px-3 py-1.5 text-xs font-medium text-white transition",
               isLoading
                 ? "cursor-not-allowed opacity-70"
                 : "hover:bg-brand-primary/90"
@@ -148,7 +148,7 @@ export function SmartPromptCard({
             onClick={() => onSkip(gap)}
             disabled={isLoading}
             className={cn(
-              "rounded-full border border-border px-3 py-1 text-xs font-medium text-stone transition",
+              "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-stone transition",
               isLoading
                 ? "cursor-not-allowed opacity-50"
                 : "hover:bg-surface"
