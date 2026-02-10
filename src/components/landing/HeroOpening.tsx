@@ -83,7 +83,10 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
         if (titleLayerRef.current) titleLayerRef.current.style.opacity = String(v);
       }),
       ctaOpacity.on("change", (v) => {
-        if (ctaLayerRef.current) ctaLayerRef.current.style.opacity = String(v);
+        if (ctaLayerRef.current) {
+          ctaLayerRef.current.style.opacity = String(v);
+          ctaLayerRef.current.style.pointerEvents = v > 0 ? "auto" : "none";
+        }
       }),
       scrollIndicatorOpacity.on("change", (v) => {
         if (scrollIndicatorRef.current) scrollIndicatorRef.current.style.opacity = String(v);
@@ -280,7 +283,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
         <div
           ref={ctaLayerRef}
           className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
-          style={{ opacity: 0 }}
+          style={{ opacity: 0, pointerEvents: "none" }}
         >
           {/* Subtle radial backdrop behind text group */}
           <div
