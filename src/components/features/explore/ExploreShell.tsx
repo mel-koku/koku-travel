@@ -470,7 +470,7 @@ export function ExploreShell() {
       <ExploreIntro totalCount={total} />
 
       {isLoading ? (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-8">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="h-10 w-full rounded shimmer mb-8" />
           <div className="space-y-10">
             <div className="aspect-[16/9] rounded-xl shimmer" />
@@ -519,7 +519,7 @@ export function ExploreShell() {
       />
 
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Loading more indicator */}
         {activeFilters.length > 0 && hasNextPage && (
           <div className="mb-6">

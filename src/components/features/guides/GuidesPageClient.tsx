@@ -93,7 +93,7 @@ export function GuidesPageClient({ guides }: GuidesPageClientProps) {
       {/* Zone C — Editorial Listing */}
       <section
         aria-label="Travel guides"
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28"
       >
         {listingGuides.length > 0 ? (
           <div className="space-y-16 lg:space-y-24">

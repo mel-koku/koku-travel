@@ -32,7 +32,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-charcoal text-white border-t border-white/10">
-      <div className="mx-auto max-w-7xl px-6 py-20 sm:py-24">
+      <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32">
         {/* Top: Brand + Navigation */}
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           {/* Brand Column */}

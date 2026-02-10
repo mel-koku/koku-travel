@@ -10,7 +10,7 @@ type GuideContentProps = {
 
 export function GuideContent({ body }: GuideContentProps) {
   return (
-    <article className="py-12 sm:py-16">
+    <article className="py-20 sm:py-28">
       <ReactMarkdown
         components={{
           h1: ({ children }) => (
