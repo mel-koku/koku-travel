@@ -129,7 +129,8 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 ## Data & Quality
 
 ### Database
-- **Locations**: ~4,385 in Supabase. Coordinates: `lat`/`lng` columns. Photos in Supabase Storage.
+- **Locations**: ~3,907 in Supabase. Coordinates: `lat`/`lng` columns. Photos in Supabase Storage.
+- **Experiences**: 34 non-place entries (tours, workshops, cruises) in separate `experiences` table — excluded from explore/itinerary
 - **Health Score**: 100/100 (DQ system: `npm run dq audit|fix|report`)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, food, entertainment, market, wellness, viewpoint, bar, transport
 
