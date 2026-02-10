@@ -10,6 +10,7 @@ import { resizePhotoUrl } from "@/lib/google/transformations";
 import { easeCinematicCSS } from "@/lib/motion";
 
 import type { Location } from "@/types/location";
+import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 const LocationExpanded = dynamic(
   () =>
@@ -23,9 +24,10 @@ const LocationExpanded = dynamic(
 
 type FeaturedLocationsProps = {
   locations: Location[];
+  content?: LandingPageContent;
 };
 
-export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
+export function FeaturedLocations({ locations, content }: FeaturedLocationsProps) {
   const [selectedLocation, setSelectedLocation] =
     useState<Location | null>(null);
   const handleClose = () => setSelectedLocation(null);
@@ -90,14 +92,13 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
             >
               <div>
                 <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
-                  Editor&apos;s Picks
+                  {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
                 </p>
                 <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
-                  Places that stay with you
+                  {content?.featuredLocationsHeading ?? "Places that stay with you"}
                 </h2>
                 <p className="mt-4 text-base text-foreground-secondary">
-                  Handpicked locations that represent the best of Japan — from hidden
-                  shrines to neighborhood favorites.
+                  {content?.featuredLocationsDescription ?? "Handpicked locations that represent the best of Japan \u2014 from hidden shrines to neighborhood favorites."}
                 </p>
               </div>
               <Link

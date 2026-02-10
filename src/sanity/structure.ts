@@ -1,9 +1,42 @@
 import type { StructureBuilder } from "sanity/structure";
 
+const SINGLETON_IDS: Record<string, string> = {
+  siteSettings: "siteSettings",
+  landingPage: "landingPage",
+  tripBuilderConfig: "tripBuilderConfig",
+};
+
+function singletonEditor(S: StructureBuilder, typeName: string, title: string) {
+  return S.listItem()
+    .title(title)
+    .id(typeName)
+    .child(
+      S.document()
+        .schemaType(typeName)
+        .documentId(SINGLETON_IDS[typeName]!)
+    );
+}
+
 export const deskStructure = (S: StructureBuilder) =>
   S.list()
     .title("Content")
     .items([
+      // ── Site Content (singletons) ──────────────
+      S.listItem()
+        .title("Site Content")
+        .child(
+          S.list()
+            .title("Site Content")
+            .items([
+              singletonEditor(S, "landingPage", "Landing Page"),
+              singletonEditor(S, "siteSettings", "Footer & Settings"),
+              singletonEditor(S, "tripBuilderConfig", "Trip Builder Config"),
+            ])
+        ),
+
+      S.divider(),
+
+      // ── Guides ─────────────────────────────────
       S.listItem()
         .title("Guides")
         .child(
@@ -48,6 +81,8 @@ export const deskStructure = (S: StructureBuilder) =>
                 ),
             ])
         ),
+
+      // ── Authors ────────────────────────────────
       S.listItem()
         .title("Authors")
         .child(S.documentTypeList("author").title("Authors")),

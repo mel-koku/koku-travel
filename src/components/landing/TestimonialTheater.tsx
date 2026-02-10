@@ -11,8 +11,9 @@ import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { parallaxSection, staggerWord } from "@/lib/motion";
+import type { LandingPageContent } from "@/types/sanitySiteContent";
 
-const testimonials = [
+const defaultTestimonials = [
   {
     quote:
       "We ducked into a ramen shop down a Kyoto backstreet — no English sign, six seats, steam everywhere. Best bowl of our lives.",
@@ -42,7 +43,29 @@ const testimonials = [
   },
 ];
 
-export function TestimonialTheater() {
+type TestimonialData = {
+  quote: string;
+  author: string;
+  location: string;
+  image: string;
+  alt: string;
+};
+
+type TestimonialTheaterProps = {
+  content?: LandingPageContent;
+};
+
+export function TestimonialTheater({ content }: TestimonialTheaterProps) {
+  const testimonials: TestimonialData[] = content?.testimonials?.length
+    ? content.testimonials.map((t) => ({
+        quote: t.quote,
+        author: t.authorName,
+        location: t.authorLocation,
+        image: t.image?.url ?? defaultTestimonials[0]!.image,
+        alt: t.alt,
+      }))
+    : defaultTestimonials;
+
   return (
     <section>
       {testimonials.map((testimonial, index) => (
@@ -64,7 +87,7 @@ function TestimonialSpread({
   flip,
   priority = false,
 }: {
-  testimonial: (typeof testimonials)[number];
+  testimonial: TestimonialData;
   index: number;
   flip: boolean;
   priority?: boolean;

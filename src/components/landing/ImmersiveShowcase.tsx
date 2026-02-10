@@ -10,8 +10,9 @@ import {
 import { useRef, useEffect } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import type { LandingPageContent } from "@/types/sanitySiteContent";
 
-const acts = [
+const defaultActs = [
   {
     number: "01",
     eyebrow: "DISCOVER",
@@ -44,17 +45,45 @@ const acts = [
   },
 ];
 
-export function ImmersiveShowcase() {
-  const prefersReducedMotion = useReducedMotion();
+type ImmersiveShowcaseProps = {
+  content?: LandingPageContent;
+};
 
-  if (prefersReducedMotion) {
-    return <ImmersiveShowcaseMobile />;
+type ActData = {
+  number: string;
+  eyebrow: string;
+  title: string;
+  description: string;
+  image: string;
+  alt: string;
+};
+
+function resolveActs(content?: LandingPageContent): ActData[] {
+  if (content?.showcaseActs?.length === 3) {
+    return content.showcaseActs.map((act) => ({
+      number: act.number,
+      eyebrow: act.eyebrow,
+      title: act.title,
+      description: act.description,
+      image: act.image?.url ?? defaultActs[0]!.image,
+      alt: act.alt,
+    }));
   }
-
-  return <ImmersiveShowcaseDesktop />;
+  return [...defaultActs];
 }
 
-function ImmersiveShowcaseDesktop() {
+export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const acts = resolveActs(content);
+
+  if (prefersReducedMotion) {
+    return <ImmersiveShowcaseMobile acts={acts} />;
+  }
+
+  return <ImmersiveShowcaseDesktop acts={acts} />;
+}
+
+function ImmersiveShowcaseDesktop({ acts }: { acts: ActData[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -83,7 +112,7 @@ function Act({
   index,
   scrollYProgress,
 }: {
-  act: (typeof acts)[number];
+  act: ActData;
   index: number;
   scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
@@ -226,7 +255,7 @@ function Act({
   );
 }
 
-function ImmersiveShowcaseMobile() {
+function ImmersiveShowcaseMobile({ acts }: { acts: ActData[] }) {
   return (
     <section className="bg-background">
       {acts.map((act) => (

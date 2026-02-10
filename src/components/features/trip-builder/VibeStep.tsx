@@ -14,6 +14,7 @@ import { VibeCard } from "./VibeCard";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { staggerWord, easeCinematicCSS } from "@/lib/motion";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 // Custom Torii icon since Lucide doesn't have one
 function ToriiIcon({ className }: { className?: string }) {
@@ -56,11 +57,23 @@ const VIBE_IMAGES: Record<VibeId, string> = {
 
 export type VibeStepProps = {
   onValidityChange?: (isValid: boolean) => void;
+  sanityConfig?: TripBuilderConfig;
 };
 
-export function VibeStep({ onValidityChange }: VibeStepProps) {
+export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
   const { data, setData } = useTripBuilder();
   const [hoveredId, setHoveredId] = useState<VibeId | null>(null);
+
+  // Build Sanity override lookup by vibeId
+  const sanityVibes = sanityConfig?.vibes;
+  const sanityVibeMap = useMemo(() => {
+    if (!sanityVibes?.length) return null;
+    const map = new Map<string, (typeof sanityVibes)[number]>();
+    for (const v of sanityVibes) {
+      map.set(v.vibeId, v);
+    }
+    return map;
+  }, [sanityVibes]);
 
   const selectedVibes = useMemo(() => data.vibes ?? [], [data.vibes]);
   const isMaxSelected = selectedVibes.length >= MAX_VIBE_SELECTION;
@@ -123,7 +136,8 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
           {VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;
-            const Icon = VIBE_ICONS[vibe.icon] ?? Mountain;
+            const sanityVibe = sanityVibeMap?.get(vibe.id);
+            const Icon = VIBE_ICONS[sanityVibe?.icon ?? vibe.icon] ?? Mountain;
             const isHovered = hoveredId === vibe.id;
 
             // Dynamic flex: hovered expands to 2, siblings contract to 0.75, default is 1
@@ -143,9 +157,9 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
                 }}
               >
                 <VibeCard
-                  name={vibe.name}
-                  description={vibe.description}
-                  image={VIBE_IMAGES[vibe.id]}
+                  name={sanityVibe?.name ?? vibe.name}
+                  description={sanityVibe?.description ?? vibe.description}
+                  image={sanityVibe?.image?.url ?? VIBE_IMAGES[vibe.id]}
                   icon={Icon}
                   index={i}
                   isSelected={isSelected}
@@ -167,7 +181,8 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
           {VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;
-            const Icon = VIBE_ICONS[vibe.icon] ?? Mountain;
+            const sanityVibe = sanityVibeMap?.get(vibe.id);
+            const Icon = VIBE_ICONS[sanityVibe?.icon ?? vibe.icon] ?? Mountain;
 
             return (
               <div
@@ -175,9 +190,9 @@ export function VibeStep({ onValidityChange }: VibeStepProps) {
                 className="h-[55vh] w-[72vw] flex-shrink-0 snap-center overflow-hidden rounded-xl"
               >
                 <VibeCard
-                  name={vibe.name}
-                  description={vibe.description}
-                  image={VIBE_IMAGES[vibe.id]}
+                  name={sanityVibe?.name ?? vibe.name}
+                  description={sanityVibe?.description ?? vibe.description}
+                  image={sanityVibe?.image?.url ?? VIBE_IMAGES[vibe.id]}
                   icon={Icon}
                   index={i}
                   isSelected={isSelected}

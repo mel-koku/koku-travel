@@ -6,8 +6,13 @@ import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { parallaxZoomIn, durationBase } from "@/lib/motion";
+import type { LandingPageContent } from "@/types/sanitySiteContent";
 
-export function FinalCTA() {
+type FinalCTAProps = {
+  content?: LandingPageContent;
+};
+
+export function FinalCTA({ content }: FinalCTAProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
@@ -51,7 +56,7 @@ export function FinalCTA() {
             animation="clipY"
             staggerDelay={0.02}
           >
-            Your Japan is waiting
+            {content?.finalCtaHeading ?? "Your Japan is waiting"}
           </SplitText>
 
           <motion.p
@@ -61,7 +66,7 @@ export function FinalCTA() {
             transition={{ duration: durationBase, delay: 0.5 }}
             className="mx-auto mt-8 max-w-md text-base text-white/80"
           >
-            Every trip starts with a single place. Find yours.
+            {content?.finalCtaDescription ?? "Every trip starts with a single place. Find yours."}
           </motion.p>
 
           <motion.div
@@ -77,14 +82,14 @@ export function FinalCTA() {
                 className="relative inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
               >
                 <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
-                <span className="relative">Start Planning</span>
+                <span className="relative">{content?.finalCtaPrimaryText ?? "Start Planning"}</span>
               </a>
             </Magnetic>
             <a
               href="/explore"
               className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"
             >
-              Browse Locations
+              {content?.finalCtaSecondaryText ?? "Browse Locations"}
             </a>
           </motion.div>
 
@@ -95,7 +100,7 @@ export function FinalCTA() {
             transition={{ duration: 0.4, delay: 1 }}
             className="mt-10 text-sm uppercase tracking-wide text-foreground-secondary"
           >
-            Free to use. No account required.
+            {content?.finalCtaSubtext ?? "Free to use. No account required."}
           </motion.p>
         </div>
       </div>

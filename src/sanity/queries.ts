@@ -97,3 +97,108 @@ export const allAuthorsQuery = groq`
     "guideCount": count(*[_type == "guide" && references(^._id) && editorialStatus == "published"])
   }
 `;
+
+/** Landing page singleton with resolved image URLs */
+export const landingPageQuery = groq`
+  *[_type == "landingPage"][0] {
+    heroTagline,
+    heroDescription,
+    heroPrimaryCtaText,
+    heroSecondaryCtaText,
+    "heroImage": heroImage {
+      ...,
+      "url": asset->url
+    },
+    philosophyEyebrow,
+    philosophyHeading,
+    "philosophyImage": philosophyImage {
+      ...,
+      "url": asset->url
+    },
+    philosophyStats,
+    showcaseActs[] {
+      number,
+      eyebrow,
+      title,
+      description,
+      "image": image {
+        ...,
+        "url": asset->url
+      },
+      alt
+    },
+    featuredLocationsEyebrow,
+    featuredLocationsHeading,
+    featuredLocationsDescription,
+    testimonials[] {
+      quote,
+      authorName,
+      authorLocation,
+      "image": image {
+        ...,
+        "url": asset->url
+      },
+      alt
+    },
+    featuredGuidesEyebrow,
+    featuredGuidesHeading,
+    featuredGuidesDescription,
+    finalCtaHeading,
+    finalCtaDescription,
+    finalCtaPrimaryText,
+    finalCtaSecondaryText,
+    finalCtaSubtext,
+    "finalCtaImage": finalCtaImage {
+      ...,
+      "url": asset->url
+    }
+  }
+`;
+
+/** Site settings singleton */
+export const siteSettingsQuery = groq`
+  *[_type == "siteSettings"][0] {
+    brandDescription,
+    newsletterLabel,
+    newsletterButtonText,
+    footerNavColumns[] {
+      title,
+      links[] {
+        label,
+        href
+      }
+    },
+    socialLinks[] {
+      platform,
+      url,
+      label
+    }
+  }
+`;
+
+/** Trip builder config singleton with resolved image URLs */
+export const tripBuilderConfigQuery = groq`
+  *[_type == "tripBuilderConfig"][0] {
+    vibes[] {
+      vibeId,
+      name,
+      description,
+      icon,
+      "image": image {
+        ...,
+        "url": asset->url
+      }
+    },
+    regions[] {
+      regionId,
+      name,
+      tagline,
+      description,
+      highlights,
+      "heroImage": heroImage {
+        ...,
+        "url": asset->url
+      }
+    }
+  }
+`;

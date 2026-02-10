@@ -19,12 +19,19 @@ import {
   durationCinematic,
   durationEpic,
 } from "@/lib/motion";
+import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type HeroOpeningProps = {
   locationCount: number;
+  content?: LandingPageContent;
 };
 
-export function HeroOpening({ locationCount }: HeroOpeningProps) {
+export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
+  const tagline = content?.heroTagline ?? "Beyond the guidebook";
+  const description = (content?.heroDescription ?? "Explore {locationCount}+ places curated by people who actually live here.").replace("{locationCount}", locationCount.toLocaleString());
+  const primaryCta = content?.heroPrimaryCtaText ?? "Start Planning";
+  const secondaryCta = content?.heroSecondaryCtaText ?? "Browse Locations";
+
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
@@ -264,7 +271,7 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
               }}
               className="text-lg text-foreground-secondary sm:text-xl"
             >
-              Beyond the guidebook
+              {tagline}
             </motion.p>
           </div>
         </div>
@@ -291,8 +298,7 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
                   "0 1px 3px rgba(31,26,20,0.5), 0 2px 8px rgba(31,26,20,0.3)",
               }}
             >
-              Explore {locationCount.toLocaleString()}+ places curated by people
-              who actually live here.
+              {description}
             </p>
             <div className="mt-10">
               <Magnetic>
@@ -300,7 +306,7 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
                   href="/trip-builder"
                   className="inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
                 >
-                  Start Planning
+                  {primaryCta}
                 </a>
               </Magnetic>
             </div>
@@ -312,7 +318,7 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
                   "0 1px 2px rgba(31,26,20,0.4), 0 1px 4px rgba(31,26,20,0.2)",
               }}
             >
-              Browse Locations
+              {secondaryCta}
             </a>
           </div>
         </div>
