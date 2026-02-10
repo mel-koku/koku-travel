@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 import { Magnetic } from "@/components/ui/Magnetic";
 import type { SiteSettings } from "@/types/sanitySiteContent";
 
@@ -75,12 +76,9 @@ export default function Footer({ settings }: FooterProps) {
                   className="flex-1 rounded-xl border border-white/20 bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/20"
                 />
                 <Magnetic>
-                  <button
-                    type="button"
-                    className="rounded-xl bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
-                  >
+                  <Button variant="primary">
                     {newsletterButton}
-                  </button>
+                  </Button>
                 </Magnetic>
               </div>
             </div>
@@ -105,6 +103,8 @@ export default function Footer({ settings }: FooterProps) {
                 key={icon.label}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-white/20 text-xs font-semibold uppercase tracking-[0.3em] text-white/60 transition-colors hover:border-white/40 hover:text-white"
                 href={icon.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={icon.label}
               >
                 {icon.label}

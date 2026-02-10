@@ -6,7 +6,6 @@ import {
   ChevronUp,
   Coffee,
   Lightbulb,
-  Loader2,
   Moon,
   Plus,
   Sunrise,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
 import type { DetectedGap, GapType } from "@/lib/smartPrompts/gapDetection";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -134,39 +134,23 @@ export function DaySuggestions({
 
                   {/* Actions */}
                   <div className="flex shrink-0 gap-2">
-                    <button
-                      type="button"
+                    <Button
+                      variant="primary"
+                      size="chip"
                       onClick={() => onAccept(gap)}
                       disabled={isLoading}
-                      className={cn(
-                        "flex items-center gap-1 rounded-full bg-brand-primary px-3 py-1.5 text-xs font-medium text-white transition",
-                        isLoading
-                          ? "cursor-not-allowed opacity-70"
-                          : "hover:bg-brand-primary/90"
-                      )}
+                      isLoading={isLoading}
                     >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                          <span className="sr-only">Adding...</span>
-                        </>
-                      ) : (
-                        "Add"
-                      )}
-                    </button>
-                    <button
-                      type="button"
+                      {isLoading ? <span className="sr-only">Adding...</span> : "Add"}
+                    </Button>
+                    <Button
+                      variant="brand-ghost"
+                      size="chip"
                       onClick={() => onSkip(gap)}
                       disabled={isLoading}
-                      className={cn(
-                        "rounded-full border border-border px-3 py-1.5 text-xs font-medium text-stone transition",
-                        isLoading
-                          ? "cursor-not-allowed opacity-50"
-                          : "hover:bg-surface"
-                      )}
                     >
                       Skip
-                    </button>
+                    </Button>
                   </div>
                 </div>
               );
