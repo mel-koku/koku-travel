@@ -211,11 +211,11 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
             animation="clipY"
             staggerDelay={0.06}
           >
-            Where are you headed?
+            {sanityConfig?.regionStepHeading ?? "Where are you headed?"}
           </SplitText>
 
           <p className="mt-3 text-sm text-white/50 lg:text-base">
-            Choose your destinations. We&apos;ve highlighted the best matches for your travel style.
+            {sanityConfig?.regionStepDescription ?? "Choose your destinations. We've highlighted the best matches for your travel style."}
           </p>
         </div>
 

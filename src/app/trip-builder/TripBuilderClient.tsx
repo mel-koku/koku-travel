@@ -74,7 +74,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
 
       {/* Cinematic generating overlay */}
       <AnimatePresence>
-        {isGenerating && <GeneratingOverlay />}
+        {isGenerating && <GeneratingOverlay sanityConfig={sanityConfig} />}
       </AnimatePresence>
 
       {/* Error toast */}

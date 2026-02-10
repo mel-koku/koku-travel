@@ -9,6 +9,7 @@ import { DatePicker } from "@/components/ui/DatePicker";
 import { SplitText } from "@/components/ui/SplitText";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { staggerWord } from "@/lib/motion";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type DateFormValues = {
   start?: string;
@@ -20,9 +21,10 @@ const MAX_DURATION = 14;
 
 export type DateStepProps = {
   onValidityChange?: (isValid: boolean) => void;
+  sanityConfig?: TripBuilderConfig;
 };
 
-export function DateStep({ onValidityChange }: DateStepProps) {
+export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
   const { data, setData } = useTripBuilder();
 
   const formValues = useMemo<DateFormValues>(
@@ -106,7 +108,7 @@ export function DateStep({ onValidityChange }: DateStepProps) {
           transition={{ duration: 12, repeat: Infinity, repeatType: "reverse", ease: "linear" }}
         >
           <Image
-            src="/images/regions/kansai-hero.jpg"
+            src={sanityConfig?.dateStepBackgroundImage?.url ?? "/images/regions/kansai-hero.jpg"}
             alt=""
             fill
             className="object-cover"
@@ -131,11 +133,11 @@ export function DateStep({ onValidityChange }: DateStepProps) {
             animation="clipY"
             staggerDelay={staggerWord}
           >
-            When are you going?
+            {sanityConfig?.dateStepHeading ?? "When are you going?"}
           </SplitText>
 
           <p className="mt-2 text-sm text-stone">
-            Cherry blossom season, summer festivals, autumn leaves — your dates shape the whole trip. Up to 14 days.
+            {sanityConfig?.dateStepDescription ?? "Cherry blossom season, summer festivals, autumn leaves \u2014 your dates shape the whole trip. Up to 14 days."}
           </p>
 
           <div className="mt-8 flex flex-col gap-6">
@@ -146,7 +148,7 @@ export function DateStep({ onValidityChange }: DateStepProps) {
               render={({ field }) => (
                 <DatePicker
                   id="trip-start"
-                  label="Start Date"
+                  label={sanityConfig?.dateStepStartLabel ?? "Start Date"}
                   required
                   value={field.value ?? ""}
                   onChange={field.onChange}
@@ -179,7 +181,7 @@ export function DateStep({ onValidityChange }: DateStepProps) {
               render={({ field }) => (
                 <DatePicker
                   id="trip-end"
-                  label="End Date"
+                  label={sanityConfig?.dateStepEndLabel ?? "End Date"}
                   required
                   value={field.value ?? ""}
                   onChange={field.onChange}
