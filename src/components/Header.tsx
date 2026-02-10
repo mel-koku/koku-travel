@@ -220,6 +220,10 @@ export default function Header() {
             ? "bg-transparent"
             : "bg-background/60 backdrop-blur-xl border-b border-border/30"
         )}
+        initial={{
+          y: 0,
+          opacity: isLandingPage ? 0 : 1,
+        }}
         animate={{
           y: isVisible || isMenuOpen ? 0 : -100,
           opacity: isLandingPage && !heroRevealed ? 0 : 1,
