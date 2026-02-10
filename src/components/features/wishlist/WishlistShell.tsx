@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import { LocationCard } from "@/components/features/explore/LocationCard";
@@ -52,53 +53,74 @@ export default function WishlistShell() {
   }
 
   return (
-    <section className="bg-background py-12 sm:py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-background py-12 sm:py-16">
+      {/* Grid grain texture */}
+      <div className="texture-grain pointer-events-none absolute inset-0" />
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {savedLocations.length === 0 ? (
-          <div className="flex flex-col items-center py-24 text-center">
-            {/* Dashed circle with heart icon */}
-            <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-border">
-              <svg
-                className="h-10 w-10 text-stone/50"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-                />
-              </svg>
+          /* Atmospheric empty state */
+          <div className="relative overflow-hidden rounded-xl">
+            {/* Background image */}
+            <div className="absolute inset-0">
+              <Image
+                src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80"
+                alt=""
+                fill
+                className="object-cover opacity-15"
+                sizes="100vw"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-charcoal/70" />
             </div>
+            <div className="texture-grain pointer-events-none absolute inset-0" />
 
-            <SplitText
-              as="h2"
-              className="mt-8 justify-center font-serif italic text-2xl text-foreground sm:text-3xl"
-              splitBy="word"
-              animation="clipY"
-              staggerDelay={0.06}
-            >
-              No favorites yet
-            </SplitText>
-
-            <ScrollReveal delay={0.3} distance={15}>
-              <p className="mt-4 max-w-sm text-base text-foreground-secondary">
-                Explore Japan&apos;s hidden gems and save the places that speak to you.
-              </p>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.5} distance={10}>
-              <Magnetic>
-                <Link
-                  href="/explore"
-                  className="mt-8 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+            <div className="relative flex flex-col items-center py-24 text-center px-6">
+              {/* Dashed circle with heart icon */}
+              <div className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-white/20">
+                <svg
+                  className="h-10 w-10 text-white/40"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
                 >
-                  Start exploring
-                </Link>
-              </Magnetic>
-            </ScrollReveal>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+                  />
+                </svg>
+              </div>
+
+              <SplitText
+                as="h2"
+                className="mt-8 justify-center font-serif italic text-2xl text-white sm:text-3xl"
+                splitBy="word"
+                animation="clipY"
+                staggerDelay={0.06}
+              >
+                No favorites yet
+              </SplitText>
+
+              <ScrollReveal delay={0.3} distance={15}>
+                <p className="mt-4 max-w-sm text-base text-white/70">
+                  Explore Japan&apos;s hidden gems and save the places that speak to you.
+                </p>
+              </ScrollReveal>
+
+              <ScrollReveal delay={0.5} distance={10}>
+                <Magnetic>
+                  <Link
+                    href="/explore"
+                    className="relative mt-8 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                  >
+                    <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+                    <span className="relative">Start exploring</span>
+                  </Link>
+                </Magnetic>
+              </ScrollReveal>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

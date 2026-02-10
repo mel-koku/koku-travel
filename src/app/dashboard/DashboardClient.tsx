@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 
@@ -249,30 +250,25 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
   return (
     <div className="min-h-screen bg-background">
       <PageHeader
-        compact
         eyebrow={content?.dashboardEyebrow ?? "Home base"}
         title={displayName}
         subtitle={content?.dashboardSubtitle ?? "Your trips, saved places, and plans in progress."}
+        imageUrl="https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=1920&q=80"
       />
 
-      {/* Stats Section */}
-      <section className="bg-background py-12 sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <ScrollReveal>
-            <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardActivityEyebrow ?? "Activity"}</p>
-            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">{content?.dashboardActivityHeading ?? "At a Glance"}</h2>
-          </ScrollReveal>
-          <div className="mt-8">
-            <StatsSection
-              favoritesCount={favorites.length}
-              guideBookmarksCount={guideBookmarks.length}
-            />
-          </div>
-        </div>
-      </section>
+      {/* Stats Section — standalone atmospheric band */}
+      <StatsSection
+        favoritesCount={favorites.length}
+        guideBookmarksCount={guideBookmarks.length}
+        tripsCount={tripsWithItinerary.length}
+        content={{
+          dashboardActivityEyebrow: content?.dashboardActivityEyebrow,
+          dashboardActivityHeading: content?.dashboardActivityHeading,
+        }}
+      />
 
       {/* Trips Section */}
-      <section className="bg-surface py-12 sm:py-16">
+      <section id="trips" className="bg-surface py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardTripsEyebrow ?? "Recent"}</p>
@@ -292,45 +288,62 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
               </ScrollReveal>
             ) : (
               <ScrollReveal delay={0.1} distance={20}>
-                <div className="flex flex-col items-center py-16 text-center">
-                  <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-border">
-                    <svg
-                      className="h-8 w-8 text-stone/50"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={1.5}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
-                    </svg>
+                {/* Atmospheric empty state */}
+                <div className="relative overflow-hidden rounded-xl">
+                  <div className="absolute inset-0">
+                    <Image
+                      src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&q=80"
+                      alt=""
+                      fill
+                      className="object-cover opacity-20"
+                      sizes="100vw"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-charcoal/70" />
                   </div>
+                  <div className="texture-grain pointer-events-none absolute inset-0" />
 
-                  <SplitText
-                    as="h3"
-                    className="mt-6 justify-center font-serif italic text-xl text-foreground sm:text-2xl"
-                    splitBy="word"
-                    animation="clipY"
-                    staggerDelay={0.06}
-                  >
-                    {content?.dashboardEmptyHeading ?? "No trips yet"}
-                  </SplitText>
-
-                  <ScrollReveal delay={0.3} distance={15}>
-                    <p className="mt-3 max-w-sm text-sm text-foreground-secondary">
-                      {content?.dashboardEmptyDescription ?? "Head to the trip builder to plan your first adventure. It'll appear here once it's ready."}
-                    </p>
-                  </ScrollReveal>
-
-                  <ScrollReveal delay={0.5} distance={10}>
-                    <Magnetic>
-                      <Link
-                        href="/trip-builder"
-                        className="mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                  <div className="relative flex flex-col items-center py-16 text-center px-6">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-dashed border-white/20">
+                      <svg
+                        className="h-8 w-8 text-white/40"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={1.5}
                       >
-                        {content?.dashboardPlanButton ?? "Start planning"}
-                      </Link>
-                    </Magnetic>
-                  </ScrollReveal>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+                      </svg>
+                    </div>
+
+                    <SplitText
+                      as="h3"
+                      className="mt-6 justify-center font-serif italic text-xl text-white sm:text-2xl"
+                      splitBy="word"
+                      animation="clipY"
+                      staggerDelay={0.06}
+                    >
+                      {content?.dashboardEmptyHeading ?? "No trips yet"}
+                    </SplitText>
+
+                    <ScrollReveal delay={0.3} distance={15}>
+                      <p className="mt-3 max-w-sm text-sm text-white/70">
+                        {content?.dashboardEmptyDescription ?? "Head to the trip builder to plan your first adventure. It'll appear here once it's ready."}
+                      </p>
+                    </ScrollReveal>
+
+                    <ScrollReveal delay={0.5} distance={10}>
+                      <Magnetic>
+                        <Link
+                          href="/trip-builder"
+                          className="relative mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                        >
+                          <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+                          <span className="relative">{content?.dashboardPlanButton ?? "Start planning"}</span>
+                        </Link>
+                      </Magnetic>
+                    </ScrollReveal>
+                  </div>
                 </div>
               </ScrollReveal>
             )}
@@ -367,20 +380,22 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
 
       {pendingUndo ? (
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4">
-          <div className="pointer-events-auto flex flex-col gap-3 rounded-2xl border border-border bg-background p-4 shadow-lg ring-1 ring-brand-primary/20">
+          <div className="pointer-events-auto flex flex-col gap-3 rounded-2xl border border-border bg-background p-4 shadow-lg shadow-[0_0_20px_rgba(196,80,79,0.15)] ring-1 ring-brand-primary/20">
             <div>
               <p className="text-sm font-semibold text-foreground">{content?.dashboardDeleteToastTitle ?? "Itinerary deleted"}</p>
               <p className="text-xs text-foreground-secondary">
                 {pendingUndo.trip.name} was removed. Undo within 8 seconds to restore.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={handleUndo}
-              className="self-start rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
-            >
-              {content?.dashboardUndoButton ?? "Undo"}
-            </button>
+            <Magnetic>
+              <button
+                type="button"
+                onClick={handleUndo}
+                className="self-start rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+              >
+                {content?.dashboardUndoButton ?? "Undo"}
+              </button>
+            </Magnetic>
           </div>
         </div>
       ) : null}
