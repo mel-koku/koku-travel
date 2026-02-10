@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
@@ -10,6 +11,10 @@ import {
 import { GuideDetailClient } from "@/components/features/guides/GuideDetailClient";
 import { urlFor } from "@/sanity/image";
 
+// Request-scoped cache: deduplicates fetches between generateMetadata() and page component
+const getCachedSanityGuide = cache((slug: string) => getSanityGuideWithLocations(slug));
+const getCachedSupabaseGuide = cache((slug: string) => getGuideWithLocations(slug));
+
 type Props = {
   params: Promise<{ slug: string }>;
 };
@@ -18,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
 
   // Try Sanity first
-  const sanityResult = await getSanityGuideWithLocations(slug);
+  const sanityResult = await getCachedSanityGuide(slug);
   if (sanityResult) {
     const { guide } = sanityResult;
     const imageUrl =
@@ -37,7 +42,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   // Fallback to Supabase
-  const result = await getGuideWithLocations(slug);
+  const result = await getCachedSupabaseGuide(slug);
   if (!result) {
     return { title: "Guide Not Found | Koku Travel" };
   }
@@ -61,8 +66,8 @@ export const revalidate = 3600;
 export default async function GuideDetailPage({ params }: Props) {
   const { slug } = await params;
 
-  // Try Sanity first
-  const sanityResult = await getSanityGuideWithLocations(slug);
+  // Try Sanity first (uses request-scoped cache — shared with generateMetadata)
+  const sanityResult = await getCachedSanityGuide(slug);
   if (sanityResult) {
     const { guide, locations } = sanityResult;
 
@@ -85,8 +90,8 @@ export default async function GuideDetailPage({ params }: Props) {
     );
   }
 
-  // Fallback to Supabase
-  const result = await getGuideWithLocations(slug);
+  // Fallback to Supabase (uses request-scoped cache — shared with generateMetadata)
+  const result = await getCachedSupabaseGuide(slug);
   if (!result) {
     notFound();
   }

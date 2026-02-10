@@ -88,7 +88,8 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
       }),
     ];
     return () => unsubs.forEach((u) => u());
-  }, [titleOpacity, ctaOpacity, scrollIndicatorOpacity, overlayOpacity]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- motion values are stable refs from useTransform
+  }, []);
 
   const handleHeroClick = useCallback(
     (e: React.MouseEvent) => {
