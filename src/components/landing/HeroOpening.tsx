@@ -56,6 +56,40 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
 
   // Click-to-reveal: auto-scroll to complete the hero reveal
   const isAutoScrolling = useRef(false);
+  const titleLayerRef = useRef<HTMLDivElement>(null);
+  const ctaLayerRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
+  const overlayVignetteRef = useRef<HTMLDivElement>(null);
+  const overlayGradientRef = useRef<HTMLDivElement>(null);
+
+  // Sync opacity motion values to DOM via refs — bypasses framer-motion v12's
+  // WAAPI renderer which overrides style.opacity on motion.div elements
+  useEffect(() => {
+    if (titleLayerRef.current) titleLayerRef.current.style.opacity = String(titleOpacity.get());
+    if (ctaLayerRef.current) ctaLayerRef.current.style.opacity = String(ctaOpacity.get());
+    if (scrollIndicatorRef.current) scrollIndicatorRef.current.style.opacity = String(scrollIndicatorOpacity.get());
+    if (overlayVignetteRef.current) overlayVignetteRef.current.style.opacity = String(overlayOpacity.get());
+    if (overlayGradientRef.current) overlayGradientRef.current.style.opacity = String(overlayOpacity.get());
+
+    const unsubs = [
+      titleOpacity.on("change", (v) => {
+        if (titleLayerRef.current) titleLayerRef.current.style.opacity = String(v);
+      }),
+      ctaOpacity.on("change", (v) => {
+        if (ctaLayerRef.current) ctaLayerRef.current.style.opacity = String(v);
+      }),
+      scrollIndicatorOpacity.on("change", (v) => {
+        if (scrollIndicatorRef.current) scrollIndicatorRef.current.style.opacity = String(v);
+      }),
+      overlayOpacity.on("change", (v) => {
+        const s = String(v);
+        if (overlayVignetteRef.current) overlayVignetteRef.current.style.opacity = s;
+        if (overlayGradientRef.current) overlayGradientRef.current.style.opacity = s;
+      }),
+    ];
+    return () => unsubs.forEach((u) => u());
+  }, [titleOpacity, ctaOpacity, scrollIndicatorOpacity, overlayOpacity]);
+
   const handleHeroClick = useCallback(
     (e: React.MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -165,19 +199,21 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
             sizes="100vw"
           />
           {/* Radial vignette — dark center for text, transparent edges for image vibrancy */}
-          <motion.div
+          <div
+            ref={overlayVignetteRef}
             className="absolute inset-0"
             style={{
-              opacity: overlayOpacity,
+              opacity: 0,
               background:
                 "radial-gradient(ellipse 70% 60% at 50% 55%, rgba(31,26,20,0.85) 0%, rgba(31,26,20,0.40) 50%, rgba(31,26,20,0.10) 100%)",
             }}
           />
           {/* Bottom gradient — grounds the lower edge */}
-          <motion.div
+          <div
+            ref={overlayGradientRef}
             className="absolute inset-0"
             style={{
-              opacity: overlayOpacity,
+              opacity: 0,
               background:
                 "linear-gradient(to top, rgba(31,26,20,0.60) 0%, transparent 40%)",
             }}
@@ -185,9 +221,9 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
         </motion.div>
 
         {/* Layer 2: Typography wall */}
-        <motion.div
+        <div
+          ref={titleLayerRef}
           className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center"
-          style={{ opacity: titleOpacity }}
         >
           {/* Stat line */}
           <motion.p
@@ -230,12 +266,13 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
               Beyond the guidebook
             </motion.p>
           </div>
-        </motion.div>
+        </div>
 
         {/* Layer 3: CTA overlay (appears in full-bleed phase) */}
-        <motion.div
+        <div
+          ref={ctaLayerRef}
           className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6 text-center"
-          style={{ opacity: ctaOpacity }}
+          style={{ opacity: 0 }}
         >
           {/* Subtle radial backdrop behind text group */}
           <div
@@ -277,12 +314,12 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
               Browse Locations
             </a>
           </div>
-        </motion.div>
+        </div>
 
         {/* Scroll indicator (first phase only) */}
-        <motion.div
+        <div
+          ref={scrollIndicatorRef}
           className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2"
-          style={{ opacity: scrollIndicatorOpacity }}
         >
           <motion.div
             initial={{ opacity: 0 }}
@@ -305,7 +342,7 @@ export function HeroOpening({ locationCount }: HeroOpeningProps) {
               />
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
