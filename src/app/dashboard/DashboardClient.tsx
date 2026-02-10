@@ -18,6 +18,7 @@ import { debounce } from "@/lib/utils";
 import { TOAST_DURATION_MS, MAX_DISPLAY_NAME_LENGTH } from "@/lib/constants";
 import { AccountSection } from "./components/AccountSection";
 import { StatsSection } from "./components/StatsSection";
+import type { PagesContent } from "@/types/sanitySiteContent";
 
 type StoredTrip = ReturnType<typeof useAppState>["trips"][number];
 
@@ -26,9 +27,10 @@ type DashboardClientProps = {
     id: string;
     email?: string | null;
   } | null;
+  content?: PagesContent;
 };
 
-export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
+export function DashboardClient({ initialAuthUser, content }: DashboardClientProps) {
   const { user, setUser, favorites, guideBookmarks, trips, deleteTrip, restoreTrip, clearAllLocalData, refreshFromSupabase, isLoadingRefresh } = useAppState();
   const [sessionUserId, setSessionUserId] = useState<string | null>(initialAuthUser?.id ?? null);
   const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);
@@ -248,17 +250,17 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
     <div className="min-h-screen bg-background">
       <PageHeader
         compact
-        eyebrow="Home base"
+        eyebrow={content?.dashboardEyebrow ?? "Home base"}
         title={displayName}
-        subtitle="Your trips, saved places, and plans in progress."
+        subtitle={content?.dashboardSubtitle ?? "Your trips, saved places, and plans in progress."}
       />
 
       {/* Stats Section */}
       <section className="bg-background py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
-            <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Activity</p>
-            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">At a Glance</h2>
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardActivityEyebrow ?? "Activity"}</p>
+            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">{content?.dashboardActivityHeading ?? "At a Glance"}</h2>
           </ScrollReveal>
           <div className="mt-8">
             <StatsSection
@@ -273,8 +275,8 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
       <section className="bg-surface py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
-            <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Recent</p>
-            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">Your Trips</h2>
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardTripsEyebrow ?? "Recent"}</p>
+            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">{content?.dashboardTripsHeading ?? "Your Trips"}</h2>
           </ScrollReveal>
 
           <div className="mt-8">
@@ -310,13 +312,12 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
                     animation="clipY"
                     staggerDelay={0.06}
                   >
-                    No trips yet
+                    {content?.dashboardEmptyHeading ?? "No trips yet"}
                   </SplitText>
 
                   <ScrollReveal delay={0.3} distance={15}>
                     <p className="mt-3 max-w-sm text-sm text-foreground-secondary">
-                      Head to the trip builder to plan your first adventure.
-                      It&apos;ll appear here once it&apos;s ready.
+                      {content?.dashboardEmptyDescription ?? "Head to the trip builder to plan your first adventure. It'll appear here once it's ready."}
                     </p>
                   </ScrollReveal>
 
@@ -326,7 +327,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
                         href="/trip-builder"
                         className="mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                       >
-                        Start planning
+                        {content?.dashboardPlanButton ?? "Start planning"}
                       </Link>
                     </Magnetic>
                   </ScrollReveal>
@@ -342,8 +343,8 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         <section className="bg-background py-12 sm:py-16">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ScrollReveal>
-              <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Account</p>
-              <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">Profile & Sync</h2>
+              <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardAccountEyebrow ?? "Account"}</p>
+              <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">{content?.dashboardAccountHeading ?? "Profile & Sync"}</h2>
             </ScrollReveal>
             <div className="mt-8 max-w-2xl">
               <ScrollReveal delay={0.1} distance={20}>
@@ -368,7 +369,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4">
           <div className="pointer-events-auto flex flex-col gap-3 rounded-2xl border border-border bg-background p-4 shadow-lg ring-1 ring-brand-primary/20">
             <div>
-              <p className="text-sm font-semibold text-foreground">Itinerary deleted</p>
+              <p className="text-sm font-semibold text-foreground">{content?.dashboardDeleteToastTitle ?? "Itinerary deleted"}</p>
               <p className="text-xs text-foreground-secondary">
                 {pendingUndo.trip.name} was removed. Undo within 8 seconds to restore.
               </p>
@@ -378,7 +379,7 @@ export function DashboardClient({ initialAuthUser }: DashboardClientProps) {
               onClick={handleUndo}
               className="self-start rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
             >
-              Undo
+              {content?.dashboardUndoButton ?? "Undo"}
             </button>
           </div>
         </div>

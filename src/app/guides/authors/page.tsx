@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { getAllSanityAuthors } from "@/lib/guides/guideService";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { AuthorCard } from "@/components/features/guides/AuthorCard";
+import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata: Metadata = {
   title: "Local Guide Authors | Koku Travel",
@@ -12,14 +13,17 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function AuthorsPage() {
-  const authors = await getAllSanityAuthors();
+  const [authors, content] = await Promise.all([
+    getAllSanityAuthors(),
+    getPagesContent(),
+  ]);
 
   return (
     <>
       <PageHeader
-        eyebrow="Our Authors"
-        title="Local Guide Authors"
-        subtitle="Meet the local experts behind our Japan travel guides"
+        eyebrow={content?.authorsEyebrow ?? "Our Authors"}
+        title={content?.authorsHeading ?? "Local Guide Authors"}
+        subtitle={content?.authorsSubtitle ?? "Meet the local experts behind our Japan travel guides"}
         compact
       />
 
@@ -27,7 +31,7 @@ export default async function AuthorsPage() {
         <div className="mx-auto max-w-4xl px-6">
           {authors.length === 0 ? (
             <p className="text-center text-foreground-secondary">
-              No authors yet. Check back soon.
+              {content?.authorsEmptyState ?? "No authors yet. Check back soon."}
             </p>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">

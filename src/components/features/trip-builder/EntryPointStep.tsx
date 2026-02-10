@@ -11,10 +11,15 @@ import type { EntryPoint, KnownRegionId } from "@/types/trip";
 import type { Airport } from "@/app/api/airports/route";
 import { logger } from "@/lib/logger";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
 
-export function EntryPointStep() {
+export type EntryPointStepProps = {
+  sanityConfig?: TripBuilderConfig;
+};
+
+export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   const { data, setData } = useTripBuilder();
   const [airports, setAirports] = useState<Airport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -108,11 +113,11 @@ export function EntryPointStep() {
             animation="clipY"
             staggerDelay={0.06}
           >
-            Where will you land?
+            {sanityConfig?.entryPointHeading ?? "Where will you land?"}
           </SplitText>
 
           <p className="mt-1 text-sm text-stone">
-            Optional — helps us plan smarter routes from your arrival.
+            {sanityConfig?.entryPointDescription ?? "Optional \u2014 helps us plan smarter routes from your arrival."}
           </p>
 
           {/* Selected airport display */}
@@ -139,7 +144,7 @@ export function EntryPointStep() {
                     onClick={handleClear}
                     className="rounded-lg px-3 py-1 text-xs text-stone hover:bg-surface hover:text-foreground-secondary"
                   >
-                    Change
+                    {sanityConfig?.entryPointChangeText ?? "Change"}
                   </button>
                 </div>
               </motion.div>
@@ -163,7 +168,7 @@ export function EntryPointStep() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by name, city, or code..."
+                  placeholder={sanityConfig?.entryPointSearchPlaceholder ?? "Search by name, city, or code..."}
                   className="h-10 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
                 {searchQuery && (
@@ -210,14 +215,14 @@ export function EntryPointStep() {
               </AnimatePresence>
 
               {searchQuery && filteredAirports.length === 0 && (
-                <p className="mt-2 text-center text-sm text-stone">No airports match that search</p>
+                <p className="mt-2 text-center text-sm text-stone">{sanityConfig?.entryPointNoResults ?? "No airports match that search"}</p>
               )}
 
               {/* Popular airports grid — shown when not searching */}
               {!searchQuery && (
                 <>
                   <p className="mb-2 mt-4 text-xs font-medium uppercase tracking-wide text-stone">
-                    Popular airports
+                    {sanityConfig?.entryPointPopularLabel ?? "Popular airports"}
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     {topAirports.map((airport) => (

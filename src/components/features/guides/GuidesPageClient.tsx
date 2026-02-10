@@ -8,9 +8,11 @@ import { GuideFilterBar } from "./GuideFilterBar";
 import { GuideEditorialRow } from "./GuideEditorialRow";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import type { PagesContent } from "@/types/sanitySiteContent";
 
 type GuidesPageClientProps = {
   guides: GuideSummary[];
+  content?: PagesContent;
 };
 
 const GUIDE_TYPE_OPTIONS: { value: GuideType; label: string }[] = [
@@ -20,7 +22,7 @@ const GUIDE_TYPE_OPTIONS: { value: GuideType; label: string }[] = [
   { value: "seasonal", label: "Seasonal" },
 ];
 
-export function GuidesPageClient({ guides }: GuidesPageClientProps) {
+export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
   const [selectedType, setSelectedType] = useState<GuideType | null>(null);
 
   const typeCounts = useMemo(() => {
@@ -66,11 +68,11 @@ export function GuidesPageClient({ guides }: GuidesPageClientProps) {
           animation="clipY"
           staggerDelay={0.06}
         >
-          Guides are on the way
+          {content?.guidesEmptyHeading ?? "Guides are on the way"}
         </SplitText>
         <ScrollReveal delay={0.3} distance={15}>
           <p className="mt-2 text-sm text-stone text-center max-w-sm">
-            We&apos;re writing curated travel guides. Check back soon.
+            {content?.guidesEmptyDescription ?? "We're writing curated travel guides. Check back soon."}
           </p>
         </ScrollReveal>
       </div>
@@ -109,10 +111,10 @@ export function GuidesPageClient({ guides }: GuidesPageClientProps) {
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="font-serif italic text-lg text-foreground">
-              Nothing here yet
+              {content?.guidesFilteredEmptyHeading ?? "Nothing here yet"}
             </p>
             <p className="mt-2 text-sm text-stone">
-              Try selecting a different category above.
+              {content?.guidesFilteredEmptyDescription ?? "Try selecting a different category above."}
             </p>
           </div>
         )}

@@ -8,9 +8,9 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 ### Sanity CMS Integration
 - **Purpose**: Let non-technical editors manage site content through Sanity Studio — guides, landing page copy, footer settings, and trip builder config — without code deploys
 - **Studio**: Embedded at `/studio` route (Sanity Studio via `next-sanity`)
-- **Schemas**: `guide` + `author` + 3 singletons (`landingPage`, `siteSettings`, `tripBuilderConfig`) + custom blocks (`tipCallout`, `locationRef`, `imageGallery`)
+- **Schemas**: `guide` + `author` + 4 singletons (`landingPage`, `siteSettings`, `tripBuilderConfig`, `pagesContent`) + custom blocks (`tipCallout`, `locationRef`, `imageGallery`)
 - **Editorial Workflow**: Draft → In Review → Published → Archived, with custom document actions (Submit for Review, Approve & Publish, Request Changes)
-- **Desk Structure**: Site Content (3 singleton editors) → Guides (Drafts/In Review/Published/Archived/All) → Authors
+- **Desk Structure**: Site Content (4 singleton editors) → Guides (Drafts/In Review/Published/Archived/All) → Authors
 - **Data Flow**: Sanity CDN for guide detail fetches + singleton content; Supabase stays for list queries/bookmarks/location data
 - **Webhook Sync**: `POST /api/sanity/webhook` — validates secret, handles guides (upsert to Supabase) and singletons (revalidatePath only)
 - **Dual Source**: Guide detail page tries Sanity first, falls back to Supabase; landing/footer/trip-builder use `content?.field ?? "hardcoded default"` fallback pattern
@@ -27,13 +27,15 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 
 **`siteSettings`** — Brand description, newsletter label/button text, footer nav columns (title + links[]{label, href}), social links (platform, url, label).
 
-**`tripBuilderConfig`** — Vibes (vibeId readOnly, name, description, icon, image) and regions (regionId readOnly, name, tagline, description, highlights[], heroImage). Logic-critical fields (interest mappings, cities) stay code-side.
+**`tripBuilderConfig`** — Vibes (vibeId readOnly, name, description, icon, image) and regions (regionId readOnly, name, tagline, description, highlights[], heroImage) + 8 step content fieldsets (intro, dates, entry point, vibes header, regions header, review labels, generating overlay, navigation labels). Logic-critical fields (interest mappings, cities) stay code-side.
+
+**`pagesContent`** — All non-landing page text: explore (heading, subtitle, error/retry/end messages), guides listing (empty states), authors (eyebrow/heading/subtitle), favorites (eyebrow/title/subtitles, background image), dashboard (section headings, empty state, toast), account (labels, form text), itinerary (loading/empty/link text). 7 collapsible fieldsets.
 
 **Singleton behavior**: Fixed document IDs, open as direct editors (not lists), publish/discard only (no delete/duplicate), hidden from Sanity "Create new" menu.
 
 **Frontend integration pattern**: All components accept optional Sanity content prop with `??` fallback to hardcoded defaults. Site never breaks if Sanity is unreachable.
 
-**Seed script**: `scripts/seed-sanity-singletons.ts` — one-time script to populate singletons with current hardcoded values (`npx tsx scripts/seed-sanity-singletons.ts`)
+**Seed script**: `scripts/seed-sanity-singletons.ts` — one-time script to populate all 4 singletons with current hardcoded values (`npx tsx scripts/seed-sanity-singletons.ts`)
 
 #### Key Files (Sanity CMS)
 
@@ -42,19 +44,23 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 | `sanity.config.ts` | Studio config (project ID, basePath `/studio`, plugins, schema, actions, newDocumentOptions filter) |
 | `src/sanity/client.ts` | Public CDN client + authenticated write client |
 | `src/sanity/image.ts` | `urlFor()` helper for Sanity image URLs |
-| `src/sanity/queries.ts` | GROQ queries (guides, authors, landingPage, siteSettings, tripBuilderConfig) |
+| `src/sanity/queries.ts` | GROQ queries (guides, authors, landingPage, siteSettings, tripBuilderConfig, pagesContent) |
 | `src/sanity/structure.ts` | Desk structure (Site Content singletons, Guides, Authors) |
 | `src/sanity/actions.ts` | Custom workflow actions for guides + singleton restrictions (publish/discard only) |
 | `src/sanity/schemas/guide.ts` | Guide document schema with Portable Text body |
 | `src/sanity/schemas/author.ts` | Author document schema |
 | `src/sanity/schemas/landingPage.ts` | Landing page singleton schema (7 fieldsets) |
 | `src/sanity/schemas/siteSettings.ts` | Footer & settings singleton schema |
-| `src/sanity/schemas/tripBuilderConfig.ts` | Trip builder config singleton schema |
+| `src/sanity/schemas/tripBuilderConfig.ts` | Trip builder config singleton schema (vibes, regions, 8 step content fieldsets) |
+| `src/sanity/schemas/pagesContent.ts` | Pages content singleton schema (7 page fieldsets) |
 | `src/sanity/schemas/objects/*.ts` | Custom block types (tipCallout, locationRef, imageGallery) |
 | `src/app/studio/[[...tool]]/page.tsx` | Embedded Sanity Studio page |
-| `src/app/api/sanity/webhook/route.ts` | Webhook: guide → Supabase sync, singletons → revalidatePath |
-| `src/lib/sanity/contentService.ts` | Fetcher functions: getLandingPageContent, getSiteSettings, getTripBuilderConfig |
-| `src/types/sanitySiteContent.ts` | TS types: LandingPageContent, SiteSettings, TripBuilderConfig |
+| `src/app/api/sanity/webhook/route.ts` | Webhook: guide → Supabase sync, singletons → revalidatePath (incl. pagesContent → 7 paths) |
+| `src/app/favorites/FavoritesClient.tsx` | Client component for favorites page (extracted for server/client split) |
+| `src/app/account/AccountClient.tsx` | Client component for account page (extracted for server/client split) |
+| `src/app/itinerary/ItineraryClient.tsx` | Client component for itinerary page (extracted for server/client split) |
+| `src/lib/sanity/contentService.ts` | Fetcher functions: getLandingPageContent, getSiteSettings, getTripBuilderConfig, getPagesContent |
+| `src/types/sanitySiteContent.ts` | TS types: LandingPageContent, SiteSettings, TripBuilderConfig, PagesContent |
 | `src/components/features/guides/PortableTextBody.tsx` | Portable Text renderer matching editorial styles |
 | `src/components/features/guides/blocks/*.tsx` | Custom block components (TipCallout, LocationEmbed, ImageGallery) |
 | `src/types/sanityGuide.ts` | SanityGuide, SanityAuthor types |
@@ -73,8 +79,21 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 | `FeaturedGuides` | `landingPage` → section header copy | Hardcoded strings |
 | `FinalCTA` | `landingPage` → heading, CTA text, subtext | Hardcoded strings |
 | `Footer` | `siteSettings` → nav columns, social links, brand copy | `defaultNavColumns`/`defaultSocialLinks` |
-| `VibeStep` | `tripBuilderConfig` → vibe name, description, image | `VIBES` data + `VIBE_IMAGES` |
-| `RegionStep` | `tripBuilderConfig` → region tagline, description, highlights, heroImage | `REGION_DESCRIPTIONS` data |
+| `VibeStep` | `tripBuilderConfig` → vibe name, description, image + vibeStep heading/description/maxWarning | `VIBES` data + `VIBE_IMAGES` + hardcoded strings |
+| `RegionStep` | `tripBuilderConfig` → region tagline, description, highlights, heroImage + regionStep heading/description | `REGION_DESCRIPTIONS` data + hardcoded strings |
+| `IntroStep` | `tripBuilderConfig` → intro heading/subheading/description/CTA/background image | Hardcoded strings |
+| `DateStep` | `tripBuilderConfig` → date heading/description/labels/background image | Hardcoded strings |
+| `EntryPointStep` | `tripBuilderConfig` → entry heading/description/labels | Hardcoded strings |
+| `ReviewStep` | `tripBuilderConfig` → review heading/description/preference labels/tooltips | Hardcoded strings |
+| `GeneratingOverlay` | `tripBuilderConfig` → generating heading/status messages | `DEFAULT_STATUS_MESSAGES` array |
+| `TripBuilderV2` (nav) | `tripBuilderConfig` → back/continue/skip/generate/startOver labels | Hardcoded strings |
+| `ExploreShell` | `pagesContent` → explore heading/subtitle/error/retry/end messages | Hardcoded strings |
+| `GuidesPageClient` | `pagesContent` → guides empty state/filtered empty state | Hardcoded strings |
+| `AuthorsPage` | `pagesContent` → authors eyebrow/heading/subtitle/empty state | Hardcoded strings |
+| `DashboardClient` | `pagesContent` → dashboard section headings/empty state/toast | Hardcoded strings |
+| `FavoritesClient` | `pagesContent` → favorites eyebrow/title/subtitles/background image | Hardcoded strings |
+| `AccountClient` | `pagesContent` → account labels/form text/sign out | Hardcoded strings |
+| `ItineraryClient` | `pagesContent` → itinerary loading/empty/builder link | Hardcoded strings |
 
 #### Env Vars (Sanity)
 | Variable | Sensitive | Vercel Environments |

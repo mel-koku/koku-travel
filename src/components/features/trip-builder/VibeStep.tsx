@@ -118,11 +118,11 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           animation="clipY"
           staggerDelay={staggerWord}
         >
-          What moves you?
+          {sanityConfig?.vibeStepHeading ?? "What moves you?"}
         </SplitText>
 
         <p className="mt-2 text-sm text-stone">
-          Pick what excites you — we&apos;ll find places that match.
+          {sanityConfig?.vibeStepDescription ?? "Pick what excites you \u2014 we'll find places that match."}
         </p>
 
         <p className="mt-2 font-mono text-sm text-stone">
@@ -211,7 +211,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
       {/* Warning when max reached */}
       {isMaxSelected && (
         <p className="relative z-10 pb-8 text-center text-sm text-warning lg:pb-4">
-          You&apos;ve picked {MAX_VIBE_SELECTION} — swap one out to add another.
+          {(sanityConfig?.vibeStepMaxWarning ?? "You've picked {max} \u2014 swap one out to add another.").replace("{max}", String(MAX_VIBE_SELECTION))}
         </p>
       )}
     </div>

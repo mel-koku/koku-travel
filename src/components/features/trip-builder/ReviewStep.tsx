@@ -23,6 +23,7 @@ import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
 import type { TripStyle } from "@/types/trip";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type PreferenceFormValues = {
   groupSize?: number;
@@ -62,9 +63,10 @@ const PACE_OPTIONS = [
 export type ReviewStepProps = {
   onValidityChange?: (isValid: boolean) => void;
   onGoToStep?: (step: number) => void;
+  sanityConfig?: TripBuilderConfig;
 };
 
-export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
+export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: ReviewStepProps) {
   const { data, setData } = useTripBuilder();
 
   const handleRemoveSavedLocation = useCallback(
@@ -167,6 +169,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
         onEditEntryPoint={handleEditEntryPoint}
         onEditVibes={handleEditVibes}
         onEditRegions={handleEditRegions}
+        sanityConfig={sanityConfig}
       />
 
       {/* Planning Warnings */}
@@ -180,7 +183,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Queued</p>
               <h3 className="font-serif text-lg italic text-foreground">
-                Saved Places ({data.savedLocationIds?.length})
+                {sanityConfig?.reviewSavedPlacesLabel ?? "Saved Places"} ({data.savedLocationIds?.length})
               </h3>
             </div>
           </div>
@@ -196,16 +199,16 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Optional</p>
         <h3 className="mt-1 font-serif text-lg italic text-foreground">
-          Fine-tune your trip
+          {sanityConfig?.reviewHeading ?? "Fine-tune your trip"}
         </h3>
         <p className="text-sm text-stone">
-          The more we know, the better your days will feel.
+          {sanityConfig?.reviewDescription ?? "The more we know, the better your days will feel."}
         </p>
 
         {/* Responsive grid */}
         <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {/* Budget */}
-          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title="Budget" optional info="Sets the price range for food and activities.">
+          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title={sanityConfig?.reviewBudgetTitle ?? "Budget"} optional info={sanityConfig?.reviewBudgetTooltip ?? "Sets the price range for food and activities."}>
             <BudgetInput
               id="budget-input"
               duration={data.duration}
@@ -216,7 +219,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Travel Pace */}
-          <PreferenceCard icon={<Gauge className="h-5 w-5" />} title="Pace" optional info="How packed should each day be?">
+          <PreferenceCard icon={<Gauge className="h-5 w-5" />} title={sanityConfig?.reviewPaceTitle ?? "Pace"} optional info={sanityConfig?.reviewPaceTooltip ?? "How packed should each day be?"}>
             <Controller
               control={control}
               name="travelStyle"
@@ -258,7 +261,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Group */}
-          <PreferenceCard icon={<Users className="h-5 w-5" />} title="Group" optional info="Helps us pick the right kind of places.">
+          <PreferenceCard icon={<Users className="h-5 w-5" />} title={sanityConfig?.reviewGroupTitle ?? "Group"} optional info={sanityConfig?.reviewGroupTooltip ?? "Helps us pick the right kind of places."}>
             <div className="grid grid-cols-2 gap-3">
               <FormField id="group-type" label="Type">
                 <Controller
@@ -304,9 +307,9 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           {/* Accessibility */}
           <PreferenceCard
             icon={<Accessibility className="h-5 w-5" />}
-            title="Access"
+            title={sanityConfig?.reviewAccessTitle ?? "Access"}
             optional
-            info="We'll only suggest places that work for you."
+            info={sanityConfig?.reviewAccessTooltip ?? "We'll only suggest places that work for you."}
           >
             <label className="flex cursor-pointer items-center gap-2">
               <input
@@ -321,7 +324,7 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
 
             <div>
               <p className="mb-2 text-xs font-medium text-foreground-secondary">
-                Dietary
+                {sanityConfig?.reviewDietaryLabel ?? "Dietary"}
               </p>
               <div className="flex flex-col gap-1.5">
                 {DIETARY_OPTIONS.map((option) => (
@@ -354,10 +357,10 @@ export function ReviewStep({ onValidityChange, onGoToStep }: ReviewStepProps) {
           </PreferenceCard>
 
           {/* Notes */}
-          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title="Notes" optional info="Anything we should know — a birthday, an allergy, a must-visit spot.">
+          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title={sanityConfig?.reviewNotesTitle ?? "Notes"} optional info={sanityConfig?.reviewNotesTooltip ?? "Anything we should know \u2014 a birthday, an allergy, a must-visit spot."}>
             <textarea
               id="additional-notes"
-              placeholder="A birthday dinner in Kyoto, avoiding steep stairs, must-see spots..."
+              placeholder={sanityConfig?.reviewNotesPlaceholder ?? "A birthday dinner in Kyoto, avoiding steep stairs, must-see spots..."}
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               rows={4}
               {...register("additionalNotes")}
