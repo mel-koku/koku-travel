@@ -6,44 +6,75 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 ## Recent Work (2026-02-10)
 
 ### Sanity CMS Integration
-- **Purpose**: Let non-technical local guides author content through a rich text editor with editorial review workflow
+- **Purpose**: Let non-technical editors manage site content through Sanity Studio — guides, landing page copy, footer settings, and trip builder config — without code deploys
 - **Studio**: Embedded at `/studio` route (Sanity Studio via `next-sanity`)
-- **Schemas**: `guide` (Portable Text body, editorial status, linked locations) + `author` (name, photo, bio, city, social links) + custom blocks (`tipCallout`, `locationRef`, `imageGallery`)
+- **Schemas**: `guide` + `author` + 3 singletons (`landingPage`, `siteSettings`, `tripBuilderConfig`) + custom blocks (`tipCallout`, `locationRef`, `imageGallery`)
 - **Editorial Workflow**: Draft → In Review → Published → Archived, with custom document actions (Submit for Review, Approve & Publish, Request Changes)
-- **Desk Structure**: Sidebar with Guides (Drafts / In Review / Published / Archived / All) + Authors
-- **Data Flow**: Sanity CDN for detail page fetches (Portable Text + author profile), Supabase stays for list queries/bookmarks/location linking
-- **Webhook Sync**: `POST /api/sanity/webhook` — validates secret, upserts summary fields to Supabase `guides` table on publish, archives on delete, calls `revalidatePath`
-- **Dual Source**: Detail page tries Sanity first (`getSanityGuideWithLocations`), falls back to Supabase (`getGuideWithLocations`); existing markdown guides render unchanged via `GuideContent.tsx`
-- **ISR**: Guide detail pages switched from `force-dynamic` to `revalidate = 3600` + on-demand revalidation via webhook
-- **Portable Text Renderer**: `PortableTextBody.tsx` matches existing editorial styles (serif headings, variable widths, breakout images, blockquotes, styled callouts)
+- **Desk Structure**: Site Content (3 singleton editors) → Guides (Drafts/In Review/Published/Archived/All) → Authors
+- **Data Flow**: Sanity CDN for guide detail fetches + singleton content; Supabase stays for list queries/bookmarks/location data
+- **Webhook Sync**: `POST /api/sanity/webhook` — validates secret, handles guides (upsert to Supabase) and singletons (revalidatePath only)
+- **Dual Source**: Guide detail page tries Sanity first, falls back to Supabase; landing/footer/trip-builder use `content?.field ?? "hardcoded default"` fallback pattern
+- **ISR**: Landing page + trip builder at `revalidate = 3600` + on-demand revalidation via webhook
+- **Portable Text Renderer**: `PortableTextBody.tsx` matches existing editorial styles
 - **Author Profiles**: Directory at `/guides/authors`, individual at `/guides/authors/[slug]` with published guide grid
 - **CSP**: `/studio` route gets relaxed CSP (`'unsafe-eval'` for Sanity scripts); all other routes unchanged
 - **Sanity API Version**: `2026-02-10` (date-based, pinned in `.env.local` and code fallback)
-- **Migration Script**: `scripts/migrate-guides-to-sanity.ts` (converts markdown→Portable Text, supports `--dry-run`)
 - **Packages Added**: `sanity`, `@sanity/vision`, `@sanity/image-url`, `next-sanity`, `@portabletext/react`, `styled-components`
+
+#### Singleton Schemas (Admin UI)
+
+**`landingPage`** — Hero text, philosophy stats, showcase acts (exactly 3), testimonials (1-5), featured section headers, final CTA. 7 collapsible fieldsets.
+
+**`siteSettings`** — Brand description, newsletter label/button text, footer nav columns (title + links[]{label, href}), social links (platform, url, label).
+
+**`tripBuilderConfig`** — Vibes (vibeId readOnly, name, description, icon, image) and regions (regionId readOnly, name, tagline, description, highlights[], heroImage). Logic-critical fields (interest mappings, cities) stay code-side.
+
+**Singleton behavior**: Fixed document IDs, open as direct editors (not lists), publish/discard only (no delete/duplicate), hidden from Sanity "Create new" menu.
+
+**Frontend integration pattern**: All components accept optional Sanity content prop with `??` fallback to hardcoded defaults. Site never breaks if Sanity is unreachable.
+
+**Seed script**: `scripts/seed-sanity-singletons.ts` — one-time script to populate singletons with current hardcoded values (`npx tsx scripts/seed-sanity-singletons.ts`)
 
 #### Key Files (Sanity CMS)
 
 | File | Purpose |
 |------|---------|
-| `sanity.config.ts` | Studio config (project ID, basePath `/studio`, plugins, schema, actions) |
+| `sanity.config.ts` | Studio config (project ID, basePath `/studio`, plugins, schema, actions, newDocumentOptions filter) |
 | `src/sanity/client.ts` | Public CDN client + authenticated write client |
 | `src/sanity/image.ts` | `urlFor()` helper for Sanity image URLs |
-| `src/sanity/queries.ts` | GROQ queries (guideBySlug, authorBySlug, allAuthors) |
-| `src/sanity/structure.ts` | Desk structure (editorial status filters) |
-| `src/sanity/actions.ts` | Custom workflow actions for guide documents |
+| `src/sanity/queries.ts` | GROQ queries (guides, authors, landingPage, siteSettings, tripBuilderConfig) |
+| `src/sanity/structure.ts` | Desk structure (Site Content singletons, Guides, Authors) |
+| `src/sanity/actions.ts` | Custom workflow actions for guides + singleton restrictions (publish/discard only) |
 | `src/sanity/schemas/guide.ts` | Guide document schema with Portable Text body |
 | `src/sanity/schemas/author.ts` | Author document schema |
+| `src/sanity/schemas/landingPage.ts` | Landing page singleton schema (7 fieldsets) |
+| `src/sanity/schemas/siteSettings.ts` | Footer & settings singleton schema |
+| `src/sanity/schemas/tripBuilderConfig.ts` | Trip builder config singleton schema |
 | `src/sanity/schemas/objects/*.ts` | Custom block types (tipCallout, locationRef, imageGallery) |
 | `src/app/studio/[[...tool]]/page.tsx` | Embedded Sanity Studio page |
-| `src/app/api/sanity/webhook/route.ts` | Webhook: Sanity → Supabase sync + revalidation |
+| `src/app/api/sanity/webhook/route.ts` | Webhook: guide → Supabase sync, singletons → revalidatePath |
+| `src/lib/sanity/contentService.ts` | Fetcher functions: getLandingPageContent, getSiteSettings, getTripBuilderConfig |
+| `src/types/sanitySiteContent.ts` | TS types: LandingPageContent, SiteSettings, TripBuilderConfig |
 | `src/components/features/guides/PortableTextBody.tsx` | Portable Text renderer matching editorial styles |
 | `src/components/features/guides/blocks/*.tsx` | Custom block components (TipCallout, LocationEmbed, ImageGallery) |
 | `src/types/sanityGuide.ts` | SanityGuide, SanityAuthor types |
 | `src/lib/guides/guideService.ts` | Sanity fetch functions (with try/catch for graceful fallback) |
 | `src/app/guides/[slug]/page.tsx` | Dual source: try Sanity first, fallback Supabase |
-| `src/components/features/guides/GuideDetailClient.tsx` | Discriminated union props for dual source |
-| `src/components/features/guides/GuidePreamble.tsx` | Author as string (legacy) or object (Sanity) with avatar + link |
+
+#### Frontend Wiring
+
+| Component | Sanity Content Source | Fallback |
+|-----------|----------------------|----------|
+| `HeroOpening` | `landingPage` → tagline, description, CTA text | Hardcoded strings |
+| `Philosophy` | `landingPage` → eyebrow, heading, stats | Hardcoded strings |
+| `ImmersiveShowcase` | `landingPage` → showcaseActs (3 acts) | `defaultActs` array |
+| `TestimonialTheater` | `landingPage` → testimonials array | `defaultTestimonials` array |
+| `FeaturedLocations` | `landingPage` → section header copy | Hardcoded strings |
+| `FeaturedGuides` | `landingPage` → section header copy | Hardcoded strings |
+| `FinalCTA` | `landingPage` → heading, CTA text, subtext | Hardcoded strings |
+| `Footer` | `siteSettings` → nav columns, social links, brand copy | `defaultNavColumns`/`defaultSocialLinks` |
+| `VibeStep` | `tripBuilderConfig` → vibe name, description, image | `VIBES` data + `VIBE_IMAGES` |
+| `RegionStep` | `tripBuilderConfig` → region tagline, description, highlights, heroImage | `REGION_DESCRIPTIONS` data |
 
 #### Env Vars (Sanity)
 | Variable | Sensitive | Vercel Environments |
