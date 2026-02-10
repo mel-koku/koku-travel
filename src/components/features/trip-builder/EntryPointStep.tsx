@@ -287,6 +287,7 @@ function JapanSilhouette({
   isLoading,
 }: JapanSilhouetteProps) {
   const topSet = useMemo(() => new Set(topAirportCodes), [topAirportCodes]);
+  const [hoveredAirport, setHoveredAirport] = useState<{ iataCode: string; name: string; x: number; y: number } | null>(null);
 
   return (
     <div className="relative h-full w-full" style={{ maxHeight: "calc(100vh - 14rem)" }}>
@@ -344,6 +345,8 @@ function JapanSilhouette({
                   fill="transparent"
                   className="cursor-pointer"
                   onClick={() => onSelectAirport(airport)}
+                  onMouseEnter={() => setHoveredAirport({ iataCode: airport.iataCode, name: airport.shortName, x: pos.x, y: pos.y })}
+                  onMouseLeave={() => setHoveredAirport(null)}
                   role="button"
                   tabIndex={0}
                   aria-label={`Select ${airport.name}`}
@@ -385,6 +388,16 @@ function JapanSilhouette({
               </g>
             );
           })}
+        {hoveredAirport && selectedAirport?.iataCode !== hoveredAirport.iataCode && (
+          <text
+            x={hoveredAirport.x + (hoveredAirport.x > 320 ? -8 : 10)}
+            y={hoveredAirport.y + (topSet.has(hoveredAirport.iataCode) ? 13 : 3)}
+            className="pointer-events-none font-mono text-[8px] fill-foreground-secondary"
+            textAnchor={hoveredAirport.x > 320 ? "end" : "start"}
+          >
+            {hoveredAirport.name}
+          </text>
+        )}
       </svg>
     </div>
   );
