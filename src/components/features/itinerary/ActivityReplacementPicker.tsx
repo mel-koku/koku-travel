@@ -142,7 +142,6 @@ export function ActivityReplacementPicker({
                             alt={location.name}
                             width={80}
                             height={80}
-                            unoptimized
                             className="h-20 w-20 shrink-0 rounded-lg object-cover"
                           />
                         )}

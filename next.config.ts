@@ -39,6 +39,11 @@ const remotePatterns: Array<{
     protocol: "https",
     hostname: "cdn.sanity.io",
   },
+  {
+    protocol: "https",
+    hostname: "mbjcxrfuuczlauavashs.supabase.co",
+    pathname: "/storage/v1/object/public/**",
+  },
 ];
 
 if (siteUrl) {

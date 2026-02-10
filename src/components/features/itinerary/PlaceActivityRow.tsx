@@ -563,7 +563,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
                 alt={activity.title}
                 fill
-                unoptimized
                 sizes="(max-width: 640px) 100vw, 600px"
                 className={`object-cover transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
                 onLoad={() => setImageLoaded(true)}

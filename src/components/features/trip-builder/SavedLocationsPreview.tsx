@@ -72,7 +72,6 @@ export function SavedLocationsPreview({
                   src={resizePhotoUrl(location.image, 400) ?? location.image}
                   alt={location.name}
                   fill
-                  unoptimized
                   className="object-cover"
                   sizes="48px"
                 />

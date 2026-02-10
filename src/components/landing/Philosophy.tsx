@@ -39,6 +39,7 @@ export function Philosophy({ locationCount }: PhilosophyProps) {
           fill
           className="object-cover"
           sizes="100vw"
+          priority
         />
         <div className="absolute inset-0 bg-charcoal/65" />
       </motion.div>

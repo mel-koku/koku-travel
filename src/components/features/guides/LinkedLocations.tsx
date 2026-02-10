@@ -78,7 +78,6 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                       src={imageSrc}
                       alt={location.name}
                       fill
-                      unoptimized
                       className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
                       style={{ transitionTimingFunction: easeCinematicCSS }}
                       sizes={

@@ -161,7 +161,6 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             src={imageSrc || "/placeholder.jpg"}
             alt={displayName}
             fill
-            unoptimized
             className="object-cover"
             sizes="(min-width: 640px) 560px, 100vw"
             priority

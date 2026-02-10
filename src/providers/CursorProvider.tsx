@@ -6,6 +6,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   type ReactNode,
 } from "react";
@@ -64,24 +65,30 @@ export function CursorProvider({ children }: { children: ReactNode }) {
       cancelAnimationFrame(rafRef.current);
       document.documentElement.classList.remove("custom-cursor");
     };
-  }, [cursorX, cursorY]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- cursorX/cursorY are stable refs from useMotionValue
+  }, []);
 
   const setCursorStateCb = useCallback((state: CursorState) => {
     setCursorState(state);
   }, []);
 
+  const value = useMemo(
+    () => ({
+      cursorState,
+      setCursorState: setCursorStateCb,
+      cursorX,
+      cursorY,
+      smoothX,
+      smoothY,
+      isEnabled,
+    }),
+    // cursorX/cursorY/smoothX/smoothY are stable refs from useMotionValue/useSpring
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [cursorState, setCursorStateCb, isEnabled]
+  );
+
   return (
-    <CursorContext.Provider
-      value={{
-        cursorState,
-        setCursorState: setCursorStateCb,
-        cursorX,
-        cursorY,
-        smoothX,
-        smoothY,
-        isEnabled,
-      }}
-    >
+    <CursorContext.Provider value={value}>
       {children}
     </CursorContext.Provider>
   );

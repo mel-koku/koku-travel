@@ -9,7 +9,7 @@ import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locat
 import type { Coordinates } from "@/data/locationCoordinates";
 import type { RoutingRequest } from "@/lib/routing/types";
 
-const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
+const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
 const DEFAULT_ZOOM = 12;
 const DEFAULT_CENTER: [number, number] = [135.7681, 35.0116];
 const ROUTE_LINE = "#8c2f2f"; // brand-primary (bathhouse crimson)
@@ -174,11 +174,9 @@ export function ItineraryMap({
 
     const controller = new AbortController();
     const loadRoutes = async () => {
-      const segments: RouteSegment[] = [];
-      for (let i = 1; i < activityPoints.length; i += 1) {
-        const previous = activityPoints[i - 1];
-        const current = activityPoints[i];
-        if (!previous || !current) continue;
+      const routePromises = activityPoints.slice(1).map(async (current, i) => {
+        const previous = activityPoints[i];
+        if (!previous || !current) return null;
         const mode = current.activity.travelFromPrevious?.mode ?? "walk";
         const request: RoutingRequest = {
           origin: previous.coordinates,
@@ -187,31 +185,30 @@ export function ItineraryMap({
         };
         try {
           const result = await mapboxService.getRoute(request);
-          if (controller.signal.aborted) {
-            return;
-          }
+          if (controller.signal.aborted) return null;
           const path = result.geometry?.length
             ? result.geometry
             : [previous.coordinates, current.coordinates];
-          segments.push({
+          return {
             id: `${previous.id}-${current.id}`,
             fromId: previous.id,
             toId: current.id,
             path,
-          });
+          };
         } catch {
-          if (controller.signal.aborted) {
-            return;
-          }
-          segments.push({
+          if (controller.signal.aborted) return null;
+          return {
             id: `${previous.id}-${current.id}`,
             fromId: previous.id,
             toId: current.id,
             path: [previous.coordinates, current.coordinates],
-          });
+          };
         }
+      });
+      const results = await Promise.all(routePromises);
+      if (!controller.signal.aborted) {
+        setRouteSegments(results.filter((s): s is RouteSegment => s !== null));
       }
-      setRouteSegments(segments);
     };
     loadRoutes();
 
@@ -227,18 +224,35 @@ export function ItineraryMap({
       return;
     }
 
-    markersRef.current.forEach((marker) => marker.remove());
-    markersRef.current.clear();
+    // Build set of current point IDs
+    const currentPointIds = new Set(activityPoints.map((p) => p.id));
 
-    activityPoints.forEach((point) => {
+    // Remove markers that are no longer in activityPoints
+    markersRef.current.forEach((marker, id) => {
+      if (!currentPointIds.has(id)) {
+        marker.remove();
+        markersRef.current.delete(id);
+      }
+    });
+
+    // Add or update markers
+    activityPoints.forEach((point, index) => {
+      const existingMarker = markersRef.current.get(point.id);
+      if (existingMarker) {
+        // Update color for selection state
+        const markerEl = existingMarker.getElement();
+        markerEl.style.backgroundColor = point.id === selectedActivityId ? MARKER_HIGHLIGHT_COLOR : MARKER_COLOR;
+        return;
+      }
+
+      // Create new marker
       const markerEl = document.createElement("div");
       markerEl.className = "koku-mapbox-marker";
-      const markerColor = point.id === selectedActivityId ? MARKER_HIGHLIGHT_COLOR : MARKER_COLOR;
       Object.assign(markerEl.style, {
         width: "26px",
         height: "26px",
         borderRadius: "50%",
-        backgroundColor: markerColor,
+        backgroundColor: point.id === selectedActivityId ? MARKER_HIGHLIGHT_COLOR : MARKER_COLOR,
         border: "2px solid white",
         boxShadow: "0 2px 6px rgba(0,0,0,0.4)",
         cursor: "pointer",
@@ -250,7 +264,7 @@ export function ItineraryMap({
         color: "#fff",
       });
       markerEl.setAttribute("data-activity-id", point.id);
-      markerEl.textContent = String(activityPoints.indexOf(point) + 1);
+      markerEl.textContent = String(index + 1);
 
       const marker = new mapboxModule.Marker({ element: markerEl })
         .setLngLat([point.coordinates.lng, point.coordinates.lat])

@@ -4,6 +4,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   useCallback,
@@ -78,16 +79,13 @@ export function LenisProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const value = useMemo(
+    () => ({ lenis: lenisInstance, scrollProgress, direction, pause, resume }),
+    [lenisInstance, scrollProgress, direction, pause, resume]
+  );
+
   return (
-    <LenisContext.Provider
-      value={{
-        lenis: lenisInstance,
-        scrollProgress,
-        direction,
-        pause,
-        resume,
-      }}
-    >
+    <LenisContext.Provider value={value}>
       {children}
     </LenisContext.Provider>
   );

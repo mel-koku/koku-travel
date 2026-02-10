@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
@@ -40,16 +40,30 @@ export function FeaturedLocations({ locations }: FeaturedLocationsProps) {
 
   // Horizontal scroll: cards stay still for the first 15% (intro readable),
   // then slide left through the rest of the scroll range.
-  // Compute exact pixel translation so the last card is always fully visible.
+  // Cache dimensions to avoid DOM reads on every scroll frame.
   const galleryRef = useRef<HTMLDivElement>(null);
-  const xTranslate = useTransform(scrollYProgress, (progress) => {
-    if (!galleryRef.current) return 0;
+  const maxShiftRef = useRef(0);
+
+  const updateMaxShift = useCallback(() => {
+    if (!galleryRef.current) return;
     const contentWidth = galleryRef.current.scrollWidth;
     const viewportWidth = window.innerWidth;
-    if (contentWidth <= viewportWidth) return 0;
-    const maxShift = contentWidth - viewportWidth + 24; // 24px right margin
+    maxShiftRef.current = contentWidth > viewportWidth ? contentWidth - viewportWidth + 24 : 0;
+  }, []);
+
+  useEffect(() => {
+    updateMaxShift();
+    const observer = new ResizeObserver(updateMaxShift);
+    if (galleryRef.current) observer.observe(galleryRef.current);
+    return () => {
+      observer.disconnect();
+    };
+  }, [updateMaxShift]);
+
+  const xTranslate = useTransform(scrollYProgress, (progress) => {
+    if (maxShiftRef.current === 0) return 0;
     const t = Math.max(0, Math.min(1, (progress - 0.05) / 0.85));
-    return -t * maxShift;
+    return -t * maxShiftRef.current;
   });
   // Progress bar width
   const progressScale = useTransform(scrollYProgress, [0.05, 0.9], [0, 1]);
@@ -157,7 +171,6 @@ function HorizontalLocationCard({
             src={imageSrc || "/placeholder.jpg"}
             alt={location.name}
             fill
-            unoptimized
             className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
             style={{ transitionTimingFunction: easeCinematicCSS }}
             sizes="50vw"
