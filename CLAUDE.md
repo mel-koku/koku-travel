@@ -55,22 +55,25 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 | `SANITY_API_WRITE_TOKEN` | Yes | Production only |
 | `SANITY_REVALIDATE_SECRET` | Yes | Production only |
 
-### Description Quality Audit & Fix (291 locations)
+### Description Quality Audit & Fix (1,129 locations across 2 rounds)
 - **Trigger**: Gion Corner had Gion District's description copied into it; led to full database audit
-- **5 tiers of issues found and fixed**:
-  - **Tier 1** (8 locations): Description described a completely different place (e.g., castle ruins had a restaurant's description)
-  - **Tier 2** (5 locations): Description about a hotel/property instead of the attraction itself
-  - **Tier 3** (12 locations): Generic boilerplate auto-generated text ("a notable landmark representing an important cultural site")
-  - **Tier 4** (14 locations): Truncated descriptions cut off at ~50 characters without ending punctuation
-  - **Tier 5** (252 locations): `description` identical to `short_description` — expanded each to 2-4 sentence paragraphs (60-200 words)
-- **Category fixes** (5 locations): Gion Corner (landmark→entertainment), Suigetsu (park→food), Sunset Live (restaurant→entertainment), OkutsuSo (museum→wellness), Kiyonoya (food→wellness)
+- **Round 1** (291 fixes):
+  - **Tier 1** (8): Description described a completely different place
+  - **Tier 2** (5): Description about a hotel/property instead of the attraction
+  - **Tier 3** (12): Generic boilerplate auto-generated text
+  - **Tier 4** (14): Truncated descriptions cut off at ~50 characters
+  - **Tier 5** (252): `description` identical to `short_description` — expanded to 60-200 words
+- **Round 2** (838 fixes):
+  - **Winter Sports** (1): Renamed to "Manza Prince Hotel", fixed description/category (nature→entertainment)
+  - **Truncated** (42): 16 Chugoku 50-char batch + 26 others; includes 2 prefecture fixes, 3 category fixes
+  - **desc=short_desc expansion** (794→0): 11 batch scripts, 60-200 word descriptions
+  - Sorinji (shrine→temple), Setouchi (nature→culture), Ikoma Plateau (landmark→nature, Fukuoka→Miyazaki), Sakitsu Village (Fukuoka→Kumamoto)
+- **Category fixes** (8 total across both rounds): Gion Corner, Suigetsu, Sunset Live, OkutsuSo, Kiyonoya, Sorinji, Setouchi, Ikoma Plateau
 - **Writing approach**: Warm, knowledgeable voice; signature dishes for restaurants, best seasons for nature, founding history for temples, practical tips throughout; no marketing cliches
 - **Verification**: Post-fix query confirms 0 remaining `description === short_description` matches
-- **Scripts** (one-time use, in `scripts/`):
-  - `find-desc-issues.js` — Detects Tier 3 (boilerplate patterns) and Tier 4 (truncated) locations
-  - `export-tier5.js` — Exports Tier 5 locations to JSON for batch processing
-  - `fix-descriptions-t1-t4.js` — Applied 35 fixes for Tiers 1-4 + category corrections
-  - `fix-tier5-batch1.js`, `fix-tier5-batch2.js`, `fix-tier5-batch3.js` — Applied 252 Tier 5 expanded descriptions (84 each)
+- **Scripts** (one-time use, gitignored, in `scripts/`):
+  - Round 1: `fix-descriptions-t1-t4.js`, `fix-tier5-batch{1,2,3}.js`, `find-desc-issues.js`, `export-tier5.js`
+  - Round 2: `fix-winter-sports.js`, `fix-truncated-descriptions.js`, `fix-tier5-b{1..11}.js`, `export-dq-audit.js`
 - **All fixes applied directly to Supabase** via service role key (no local data files changed)
 
 ---
