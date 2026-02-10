@@ -7,7 +7,7 @@ import {
   useTransform,
   useReducedMotion,
 } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
@@ -63,8 +63,8 @@ function ImmersiveShowcaseDesktop() {
   });
 
   return (
-    <section ref={containerRef} className="relative h-[300vh]">
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+    <section ref={containerRef} className="relative h-[300vh] shrink-0 bg-background">
+      <div className="sticky top-0 h-screen w-full overflow-hidden bg-charcoal">
         {acts.map((act, index) => (
           <Act
             key={act.number}
@@ -87,10 +87,11 @@ function Act({
   index: number;
   scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const start = index / 3;
   const end = (index + 1) / 3;
 
-  // All hooks called unconditionally — pick the right input/output ranges per index
+  // Opacity ranges — each act fades in/out with crossfade overlap
   const opacityFirstIn = [0, end - 0.08, end];
   const opacityFirstOut = [1, 1, 0];
   const opacityMidIn = [Math.max(0, start - 0.05), start + 0.05, end - 0.08, end];
@@ -103,6 +104,19 @@ function Act({
   const opacityLast = useTransform(scrollYProgress, opacityLastIn, opacityLastOut);
 
   const adjustedOpacity = index === 0 ? opacityFirst : index === 2 ? opacityLast : opacityMid;
+
+  // Sync opacity via ref — bypasses framer-motion v12's WAAPI renderer
+  // which overrides style.opacity on motion.div elements
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    el.style.opacity = String(adjustedOpacity.get());
+    const unsub = adjustedOpacity.on("change", (v) => {
+      if (containerRef.current) containerRef.current.style.opacity = String(v);
+    });
+    return () => unsub();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- motion values are stable refs
+  }, []);
 
   // Image clip-path reveal from left
   const clipX = useTransform(
@@ -119,14 +133,15 @@ function Act({
   const isFullWidth = index === 2;
 
   return (
-    <motion.div
+    <div
+      ref={containerRef}
       className="absolute inset-0 flex items-center"
-      style={{ opacity: adjustedOpacity }}
+      style={{ opacity: 0 }}
     >
 
       {isFullWidth ? (
         /* Act 3: Full-width image with text overlay */
-        <div className="relative h-full w-full">
+        <div className="relative h-full w-full bg-charcoal">
           <motion.div
             className="absolute inset-0"
             style={{ clipPath: clipPathStyle }}
@@ -207,7 +222,7 @@ function Act({
           )}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
 
