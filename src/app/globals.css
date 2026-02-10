@@ -61,10 +61,6 @@
   --sand: #3a332a;
   --warm-gray: #b8ad9e;
 
-  /* Layout spacing */
-  --space-section: clamp(4rem, 8vw, 8rem);
-  --space-gutter: clamp(1rem, 3vw, 2rem);
-
   /* Type scale (augmented fourth, ratio 1.414) */
   --text-caption: 0.5rem;
   --text-small: 0.707rem;
