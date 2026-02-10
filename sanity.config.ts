@@ -19,7 +19,7 @@ export default defineConfig({
       structure: deskStructure,
     }),
     visionTool({
-      defaultApiVersion: "2024-10-21",
+      defaultApiVersion: "2026-02-10",
     }),
   ],
 
