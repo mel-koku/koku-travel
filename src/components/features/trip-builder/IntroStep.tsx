@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { parallaxSubtle, staggerChar } from "@/lib/motion";
+import { ArrowLineCTA } from "@/components/features/trip-builder/ArrowLineCTA";
+import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
+import { easeReveal, easeCinematicCSS, staggerChar, durationBase } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type IntroStepProps = {
@@ -15,81 +15,152 @@ type IntroStepProps = {
 };
 
 export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
 
-  const imageY = useTransform(scrollYProgress, [0, 1], [parallaxSubtle.from, parallaxSubtle.to]);
+  const heading = sanityConfig?.introHeading ?? "Your Japan";
+  const subheading = sanityConfig?.introSubheading ?? "starts here";
+  const description =
+    sanityConfig?.introDescription ??
+    "Share what moves you, and we\u2019ll plan the rest \u2014 day by day, from places locals actually go.";
+  const ctaText = sanityConfig?.introCtaText ?? "Start Planning";
+  const eyebrow = sanityConfig?.introEyebrow ?? "TRIP BUILDER";
+  const bgImage =
+    sanityConfig?.introBackgroundImage?.url ?? "/images/regions/kansai-hero.jpg";
+  const accentImage =
+    sanityConfig?.introAccentImage?.url ?? "/images/regions/kansai-hero.jpg";
+  const imageCaption = sanityConfig?.introImageCaption ?? "Kansai, Japan";
+
+  const fade = (delay: number) =>
+    prefersReducedMotion
+      ? {}
+      : {
+          initial: { opacity: 0, y: 12 } as const,
+          animate: { opacity: 1, y: 0 } as const,
+          transition: { duration: 0.4, ease: easeReveal, delay },
+        };
 
   return (
-    <div
-      ref={containerRef}
-      className="relative -mt-20 flex min-h-screen items-center justify-center overflow-hidden bg-charcoal pt-20"
-    >
-      {/* Parallax background image */}
-      <motion.div
-        className="absolute inset-0"
-        style={prefersReducedMotion ? {} : { y: imageY }}
-      >
+    <div className="relative -mt-20 flex min-h-screen items-center overflow-hidden bg-charcoal pt-20">
+      {/* Atmospheric background — dim, Ken Burns ambient */}
+      <div className="absolute inset-0 overflow-hidden">
         <Image
-          src={sanityConfig?.introBackgroundImage?.url ?? "/images/regions/kansai-hero.jpg"}
+          src={bgImage}
           alt=""
           fill
-          className="object-cover opacity-25"
+          className="object-cover opacity-30"
           priority
           sizes="100vw"
+          style={
+            prefersReducedMotion
+              ? {}
+              : {
+                  animation: `intro-ken-burns 20s ${easeCinematicCSS} forwards`,
+                  transform: "scale(1.12)",
+                }
+          }
         />
         <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/40 to-charcoal/80" />
-      </motion.div>
+      </div>
 
       {/* Grain texture */}
       <div className="texture-grain absolute inset-0" />
 
-      {/* Content */}
-      <div className="relative z-10 mx-auto max-w-4xl px-6 py-20 text-center sm:py-28">
-        <SplitText
-          as="h1"
-          className="justify-center font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
-          splitBy="word"
-          animation="clipY"
-          staggerDelay={0.04}
-          delay={0.15}
-        >
-          {sanityConfig?.introHeading ?? "Your Japan"}
-        </SplitText>
+      {/* Main grid content */}
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-10 px-6 py-20 sm:py-28 lg:grid-cols-[1fr_0.82fr] lg:gap-16 lg:px-10">
+        {/* ── LEFT COLUMN — Typography + CTA ── */}
+        <div className="flex flex-col justify-center">
+          {/* Eyebrow */}
+          <motion.p
+            className="font-mono text-[10px] uppercase tracking-[0.2em] text-stone"
+            {...fade(0.15)}
+          >
+            {eyebrow}
+          </motion.p>
 
-        <SplitText
-          as="p"
-          className="mt-2 justify-center font-serif text-[clamp(1.5rem,5vw,3rem)] italic text-brand-primary"
-          splitBy="char"
-          animation="fadeUp"
-          staggerDelay={staggerChar}
-          delay={0.5}
-        >
-          {sanityConfig?.introSubheading ?? "starts here"}
-        </SplitText>
+          {/* Heading — dramatic scale */}
+          <SplitText
+            as="h1"
+            className="mt-4 font-serif italic text-[clamp(4rem,12vw,9rem)] leading-[0.9] text-white"
+            splitBy="word"
+            animation="clipY"
+            staggerDelay={0.08}
+            delay={0.3}
+          >
+            {heading}
+          </SplitText>
 
-        <ScrollReveal delay={0.8} distance={15} duration={0.6}>
-          <p className="mx-auto mt-6 max-w-xl text-base text-white/70 sm:text-lg">
-            {sanityConfig?.introDescription ?? "Share what moves you, and we'll plan the rest \u2014 day by day, from places locals actually go."}
-          </p>
+          {/* Subheading — brand-primary, char stagger */}
+          <SplitText
+            as="p"
+            className="mt-2 font-serif text-[clamp(1.5rem,5vw,3.5rem)] italic leading-[1.1] text-brand-primary"
+            splitBy="char"
+            animation="fadeUp"
+            staggerDelay={staggerChar}
+            delay={0.6}
+          >
+            {subheading}
+          </SplitText>
 
-          <div className="mt-10">
-            <Magnetic>
-              <button
-                type="button"
-                onClick={onStart}
-                className="h-14 cursor-pointer rounded-xl bg-brand-primary px-12 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-brand-primary/90"
-              >
-                {sanityConfig?.introCtaText ?? "Start Planning"}
-              </button>
-            </Magnetic>
-          </div>
-        </ScrollReveal>
+          {/* Description */}
+          <motion.p
+            className="mt-6 max-w-sm text-base leading-relaxed text-foreground-secondary sm:text-lg"
+            {...fade(1.0)}
+          >
+            {description}
+          </motion.p>
+
+          {/* CTA — ArrowLineCTA on desktop, button on mobile */}
+          <motion.div
+            className="mt-10"
+            initial={
+              prefersReducedMotion ? {} : { opacity: 0, x: -20 }
+            }
+            animate={{ opacity: 1, x: 0 }}
+            transition={{
+              duration: durationBase,
+              ease: easeReveal,
+              delay: 1.4,
+            }}
+          >
+            {/* Desktop: ArrowLineCTA */}
+            <div className="hidden lg:block">
+              <ArrowLineCTA label={ctaText} onClick={onStart} />
+            </div>
+
+            {/* Mobile: full-width button */}
+            <div className="lg:hidden">
+              <Magnetic>
+                <button
+                  type="button"
+                  onClick={onStart}
+                  className="h-14 w-full cursor-pointer rounded-xl bg-brand-primary px-12 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-brand-primary/90"
+                >
+                  {ctaText}
+                </button>
+              </Magnetic>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* ── RIGHT COLUMN — Image Panel ── */}
+        <div className="flex w-full items-center">
+          <IntroImagePanel
+            src={accentImage}
+            caption={imageCaption}
+            delay={0.6}
+          />
+        </div>
       </div>
+
+      {/* Step indicator — bottom-left */}
+      <motion.p
+        className="absolute bottom-6 left-6 z-10 font-mono text-[10px] uppercase tracking-widest text-stone/60 lg:bottom-10 lg:left-10"
+        initial={prefersReducedMotion ? {} : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4, delay: 1.8 }}
+      >
+        Step 01 / 06
+      </motion.p>
     </div>
   );
 }

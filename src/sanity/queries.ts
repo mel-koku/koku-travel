@@ -208,6 +208,12 @@ export const tripBuilderConfigQuery = groq`
       ...,
       "url": asset->url
     },
+    introEyebrow,
+    "introAccentImage": introAccentImage {
+      ...,
+      "url": asset->url
+    },
+    introImageCaption,
     dateStepHeading,
     dateStepDescription,
     "dateStepBackgroundImage": dateStepBackgroundImage {
