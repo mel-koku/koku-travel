@@ -133,7 +133,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
                 <button
                   type="button"
                   onClick={onStart}
-                  className="h-14 w-full cursor-pointer rounded-xl bg-brand-primary px-12 text-sm font-semibold uppercase tracking-wider text-white transition hover:bg-brand-primary/90"
+                  className="h-14 w-full cursor-pointer rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
                 >
                   {ctaText}
                 </button>
@@ -159,7 +159,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 1.8 }}
       >
-        Step 01 / 06
+        5 steps ahead
       </motion.p>
     </div>
   );
