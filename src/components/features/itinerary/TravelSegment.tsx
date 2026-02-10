@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { ItineraryTravelSegment } from "@/types/itinerary";
 import { TravelModeSelector } from "./TravelModeSelector";
+import { Button } from "@/components/ui/Button";
 import type { Coordinate } from "@/lib/routing/types";
 import { Modal } from "@/components/ui/Modal";
 
@@ -181,13 +182,13 @@ export function TravelSegment({
               ))}
             </ol>
             <div className="pt-2 border-t border-border">
-              <button
-                type="button"
+              <Button
+                variant="primary"
+                fullWidth
                 onClick={() => setDirectionsOpen(false)}
-                className="w-full rounded-lg bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
               >
                 Close
-              </button>
+              </Button>
             </div>
           </div>
         </Modal>

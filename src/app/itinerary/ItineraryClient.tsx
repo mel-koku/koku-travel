@@ -163,7 +163,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     return (
       <div className="p-16 text-center text-foreground-secondary">
         <p>{content?.itineraryEmptyState ?? "No itineraries yet. Build a trip and it\u2019ll show up here."}</p>
-        <Link href="/trip-builder" className="text-sage underline">
+        <Link href="/trip-builder" className="link-reveal text-sage transition-colors hover:text-sage/80">
           {content?.itineraryBuilderLink ?? "Go to Trip Builder"}
         </Link>
       </div>

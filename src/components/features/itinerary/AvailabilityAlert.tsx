@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
 import type { DayAvailabilityIssues, BatchAvailabilityResult } from "@/lib/availability/availabilityService";
 
 export type AvailabilityAlertProps = {
@@ -157,13 +158,14 @@ function AvailabilityIssueItem({ issue, onFindAlternative }: AvailabilityIssueIt
           </div>
         </div>
         {onFindAlternative && (
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="chipTiny"
+            className="shrink-0 bg-sage/20 text-sage hover:bg-sage/30"
             onClick={onFindAlternative}
-            className="shrink-0 rounded-full bg-sage/20 px-2 py-0.5 text-[10px] font-semibold text-sage hover:bg-sage/30 transition"
           >
             Find alternative
-          </button>
+          </Button>
         )}
       </div>
     </div>

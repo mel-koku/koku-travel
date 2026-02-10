@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
+import { Button } from "@/components/ui/Button";
 import { CATEGORY_HIERARCHY, getSubTypesForCategories } from "@/data/categoryHierarchy";
 
 type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
@@ -415,12 +416,13 @@ export function FilterPanel({
               >
                 Clear all
               </button>
-              <button
+              <Button
+                variant="primary"
+                size="lg"
                 onClick={onClose}
-                className="rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:bg-brand-primary/90 transition"
               >
                 Show {resultsCount.toLocaleString()} places
-              </button>
+              </Button>
             </div>
           </motion.div>
         </>
