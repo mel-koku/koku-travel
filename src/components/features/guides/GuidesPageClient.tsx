@@ -95,10 +95,10 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
       {/* Zone C — Editorial Listing */}
       <section
         aria-label="Travel guides"
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 sm:py-28"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-28"
       >
         {listingGuides.length > 0 ? (
-          <div className="space-y-16 lg:space-y-24">
+          <div className="space-y-10 sm:space-y-16 lg:space-y-24">
             {listingGuides.map((guide, i) => (
               <GuideEditorialRow
                 key={guide.id}

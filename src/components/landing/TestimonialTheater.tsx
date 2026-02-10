@@ -105,7 +105,7 @@ function TestimonialSpread({
   return (
     <div
       ref={containerRef}
-      className={`grid min-h-[70vh] lg:grid-cols-2 ${
+      className={`grid min-h-[50vh] lg:min-h-[70vh] lg:grid-cols-2 ${
         flip ? "" : ""
       }`}
     >
@@ -150,7 +150,7 @@ function TestimonialSpread({
 
       {/* Quote half */}
       <div
-        className={`flex items-center bg-charcoal px-8 py-16 sm:px-12 lg:px-16 lg:py-24 ${
+        className={`flex items-center bg-charcoal px-8 py-12 sm:py-20 lg:py-28 sm:px-12 lg:px-16 ${
           flip ? "lg:order-1" : ""
         }`}
       >

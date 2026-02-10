@@ -113,7 +113,7 @@ function Feature70_30() {
       </div>
 
       {/* 30% text — overlaps into image with negative margin */}
-      <div className="relative z-10 flex items-center bg-surface px-6 py-20 lg:-ml-16 lg:py-32">
+      <div className="relative z-10 flex items-center bg-surface px-6 py-12 sm:py-20 lg:py-28 lg:-ml-16">
         <div className="lg:max-w-sm">
           <ScrollReveal>
             <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">
@@ -159,7 +159,7 @@ function Feature40_60() {
       className="mx-auto grid max-w-7xl lg:grid-cols-[4fr_6fr] lg:min-h-[70vh]"
     >
       {/* 40% text — overlaps into image */}
-      <div className="relative z-10 flex items-center px-6 py-20 lg:py-32 lg:pr-0">
+      <div className="relative z-10 flex items-center px-6 py-12 sm:py-20 lg:py-28 lg:pr-0">
         <div className="lg:max-w-sm">
           <ScrollReveal>
             <p className="text-sm font-medium uppercase tracking-widest text-brand-primary">

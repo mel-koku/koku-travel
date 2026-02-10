@@ -30,6 +30,17 @@ Koku Travel is a Next.js trip planning application for Japan travel. It includes
 | Warning | `text-warning` | `#d4a017` |
 | Error | `bg-error` / `text-error` | `#b33025` |
 
+### Mobile Responsiveness Patterns
+- **Viewport height**: Use `h-[100dvh]` / `min-h-[100dvh]` instead of `h-screen` / `min-h-screen` (fixes mobile Safari/Chrome address bar jitter)
+- **Section padding**: `py-12 sm:py-20 lg:py-28` progressive pattern for vertical rhythm
+- **Touch targets**: Minimum 44px (`h-11 w-11`) for icon buttons; `py-2.5` minimum for text buttons
+- **Input text size**: Use `text-base` (not `text-sm`) on inputs to prevent iOS auto-zoom on focus
+- **Dropdown width**: `w-[min(16rem,90vw)]` to prevent overflow on narrow screens
+- **Flex overflow**: Add `flex-wrap gap-2` to `flex justify-between` rows that may overflow on mobile
+- **Touch feedback**: Add `group-active:scale-[1.02]` alongside `group-hover:scale-[1.02]` for mobile tap response
+- **Safe area**: Use `pb-[env(safe-area-inset-bottom)]` for fixed-bottom elements (toasts, pills)
+- **Overscroll**: Add `overscroll-contain` on horizontal scroll containers to prevent parent page scroll
+
 ### Color Rules
 - **Never** use raw Tailwind colors (`gray-*`, `indigo-*`, `amber-*`, etc.)
 - **Exception**: `TravelModeSelector.tsx` transport-mode colors (functional differentiators)

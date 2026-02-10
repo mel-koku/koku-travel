@@ -40,7 +40,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
         };
 
   return (
-    <div className="relative -mt-20 flex min-h-screen items-center overflow-hidden bg-charcoal pt-20">
+    <div className="relative -mt-20 flex min-h-[100dvh] items-center overflow-hidden bg-charcoal pt-20">
       {/* Atmospheric background — dim, Ken Burns ambient */}
       <div className="absolute inset-0 overflow-hidden">
         <Image

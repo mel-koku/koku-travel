@@ -47,7 +47,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
       </motion.div>
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[80vh] items-center justify-center px-6 py-24 sm:py-32 text-center">
+      <div className="relative z-10 flex min-h-[80vh] items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
         <div className="max-w-2xl">
           <SplitText
             as="h2"

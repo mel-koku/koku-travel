@@ -35,7 +35,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen w-full overflow-hidden bg-charcoal"
+      className="relative min-h-[100dvh] w-full overflow-hidden bg-charcoal"
     >
       {/* Parallax background image */}
       <motion.div
@@ -55,7 +55,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
       </motion.div>
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
+      <div className="relative z-10 flex min-h-[100dvh] flex-col items-center justify-center px-6 text-center">
         {/* Small stat line */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}

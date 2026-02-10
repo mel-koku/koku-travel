@@ -32,7 +32,7 @@ export function GuidePreamble({
   const authorSlug = isAuthorObject ? author.slug : undefined;
 
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-2xl px-6">
         {/* Summary */}
         <ScrollReveal distance={30} delay={0.1}>

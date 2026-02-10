@@ -119,7 +119,7 @@ const markdownComponents = {
 
 export function GuideContent({ body }: GuideContentProps) {
   return (
-    <article className="py-20 sm:py-28">
+    <article className="py-12 sm:py-20 lg:py-28">
       <ReactMarkdown components={markdownComponents}>
         {body}
       </ReactMarkdown>

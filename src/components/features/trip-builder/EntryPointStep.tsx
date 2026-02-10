@@ -295,7 +295,7 @@ function JapanSilhouette({
   const [hoveredAirport, setHoveredAirport] = useState<{ iataCode: string; name: string; x: number; y: number } | null>(null);
 
   return (
-    <div className="relative h-full w-full" style={{ maxHeight: "calc(100vh - 14rem)" }}>
+    <div className="relative h-full w-full" style={{ maxHeight: "calc(100dvh - 14rem)" }}>
       <svg
         viewBox={JAPAN_MAP_VIEWBOX}
         className="h-full w-full"
