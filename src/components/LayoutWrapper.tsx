@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { usePathname } from "next/navigation";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -24,6 +25,15 @@ export function LayoutWrapper({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const isStudio = pathname.startsWith("/studio");
+
+  // Sanity Studio manages its own scroll, layout, and UI chrome —
+  // skip Lenis, Header, Footer, PageTransition, and cursor overlay
+  if (isStudio) {
+    return <>{children}</>;
+  }
+
   return (
     <QueryProvider>
       <AppStateProvider>
