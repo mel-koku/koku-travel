@@ -36,10 +36,23 @@ export async function POST(request: NextRequest) {
   }
 
   const body = (await request.json()) as SanityWebhookBody;
-  if (body._type !== "guide") {
-    return NextResponse.json({ skipped: true, reason: "Not a guide document" });
-  }
 
+  switch (body._type) {
+    case "guide":
+      return handleGuide(body);
+    case "landingPage":
+    case "siteSettings":
+      return handleSingletonRevalidation(body._type, ["/"]);
+    case "tripBuilderConfig":
+      return handleSingletonRevalidation(body._type, ["/trip-builder"]);
+    default:
+      return NextResponse.json({ skipped: true, reason: `Unknown type: ${body._type}` });
+  }
+}
+
+// ── Guide handler (unchanged logic) ────────────────────────
+
+async function handleGuide(body: SanityWebhookBody) {
   const slug = body.slug?.current;
   if (!slug) {
     return NextResponse.json({ error: "Missing slug" }, { status: 400 });
@@ -105,10 +118,26 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Revalidate affected pages
   revalidatePath("/guides");
   revalidatePath(`/guides/${slug}`);
   revalidatePath("/");
 
   return NextResponse.json({ ok: true, action: "upserted", slug });
+}
+
+// ── Singleton revalidation ─────────────────────────────────
+
+async function handleSingletonRevalidation(
+  type: string,
+  paths: string[]
+) {
+  for (const path of paths) {
+    revalidatePath(path);
+  }
+  // Always revalidate home since siteSettings affects footer
+  if (!paths.includes("/")) {
+    revalidatePath("/");
+  }
+
+  return NextResponse.json({ ok: true, action: "revalidated", type, paths });
 }

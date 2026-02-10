@@ -13,6 +13,8 @@ import {
   autoSelectRegions,
 } from "@/lib/tripBuilder/regionScoring";
 import type { KnownRegionId } from "@/types/trip";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import type { RegionDescription } from "@/data/regionDescriptions";
 
 import { RegionMapCanvas } from "./RegionMapCanvas";
 import { RegionRow } from "./RegionRow";
@@ -21,11 +23,30 @@ import { RegionSummaryPill } from "./RegionSummaryPill";
 
 export type RegionStepProps = {
   onValidityChange?: (isValid: boolean) => void;
+  sanityConfig?: TripBuilderConfig;
 };
 
 const EASE_OUT_EXPO = [0.215, 0.61, 0.355, 1] as const;
 
-export function RegionStep({ onValidityChange }: RegionStepProps) {
+/** Merge Sanity overrides into a RegionDescription, falling back to hardcoded values */
+function mergeRegionOverride(
+  region: RegionDescription,
+  sanityRegionMap: Map<string, NonNullable<TripBuilderConfig["regions"]>[number]> | null
+): RegionDescription {
+  if (!sanityRegionMap) return region;
+  const override = sanityRegionMap.get(region.id);
+  if (!override) return region;
+  return {
+    ...region,
+    name: override.name || region.name,
+    tagline: override.tagline || region.tagline,
+    description: override.description || region.description,
+    highlights: override.highlights?.length ? override.highlights : region.highlights,
+    heroImage: override.heroImage?.url ?? region.heroImage,
+  };
+}
+
+export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) {
   const { data, setData } = useTripBuilder();
   const hasAutoSelected = useRef(false);
   const hoverClearTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -72,17 +93,32 @@ export function RegionStep({ onValidityChange }: RegionStepProps) {
     };
   }, []);
 
+  // Build Sanity override lookup by regionId
+  const sanityRegions = sanityConfig?.regions;
+  const sanityRegionMap = useMemo(() => {
+    if (!sanityRegions?.length) return null;
+    const map = new Map<string, NonNullable<TripBuilderConfig["regions"]>[number]>();
+    for (const r of sanityRegions) {
+      map.set(r.regionId, r);
+    }
+    return map;
+  }, [sanityRegions]);
+
   const vibes = useMemo(() => data.vibes ?? [], [data.vibes]);
   const selectedRegions = useMemo(
     () => (data.regions ?? []) as KnownRegionId[],
     [data.regions]
   );
 
-  // Score regions
-  const scoredRegions = useMemo(
-    () => scoreRegionsForTrip(vibes, data.entryPoint),
-    [vibes, data.entryPoint]
-  );
+  // Score regions and merge Sanity overrides
+  const scoredRegions = useMemo(() => {
+    const scored = scoreRegionsForTrip(vibes, data.entryPoint);
+    if (!sanityRegionMap) return scored;
+    return scored.map((s) => ({
+      ...s,
+      region: mergeRegionOverride(s.region, sanityRegionMap),
+    }));
+  }, [vibes, data.entryPoint, sanityRegionMap]);
 
   // Total cities
   const totalCities = useMemo(() => {

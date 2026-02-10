@@ -29,5 +29,12 @@ export default defineConfig({
 
   document: {
     actions: resolveDocumentActions,
+    newDocumentOptions: (prev) =>
+      prev.filter(
+        (item) =>
+          !["siteSettings", "landingPage", "tripBuilderConfig"].includes(
+            item.templateId
+          )
+      ),
   },
 });

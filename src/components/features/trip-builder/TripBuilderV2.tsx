@@ -15,9 +15,11 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { easePageTransition, durationSlow } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { ChevronLeft } from "lucide-react";
+import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 export type TripBuilderV2Props = {
   onComplete?: () => void;
+  sanityConfig?: TripBuilderConfig;
 };
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5;
@@ -44,7 +46,7 @@ const reducedMotionVariants: Variants = {
   exit: { opacity: 0, transition: { duration: 0.2 } },
 };
 
-export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
+export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) {
   const { data, reset } = useTripBuilder();
   const [currentStep, setCurrentStep] = useState<Step>(0);
   const [direction, setDirection] = useState(1);
@@ -202,7 +204,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
               nextDisabled={isNextDisabled}
               fullBleed
             >
-              <VibeStep onValidityChange={setVibesValid} />
+              <VibeStep onValidityChange={setVibesValid} sanityConfig={sanityConfig} />
             </StepShell>
           )}
 
@@ -215,7 +217,7 @@ export function TripBuilderV2({ onComplete }: TripBuilderV2Props) {
               nextDisabled={isNextDisabled}
               fullBleed
             >
-              <RegionStep onValidityChange={setRegionsValid} />
+              <RegionStep onValidityChange={setRegionsValid} sanityConfig={sanityConfig} />
             </StepShell>
           )}
 

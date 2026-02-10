@@ -8,9 +8,11 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useCursor } from "@/providers/CursorProvider";
 import type { GuideSummary } from "@/types/guide";
 import { staggerItem, easeCinematicCSS } from "@/lib/motion";
+import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type FeaturedGuidesProps = {
   guides: GuideSummary[];
+  content?: LandingPageContent;
 };
 
 const GUIDE_TYPE_LABELS: Record<GuideSummary["guideType"], string> = {
@@ -20,7 +22,7 @@ const GUIDE_TYPE_LABELS: Record<GuideSummary["guideType"], string> = {
   seasonal: "Seasonal",
 };
 
-export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
+export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
   if (guides.length === 0) {
     return null;
   }
@@ -36,7 +38,7 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
           <div>
             <ScrollReveal>
               <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
-                Travel Guides
+                {content?.featuredGuidesEyebrow ?? "Travel Guides"}
               </p>
             </ScrollReveal>
             <SplitText
@@ -46,12 +48,11 @@ export function FeaturedGuides({ guides }: FeaturedGuidesProps) {
               animation="clipY"
               delay={0.1}
             >
-              Start reading
+              {content?.featuredGuidesHeading ?? "Start reading"}
             </SplitText>
             <ScrollReveal delay={0.2}>
               <p className="mt-4 max-w-md text-base text-foreground-secondary">
-                Local insights, seasonal tips, and curated itineraries to help
-                you plan a trip that goes beyond the surface.
+                {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and curated itineraries to help you plan a trip that goes beyond the surface."}
               </p>
             </ScrollReveal>
           </div>

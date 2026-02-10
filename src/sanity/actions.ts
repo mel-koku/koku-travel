@@ -76,6 +76,8 @@ function RequestChangesAction(
   };
 }
 
+const SINGLETON_TYPES = new Set(["siteSettings", "landingPage", "tripBuilderConfig"]);
+
 export function resolveDocumentActions(
   prev: DocumentActionComponent[],
   context: DocumentActionsContext
@@ -91,5 +93,13 @@ export function resolveDocumentActions(
       ),
     ];
   }
+
+  // Singletons: only publish, no delete or duplicate
+  if (SINGLETON_TYPES.has(context.schemaType)) {
+    return prev.filter(
+      (action) => action.action === "publish" || action.action === "discardChanges"
+    );
+  }
+
   return prev;
 }

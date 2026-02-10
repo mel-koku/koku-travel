@@ -13,6 +13,7 @@ import { LenisProvider } from "@/providers/LenisProvider";
 import { CursorProvider } from "@/providers/CursorProvider";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollProgressBar } from "@/components/ui/ScrollProgressBar";
+import type { SiteSettings } from "@/types/sanitySiteContent";
 
 // Lazy-load CustomCursor (~40KB) — only needed on desktop, not critical path
 const CustomCursor = dynamic(
@@ -22,8 +23,10 @@ const CustomCursor = dynamic(
 
 export function LayoutWrapper({
   children,
+  siteSettings,
 }: {
   children: React.ReactNode;
+  siteSettings?: SiteSettings;
 }) {
   const pathname = usePathname();
   const isStudio = pathname.startsWith("/studio");
@@ -49,7 +52,7 @@ export function LayoutWrapper({
                       <PageTransition>{children}</PageTransition>
                     </main>
                   </ErrorBoundary>
-                  <Footer />
+                  <Footer settings={siteSettings} />
                 </div>
                 <CustomCursor />
               </CursorProvider>
