@@ -5,8 +5,10 @@ import {
   getGuideWithLocations,
   getGuidesByCity,
   getGuidesByType,
+  getSanityGuideWithLocations,
 } from "@/lib/guides/guideService";
 import { GuideDetailClient } from "@/components/features/guides/GuideDetailClient";
+import { urlFor } from "@/sanity/image";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -14,16 +16,33 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const result = await getGuideWithLocations(slug);
 
-  if (!result) {
+  // Try Sanity first
+  const sanityResult = await getSanityGuideWithLocations(slug);
+  if (sanityResult) {
+    const { guide } = sanityResult;
+    const imageUrl =
+      guide.featuredImage?.url ||
+      urlFor(guide.featuredImage).width(1200).url();
     return {
-      title: "Guide Not Found | Koku Travel",
+      title: `${guide.title} | Koku Travel`,
+      description: guide.summary,
+      openGraph: {
+        title: guide.title,
+        description: guide.summary,
+        images: [imageUrl],
+        type: "article",
+      },
     };
   }
 
-  const { guide } = result;
+  // Fallback to Supabase
+  const result = await getGuideWithLocations(slug);
+  if (!result) {
+    return { title: "Guide Not Found | Koku Travel" };
+  }
 
+  const { guide } = result;
   return {
     title: `${guide.title} | Koku Travel`,
     description: guide.summary,
@@ -36,20 +55,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Dynamic rendering - no generateStaticParams to avoid cookies() build-time error
-export const dynamic = "force-dynamic";
+// ISR with on-demand revalidation via webhook
+export const revalidate = 3600;
 
 export default async function GuideDetailPage({ params }: Props) {
   const { slug } = await params;
-  const result = await getGuideWithLocations(slug);
 
+  // Try Sanity first
+  const sanityResult = await getSanityGuideWithLocations(slug);
+  if (sanityResult) {
+    const { guide, locations } = sanityResult;
+
+    // Related guides still from Supabase
+    let relatedGuides = guide.city
+      ? await getGuidesByCity(guide.city, guide.slug, 1)
+      : [];
+    if (relatedGuides.length === 0) {
+      relatedGuides = await getGuidesByType(guide.guideType, guide.slug, 1);
+    }
+    const relatedGuide = relatedGuides[0] ?? null;
+
+    return (
+      <GuideDetailClient
+        sanityGuide={guide}
+        locations={locations}
+        relatedGuide={relatedGuide}
+        source="sanity"
+      />
+    );
+  }
+
+  // Fallback to Supabase
+  const result = await getGuideWithLocations(slug);
   if (!result) {
     notFound();
   }
 
   const { guide, locations } = result;
 
-  // Fetch one related guide: prefer same city, fallback to same type
   let relatedGuides = guide.city
     ? await getGuidesByCity(guide.city, guide.id, 1)
     : [];
@@ -63,6 +106,7 @@ export default async function GuideDetailPage({ params }: Props) {
       guide={guide}
       locations={locations}
       relatedGuide={relatedGuide}
+      source="supabase"
     />
   );
 }

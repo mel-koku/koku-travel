@@ -35,6 +35,10 @@ const remotePatterns: Array<{
     protocol: "https",
     hostname: "cdn.pixabay.com",
   },
+  {
+    protocol: "https",
+    hostname: "cdn.sanity.io",
+  },
 ];
 
 if (siteUrl) {
@@ -111,9 +115,9 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com", // Allow Google Fonts stylesheets + Tailwind CSS inline styles
       "img-src 'self' data: https: blob:",
       "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
-      "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://*.vercel-insights.com https://vitals.vercel-insights.com",
+      "connect-src 'self' https://*.supabase.co https://*.googleapis.com https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://*.vercel-insights.com https://vitals.vercel-insights.com https://*.sanity.io https://*.apicdn.sanity.io",
       "worker-src 'self' blob:", // Allow Mapbox GL JS Web Workers
-      "frame-src 'self'",
+      "frame-src 'self' https://*.sanity.io",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -129,7 +133,25 @@ const nextConfig: NextConfig = {
     remotePatterns,
   },
   async headers() {
+    // Sanity Studio requires 'unsafe-eval' for script execution
+    const studioScriptSrc = ["'self'", "'unsafe-eval'", "'unsafe-inline'", "https://unpkg.com", "https://vercel.live", "https://va.vercel-scripts.com"];
+    const studioHeaders = securityHeaders.map((header) => {
+      if (header.key === "Content-Security-Policy") {
+        return {
+          ...header,
+          value: header.value
+            .replace(`script-src ${scriptSrc.join(" ")}`, `script-src ${studioScriptSrc.join(" ")}`)
+            .replace("frame-ancestors 'self'", "frame-ancestors 'self' https://*.sanity.io"),
+        };
+      }
+      return header;
+    });
+
     return [
+      {
+        source: "/studio/:path*",
+        headers: studioHeaders,
+      },
       {
         source: "/:path*",
         headers: securityHeaders,

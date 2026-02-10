@@ -9,6 +9,9 @@ import type { Guide, GuideRow, GuideSummary } from "@/types/guide";
 import { rowToGuide } from "@/types/guide";
 import { fetchLocationsByIds } from "@/lib/locations/locationService";
 import type { Location } from "@/types/location";
+import { sanityClient } from "@/sanity/client";
+import { guideBySlugQuery, authorBySlugQuery, allAuthorsQuery } from "@/sanity/queries";
+import type { SanityGuide, SanityAuthorFull, SanityAuthorSummary } from "@/types/sanityGuide";
 
 /**
  * Columns for full guide fetch
@@ -260,4 +263,75 @@ export async function getGuidesByType(
     readingTimeMinutes: row.reading_time_minutes ?? undefined,
     tags: row.tags,
   }));
+}
+
+// ---------------------------------------------------------------------------
+// Sanity CDN fetchers
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetches a guide from Sanity by slug (CDN-cached).
+ * Returns null if the Sanity project is unavailable.
+ */
+export async function getSanityGuideBySlug(
+  slug: string
+): Promise<SanityGuide | null> {
+  try {
+    const result = await sanityClient.fetch<SanityGuide | null>(
+      guideBySlugQuery,
+      { slug }
+    );
+    return result;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetches a Sanity guide with its linked locations from Supabase.
+ */
+export async function getSanityGuideWithLocations(
+  slug: string
+): Promise<{ guide: SanityGuide; locations: Location[] } | null> {
+  const guide = await getSanityGuideBySlug(slug);
+  if (!guide) return null;
+
+  const locations = guide.locationIds?.length
+    ? await fetchLocationsByIds(guide.locationIds)
+    : [];
+
+  return { guide, locations };
+}
+
+/**
+ * Fetches an author profile from Sanity with their published guides.
+ * Returns null if the Sanity project is unavailable.
+ */
+export async function getSanityAuthorBySlug(
+  slug: string
+): Promise<SanityAuthorFull | null> {
+  try {
+    const result = await sanityClient.fetch<SanityAuthorFull | null>(
+      authorBySlugQuery,
+      { slug }
+    );
+    return result;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetches all authors from Sanity for the directory page.
+ * Returns empty array if the Sanity project is unavailable.
+ */
+export async function getAllSanityAuthors(): Promise<SanityAuthorSummary[]> {
+  try {
+    const result = await sanityClient.fetch<SanityAuthorSummary[]>(
+      allAuthorsQuery
+    );
+    return result || [];
+  } catch {
+    return [];
+  }
 }
