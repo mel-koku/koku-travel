@@ -62,29 +62,6 @@ function formatTime(totalMinutes: number): string {
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
-function chooseTravelMode(
-  activity: Extract<ItineraryActivity, { kind: "place" }>,
-  location: Location | null,
-  previousLocation: Location | null,
-): ItineraryTravelMode {
-  if (activity.travelFromPrevious?.mode) {
-    return activity.travelFromPrevious.mode;
-  }
-  if (previousLocation?.preferredTransitModes?.length) {
-    const firstMode = previousLocation.preferredTransitModes[0];
-    if (firstMode) {
-      return firstMode;
-    }
-  }
-  if (location?.preferredTransitModes?.length) {
-    const firstMode = location.preferredTransitModes[0];
-    if (firstMode) {
-      return firstMode;
-    }
-  }
-  return "walk";
-}
-
 function lookupCoordinates(activity: Extract<ItineraryActivity, { kind: "place" }>, location: Location | null): Coordinates {
   // First check if activity has embedded coordinates (entry points, external places)
   if (activity.coordinates) {
@@ -339,39 +316,38 @@ export async function planItinerary(
 ): Promise<Itinerary> {
   const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
-  const plannedDays: ItineraryDay[] = [];
+  // Plan all days in parallel (each day's routing is independent)
+  const rawPlannedDays = await Promise.all(
+    itinerary.days.map((day) => {
+      if (!day) return undefined;
+      const entryPoints = dayEntryPoints?.[day.id];
+      return planItineraryDay(
+        day,
+        itinerary,
+        mergedOptions,
+        entryPoints?.startPoint,
+        entryPoints?.endPoint,
+      );
+    }),
+  );
 
-  for (let dayIndex = 0; dayIndex < itinerary.days.length; dayIndex += 1) {
-    const day = itinerary.days[dayIndex];
-    const previousDay = dayIndex > 0 ? plannedDays[dayIndex - 1] : undefined;
-    
-    if (!day) {
-      continue; // Skip if day is undefined
-    }
-    
-    const entryPoints = dayEntryPoints?.[day.id];
-    const plannedDay = await planItineraryDay(
-      day,
-      itinerary,
-      mergedOptions,
-      entryPoints?.startPoint,
-      entryPoints?.endPoint,
-    );
-    
-    // Detect city change and create transition
-    if (previousDay && previousDay.cityId && plannedDay.cityId && previousDay.cityId !== plannedDay.cityId) {
+  // Add city transitions sequentially (static lookups, no API calls)
+  const plannedDays: ItineraryDay[] = [];
+  for (const current of rawPlannedDays) {
+    if (!current) continue;
+    const previous = plannedDays[plannedDays.length - 1];
+    if (previous?.cityId && current.cityId && previous.cityId !== current.cityId) {
       const transition = createCityTransition(
-        previousDay.cityId,
-        plannedDay.cityId,
-        previousDay,
-        plannedDay,
+        previous.cityId,
+        current.cityId,
+        previous,
+        current,
       );
       if (transition) {
-        plannedDay.cityTransition = transition;
+        current.cityTransition = transition;
       }
     }
-    
-    plannedDays.push(plannedDay);
+    plannedDays.push(current);
   }
 
   return {
@@ -397,21 +373,160 @@ async function planItineraryDay(
   const endMinutes =
     parseTime(day.bounds?.endTime) ?? parseTime(options.defaultDayEnd) ?? parseTime("21:00") ?? 1260;
 
-  let cursorMinutes = startMinutes;
-  let lastPlaceIndex: number | null = null;
-  // Use start point coordinates if available, otherwise null
-  let lastPlaceCoordinates: Coordinates = startPoint
-    ? { lat: startPoint.coordinates.lat, lng: startPoint.coordinates.lng }
-    : null;
-  let lastPlaceLocation: Location | null = null;
-
-  const plannedActivities: ItineraryActivity[] = [];
-
   // Pre-fetch all locations at once for efficiency
   const placeActivities = day.activities.filter(
     (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
   );
   const locationsMap = await findLocationsForActivities(placeActivities);
+
+  // Pre-compute metadata for all place activities
+  const metaByActivityId = new Map<
+    string,
+    { location: Location | null; coordinates: Coordinates; visitDuration: number }
+  >();
+  await Promise.all(
+    placeActivities.map(async (activity) => {
+      const location = locationsMap.get(activity.id) ?? null;
+      const coordinates = lookupCoordinates(activity, location);
+      const visitDuration = await determineVisitDuration(activity, location, options);
+      metaByActivityId.set(activity.id, { location, coordinates, visitDuration });
+    }),
+  );
+
+  // Build routing pairs between consecutive place activities
+  const routingPairs: Array<{
+    origin: { lat: number; lng: number };
+    destination: { lat: number; lng: number };
+    activityId: string;
+    explicitMode: ItineraryTravelMode | null;
+  }> = [];
+  let prevCoords: Coordinates = startPoint
+    ? { lat: startPoint.coordinates.lat, lng: startPoint.coordinates.lng }
+    : null;
+
+  for (const activity of placeActivities) {
+    const meta = metaByActivityId.get(activity.id);
+    const coordinates = meta?.coordinates ?? null;
+    if (prevCoords && coordinates) {
+      const hasExplicit =
+        activity.travelFromPrevious?.mode && activity.travelFromPrevious.mode !== "walk";
+      routingPairs.push({
+        origin: prevCoords,
+        destination: coordinates,
+        activityId: activity.id,
+        explicitMode: hasExplicit ? activity.travelFromPrevious!.mode : null,
+      });
+    }
+    prevCoords = coordinates;
+  }
+
+  // --- Phase 1: Fetch walk routes + explicit-mode routes in parallel ---
+  const phase1Results = await Promise.all(
+    routingPairs.map((pair) =>
+      requestRoute({
+        origin: pair.origin,
+        destination: pair.destination,
+        mode: pair.explicitMode ?? "walk",
+        departureTime: formatTime(startMinutes),
+        timezone: dayTimezone,
+      }),
+    ),
+  );
+
+  // --- Phase 2: Fetch transit routes for walk pairs with distance >= 1km ---
+  const transitNeeded: { pairIndex: number; departureTime: string }[] = [];
+  let estimatedCursor = startMinutes;
+
+  for (let i = 0; i < routingPairs.length; i++) {
+    const pair = routingPairs[i];
+    const walkResult = phase1Results[i];
+    if (!pair || !walkResult) continue;
+
+    if (!pair.explicitMode) {
+      const distanceKm = (walkResult.distanceMeters ?? 0) / 1000;
+      if (distanceKm >= 1) {
+        transitNeeded.push({
+          pairIndex: i,
+          departureTime: formatTime(estimatedCursor),
+        });
+      }
+    }
+    estimatedCursor += Math.max(1, Math.round(walkResult.durationSeconds / 60));
+    const meta = metaByActivityId.get(pair.activityId);
+    if (meta) {
+      estimatedCursor += meta.visitDuration + options.transitionBufferMinutes;
+    }
+  }
+
+  const phase2Results =
+    transitNeeded.length > 0
+      ? await Promise.all(
+          transitNeeded.map(({ pairIndex, departureTime }) => {
+            const rp = routingPairs[pairIndex]!;
+            return requestRoute({
+              origin: rp.origin,
+              destination: rp.destination,
+              mode: "transit",
+              departureTime,
+              timezone: dayTimezone,
+            });
+          },
+          ),
+        )
+      : [];
+
+  // Build transit result lookup
+  const transitResultMap = new Map<number, Awaited<ReturnType<typeof requestRoute>>>();
+  transitNeeded.forEach(({ pairIndex }, i) => {
+    const result = phase2Results[i];
+    if (result) transitResultMap.set(pairIndex, result);
+  });
+
+  // Resolve final route for each pair
+  const resolvedRouteByActivityId = new Map<
+    string,
+    { route: Awaited<ReturnType<typeof requestRoute>>; travelMode: ItineraryTravelMode }
+  >();
+
+  for (let i = 0; i < routingPairs.length; i++) {
+    const pair = routingPairs[i];
+    const phase1Result = phase1Results[i];
+    if (!pair || !phase1Result) continue;
+
+    if (pair.explicitMode) {
+      resolvedRouteByActivityId.set(pair.activityId, {
+        route: phase1Result,
+        travelMode: toItineraryMode(phase1Result.mode),
+      });
+    } else {
+      const distanceKm = (phase1Result.distanceMeters ?? 0) / 1000;
+      if (distanceKm >= 1) {
+        const transitResult = transitResultMap.get(i);
+        if (transitResult && transitResult.durationSeconds > 0) {
+          resolvedRouteByActivityId.set(pair.activityId, {
+            route: transitResult,
+            travelMode: "train",
+          });
+        } else {
+          resolvedRouteByActivityId.set(pair.activityId, {
+            route: phase1Result,
+            travelMode: "walk",
+          });
+          logger.warn("No train route found for distance >= 1km, using walk", { distanceKm });
+        }
+      } else {
+        resolvedRouteByActivityId.set(pair.activityId, {
+          route: phase1Result,
+          travelMode: "walk",
+        });
+      }
+    }
+  }
+
+  // --- Sequential assembly using pre-fetched routes (no more API calls) ---
+  let cursorMinutes = startMinutes;
+  let lastPlaceIndex: number | null = null;
+  const plannedActivities: ItineraryActivity[] = [];
 
   for (const activity of day.activities) {
     if (activity.kind !== "place") {
@@ -424,88 +539,13 @@ async function planItineraryDay(
       continue;
     }
 
-    const location = locationsMap.get(activity.id) ?? null;
-    const coordinates = lookupCoordinates(activity, location);
-
+    const meta = metaByActivityId.get(activity.id)!;
     const plannerActivity: ItineraryActivity = { ...activity };
 
-    let travelMode = chooseTravelMode(activity, location, lastPlaceLocation);
-    let travelDurationSeconds = 0;
-    let travelDistanceMeters = 0;
-    let travelInstructions: string[] | undefined;
-
-    if (lastPlaceCoordinates && coordinates) {
-      let route: Awaited<ReturnType<typeof requestRoute>>;
-      const departureTime = formatTime(cursorMinutes);
-
-      // If explicit non-walk mode is set (likely user preference), preserve it
-      // Otherwise, recalculate to apply the new logic (walk > 10 min -> transit)
-      if (activity.travelFromPrevious?.mode && activity.travelFromPrevious.mode !== "walk") {
-        travelMode = activity.travelFromPrevious.mode;
-        route = await requestRoute({
-          origin: lastPlaceCoordinates,
-          destination: coordinates,
-          mode: travelMode,
-          departureTime,
-          timezone: dayTimezone,
-        });
-      } else {
-        // First, get walk route to check distance
-        const walkRoute = await requestRoute({
-          origin: lastPlaceCoordinates,
-          destination: coordinates,
-          mode: "walk",
-          departureTime,
-          timezone: dayTimezone,
-        });
-
-        const distanceMeters = walkRoute.distanceMeters ?? 0;
-        const distanceKm = distanceMeters / 1000;
-
-        logger.debug("Checking travel mode based on distance", {
-          distanceMeters,
-          distanceKm,
-          origin: lastPlaceCoordinates,
-          destination: coordinates,
-        });
-
-        // If distance >= 1km, use train; otherwise walk
-        if (distanceKm >= 1) {
-          // Try to get train route
-          const trainRoute = await requestRoute({
-            origin: lastPlaceCoordinates,
-            destination: coordinates,
-            mode: "transit",
-            departureTime,
-            timezone: dayTimezone,
-          });
-
-          if (trainRoute && trainRoute.durationSeconds > 0) {
-            const trainDurationMinutes = Math.round(trainRoute.durationSeconds / 60);
-            logger.debug("Using train for distance >= 1km", {
-              distanceKm,
-              trainDurationMinutes,
-            });
-            route = trainRoute;
-            travelMode = "train";
-          } else {
-            // Fallback to walk if no train route available
-            travelMode = "walk";
-            route = walkRoute;
-            logger.warn("No train route found for distance >= 1km, using walk", { distanceKm });
-          }
-        } else {
-          // Distance < 1km, use walk
-          travelMode = "walk";
-          route = walkRoute;
-          logger.debug("Distance < 1km, using walk", { distanceKm });
-        }
-      }
-      
-      travelMode = toItineraryMode(route.mode);
-      travelDurationSeconds = route.durationSeconds;
-      travelDistanceMeters = route.distanceMeters;
-      travelInstructions = route.legs.flatMap((leg) =>
+    const resolved = resolvedRouteByActivityId.get(activity.id);
+    if (resolved) {
+      const { route, travelMode } = resolved;
+      const travelInstructions = route.legs.flatMap((leg) =>
         (leg.steps ?? [])
           .map((step) => step.instruction)
           .filter((instruction): instruction is string => Boolean(instruction)),
@@ -518,10 +558,10 @@ async function planItineraryDay(
       const travelSegment = buildTravelSegment(
         travelMode,
         cursorMinutes,
-        travelDurationSeconds,
-        travelDistanceMeters,
+        route.durationSeconds,
+        route.distanceMeters,
         travelPath,
-        travelInstructions?.length ? travelInstructions : undefined,
+        travelInstructions.length ? travelInstructions : undefined,
       );
 
       if (lastPlaceIndex != null) {
@@ -533,13 +573,10 @@ async function planItineraryDay(
       cursorMinutes += travelSegment.durationMinutes;
     }
 
-    const visitDuration = await determineVisitDuration(activity, location, options);
-    const operatingPeriod = getOperatingPeriodForDay(location?.operatingHours, day.weekday);
+    const operatingPeriod = getOperatingPeriodForDay(meta.location?.operatingHours, day.weekday);
+    const evaluation = evaluateOperatingWindow(operatingPeriod, cursorMinutes, meta.visitDuration);
 
-    const evaluation = evaluateOperatingWindow(operatingPeriod, cursorMinutes, visitDuration);
-
-    // Set durationMin so it's available for duration calculations
-    plannerActivity.durationMin = visitDuration;
+    plannerActivity.durationMin = meta.visitDuration;
 
     plannerActivity.schedule = {
       arrivalTime: formatTime(evaluation.adjustedArrival),
@@ -551,7 +588,7 @@ async function planItineraryDay(
         ? {
             opensAt: evaluation.window.opensAt,
             closesAt: evaluation.window.closesAt,
-            note: location?.operatingHours?.notes,
+            note: meta.location?.operatingHours?.notes,
             status: evaluation.window.status,
           }
         : undefined,
@@ -562,19 +599,17 @@ async function planItineraryDay(
         opensAt: evaluation.window.opensAt,
         closesAt: evaluation.window.closesAt,
         status: evaluation.window.status,
-        note: location?.operatingHours?.notes,
+        note: meta.location?.operatingHours?.notes,
       };
     }
 
     cursorMinutes = evaluation.adjustedDeparture + options.transitionBufferMinutes;
 
-    plannerActivity.notes = plannerActivity.notes ?? location?.recommendedVisit?.summary;
+    plannerActivity.notes = plannerActivity.notes ?? meta.location?.recommendedVisit?.summary;
 
     plannedActivities.push(plannerActivity);
 
     lastPlaceIndex = plannedActivities.length - 1;
-    lastPlaceCoordinates = coordinates;
-    lastPlaceLocation = location;
   }
 
   // Clamp final cursor to end of day
