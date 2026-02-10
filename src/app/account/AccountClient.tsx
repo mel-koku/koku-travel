@@ -170,7 +170,7 @@ export function AccountClient({ content }: AccountClientProps) {
                   to enable account features.
                 </div>
               )}
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <h2 className="font-serif italic text-xl text-foreground sm:text-2xl">{content?.accountProfileHeading ?? "Profile"}</h2>
                 {signedIn && supabase && (
                   <button
@@ -188,13 +188,13 @@ export function AccountClient({ content }: AccountClientProps) {
                   <label className="text-sm text-foreground-secondary block">
                     {content?.accountDisplayNameLabel ?? "Display name"}
                     <input
-                      className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                      className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                       value={user.displayName}
                       onChange={(e) => onNameChange(e.target.value)}
                     />
                   </label>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
                     <div className="text-xs text-stone">
                       {isLoadingProfile || isLoadingRefresh ? (
                         <span className="flex items-center gap-2">
@@ -265,7 +265,7 @@ function EmailForm({ content }: { content?: PagesContent }) {
         type="email"
         required
         disabled={supabaseUnavailable}
-        className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+        className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
         placeholder={content?.accountEmailPlaceholder ?? "name@example.com"}
         value={email}
         onChange={(e) => setEmail(e.target.value)}

@@ -370,7 +370,7 @@ export function Dropdown({
           aria-labelledby={triggerId}
           className={cn(
             // Always use fixed positioning when portaled to avoid overflow clipping
-            "fixed z-40 w-64 rounded-2xl bg-background p-2 focus:outline-none",
+            "fixed z-40 w-[min(16rem,90vw)] rounded-2xl bg-background p-2 focus:outline-none",
             // Only apply alignment classes if we're not using custom positioning
             Object.keys(menuStyle).length === 0 ? alignmentClasses : "",
             // Always add overflow handling if maxHeight is set

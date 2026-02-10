@@ -93,7 +93,7 @@ function ImmersiveShowcaseDesktop({ acts }: { acts: ActData[] }) {
 
   return (
     <section ref={containerRef} className="relative h-[300vh] shrink-0 bg-background">
-      <div className="sticky top-0 h-screen w-full overflow-hidden bg-charcoal">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-charcoal">
         {acts.map((act, index) => (
           <Act
             key={act.number}

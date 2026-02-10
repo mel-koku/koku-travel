@@ -139,7 +139,7 @@ export const EditorialCard = memo(function EditorialCard({
                 toggleWishlist(location.id);
               }}
               aria-label={active ? "Remove from favorites" : "Add to favorites"}
-              className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 backdrop-blur-md shadow-lg transition-all hover:bg-surface hover:scale-105 active:scale-95"
+              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-surface/90 backdrop-blur-md shadow-lg transition-all hover:bg-surface hover:scale-105 active:scale-95"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
             </button>

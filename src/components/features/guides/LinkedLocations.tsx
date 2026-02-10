@@ -24,7 +24,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
   }
 
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
         <ScrollReveal distance={20}>

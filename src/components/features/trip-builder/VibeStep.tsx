@@ -176,8 +176,8 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
       </div>
 
       {/* Mobile: Horizontal scroll with snap */}
-      <div className="relative z-10 mt-8 pb-32 lg:hidden">
-        <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto px-6">
+      <div className="relative z-10 mt-8 pb-20 lg:hidden">
+        <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-contain px-6">
           {VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;

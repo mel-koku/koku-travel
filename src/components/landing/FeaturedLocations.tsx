@@ -78,7 +78,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
           while the gallery stays pinned and slides horizontally */}
       <section ref={containerRef} className="relative h-[200vh] bg-background">
         {/* Sticky viewport — stays visible while user scrolls the 250vh */}
-        <div className="sticky top-0 flex h-screen flex-col justify-center overflow-hidden py-12">
+        <div className="sticky top-0 flex h-[100dvh] flex-col justify-center overflow-hidden py-12">
           {/* Gallery row */}
           <motion.div
             ref={galleryRef}
@@ -172,7 +172,7 @@ function HorizontalLocationCard({
             src={imageSrc || "/placeholder.jpg"}
             alt={location.name}
             fill
-            className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
+            className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02] group-active:scale-[1.02]"
             style={{ transitionTimingFunction: easeCinematicCSS }}
             sizes="50vw"
           />

@@ -42,7 +42,7 @@ export function AccountSection({
           to enable account features.
         </div>
       )}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-lg font-semibold text-foreground">Account</h2>
         {isAuthenticated && supabase && (
           <button
@@ -60,13 +60,13 @@ export function AccountSection({
           <label className="text-sm text-foreground-secondary block">
             Display name
             <input
-              className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
               value={displayName}
               onChange={(e) => onNameChange(e.target.value)}
             />
           </label>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="text-xs text-stone">
               {isLoadingProfile || isLoadingRefresh ? (
                 <span className="flex items-center gap-2">
@@ -142,7 +142,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
           type="email"
           required
           disabled={supabaseUnavailable}
-          className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
           placeholder="name@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

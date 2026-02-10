@@ -123,7 +123,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
   // Mobile: simplified single-screen hero
   if (prefersReducedMotion) {
     return (
-      <section className="relative min-h-screen w-full overflow-hidden bg-charcoal">
+      <section className="relative min-h-[100dvh] w-full overflow-hidden bg-charcoal">
         <div className="absolute inset-0">
           <Image
             src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1920&q=80"
@@ -150,7 +150,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             }}
           />
         </div>
-        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
+        <div className="relative z-10 flex min-h-[100dvh] flex-col items-center justify-center px-6 text-center">
           <p className="mb-6 text-sm font-medium uppercase tracking-ultra text-white/60">
             {locationCount.toLocaleString()}+ places worth knowing
           </p>
@@ -187,7 +187,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
       {/* Sticky viewport */}
       { }
       <div
-        className="sticky top-0 h-screen w-full overflow-hidden bg-charcoal"
+        className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-charcoal"
         onClick={handleHeroClick}
       >
         {/* Layer 1: Background image with clip-path reveal */}

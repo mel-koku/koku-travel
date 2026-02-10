@@ -835,7 +835,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     event.stopPropagation();
                     handleToggleNotes();
                   }}
-                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
+                  className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
                 >
                   <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -849,7 +849,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 {tripId && dayId && onReplace && (
                   <button
                     type="button"
-                    className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
+                    className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -865,7 +865,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 )}
                 <button
                   type="button"
-                  className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
+                  className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
                   onClick={(event) => {
                     event.preventDefault();
                     event.stopPropagation();
