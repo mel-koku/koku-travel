@@ -268,10 +268,12 @@ function StepShell({
   onBack,
   onNext,
   nextLabel,
-  backLabel = "Back",
+  backLabel,
   nextDisabled = false,
   fullBleed = false,
 }: StepShellProps) {
+  const resolvedBackLabel = backLabel ?? "Back";
+
   return (
     <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
       {/* Content area — grows to fill, page scrolls naturally */}
@@ -290,9 +292,10 @@ function StepShell({
           <button
             type="button"
             onClick={onBack}
-            className="link-reveal cursor-pointer text-xs font-medium uppercase tracking-wide text-stone transition-colors hover:text-foreground-secondary"
+            className="flex cursor-pointer items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-foreground-secondary transition-colors hover:text-foreground"
           >
-            {backLabel}
+            <ChevronLeft className="h-3.5 w-3.5" />
+            {resolvedBackLabel}
           </button>
 
           <ArrowLineCTA
