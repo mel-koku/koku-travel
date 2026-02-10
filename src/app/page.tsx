@@ -9,24 +9,40 @@ import {
 } from "@/components/landing";
 import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides } from "@/lib/guides/guideService";
+import { getLandingPageContent } from "@/lib/sanity/contentService";
+
+export const revalidate = 3600;
 
 export default async function Home() {
-  // Fetch featured data server-side
-  const [featuredLocations, locationCount, featuredGuides] = await Promise.all([
-    fetchTopRatedLocations({ limit: 8 }),
-    getLocationCount(),
-    getFeaturedGuides(3),
-  ]);
+  const [featuredLocations, locationCount, featuredGuides, landingContent] =
+    await Promise.all([
+      fetchTopRatedLocations({ limit: 8 }),
+      getLocationCount(),
+      getFeaturedGuides(3),
+      getLandingPageContent(),
+    ]);
 
   return (
     <main className="flex flex-col">
-      <HeroOpening locationCount={locationCount} />
-      <Philosophy locationCount={locationCount} />
-      <ImmersiveShowcase />
-      <FeaturedLocations locations={featuredLocations} />
-      <TestimonialTheater />
-      <FeaturedGuides guides={featuredGuides} />
-      <FinalCTA />
+      <HeroOpening
+        locationCount={locationCount}
+        content={landingContent ?? undefined}
+      />
+      <Philosophy
+        locationCount={locationCount}
+        content={landingContent ?? undefined}
+      />
+      <ImmersiveShowcase content={landingContent ?? undefined} />
+      <FeaturedLocations
+        locations={featuredLocations}
+        content={landingContent ?? undefined}
+      />
+      <TestimonialTheater content={landingContent ?? undefined} />
+      <FeaturedGuides
+        guides={featuredGuides}
+        content={landingContent ?? undefined}
+      />
+      <FinalCTA content={landingContent ?? undefined} />
     </main>
   );
 }

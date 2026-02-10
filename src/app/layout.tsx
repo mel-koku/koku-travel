@@ -3,6 +3,7 @@ import { Geist_Mono, DM_Sans, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { WebVitals } from "@/components/WebVitals";
+import { getSiteSettings } from "@/lib/sanity/contentService";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -26,18 +27,20 @@ export const metadata: Metadata = {
     "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const siteSettings = await getSiteSettings();
+
   return (
     <html lang="en">
       <body
         className={`${dmSans.variable} ${geistMono.variable} ${instrumentSerif.variable} min-h-screen bg-background font-sans text-foreground antialiased`}
       >
         <WebVitals />
-        <LayoutWrapper>{children}</LayoutWrapper>
+        <LayoutWrapper siteSettings={siteSettings ?? undefined}>{children}</LayoutWrapper>
       </body>
     </html>
   );

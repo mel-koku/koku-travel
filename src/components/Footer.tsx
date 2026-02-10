@@ -2,33 +2,54 @@
 
 import Link from "next/link";
 import { Magnetic } from "@/components/ui/Magnetic";
+import type { SiteSettings } from "@/types/sanitySiteContent";
 
-const exploreLinks = [
-  { label: "Locations", href: "/explore" },
-  { label: "Guides", href: "/guides" },
-  { label: "Trip Builder", href: "/trip-builder" },
+const defaultNavColumns = [
+  {
+    title: "Explore",
+    links: [
+      { label: "Locations", href: "/explore" },
+      { label: "Guides", href: "/guides" },
+      { label: "Trip Builder", href: "/trip-builder" },
+    ],
+  },
+  {
+    title: "Account",
+    links: [
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Favorites", href: "/favorites" },
+      { label: "Settings", href: "/account" },
+    ],
+  },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "#" },
+      { label: "Contact", href: "#" },
+      { label: "Privacy", href: "#" },
+    ],
+  },
 ];
 
-const accountLinks = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Favorites", href: "/favorites" },
-  { label: "Settings", href: "/account" },
-];
-
-const companyLinks = [
-  { label: "About", href: "#" },
-  { label: "Contact", href: "#" },
-  { label: "Privacy", href: "#" },
-];
-
-const socialIcons = [
+const defaultSocialLinks = [
   { label: "IG", href: "#" },
   { label: "X", href: "#" },
   { label: "YT", href: "#" },
 ];
 
-export default function Footer() {
+type FooterProps = {
+  settings?: SiteSettings;
+};
+
+export default function Footer({ settings }: FooterProps) {
   const currentYear = new Date().getFullYear();
+  const brandDescription = settings?.brandDescription ?? "Curated by people who know Japan from the inside.";
+  const newsletterLabel = settings?.newsletterLabel ?? "Get the inside track";
+  const newsletterButton = settings?.newsletterButtonText ?? "Sign me up";
+  const navColumns = settings?.footerNavColumns?.length ? settings.footerNavColumns : defaultNavColumns;
+  const socialLinks = settings?.socialLinks?.length
+    ? settings.socialLinks.map((s) => ({ label: s.label, href: s.url }))
+    : defaultSocialLinks;
 
   return (
     <footer className="bg-charcoal text-white border-t border-white/10">
@@ -39,13 +60,13 @@ export default function Footer() {
           <div className="lg:col-span-5">
             <h3 className="font-serif italic text-3xl sm:text-4xl">Koku Travel</h3>
             <p className="mt-4 max-w-md text-base text-white/60">
-              Curated by people who know Japan from the inside.
+              {brandDescription}
             </p>
 
             {/* Newsletter */}
             <div className="mt-8">
               <label className="text-xs uppercase tracking-[0.3em] text-white/40">
-                Get the inside track
+                {newsletterLabel}
               </label>
               <div className="mt-3 flex gap-2">
                 <input
@@ -58,7 +79,7 @@ export default function Footer() {
                     type="button"
                     className="rounded-xl bg-brand-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
                   >
-                    Sign me up
+                    {newsletterButton}
                   </button>
                 </Magnetic>
               </div>
@@ -67,9 +88,9 @@ export default function Footer() {
 
           {/* Navigation Columns */}
           <div className="grid grid-cols-2 gap-8 lg:col-span-7 lg:grid-cols-3">
-            <NavColumn title="Explore" links={exploreLinks} />
-            <NavColumn title="Account" links={accountLinks} />
-            <NavColumn title="Company" links={companyLinks} />
+            {navColumns.map((col) => (
+              <NavColumn key={col.title} title={col.title} links={col.links} />
+            ))}
           </div>
         </div>
 
@@ -79,7 +100,7 @@ export default function Footer() {
             &copy; {currentYear} Koku Travel. All rights reserved.
           </p>
           <div className="flex items-center gap-3">
-            {socialIcons.map((icon) => (
+            {socialLinks.map((icon) => (
               <a
                 key={icon.label}
                 className="flex h-10 w-10 items-center justify-center rounded-full border border-dashed border-white/20 text-xs font-semibold uppercase tracking-[0.3em] text-white/60 transition-colors hover:border-white/40 hover:text-white"

@@ -7,12 +7,14 @@ import { SplitText } from "@/components/ui/SplitText";
 import { parallaxSection } from "@/lib/motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type PhilosophyProps = {
   locationCount: number;
+  content?: LandingPageContent;
 };
 
-export function Philosophy({ locationCount }: PhilosophyProps) {
+export function Philosophy({ locationCount, content }: PhilosophyProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
@@ -52,7 +54,7 @@ export function Philosophy({ locationCount }: PhilosophyProps) {
         {/* Eyebrow */}
         <ScrollReveal>
           <p className="text-xs font-medium uppercase tracking-ultra text-white/50">
-            Locally sourced, locally verified
+            {content?.philosophyEyebrow ?? "Locally sourced, locally verified"}
           </p>
         </ScrollReveal>
 
@@ -65,7 +67,7 @@ export function Philosophy({ locationCount }: PhilosophyProps) {
           staggerDelay={0.04}
           delay={0.1}
         >
-          Not from a desk, but from years of living here.
+          {content?.philosophyHeading ?? "Not from a desk, but from years of living here."}
         </SplitText>
 
         {/* Inline stats */}
