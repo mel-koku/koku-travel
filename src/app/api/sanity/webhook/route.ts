@@ -40,6 +40,8 @@ export async function POST(request: NextRequest) {
   switch (body._type) {
     case "guide":
       return handleGuide(body);
+    case "experience":
+      return handleExperience(body);
     case "landingPage":
     case "siteSettings":
       return handleSingletonRevalidation(body._type, ["/"]);
@@ -133,6 +135,19 @@ async function handleGuide(body: SanityWebhookBody) {
   revalidatePath("/");
 
   return NextResponse.json({ ok: true, action: "upserted", slug });
+}
+
+// ── Experience handler (revalidation only, no Supabase sync) ──
+
+async function handleExperience(body: SanityWebhookBody) {
+  const slug = body.slug?.current;
+
+  revalidatePath("/experiences");
+  if (slug) {
+    revalidatePath(`/experiences/${slug}`);
+  }
+
+  return NextResponse.json({ ok: true, action: "revalidated", slug });
 }
 
 // ── Singleton revalidation ─────────────────────────────────
