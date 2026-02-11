@@ -8,6 +8,7 @@ type MagneticProps = {
   children: ReactNode;
   className?: string;
   strength?: number;
+  maxDisplacement?: number;
   threshold?: number;
   disabled?: boolean;
 };
@@ -16,6 +17,7 @@ export function Magnetic({
   children,
   className = "",
   strength = 0.3,
+  maxDisplacement = 12,
   threshold = 100,
   disabled = false,
 }: MagneticProps) {
@@ -44,12 +46,11 @@ export function Magnetic({
       const distance = Math.sqrt(distX * distX + distY * distY);
 
       if (distance < threshold) {
-        const maxDisplacement = 12;
         x.set(distX * strength * Math.min(1, maxDisplacement / (Math.abs(distX * strength) || 1)));
         y.set(distY * strength * Math.min(1, maxDisplacement / (Math.abs(distY * strength) || 1)));
       }
     },
-    [disabled, isTouchDevice, strength, threshold, x, y]
+    [disabled, isTouchDevice, strength, maxDisplacement, threshold, x, y]
   );
 
   const handleMouseLeave = useCallback(() => {

@@ -40,8 +40,8 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
     offset: ["start start", "end end"],
   });
 
-  // Horizontal scroll: cards stay still for the first 15% (intro readable),
-  // then slide left through the rest of the scroll range.
+  // Horizontal scroll: cards stay still for the first 8% (intro readable),
+  // then slide left with eased motion through the rest of the scroll range.
   // Cache dimensions to avoid DOM reads on every scroll frame.
   const galleryRef = useRef<HTMLDivElement>(null);
   const maxShiftRef = useRef(0);
@@ -64,11 +64,15 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
 
   const xTranslate = useTransform(scrollYProgress, (progress) => {
     if (maxShiftRef.current === 0) return 0;
-    const t = Math.max(0, Math.min(1, (progress - 0.05) / 0.85));
+    // Ease-in-out: slow start, smooth middle, gentle stop
+    const linear = Math.max(0, Math.min(1, (progress - 0.08) / 0.84));
+    const t = linear < 0.5
+      ? 2 * linear * linear
+      : 1 - Math.pow(-2 * linear + 2, 2) / 2;
     return -t * maxShiftRef.current;
   });
   // Progress bar width
-  const progressScale = useTransform(scrollYProgress, [0.05, 0.9], [0, 1]);
+  const progressScale = useTransform(scrollYProgress, [0.08, 0.92], [0, 1]);
 
   if (locations.length === 0) return null;
 
@@ -76,7 +80,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
     <>
       {/* Tall outer container — the user scrolls through this height
           while the gallery stays pinned and slides horizontally */}
-      <section ref={containerRef} className="relative h-[200vh] bg-background">
+      <section ref={containerRef} className="relative h-[250vh] bg-background">
         {/* Sticky viewport — stays visible while user scrolls the 250vh */}
         <div className="sticky top-0 flex h-[100dvh] flex-col justify-center overflow-hidden py-12">
           {/* Gallery row */}
@@ -87,27 +91,33 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
           >
             {/* Intro text card */}
             <div
-              className="flex flex-shrink-0 flex-col justify-between rounded-xl bg-surface p-8"
+              className="texture-grain relative flex h-full flex-shrink-0 flex-col justify-between rounded-xl bg-canvas p-10 lg:p-14"
               style={{ width: "clamp(320px, 40vw, 450px)" }}
             >
               <div>
-                <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
+                <p className="eyebrow-editorial text-brand-primary">
                   {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
                 </p>
-                <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
+                <h2 className="mt-4 font-serif italic text-3xl tracking-heading text-foreground">
                   {content?.featuredLocationsHeading ?? "Places that stay with you"}
                 </h2>
+                <p className="mt-2 font-mono text-sm text-foreground-secondary">
+                  3,907+ places
+                </p>
                 <p className="mt-4 text-base text-foreground-secondary">
                   {content?.featuredLocationsDescription ?? "Handpicked locations that represent the best of Japan \u2014 from hidden shrines to neighborhood favorites."}
                 </p>
               </div>
-              <Link
-                href="/explore"
-                className="link-reveal mt-8 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
-              >
-                Explore all
-                <ArrowRightIcon />
-              </Link>
+              <div>
+                <div className="mt-6 mb-4 h-px w-8 bg-brand-primary/60" />
+                <Link
+                  href="/explore"
+                  className="link-reveal inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
+                >
+                  Explore all
+                  <ArrowRightIcon />
+                </Link>
+              </div>
             </div>
 
             {locations.slice(0, 8).map((location) => (
@@ -178,7 +188,7 @@ function HorizontalLocationCard({
           />
         </div>
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent" />
 
         {/* Bottom accent line on hover */}
         <div className="absolute inset-x-0 bottom-0 h-[2px] scale-x-0 bg-brand-primary/60 transition-transform duration-500 group-hover:scale-x-100" />

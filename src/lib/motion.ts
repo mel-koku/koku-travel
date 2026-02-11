@@ -79,6 +79,14 @@ export const parallaxSubtle = { from: '0%', to: '8%' } as const;
 /** Zoom-in effect (FinalCTA background) */
 export const parallaxZoomIn = { from: 1, to: 1.08 } as const;
 
+// ── Page Transition Durations ────────────────────────────
+
+/** Clip-path circle() reveal overlay */
+export const pageTransitionDuration = 0.5;
+
+/** Overlay fade-out after reveal */
+export const pageTransitionExitDuration = 0.4;
+
 // ── Spring Presets ───────────────────────────────────────
 
 /** Interactive elements: selection checkmarks, magnetic snap */
@@ -89,3 +97,11 @@ export const springNavigation = { stiffness: 300, damping: 30 } as const;
 
 /** Custom cursor follow */
 export const springCursor = { stiffness: 10000, damping: 500, mass: 0.1 } as const;
+
+// ── Magnetic Presets ──────────────────────────────────────
+
+/** Primary CTAs (IntroStep, ArrowLineCTA, FinalCTA) */
+export const magneticCTA = { strength: 0.3, maxDisplacement: 20, threshold: 120 } as const;
+
+/** Subtle chrome elements (header nav, menu items) */
+export const magneticSubtle = { strength: 0.12, maxDisplacement: 8, threshold: 80 } as const;

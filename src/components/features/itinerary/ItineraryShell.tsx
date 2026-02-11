@@ -11,6 +11,7 @@ import {
   type SetStateAction,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { durationFast, durationSlow, easeReveal, easePageTransition } from "@/lib/motion";
 import { useAppState } from "@/state/AppState";
 import { Itinerary, type ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -117,6 +118,7 @@ export const ItineraryShell = ({
   const [isPlanning, setIsPlanning] = useState(false);
   const [planningError, setPlanningError] = useState<string | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const [mapExpanded, setMapExpanded] = useState(false);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -727,11 +729,72 @@ export const ItineraryShell = ({
         </div>
       </div>
 
+      {/* ── Mobile peek map strip (< lg) ── */}
+      <div className="relative lg:hidden">
+        <motion.div
+          animate={{ height: mapExpanded ? "100dvh" : "30vh" }}
+          transition={{
+            duration: durationSlow,
+            ease: [...easePageTransition] as [number, number, number, number],
+          }}
+          className="relative overflow-hidden"
+        >
+          <ItineraryMapPanel
+            day={safeSelectedDay}
+            activities={currentDay?.activities ?? []}
+            selectedActivityId={selectedActivityId}
+            onSelectActivity={handleSelectActivity}
+            isPlanning={isPlanning}
+            startPoint={currentDayEntryPoints?.startPoint}
+            endPoint={currentDayEntryPoints?.endPoint}
+            tripStartDate={tripStartDate}
+            dayLabel={currentDay?.dateLabel}
+          />
+
+          {/* Tap-to-expand overlay (when collapsed) */}
+          {!mapExpanded && (
+            <button
+              type="button"
+              onClick={() => setMapExpanded(true)}
+              className="absolute inset-0 z-10"
+              aria-label="Expand map"
+            >
+              {/* Bottom gradient hint */}
+              <div className="absolute inset-x-0 bottom-0 flex items-end justify-center bg-gradient-to-t from-charcoal/60 to-transparent pb-2.5 pt-8">
+                <span className="rounded-full bg-charcoal/80 px-3 py-1 text-[11px] font-medium text-white/90 backdrop-blur-sm">
+                  Tap to expand map
+                </span>
+              </div>
+            </button>
+          )}
+
+          {/* Collapse button (when expanded) */}
+          <AnimatePresence>
+            {mapExpanded && (
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: durationFast, ease: easeReveal }}
+                onClick={() => setMapExpanded(false)}
+                className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl bg-charcoal/80 text-white/90 backdrop-blur-sm transition-colors hover:bg-charcoal"
+                aria-label="Collapse map"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      </div>
+
       <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
           {/* Activities List */}
-          <div data-itinerary-activities className="relative flex-1 overflow-y-auto border-border bg-background p-3 lg:rounded-2xl lg:border">
+          <div data-itinerary-activities className="relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 lg:rounded-2xl lg:border">
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
@@ -739,7 +802,7 @@ export const ItineraryShell = ({
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: durationFast, ease: easeReveal }}
                   className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm"
                 >
                   <h2 className="font-serif italic text-3xl text-foreground sm:text-4xl">
@@ -816,8 +879,8 @@ export const ItineraryShell = ({
           </div>
         </div>
 
-        {/* Right: Sticky Map (50%) */}
-        <div className="h-[50vh] lg:sticky lg:top-[80px] lg:h-[calc(100vh-96px)] lg:w-1/2">
+        {/* Right: Sticky Map — desktop only (50%) */}
+        <div className="hidden lg:sticky lg:top-[80px] lg:block lg:h-[calc(100vh-96px)] lg:w-1/2">
           <div className="h-full lg:rounded-2xl lg:overflow-hidden lg:border lg:border-border">
             <ItineraryMapPanel
               day={safeSelectedDay}

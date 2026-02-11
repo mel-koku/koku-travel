@@ -335,7 +335,7 @@ export function Dropdown({
         type="button"
         id={triggerId}
         className={cn(
-          "inline-flex items-center gap-2 rounded-xl bg-background px-4 py-2 text-sm font-semibold text-foreground transition hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+          "inline-flex items-center gap-2 rounded-xl bg-background px-4 py-2 text-sm font-semibold text-foreground transition duration-300 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
           triggerClassName
         )}
         aria-haspopup="menu"
@@ -349,7 +349,7 @@ export function Dropdown({
           : <span className="flex items-center">{label}</span>}
         {!hideChevron && (
           <svg
-            className={cn("h-4 w-4 transform transition-transform", open && "rotate-180")}
+            className={cn("h-4 w-4 transform transition-transform duration-300", open && "rotate-180")}
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 20 20"
@@ -393,7 +393,7 @@ export function Dropdown({
                 aria-disabled={disabled}
                 disabled={disabled}
                 className={cn(
-                  "flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm text-foreground transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
+                  "flex w-full items-start gap-3 rounded-xl px-3 py-2 text-left text-sm text-foreground transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
                   activeIndex === index && "bg-brand-primary/10 text-brand-primary",
                   disabled
                     ? "cursor-not-allowed opacity-50"

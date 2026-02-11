@@ -348,7 +348,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
                 transition={{
                   duration: durationEpic,
                   repeat: Infinity,
-                  ease: "easeInOut",
+                  ease: [0.45, 0, 0.55, 1],
                 }}
                 className="absolute h-4 w-px bg-gradient-to-b from-transparent via-foreground/70 to-transparent"
               />

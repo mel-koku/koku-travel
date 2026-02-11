@@ -3,7 +3,6 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { parallaxSubtle } from "@/lib/motion";
 
@@ -75,22 +74,17 @@ export function PageHeader({
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 text-center sm:py-28">
         {eyebrow && (
           <ScrollReveal distance={10} delay={0}>
-            <p className="text-xs uppercase tracking-[0.3em] text-white/60">
+            <p className="eyebrow-editorial text-white/60">
               {eyebrow}
             </p>
           </ScrollReveal>
         )}
 
-        <SplitText
-          as="h1"
-          className="mt-4 justify-center font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
-          splitBy="word"
-          animation="clipY"
-          staggerDelay={0.04}
-          delay={0.15}
-        >
-          {title}
-        </SplitText>
+        <ScrollReveal delay={0.15}>
+          <h1 className="mt-4 font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white">
+            {title}
+          </h1>
+        </ScrollReveal>
 
         {subtitle && (
           <ScrollReveal delay={0.3} distance={15}>

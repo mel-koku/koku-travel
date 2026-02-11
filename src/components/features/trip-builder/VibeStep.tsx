@@ -9,10 +9,10 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-import { SplitText } from "@/components/ui/SplitText";
+import { motion } from "framer-motion";
 import { VibeCard } from "./VibeCard";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { staggerWord, easeCinematicCSS } from "@/lib/motion";
+import { easeCinematic, easeCinematicCSS } from "@/lib/motion";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -106,20 +106,18 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
 
       {/* Typography — centered near top */}
       <div className="relative z-10 px-6 pt-28 text-center lg:pt-32">
-        <p className="text-xs font-medium uppercase tracking-[0.25em] text-brand-primary">
+        <p className="eyebrow-editorial text-brand-primary">
           STEP 03
         </p>
 
-        <SplitText
-          as="h2"
-          className="mt-3 justify-center font-serif text-4xl italic tracking-tight text-white sm:text-5xl"
-          splitBy="word"
-          trigger="load"
-          animation="clipY"
-          staggerDelay={staggerWord}
+        <motion.h2
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [...easeCinematic] as [number, number, number, number], delay: 0.15 }}
+          className="mt-3 font-serif text-4xl italic tracking-tight text-white sm:text-5xl"
         >
           {sanityConfig?.vibeStepHeading ?? "What moves you?"}
-        </SplitText>
+        </motion.h2>
 
         <p className="mt-2 text-sm text-stone">
           {sanityConfig?.vibeStepDescription ?? "Pick what excites you \u2014 we'll find places that match."}

@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useCursor } from "@/providers/CursorProvider";
 import type { GuideSummary } from "@/types/guide";
@@ -36,37 +35,25 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
         {/* Section Header */}
         <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <ScrollReveal>
-              <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
-                {content?.featuredGuidesEyebrow ?? "Travel Guides"}
-              </p>
-            </ScrollReveal>
-            <SplitText
-              as="h2"
-              className="mt-4 font-serif italic text-3xl tracking-heading text-foreground sm:text-4xl"
-              splitBy="word"
-              animation="clipY"
-              delay={0.1}
-            >
+            <p className="eyebrow-editorial text-brand-primary">
+              {content?.featuredGuidesEyebrow ?? "Travel Guides"}
+            </p>
+            <h2 className="mt-4 font-serif italic text-3xl tracking-heading text-foreground sm:text-4xl">
               {content?.featuredGuidesHeading ?? "Start reading"}
-            </SplitText>
-            <ScrollReveal delay={0.2}>
-              <p className="mt-4 max-w-md text-base text-foreground-secondary">
-                {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and curated itineraries to help you plan a trip that goes beyond the surface."}
-              </p>
-            </ScrollReveal>
+            </h2>
+            <p className="mt-4 max-w-md text-base text-foreground-secondary">
+              {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and curated itineraries to help you plan a trip that goes beyond the surface."}
+            </p>
           </div>
-          <ScrollReveal delay={0.2}>
-            <Link
-              href="/guides"
-              className="link-reveal group flex items-center gap-2 text-foreground transition-colors hover:text-brand-primary"
-            >
-              <span className="text-sm font-medium uppercase tracking-wider">
-                Read all guides
-              </span>
-              <ArrowRightIcon />
-            </Link>
-          </ScrollReveal>
+          <Link
+            href="/guides"
+            className="link-reveal group flex items-center gap-2 text-foreground transition-colors hover:text-brand-primary"
+          >
+            <span className="text-sm font-medium uppercase tracking-wider">
+              Read all guides
+            </span>
+            <ArrowRightIcon />
+          </Link>
         </div>
 
         {/* Asymmetric Grid */}
@@ -126,8 +113,8 @@ function GuideCard({
               : "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           }
         />
-        {/* Gradient overlay — lightens on hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent transition-opacity duration-500 group-hover:opacity-80" />
+        {/* Gradient overlay — recedes on hover to reveal more image */}
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
 
         {/* Index number */}
         <div className="absolute right-4 top-4">

@@ -28,7 +28,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
       <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
         <ScrollReveal distance={20}>
-          <p className="mb-2 font-mono text-xs uppercase tracking-wide text-stone">
+          <p className="mb-2 eyebrow-editorial">
             Featured in this guide
           </p>
           <h2 className="font-serif text-2xl italic text-foreground sm:text-3xl">
@@ -87,8 +87,9 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                       }
                       loading="lazy"
                     />
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/20 to-transparent" />
+                    {/* Gradient overlay — recedes on hover */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/10 via-transparent to-transparent" />
                   </div>
 
                   {/* Overlay text */}

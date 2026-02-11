@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { SplitText } from "@/components/ui/SplitText";
-import { staggerWord, easeReveal } from "@/lib/motion";
+import { easeReveal, durationFast } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 const DEFAULT_STATUS_MESSAGES = [
@@ -44,17 +43,14 @@ export function GeneratingOverlay({ sanityConfig }: GeneratingOverlayProps) {
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center gap-8 px-6 text-center">
-        <SplitText
-          as="h2"
-          className="justify-center font-serif text-3xl italic text-white sm:text-4xl"
-          splitBy="word"
-          trigger="load"
-          animation="clipY"
-          staggerDelay={staggerWord}
-          delay={0.1}
+        <motion.h2
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
+          className="font-serif text-3xl italic text-white sm:text-4xl"
         >
           {sanityConfig?.generatingHeading ?? "Crafting your journey"}
-        </SplitText>
+        </motion.h2>
 
         {/* Progress bar */}
         <div className="h-0.5 w-64 overflow-hidden rounded-full bg-border">
@@ -74,7 +70,7 @@ export function GeneratingOverlay({ sanityConfig }: GeneratingOverlayProps) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: durationFast, ease: easeReveal }}
               className="text-sm text-white/60"
             >
               {messages[messageIndex]}

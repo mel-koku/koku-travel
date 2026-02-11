@@ -148,7 +148,7 @@ export function GuideHero({
                 transition={{
                   duration: durationEpic,
                   repeat: Infinity,
-                  ease: "easeInOut",
+                  ease: [0.45, 0, 0.55, 1],
                 }}
                 className="absolute h-4 w-px bg-gradient-to-b from-transparent via-white/50 to-transparent"
               />

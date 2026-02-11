@@ -1,10 +1,5 @@
 "use client";
 
-import Image from "next/image";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
-import { SplitText } from "@/components/ui/SplitText";
-import { parallaxSection } from "@/lib/motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
@@ -15,101 +10,70 @@ type PhilosophyProps = {
 };
 
 export function Philosophy({ locationCount, content }: PhilosophyProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = useReducedMotion();
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const imageScale = useTransform(scrollYProgress, [0, 1], [parallaxSection.from, parallaxSection.to]);
+  const stats = content?.philosophyStats;
 
   return (
-    <section
-      ref={containerRef}
-      className="relative min-h-[80vh] overflow-hidden"
-    >
-      {/* Full-bleed background image with slow zoom */}
-      <motion.div
-        className="absolute inset-0"
-        style={prefersReducedMotion ? {} : { scale: imageScale }}
-      >
-        <Image
-          src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80"
-          alt="Traditional Japanese street at dusk"
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority
-        />
-        <div className="absolute inset-0 bg-charcoal/65" />
-      </motion.div>
-
-      {/* Grain */}
-      <div className="texture-grain pointer-events-none absolute inset-0" />
-
-      {/* Content — centered, compact */}
-      <div className="relative z-10 flex min-h-[80vh] flex-col items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
+    <section className="bg-canvas min-h-[50vh]">
+      <div className="flex min-h-[50vh] flex-col items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
         {/* Eyebrow */}
-        <ScrollReveal>
-          <p className="text-xs font-medium uppercase tracking-ultra text-white/50">
-            {content?.philosophyEyebrow ?? "Locally sourced, locally verified"}
-          </p>
+        <p className="eyebrow-mono">
+          {content?.philosophyEyebrow ?? "Locally sourced, locally verified"}
+        </p>
+
+        {/* Heading */}
+        <ScrollReveal delay={0.1}>
+          <h2 className="mx-auto mt-6 max-w-2xl font-serif italic text-2xl leading-snug tracking-heading text-foreground sm:text-3xl lg:text-4xl">
+            {content?.philosophyHeading ??
+              "Not from a desk, but from years of living here."}
+          </h2>
         </ScrollReveal>
 
-        {/* Short statement */}
-        <SplitText
-          as="h2"
-          className="mx-auto mt-6 max-w-2xl justify-center font-serif italic text-2xl leading-snug tracking-heading text-white sm:text-3xl lg:text-4xl"
-          splitBy="word"
-          animation="clipY"
-          staggerDelay={0.04}
-          delay={0.1}
-        >
-          {content?.philosophyHeading ?? "Not from a desk, but from years of living here."}
-        </SplitText>
-
-        {/* Inline stats */}
-        <ScrollReveal delay={0.3}>
-          <div className="mt-12 flex items-center gap-4 sm:gap-8 md:gap-12">
-            <div className="text-center">
-              <div className="flex items-baseline justify-center gap-0.5">
-                <AnimatedNumber
-                  value={locationCount}
-                  className="font-mono text-2xl font-medium text-brand-secondary sm:text-3xl"
-                />
-                <span className="font-mono text-lg text-brand-secondary">+</span>
-              </div>
-              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/40">
-                Places
-              </p>
-            </div>
-
-            <div className="h-8 w-px bg-white/15" />
-
-            <div className="text-center">
+        {/* Stats */}
+        <div className="mt-16 flex items-center justify-center gap-x-16 lg:gap-x-24">
+          {/* Stat 1 — Places */}
+          <div className="text-center">
+            <div className="flex items-baseline justify-center gap-1">
               <AnimatedNumber
-                value={47}
-                className="font-mono text-2xl font-medium text-brand-secondary sm:text-3xl"
+                value={locationCount}
+                className="text-[clamp(4rem,10vw,8rem)] font-mono font-light text-foreground leading-none"
               />
-              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/40">
-                Prefectures
-              </p>
-            </div>
-
-            <div className="h-8 w-px bg-white/15" />
-
-            <div className="text-center">
-              <span className="font-mono text-2xl font-medium text-brand-secondary sm:text-3xl">
-                100%
+              <span className="text-[clamp(2rem,5vw,4rem)] font-mono font-light text-foreground">
+                +
               </span>
-              <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/40">
-                Local
-              </p>
             </div>
+            <p className="eyebrow-mono mt-3">
+              {stats?.[0]?.label ?? "Places"}
+            </p>
           </div>
-        </ScrollReveal>
+
+          {/* Divider */}
+          <div className="h-16 w-px bg-border/30" />
+
+          {/* Stat 2 — Prefectures */}
+          <div className="text-center">
+            <AnimatedNumber
+              value={stats?.[1]?.value ? parseInt(stats[1].value, 10) : 47}
+              className="text-[clamp(4rem,10vw,8rem)] font-mono font-light text-foreground leading-none"
+            />
+            <p className="eyebrow-mono mt-3">
+              {stats?.[1]?.label ?? "Prefectures"}
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div className="h-16 w-px bg-border/30" />
+
+          {/* Stat 3 — Local */}
+          <div className="text-center">
+            <span className="text-[clamp(4rem,10vw,8rem)] font-mono font-light text-foreground leading-none">
+              {stats?.[2]?.value ?? "100"}
+              {stats?.[2]?.suffix ?? "%"}
+            </span>
+            <p className="eyebrow-mono mt-3">
+              {stats?.[2]?.label ?? "Local"}
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );

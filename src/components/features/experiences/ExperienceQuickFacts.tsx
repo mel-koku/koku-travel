@@ -1,6 +1,3 @@
-"use client";
-
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { Difficulty } from "@/types/experience";
 
 type ExperienceQuickFactsProps = {
@@ -54,20 +51,18 @@ export function ExperienceQuickFacts({
 
   return (
     <section className="border-y border-border/50 py-8">
-      <ScrollReveal distance={20}>
-        <div className="mx-auto flex max-w-4xl flex-wrap justify-center gap-x-10 gap-y-4 px-6">
-          {facts.map((fact) => (
-            <div key={fact.label} className="text-center">
-              <p className="font-mono text-[10px] uppercase tracking-ultra text-stone">
-                {fact.label}
-              </p>
-              <p className="mt-1 text-sm font-medium text-foreground">
-                {fact.value}
-              </p>
-            </div>
-          ))}
-        </div>
-      </ScrollReveal>
+      <div className="mx-auto flex max-w-4xl flex-wrap justify-center gap-x-10 gap-y-4 px-6">
+        {facts.map((fact) => (
+          <div key={fact.label} className="text-center">
+            <p className="eyebrow-editorial">
+              {fact.label}
+            </p>
+            <p className="mt-1 text-sm font-medium text-foreground">
+              {fact.value}
+            </p>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
