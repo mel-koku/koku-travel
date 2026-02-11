@@ -82,7 +82,7 @@ export function resolveDocumentActions(
   prev: DocumentActionComponent[],
   context: DocumentActionsContext
 ): DocumentActionComponent[] {
-  if (context.schemaType === "guide") {
+  if (context.schemaType === "guide" || context.schemaType === "experience") {
     return [
       SubmitForReviewAction,
       ApproveAndPublishAction,

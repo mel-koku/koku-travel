@@ -7,6 +7,7 @@ import { urlFor } from "@/sanity/image";
 import { TipCalloutBlock } from "./blocks/TipCalloutBlock";
 import { LocationEmbedBlock } from "./blocks/LocationEmbedBlock";
 import { ImageGalleryBlock } from "./blocks/ImageGalleryBlock";
+import { ExperienceHighlightBlock } from "@/components/features/experiences/blocks/ExperienceHighlightBlock";
 
 type PortableTextBodyProps = {
   body: unknown[];
@@ -116,6 +117,7 @@ const components: PortableTextComponents = {
     tipCallout: ({ value }) => <TipCalloutBlock value={value} />,
     locationRef: ({ value }) => <LocationEmbedBlock value={value} />,
     imageGallery: ({ value }) => <ImageGalleryBlock value={value} />,
+    experienceHighlight: ({ value }) => <ExperienceHighlightBlock value={value} />,
   },
 };
 

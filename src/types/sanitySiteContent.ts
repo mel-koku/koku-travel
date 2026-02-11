@@ -33,6 +33,11 @@ export type LandingPageContent = {
   featuredLocationsHeading?: string;
   featuredLocationsDescription?: string;
 
+  // Featured Experiences section header
+  featuredExperiencesEyebrow?: string;
+  featuredExperiencesHeading?: string;
+  featuredExperiencesDescription?: string;
+
   // Testimonials
   testimonials?: Array<{
     quote: string;
