@@ -52,12 +52,13 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedCities = sanitizeCities(raw.cities);
   const normalizedDayStartTime = sanitizeDayStartTime(raw.dayStartTime);
   const normalizedSavedLocationIds = sanitizeSavedLocationIds(raw.savedLocationIds);
+  // Only include known TripBuilderData fields — never spread ...raw
+  // to prevent stale localStorage keys from reaching .strict() schema validation
   return {
-    ...base,
-    ...raw,
+    duration: raw.duration ?? base.duration,
     dates: {
-      ...base.dates,
-      ...raw.dates,
+      start: raw.dates?.start ?? base.dates?.start,
+      end: raw.dates?.end ?? base.dates?.end,
     },
     vibes: normalizedVibes,
     regions: normalizedRegions,
@@ -66,6 +67,10 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     style: normalizedStyle,
     entryPoint: normalizedEntryPoint,
     accessibility: normalizedAccessibility,
+    budget: raw.budget ?? base.budget,
+    group: raw.group ?? base.group,
+    weatherPreferences: raw.weatherPreferences ?? base.weatherPreferences,
+    travelerProfile: raw.travelerProfile ?? base.travelerProfile,
     dayStartTime: normalizedDayStartTime,
     savedLocationIds: normalizedSavedLocationIds,
   };
