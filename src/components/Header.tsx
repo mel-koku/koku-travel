@@ -22,6 +22,7 @@ import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.
 const navItems = [
   { label: "Explore", href: "/explore" },
   { label: "Guides", href: "/guides" },
+  { label: "Experiences", href: "/experiences" },
   { label: "Trip Builder", href: "/trip-builder" },
 ];
 
@@ -156,7 +157,7 @@ export default function Header() {
     }
 
     // Pages with sticky sub-nav: always visible
-    if (pathname === "/explore" || pathname === "/guides" || pathname.startsWith("/itinerary")) {
+    if (pathname === "/explore" || pathname === "/guides" || pathname === "/experiences" || pathname.startsWith("/itinerary")) {
       setIsVisible(true);
       return;
     }

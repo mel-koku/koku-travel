@@ -1,0 +1,36 @@
+import type { ExperienceType, Difficulty } from "./experience";
+import type { SanityImageAsset, SanityAuthor } from "./sanityGuide";
+
+export type SanityExperience = {
+  _id: string;
+  title: string;
+  slug: string;
+  subtitle?: string;
+  summary: string;
+  body: unknown[];
+  featuredImage: SanityImageAsset & { url?: string };
+  thumbnailImage?: SanityImageAsset & { url?: string };
+  author: SanityAuthor;
+  experienceType: ExperienceType;
+  duration?: string;
+  groupSizeMin?: number;
+  groupSizeMax?: number;
+  difficulty?: Difficulty;
+  bestSeason?: string[];
+  meetingPoint?: string;
+  whatsIncluded?: string[];
+  whatToBring?: string[];
+  nearestStation?: string;
+  estimatedCost?: string;
+  bookingUrl?: string;
+  tags?: string[];
+  city?: string;
+  region?: string;
+  readingTimeMinutes?: number;
+  editorialStatus: "draft" | "in_review" | "published" | "archived";
+  featured: boolean;
+  sortOrder: number;
+  publishedAt?: string;
+  _createdAt: string;
+  _updatedAt: string;
+};

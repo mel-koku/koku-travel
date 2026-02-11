@@ -1,0 +1,89 @@
+"use client";
+
+import Link from "next/link";
+
+import { SplitText } from "@/components/ui/SplitText";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { ExperienceCard } from "@/components/features/experiences/ExperienceCard";
+import type { ExperienceSummary } from "@/types/experience";
+import type { LandingPageContent } from "@/types/sanitySiteContent";
+
+type FeaturedExperiencesProps = {
+  experiences: ExperienceSummary[];
+  content?: LandingPageContent;
+};
+
+export function FeaturedExperiences({
+  experiences,
+  content,
+}: FeaturedExperiencesProps) {
+  if (experiences.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="bg-background py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6">
+        {/* Section Header */}
+        <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <ScrollReveal>
+              <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
+                {content?.featuredExperiencesEyebrow ?? "Experiences"}
+              </p>
+            </ScrollReveal>
+            <SplitText
+              as="h2"
+              className="mt-4 font-serif italic text-3xl tracking-heading text-foreground sm:text-4xl"
+              splitBy="word"
+              animation="clipY"
+              delay={0.1}
+            >
+              {content?.featuredExperiencesHeading ?? "Go beyond sightseeing"}
+            </SplitText>
+            <ScrollReveal delay={0.2}>
+              <p className="mt-4 max-w-md text-base text-foreground-secondary">
+                {content?.featuredExperiencesDescription ??
+                  "Workshops, cruises, and adventures that connect you with the culture — not just the scenery."}
+              </p>
+            </ScrollReveal>
+          </div>
+          <ScrollReveal delay={0.2}>
+            <Link
+              href="/experiences"
+              className="link-reveal group flex items-center gap-2 text-foreground transition-colors hover:text-brand-primary"
+            >
+              <span className="text-sm font-medium uppercase tracking-wider">
+                Explore experiences
+              </span>
+              <svg
+                className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+                />
+              </svg>
+            </Link>
+          </ScrollReveal>
+        </div>
+
+        {/* Grid */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {experiences.map((experience, idx) => (
+            <ExperienceCard
+              key={experience._id}
+              experience={experience}
+              index={idx}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}

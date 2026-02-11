@@ -84,6 +84,52 @@ export const deskStructure = (S: StructureBuilder) =>
             ])
         ),
 
+      // ── Experiences ─────────────────────────────
+      S.listItem()
+        .title("Experiences")
+        .child(
+          S.list()
+            .title("Experiences")
+            .items([
+              S.listItem()
+                .title("Drafts")
+                .child(
+                  S.documentList()
+                    .title("Drafts")
+                    .filter('_type == "experience" && editorialStatus == "draft"')
+                ),
+              S.listItem()
+                .title("In Review")
+                .child(
+                  S.documentList()
+                    .title("In Review")
+                    .filter('_type == "experience" && editorialStatus == "in_review"')
+                ),
+              S.listItem()
+                .title("Published")
+                .child(
+                  S.documentList()
+                    .title("Published")
+                    .filter('_type == "experience" && editorialStatus == "published"')
+                ),
+              S.listItem()
+                .title("Archived")
+                .child(
+                  S.documentList()
+                    .title("Archived")
+                    .filter('_type == "experience" && editorialStatus == "archived"')
+                ),
+              S.divider(),
+              S.listItem()
+                .title("All Experiences")
+                .child(
+                  S.documentList()
+                    .title("All Experiences")
+                    .filter('_type == "experience"')
+                ),
+            ])
+        ),
+
       // ── Authors ────────────────────────────────
       S.listItem()
         .title("Authors")

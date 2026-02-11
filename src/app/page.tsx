@@ -3,22 +3,25 @@ import {
   Philosophy,
   ImmersiveShowcase,
   FeaturedLocations,
+  FeaturedExperiences,
   TestimonialTheater,
   FeaturedGuides,
   FinalCTA,
 } from "@/components/landing";
 import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides } from "@/lib/guides/guideService";
+import { getFeaturedExperiences } from "@/lib/experiences/experienceService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
 
 export const revalidate = 3600;
 
 export default async function Home() {
-  const [featuredLocations, locationCount, featuredGuides, landingContent] =
+  const [featuredLocations, locationCount, featuredGuides, featuredExperiences, landingContent] =
     await Promise.all([
       fetchTopRatedLocations({ limit: 8 }),
       getLocationCount(),
       getFeaturedGuides(3),
+      getFeaturedExperiences(3),
       getLandingPageContent(),
     ]);
 
@@ -35,6 +38,10 @@ export default async function Home() {
       <ImmersiveShowcase content={landingContent ?? undefined} />
       <FeaturedLocations
         locations={featuredLocations}
+        content={landingContent ?? undefined}
+      />
+      <FeaturedExperiences
+        experiences={featuredExperiences}
         content={landingContent ?? undefined}
       />
       <TestimonialTheater content={landingContent ?? undefined} />

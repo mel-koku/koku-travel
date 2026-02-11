@@ -9,6 +9,7 @@ export const landingPage = defineType({
     { name: "philosophy", title: "Philosophy Section", options: { collapsible: true } },
     { name: "showcase", title: "Showcase Section", options: { collapsible: true } },
     { name: "featuredLocations", title: "Featured Locations Section", options: { collapsible: true } },
+    { name: "featuredExperiences", title: "Featured Experiences Section", options: { collapsible: true } },
     { name: "testimonials", title: "Testimonials Section", options: { collapsible: true } },
     { name: "featuredGuides", title: "Featured Guides Section", options: { collapsible: true } },
     { name: "finalCta", title: "Final CTA Section", options: { collapsible: true } },
@@ -203,6 +204,31 @@ export const landingPage = defineType({
       fieldset: "featuredLocations",
       initialValue:
         "Handpicked locations that represent the best of Japan — from hidden shrines to neighborhood favorites.",
+    }),
+
+    // ── Featured Experiences ────────────────────────
+    defineField({
+      name: "featuredExperiencesEyebrow",
+      title: "Eyebrow",
+      type: "string",
+      fieldset: "featuredExperiences",
+      initialValue: "Experiences",
+    }),
+    defineField({
+      name: "featuredExperiencesHeading",
+      title: "Heading",
+      type: "string",
+      fieldset: "featuredExperiences",
+      initialValue: "Go beyond sightseeing",
+    }),
+    defineField({
+      name: "featuredExperiencesDescription",
+      title: "Description",
+      type: "text",
+      rows: 2,
+      fieldset: "featuredExperiences",
+      initialValue:
+        "Workshops, cruises, and adventures that connect you with the culture — not just the scenery.",
     }),
 
     // ── Testimonials ─────────────────────────────

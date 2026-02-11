@@ -130,6 +130,9 @@ export const landingPageQuery = groq`
     featuredLocationsEyebrow,
     featuredLocationsHeading,
     featuredLocationsDescription,
+    featuredExperiencesEyebrow,
+    featuredExperiencesHeading,
+    featuredExperiencesDescription,
     testimonials[] {
       quote,
       authorName,
@@ -256,6 +259,123 @@ export const tripBuilderConfigQuery = groq`
     navStartPlanningLabel,
     navGenerateLabel,
     navStartOverConfirmation
+  }
+`;
+
+/** Full experience with expanded author and resolved images */
+export const experienceBySlugQuery = groq`
+  *[_type == "experience" && slug.current == $slug && editorialStatus == "published"][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    subtitle,
+    summary,
+    body[] {
+      ...,
+      _type == "image" => {
+        ...,
+        "url": asset->url,
+        "dimensions": asset->metadata.dimensions
+      }
+    },
+    "featuredImage": featuredImage {
+      ...,
+      "url": asset->url,
+      "dimensions": asset->metadata.dimensions
+    },
+    "thumbnailImage": thumbnailImage {
+      ...,
+      "url": asset->url,
+      "dimensions": asset->metadata.dimensions
+    },
+    author-> {
+      name,
+      "slug": slug.current,
+      "photo": photo {
+        ...,
+        "url": asset->url
+      },
+      bio,
+      city,
+      socialLinks
+    },
+    experienceType,
+    duration,
+    groupSizeMin,
+    groupSizeMax,
+    difficulty,
+    bestSeason,
+    meetingPoint,
+    whatsIncluded,
+    whatToBring,
+    nearestStation,
+    estimatedCost,
+    bookingUrl,
+    tags,
+    city,
+    region,
+    readingTimeMinutes,
+    editorialStatus,
+    featured,
+    sortOrder,
+    publishedAt,
+    _createdAt,
+    _updatedAt
+  }
+`;
+
+/** Featured experiences for landing page */
+export const featuredExperiencesQuery = groq`
+  *[_type == "experience" && editorialStatus == "published" && featured == true] | order(sortOrder asc) [0...$limit] {
+    _id,
+    title,
+    "slug": slug.current,
+    summary,
+    "featuredImage": featuredImage {
+      ...,
+      "url": asset->url
+    },
+    "thumbnailImage": thumbnailImage {
+      ...,
+      "url": asset->url
+    },
+    experienceType,
+    duration,
+    difficulty,
+    estimatedCost,
+    city,
+    region,
+    readingTimeMinutes,
+    tags,
+    publishedAt
+  }
+`;
+
+/** All published experiences for listing page */
+export const allPublishedExperiencesQuery = groq`
+  *[_type == "experience" && editorialStatus == "published"] | order(sortOrder asc, publishedAt desc) {
+    _id,
+    title,
+    "slug": slug.current,
+    subtitle,
+    summary,
+    "featuredImage": featuredImage {
+      ...,
+      "url": asset->url
+    },
+    "thumbnailImage": thumbnailImage {
+      ...,
+      "url": asset->url
+    },
+    experienceType,
+    duration,
+    difficulty,
+    estimatedCost,
+    city,
+    region,
+    readingTimeMinutes,
+    tags,
+    publishedAt
   }
 `;
 
