@@ -27,7 +27,7 @@ type HeroOpeningProps = {
 };
 
 export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
-  const tagline = content?.heroTagline ?? "Beyond the guidebook";
+  const tagline = content?.heroTagline ?? "Beyond the Japan guidebook";
   const description = (content?.heroDescription ?? "Explore {locationCount}+ places curated by people who actually live here.").replace("{locationCount}", locationCount.toLocaleString());
   const primaryCta = content?.heroPrimaryCtaText ?? "Start Planning";
   const secondaryCta = content?.heroSecondaryCtaText ?? "Browse Locations";
@@ -249,7 +249,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           </motion.p>
 
           {/* Giant "KOKU" */}
-          <div className="overflow-hidden px-[3vw] pb-[3vw]">
+          <div className="overflow-hidden px-[4vw] pb-[3vw]">
             <motion.h1
               initial={{ y: "125%" }}
               animate={mounted ? { y: "0%" } : { y: "125%" }}

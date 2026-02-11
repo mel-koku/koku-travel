@@ -21,7 +21,7 @@ const TAGLINES = [
   "Every path tells a story",
   "Discover the soul of Japan",
   "Journey through living tradition",
-  "Beyond the guidebook",
+  "Beyond the Japan guidebook",
 ];
 
 // Default to first entries for SSR, randomized on mount

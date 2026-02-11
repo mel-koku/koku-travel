@@ -21,7 +21,7 @@ export const landingPage = defineType({
       title: "Tagline",
       type: "string",
       fieldset: "hero",
-      initialValue: "Beyond the guidebook",
+      initialValue: "Beyond the Japan guidebook",
     }),
     defineField({
       name: "heroDescription",
