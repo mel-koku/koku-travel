@@ -39,6 +39,25 @@ export function Dropdown({
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
   const menuId = useId();
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const clearHoverTimeout = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+  };
+
+  const startHoverTimeout = () => {
+    clearHoverTimeout();
+    hoverTimeoutRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 300);
+  };
+
+  useEffect(() => {
+    return () => clearHoverTimeout();
+  }, []);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -343,6 +362,8 @@ export function Dropdown({
         aria-controls={open ? menuId : undefined}
         onClick={() => setOpen((prev) => !prev)}
         onKeyDown={handleTriggerKeyDown}
+        onMouseEnter={clearHoverTimeout}
+        onMouseLeave={() => { if (open) startHoverTimeout(); }}
       >
         {isValidElement(label) && typeof label.type !== 'string'
           ? cloneElement(label as React.ReactElement<{ isOpen?: boolean }>, { isOpen: open })
@@ -368,9 +389,11 @@ export function Dropdown({
           id={menuId}
           role="menu"
           aria-labelledby={triggerId}
+          onMouseEnter={clearHoverTimeout}
+          onMouseLeave={startHoverTimeout}
           className={cn(
             // Always use fixed positioning when portaled to avoid overflow clipping
-            "fixed z-40 w-[min(16rem,90vw)] rounded-2xl bg-background p-2 focus:outline-none",
+            "fixed z-[60] w-[min(16rem,90vw)] rounded-2xl bg-background p-2 focus:outline-none",
             // Only apply alignment classes if we're not using custom positioning
             Object.keys(menuStyle).length === 0 ? alignmentClasses : "",
             // Always add overflow handling if maxHeight is set

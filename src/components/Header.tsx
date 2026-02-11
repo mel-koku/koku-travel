@@ -16,7 +16,6 @@ import { cn } from "@/lib/cn";
 import { springNavigation } from "@/lib/motion";
 import { MenuTrigger } from "@/components/header/MenuTrigger";
 import { MenuOverlay } from "@/components/header/MenuOverlay";
-import { KokuMark } from "@/components/ui/KokuMark";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -236,13 +235,18 @@ export default function Header() {
               onMouseEnter={() => setCursorState("link")}
               onMouseLeave={() => setCursorState("default")}
             >
-              <KokuMark className="h-6 w-6 text-foreground" />
               <span className="flex items-baseline gap-1.5">
                 <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
                   Koku
                 </span>
                 <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
                   Travel
+                </span>
+                <span className="text-sm font-light text-foreground-secondary">
+                  ·
+                </span>
+                <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
+                  Japan
                 </span>
               </span>
             </Link>
