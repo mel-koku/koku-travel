@@ -24,7 +24,7 @@ export function ActiveFilterChips({
           <button
             key={`${filter.type}-${filter.value}-${index}`}
             onClick={() => onRemove(filter)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-surface border border-border/50 transition-all duration-200 group active:scale-[0.97]"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-surface border border-border/50 transition-all duration-300 group active:scale-[0.97]"
             aria-label={`Remove ${filter.label} filter`}
           >
             <span>{filter.label}</span>

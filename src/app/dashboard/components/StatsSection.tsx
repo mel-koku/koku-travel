@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { parallaxSection } from "@/lib/motion";
@@ -71,16 +70,11 @@ export function StatsSection({
           </p>
         </ScrollReveal>
 
-        <SplitText
-          as="h2"
-          className="mt-4 justify-center font-serif italic text-2xl tracking-heading text-white sm:text-3xl"
-          splitBy="word"
-          animation="clipY"
-          staggerDelay={0.04}
-          delay={0.1}
-        >
-          {content?.dashboardActivityHeading ?? "At a Glance"}
-        </SplitText>
+        <ScrollReveal delay={0.1}>
+          <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-white sm:text-3xl">
+            {content?.dashboardActivityHeading ?? "At a Glance"}
+          </h2>
+        </ScrollReveal>
 
         {/* Inline stats */}
         <ScrollReveal delay={0.3}>

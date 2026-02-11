@@ -18,7 +18,7 @@ import {
   getLocationReviewCount,
   numberFormatter,
 } from "./activityUtils";
-import { easeReveal } from "@/lib/motion";
+import { easeReveal, durationFast } from "@/lib/motion";
 import { logger } from "@/lib/logger";
 import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGenerator";
 import { ActivityConflictIndicator } from "./ConflictBadge";
@@ -712,7 +712,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                    transition={{ duration: 0.25, ease: easeReveal }}
+                    transition={{ duration: durationFast, ease: easeReveal }}
                     className="overflow-hidden"
                   >
                     {/* Full description — prefer location.description (most specific), then shortDescription, then editorialSummary */}

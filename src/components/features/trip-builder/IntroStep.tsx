@@ -6,7 +6,7 @@ import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { ArrowLineCTA } from "@/components/features/trip-builder/ArrowLineCTA";
 import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
-import { easeReveal, easeCinematicCSS, staggerChar, durationBase } from "@/lib/motion";
+import { easeReveal, easeCinematicCSS, staggerChar, durationBase, magneticCTA } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type IntroStepProps = {
@@ -71,7 +71,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
         <div className="flex flex-col justify-center">
           {/* Eyebrow */}
           <motion.p
-            className="font-mono text-[10px] uppercase tracking-[0.2em] text-stone"
+            className="eyebrow-editorial"
             {...fade(0.15)}
           >
             {eyebrow}
@@ -129,7 +129,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
 
             {/* Mobile: full-width button */}
             <div className="lg:hidden">
-              <Magnetic>
+              <Magnetic strength={magneticCTA.strength} maxDisplacement={magneticCTA.maxDisplacement} threshold={magneticCTA.threshold}>
                 <button
                   type="button"
                   onClick={onStart}

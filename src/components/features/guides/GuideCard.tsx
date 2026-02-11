@@ -44,7 +44,7 @@ export const GuideCard = memo(function GuideCard({ guide }: GuideCardProps) {
             priority={false}
           />
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent" />
 
           {/* Type badge */}
           <div className="absolute top-3 left-3">

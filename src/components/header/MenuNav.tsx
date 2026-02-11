@@ -4,8 +4,9 @@ import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { easeReveal, staggerItem } from "@/lib/motion";
+import { easeReveal, staggerItem, durationMicro } from "@/lib/motion";
 import { useCursor } from "@/providers/CursorProvider";
+import { KokuMark } from "@/components/ui/KokuMark";
 import { useAuthState } from "@/components/ui/IdentityBadge";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
@@ -63,7 +64,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
         exit: {
           opacity: 0,
           y: 20,
-          transition: { duration: 0.2 },
+          transition: { duration: durationMicro, ease: [...easeReveal] as [number, number, number, number] },
         },
       };
 
@@ -82,7 +83,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
         },
         exit: {
           opacity: 0,
-          transition: { duration: 0.15 },
+          transition: { duration: durationMicro, ease: [...easeReveal] as [number, number, number, number] },
         },
       };
 
@@ -112,13 +113,16 @@ export function MenuNav({ onClose }: MenuNavProps) {
         <Link
           href="/"
           onClick={onClose}
-          className="flex items-baseline gap-1.5"
+          className="flex items-center gap-2"
         >
-          <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
-            Koku
-          </span>
-          <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
-            Travel
+          <KokuMark className="h-6 w-6 text-foreground" />
+          <span className="flex items-baseline gap-1.5">
+            <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
+              Koku
+            </span>
+            <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
+              Travel
+            </span>
           </span>
         </Link>
       </motion.div>

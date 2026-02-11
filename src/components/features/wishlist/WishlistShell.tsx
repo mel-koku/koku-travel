@@ -6,7 +6,6 @@ import Link from "next/link";
 import { LocationCard } from "@/components/features/explore/LocationCard";
 import { AddToItineraryButton } from "@/components/features/wishlist/AddToItineraryButton";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { useWishlist } from "@/context/WishlistContext";
 import { useWishlistLocations } from "@/hooks/useWishlistLocations";
@@ -93,15 +92,9 @@ export default function WishlistShell() {
                 </svg>
               </div>
 
-              <SplitText
-                as="h2"
-                className="mt-8 justify-center font-serif italic text-2xl text-white sm:text-3xl"
-                splitBy="word"
-                animation="clipY"
-                staggerDelay={0.06}
-              >
+              <h2 className="mt-8 font-serif italic text-2xl text-white sm:text-3xl">
                 No favorites yet
-              </SplitText>
+              </h2>
 
               <ScrollReveal delay={0.3} distance={15}>
                 <p className="mt-4 max-w-sm text-base text-white/70">

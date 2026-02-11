@@ -4,9 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plane, Search, X } from "lucide-react";
 
-import { SplitText } from "@/components/ui/SplitText";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { cn } from "@/lib/cn";
+import { durationFast, easeReveal } from "@/lib/motion";
 import type { EntryPoint, KnownRegionId } from "@/types/trip";
 import type { Airport } from "@/app/api/airports/route";
 import { logger } from "@/lib/logger";
@@ -105,16 +105,14 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
             STEP 02
           </p>
 
-          <SplitText
-            as="h2"
+          <motion.h2
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: easeReveal, delay: 0.15 }}
             className="mt-2 font-serif text-2xl italic tracking-tight text-foreground lg:text-3xl"
-            splitBy="word"
-            trigger="load"
-            animation="clipY"
-            staggerDelay={0.06}
           >
             {sanityConfig?.entryPointHeading ?? "Where will you land?"}
-          </SplitText>
+          </motion.h2>
 
           <p className="mt-1 text-sm text-stone">
             {sanityConfig?.entryPointDescription ?? "Optional \u2014 helps us plan smarter routes from your arrival."}
@@ -189,7 +187,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: durationFast, ease: easeReveal }}
                     className="overflow-hidden"
                   >
                     <div className="mt-2 max-h-48 overflow-auto rounded-xl border border-border bg-background">

@@ -1,11 +1,9 @@
 "use client";
 
-import Image from "next/image";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { useRef } from "react";
+import { motion } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { parallaxZoomIn, durationBase } from "@/lib/motion";
+import { durationBase, magneticCTA } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type FinalCTAProps = {
@@ -13,38 +11,13 @@ type FinalCTAProps = {
 };
 
 export function FinalCTA({ content }: FinalCTAProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = useReducedMotion();
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  // Slow zoom parallax on background
-  const imageScale = useTransform(scrollYProgress, [0, 1], [parallaxZoomIn.from, parallaxZoomIn.to]);
-
   return (
     <section
-      ref={containerRef}
       className="relative min-h-[80vh] overflow-hidden"
     >
       <div className="texture-grain pointer-events-none absolute inset-0 z-20" />
-      {/* Background Image with slow zoom */}
-      <motion.div
-        className="absolute inset-0"
-        style={prefersReducedMotion ? {} : { scale: imageScale }}
-      >
-        <Image
-          src="https://images.unsplash.com/photo-1718166130977-41caff62724e?w=1920&q=80"
-          alt="Floating torii gate over water"
-          fill
-          className="object-cover saturate-[0.7] brightness-[0.6]"
-          sizes="100vw"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-charcoal/50" />
-      </motion.div>
+      {/* Solid brand-primary background */}
+      <div className="absolute inset-0 bg-brand-primary" />
 
       {/* Content */}
       <div className="relative z-10 flex min-h-[80vh] items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
@@ -76,12 +49,11 @@ export function FinalCTA({ content }: FinalCTAProps) {
             transition={{ duration: durationBase, delay: 0.7 }}
             className="mt-12 flex flex-col items-center"
           >
-            <Magnetic>
+            <Magnetic strength={magneticCTA.strength} maxDisplacement={magneticCTA.maxDisplacement} threshold={magneticCTA.threshold}>
               <a
                 href="/trip-builder"
-                className="relative inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
+                className="relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
               >
-                <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
                 <span className="relative">{content?.finalCtaPrimaryText ?? "Start Planning"}</span>
               </a>
             </Magnetic>
@@ -97,8 +69,8 @@ export function FinalCTA({ content }: FinalCTAProps) {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 1 }}
-            className="mt-10 text-sm uppercase tracking-wide text-foreground-secondary"
+            transition={{ duration: durationBase, delay: 1 }}
+            className="mt-10 text-sm uppercase tracking-wide text-white/50"
           >
             {content?.finalCtaSubtext ?? "Free to use. No account required."}
           </motion.p>

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useMemo } from "react";
 import { Calendar, Plane, Sparkles, MapPin } from "lucide-react";
 
-import { SplitText } from "@/components/ui/SplitText";
+import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getVibeById } from "@/data/vibes";
 import { REGIONS } from "@/data/regions";
@@ -91,16 +91,14 @@ export function TripSummaryEditorial({
           STEP 05
         </p>
 
-        <SplitText
-          as="h2"
+        <motion.h2
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
           className="mt-3 font-serif text-3xl italic tracking-tight text-foreground sm:text-4xl"
-          splitBy="word"
-          trigger="load"
-          animation="clipY"
-          staggerDelay={0.06}
         >
           {headline}
-        </SplitText>
+        </motion.h2>
 
         <div className="mt-8 flex flex-col gap-4">
           {/* Dates */}

@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef, useState, useEffect } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { easeReveal } from "@/lib/motion";
 
 type LandingHeroProps = {
   locationCount: number;
@@ -71,7 +72,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
           <motion.h1
             initial={{ y: "125%" }}
             animate={mounted ? { y: "0%" } : { y: "125%" }}
-            transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay: 0.3 }}
+            transition={{ duration: 0.8, ease: easeReveal, delay: 0.3 }}
             className="font-serif italic text-[clamp(4rem,15vw,10rem)] leading-[0.9] tracking-tight text-white"
           >
             JAPAN
@@ -142,7 +143,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
               {/* Animated pulse */}
               <motion.div
                 animate={{ y: [0, 64, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: [0.45, 0, 0.55, 1] }}
                 className="absolute h-4 w-px bg-gradient-to-b from-transparent via-white/60 to-transparent"
               />
             </div>

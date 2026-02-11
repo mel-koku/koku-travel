@@ -13,7 +13,6 @@ type MenuOverlayProps = {
   onClose: () => void;
 };
 
-const EASE_OUT_EXPO = easePageTransition;
 
 function focusTrigger() {
   const trigger = document.querySelector<HTMLButtonElement>('[data-menu-trigger]');
@@ -93,11 +92,11 @@ export function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
         hidden: { y: "-100%" },
         visible: {
           y: "0%",
-          transition: { duration: 0.5, ease: EASE_OUT_EXPO },
+          transition: { duration: 0.5, ease: easePageTransition },
         },
         exit: {
           y: "-100%",
-          transition: { duration: 0.4, ease: EASE_OUT_EXPO },
+          transition: { duration: 0.4, ease: easePageTransition },
         },
       };
 
