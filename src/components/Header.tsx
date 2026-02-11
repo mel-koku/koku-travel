@@ -20,10 +20,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 const navItems = [
-  { label: "Explore", href: "/explore" },
+  { label: "Places", href: "/explore" },
   { label: "Guides", href: "/guides" },
   { label: "Experiences", href: "/experiences" },
-  { label: "Trip Builder", href: "/trip-builder" },
 ];
 
 function UserMenu({
@@ -105,7 +104,7 @@ function UserMenu({
 
   return (
     <Dropdown
-      label={<IdentityBadge showChevron={true} />}
+      label={<IdentityBadge compact />}
       align="end"
       hideChevron={true}
       triggerClassName="!border-0 !bg-transparent !shadow-none !p-0 hover:!bg-transparent !rounded-none gap-0"
@@ -267,7 +266,6 @@ export default function Header() {
                     )}
                   >
                     {item.label}
-                    {/* Animated underline */}
                     <span
                       className={cn(
                         "absolute -bottom-0.5 left-0 h-[2px] w-full origin-left transition-transform duration-300 ease-out",
@@ -284,6 +282,18 @@ export default function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-3 sm:gap-6">
+            {/* CTA button (lg+) */}
+            <Magnetic strength={0.15}>
+              <Link
+                href="/trip-builder"
+                onMouseEnter={() => setCursorState("link")}
+                onMouseLeave={() => setCursorState("default")}
+                className="hidden h-10 items-center rounded-xl bg-brand-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-brand-primary/90 lg:flex"
+              >
+                Plan a Trip
+              </Link>
+            </Magnetic>
+
             {/* Desktop user menu (lg+) */}
             <div className="hidden lg:block">
               <UserMenu
