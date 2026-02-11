@@ -42,7 +42,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to generate itinerary (${response.status})`);
+        throw new Error(errorData.error || `Failed to generate itinerary (${response.status})`);
       }
 
       const result: PlanApiResponse = await response.json();

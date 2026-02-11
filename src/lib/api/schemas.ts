@@ -205,9 +205,9 @@ const entryPointSchema = z.object({
   id: z.string().min(1).max(255).regex(/^[A-Za-z0-9._-]+$/),
   name: z.string().min(1).max(500),
   coordinates: coordinatesSchema,
-  cityId: z.string().max(255).optional(),
-  iataCode: z.string().length(3).regex(/^[A-Z]{3}$/).optional(),
-  region: knownRegionIdSchema.optional(),
+  cityId: z.string().max(255).nullish().transform(v => v ?? undefined),
+  iataCode: z.string().length(3).regex(/^[A-Z]{3}$/).nullish().transform(v => v ?? undefined),
+  region: knownRegionIdSchema.nullish().transform(v => v ?? undefined),
 }).strict().optional();
 
 /**
