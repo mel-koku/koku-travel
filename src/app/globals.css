@@ -337,6 +337,7 @@ body {
 /* Lenis smooth scrolling */
 html.lenis {
   height: auto;
+  scrollbar-gutter: stable;
 }
 
 html.lenis-stopped {
