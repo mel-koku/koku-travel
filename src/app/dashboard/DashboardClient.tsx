@@ -8,7 +8,6 @@ import { useAppState } from "@/state/AppState";
 import { DashboardItineraryPreview } from "@/components/features/itinerary/DashboardItineraryPreview";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { createClient } from "@/lib/supabase/client";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
@@ -316,15 +315,9 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                       </svg>
                     </div>
 
-                    <SplitText
-                      as="h3"
-                      className="mt-6 justify-center font-serif italic text-xl text-white sm:text-2xl"
-                      splitBy="word"
-                      animation="clipY"
-                      staggerDelay={0.06}
-                    >
+                    <h3 className="mt-6 font-serif italic text-xl text-white sm:text-2xl">
                       {content?.dashboardEmptyHeading ?? "No trips yet"}
-                    </SplitText>
+                    </h3>
 
                     <ScrollReveal delay={0.3} distance={15}>
                       <p className="mt-3 max-w-sm text-sm text-white/70">

@@ -1,7 +1,10 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
 import type { Location } from "@/types/location";
+import { resizePhotoUrl } from "@/lib/google/transformations";
 import { FeatureRow } from "./FeatureRow";
 import { ThreeUpRow } from "./ThreeUpRow";
 import { TwoUpRow } from "./TwoUpRow";
@@ -28,10 +31,42 @@ const DEFAULT_INTERSTITIALS = [
   "Every backstreet has a story.",
 ];
 
+const FALLBACK_IMAGE =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
+
+function FullBleedRow({ location }: { location: Location }) {
+  const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 1600);
+
+  return (
+    <Link
+      href={`/explore?location=${location.id}`}
+      className="group relative block w-full overflow-hidden rounded-xl aspect-[21/9]"
+    >
+      <Image
+        src={imageSrc || FALLBACK_IMAGE}
+        alt={location.name}
+        fill
+        className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.04]"
+        sizes="100vw"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-charcoal/70 via-charcoal/20 to-transparent" />
+      <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10">
+        <p className="text-xs uppercase tracking-wide text-white/60">
+          {location.city}
+        </p>
+        <h3 className="text-2xl font-serif italic text-white sm:text-3xl">
+          {location.name}
+        </h3>
+      </div>
+    </Link>
+  );
+}
+
 /**
  * Chunks locations into repeating editorial row modules:
  * Module pattern per 6 items: FeatureRow(1) + ThreeUpRow(3) + TwoUpRow(2)
  * Inserts TextInterstitial every ~18 items (3 modules).
+ * After every 3 modules, a FullBleedRow showcases a single location at full width.
  */
 export function LocationEditorialGrid({
   locations,
@@ -45,15 +80,38 @@ export function LocationEditorialGrid({
     let moduleCount = 0;
     let interstitialIndex = 0;
 
-    for (let i = 0; i < locations.length; ) {
-      const remaining = locations.length - i;
+    // Pre-reserve locations for full-bleed rows so they aren't shown in regular modules.
+    // Every 3 modules consumes 18 items, then 1 item for the full-bleed row = 19 per cycle.
+    const fullBleedLocations: Location[] = [];
+    const gridLocations: Location[] = [];
+
+    let cursor = 0;
+    while (cursor < locations.length) {
+      // Take up to 18 items for 3 regular modules
+      const chunkEnd = Math.min(cursor + 18, locations.length);
+      for (let j = cursor; j < chunkEnd; j++) {
+        gridLocations.push(locations[j]!);
+      }
+      cursor = chunkEnd;
+
+      // Reserve the next item for a full-bleed row (if available)
+      if (cursor < locations.length) {
+        fullBleedLocations.push(locations[cursor]!);
+        cursor += 1;
+      }
+    }
+
+    let fullBleedIndex = 0;
+
+    for (let i = 0; i < gridLocations.length; ) {
+      const remaining = gridLocations.length - i;
 
       // Feature Row (1 item)
       if (remaining >= 1) {
         result.push(
           <FeatureRow
             key={`feature-${i}`}
-            location={locations[i]!}
+            location={gridLocations[i]!}
             onSelect={onSelect}
           />
         );
@@ -61,8 +119,8 @@ export function LocationEditorialGrid({
       }
 
       // ThreeUp Row (3 items)
-      if (i < locations.length) {
-        const threeItems = locations.slice(i, Math.min(i + 3, locations.length));
+      if (i < gridLocations.length) {
+        const threeItems = gridLocations.slice(i, Math.min(i + 3, gridLocations.length));
         if (threeItems.length > 0) {
           result.push(
             <ThreeUpRow
@@ -76,8 +134,8 @@ export function LocationEditorialGrid({
       }
 
       // TwoUp Row (2 items)
-      if (i < locations.length) {
-        const twoItems = locations.slice(i, Math.min(i + 2, locations.length));
+      if (i < gridLocations.length) {
+        const twoItems = gridLocations.slice(i, Math.min(i + 2, gridLocations.length));
         if (twoItems.length > 0) {
           result.push(
             <TwoUpRow
@@ -92,8 +150,8 @@ export function LocationEditorialGrid({
 
       moduleCount += 1;
 
-      // Insert text interstitial every 3 modules
-      if (moduleCount % INTERSTITIAL_INTERVAL === 0 && i < locations.length) {
+      // Insert text interstitial + full-bleed row every 3 modules
+      if (moduleCount % INTERSTITIAL_INTERVAL === 0 && i < gridLocations.length) {
         const text = activeCategory
           ? INTERSTITIAL_MESSAGES[activeCategory] || DEFAULT_INTERSTITIALS[interstitialIndex % DEFAULT_INTERSTITIALS.length]!
           : DEFAULT_INTERSTITIALS[interstitialIndex % DEFAULT_INTERSTITIALS.length]!;
@@ -102,6 +160,17 @@ export function LocationEditorialGrid({
           <TextInterstitial key={`interstitial-${moduleCount}`} text={text} />
         );
         interstitialIndex += 1;
+
+        // Insert full-bleed row after the interstitial
+        if (fullBleedIndex < fullBleedLocations.length) {
+          result.push(
+            <FullBleedRow
+              key={`fullbleed-${fullBleedIndex}`}
+              location={fullBleedLocations[fullBleedIndex]!}
+            />
+          );
+          fullBleedIndex += 1;
+        }
       }
     }
 

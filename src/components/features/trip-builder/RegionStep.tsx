@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { MapPin } from "lucide-react";
 
-import { SplitText } from "@/components/ui/SplitText";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { REGIONS } from "@/data/regions";
 import {
@@ -15,6 +14,7 @@ import {
 import type { KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { RegionDescription } from "@/data/regionDescriptions";
+import { easeCinematic } from "@/lib/motion";
 
 import { RegionMapCanvas } from "./RegionMapCanvas";
 import { RegionRow } from "./RegionRow";
@@ -25,8 +25,6 @@ export type RegionStepProps = {
   onValidityChange?: (isValid: boolean) => void;
   sanityConfig?: TripBuilderConfig;
 };
-
-const EASE_OUT_EXPO = [0.215, 0.61, 0.355, 1] as const;
 
 /** Merge Sanity overrides into a RegionDescription, falling back to hardcoded values */
 function mergeRegionOverride(
@@ -199,20 +197,18 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       <div className="relative z-10">
         {/* Heading */}
         <div className="px-6 pt-24 lg:max-w-[45%] lg:px-10 lg:pt-28">
-          <p className="text-xs font-medium uppercase tracking-[0.25em] text-brand-primary">
+          <p className="eyebrow-editorial text-brand-primary">
             STEP 04
           </p>
 
-          <SplitText
-            as="h2"
+          <motion.h2
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [...easeCinematic] as [number, number, number, number], delay: 0.15 }}
             className="mt-3 font-serif text-3xl italic tracking-tight text-white sm:text-4xl lg:text-5xl"
-            splitBy="word"
-            trigger="load"
-            animation="clipY"
-            staggerDelay={0.06}
           >
             {sanityConfig?.regionStepHeading ?? "Where are you headed?"}
-          </SplitText>
+          </motion.h2>
 
           <p className="mt-3 text-sm text-white/50 lg:text-base">
             {sanityConfig?.regionStepDescription ?? "Choose your destinations. We've highlighted the best matches for your travel style."}
@@ -263,7 +259,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                       exit={{ height: 0, opacity: 0 }}
                       transition={{
                         duration: 0.4,
-                        ease: EASE_OUT_EXPO as [number, number, number, number],
+                        ease: [...easeCinematic] as [number, number, number, number],
                       }}
                       className="overflow-hidden"
                     >

@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { cn } from "@/lib/cn";
-import { easeReveal, durationFast } from "@/lib/motion";
+import { easeReveal, durationFast, magneticCTA } from "@/lib/motion";
 
 type ArrowLineCTAProps = {
   label: string;
@@ -21,7 +21,7 @@ export function ArrowLineCTA({
   const prefersReducedMotion = useReducedMotion();
 
   return (
-    <Magnetic strength={0.15} disabled={disabled}>
+    <Magnetic strength={magneticCTA.strength} maxDisplacement={magneticCTA.maxDisplacement} threshold={magneticCTA.threshold} disabled={disabled}>
       <button
         type="button"
         onClick={onClick}

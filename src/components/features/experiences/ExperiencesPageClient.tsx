@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { ExperienceCard } from "./ExperienceCard";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
@@ -50,20 +49,12 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
   if (experiences.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4">
-        <SplitText
-          as="p"
-          className="justify-center font-serif italic text-lg text-foreground"
-          splitBy="word"
-          animation="clipY"
-          staggerDelay={0.06}
-        >
+        <p className="font-serif italic text-lg text-foreground">
           Experiences are on the way
-        </SplitText>
-        <ScrollReveal delay={0.3} distance={15}>
-          <p className="mt-2 text-sm text-stone text-center max-w-sm">
-            We&apos;re curating immersive Japan experiences. Check back soon.
-          </p>
-        </ScrollReveal>
+        </p>
+        <p className="mt-2 text-sm text-stone text-center max-w-sm">
+          We&apos;re curating immersive Japan experiences. Check back soon.
+        </p>
       </div>
     );
   }
@@ -73,15 +64,11 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
       {/* Header */}
       <section className="py-16 sm:py-24 lg:py-32">
         <div className="mx-auto max-w-4xl px-6 text-center">
-          <SplitText
-            as="h1"
-            className="justify-center font-serif text-4xl italic text-foreground sm:text-5xl lg:text-6xl"
-            splitBy="word"
-            animation="clipY"
-            staggerDelay={0.06}
-          >
-            Experiences
-          </SplitText>
+          <ScrollReveal>
+            <h1 className="font-serif text-4xl italic text-foreground sm:text-5xl lg:text-6xl">
+              Experiences
+            </h1>
+          </ScrollReveal>
           <ScrollReveal delay={0.3} distance={15}>
             <p className="mx-auto mt-4 max-w-xl text-lg text-foreground-secondary">
               Hands-on workshops, cultural immersions, and unforgettable moments across Japan.

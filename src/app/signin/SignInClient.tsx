@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { parallaxSection, durationBase } from "@/lib/motion";
@@ -90,15 +89,11 @@ export function SignInClient(_props: SignInClientProps) {
         {/* Text over image */}
         <div className="relative z-10 flex h-full min-h-[40vh] lg:min-h-[100dvh] items-end p-8 sm:p-12 lg:p-16">
           <div>
-            <SplitText
-              as="h1"
-              className="font-serif italic text-[clamp(2rem,6vw,4rem)] leading-[1.1] text-white"
-              splitBy="word"
-              animation="clipY"
-              staggerDelay={0.04}
-            >
-              Welcome back
-            </SplitText>
+            <ScrollReveal>
+              <h1 className="font-serif italic text-[clamp(2rem,6vw,4rem)] leading-[1.1] text-white">
+                Welcome back
+              </h1>
+            </ScrollReveal>
             <ScrollReveal delay={0.3} distance={15}>
               <p className="mt-4 max-w-sm text-base text-white/70">
                 Sign in to pick up where you left off.
@@ -117,16 +112,11 @@ export function SignInClient(_props: SignInClientProps) {
             </p>
           </ScrollReveal>
 
-          <SplitText
-            as="h2"
-            className="mt-4 font-serif italic text-2xl text-foreground sm:text-3xl"
-            splitBy="word"
-            animation="clipY"
-            staggerDelay={0.04}
-            delay={0.1}
-          >
-            Sign in with email
-          </SplitText>
+          <ScrollReveal delay={0.1}>
+            <h2 className="mt-4 font-serif italic text-2xl text-foreground sm:text-3xl">
+              Sign in with email
+            </h2>
+          </ScrollReveal>
 
           <ScrollReveal delay={0.3} distance={10}>
             <p className="mt-3 text-sm text-foreground-secondary">

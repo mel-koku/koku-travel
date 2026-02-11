@@ -6,9 +6,8 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { motion } from "framer-motion";
 
 import { DatePicker } from "@/components/ui/DatePicker";
-import { SplitText } from "@/components/ui/SplitText";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { staggerWord } from "@/lib/motion";
+import { durationFast, easeReveal } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type DateFormValues = {
@@ -125,16 +124,14 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
             STEP 01
           </p>
 
-          <SplitText
-            as="h2"
+          <motion.h2
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: easeReveal, delay: 0.15 }}
             className="mt-3 font-serif text-3xl italic tracking-tight text-foreground"
-            splitBy="word"
-            trigger="load"
-            animation="clipY"
-            staggerDelay={staggerWord}
           >
             {sanityConfig?.dateStepHeading ?? "When are you going?"}
-          </SplitText>
+          </motion.h2>
 
           <p className="mt-2 text-sm text-stone">
             {sanityConfig?.dateStepDescription ?? "Cherry blossom season, summer festivals, autumn leaves \u2014 your dates shape the whole trip. Up to 14 days."}
@@ -200,7 +197,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: durationFast, ease: easeReveal }}
                 className="mt-6"
               >
                 <p className="font-mono text-sm text-sage">

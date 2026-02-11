@@ -6,8 +6,6 @@ import type { GuideSummary, GuideType } from "@/types/guide";
 import { GuideHeroSpread } from "./GuideHeroSpread";
 import { GuideFilterBar } from "./GuideFilterBar";
 import { GuideEditorialRow } from "./GuideEditorialRow";
-import { SplitText } from "@/components/ui/SplitText";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 type GuidesPageClientProps = {
@@ -61,20 +59,12 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
   if (guides.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4">
-        <SplitText
-          as="p"
-          className="justify-center font-serif italic text-lg text-foreground"
-          splitBy="word"
-          animation="clipY"
-          staggerDelay={0.06}
-        >
+        <p className="font-serif italic text-lg text-foreground">
           {content?.guidesEmptyHeading ?? "Guides are on the way"}
-        </SplitText>
-        <ScrollReveal delay={0.3} distance={15}>
-          <p className="mt-2 text-sm text-stone text-center max-w-sm">
-            {content?.guidesEmptyDescription ?? "We're writing curated travel guides. Check back soon."}
-          </p>
-        </ScrollReveal>
+        </p>
+        <p className="mt-2 text-sm text-stone text-center max-w-sm">
+          {content?.guidesEmptyDescription ?? "We're writing curated travel guides. Check back soon."}
+        </p>
       </div>
     );
   }

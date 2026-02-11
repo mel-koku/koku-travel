@@ -64,7 +64,7 @@ export default function IdentityBadge({
       <span className="text-sm font-medium text-foreground">{label}</span>
       {showChevron && (
         <svg
-          className={`h-4 w-4 text-foreground-secondary transform transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-foreground-secondary transform transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 20 20"

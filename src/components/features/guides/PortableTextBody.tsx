@@ -31,7 +31,7 @@ const components: PortableTextComponents = {
     ),
     normal: ({ children }) => (
       <div className="mx-auto max-w-2xl px-6">
-        <p className="text-lg leading-[1.8] text-foreground-secondary mb-6">
+        <p className="text-lg leading-[1.8] text-foreground-body mb-6">
           {children}
         </p>
       </div>
@@ -39,7 +39,7 @@ const components: PortableTextComponents = {
     blockquote: ({ children }) => (
       <div className="mx-auto max-w-3xl px-6 my-12">
         <div className="h-px w-12 bg-brand-primary/40 mb-8" />
-        <blockquote className="font-serif italic text-xl text-foreground py-4 sm:text-2xl">
+        <blockquote className="serif-body text-xl text-foreground py-4 border-l-2 border-brand-primary/40 pl-8 sm:text-2xl">
           {children}
         </blockquote>
       </div>
@@ -48,14 +48,14 @@ const components: PortableTextComponents = {
   list: {
     bullet: ({ children }) => (
       <div className="mx-auto max-w-2xl px-6">
-        <ul className="list-disc list-outside ml-6 mb-6 space-y-2 text-lg leading-[1.8] text-foreground-secondary">
+        <ul className="list-disc list-outside ml-6 mb-6 space-y-2 text-lg leading-[1.8] text-foreground-body">
           {children}
         </ul>
       </div>
     ),
     number: ({ children }) => (
       <div className="mx-auto max-w-2xl px-6">
-        <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 text-lg leading-[1.8] text-foreground-secondary">
+        <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 text-lg leading-[1.8] text-foreground-body">
           {children}
         </ol>
       </div>
@@ -63,10 +63,10 @@ const components: PortableTextComponents = {
   },
   listItem: {
     bullet: ({ children }) => (
-      <li className="text-foreground-secondary">{children}</li>
+      <li className="text-foreground-body">{children}</li>
     ),
     number: ({ children }) => (
-      <li className="text-foreground-secondary">{children}</li>
+      <li className="text-foreground-body">{children}</li>
     ),
   },
   marks: {

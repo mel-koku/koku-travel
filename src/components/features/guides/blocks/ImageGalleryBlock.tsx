@@ -32,7 +32,7 @@ export function ImageGalleryBlock({ value }: ImageGalleryProps) {
           : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4";
 
   return (
-    <ScrollReveal className="mx-auto my-12 max-w-5xl px-4" distance={40}>
+    <ScrollReveal className="mx-auto my-12 max-w-6xl px-4" distance={40}>
       <div className={layoutClass}>
         {images.map((image, i) => {
           const src = urlFor(image).width(800).quality(85).url();

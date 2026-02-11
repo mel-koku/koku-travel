@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Check, MapPin, Plane, Star } from "lucide-react";
 
 import { cn } from "@/lib/cn";
-import { easeCinematicCSS, springInteraction } from "@/lib/motion";
+import { easeCinematicCSS, springInteraction, durationFast } from "@/lib/motion";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { REGIONS } from "@/data/regions";
 import type { RegionDescription } from "@/data/regionDescriptions";
@@ -40,7 +40,7 @@ export function RegionCard({
     <motion.button
       type="button"
       onClick={onToggle}
-      whileHover={prefersReducedMotion ? {} : { y: -4, transition: { duration: 0.2 } }}
+      whileHover={prefersReducedMotion ? {} : { y: -4, transition: { duration: durationFast } }}
       whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
       layout
       className={cn(

@@ -47,7 +47,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
       {/* Next guide card */}
       {relatedGuide && (
         <div className="mx-auto mt-16 max-w-5xl px-6">
-          <p className="mb-4 font-mono text-xs uppercase tracking-wide text-stone">
+          <p className="mb-4 eyebrow-editorial">
             Next Guide
           </p>
           <Link
@@ -65,8 +65,9 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
                 style={{ transitionTimingFunction: easeCinematicCSS }}
                 sizes="(min-width: 1280px) 80vw, 95vw"
               />
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
+              {/* Gradient overlay — recedes on hover */}
+              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/10 via-transparent to-transparent" />
             </div>
 
             {/* Overlay text */}

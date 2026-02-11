@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Check, Plane, Star } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { easeCinematic } from "@/lib/motion";
 import type { RegionDescription } from "@/data/regionDescriptions";
 
 type RegionRowProps = {
@@ -17,8 +18,6 @@ type RegionRowProps = {
   onHover: () => void;
   onLeave: () => void;
 };
-
-const EASE_OUT_EXPO = [0.215, 0.61, 0.355, 1] as const;
 
 export function RegionRow({
   index,
@@ -48,7 +47,7 @@ export function RegionRow({
       transition={{
         delay: index * 0.08,
         duration: 0.6,
-        ease: EASE_OUT_EXPO as [number, number, number, number],
+        ease: [...easeCinematic] as [number, number, number, number],
       }}
       className={cn(
         "group flex w-full cursor-pointer items-center gap-4 border-b px-4 py-4 text-left transition-colors duration-300 lg:px-5 lg:py-5",

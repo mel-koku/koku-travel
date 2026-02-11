@@ -170,7 +170,7 @@ export function Modal(props: ModalProps) {
           className={cn(
             "relative w-full max-w-lg rounded-2xl bg-background p-6 shadow-xl outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
             "max-h-[calc(100vh-6rem)] overflow-y-auto sm:p-8",
-            "animate-[modal-enter_0.2s_ease-out]",
+            "animate-[modal-enter_0.3s_ease-out]",
             panelClassName,
           )}
           role="dialog"

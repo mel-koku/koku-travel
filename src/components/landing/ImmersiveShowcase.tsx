@@ -7,9 +7,9 @@ import {
   useTransform,
   useReducedMotion,
 } from "framer-motion";
-import { useRef, useEffect } from "react";
-import { SplitText } from "@/components/ui/SplitText";
+import { useRef, useEffect, useState } from "react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { easeReveal } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 const defaultActs = [
@@ -85,11 +85,29 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
 
 function ImmersiveShowcaseDesktop({ acts }: { acts: ActData[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [sectionInView, setSectionInView] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
+
+  // Detect when the section enters the viewport (fires once)
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setSectionInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section ref={containerRef} className="relative h-[300vh] shrink-0 bg-background">
@@ -100,6 +118,7 @@ function ImmersiveShowcaseDesktop({ acts }: { acts: ActData[] }) {
             act={act}
             index={index}
             scrollYProgress={scrollYProgress}
+            sectionInView={sectionInView}
           />
         ))}
       </div>
@@ -111,21 +130,24 @@ function Act({
   act,
   index,
   scrollYProgress,
+  sectionInView,
 }: {
   act: ActData;
   index: number;
   scrollYProgress: ReturnType<typeof useScroll>["scrollYProgress"];
+  sectionInView: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isActive, setIsActive] = useState(false);
   const start = index / 3;
   const end = (index + 1) / 3;
 
-  // Opacity ranges — each act fades in/out with crossfade overlap
-  const opacityFirstIn = [0, end - 0.08, end];
+  // Opacity ranges — sharper snap transitions (3% window)
+  const opacityFirstIn = [0, end - 0.03, end];
   const opacityFirstOut = [1, 1, 0];
-  const opacityMidIn = [Math.max(0, start - 0.05), start + 0.05, end - 0.08, end];
+  const opacityMidIn = [Math.max(0, start - 0.015), start + 0.015, end - 0.03, end];
   const opacityMidOut = [0, 1, 1, 0];
-  const opacityLastIn = [start - 0.05, start + 0.05, 1];
+  const opacityLastIn = [start - 0.015, start + 0.015, 1];
   const opacityLastOut = [0, 1, 1];
 
   const opacityFirst = useTransform(scrollYProgress, opacityFirstIn, opacityFirstOut);
@@ -144,8 +166,22 @@ function Act({
       if (containerRef.current) containerRef.current.style.opacity = String(v);
     });
     return () => unsub();
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- motion values are stable refs
-  }, []);
+  }, [adjustedOpacity]);
+
+  // Track activation — triggers text reveal animations once
+  // Requires section to be in viewport AND act opacity above threshold
+  useEffect(() => {
+    if (isActive || !sectionInView) return;
+    // Act 0 activates immediately when section enters viewport
+    if (index === 0) {
+      setIsActive(true);
+      return;
+    }
+    const unsub = adjustedOpacity.on("change", (v) => {
+      if (v > 0.3) setIsActive(true);
+    });
+    return () => unsub();
+  }, [isActive, sectionInView, index, adjustedOpacity]);
 
   // Image clip-path reveal from left
   const clipX = useTransform(
@@ -185,16 +221,31 @@ function Act({
             <div className="absolute inset-0 bg-charcoal/60" />
           </motion.div>
           <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-6">
-            <div className="max-w-lg text-white">
-              <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
+            <div className="max-w-lg">
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.4, ease: easeReveal }}
+                className="eyebrow-editorial text-brand-primary"
+              >
                 {act.eyebrow}
-              </p>
-              <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl">
+              </motion.p>
+              <motion.h2
+                initial={{ opacity: 0, y: 12 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+                transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
+                className="mt-4 font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
+              >
                 {act.title}
-              </h2>
-              <p className="mt-6 text-base leading-relaxed text-white/80">
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.4, ease: easeReveal, delay: 0.4 }}
+                className="mt-6 text-base leading-relaxed text-white/80"
+              >
                 {act.description}
-              </p>
+              </motion.p>
             </div>
           </div>
         </div>
@@ -209,15 +260,30 @@ function Act({
         >
           {index === 1 && (
             <div className="max-w-md lg:order-1">
-              <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.4, ease: easeReveal }}
+                className="eyebrow-editorial text-brand-primary"
+              >
                 {act.eyebrow}
-              </p>
-              <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
+              </motion.p>
+              <motion.h2
+                initial={{ opacity: 0, y: 12 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+                transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
+                className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl"
+              >
                 {act.title}
-              </h2>
-              <p className="mt-6 text-base leading-relaxed text-foreground-secondary">
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.4, ease: easeReveal, delay: 0.4 }}
+                className="mt-6 text-base leading-relaxed text-foreground-secondary"
+              >
                 {act.description}
-              </p>
+              </motion.p>
             </div>
           )}
 
@@ -238,15 +304,30 @@ function Act({
 
           {index === 0 && (
             <div className="max-w-md">
-              <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.4, ease: easeReveal }}
+                className="eyebrow-editorial text-brand-primary"
+              >
                 {act.eyebrow}
-              </p>
-              <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
+              </motion.p>
+              <motion.h2
+                initial={{ opacity: 0, y: 12 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+                transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
+                className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl"
+              >
                 {act.title}
-              </h2>
-              <p className="mt-6 text-base leading-relaxed text-foreground-secondary">
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 10 }}
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: 0.4, ease: easeReveal, delay: 0.4 }}
+                className="mt-6 text-base leading-relaxed text-foreground-secondary"
+              >
                 {act.description}
-              </p>
+              </motion.p>
             </div>
           )}
         </div>
@@ -275,19 +356,15 @@ function ImmersiveShowcaseMobile({ acts }: { acts: ActData[] }) {
 
             <div className="mt-8">
               <ScrollReveal delay={0.15}>
-                <p className="text-sm font-medium uppercase tracking-ultra text-brand-primary">
+                <p className="eyebrow-editorial text-brand-primary">
                   {act.eyebrow}
                 </p>
               </ScrollReveal>
-              <SplitText
-                as="h2"
-                className="mt-4 font-serif italic text-xl tracking-heading text-foreground sm:text-2xl"
-                splitBy="word"
-                animation="clipY"
-                delay={0.2}
-              >
-                {act.title}
-              </SplitText>
+              <ScrollReveal delay={0.2}>
+                <h2 className="mt-4 font-serif italic text-xl tracking-heading text-foreground sm:text-2xl">
+                  {act.title}
+                </h2>
+              </ScrollReveal>
               <ScrollReveal delay={0.3}>
                 <p className="mt-4 text-base leading-relaxed text-foreground-secondary">
                   {act.description}

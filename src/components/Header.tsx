@@ -16,6 +16,7 @@ import { cn } from "@/lib/cn";
 import { springNavigation } from "@/lib/motion";
 import { MenuTrigger } from "@/components/header/MenuTrigger";
 import { MenuOverlay } from "@/components/header/MenuOverlay";
+import { KokuMark } from "@/components/ui/KokuMark";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -123,7 +124,6 @@ export default function Header() {
   const { setCursorState } = useCursor();
   const { scrollProgress, direction } = useLenis();
   const prefersReducedMotion = useReducedMotion();
-  const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const isLandingPage = pathname === "/";
 
@@ -131,8 +131,9 @@ export default function Header() {
   const [heroRevealed, setHeroRevealed] = useState(!isLandingPage);
 
   // Track scroll progress and direction refs for stable access
-  const lastDirectionRef = useRef(direction);
   const scrollProgressRef = useRef(scrollProgress);
+  const scrollAccumRef = useRef(0);
+  const lastScrollYRef = useRef(0);
   useEffect(() => { scrollProgressRef.current = scrollProgress; }, [scrollProgress]);
 
   // Hero reveal tracking (separate from direction-based hide/show)
@@ -148,7 +149,8 @@ export default function Header() {
     }
   }, [isLandingPage, scrollProgress, heroRevealed]);
 
-  // Direction-based hide/show — only fires when direction actually changes
+  // Direction-based hide/show with scroll hysteresis
+  // Require 50px of cumulative upward scroll to show, 20px downward to hide
   useEffect(() => {
     if (isMenuOpen) {
       setIsVisible(true);
@@ -173,28 +175,23 @@ export default function Header() {
       return;
     }
 
-    // Only act when direction actually changes
-    if (direction === lastDirectionRef.current) return;
-    lastDirectionRef.current = direction;
+    const currentY = typeof window !== "undefined" ? window.scrollY : 0;
+    const delta = currentY - lastScrollYRef.current;
+    lastScrollYRef.current = currentY;
 
-    if (debounceRef.current) {
-      clearTimeout(debounceRef.current);
+    // Reset accumulator on direction change
+    if ((delta > 0 && scrollAccumRef.current < 0) || (delta < 0 && scrollAccumRef.current > 0)) {
+      scrollAccumRef.current = 0;
     }
+    scrollAccumRef.current += delta;
 
-    debounceRef.current = setTimeout(() => {
-      if (direction === 1) {
-        setIsVisible(false);
-      } else if (direction === -1) {
-        setIsVisible(true);
-      }
-    }, 50);
-
-    return () => {
-      if (debounceRef.current) {
-        clearTimeout(debounceRef.current);
-      }
-    };
-  }, [direction, isMenuOpen, isLandingPage, pathname]);
+    // Hysteresis thresholds
+    if (scrollAccumRef.current > 20) {
+      setIsVisible(false);
+    } else if (scrollAccumRef.current < -50) {
+      setIsVisible(true);
+    }
+  }, [direction, isMenuOpen, isLandingPage, pathname, scrollProgress]);
 
   const handleMenuToggle = useCallback(() => {
     setIsMenuOpen((prev) => !prev);
@@ -235,15 +232,18 @@ export default function Header() {
           <Magnetic strength={0.15}>
             <Link
               href="/"
-              className="flex items-baseline gap-1.5"
+              className="flex items-center gap-2"
               onMouseEnter={() => setCursorState("link")}
               onMouseLeave={() => setCursorState("default")}
             >
-              <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
-                Koku
-              </span>
-              <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
-                Travel
+              <KokuMark className="h-6 w-6 text-foreground" />
+              <span className="flex items-baseline gap-1.5">
+                <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
+                  Koku
+                </span>
+                <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
+                  Travel
+                </span>
               </span>
             </Link>
           </Magnetic>

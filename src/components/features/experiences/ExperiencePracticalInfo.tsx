@@ -29,18 +29,16 @@ export function ExperiencePracticalInfo({
   return (
     <section className="py-12 sm:py-20">
       <div className="mx-auto max-w-2xl px-6">
-        <ScrollReveal distance={30}>
-          <h2 className="font-serif text-2xl italic text-foreground mb-8 sm:text-3xl">
-            Practical Information
-          </h2>
-        </ScrollReveal>
+        <h2 className="font-serif text-2xl italic text-foreground mb-8 sm:text-3xl">
+          Practical Information
+        </h2>
 
-        <div className="space-y-8">
-          {/* What's included */}
-          {whatsIncluded && whatsIncluded.length > 0 && (
-            <ScrollReveal distance={20} delay={0.1}>
+        <ScrollReveal distance={30}>
+          <div className="space-y-8">
+            {/* What's included */}
+            {whatsIncluded && whatsIncluded.length > 0 && (
               <div>
-                <h3 className="font-mono text-xs uppercase tracking-wide text-stone mb-3">
+                <h3 className="eyebrow-editorial mb-3">
                   What&apos;s Included
                 </h3>
                 <ul className="space-y-2">
@@ -67,14 +65,12 @@ export function ExperiencePracticalInfo({
                   ))}
                 </ul>
               </div>
-            </ScrollReveal>
-          )}
+            )}
 
-          {/* What to bring */}
-          {whatToBring && whatToBring.length > 0 && (
-            <ScrollReveal distance={20} delay={0.15}>
+            {/* What to bring */}
+            {whatToBring && whatToBring.length > 0 && (
               <div>
-                <h3 className="font-mono text-xs uppercase tracking-wide text-stone mb-3">
+                <h3 className="eyebrow-editorial mb-3">
                   What to Bring
                 </h3>
                 <ul className="space-y-2">
@@ -101,16 +97,14 @@ export function ExperiencePracticalInfo({
                   ))}
                 </ul>
               </div>
-            </ScrollReveal>
-          )}
+            )}
 
-          {/* Meeting point & station */}
-          {(meetingPoint || nearestStation) && (
-            <ScrollReveal distance={20} delay={0.2}>
+            {/* Meeting point & station */}
+            {(meetingPoint || nearestStation) && (
               <div className="rounded-xl border border-border/50 bg-surface p-6 space-y-4">
                 {meetingPoint && (
                   <div>
-                    <h3 className="font-mono text-xs uppercase tracking-wide text-stone mb-1">
+                    <h3 className="eyebrow-editorial mb-1">
                       Meeting Point
                     </h3>
                     <p className="text-base text-foreground-secondary">
@@ -120,7 +114,7 @@ export function ExperiencePracticalInfo({
                 )}
                 {nearestStation && (
                   <div>
-                    <h3 className="font-mono text-xs uppercase tracking-wide text-stone mb-1">
+                    <h3 className="eyebrow-editorial mb-1">
                       Nearest Station
                     </h3>
                     <p className="text-base text-foreground-secondary">
@@ -129,12 +123,10 @@ export function ExperiencePracticalInfo({
                   </div>
                 )}
               </div>
-            </ScrollReveal>
-          )}
+            )}
 
-          {/* Booking CTA */}
-          {bookingUrl && (
-            <ScrollReveal distance={15} delay={0.25}>
+            {/* Booking CTA */}
+            {bookingUrl && (
               <a
                 href={bookingUrl}
                 target="_blank"
@@ -156,9 +148,9 @@ export function ExperiencePracticalInfo({
                   />
                 </svg>
               </a>
-            </ScrollReveal>
-          )}
-        </div>
+            )}
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

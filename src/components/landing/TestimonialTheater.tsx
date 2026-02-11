@@ -1,16 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-} from "framer-motion";
-import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { parallaxSection, staggerWord } from "@/lib/motion";
+import { staggerWord } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 const defaultTestimonials = [
@@ -66,126 +58,77 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
       }))
     : defaultTestimonials;
 
+  const [featured, ...rest] = testimonials;
+  if (!featured) return null;
+
   return (
     <section>
-      {testimonials.map((testimonial, index) => (
-        <TestimonialSpread
-          key={index}
-          testimonial={testimonial}
-          index={index}
-          flip={index % 2 === 1}
-          priority={index === 0}
+      {/* Featured testimonial — full-bleed hero moment */}
+      <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
+        <Image
+          src={featured.image}
+          alt={featured.alt}
+          fill
+          className="object-cover"
+          sizes="100vw"
+          priority
         />
-      ))}
-    </section>
-  );
-}
+        <div className="absolute inset-0 bg-charcoal/60" />
 
-function TestimonialSpread({
-  testimonial,
-  index,
-  flip,
-  priority = false,
-}: {
-  testimonial: TestimonialData;
-  index: number;
-  flip: boolean;
-  priority?: boolean;
-}) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const prefersReducedMotion = useReducedMotion();
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"],
-  });
-
-  const imageScale = useTransform(scrollYProgress, [0, 1], [parallaxSection.from, parallaxSection.to]);
-
-  return (
-    <div
-      ref={containerRef}
-      className={`grid min-h-[50vh] lg:min-h-[70vh] lg:grid-cols-2 ${
-        flip ? "" : ""
-      }`}
-    >
-      {/* Image half */}
-      <div
-        className={`relative min-h-[40vh] overflow-hidden lg:min-h-[70vh] ${
-          flip ? "lg:order-2" : ""
-        }`}
-      >
-        <motion.div
-          className="absolute inset-0"
-          style={
-            prefersReducedMotion
-              ? {}
-              : { scale: imageScale }
-          }
-        >
-          <Image
-            src={testimonial.image}
-            alt={testimonial.alt}
-            fill
-            className="object-cover"
-            sizes="(min-width: 1024px) 50vw, 100vw"
-            priority={priority}
-          />
-        </motion.div>
-        {/* Subtle edge gradient toward the text side */}
-        <div
-          className={`absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-charcoal/40 lg:to-transparent ${
-            flip
-              ? "lg:bg-gradient-to-l lg:from-transparent lg:via-transparent lg:to-charcoal/30"
-              : "lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-charcoal/30"
-          }`}
-        />
-        {/* Index number */}
-        <div className="absolute bottom-6 left-6 lg:bottom-auto lg:left-auto lg:right-6 lg:top-6">
-          <span className="font-mono text-sm text-white/30">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-        </div>
-      </div>
-
-      {/* Quote half */}
-      <div
-        className={`flex items-center bg-charcoal px-8 py-12 sm:py-20 lg:py-28 sm:px-12 lg:px-16 ${
-          flip ? "lg:order-1" : ""
-        }`}
-      >
-        <div className="max-w-lg">
-          {/* Oversized quotation mark */}
-          <span className="block select-none font-serif italic text-[6rem] leading-none text-foreground/[0.06]">
+        <div className="relative z-10 max-w-3xl px-6 pb-12 text-center sm:px-12">
+          <span className="mb-4 block select-none font-serif italic text-[6rem] leading-none text-white/10">
             &ldquo;
           </span>
 
-          <blockquote className="-mt-12">
+          <blockquote className="-mt-16">
             <SplitText
               as="p"
-              className="font-serif italic text-xl leading-relaxed text-white/90 sm:text-2xl"
+              className="font-serif italic text-2xl leading-relaxed text-white sm:text-3xl lg:text-4xl"
               splitBy="word"
               animation="fadeUp"
               staggerDelay={staggerWord}
               delay={0.1}
             >
-              {testimonial.quote}
+              {featured.quote}
             </SplitText>
           </blockquote>
 
-          <ScrollReveal delay={0.4}>
-            <div className="mt-10">
-              <div className="mb-4 h-px w-8 bg-brand-primary/60" />
-              <p className="text-sm font-medium text-white">
-                {testimonial.author}
-              </p>
-              <p className="mt-0.5 text-xs text-white/40">
-                {testimonial.location}
-              </p>
-            </div>
-          </ScrollReveal>
+          <div className="mt-8">
+            <p className="text-sm font-medium text-white">
+              {featured.author}
+            </p>
+            <p className="mt-0.5 text-xs text-white/50">
+              {featured.location}
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Remaining testimonials — compact card row */}
+      {rest.length > 0 && (
+        <div className="flex gap-6 overflow-x-auto overscroll-contain px-6 py-12">
+          {rest.map((testimonial, i) => (
+            <div
+              key={i}
+              className="min-w-[280px] flex-1 rounded-xl border border-border/50 bg-surface p-6"
+            >
+              <blockquote>
+                <p className="font-serif italic text-base leading-relaxed text-foreground-secondary">
+                  &ldquo;{testimonial.quote}&rdquo;
+                </p>
+              </blockquote>
+              <div className="mt-4">
+                <p className="text-xs font-medium text-stone">
+                  {testimonial.author}
+                </p>
+                <p className="mt-0.5 text-xs text-stone/60">
+                  {testimonial.location}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
