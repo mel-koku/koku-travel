@@ -13,14 +13,16 @@ function circle(initial: string) {
   );
 }
 
-export default function IdentityBadge({ 
+export default function IdentityBadge({
   className = "",
   showChevron = false,
   isOpen = false,
-}: { 
+  compact = false,
+}: {
   className?: string;
   showChevron?: boolean;
   isOpen?: boolean;
+  compact?: boolean;
 }) {
   const supabase = createClient();
   const { user } = useAppState();
@@ -51,6 +53,10 @@ export default function IdentityBadge({
 
   const label = user.displayName || email || "Guest";
   const initial = (label?.[0] ?? "G").toUpperCase();
+
+  if (compact) {
+    return <span className={className}>{circle(initial)}</span>;
+  }
 
   return (
     <span className={`inline-flex items-center gap-2 rounded-xl border border-border bg-background px-3 py-2 ${className}`}>
