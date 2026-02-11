@@ -131,7 +131,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
       </div>
 
       {/* Desktop: Expanding columns */}
-      <div className="relative z-10 mt-8 hidden flex-1 px-8 pb-8 lg:flex lg:mt-10 lg:px-12">
+      <div className="relative z-10 mt-8 hidden flex-1 px-8 pb-8 lg:flex lg:mt-10 lg:pl-12 lg:pr-20">
         <div className="flex w-full gap-[3px]">
           {VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
