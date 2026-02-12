@@ -157,11 +157,32 @@
   --success: #2d7a6f;
   --warning: #d4a017;
   --error: #b33025;
+  --stone: #7a6f62;
+  --charcoal: #1f1a14;
   --cream: #f2ebe0;
+  --sage: #2d7a6f;
+  --terracotta: #c6923a;
   --sand: #e3d5c3;
   --warm-gray: #5a4f44;
   --canvas: #f2ebe0;
   --foreground-body: color-mix(in srgb, #1f1a14 85%, transparent);
+
+  /* Chart colors (light) */
+  --chart-1: #8c2f2f;
+  --chart-2: #2d7a6f;
+  --chart-3: #c6923a;
+  --chart-4: #d4a017;
+  --chart-5: #7a6f62;
+
+  /* Sidebar (light) */
+  --sidebar: #f2ebe0;
+  --sidebar-foreground: #1f1a14;
+  --sidebar-primary: #8c2f2f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #faf5ef;
+  --sidebar-accent-foreground: #1f1a14;
+  --sidebar-border: #e3d5c3;
+  --sidebar-ring: #8c2f2f;
 }
 
 @theme inline {

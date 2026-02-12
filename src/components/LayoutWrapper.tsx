@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
+import { ThemeProvider } from "next-themes";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -38,28 +39,30 @@ export function LayoutWrapper({
   }
 
   return (
-    <QueryProvider>
-      <AppStateProvider>
-        <ToastProvider>
-          <WishlistProvider>
-            <LenisProvider>
-              <CursorProvider>
-                <ScrollProgressBar />
-                <div className="flex min-h-screen flex-col">
-                  <Header />
-                  <ErrorBoundary>
-                    <main className="flex-1">
-                      <PageTransition>{children}</PageTransition>
-                    </main>
-                  </ErrorBoundary>
-                  <Footer settings={siteSettings} />
-                </div>
-                <CustomCursor />
-              </CursorProvider>
-            </LenisProvider>
-          </WishlistProvider>
-        </ToastProvider>
-      </AppStateProvider>
-    </QueryProvider>
+    <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
+      <QueryProvider>
+        <AppStateProvider>
+          <ToastProvider>
+            <WishlistProvider>
+              <LenisProvider>
+                <CursorProvider>
+                  <ScrollProgressBar />
+                  <div className="flex min-h-screen flex-col">
+                    <Header />
+                    <ErrorBoundary>
+                      <main className="flex-1">
+                        <PageTransition>{children}</PageTransition>
+                      </main>
+                    </ErrorBoundary>
+                    <Footer settings={siteSettings} />
+                  </div>
+                  <CustomCursor />
+                </CursorProvider>
+              </LenisProvider>
+            </WishlistProvider>
+          </ToastProvider>
+        </AppStateProvider>
+      </QueryProvider>
+    </ThemeProvider>
   );
 }

@@ -35,7 +35,7 @@ export default async function RootLayout({
   const siteSettings = await getSiteSettings();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${dmSans.variable} ${geistMono.variable} ${instrumentSerif.variable} min-h-screen bg-background font-sans text-foreground antialiased`}
       >
