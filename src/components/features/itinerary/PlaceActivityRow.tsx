@@ -576,9 +576,9 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
               {/* Top overlay: Drag handle left, badges right */}
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
-                {/* Drag Handle */}
+                {/* Drag Handle — hidden by default, revealed on card hover */}
                 {!hideDragHandle && (
-                  <div className="rounded-lg bg-surface/90 border border-border/50 p-1 shadow-sm backdrop-blur-sm">
+                  <div className={`transition-opacity duration-200 ${isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                     <DragHandle
                       variant="place"
                       label={dragHandleLabel}
