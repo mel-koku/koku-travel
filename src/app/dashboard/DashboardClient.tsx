@@ -234,7 +234,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
 
   if (isLoadingAuth) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-surface">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-surface">
         <div className="text-center">
           <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-primary border-r-transparent"></div>
           <p className="text-sm text-foreground-secondary">Loading dashboard...</p>
@@ -247,7 +247,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
   const displayName = user.displayName || "Guest";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       <PageHeader
         eyebrow={content?.dashboardEyebrow ?? "Home base"}
         title={displayName}

@@ -93,7 +93,7 @@ function MapSkeleton() {
 export function ItinerarySkeleton() {
   return (
     <div className="bg-surface py-6 sm:py-8 md:py-10">
-      <section className="mx-auto min-h-[calc(100vh-120px)] max-w-screen-2xl p-3 sm:p-4 md:p-6 md:min-h-[calc(100vh-140px)]">
+      <section className="mx-auto min-h-[calc(100dvh-120px)] max-w-screen-2xl p-3 sm:p-4 md:p-6 md:min-h-[calc(100dvh-140px)]">
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(380px,40%)_1fr] xl:gap-6">
           {/* Left column: Header + Map panel */}
           <div className="order-2 flex flex-col gap-4 xl:order-1">
@@ -112,7 +112,7 @@ export function ItinerarySkeleton() {
               </div>
             </div>
             {/* Map panel */}
-            <div className="sticky h-[400px] rounded-2xl border border-border bg-background shadow-sm sm:h-[500px] xl:h-[calc(100vh-280px)] xl:min-h-[400px]">
+            <div className="sticky h-[400px] rounded-2xl border border-border bg-background shadow-sm sm:h-[500px] xl:h-[calc(100dvh-280px)] xl:min-h-[400px]">
               <MapSkeleton />
             </div>
           </div>

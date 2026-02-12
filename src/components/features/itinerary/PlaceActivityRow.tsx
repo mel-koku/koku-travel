@@ -515,7 +515,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     type="time"
                     value={tempManualTime}
                     onChange={(e) => setTempManualTime(e.target.value)}
-                    className="rounded border border-border px-2 py-1 text-sm focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="rounded border border-border px-2 py-1 text-base focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                   <button
                     type="button"
@@ -890,7 +890,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground-secondary shadow-sm placeholder:text-stone focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                  className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-base text-foreground-secondary shadow-sm placeholder:text-stone focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                   rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}

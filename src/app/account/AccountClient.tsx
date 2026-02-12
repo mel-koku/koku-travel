@@ -137,7 +137,7 @@ export function AccountClient({ content }: AccountClientProps) {
 
   if (isLoadingAuth) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-surface">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-surface">
         <div className="text-center">
           <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-brand-primary border-r-transparent"></div>
           <p className="text-sm text-foreground-secondary">Loading account...</p>
@@ -147,7 +147,7 @@ export function AccountClient({ content }: AccountClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       <PageHeader
         compact
         eyebrow={content?.accountEyebrow ?? "Settings"}
@@ -188,7 +188,7 @@ export function AccountClient({ content }: AccountClientProps) {
                   <label className="text-sm text-foreground-secondary block">
                     {content?.accountDisplayNameLabel ?? "Display name"}
                     <input
-                      className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                      className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                       value={user.displayName}
                       onChange={(e) => onNameChange(e.target.value)}
                     />

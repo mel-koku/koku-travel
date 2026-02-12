@@ -309,7 +309,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
               <Magnetic>
                 <a
                   href="/trip-builder"
-                  className="inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
+                  className="inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
                 >
                   {primaryCta}
                 </a>
@@ -317,7 +317,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             </div>
             <a
               href="/explore"
-              className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"
+              className="link-reveal mt-6 py-3 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"
               style={{
                 textShadow:
                   "0 1px 2px rgba(31,26,20,0.4), 0 1px 4px rgba(31,26,20,0.2)",

@@ -75,7 +75,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       <button
         type="button"
         onClick={handleDismiss}
-        className="rounded p-1 hover:bg-white/20 transition"
+        className="flex h-11 w-11 items-center justify-center rounded hover:bg-white/20 transition"
         aria-label="Dismiss"
       >
         <svg
@@ -101,7 +101,7 @@ export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-[1300] flex flex-col gap-2 pb-[env(safe-area-inset-bottom)]">
+    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:w-auto z-[1300] flex flex-col gap-2 pb-[env(safe-area-inset-bottom)]">
       {toasts.map((toast) => (
         <Toast key={toast.id} toast={toast} onDismiss={onDismiss} />
       ))}

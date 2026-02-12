@@ -274,7 +274,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       </div>
 
       {/* Summary pill — fixed to viewport */}
-      <div className="fixed bottom-24 left-1/2 z-20 -translate-x-1/2">
+      <div className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
         <RegionSummaryPill
           selectedCount={selectedRegions.length}
           totalCities={totalCities}

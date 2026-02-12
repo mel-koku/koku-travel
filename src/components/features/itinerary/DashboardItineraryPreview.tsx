@@ -174,7 +174,7 @@ export const DashboardItineraryPreview = ({
               <div className="relative w-full sm:w-auto">
                 <select
                   id="dashboard-trip-selector"
-                  className="w-full appearance-none rounded-full border border-border bg-background py-2 pl-4 pr-10 text-sm font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary sm:min-w-[220px]"
+                  className="w-full appearance-none rounded-full border border-border bg-background py-2 pl-4 pr-10 text-base font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary sm:min-w-[220px]"
                   value={selectedTripId ?? trip.id}
                   onChange={handleTripChange}
                 >
