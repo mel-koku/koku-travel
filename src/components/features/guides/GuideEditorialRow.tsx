@@ -23,12 +23,15 @@ type GuideEditorialRowProps = {
   guide: GuideSummary;
   index: number;
   flip: boolean;
+  /** Render immediately without scroll-triggered reveal */
+  eager?: boolean;
 };
 
 export const GuideEditorialRow = memo(function GuideEditorialRow({
   guide,
   index,
   flip,
+  eager = false,
 }: GuideEditorialRowProps) {
   const { setCursorState } = useCursor();
   const imageSrc = guide.thumbnailImage || guide.featuredImage || FALLBACK_IMAGE;
@@ -36,8 +39,11 @@ export const GuideEditorialRow = memo(function GuideEditorialRow({
   const location = guide.city || guide.region || "";
   const metaParts = [typeLabel, location, guide.readingTimeMinutes ? `${guide.readingTimeMinutes} min read` : ""].filter(Boolean);
 
+  const Wrapper = eager ? "div" : ScrollReveal;
+  const wrapperProps = eager ? {} : { distance: 30 };
+
   return (
-    <ScrollReveal distance={30}>
+    <Wrapper {...wrapperProps}>
       <Link
         href={`/guides/${guide.id}`}
         className="group block"
@@ -91,6 +97,6 @@ export const GuideEditorialRow = memo(function GuideEditorialRow({
           </div>
         </div>
       </Link>
-    </ScrollReveal>
+    </Wrapper>
   );
 });
