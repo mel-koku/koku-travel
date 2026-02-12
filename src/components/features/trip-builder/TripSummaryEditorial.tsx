@@ -241,7 +241,7 @@ function SummaryItem({ icon, label, value, onEdit }: SummaryItemProps) {
         <button
           type="button"
           onClick={onEdit}
-          className="link-reveal shrink-0 py-2 px-1 text-xs text-stone hover:text-foreground-secondary"
+          className="link-reveal shrink-0 min-h-[44px] flex items-center px-2 text-xs text-stone hover:text-foreground-secondary"
         >
           Edit
         </button>

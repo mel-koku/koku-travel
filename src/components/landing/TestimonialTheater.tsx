@@ -76,11 +76,11 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
         <div className="absolute inset-0 bg-charcoal/60" />
 
         <div className="relative z-10 max-w-3xl px-6 pb-12 text-center sm:px-12">
-          <span className="mb-4 block select-none font-serif italic text-[6rem] leading-none text-white/10">
+          <span className="mb-4 block select-none font-serif italic text-[4rem] leading-none text-white/10 sm:text-[6rem]">
             &ldquo;
           </span>
 
-          <blockquote className="-mt-16">
+          <blockquote className="-mt-12 sm:-mt-16">
             <SplitText
               as="p"
               className="font-serif italic text-2xl leading-relaxed text-white sm:text-3xl lg:text-4xl"
@@ -110,7 +110,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
           {rest.map((testimonial, i) => (
             <div
               key={i}
-              className="min-w-[280px] snap-start rounded-xl border border-border/50 bg-surface p-6"
+              className="w-[min(280px,85vw)] shrink-0 snap-start rounded-xl border border-border/50 bg-surface p-6"
             >
               <blockquote>
                 <p className="font-serif italic text-base leading-relaxed text-foreground-secondary">

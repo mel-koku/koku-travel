@@ -32,7 +32,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       <label
         htmlFor={inputId}
         className={cn(
-          "group flex min-h-10 cursor-pointer items-start gap-3 rounded-xl border border-transparent px-4 py-3 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-primary focus-within:ring-offset-2",
+          "group flex min-h-[44px] cursor-pointer items-start gap-3 rounded-xl border border-transparent px-4 py-3 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-brand-primary focus-within:ring-offset-2",
           disabled ? "cursor-not-allowed bg-surface opacity-70" : "hover:bg-surface",
           containerClassName,
         )}

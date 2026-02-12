@@ -372,7 +372,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
       )}
 
       {pendingUndo ? (
-        <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4">
+        <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4 pb-[env(safe-area-inset-bottom)]">
           <div className="pointer-events-auto flex flex-col gap-3 rounded-2xl border border-border bg-background p-4 shadow-lg shadow-[0_0_20px_rgba(196,80,79,0.15)] ring-1 ring-brand-primary/20">
             <div>
               <p className="text-sm font-semibold text-foreground">{content?.dashboardDeleteToastTitle ?? "Itinerary deleted"}</p>

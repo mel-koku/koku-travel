@@ -91,7 +91,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
             {/* Intro text card */}
             <div
               className="texture-grain relative flex h-full flex-shrink-0 flex-col justify-between rounded-xl bg-canvas p-10 lg:p-14"
-              style={{ width: "clamp(320px, 40vw, 450px)" }}
+              style={{ width: "min(clamp(320px, 40vw, 450px), 90vw)" }}
             >
               <div>
                 <p className="eyebrow-editorial text-brand-primary">
@@ -211,7 +211,7 @@ function HorizontalLocationCard({
       type="button"
       onClick={() => onSelect(location)}
       className="group relative flex-shrink-0 overflow-hidden rounded-xl text-left"
-      style={{ width: "clamp(320px, 40vw, 450px)" }}
+      style={{ width: "min(clamp(320px, 40vw, 450px), 90vw)" }}
       onMouseEnter={() => isEnabled && setCursorState("view")}
       onMouseLeave={() => isEnabled && setCursorState("default")}
     >

@@ -216,7 +216,7 @@ export function TravelModeSelector({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-border bg-background shadow-lg ring-1 ring-black/5">
+        <div className="absolute left-0 top-full z-50 mt-1 w-[min(14rem,90vw)] rounded-lg border border-border bg-background shadow-lg ring-1 ring-black/5">
           <div className="p-1">
             {TRAVEL_MODES.map((option) => {
               const estimate = getEstimate(option.mode);

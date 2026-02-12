@@ -84,7 +84,7 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
             <button
               type="button"
               onClick={() => setSelectedType(null)}
-              className={`shrink-0 rounded-xl px-3 py-2.5 font-mono text-xs uppercase tracking-wide transition-colors ${
+              className={`shrink-0 rounded-xl px-3 py-2.5 min-h-[44px] font-mono text-xs uppercase tracking-wide transition-colors ${
                 selectedType === null
                   ? "bg-foreground text-background"
                   : "text-stone hover:text-foreground"
@@ -101,7 +101,7 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
                     selectedType === type.value ? null : type.value
                   )
                 }
-                className={`shrink-0 rounded-xl px-3 py-2.5 font-mono text-xs uppercase tracking-wide transition-colors ${
+                className={`shrink-0 rounded-xl px-3 py-2.5 min-h-[44px] font-mono text-xs uppercase tracking-wide transition-colors ${
                   selectedType === type.value
                     ? "bg-foreground text-background"
                     : "text-stone hover:text-foreground"
