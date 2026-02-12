@@ -1,6 +1,8 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { SplitText } from "@/components/ui/SplitText";
 import { staggerWord } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
@@ -33,6 +35,70 @@ const defaultTestimonials = [
       "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&q=80",
     alt: "Quiet Japanese alleyway with traditional architecture",
   },
+  {
+    quote:
+      "Our taxi driver in Takayama saw the itinerary on my phone and nodded approvingly. That told me everything.",
+    author: "David Park",
+    location: "Seoul",
+    image: "",
+    alt: "",
+  },
+  {
+    quote:
+      "I thought two weeks was too long. By day ten I was already sad it was ending. Every single day had a moment.",
+    author: "Emma Lindqvist",
+    location: "Stockholm",
+    image: "",
+    alt: "",
+  },
+  {
+    quote:
+      "Koku suggested a tofu restaurant in Arashiyama that wasn't on any blog I'd read. Seven courses, all soy. Transcendent.",
+    author: "James O'Brien",
+    location: "Dublin",
+    image: "",
+    alt: "",
+  },
+  {
+    quote:
+      "We traveled with a toddler and the plan actually accounted for nap breaks and family-friendly stops. Lifesaver.",
+    author: "Priya Sharma",
+    location: "Melbourne",
+    image: "",
+    alt: "",
+  },
+  {
+    quote:
+      "The overnight ferry to Yakushima was the highlight we never would have found ourselves. Woke up to that island emerging from mist.",
+    author: "Lucas Moreau",
+    location: "Paris",
+    image: "",
+    alt: "",
+  },
+  {
+    quote:
+      "I've used every trip planner out there. This is the first one that understood the difference between seeing Japan and feeling it.",
+    author: "Aisha Williams",
+    location: "New York",
+    image: "",
+    alt: "",
+  },
+  {
+    quote:
+      "Spent three hours in a Kanazawa market that wasn't even the 'main attraction' for the day. Bought pottery I'll keep forever.",
+    author: "Henrik Bjørnstad",
+    location: "Oslo",
+    image: "",
+    alt: "",
+  },
+  {
+    quote:
+      "My partner doesn't like planned trips. Five minutes into day one, she turned to me and said 'okay, this is different.'",
+    author: "Tomás Rivera",
+    location: "Mexico City",
+    image: "",
+    alt: "",
+  },
 ];
 
 type TestimonialData = {
@@ -59,6 +125,29 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
     : defaultTestimonials;
 
   const [featured, ...rest] = testimonials;
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollState = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 8);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8);
+  }, []);
+
+  useEffect(() => {
+    updateScrollState();
+  }, [updateScrollState]);
+
+  const scroll = useCallback((dir: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const amount = el.clientWidth * 0.7;
+    el.scrollBy({ left: dir === "left" ? -amount : amount, behavior: "smooth" });
+  }, []);
+
   if (!featured) return null;
 
   return (
@@ -104,29 +193,53 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
         </div>
       </div>
 
-      {/* Remaining testimonials — compact card row */}
+      {/* Remaining testimonials — horizontal scroll with arrows */}
       {rest.length > 0 && (
-        <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-contain px-6 py-12 scrollbar-hide">
-          {rest.map((testimonial, i) => (
-            <div
-              key={i}
-              className="w-[min(280px,85vw)] shrink-0 snap-start rounded-xl border border-border/50 bg-surface p-6"
-            >
-              <blockquote>
-                <p className="font-serif italic text-base leading-relaxed text-foreground-secondary">
-                  &ldquo;{testimonial.quote}&rdquo;
-                </p>
-              </blockquote>
-              <div className="mt-4">
-                <p className="text-xs font-medium text-stone">
-                  {testimonial.author}
-                </p>
-                <p className="mt-0.5 text-xs text-stone/60">
-                  {testimonial.location}
-                </p>
+        <div className="pt-16 pb-12">
+          <div
+            ref={scrollRef}
+            onScroll={updateScrollState}
+            className="flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-contain px-6 scrollbar-hide sm:gap-5 sm:px-8 lg:px-12"
+          >
+            {rest.map((testimonial, i) => (
+              <div
+                key={i}
+                className="w-[min(300px,80vw)] shrink-0 snap-start rounded-xl border border-border/50 bg-surface p-6"
+              >
+                <blockquote>
+                  <p className="font-serif italic text-base leading-relaxed text-foreground-secondary">
+                    &ldquo;{testimonial.quote}&rdquo;
+                  </p>
+                </blockquote>
+                <div className="mt-4">
+                  <p className="text-xs font-medium text-stone">
+                    {testimonial.author}
+                  </p>
+                  <p className="mt-0.5 text-xs text-stone/60">
+                    {testimonial.location}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Arrow buttons below cards */}
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <button
+              aria-label="Scroll left"
+              onClick={() => scroll("left")}
+              className={`flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground ${canScrollLeft ? "opacity-100" : "pointer-events-none opacity-30"}`}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <button
+              aria-label="Scroll right"
+              onClick={() => scroll("right")}
+              className={`flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground ${canScrollRight ? "opacity-100" : "pointer-events-none opacity-30"}`}
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
         </div>
       )}
     </section>
