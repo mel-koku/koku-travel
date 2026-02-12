@@ -32,8 +32,7 @@ const markdownComponents = {
       </h3>
     </div>
   ),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  p: ({ children, node }: { children?: React.ReactNode; node?: any }) => {
+  p: ({ children, node }: { children?: React.ReactNode; node?: { children?: Array<{ type?: string; tagName?: string }> } }) => {
     const hasOnlyImage =
       node?.children?.length === 1 &&
       node.children[0]?.type === "element" &&

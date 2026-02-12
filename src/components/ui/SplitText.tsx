@@ -95,7 +95,7 @@ export function SplitText({
       return words.map((word, wordIdx) => ({
         wordKey: `word-${wordIdx}`,
         chars: word.split("").map((char) => ({
-          key: `${char}-${globalCharIndex}`,
+          key: `c-${globalCharIndex}`,
           content: char,
           index: globalCharIndex++,
         })),
@@ -103,7 +103,7 @@ export function SplitText({
       }));
     }
     return children.split(" ").map((word, i) => ({
-      key: `${word}-${i}`,
+      key: `w-${i}`,
       content: word,
     }));
   }, [children, splitBy]);

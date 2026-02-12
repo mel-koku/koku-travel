@@ -5,6 +5,7 @@ import { isValidPhotoName, parsePositiveInt } from "@/lib/api/validation";
 import { photoNameSchema } from "@/lib/api/schemas";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
 
 const MAX_DIMENSION = 4000; // Reasonable maximum for image dimensions
 
@@ -23,10 +24,12 @@ const MAX_DIMENSION = 4000; // Reasonable maximum for image dimensions
  * @throws Returns 500 for other errors
  */
 export async function GET(request: NextRequest) {
+  const context = createRequestContext(request);
+
   // Rate limiting: 200 requests per minute per IP (images are cached)
   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 200, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
-    return rateLimitResponse;
+    return addRequestContextHeaders(rateLimitResponse, context);
   }
 
   const { searchParams } = new URL(request.url);
@@ -34,15 +37,18 @@ export async function GET(request: NextRequest) {
   const photoNameParam = searchParams.get("photoName") ?? searchParams.get("reference");
 
   if (!photoNameParam) {
-    return badRequest("Missing required query parameter 'photoName'.");
+    return addRequestContextHeaders(badRequest("Missing required query parameter 'photoName'."), context);
   }
 
   // Validate using both existing function and Zod schema for defense in depth
   const photoNameValidation = photoNameSchema.safeParse(photoNameParam);
   if (!photoNameValidation.success || !isValidPhotoName(photoNameParam)) {
-    return badRequest("Invalid photoName parameter format.", {
-      errors: photoNameValidation.success ? undefined : photoNameValidation.error.issues,
-    });
+    return addRequestContextHeaders(
+      badRequest("Invalid photoName parameter format.", {
+        errors: photoNameValidation.success ? undefined : photoNameValidation.error.issues,
+      }),
+      context,
+    );
   }
 
   const validatedPhotoName = photoNameValidation.data;
@@ -74,10 +80,10 @@ export async function GET(request: NextRequest) {
     const errorMessage = error instanceof Error ? error.message : "";
 
     if (errorMessage.includes("Missing Google Places API key")) {
-      return serviceUnavailable("Google Places API is not configured.");
+      return addRequestContextHeaders(serviceUnavailable("Google Places API is not configured."), context);
     }
 
-    return internalError(message, { photoName: validatedPhotoName });
+    return addRequestContextHeaders(internalError(message, { photoName: validatedPhotoName }), context);
   }
 }
 

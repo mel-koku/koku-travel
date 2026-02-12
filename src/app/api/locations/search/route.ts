@@ -7,6 +7,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
 } from "@/lib/api/middleware";
+import { escapePostgrestValue } from "@/lib/supabase/sanitize";
 
 /**
  * Lightweight search result for autocomplete
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
       .select("id, name, city, region, category, place_id, image, rating")
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
       .or(
-        `name.ilike.%${query}%,city.ilike.%${query}%,region.ilike.%${query}%,category.ilike.%${query}%`
+        `name.ilike.%${escapePostgrestValue(query)}%,city.ilike.%${escapePostgrestValue(query)}%,region.ilike.%${escapePostgrestValue(query)}%,category.ilike.%${escapePostgrestValue(query)}%`
       )
       .order("name", { ascending: true })
       .limit(limit);

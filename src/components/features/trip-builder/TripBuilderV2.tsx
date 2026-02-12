@@ -1,6 +1,5 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { IntroStep } from "./IntroStep";
@@ -11,7 +10,7 @@ import { RegionStep } from "./RegionStep";
 import { ReviewStep } from "./ReviewStep";
 import { StepProgressTrack } from "./StepProgressTrack";
 import { ArrowLineCTA } from "./ArrowLineCTA";
-import { useTripBuilder } from "@/context/TripBuilderContext";
+import { useTripBuilderNavigation } from "@/hooks/useTripBuilderNavigation";
 import { easePageTransition, durationSlow } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { ChevronLeft } from "lucide-react";
@@ -21,10 +20,6 @@ export type TripBuilderV2Props = {
   onComplete?: () => void;
   sanityConfig?: TripBuilderConfig;
 };
-
-type Step = 0 | 1 | 2 | 3 | 4 | 5;
-
-const STEP_COUNT = 6;
 
 const stepVariants: Variants = {
   enter: (dir: number) => ({
@@ -47,101 +42,26 @@ const reducedMotionVariants: Variants = {
 };
 
 export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) {
-  const { data, reset } = useTripBuilder();
-  const [currentStep, setCurrentStep] = useState<Step>(0);
-  const [direction, setDirection] = useState(1);
   const prefersReducedMotion = useReducedMotion();
 
-  // Step validity
-  const [datesValid, setDatesValid] = useState(false);
-  const [vibesValid, setVibesValid] = useState(false);
-  const [regionsValid, setRegionsValid] = useState(false);
-  const [reviewValid, setReviewValid] = useState(true);
-
-  // Track completed steps
-  const completedSteps = useMemo(() => {
-    const set = new Set<number>();
-    // Step 0 (intro) is always completed once you move past it
-    if (currentStep > 0) set.add(0);
-    if (datesValid) set.add(1);
-    // Entry point is optional, mark complete if user has been there
-    if (currentStep > 2 || data.entryPoint) set.add(2);
-    if (vibesValid) set.add(3);
-    if (regionsValid) set.add(4);
-    if (reviewValid && currentStep === 5) set.add(5);
-    return set;
-  }, [currentStep, datesValid, data.entryPoint, vibesValid, regionsValid, reviewValid]);
-
-  const goToStep = useCallback(
-    (step: Step) => {
-      setDirection(step > currentStep ? 1 : -1);
-      setCurrentStep(step);
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
-    },
-    [currentStep]
-  );
-
-  const handleNext = useCallback(() => {
-    if (currentStep === 0) goToStep(1);
-    else if (currentStep === 1 && datesValid) goToStep(2);
-    else if (currentStep === 2) goToStep(3); // Entry point is optional
-    else if (currentStep === 3 && vibesValid) goToStep(4);
-    else if (currentStep === 4 && regionsValid) goToStep(5);
-    else if (currentStep === 5 && reviewValid) onComplete?.();
-  }, [currentStep, datesValid, vibesValid, regionsValid, reviewValid, goToStep, onComplete]);
-
-  const handleBack = useCallback(() => {
-    if (currentStep > 0) {
-      goToStep((currentStep - 1) as Step);
-    }
-  }, [currentStep, goToStep]);
-
-  const handleStartOver = useCallback(() => {
-    if (
-      window.confirm(
-        sanityConfig?.navStartOverConfirmation ?? "Start over? Your current selections will be cleared."
-      )
-    ) {
-      reset();
-      goToStep(0);
-    }
-  }, [reset, goToStep, sanityConfig?.navStartOverConfirmation]);
-
-  const handleStepClick = useCallback(
-    (step: number) => {
-      if (step < currentStep || completedSteps.has(step)) {
-        goToStep(step as Step);
-      }
-    },
-    [currentStep, completedSteps, goToStep]
-  );
-
-  // Determine if next is disabled
-  const isNextDisabled = (() => {
-    if (currentStep === 1) return !datesValid;
-    if (currentStep === 3) return !vibesValid;
-    if (currentStep === 4) return !regionsValid;
-    if (currentStep === 5) return !reviewValid;
-    return false;
-  })();
-
-  // Get next button label
-  const getNextLabel = () => {
-    if (currentStep === 0) return sanityConfig?.navStartPlanningLabel ?? "Start Planning";
-    if (currentStep === 2) return data.entryPoint ? (sanityConfig?.navContinueLabel ?? "Continue") : (sanityConfig?.navSkipLabel ?? "Skip");
-    if (currentStep === 5) return sanityConfig?.navGenerateLabel ?? "Generate Itinerary";
-    return sanityConfig?.navContinueLabel ?? "Continue";
-  };
-
-  // Navigation handlers for ReviewStep to go to specific steps
-  const handleGoToStep = useCallback(
-    (step: number) => {
-      goToStep(step as Step);
-    },
-    [goToStep]
-  );
+  const {
+    currentStep,
+    direction,
+    completedSteps,
+    stepCount,
+    setDatesValid,
+    setVibesValid,
+    setRegionsValid,
+    setReviewValid,
+    goToStep,
+    handleNext,
+    handleBack,
+    handleStartOver,
+    handleStepClick,
+    handleGoToStep,
+    isNextDisabled,
+    getNextLabel,
+  } = useTripBuilderNavigation({ onComplete, sanityConfig });
 
   const variants = prefersReducedMotion ? reducedMotionVariants : stepVariants;
 
@@ -151,7 +71,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
       {currentStep > 0 && (
         <StepProgressTrack
           currentStep={currentStep}
-          totalSteps={STEP_COUNT}
+          totalSteps={stepCount}
           onStepClick={handleStepClick}
           onStartOver={handleStartOver}
           completedSteps={completedSteps}

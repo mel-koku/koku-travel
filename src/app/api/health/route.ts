@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
+import { checkRateLimit } from "@/lib/api/rateLimit";
 import { logger } from "@/lib/logger";
 
 /**
@@ -13,6 +14,11 @@ import { logger } from "@/lib/logger";
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
   const context = createRequestContext(request);
+
+  // Rate limit: 200 req/min — generous for monitoring but prevents abuse
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 200, windowMs: 60_000 });
+  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
+
   const timestamp = new Date().toISOString();
   const version = process.env.npm_package_version || "unknown";
 
