@@ -9,6 +9,7 @@ import {
   addRequestContextHeaders,
   createRequestContext,
   getOptionalAuth,
+  requireJsonContentType,
 } from "@/lib/api/middleware";
 import { readBodyWithSizeLimit } from "@/lib/api/bodySizeLimit";
 import { badRequest, internalError } from "@/lib/api/errors";
@@ -38,6 +39,9 @@ export async function POST(request: NextRequest) {
   if (rateLimitResponse) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
+
+  const contentTypeError = requireJsonContentType(request, context);
+  if (contentTypeError) return contentTypeError;
 
   const authResult = await getOptionalAuth(request, context);
   const finalContext = authResult.context;

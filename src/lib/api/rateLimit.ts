@@ -20,13 +20,19 @@ const RATE_LIMIT_CONSTANTS = {
 /**
  * Distributed rate limiter with Upstash Redis
  * Falls back to in-memory rate limiting if Redis is not configured
- * 
- * CURRENT USAGE:
- * - /api/locations: 100 req/min
- * - /api/places/*: 60 req/min
- * - /api/itinerary/plan: 20 req/min
- * - /api/itinerary/refine: 30 req/min
- * - /api/routing/*: 100 req/min
+ *
+ * Rate limit tiers (rationale):
+ * - /api/locations: 100 req/min — high-traffic browse/search; paginated so each page = 1 req
+ * - /api/places/*: 60 req/min — proxies Google Places API (cost-sensitive)
+ * - /api/itinerary/plan: 20 req/min — expensive AI generation, one plan per user session
+ * - /api/itinerary/refine: 30 req/min — lighter AI refinement, but still costly
+ * - /api/itinerary/availability: 30 req/min — Supabase reads, moderate
+ * - /api/routing/*: 100 req/min — proxies Mapbox/Google routing (batched per day)
+ * - /api/health: 200 req/min — lightweight health check, generous for monitoring
+ * - /api/sanity/webhook: 30 req/min — Sanity publishes infrequently; protects against replay
+ *
+ * In-memory fallback is suitable for single-instance dev only.
+ * Production MUST use Upstash Redis for consistent limits across serverless instances.
  */
 
 type RateLimitConfig = {
@@ -287,9 +293,14 @@ export async function checkRateLimit(
   const pathname = request.nextUrl.pathname;
   const ip = `${clientIp}:${pathname}`;
 
+  // Tighten limits for unidentifiable clients to prevent bypass via missing headers
+  const effectiveConfig = clientIp === "unknown"
+    ? { ...config, maxRequests: Math.min(config.maxRequests, 20) }
+    : config;
+
   try {
     // Try to use Upstash Redis if available
-    const ratelimit = getUpstashRatelimit(config);
+    const ratelimit = getUpstashRatelimit(effectiveConfig);
     if (ratelimit) {
       const result = await ratelimit.limit(ip);
       
@@ -305,7 +316,7 @@ export async function checkRateLimit(
             status: 429,
             headers: {
               "Retry-After": String(retryAfter),
-              "X-RateLimit-Limit": String(config.maxRequests),
+              "X-RateLimit-Limit": String(effectiveConfig.maxRequests),
               "X-RateLimit-Remaining": String(result.remaining),
               "X-RateLimit-Reset": String(result.reset),
             },
@@ -325,7 +336,7 @@ export async function checkRateLimit(
   }
 
   // Fallback to in-memory rate limiting
-  const result = await checkRateLimitInMemory(ip, config);
+  const result = await checkRateLimitInMemory(ip, effectiveConfig);
 
   if (!result.allowed) {
     return NextResponse.json(
@@ -338,9 +349,9 @@ export async function checkRateLimit(
         status: 429,
         headers: {
           "Retry-After": String(result.retryAfter || 60),
-          "X-RateLimit-Limit": String(config.maxRequests),
+          "X-RateLimit-Limit": String(effectiveConfig.maxRequests),
           "X-RateLimit-Remaining": String(result.remaining || 0),
-          "X-RateLimit-Reset": String(result.resetAt || Date.now() + config.windowMs),
+          "X-RateLimit-Reset": String(result.resetAt || Date.now() + effectiveConfig.windowMs),
         },
       },
     );

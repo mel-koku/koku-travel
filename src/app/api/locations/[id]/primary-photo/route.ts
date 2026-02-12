@@ -4,6 +4,7 @@ import { isValidLocationId } from "@/lib/api/validation";
 import { locationIdSchema } from "@/lib/api/schemas";
 import { badRequest, notFound } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -48,21 +49,26 @@ type RouteContext = {
  * @throws Returns 503 if Google Places API is not configured
  * @throws Returns 500 for other errors
  */
-export async function GET(request: NextRequest, context: RouteContext) {
+export async function GET(request: NextRequest, routeContext: RouteContext) {
+  const context = createRequestContext(request);
+
   // Rate limiting: 100 requests per minute per IP
   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
-    return rateLimitResponse;
+    return addRequestContextHeaders(rateLimitResponse, context);
   }
 
-  const { id } = await context.params;
+  const { id } = await routeContext.params;
 
   // Validate using both existing function and Zod schema for defense in depth
   const idValidation = locationIdSchema.safeParse(id);
   if (!idValidation.success || !isValidLocationId(id)) {
-    return badRequest("Invalid location ID format", {
-      errors: idValidation.success ? undefined : idValidation.error.issues,
-    });
+    return addRequestContextHeaders(
+      badRequest("Invalid location ID format", {
+        errors: idValidation.success ? undefined : idValidation.error.issues,
+      }),
+      context,
+    );
   }
 
   const validatedId = idValidation.data;
@@ -76,7 +82,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     .single();
 
   if (dbError || !locationData) {
-    return notFound("Location not found");
+    return addRequestContextHeaders(notFound("Location not found"), context);
   }
 
   const row = locationData as unknown as LocationPrimaryPhotoRow;
@@ -85,23 +91,26 @@ export async function GET(request: NextRequest, context: RouteContext) {
   // Falls back to location.image if no primary_photo_url exists
   const photoUrl = row.primary_photo_url ?? row.image;
 
-  return NextResponse.json(
-    {
-      placeId: row.place_id ?? row.id,
-      fetchedAt: new Date().toISOString(),
-      photo: photoUrl
-        ? { name: "primary", proxyUrl: photoUrl, attributions: [] }
-        : null,
-      displayName: row.name,
-      editorialSummary: row.short_description ?? null,
-    },
-    {
-      status: 200,
-      headers: {
-        // 30-day cache since data is from DB (photos don't change frequently)
-        "Cache-Control": "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800",
+  return addRequestContextHeaders(
+    NextResponse.json(
+      {
+        placeId: row.place_id ?? row.id,
+        fetchedAt: new Date().toISOString(),
+        photo: photoUrl
+          ? { name: "primary", proxyUrl: photoUrl, attributions: [] }
+          : null,
+        displayName: row.name,
+        editorialSummary: row.short_description ?? null,
       },
-    },
+      {
+        status: 200,
+        headers: {
+          // 30-day cache since data is from DB (photos don't change frequently)
+          "Cache-Control": "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800",
+        },
+      },
+    ),
+    context,
   );
 }
 

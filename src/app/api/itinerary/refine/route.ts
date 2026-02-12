@@ -8,6 +8,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
   getOptionalAuth,
+  requireJsonContentType,
 } from "@/lib/api/middleware";
 import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { z } from "zod";
@@ -19,6 +20,7 @@ import { convertTripReasonToItineraryReason } from "@/lib/utils/recommendationAd
 import { createClient } from "@/lib/supabase/server";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
+import { escapePostgrestValue } from "@/lib/supabase/sanitize";
 
 // Simple stub request format (as specified in plan)
 type RefineRequestBody = {
@@ -67,7 +69,7 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
       .order("name", { ascending: true });
 
     if (cities && cities.length > 0) {
-      const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
+      const cityFilters = cities.map((c) => `city.ilike.${escapePostgrestValue(c)}`).join(",");
       query = query.or(cityFilters);
     }
     return query;
@@ -90,23 +92,30 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
 
   const allLocations: Location[] = (firstPage as unknown as LocationDbRow[]).map(transformDbRowToLocation);
 
-  // Fetch remaining pages in parallel if needed
-  if (firstPage.length === pageSize) {
+  // Fetch remaining pages with batched concurrency (3 at a time) and total cap
+  const maxTotalLocations = 5000;
+  if (firstPage.length === pageSize && allLocations.length < maxTotalLocations) {
     const maxPages = 10;
-    const pagePromises = Array.from({ length: maxPages }, (_, i) => {
+    const tasks = Array.from({ length: maxPages }, (_, i) => {
       const page = i + 1;
-      return buildQuery()
-        .range(page * pageSize, (page + 1) * pageSize - 1)
-        .then(({ data, error }) => {
-          if (error || !data || data.length === 0) return [];
-          return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
-        });
+      return () =>
+        buildQuery()
+          .range(page * pageSize, (page + 1) * pageSize - 1)
+          .then(({ data, error }) => {
+            if (error || !data || data.length === 0) return [];
+            return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
+          });
     });
 
-    const results = await Promise.all(pagePromises);
-    for (const locations of results) {
-      if (locations.length === 0) break;
-      allLocations.push(...locations);
+    // Execute in batches of 3 concurrent requests to avoid overwhelming the DB
+    for (let i = 0; i < tasks.length && allLocations.length < maxTotalLocations; i += 3) {
+      const batch = tasks.slice(i, i + 3);
+      const results = await Promise.all(batch.map((fn) => fn()));
+      for (const locations of results) {
+        if (locations.length === 0) break;
+        allLocations.push(...locations);
+        if (allLocations.length >= maxTotalLocations) break;
+      }
     }
   }
 
@@ -167,6 +176,9 @@ export async function POST(request: NextRequest) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
 
+  const contentTypeError = requireJsonContentType(request, context);
+  if (contentTypeError) return contentTypeError;
+
   // Optional authentication (for future user-specific features)
   const authResult = await getOptionalAuth(request, context);
   const finalContext = authResult.context;
@@ -174,7 +186,7 @@ export async function POST(request: NextRequest) {
   try {
     // Validate request body with size limit (2MB for trip data)
     // Note: refine endpoint accepts multiple formats (legacy and new), so we validate structure first
-    // Using passthrough() to allow additional fields for backward compatibility
+    // Using strip() to silently drop unknown fields for security
     // Schema must match VALID_REFINEMENT_TYPES for consistency
 
     // Schema for Trip object in refinement requests (loose validation, detailed validation in engine)
@@ -186,17 +198,17 @@ export async function POST(request: NextRequest) {
         activities: z.array(z.object({
           id: z.string(),
           locationId: z.string(),
-        }).passthrough()).optional(),
-      }).passthrough()).optional(),
-    }).passthrough().optional();
+        }).strip()).optional(),
+      }).strip()).optional(),
+    }).strip().optional();
 
     const refineSchema = z.object({
       trip: tripForRefinementSchema, // Trip object with basic structure validation
       refinementType: z.enum(["too_busy", "too_light", "more_food", "more_culture", "more_kid_friendly", "more_rest"]).optional(),
       dayIndex: z.number().int().min(0).max(30).optional(),
       tripId: z.string().max(255).regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters").optional(),
-      builderData: tripBuilderDataSchema.partial().passthrough().optional(), // Partial TripBuilderData with proper validation
-    }).passthrough(); // Allow additional fields for backward compatibility
+      builderData: tripBuilderDataSchema.partial().strip().optional(), // Partial TripBuilderData with proper validation
+    }).strip(); // Silently drop unknown fields for security
     
     const bodyValidation = await validateRequestBody(
       request,

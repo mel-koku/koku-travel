@@ -39,6 +39,13 @@ type Coordinates = {
 
 const MINUTES_IN_DAY = 24 * 60;
 
+/** Distance threshold (km) above which transit routing is preferred over walking */
+const TRANSIT_DISTANCE_THRESHOLD_KM = 1;
+/** Travel time threshold (minutes) for short-distance train classification */
+const SHORT_DISTANCE_TRAIN_THRESHOLD_MIN = 60;
+/** Travel time threshold (minutes) for long-distance shinkansen classification */
+const LONG_DISTANCE_TRAIN_THRESHOLD_MIN = 120;
+
 function parseTime(value?: string | null): number | null {
   if (!value) {
     return null;
@@ -236,9 +243,9 @@ function createCityTransition(
 
   // Determine travel mode based on distance/time
   let mode: ItineraryTravelMode = "transit";
-  if (travelTime < 60) {
+  if (travelTime < SHORT_DISTANCE_TRAIN_THRESHOLD_MIN) {
     mode = "train"; // Short distance, likely train
-  } else if (travelTime > 120) {
+  } else if (travelTime > LONG_DISTANCE_TRAIN_THRESHOLD_MIN) {
     mode = "train"; // Long distance, likely shinkansen
   }
 
@@ -414,7 +421,7 @@ async function planItineraryDay(
         origin: prevCoords,
         destination: coordinates,
         activityId: activity.id,
-        explicitMode: hasExplicit ? activity.travelFromPrevious!.mode : null,
+        explicitMode: hasExplicit ? activity.travelFromPrevious?.mode ?? null : null,
       });
     }
     prevCoords = coordinates;
@@ -444,7 +451,7 @@ async function planItineraryDay(
 
     if (!pair.explicitMode) {
       const distanceKm = (walkResult.distanceMeters ?? 0) / 1000;
-      if (distanceKm >= 1) {
+      if (distanceKm >= TRANSIT_DISTANCE_THRESHOLD_KM) {
         transitNeeded.push({
           pairIndex: i,
           departureTime: formatTime(estimatedCursor),
@@ -500,7 +507,7 @@ async function planItineraryDay(
       });
     } else {
       const distanceKm = (phase1Result.distanceMeters ?? 0) / 1000;
-      if (distanceKm >= 1) {
+      if (distanceKm >= TRANSIT_DISTANCE_THRESHOLD_KM) {
         const transitResult = transitResultMap.get(i);
         if (transitResult && transitResult.durationSeconds > 0) {
           resolvedRouteByActivityId.set(pair.activityId, {

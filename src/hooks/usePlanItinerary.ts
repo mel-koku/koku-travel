@@ -42,15 +42,28 @@ interface ApiResponse {
 }
 
 /**
- * Schedules an itinerary via the API
+ * Schedules an itinerary via the API.
+ * Used as react-query mutationFn (single-param signature).
  */
 async function scheduleItinerary(
   params: ScheduleItineraryParams,
+): Promise<Itinerary> {
+  return fetchSchedule(params);
+}
+
+/**
+ * Core fetch for the schedule endpoint. Accepts an optional AbortSignal
+ * for cancellation from standalone callers (planItineraryClient).
+ */
+async function fetchSchedule(
+  params: ScheduleItineraryParams,
+  signal?: AbortSignal,
 ): Promise<Itinerary> {
   const response = await fetch("/api/itinerary/schedule", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(params),
+    signal,
   });
 
   if (!response.ok) {
@@ -115,6 +128,7 @@ export async function planItineraryClient(
   itinerary: Itinerary,
   options?: PlannerOptions,
   dayEntryPoints?: DayEntryPoints,
+  signal?: AbortSignal,
 ): Promise<Itinerary> {
-  return scheduleItinerary({ itinerary, options, dayEntryPoints });
+  return fetchSchedule({ itinerary, options, dayEntryPoints }, signal);
 }

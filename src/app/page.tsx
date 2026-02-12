@@ -8,6 +8,7 @@ import {
   FeaturedGuides,
   FinalCTA,
 } from "@/components/landing";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locationService";
 import { getFeaturedGuides } from "@/lib/guides/guideService";
 import { getFeaturedExperiences } from "@/lib/experiences/experienceService";
@@ -35,16 +36,24 @@ export default async function Home() {
         locationCount={locationCount}
         content={landingContent ?? undefined}
       />
-      <ImmersiveShowcase content={landingContent ?? undefined} />
-      <FeaturedLocations
-        locations={featuredLocations}
-        content={landingContent ?? undefined}
-      />
-      <FeaturedExperiences
-        experiences={featuredExperiences}
-        content={landingContent ?? undefined}
-      />
-      <TestimonialTheater content={landingContent ?? undefined} />
+      <ErrorBoundary fallback={null}>
+        <ImmersiveShowcase content={landingContent ?? undefined} />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <FeaturedLocations
+          locations={featuredLocations}
+          content={landingContent ?? undefined}
+        />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <FeaturedExperiences
+          experiences={featuredExperiences}
+          content={landingContent ?? undefined}
+        />
+      </ErrorBoundary>
+      <ErrorBoundary fallback={null}>
+        <TestimonialTheater content={landingContent ?? undefined} />
+      </ErrorBoundary>
       <FeaturedGuides
         guides={featuredGuides}
         content={landingContent ?? undefined}

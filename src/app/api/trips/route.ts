@@ -7,6 +7,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
   requireAuth,
+  requireJsonContentType,
 } from "@/lib/api/middleware";
 import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { badRequest, internalError } from "@/lib/api/errors";
@@ -24,14 +25,14 @@ const itineraryActivitySchemaLoose = z.discriminatedUnion("kind", [
     title: z.string().max(500),
     timeOfDay: z.enum(["morning", "afternoon", "evening"]),
     locationId: z.string().optional(),
-  }).passthrough(),
+  }).strip(),
   z.object({
     kind: z.literal("note"),
     id: z.string(),
     title: z.string().max(500),
     timeOfDay: z.enum(["morning", "afternoon", "evening"]),
     notes: z.string().max(5000),
-  }).passthrough(),
+  }).strip(),
 ]);
 
 /**
@@ -40,14 +41,14 @@ const itineraryActivitySchemaLoose = z.discriminatedUnion("kind", [
 const itineraryDaySchemaLoose = z.object({
   id: z.string(),
   activities: z.array(itineraryActivitySchemaLoose).max(50).default([]),
-}).passthrough();
+}).strip();
 
 /**
  * Schema for itinerary (loose validation for creation)
  */
 const itinerarySchemaLoose = z.object({
   days: z.array(itineraryDaySchemaLoose).max(30).default([]),
-}).passthrough().default({ days: [] });
+}).strip().default({ days: [] });
 
 /**
  * Schema for creating a new trip
@@ -56,7 +57,7 @@ const createTripSchema = z.object({
   id: z.string().uuid().optional(), // Allow client-generated UUID
   name: z.string().min(1).max(500).default("Untitled itinerary"),
   itinerary: itinerarySchemaLoose,
-  builderData: tripBuilderDataSchema.partial().passthrough().default({}),
+  builderData: tripBuilderDataSchema.partial().strip().default({}),
 });
 
 /**
@@ -156,6 +157,9 @@ export async function POST(request: NextRequest) {
   if (rateLimitResponse) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
+
+  const contentTypeError = requireJsonContentType(request, context);
+  if (contentTypeError) return contentTypeError;
 
   // Require authentication
   const authResult = await requireAuth(request, context);

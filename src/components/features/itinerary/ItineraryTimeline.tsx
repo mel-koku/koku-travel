@@ -256,8 +256,10 @@ export const ItineraryTimeline = ({
       let newIndex = -1;
       let movedActivity: ItineraryActivity | null = null as ItineraryActivity | null;
 
-      // First, update the model with the new order
-      // Use flushSync to ensure state update completes synchronously before proceeding
+      // First, update the model with the new order.
+      // flushSync is required here because DnD-kit reads DOM positions immediately
+      // after onDragEnd — React's batched/async updates would leave stale DOM positions,
+      // causing the dropped item to snap to the wrong visual position.
       let activityIdsForReorder: string[] | null = null;
 
       flushSync(() => {
