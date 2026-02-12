@@ -74,7 +74,8 @@ export function ExperienceFooter({
                     style={{ transitionTimingFunction: easeCinematicCSS }}
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/10 via-transparent to-transparent" />
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-5">
