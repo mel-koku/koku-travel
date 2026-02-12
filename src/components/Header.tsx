@@ -198,7 +198,7 @@ export default function Header() {
           "fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-colors duration-300",
           isAtTop
             ? "bg-transparent"
-            : "bg-background/60 backdrop-blur-xl border-b border-border/30"
+            : "bg-background/80 backdrop-blur-sm border-b border-border/30"
         )}
         initial={{ y: 0, opacity: 1 }}
         animate={{

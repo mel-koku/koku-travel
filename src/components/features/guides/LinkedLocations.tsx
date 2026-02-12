@@ -78,7 +78,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                       src={imageSrc}
                       alt={location.name}
                       fill
-                      className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                       style={{ transitionTimingFunction: easeCinematicCSS }}
                       sizes={
                         isFeatured

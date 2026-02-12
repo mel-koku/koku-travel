@@ -66,7 +66,7 @@ export function VibeCard({
           alt={name}
           fill
           className={cn(
-            "object-cover transition-transform duration-[1200ms]",
+            "object-cover transition-transform duration-500",
             isHovered || isSelected ? "scale-110" : "scale-100"
           )}
           style={{
