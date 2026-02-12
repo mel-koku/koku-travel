@@ -31,7 +31,7 @@ export function PreferenceCard({
       )}
     >
       <div className="mb-1 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-charcoal text-foreground-secondary">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-foreground-secondary">
           {icon}
         </div>
         <div>

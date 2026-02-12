@@ -225,7 +225,7 @@ type SummaryItemProps = {
 
 function SummaryItem({ icon, label, value, onEdit }: SummaryItemProps) {
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex items-start justify-between gap-4 border-b border-border/50 pb-4">
       <div className="flex items-start gap-3">
         <div className="mt-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-surface text-stone">
           {icon}

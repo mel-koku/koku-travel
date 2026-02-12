@@ -177,7 +177,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
   );
 
   return (
-    <div className="relative min-h-[calc(100dvh-5rem)] bg-charcoal">
+    <div className="relative min-h-[calc(100dvh-5rem)] bg-background">
       {/* Layer 0: Map canvas — fixed to viewport so it never scrolls */}
       <div className="fixed inset-0 z-0">
         <RegionMapCanvas
@@ -205,12 +205,12 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [...easeCinematic] as [number, number, number, number], delay: 0.15 }}
-            className="mt-3 font-serif text-3xl italic tracking-tight text-white sm:text-4xl lg:text-5xl"
+            className="mt-3 font-serif text-3xl italic tracking-tight text-foreground sm:text-4xl lg:text-5xl"
           >
             {sanityConfig?.regionStepHeading ?? "Where are you headed?"}
           </motion.h2>
 
-          <p className="mt-3 text-sm text-white/50 lg:text-base">
+          <p className="mt-3 text-sm text-stone lg:text-base">
             {sanityConfig?.regionStepDescription ?? "Choose your destinations. We've highlighted the best matches for your travel style."}
           </p>
         </div>
@@ -302,7 +302,7 @@ function MobileRegionDetail({ region }: { region: import("@/data/regionDescripti
   const regionCities = REGIONS.find((r) => r.id === region.id)?.cities ?? [];
 
   return (
-    <div className="border-b border-white/5 bg-white/[0.02] px-4 py-4">
+    <div className="border-b border-border/50 bg-foreground/[0.02] px-4 py-4">
       {/* Hero image */}
       <div className="relative mb-3 aspect-[16/9] overflow-hidden rounded-xl">
         <Image
@@ -316,7 +316,7 @@ function MobileRegionDetail({ region }: { region: import("@/data/regionDescripti
       </div>
 
       {/* Description */}
-      <p className="text-sm leading-relaxed text-white/60">
+      <p className="text-sm leading-relaxed text-foreground-secondary">
         {region.description}
       </p>
 
@@ -326,7 +326,7 @@ function MobileRegionDetail({ region }: { region: import("@/data/regionDescripti
           {regionCities.map((city) => (
             <span
               key={city.id}
-              className="flex items-center gap-1 rounded-lg bg-white/5 px-2 py-0.5 text-xs text-white/60"
+              className="flex items-center gap-1 rounded-lg bg-foreground/5 px-2 py-0.5 text-xs text-foreground-secondary"
             >
               <MapPin className="h-3 w-3 text-brand-primary" />
               {city.name}

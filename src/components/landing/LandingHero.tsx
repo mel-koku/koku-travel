@@ -36,7 +36,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[100dvh] w-full overflow-hidden bg-charcoal"
+      className="relative min-h-[100dvh] w-full overflow-hidden bg-background"
     >
       {/* Parallax background image */}
       <motion.div
@@ -133,7 +133,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
             </span>
             <div className="relative h-16 w-px overflow-hidden">
               <motion.div
-                className="absolute inset-x-0 top-0 h-full w-full origin-top bg-gradient-to-b from-white/50 to-transparent"
+                className="absolute inset-x-0 top-0 h-full w-full origin-top bg-gradient-to-b from-foreground/50 to-transparent"
                 style={
                   prefersReducedMotion
                     ? {}
@@ -144,7 +144,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
               <motion.div
                 animate={{ y: [0, 64, 0] }}
                 transition={{ duration: 2.5, repeat: Infinity, ease: [0.45, 0, 0.55, 1] }}
-                className="absolute h-4 w-px bg-gradient-to-b from-transparent via-white/60 to-transparent"
+                className="absolute h-4 w-px bg-gradient-to-b from-transparent via-foreground/60 to-transparent"
               />
             </div>
           </div>

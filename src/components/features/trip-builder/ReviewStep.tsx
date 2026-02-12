@@ -105,7 +105,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
     [data]
   );
 
-  const { control, register } = useForm<PreferenceFormValues>({
+  const { control, register, setValue } = useForm<PreferenceFormValues>({
     defaultValues,
     mode: "onChange",
   });
@@ -311,36 +311,51 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             optional
             info={sanityConfig?.reviewAccessTooltip ?? "We'll only suggest places that work for you."}
           >
-            <label className="flex min-h-[44px] cursor-pointer items-center gap-2">
-              <input
-                type="checkbox"
-                className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-                {...register("mobilityAssistance")}
-              />
-              <span className="text-sm text-foreground-secondary">
-                Mobility assistance
-              </span>
-            </label>
+            <button
+              type="button"
+              onClick={() => setValue("mobilityAssistance", !formValues.mobilityAssistance)}
+              className={cn(
+                "flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm transition-colors",
+                formValues.mobilityAssistance
+                  ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
+                  : "border-border text-foreground-secondary hover:bg-surface"
+              )}
+            >
+              {formValues.mobilityAssistance && (
+                <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
+              )}
+              Mobility assistance
+            </button>
 
             <div>
               <p className="mb-2 text-xs font-medium text-foreground-secondary">
                 {sanityConfig?.reviewDietaryLabel ?? "Dietary"}
               </p>
-              <div className="flex flex-col gap-1.5">
-                {DIETARY_OPTIONS.map((option) => (
-                  <label
-                    key={option.id}
-                    className="flex min-h-[44px] cursor-pointer items-center gap-2"
-                  >
-                    <input
-                      type="checkbox"
-                      value={option.id}
-                      className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
-                      {...register("dietary")}
-                    />
-                    <span className="text-xs text-foreground-secondary">{option.label}</span>
-                  </label>
-                ))}
+              <div className="flex flex-wrap gap-2">
+                {DIETARY_OPTIONS.map((option) => {
+                  const isSelected = formValues.dietary?.includes(option.id);
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => {
+                        const current = formValues.dietary ?? [];
+                        const next = isSelected
+                          ? current.filter((id) => id !== option.id)
+                          : [...current, option.id];
+                        setValue("dietary", next);
+                      }}
+                      className={cn(
+                        "min-h-[44px] rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                        isSelected
+                          ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
+                          : "border-border text-foreground-secondary hover:bg-surface"
+                      )}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

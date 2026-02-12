@@ -1,6 +1,10 @@
 "use client";
 
-import { useMemo, useEffect, useRef, type ChangeEvent } from "react";
+import { useMemo, useEffect, useRef, useState, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, Check } from "lucide-react";
+import { cn } from "@/lib/cn";
+import { durationFast, easeReveal } from "@/lib/motion";
 
 type DaySelectorProps = {
   totalDays: number;
@@ -52,10 +56,11 @@ export const DaySelector = ({
   labels = [],
   tripStartDate,
   autoScrollToToday = true,
-  variant = "default",
 }: DaySelectorProps) => {
-  const isDark = variant === "dark";
   const hasAutoScrolled = useRef(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const todayIndex = useMemo(
     () => getTodayIndex(tripStartDate, totalDays),
@@ -63,7 +68,6 @@ export const DaySelector = ({
   );
 
   const days = useMemo(() => {
-    // Separate formatters for custom order: "Feb 11, Tue"
     const monthDayFormatter = new Intl.DateTimeFormat(undefined, {
       month: "short",
       day: "numeric",
@@ -75,7 +79,6 @@ export const DaySelector = ({
     return Array.from({ length: totalDays }).map((_, index) => {
       let dateLabel = `Day ${index + 1}`;
 
-      // Calculate actual date from trip start date
       if (tripStartDate) {
         try {
           const [year, month, day] = tripStartDate.split("-").map(Number);
@@ -91,7 +94,6 @@ export const DaySelector = ({
         }
       }
 
-      // Extract city from label if available (format: "Day X (City)")
       const cityMatch = labels[index]?.match(/\(([^)]+)\)/);
       const city = cityMatch ? cityMatch[1] : null;
 
@@ -116,9 +118,45 @@ export const DaySelector = ({
     }
   }, [autoScrollToToday, todayIndex, selected, onChange]);
 
-  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    onChange(Number(event.target.value));
-  };
+  // Close on outside click
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClick = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [isOpen]);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsOpen(false);
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen]);
+
+  // Scroll selected item into view when opening
+  useEffect(() => {
+    if (isOpen && listRef.current) {
+      const selectedEl = listRef.current.querySelector("[data-selected]");
+      selectedEl?.scrollIntoView({ block: "nearest" });
+    }
+  }, [isOpen]);
+
+  const handleSelect = useCallback(
+    (index: number) => {
+      onChange(index);
+      setIsOpen(false);
+    },
+    [onChange]
+  );
+
+  const selectedDay = days[selected];
 
   if (days.length === 0) {
     return (
@@ -129,31 +167,73 @@ export const DaySelector = ({
   }
 
   return (
-    <div className="relative">
-      <select
-        value={selected}
-        onChange={handleChange}
-        className={
-          isDark
-            ? "w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-3 py-2 pr-10 text-base font-medium text-white shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
-            : "w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-10 text-base font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
-        }
+    <div className="relative" ref={containerRef}>
+      {/* Trigger */}
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex w-full items-center justify-between rounded-xl border border-border bg-background px-3 py-2.5 text-base font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
         aria-label="Select day"
       >
-        {days.map(({ index, label, isToday }) => (
-          <option key={index} value={index}>
-            {isToday ? `${label} (Today)` : label}
-          </option>
-        ))}
-      </select>
-      {/* Dropdown arrow */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-        <svg className={`h-4 w-4 ${isDark ? "text-white/50" : "text-stone"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-        </svg>
-      </div>
+        <span>
+          {selectedDay?.label}
+          {selectedDay?.isToday && (
+            <span className="ml-2 text-xs text-sage">(Today)</span>
+          )}
+        </span>
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 text-stone transition-transform",
+            isOpen && "rotate-180"
+          )}
+        />
+      </button>
+
+      {/* Dropdown */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            ref={listRef}
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: durationFast, ease: easeReveal }}
+            role="listbox"
+            data-lenis-prevent
+            className="absolute left-0 right-0 top-full z-50 mt-1 max-h-72 overflow-auto overscroll-contain rounded-xl border border-border bg-popover shadow-lg"
+          >
+            {days.map(({ index, label, isToday }) => {
+              const isSelected = index === selected;
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  data-selected={isSelected ? "" : undefined}
+                  onClick={() => handleSelect(index)}
+                  className={cn(
+                    "flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm transition-colors",
+                    isSelected
+                      ? "bg-brand-primary/10 text-brand-primary font-medium"
+                      : "text-popover-foreground hover:bg-surface"
+                  )}
+                >
+                  {isSelected && <Check className="h-3.5 w-3.5 shrink-0" />}
+                  <span className={!isSelected ? "pl-5.5" : ""}>
+                    {label}
+                    {isToday && (
+                      <span className="ml-2 text-xs text-sage">(Today)</span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
-
-

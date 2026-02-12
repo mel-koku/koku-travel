@@ -36,7 +36,7 @@ export function GeneratingOverlay({ sanityConfig }: GeneratingOverlayProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-charcoal/95 backdrop-blur-lg"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background/95 backdrop-blur-lg"
     >
       {/* Film grain */}
       <div className="texture-grain pointer-events-none absolute inset-0" />
@@ -47,7 +47,7 @@ export function GeneratingOverlay({ sanityConfig }: GeneratingOverlayProps) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
-          className="font-serif text-3xl italic text-white sm:text-4xl"
+          className="font-serif text-3xl italic text-foreground sm:text-4xl"
         >
           {sanityConfig?.generatingHeading ?? "Crafting your journey"}
         </motion.h2>
@@ -71,7 +71,7 @@ export function GeneratingOverlay({ sanityConfig }: GeneratingOverlayProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: durationFast, ease: easeReveal }}
-              className="text-sm text-white/60"
+              className="text-sm text-foreground-secondary"
             >
               {messages[messageIndex]}
             </motion.p>
