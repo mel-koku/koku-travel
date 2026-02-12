@@ -144,7 +144,7 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
         {filteredExperiences.length > 0 ? (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 sm:gap-10">
             {filteredExperiences.map((exp, i) => (
-              <ExperienceCard key={exp._id} experience={exp} index={i} />
+              <ExperienceCard key={exp._id} experience={exp} index={i} eager={i < 3} />
             ))}
           </div>
         ) : (

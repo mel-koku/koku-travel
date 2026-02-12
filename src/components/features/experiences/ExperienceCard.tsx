@@ -19,9 +19,11 @@ const EXPERIENCE_TYPE_LABELS: Record<ExperienceType, string> = {
 type ExperienceCardProps = {
   experience: ExperienceSummary;
   index: number;
+  /** Render immediately without scroll-triggered reveal */
+  eager?: boolean;
 };
 
-export function ExperienceCard({ experience, index }: ExperienceCardProps) {
+export function ExperienceCard({ experience, index, eager = false }: ExperienceCardProps) {
   const { setCursorState, isEnabled } = useCursor();
   const imageUrl = experience.thumbnailImage?.url || experience.featuredImage?.url || "";
 
@@ -31,8 +33,11 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
     experience.duration,
   ].filter(Boolean);
 
+  const Wrapper = eager ? "div" : ScrollReveal;
+  const wrapperProps = eager ? {} : { delay: index * 0.08, distance: 30 };
+
   return (
-    <ScrollReveal delay={index * 0.08} distance={30}>
+    <Wrapper {...wrapperProps}>
       <Link
         href={`/experiences/${experience.slug}`}
         className="group block"
@@ -80,6 +85,6 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
           </p>
         )}
       </Link>
-    </ScrollReveal>
+    </Wrapper>
   );
 }
