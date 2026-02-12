@@ -46,7 +46,7 @@ export function ExperienceCard({ experience, index }: ExperienceCardProps) {
               src={imageUrl}
               alt={experience.title}
               fill
-              className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.04]"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
               style={{ transitionTimingFunction: easeCinematicCSS }}
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             />

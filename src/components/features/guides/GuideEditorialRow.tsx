@@ -55,7 +55,7 @@ export const GuideEditorialRow = memo(function GuideEditorialRow({
               src={imageSrc}
               alt={guide.title}
               fill
-              className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
               style={{ transitionTimingFunction: easeCinematicCSS }}
               sizes="(min-width: 1024px) 50vw, 100vw"
             />

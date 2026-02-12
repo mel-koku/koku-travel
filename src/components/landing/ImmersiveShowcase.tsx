@@ -310,6 +310,7 @@ function Act({
               fill
               className="object-cover"
               sizes="(min-width: 1024px) 60vw, 100vw"
+              {...(index === 0 ? { loading: "eager" as const } : {})}
             />
           </motion.div>
 
@@ -350,7 +351,7 @@ function Act({
 function ImmersiveShowcaseMobile({ acts }: { acts: ActData[] }) {
   return (
     <section className="bg-background">
-      {acts.map((act) => (
+      {acts.map((act, i) => (
         <div key={act.number} className="px-6 py-16">
           <div className="mx-auto max-w-3xl">
             <ScrollReveal delay={0.1}>
@@ -360,7 +361,8 @@ function ImmersiveShowcaseMobile({ acts }: { acts: ActData[] }) {
                   alt={act.alt}
                   fill
                   className="object-cover"
-                  sizes="100vw"
+                  sizes="(min-width: 768px) 768px, 100vw"
+                  {...(i === 0 ? { loading: "eager" as const } : {})}
                 />
               </div>
             </ScrollReveal>
