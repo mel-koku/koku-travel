@@ -7,14 +7,19 @@ import { useCursor } from "@/providers/CursorProvider";
 type MenuTriggerProps = {
   isOpen: boolean;
   onToggle: () => void;
-  color?: "white" | "charcoal";
+  color?: "white" | "charcoal" | "foreground";
 };
 
 export function MenuTrigger({ isOpen, onToggle, color = "charcoal" }: MenuTriggerProps) {
   const { setCursorState } = useCursor();
   const prefersReducedMotion = useReducedMotion();
 
-  const lineColor = color === "white" ? "bg-white" : "bg-charcoal";
+  const lineColor =
+    color === "foreground"
+      ? "bg-foreground"
+      : color === "white"
+        ? "bg-white"
+        : "bg-charcoal";
 
   const transition = prefersReducedMotion
     ? { duration: 0 }
