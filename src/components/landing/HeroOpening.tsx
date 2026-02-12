@@ -109,8 +109,8 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
       if (isAutoScrolling.current) return;
 
       isAutoScrolling.current = true;
-      // scrollYProgress 0.4 = full reveal; container is 200vh, scroll range is 200vh
-      const targetScroll = window.innerHeight * 0.8;
+      // scrollYProgress 0.4 = full reveal; container is 150vh, scroll range is 150vh
+      const targetScroll = window.innerHeight * 0.6;
       animate(window.scrollY, targetScroll, {
         duration: durationCinematic,
         ease: easePageTransition,
@@ -186,7 +186,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
   }
 
   return (
-    <section ref={containerRef} className="relative h-[200vh] w-full">
+    <section ref={containerRef} className="relative h-[150vh] w-full">
       {/* Sticky viewport */}
       { }
       <div
