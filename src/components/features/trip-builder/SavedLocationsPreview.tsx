@@ -105,7 +105,7 @@ export function SavedLocationsPreview({
             <button
               type="button"
               onClick={() => onRemove(location.id)}
-              className="flex-shrink-0 rounded-full p-1.5 text-stone hover:bg-surface hover:text-foreground"
+              className="flex-shrink-0 rounded-full p-2.5 text-stone hover:bg-surface hover:text-foreground"
               aria-label={`Remove ${location.name}`}
             >
               <X className="h-4 w-4" />

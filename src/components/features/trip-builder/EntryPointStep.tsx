@@ -140,7 +140,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                   <button
                     type="button"
                     onClick={handleClear}
-                    className="rounded-lg px-3 py-1 text-xs text-stone hover:bg-surface hover:text-foreground-secondary"
+                    className="rounded-lg px-4 py-2 text-xs text-stone hover:bg-surface hover:text-foreground-secondary"
                   >
                     {sanityConfig?.entryPointChangeText ?? "Change"}
                   </button>

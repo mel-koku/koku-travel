@@ -331,7 +331,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
         {/* Scroll indicator (first phase only) */}
         <div
           ref={scrollIndicatorRef}
-          className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2"
+          className="absolute bottom-10 left-1/2 z-10 -translate-x-1/2 pb-[env(safe-area-inset-bottom)]"
         >
           <motion.div
             initial={{ opacity: 0 }}

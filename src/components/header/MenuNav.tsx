@@ -174,7 +174,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           onClick={onClose}
           onMouseEnter={() => setCursorState("link")}
           onMouseLeave={() => setCursorState("default")}
-          className="py-2 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+          className="py-2.5 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
         >
           Dashboard
         </Link>
@@ -188,7 +188,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
             }}
             onMouseEnter={() => setCursorState("link")}
             onMouseLeave={() => setCursorState("default")}
-            className="py-2 text-left text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+            className="py-2.5 text-left text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign out
           </button>
@@ -198,7 +198,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
             onClick={onClose}
             onMouseEnter={() => setCursorState("link")}
             onMouseLeave={() => setCursorState("default")}
-            className="py-2 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+            className="py-2.5 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign in
           </Link>
@@ -208,7 +208,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           onClick={handleClearData}
           onMouseEnter={() => setCursorState("link")}
           onMouseLeave={() => setCursorState("default")}
-          className="flex items-center gap-2 py-2 text-left text-sm text-stone transition-colors hover:text-warning"
+          className="flex items-center gap-2 py-2.5 text-left text-sm text-stone transition-colors hover:text-warning"
         >
           <span>Clear local data</span>
           <svg
