@@ -4,7 +4,6 @@ import type {
   PointerEvent,
   TouchEvent,
 } from "react";
-import { GripIcon } from "./activityIcons";
 
 type DragHandleListeners = {
   onKeyDown?: (event: React.KeyboardEvent<Element>) => void;
@@ -31,13 +30,6 @@ export function DragHandle({
   attributes,
   listeners,
 }: DragHandleProps) {
-  const baseClasses =
-    "group/handle flex items-center gap-1.5 rounded-lg border px-2 py-1.5 text-xs font-medium shadow-sm transition-all cursor-grab focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-95 data-[dragging=true]:shadow-none hover:shadow-md active:scale-95";
-  const placeClasses =
-    "border-border bg-background text-stone hover:border-sage/50 hover:bg-sage/5 hover:text-sage";
-  const noteClasses =
-    "border-sage/30 bg-sage/10 text-sage hover:bg-sage/20";
-
   const dragAttributeProps = (attributes ?? {}) as Record<string, unknown>;
   const dragHandleListeners = (() => {
     const typed = (listeners ?? {}) as DragHandleListeners;
@@ -84,12 +76,18 @@ export function DragHandle({
     };
   })();
 
+  const isPlace = variant === "place";
+
   return (
     <button
       type="button"
       aria-label={label}
       data-dragging={isDragging}
-      className={`${baseClasses} ${variant === "place" ? placeClasses : noteClasses}`}
+      className={
+        isPlace
+          ? "font-mono text-[10px] uppercase tracking-[0.08em] whitespace-nowrap rounded-full bg-white/85 px-3 py-1.5 text-charcoal/80 shadow-sm backdrop-blur-md transition-all cursor-grab hover:bg-white/95 hover:text-charcoal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-95 active:scale-95"
+          : "font-mono text-[10px] uppercase tracking-[0.08em] whitespace-nowrap rounded-md px-2 py-1 text-sage transition-all cursor-grab hover:bg-sage/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-95 active:scale-95"
+      }
       {...dragAttributeProps}
       {...dragHandleListeners}
       onClick={(event) => {
@@ -97,8 +95,7 @@ export function DragHandle({
         event.stopPropagation();
       }}
     >
-      <GripIcon />
-      <span className="hidden sm:inline group-hover/handle:inline">Reorder</span>
+      Drag to reorder
     </button>
   );
 }
