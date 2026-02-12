@@ -284,7 +284,7 @@ export const landingPage = defineType({
           },
         },
       ],
-      validation: (rule) => rule.min(1).max(5),
+      validation: (rule) => rule.min(1).max(15),
     }),
 
     // ── Featured Guides ──────────────────────────
