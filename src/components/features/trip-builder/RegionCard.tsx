@@ -58,7 +58,7 @@ export function RegionCard({
           alt={`${region.name} region`}
           fill
           className={cn(
-            "object-cover transition-transform duration-[1200ms]",
+            "object-cover transition-transform duration-500",
             isSelected ? "scale-[1.04]" : "group-hover:scale-[1.04]"
           )}
           style={{ transitionTimingFunction: easeCinematicCSS }}

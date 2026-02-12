@@ -61,7 +61,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
                 src={relatedGuide.featuredImage}
                 alt={relatedGuide.title}
                 fill
-                className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.02]"
+                className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                 style={{ transitionTimingFunction: easeCinematicCSS }}
                 sizes="(min-width: 1280px) 80vw, 95vw"
               />

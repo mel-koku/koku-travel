@@ -136,6 +136,7 @@ const nextConfig: NextConfig = {
   images: {
     localPatterns,
     remotePatterns,
+    minimumCacheTTL: 86400, // 24 hours — prevents frequent re-optimization
   },
   async headers() {
     // Sanity Studio requires 'unsafe-eval' for script execution
