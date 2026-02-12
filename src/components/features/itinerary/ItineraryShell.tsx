@@ -697,61 +697,6 @@ export const ItineraryShell = ({
 
   return (
     <section className="mx-auto min-h-[calc(100dvh-64px)] max-w-screen-2xl">
-      {/* Dark banner — merges with transparent header */}
-      <div className="relative -mt-20 bg-charcoal pt-24 pb-6">
-        <div className="texture-grain absolute inset-0" />
-        <div className="relative z-10 mx-auto max-w-screen-2xl px-4 lg:px-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <div className="flex items-center gap-3">
-                <h1
-                  ref={finalHeadingRef}
-                  tabIndex={-1}
-                  className="font-serif italic text-2xl text-white focus:outline-none sm:text-3xl"
-                >
-                  Your Itinerary
-                </h1>
-                {isUsingMock && (
-                  <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
-                    Mock
-                  </span>
-                )}
-              </div>
-              {createdLabel && (
-                <p className="mt-1 font-mono text-[11px] text-white/50">
-                  Saved {createdLabel}
-                  {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
-                </p>
-              )}
-              {/* Cities chips */}
-              {selectedCityNames.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {selectedCityNames.map((cityName) => (
-                    <span
-                      key={cityName}
-                      className="inline-flex items-center rounded-full bg-white/10 px-2.5 py-0.5 text-[11px] font-medium text-white/80"
-                    >
-                      {cityName}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-            {/* Day picker */}
-            <div className="w-full sm:w-auto sm:min-w-[280px]">
-              <DaySelector
-                totalDays={days.length}
-                selected={safeSelectedDay}
-                onChange={handleSelectDayChange}
-                labels={days.map((day) => day.dateLabel ?? "")}
-                tripStartDate={tripStartDate}
-                variant="dark"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* ── Mobile peek map strip (< lg) ── */}
       <div className="relative lg:hidden">
         <motion.div
@@ -818,6 +763,56 @@ export const ItineraryShell = ({
       <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
+          {/* Header + Day Selector */}
+          <div className="px-3 pt-4 pb-3 lg:px-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="flex items-center gap-3">
+                  <h1
+                    ref={finalHeadingRef}
+                    tabIndex={-1}
+                    className="font-serif italic text-2xl text-foreground focus:outline-none sm:text-3xl"
+                  >
+                    Your Itinerary
+                  </h1>
+                  {isUsingMock && (
+                    <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                      Mock
+                    </span>
+                  )}
+                </div>
+                {createdLabel && (
+                  <p className="mt-1 font-mono text-[11px] text-stone">
+                    Saved {createdLabel}
+                    {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
+                  </p>
+                )}
+                {selectedCityNames.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {selectedCityNames.map((cityName) => (
+                      <span
+                        key={cityName}
+                        className="inline-flex items-center rounded-full bg-foreground/10 px-2.5 py-0.5 text-[11px] font-medium text-foreground-secondary"
+                      >
+                        {cityName}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="w-full sm:w-auto sm:min-w-[280px]">
+                <DaySelector
+                  totalDays={days.length}
+                  selected={safeSelectedDay}
+                  onChange={handleSelectDayChange}
+                  labels={days.map((day) => day.dateLabel ?? "")}
+                  tripStartDate={tripStartDate}
+                  variant="default"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Activities List */}
           <div data-itinerary-activities className="relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 lg:rounded-2xl lg:border">
             {/* Day transition interstitial */}

@@ -122,7 +122,7 @@ function ImmersiveShowcaseDesktop({ acts }: { acts: ActData[] }) {
 
   return (
     <section ref={containerRef} className="relative h-[220vh] shrink-0 bg-background">
-      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-charcoal">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-background">
         {acts.map((act, index) => (
           <Act
             key={act.number}
@@ -217,7 +217,7 @@ function Act({
 
       {isFullWidth ? (
         /* Act 3: Full-width image with text overlay */
-        <div className="relative h-full w-full bg-charcoal">
+        <div className="relative h-full w-full bg-background">
           <motion.div
             className="absolute inset-0"
             style={{ clipPath: clipPathStyle }}

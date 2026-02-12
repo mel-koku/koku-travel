@@ -1,12 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { ArrowLineCTA } from "@/components/features/trip-builder/ArrowLineCTA";
 import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
-import { easeReveal, easeCinematicCSS, staggerChar, durationBase, magneticCTA } from "@/lib/motion";
+import { easeReveal, staggerChar, durationBase, magneticCTA } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type IntroStepProps = {
@@ -24,8 +23,6 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
     "Share what moves you, and we\u2019ll plan the rest \u2014 day by day, from places locals actually go.";
   const ctaText = sanityConfig?.introCtaText ?? "Start Planning";
   const eyebrow = sanityConfig?.introEyebrow ?? "TRIP BUILDER";
-  const bgImage =
-    sanityConfig?.introBackgroundImage?.url ?? "/images/regions/kansai-hero.jpg";
   const accentImage =
     sanityConfig?.introAccentImage?.url ?? "/images/regions/kansai-hero.jpg";
   const imageCaption = sanityConfig?.introImageCaption ?? "Kansai, Japan";
@@ -40,30 +37,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
         };
 
   return (
-    <div className="relative -mt-20 flex min-h-[100dvh] items-center overflow-hidden bg-charcoal pt-20">
-      {/* Atmospheric background — dim, Ken Burns ambient */}
-      <div className="absolute inset-0 overflow-hidden">
-        <Image
-          src={bgImage}
-          alt=""
-          fill
-          className="object-cover opacity-30"
-          priority
-          sizes="100vw"
-          style={
-            prefersReducedMotion
-              ? {}
-              : {
-                  animation: `intro-ken-burns 20s ${easeCinematicCSS} forwards`,
-                  transform: "scale(1.12)",
-                }
-          }
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/40 to-charcoal/80" />
-      </div>
-
-      {/* Grain texture */}
-      <div className="texture-grain absolute inset-0" />
+    <div className="relative -mt-20 flex min-h-[100dvh] items-center overflow-hidden bg-background pt-20">
 
       {/* Main grid content */}
       <div className="relative z-10 mx-auto grid w-full max-w-7xl gap-10 px-6 py-20 sm:py-28 lg:grid-cols-[1fr_0.82fr] lg:gap-16 lg:px-10">
@@ -80,7 +54,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
           {/* Heading — dramatic scale */}
           <SplitText
             as="h1"
-            className="mt-4 font-serif italic text-[clamp(4rem,12vw,9rem)] leading-[0.9] text-white"
+            className="mt-4 font-serif italic text-[clamp(4rem,12vw,9rem)] leading-[0.9] text-foreground"
             splitBy="word"
             animation="clipY"
             staggerDelay={0.08}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "next-themes";
 import { JAPAN_MAP_VIEWBOX, REGION_PREFECTURES, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
 import type { KnownRegionId } from "@/types/trip";
 
@@ -8,11 +9,29 @@ type RegionMapCanvasProps = {
   selectedRegions: KnownRegionId[];
 };
 
+// Theme-aware color palettes for map rendering
+const COLORS = {
+  dark: {
+    baseFill: "none",
+    baseStroke: "rgba(255, 255, 255, 0.18)",
+    hoverFill: "rgba(255, 255, 255, 0.1)",
+    hoverStroke: "rgba(255, 255, 255, 0.35)",
+  },
+  light: {
+    baseFill: "none",
+    baseStroke: "rgba(31, 26, 20, 0.25)",
+    hoverFill: "rgba(31, 26, 20, 0.08)",
+    hoverStroke: "rgba(31, 26, 20, 0.4)",
+  },
+} as const;
+
 export function RegionMapCanvas({
   hoveredRegion,
   selectedRegions,
 }: RegionMapCanvasProps) {
   const selectedSet = new Set(selectedRegions);
+  const { resolvedTheme } = useTheme();
+  const palette = resolvedTheme === "light" ? COLORS.light : COLORS.dark;
 
   return (
     <div className="flex h-full w-full items-center justify-center opacity-20 lg:opacity-100">
@@ -44,15 +63,15 @@ export function RegionMapCanvas({
                 isSelected
                   ? "rgba(196, 80, 79, 0.2)"
                   : isHovered
-                    ? "rgba(255, 255, 255, 0.1)"
-                    : "none"
+                    ? palette.hoverFill
+                    : palette.baseFill
               }
               stroke={
                 isSelected
                   ? "rgba(196, 80, 79, 0.8)"
                   : isHovered
-                    ? "rgba(255, 255, 255, 0.35)"
-                    : "rgba(255, 255, 255, 0.18)"
+                    ? palette.hoverStroke
+                    : palette.baseStroke
               }
               strokeWidth={isSelected ? 1.2 : 0.6}
               opacity={isSelected || isHovered ? 1 : 0.55}

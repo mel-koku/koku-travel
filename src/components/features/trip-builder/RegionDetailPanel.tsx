@@ -50,7 +50,7 @@ export function RegionDetailPanel({
               duration: 0.5,
               ease: [...easeCinematic] as [number, number, number, number],
             }}
-            className="flex h-full w-full flex-col border-l border-white/10 bg-charcoal/90 backdrop-blur-xl"
+            className="flex h-full w-full flex-col border-l border-border bg-background/95 backdrop-blur-xl"
           >
             {/* Hero image — fixed height, not scrollable */}
             <div className="relative h-[40%] shrink-0 overflow-hidden">
@@ -79,13 +79,13 @@ export function RegionDetailPanel({
             >
               <div className="flex flex-col gap-5">
                 {/* Description */}
-                <p className="text-sm leading-relaxed text-white/70">
+                <p className="text-sm leading-relaxed text-foreground-secondary">
                   {region.description}
                 </p>
 
                 {/* Cities */}
                 <div>
-                  <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-white/40">
+                  <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-stone">
                     Cities
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -93,7 +93,7 @@ export function RegionDetailPanel({
                       (city) => (
                         <span
                           key={city.id}
-                          className="flex items-center gap-1 rounded-lg bg-white/5 px-2.5 py-1 text-xs text-white/70"
+                          className="flex items-center gap-1 rounded-lg bg-foreground/5 px-2.5 py-1 text-xs text-foreground-secondary"
                         >
                           <MapPin className="h-3 w-3 text-brand-primary" />
                           {city.name}
@@ -105,7 +105,7 @@ export function RegionDetailPanel({
 
                 {/* Best for vibes */}
                 <div>
-                  <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-white/40">
+                  <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-stone">
                     Best for
                   </h4>
                   <div className="flex flex-wrap gap-2">
@@ -126,14 +126,14 @@ export function RegionDetailPanel({
 
                 {/* Highlights */}
                 <div>
-                  <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-white/40">
+                  <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-stone">
                     Highlights
                   </h4>
                   <ul className="space-y-1.5">
                     {region.highlights.map((h) => (
                       <li
                         key={h}
-                        className="flex items-center gap-2 text-sm text-white/60"
+                        className="flex items-center gap-2 text-sm text-foreground-secondary"
                       >
                         <span className="h-1 w-1 shrink-0 rounded-full bg-brand-primary" />
                         {h}
@@ -149,7 +149,7 @@ export function RegionDetailPanel({
                   className={cn(
                     "mt-2 w-full shrink-0 rounded-xl py-3 text-sm font-medium uppercase tracking-wider transition-colors",
                     isSelected
-                      ? "bg-white/10 text-white hover:bg-white/15"
+                      ? "bg-foreground/10 text-foreground hover:bg-foreground/15"
                       : "bg-brand-primary text-white hover:bg-brand-primary/90"
                   )}
                 >

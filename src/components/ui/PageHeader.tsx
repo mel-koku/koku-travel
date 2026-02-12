@@ -42,7 +42,7 @@ export function PageHeader({
   return (
     <div
       ref={containerRef}
-      className={`relative -mt-20 flex ${minHeight} items-center justify-center overflow-hidden bg-charcoal pt-20`}
+      className={`relative -mt-20 flex ${minHeight} items-center justify-center overflow-hidden bg-background pt-20`}
     >
       {/* Parallax background image */}
       {imageUrl ? (
@@ -58,11 +58,11 @@ export function PageHeader({
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-charcoal/60 via-charcoal/40 to-charcoal/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/40 to-background/80" />
         </motion.div>
       ) : (
         <motion.div
-          className="absolute inset-0 bg-gradient-to-br from-charcoal via-charcoal/95 to-charcoal/85"
+          className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/85"
           style={prefersReducedMotion ? {} : { y: imageY }}
         />
       )}
@@ -74,21 +74,21 @@ export function PageHeader({
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 text-center sm:py-28">
         {eyebrow && (
           <ScrollReveal distance={10} delay={0}>
-            <p className="eyebrow-editorial text-white/60">
+            <p className="eyebrow-editorial text-foreground-secondary">
               {eyebrow}
             </p>
           </ScrollReveal>
         )}
 
         <ScrollReveal delay={0.15}>
-          <h1 className="mt-4 font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white">
+          <h1 className="mt-4 font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-foreground">
             {title}
           </h1>
         </ScrollReveal>
 
         {subtitle && (
           <ScrollReveal delay={0.3} distance={15}>
-            <p className="mx-auto mt-6 max-w-2xl text-base text-white/70 sm:text-lg">
+            <p className="mx-auto mt-6 max-w-2xl text-base text-foreground-secondary sm:text-lg">
               {subtitle}
             </p>
           </ScrollReveal>

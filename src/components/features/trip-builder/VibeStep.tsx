@@ -100,7 +100,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
   );
 
   return (
-    <div className="flex flex-1 flex-col bg-charcoal">
+    <div className="flex flex-1 flex-col bg-background">
       {/* Grain texture */}
       <div className="texture-grain pointer-events-none absolute inset-0" />
 
@@ -114,7 +114,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [...easeCinematic] as [number, number, number, number], delay: 0.15 }}
-          className="mt-3 font-serif text-4xl italic tracking-tight text-white sm:text-5xl"
+          className="mt-3 font-serif text-4xl italic tracking-tight text-foreground sm:text-5xl"
         >
           {sanityConfig?.vibeStepHeading ?? "What moves you?"}
         </motion.h2>
