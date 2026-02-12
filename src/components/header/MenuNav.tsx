@@ -102,7 +102,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
 
   return (
     <motion.nav
-      className="flex h-full flex-col justify-between px-4 py-12 sm:px-8 md:px-12 lg:px-20"
+      className="flex h-full flex-col px-4 py-12 sm:px-8 md:px-12 lg:px-20"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -166,7 +166,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
 
       {/* Bottom section: secondary links */}
       <motion.div
-        className="flex flex-col gap-3 border-t border-border pt-6"
+        className="mt-auto flex flex-col gap-3 border-t border-border pt-6"
         variants={bottomVariants}
       >
         <Link
@@ -174,7 +174,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           onClick={onClose}
           onMouseEnter={() => setCursorState("link")}
           onMouseLeave={() => setCursorState("default")}
-          className="text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+          className="py-2 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
         >
           Dashboard
         </Link>
@@ -188,7 +188,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
             }}
             onMouseEnter={() => setCursorState("link")}
             onMouseLeave={() => setCursorState("default")}
-            className="text-left text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+            className="py-2 text-left text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign out
           </button>
@@ -198,7 +198,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
             onClick={onClose}
             onMouseEnter={() => setCursorState("link")}
             onMouseLeave={() => setCursorState("default")}
-            className="text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+            className="py-2 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign in
           </Link>
@@ -208,7 +208,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           onClick={handleClearData}
           onMouseEnter={() => setCursorState("link")}
           onMouseLeave={() => setCursorState("default")}
-          className="flex items-center gap-2 text-left text-sm text-stone transition-colors hover:text-warning"
+          className="flex items-center gap-2 py-2 text-left text-sm text-stone transition-colors hover:text-warning"
         >
           <span>Clear local data</span>
           <svg

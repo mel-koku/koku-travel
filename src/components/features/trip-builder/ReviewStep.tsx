@@ -330,7 +330,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
                 {DIETARY_OPTIONS.map((option) => (
                   <label
                     key={option.id}
-                    className="flex cursor-pointer items-center gap-2"
+                    className="flex min-h-[44px] cursor-pointer items-center gap-2"
                   >
                     <input
                       type="checkbox"
@@ -361,7 +361,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             <textarea
               id="additional-notes"
               placeholder={sanityConfig?.reviewNotesPlaceholder ?? "A birthday dinner in Kyoto, avoiding steep stairs, must-see spots..."}
-              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               rows={4}
               {...register("additionalNotes")}
             />

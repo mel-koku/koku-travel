@@ -89,7 +89,7 @@ export function GuidePreamble({
             type="button"
             onClick={onToggleBookmark}
             disabled={isToggling || !user}
-            className={`flex h-10 w-10 items-center justify-center rounded-xl border transition-all ${
+            className={`flex h-11 w-11 items-center justify-center rounded-xl border transition-all ${
               bookmarked
                 ? "border-sage/50 text-sage"
                 : "border-border/50 text-stone hover:border-sage/50 hover:text-sage"

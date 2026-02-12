@@ -211,7 +211,7 @@ export default function Header() {
     <>
       <motion.header
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-colors duration-300",
+          "fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-colors duration-300",
           isAtTop
             ? "bg-transparent"
             : "bg-background/60 backdrop-blur-xl border-b border-border/30"

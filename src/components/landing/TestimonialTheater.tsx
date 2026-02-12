@@ -106,11 +106,11 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
 
       {/* Remaining testimonials — compact card row */}
       {rest.length > 0 && (
-        <div className="flex gap-6 overflow-x-auto overscroll-contain px-6 py-12">
+        <div className="flex snap-x snap-mandatory gap-6 overflow-x-auto overscroll-contain px-6 py-12 scrollbar-hide">
           {rest.map((testimonial, i) => (
             <div
               key={i}
-              className="min-w-[280px] flex-1 rounded-xl border border-border/50 bg-surface p-6"
+              className="min-w-[280px] snap-start rounded-xl border border-border/50 bg-surface p-6"
             >
               <blockquote>
                 <p className="font-serif italic text-base leading-relaxed text-foreground-secondary">

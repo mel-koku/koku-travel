@@ -31,7 +31,7 @@ const components: PortableTextComponents = {
     ),
     normal: ({ children }) => (
       <div className="mx-auto max-w-2xl px-6">
-        <p className="text-lg leading-[1.8] text-foreground-body mb-6">
+        <p className="text-base sm:text-lg leading-[1.8] text-foreground-body mb-6">
           {children}
         </p>
       </div>
@@ -48,14 +48,14 @@ const components: PortableTextComponents = {
   list: {
     bullet: ({ children }) => (
       <div className="mx-auto max-w-2xl px-6">
-        <ul className="list-disc list-outside ml-6 mb-6 space-y-2 text-lg leading-[1.8] text-foreground-body">
+        <ul className="list-disc list-outside ml-6 mb-6 space-y-2 text-base sm:text-lg leading-[1.8] text-foreground-body">
           {children}
         </ul>
       </div>
     ),
     number: ({ children }) => (
       <div className="mx-auto max-w-2xl px-6">
-        <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 text-lg leading-[1.8] text-foreground-body">
+        <ol className="list-decimal list-outside ml-6 mb-6 space-y-2 text-base sm:text-lg leading-[1.8] text-foreground-body">
           {children}
         </ol>
       </div>

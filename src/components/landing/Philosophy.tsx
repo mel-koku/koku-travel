@@ -29,7 +29,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
         </ScrollReveal>
 
         {/* Stats */}
-        <div className="mt-16 flex items-center justify-center gap-x-16 lg:gap-x-24">
+        <div className="mt-16 flex flex-wrap items-center justify-center gap-y-8 gap-x-6 sm:gap-x-16 lg:gap-x-24">
           {/* Stat 1 — Places */}
           <div className="text-center">
             <div className="flex items-baseline justify-center gap-1">
@@ -47,7 +47,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
           </div>
 
           {/* Divider */}
-          <div className="h-16 w-px bg-border/30" />
+          <div className="hidden sm:block h-16 w-px bg-border/30" />
 
           {/* Stat 2 — Prefectures */}
           <div className="text-center">
@@ -61,7 +61,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
           </div>
 
           {/* Divider */}
-          <div className="h-16 w-px bg-border/30" />
+          <div className="hidden sm:block h-16 w-px bg-border/30" />
 
           {/* Stat 3 — Local */}
           <div className="text-center">

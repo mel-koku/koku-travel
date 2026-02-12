@@ -52,14 +52,14 @@ export function FinalCTA({ content }: FinalCTAProps) {
             <Magnetic strength={magneticCTA.strength} maxDisplacement={magneticCTA.maxDisplacement} threshold={magneticCTA.threshold}>
               <a
                 href="/trip-builder"
-                className="relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl"
+                className="relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl active:scale-[0.98]"
               >
                 <span className="relative">{content?.finalCtaPrimaryText ?? "Start Planning"}</span>
               </a>
             </Magnetic>
             <a
               href="/explore"
-              className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"
+              className="link-reveal mt-6 py-3 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"
             >
               {content?.finalCtaSecondaryText ?? "Browse Locations"}
             </a>

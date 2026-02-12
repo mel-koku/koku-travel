@@ -673,7 +673,7 @@ export const ItineraryShell = ({
   );
 
   return (
-    <section className="mx-auto min-h-[calc(100vh-64px)] max-w-screen-2xl">
+    <section className="mx-auto min-h-[calc(100dvh-64px)] max-w-screen-2xl">
       {/* Dark banner — merges with transparent header */}
       <div className="relative -mt-20 bg-charcoal pt-24 pb-6">
         <div className="texture-grain absolute inset-0" />
@@ -778,7 +778,7 @@ export const ItineraryShell = ({
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: durationFast, ease: easeReveal }}
                 onClick={() => setMapExpanded(false)}
-                className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl bg-charcoal/80 text-white/90 backdrop-blur-sm transition-colors hover:bg-charcoal"
+                className="absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center rounded-xl bg-charcoal/80 text-white/90 backdrop-blur-sm transition-colors hover:bg-charcoal"
                 aria-label="Collapse map"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -880,7 +880,7 @@ export const ItineraryShell = ({
         </div>
 
         {/* Right: Sticky Map — desktop only (50%) */}
-        <div className="hidden lg:sticky lg:top-[80px] lg:block lg:h-[calc(100vh-96px)] lg:w-1/2">
+        <div className="hidden lg:sticky lg:top-[80px] lg:block lg:h-[calc(100dvh-96px)] lg:w-1/2">
           <div className="h-full lg:rounded-2xl lg:overflow-hidden lg:border lg:border-border">
             <ItineraryMapPanel
               day={safeSelectedDay}

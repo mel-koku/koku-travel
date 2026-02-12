@@ -242,7 +242,7 @@ export function FilterPanel({
                   value={query}
                   onChange={(e) => onQueryChange(e.target.value)}
                   placeholder="Search places..."
-                  className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
                 {query && (
                   <button

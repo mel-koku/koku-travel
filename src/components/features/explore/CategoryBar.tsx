@@ -72,7 +72,7 @@ export function CategoryBar({
           {/* Category tabs */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-x-auto scrollbar-hide"
+            className="flex-1 overflow-x-auto scrollbar-hide overscroll-contain"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <div className="flex gap-1 sm:gap-2 min-w-max">
@@ -127,11 +127,11 @@ export function CategoryBar({
                   value={query}
                   onChange={(e) => onQueryChange?.(e.target.value)}
                   placeholder="Search..."
-                  className="w-32 sm:w-44 bg-transparent text-sm placeholder:text-stone focus:outline-none"
+                  className="w-32 sm:w-44 bg-transparent text-base placeholder:text-stone focus:outline-none"
                 />
                 <button
                   onClick={handleSearchToggle}
-                  className="p-0.5 rounded hover:bg-surface"
+                  className="p-2 rounded hover:bg-surface"
                   aria-label="Close search"
                 >
                   <svg className="h-3.5 w-3.5 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -142,7 +142,7 @@ export function CategoryBar({
             ) : (
               <button
                 onClick={handleSearchToggle}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-border hover:bg-surface transition"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-border hover:bg-surface transition"
                 aria-label="Search"
               >
                 <svg className="h-4 w-4 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

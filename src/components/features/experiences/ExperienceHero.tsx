@@ -90,7 +90,7 @@ export function ExperienceHero({
 
   if (prefersReducedMotion) {
     return (
-      <section className="relative -mt-20 h-screen w-full overflow-hidden">
+      <section className="relative -mt-20 h-[100dvh] w-full overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={featuredImage}
@@ -112,7 +112,7 @@ export function ExperienceHero({
       ref={containerRef}
       className="relative -mt-20 h-[120vh] w-full sm:h-[150vh]"
     >
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
         <motion.div className="absolute inset-0" style={{ scale: imageScale }}>
           <Image
             src={featuredImage}

@@ -80,7 +80,18 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
     return <ImmersiveShowcaseMobile acts={acts} />;
   }
 
-  return <ImmersiveShowcaseDesktop acts={acts} />;
+  return (
+    <>
+      {/* Scroll-pinned desktop version */}
+      <div className="hidden lg:block">
+        <ImmersiveShowcaseDesktop acts={acts} />
+      </div>
+      {/* Simple stacked mobile version */}
+      <div className="lg:hidden">
+        <ImmersiveShowcaseMobile acts={acts} />
+      </div>
+    </>
+  );
 }
 
 function ImmersiveShowcaseDesktop({ acts }: { acts: ActData[] }) {
@@ -252,7 +263,7 @@ function Act({
       ) : (
         /* Acts 1–2: Split layout */
         <div
-          className={`mx-auto grid h-full max-w-7xl items-center gap-16 px-6 ${
+          className={`mx-auto grid h-full max-w-7xl items-center gap-6 lg:gap-16 px-6 ${
             index === 0
               ? "lg:grid-cols-[6fr_4fr]"
               : "lg:grid-cols-[4fr_6fr]"

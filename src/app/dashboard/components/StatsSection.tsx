@@ -78,7 +78,7 @@ export function StatsSection({
 
         {/* Inline stats */}
         <ScrollReveal delay={0.3}>
-          <div className="mt-10 flex items-center gap-4 sm:gap-8 md:gap-12">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-8 md:gap-12">
             <div className="text-center">
               <AnimatedNumber
                 value={favoritesCount}
@@ -89,13 +89,13 @@ export function StatsSection({
               </p>
               <Link
                 href={favoritesCount > 0 ? "/favorites" : "/explore"}
-                className="link-reveal mt-2 inline-block text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
               >
                 {favoritesCount > 0 ? "View favorites" : "Explore places"}
               </Link>
             </div>
 
-            <div className="h-8 w-px bg-white/15" />
+            <div className="hidden sm:block h-8 w-px bg-white/15" />
 
             <div className="text-center">
               <AnimatedNumber
@@ -107,13 +107,13 @@ export function StatsSection({
               </p>
               <Link
                 href="/guides/bookmarks"
-                className="link-reveal mt-2 inline-block text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
               >
                 View guides
               </Link>
             </div>
 
-            <div className="h-8 w-px bg-white/15" />
+            <div className="hidden sm:block h-8 w-px bg-white/15" />
 
             <div className="text-center">
               <AnimatedNumber
@@ -125,7 +125,7 @@ export function StatsSection({
               </p>
               <Link
                 href="#trips"
-                className="link-reveal mt-2 inline-block text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
+                className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
               >
                 View trips
               </Link>
