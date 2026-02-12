@@ -79,7 +79,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
   return (
     <>
       {/* Desktop: Scroll-pinned horizontal gallery */}
-      <section ref={containerRef} className="relative hidden h-[250vh] bg-background lg:block">
+      <section ref={containerRef} className="relative hidden h-[180vh] bg-background lg:block">
         {/* Sticky viewport — stays visible while user scrolls the 250vh */}
         <div className="sticky top-0 flex h-[100dvh] flex-col justify-center overflow-hidden py-12">
           {/* Gallery row */}
