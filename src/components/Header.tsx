@@ -126,27 +126,11 @@ export default function Header() {
 
   const isLandingPage = pathname === "/";
 
-  // On landing page, header starts hidden and reveals after hero scroll
-  const [heroRevealed, setHeroRevealed] = useState(!isLandingPage);
-
   // Track scroll progress and direction refs for stable access
   const scrollProgressRef = useRef(scrollProgress);
   const scrollAccumRef = useRef(0);
   const lastScrollYRef = useRef(0);
   useEffect(() => { scrollProgressRef.current = scrollProgress; }, [scrollProgress]);
-
-  // Hero reveal tracking (separate from direction-based hide/show)
-  useEffect(() => {
-    if (!isLandingPage) {
-      if (!heroRevealed) setHeroRevealed(true);
-      return;
-    }
-    if (scrollProgress < 0.025) {
-      setHeroRevealed(false);
-    } else if (!heroRevealed) {
-      setHeroRevealed(true);
-    }
-  }, [isLandingPage, scrollProgress, heroRevealed]);
 
   // Direction-based hide/show with scroll hysteresis
   // Require 50px of cumulative upward scroll to show, 20px downward to hide
@@ -216,13 +200,10 @@ export default function Header() {
             ? "bg-transparent"
             : "bg-background/60 backdrop-blur-xl border-b border-border/30"
         )}
-        initial={{
-          y: 0,
-          opacity: isLandingPage ? 0 : 1,
-        }}
+        initial={{ y: 0, opacity: 1 }}
         animate={{
           y: isVisible || isMenuOpen ? 0 : -100,
-          opacity: isLandingPage && !heroRevealed ? 0 : 1,
+          opacity: 1,
         }}
         transition={headerSpring}
       >
