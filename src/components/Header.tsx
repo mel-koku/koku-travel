@@ -16,6 +16,7 @@ import { cn } from "@/lib/cn";
 import { springNavigation } from "@/lib/motion";
 import { MenuTrigger } from "@/components/header/MenuTrigger";
 import { MenuOverlay } from "@/components/header/MenuOverlay";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -266,7 +267,7 @@ export default function Header() {
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center gap-3 sm:gap-6">
+          <div className="flex items-center gap-1 sm:gap-3 lg:gap-6">
             {/* CTA button (lg+) */}
             <Magnetic strength={0.15}>
               <Link
@@ -279,6 +280,11 @@ export default function Header() {
               </Link>
             </Magnetic>
 
+            {/* Theme toggle (desktop) */}
+            <div className="hidden lg:block">
+              <ThemeToggle />
+            </div>
+
             {/* Desktop user menu (lg+) */}
             <div className="hidden lg:block">
               <UserMenu
@@ -288,12 +294,13 @@ export default function Header() {
               />
             </div>
 
-            {/* Menu trigger (< lg) */}
-            <div className="lg:hidden">
+            {/* Theme toggle + menu trigger (mobile) */}
+            <div className="flex items-center gap-1 lg:hidden">
+              <ThemeToggle />
               <MenuTrigger
                 isOpen={isMenuOpen}
                 onToggle={handleMenuToggle}
-                color="white"
+                color="foreground"
               />
             </div>
           </div>
