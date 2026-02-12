@@ -95,6 +95,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
                 guide={guide}
                 index={heroGuide ? i + 1 : i}
                 flip={i % 2 === 1}
+                eager={i === 0}
               />
             ))}
           </div>
