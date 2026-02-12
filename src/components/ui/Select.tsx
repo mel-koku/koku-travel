@@ -143,70 +143,73 @@ const SelectSeparator = React.forwardRef<
 ))
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName
 
-// Simple Select (legacy API) - uses native HTML select for form compatibility
+// Simple Select — Radix-based drop-in replacement for native <select>
+// Keeps the same external API (value, onChange with e.target.value, options, placeholder)
 type SelectOption = {
   label: string
   value: string
   disabled?: boolean
 }
 
-interface SimpleSelectProps extends Omit<React.ComponentPropsWithoutRef<"select">, "children"> {
+interface SimpleSelectProps {
   placeholder?: string
   options: SelectOption[]
   error?: string
+  className?: string
+  id?: string
+  disabled?: boolean
+  value?: string
+  onChange?: (e: { target: { value: string } }) => void
+  "aria-describedby"?: string
+  "aria-invalid"?: boolean
 }
 
-const Select = React.forwardRef<HTMLSelectElement, SimpleSelectProps>(
-  ({ options, placeholder, error, className, id, disabled, defaultValue, ...rest }, ref) => {
-    const describedByIds = [
-      rest["aria-describedby"] as string | undefined,
-      error && id ? `${id}-error` : undefined,
-    ].filter(Boolean) as string[]
-    const describedBy = describedByIds.length ? describedByIds.join(" ") : undefined
+function Select({ options, placeholder, error, className, id, disabled, value, onChange, ...rest }: SimpleSelectProps) {
+  const describedByIds = [
+    rest["aria-describedby"],
+    error && id ? `${id}-error` : undefined,
+  ].filter(Boolean) as string[]
+  const describedBy = describedByIds.length ? describedByIds.join(" ") : undefined
 
-    const finalDefaultValue =
-      rest.value === undefined ? defaultValue ?? (placeholder ? "" : undefined) : undefined
-
-    return (
-      <div className="relative w-full">
-        <select
-          ref={ref}
+  return (
+    <div className="w-full">
+      <SelectPrimitive.Root
+        value={value ?? ""}
+        onValueChange={(newValue) => {
+          onChange?.({ target: { value: newValue } })
+        }}
+        disabled={disabled}
+      >
+        <SelectTrigger
           id={id}
-          defaultValue={finalDefaultValue}
           className={cn(
-            "block h-12 w-full appearance-none rounded-xl border border-border bg-background pl-3 pr-10 py-2 text-base shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
+            "h-12 rounded-xl border-border bg-background text-base shadow-sm focus:ring-2 focus:ring-brand-primary",
             disabled && "cursor-not-allowed opacity-50",
-            error && "border-error focus-visible:ring-error",
+            error && "border-error focus:ring-error",
+            (!value || value === "") && "text-stone",
             className
           )}
-          disabled={disabled}
           aria-invalid={error ? true : rest["aria-invalid"]}
           aria-describedby={describedBy}
-          {...rest}
         >
-          {placeholder && (
-            <option value="" disabled>
-              {placeholder}
-            </option>
-          )}
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
           {options.map((option) => (
-            <option key={option.value} value={option.value} disabled={option.disabled}>
+            <SelectItem key={option.value} value={option.value} disabled={option.disabled}>
               {option.label}
-            </option>
+            </SelectItem>
           ))}
-        </select>
-        <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-stone">
-          <ChevronDown className="h-4 w-4" />
-        </span>
-        {error && id && (
-          <p id={`${id}-error`} className="mt-2 text-sm text-destructive" role="alert">
-            {error}
-          </p>
-        )}
-      </div>
-    )
-  }
-)
+        </SelectContent>
+      </SelectPrimitive.Root>
+      {error && id && (
+        <p id={`${id}-error`} className="mt-2 text-sm text-destructive" role="alert">
+          {error}
+        </p>
+      )}
+    </div>
+  )
+}
 Select.displayName = "Select"
 
 // Radix-based Select for more advanced use cases

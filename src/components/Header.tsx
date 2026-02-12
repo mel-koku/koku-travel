@@ -185,9 +185,6 @@ export default function Header() {
     setIsMenuOpen(false);
   }, []);
 
-  // Header is always transparent with blur on dark site
-  const isAtTop = scrollProgress < 0.02 && !isMenuOpen;
-
   const headerSpring = prefersReducedMotion
     ? { duration: 0 }
     : { type: "spring" as const, ...springNavigation };
@@ -195,12 +192,7 @@ export default function Header() {
   return (
     <>
       <motion.header
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-colors duration-300",
-          isAtTop
-            ? "bg-transparent"
-            : "bg-background/80 backdrop-blur-sm border-b border-border/30"
-        )}
+        className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] bg-background/80 backdrop-blur-sm border-b border-border/30"
         initial={{ y: 0, opacity: 1 }}
         animate={{
           y: isVisible || isMenuOpen ? 0 : -100,

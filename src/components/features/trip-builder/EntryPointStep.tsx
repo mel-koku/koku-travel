@@ -308,8 +308,8 @@ function JapanSilhouette({
             fill="none"
             stroke="currentColor"
             strokeWidth="0.8"
-            className="text-border"
-            opacity="0.4"
+            className="text-foreground"
+            opacity="0.15"
           />
         ))}
         {!isLoading &&

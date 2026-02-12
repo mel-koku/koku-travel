@@ -158,33 +158,40 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
           )}
         </div>
 
-        {/* Mode selector */}
-        <div className="relative">
-          <select
-            value={value?.mode ?? "perDay"}
-            onChange={handleModeChange}
-            disabled={!hasDuration}
-            className={cn(
-              "block appearance-none rounded-xl border border-border bg-background pl-4 pr-10 text-base text-foreground shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
-              "h-12",
-              !hasDuration && "cursor-not-allowed bg-surface text-stone opacity-80"
-            )}
-            aria-label="Budget calculation mode"
-          >
-            <option value="perDay">Per Day</option>
-            <option value="total">Total Trip</option>
-          </select>
-          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-stone">
-            <svg
-              className="h-4 w-4"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 20 20"
-              aria-hidden="true"
-            >
-              <path d="M5 7l5 5 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-          </span>
+        {/* Mode toggle */}
+        <div
+          className={cn(
+            "flex h-12 shrink-0 overflow-hidden rounded-xl border border-border",
+            !hasDuration && "cursor-not-allowed opacity-80"
+          )}
+          role="radiogroup"
+          aria-label="Budget calculation mode"
+        >
+          {(["perDay", "total"] as const).map((mode) => {
+            const isActive = (value?.mode ?? "perDay") === mode;
+            return (
+              <button
+                key={mode}
+                type="button"
+                role="radio"
+                aria-checked={isActive}
+                disabled={!hasDuration}
+                onClick={() => {
+                  if (!hasDuration) return;
+                  const syntheticEvent = { target: { value: mode } } as React.ChangeEvent<HTMLSelectElement>;
+                  handleModeChange(syntheticEvent);
+                }}
+                className={cn(
+                  "px-3 text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-brand-primary text-white"
+                    : "bg-background text-foreground-secondary hover:bg-surface"
+                )}
+              >
+                {mode === "perDay" ? "Per Day" : "Total"}
+              </button>
+            );
+          })}
         </div>
       </div>
 

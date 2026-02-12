@@ -51,16 +51,16 @@ export function RegionRow({
       }}
       className={cn(
         "group flex w-full cursor-pointer items-center gap-4 border-b px-4 py-4 text-left transition-colors duration-300 lg:px-5 lg:py-5",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         isSelected
-          ? "border-white/10 bg-brand-primary/5"
-          : "border-white/5 hover:border-white/10",
+          ? "border-border bg-brand-primary/5"
+          : "border-border/50 hover:border-border",
       )}
     >
       {/* Index number */}
       <span className={cn(
         "shrink-0 font-mono text-xs tabular-nums transition-colors duration-300",
-        isSelected || isHovered ? "text-white/60" : "text-white/30",
+        isSelected || isHovered ? "text-foreground-secondary" : "text-stone",
       )}>
         {String(index + 1).padStart(2, "0")}
       </span>
@@ -68,7 +68,7 @@ export function RegionRow({
       {/* Region name */}
       <span className={cn(
         "flex-1 font-serif text-xl italic tracking-tight transition-colors duration-300 sm:text-2xl",
-        isSelected || isHovered ? "text-white" : "text-white/70",
+        isSelected || isHovered ? "text-foreground" : "text-foreground-secondary",
       )}>
         {region.name}
       </span>
@@ -92,7 +92,7 @@ export function RegionRow({
       {/* Match score */}
       <span className={cn(
         "shrink-0 font-mono text-xs tabular-nums transition-colors duration-300",
-        isSelected || isHovered ? "text-white/60" : "text-white/30",
+        isSelected || isHovered ? "text-foreground-secondary" : "text-stone",
       )}>
         {matchScore}%
       </span>
@@ -111,7 +111,7 @@ export function RegionRow({
         ) : (
           <div className={cn(
             "h-6 w-6 rounded-full border transition-colors duration-300",
-            isHovered ? "border-white/30" : "border-white/10",
+            isHovered ? "border-foreground/30" : "border-border",
           )} />
         )}
       </div>

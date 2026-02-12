@@ -39,7 +39,7 @@ export function LayoutWrapper({
   }
 
   return (
-    <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
+    <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false}>
       <QueryProvider>
         <AppStateProvider>
           <ToastProvider>

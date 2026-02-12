@@ -6,6 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  color-scheme: dark;
   /* Dark-dominant palette */
   --background: #1a1714;
   --foreground: #f0e8dc;
@@ -130,6 +131,7 @@
 
 /* Light theme option (original warm palette) */
 [data-theme="light"] {
+  color-scheme: light;
   --background: #faf5ef;
   --foreground: #1f1a14;
   --card: #faf5ef;

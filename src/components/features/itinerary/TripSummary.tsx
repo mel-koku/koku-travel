@@ -12,7 +12,7 @@ export type TripSummaryProps = {
   className?: string;
   /** Start collapsed */
   defaultCollapsed?: boolean;
-  /** Visual variant — "default" for light bg, "dark" for charcoal banner */
+  /** Visual variant — "default" for standard bg, "dark" for elevated surface */
   variant?: "default" | "dark";
 };
 
@@ -63,8 +63,8 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
 
   return (
     <div className={cn(
-      "rounded-lg border backdrop-blur-sm",
-      isDark ? "border-white/10 bg-white/5" : "border-border bg-background/80",
+      "rounded-lg border border-border backdrop-blur-sm",
+      isDark ? "bg-surface/50" : "bg-background/80",
       className,
     )}>
       {/* Header - always visible */}
@@ -73,17 +73,17 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
         onClick={() => setIsExpanded(!isExpanded)}
         className={cn(
           "flex w-full items-center justify-between px-3 py-2 text-left transition",
-          isDark ? "hover:bg-white/10" : "hover:bg-surface/50",
+          isDark ? "hover:bg-surface" : "hover:bg-surface/50",
         )}
       >
         <div className="flex items-center gap-2">
           <svg className="h-4 w-4 text-sage" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
-          <span className={cn("text-sm font-medium", isDark ? "text-white" : "text-foreground")}>Trip Summary</span>
+          <span className="text-sm font-medium text-foreground">Trip Summary</span>
         </div>
         <svg
-          className={cn("h-4 w-4 transition-transform", isDark ? "text-white/50" : "text-stone", isExpanded && "rotate-180")}
+          className={cn("h-4 w-4 text-stone transition-transform", isExpanded && "rotate-180")}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -95,12 +95,12 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
 
       {/* Expandable content */}
       {isExpanded && (
-        <div className={cn("border-t px-3 py-2 space-y-2", isDark ? "border-white/10" : "border-border")}>
+        <div className="border-t border-border px-3 py-2 space-y-2">
           {/* Duration & Dates */}
           {(tripData.duration || formattedDates) && (
             <div className="flex items-center justify-between text-xs">
-              <span className={isDark ? "text-white/50" : "text-stone"}>When</span>
-              <span className={cn("font-mono font-medium", isDark ? "text-white" : "text-foreground")}>
+              <span className="text-stone">When</span>
+              <span className="font-mono font-medium text-foreground">
                 {tripData.duration ? `${tripData.duration} days` : ""}{tripData.duration && formattedDates ? " · " : ""}{formattedDates ?? ""}
               </span>
             </div>
@@ -109,8 +109,8 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
           {/* Entry Point */}
           {tripData.entryPoint && (
             <div className="flex items-center justify-between text-xs">
-              <span className={isDark ? "text-white/50" : "text-stone"}>Entry</span>
-              <span className={cn("font-medium truncate ml-2 max-w-[180px]", isDark ? "text-white" : "text-foreground")}>
+              <span className="text-stone">Entry</span>
+              <span className="font-medium truncate ml-2 max-w-[180px] text-foreground">
                 {tripData.entryPoint.name}
               </span>
             </div>
@@ -119,15 +119,15 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
           {/* Budget */}
           {budgetLabel && (
             <div className="flex items-center justify-between text-xs">
-              <span className={isDark ? "text-white/50" : "text-stone"}>Budget</span>
-              <span className={cn("font-medium", isDark ? "text-white" : "text-foreground")}>{budgetLabel}</span>
+              <span className="text-stone">Budget</span>
+              <span className="font-medium text-foreground">{budgetLabel}</span>
             </div>
           )}
 
           {/* Vibes */}
           {hasVibes && (
             <div className="flex items-start justify-between text-xs">
-              <span className={cn("pt-0.5", isDark ? "text-white/50" : "text-stone")}>Vibes</span>
+              <span className="pt-0.5 text-stone">Vibes</span>
               <div className="flex flex-wrap justify-end gap-1 ml-2">
                 {tripData.vibes?.slice(0, 3).map((vibe) => (
                   <span
@@ -138,7 +138,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
                   </span>
                 ))}
                 {(tripData.vibes?.length ?? 0) > 3 && (
-                  <span className={cn("text-[10px]", isDark ? "text-white/50" : "text-stone")}>+{(tripData.vibes?.length ?? 0) - 3}</span>
+                  <span className="text-[10px] text-stone">+{(tripData.vibes?.length ?? 0) - 3}</span>
                 )}
               </div>
             </div>
@@ -147,7 +147,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
           {/* Regions */}
           {hasRegions && (
             <div className="flex items-start justify-between text-xs">
-              <span className={cn("pt-0.5", isDark ? "text-white/50" : "text-stone")}>Regions</span>
+              <span className="pt-0.5 text-stone">Regions</span>
               <div className="flex flex-wrap justify-end gap-1 ml-2">
                 {tripData.regions?.slice(0, 2).map((region) => (
                   <span
@@ -158,7 +158,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
                   </span>
                 ))}
                 {(tripData.regions?.length ?? 0) > 2 && (
-                  <span className={cn("text-[10px]", isDark ? "text-white/50" : "text-stone")}>+{(tripData.regions?.length ?? 0) - 2}</span>
+                  <span className="text-[10px] text-stone">+{(tripData.regions?.length ?? 0) - 2}</span>
                 )}
               </div>
             </div>

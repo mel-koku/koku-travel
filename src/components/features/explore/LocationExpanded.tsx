@@ -186,7 +186,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             className="flex h-11 w-11 items-center justify-center rounded-xl bg-surface shadow-sm transition-transform hover:scale-105 hover:bg-border/50"
             aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
           >
-            <HeartIcon active={isFavorite} animating={heartAnimating} variant="overlay" />
+            <HeartIcon active={isFavorite} animating={heartAnimating} variant="inline" />
           </button>
           <button
             type="button"

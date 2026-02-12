@@ -82,7 +82,7 @@ export function GuideHeroSpread({ guide }: GuideHeroSpreadProps) {
         </div>
 
         {/* Text half */}
-        <div className="flex items-center bg-charcoal px-4 py-12 sm:px-8 sm:py-16 lg:px-16 lg:py-24">
+        <div className="flex items-center bg-background px-4 py-12 sm:px-8 sm:py-16 lg:px-16 lg:py-24">
           <div className="max-w-lg">
             {/* Eyebrow */}
             <ScrollReveal distance={10} delay={0}>
@@ -94,7 +94,7 @@ export function GuideHeroSpread({ guide }: GuideHeroSpreadProps) {
             {/* Title */}
             <SplitText
               as="h2"
-              className="mt-4 font-serif italic text-3xl leading-snug text-white/90 sm:text-4xl lg:text-5xl"
+              className="mt-4 font-serif italic text-3xl leading-snug text-foreground sm:text-4xl lg:text-5xl"
               splitBy="word"
               animation="clipY"
               staggerDelay={0.04}
@@ -112,7 +112,7 @@ export function GuideHeroSpread({ guide }: GuideHeroSpreadProps) {
 
             {/* CTA */}
             <ScrollReveal distance={10} delay={0.5}>
-              <span className="link-reveal mt-8 inline-block text-sm font-medium text-white">
+              <span className="link-reveal mt-8 inline-block text-sm font-medium text-foreground">
                 Read guide →
               </span>
             </ScrollReveal>
