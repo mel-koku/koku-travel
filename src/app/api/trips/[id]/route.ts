@@ -30,7 +30,7 @@ const recommendationReasonSchema = z.object({
     reasoning: z.string(),
   })).optional(),
   alternativesConsidered: z.array(z.string()).optional(),
-}).passthrough();
+}).strip();
 
 /**
  * Schema for operating window
@@ -107,7 +107,7 @@ const itineraryActivitySchema = z.discriminatedUnion("kind", [
     availabilityStatus: z.enum(["available", "limited", "unavailable", "unknown"]).optional(),
     availabilityMessage: z.string().optional(),
     manualStartTime: z.string().optional(),
-  }).passthrough(),
+  }).strip(),
   z.object({
     kind: z.literal("note"),
     id: z.string(),
@@ -116,7 +116,7 @@ const itineraryActivitySchema = z.discriminatedUnion("kind", [
     notes: z.string().max(5000),
     startTime: z.string().optional(),
     endTime: z.string().optional(),
-  }).passthrough(),
+  }).strip(),
 ]);
 
 /**
@@ -143,7 +143,7 @@ const itineraryDaySchema = z.object({
   isDayTrip: z.boolean().optional(),
   baseCityId: z.string().optional(),
   dayTripTravelMinutes: z.number().optional(),
-}).passthrough();
+}).strip();
 
 /**
  * Schema for itinerary
@@ -151,7 +151,7 @@ const itineraryDaySchema = z.object({
 const itinerarySchema = z.object({
   days: z.array(itineraryDaySchema).max(30),
   timezone: z.string().optional(),
-}).passthrough();
+}).strip();
 
 /**
  * Schema for updating a trip (partial update)
@@ -159,8 +159,9 @@ const itinerarySchema = z.object({
 const updateTripSchema = z.object({
   name: z.string().min(1).max(500).optional(),
   itinerary: itinerarySchema.optional(),
-  builderData: tripBuilderDataSchema.partial().passthrough().optional(),
-});
+  builderData: tripBuilderDataSchema.partial().strip().optional(),
+  updatedAt: z.string().optional(),
+}).strip();
 
 type RouteParams = {
   params: Promise<{ id: string }>;
@@ -347,6 +348,17 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    // Optimistic locking: reject if client's snapshot is stale
+    if (updates.updatedAt && existingResult.data.updatedAt !== updates.updatedAt) {
+      return addRequestContextHeaders(
+        NextResponse.json(
+          { error: "Trip modified since last load", code: "CONFLICT" },
+          { status: 409 },
+        ),
+        finalContext,
+      );
+    }
+
     // Merge updates with existing trip
     const updatedTrip: StoredTrip = {
       ...existingResult.data,
@@ -356,16 +368,24 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       updatedAt: new Date().toISOString(),
     };
 
-    // Validate itinerary data integrity (async, non-blocking)
+    // Validate itinerary data integrity — block on errors, allow warnings through
     if (updatedTrip.itinerary) {
       const validationResult = await validateItineraryWithDatabase(supabase, updatedTrip.itinerary);
-      if (!validationResult.valid) {
-        logger.warn("Itinerary validation errors detected", {
+      if (validationResult.summary.errorCount > 0) {
+        const errors = validationResult.issues.filter((i) => i.severity === "error");
+        logger.warn("Itinerary validation errors — blocking save", {
           requestId: finalContext.requestId,
           tripId,
           errorCount: validationResult.summary.errorCount,
-          errors: validationResult.issues.filter((i) => i.severity === "error"),
+          errors,
         });
+        return addRequestContextHeaders(
+          badRequest("Itinerary has validation errors", {
+            errors,
+            errorCount: validationResult.summary.errorCount,
+          }, { requestId: finalContext.requestId }),
+          finalContext,
+        );
       }
       if (validationResult.summary.warningCount > 0) {
         logger.info("Itinerary validation warnings", {

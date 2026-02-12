@@ -1,7 +1,10 @@
+import crypto from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
+import { checkRateLimit } from "@/lib/api/rateLimit";
+import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
 
 const WEBHOOK_SECRET = process.env.SANITY_REVALIDATE_SECRET;
 
@@ -29,26 +32,42 @@ type SanityWebhookBody = {
 };
 
 export async function POST(request: NextRequest) {
-  // Validate webhook secret
+  const context = createRequestContext(request);
+
+  // Rate limit: 30 req/min — Sanity publishes infrequently; protects against replay
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60_000 });
+  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
+
+  // Validate webhook secret using timing-safe comparison to prevent timing attacks
   const secret = request.headers.get("sanity-webhook-secret");
-  if (!WEBHOOK_SECRET || secret !== WEBHOOK_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const secretBuf = Buffer.from(secret ?? "", "utf8");
+  const expectedBuf = Buffer.from(WEBHOOK_SECRET ?? "", "utf8");
+  if (secretBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(secretBuf, expectedBuf)) {
+    return addRequestContextHeaders(
+      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
+      context,
+    );
   }
 
   const body = (await request.json()) as SanityWebhookBody;
 
+  let response: NextResponse;
   switch (body._type) {
     case "guide":
-      return handleGuide(body);
+      response = await handleGuide(body);
+      break;
     case "experience":
-      return handleExperience(body);
+      response = await handleExperience(body);
+      break;
     case "landingPage":
     case "siteSettings":
-      return handleSingletonRevalidation(body._type, ["/"]);
+      response = await handleSingletonRevalidation(body._type, ["/"]);
+      break;
     case "tripBuilderConfig":
-      return handleSingletonRevalidation(body._type, ["/trip-builder"]);
+      response = await handleSingletonRevalidation(body._type, ["/trip-builder"]);
+      break;
     case "pagesContent":
-      return handleSingletonRevalidation(body._type, [
+      response = await handleSingletonRevalidation(body._type, [
         "/explore",
         "/guides",
         "/guides/authors",
@@ -57,9 +76,12 @@ export async function POST(request: NextRequest) {
         "/account",
         "/itinerary",
       ]);
+      break;
     default:
-      return NextResponse.json({ skipped: true, reason: `Unknown type: ${body._type}` });
+      response = NextResponse.json({ skipped: true, reason: `Unknown type: ${body._type}` });
   }
+
+  return addRequestContextHeaders(response, context);
 }
 
 // ── Guide handler (unchanged logic) ────────────────────────

@@ -5,6 +5,7 @@ import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
   createRequestContext,
   addRequestContextHeaders,
+  requireJsonContentType,
 } from "@/lib/api/middleware";
 import { planItinerary } from "@/lib/itineraryPlanner";
 import type { Itinerary } from "@/types/itinerary";
@@ -57,6 +58,9 @@ export async function POST(request: NextRequest) {
   if (rateLimitResponse) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
+
+  const contentTypeError = requireJsonContentType(request, context);
+  if (contentTypeError) return contentTypeError;
 
   try {
     const body = (await request.json()) as ScheduleItineraryRequest;

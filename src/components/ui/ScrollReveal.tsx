@@ -43,7 +43,7 @@ export function ScrollReveal({
   const isInView = useInView(ref, { once, margin: margin as `${number}px` });
 
   if (prefersReducedMotion) {
-    return <div className={className}>{children}</div>;
+    return <motion.div ref={ref} className={className}>{children}</motion.div>;
   }
 
   const dir = directionMap[direction];

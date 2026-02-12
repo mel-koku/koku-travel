@@ -142,8 +142,10 @@ const isoDateSchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in ISO format (YYYY-MM-DD)")
   .refine((val) => {
-    const date = new Date(val);
-    return !Number.isNaN(date.getTime()) && val === date.toISOString().split("T")[0];
+    // Validate date components directly to avoid timezone-dependent Date parsing
+    const [y, m, d] = val.split("-").map(Number);
+    return y !== undefined && m !== undefined && d !== undefined &&
+      y >= 2020 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31;
   }, "Invalid date")
   .optional();
 

@@ -13,6 +13,8 @@ import {
   type LocationDbRow,
   type LocationListingDbRow,
 } from "@/lib/supabase/projections";
+import { assertLocationDbRow, assertLocationDbRows } from "@/lib/supabase/assertDbRow";
+import { logger } from "@/lib/logger";
 
 /**
  * Fetches the total count of explorable locations in the database
@@ -111,9 +113,11 @@ export async function fetchLocationById(id: string): Promise<Location | null> {
     .single();
 
   if (error || !data) {
+    if (error) logger.error("[fetchLocationById] Supabase query failed", { error: error.message, code: error.code, id });
     return null;
   }
 
+  assertLocationDbRow(data, "fetchLocationById");
   return transformDbRowToLocation(data as unknown as LocationDbRow);
 }
 
@@ -136,9 +140,11 @@ export async function fetchLocationsByIds(ids: string[]): Promise<Location[]> {
     .in("id", ids);
 
   if (error || !data) {
+    if (error) logger.error("[fetchLocationsByIds] Supabase query failed", { error: error.message, code: error.code });
     return [];
   }
 
+  assertLocationDbRows(data, "fetchLocationsByIds");
   return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
 }
 
@@ -159,9 +165,11 @@ export async function fetchLocationByName(name: string): Promise<Location | null
     .single();
 
   if (error || !data) {
+    if (error) logger.error("[fetchLocationByName] Supabase query failed", { error: error.message, code: error.code, name });
     return null;
   }
 
+  assertLocationDbRow(data, "fetchLocationByName");
   return transformDbRowToLocation(data as unknown as LocationDbRow);
 }
 
@@ -187,9 +195,11 @@ export async function fetchLocationsByNames(names: string[]): Promise<Location[]
     .or(nameFilters);
 
   if (error || !data) {
+    if (error) logger.error("[fetchLocationsByNames] Supabase query failed", { error: error.message, code: error.code });
     return [];
   }
 
+  assertLocationDbRows(data, "fetchLocationsByNames");
   return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
 }
 
@@ -239,9 +249,11 @@ export async function fetchLocationsByCity(
   const { data, error } = await query.limit(limit);
 
   if (error || !data) {
+    if (error) logger.error("[fetchLocationsByCity] Supabase query failed", { error: error.message, code: error.code, city });
     return [];
   }
 
+  assertLocationDbRows(data, "fetchLocationsByCity");
   return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
 }
 
@@ -301,9 +313,11 @@ export async function fetchLocationsByCategories(
   const { data, error } = await query.limit(limit);
 
   if (error || !data) {
+    if (error) logger.error("[fetchLocationsByCategories] Supabase query failed", { error: error.message, code: error.code, categories });
     return [];
   }
 
+  assertLocationDbRows(data, "fetchLocationsByCategories");
   return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
 }
 
@@ -326,9 +340,11 @@ export async function fetchLocationsByIdsForListing(ids: string[]): Promise<Loca
     .in("id", ids);
 
   if (error || !data) {
+    if (error) logger.error("[fetchLocationsByIdsForListing] Supabase query failed", { error: error.message, code: error.code });
     return [];
   }
 
+  assertLocationDbRows(data, "fetchLocationsByIdsForListing");
   return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
 }
 
@@ -373,9 +389,11 @@ export async function fetchTopRatedLocations(
     .limit(limit);
 
   if (error || !data) {
+    if (error) logger.error("[fetchTopRatedLocations] Supabase query failed", { error: error.message, code: error.code });
     return [];
   }
 
+  assertLocationDbRows(data, "fetchTopRatedLocations");
   return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
 }
 
@@ -455,6 +473,7 @@ export async function fetchAllLocations(
     throw new Error("No locations found in database. Please ensure locations are seeded.");
   }
 
+  assertLocationDbRows(firstPage, "fetchAllLocations");
   const allLocations: Location[] = (firstPage as unknown as LocationDbRow[]).map(transformDbRowToLocation);
 
   // If first page was full, fetch remaining pages in parallel
@@ -482,6 +501,7 @@ export async function fetchAllLocations(
           if (error || !data || data.length === 0) {
             return [];
           }
+          assertLocationDbRows(data, "fetchAllLocations.page");
           return (data as unknown as LocationDbRow[]).map(transformDbRowToLocation);
         })(),
       );

@@ -35,7 +35,7 @@ function createActivityFromLocation(location: Location): ItineraryActivity {
     title: location.name,
     timeOfDay: "morning",
     durationMin: durationMinutes,
-    neighborhood: location.city,
+    neighborhood: location.neighborhood ?? location.city,
     tags,
     notes: location.shortDescription?.trim() || undefined,
     locationId: location.id,

@@ -21,6 +21,7 @@ import { WhatsNextCard } from "./WhatsNextCard";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
 import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { logger } from "@/lib/logger";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
 import {
   useReplacementCandidates,
@@ -294,14 +295,18 @@ export const ItineraryShell = ({
   const planTimeoutRef = useRef<number | null>(null);
   const planWatchdogRef = useRef<number | null>(null);
   const pendingPlanRef = useRef<Itinerary | null>(null);
+  // Counter to detect stale planning results (incremented on each new request)
   const planningRequestRef = useRef(0);
   const isMountedRef = useRef(true);
+  // AbortController for in-flight fetch requests — aborted on unmount or superseded
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     // Reset to true on mount (handles React Strict Mode double-mounting)
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
+      abortControllerRef.current?.abort();
       if (planTimeoutRef.current) {
         clearTimeout(planTimeoutRef.current);
         planTimeoutRef.current = null;
@@ -380,16 +385,21 @@ export const ItineraryShell = ({
           ? { defaultDayStart: tripBuilderData.dayStartTime }
           : undefined;
 
-        planItineraryClient(target, plannerOptions, dayEntryPointsMap)
+        // Abort any in-flight request before starting a new one
+        abortControllerRef.current?.abort();
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
+        planItineraryClient(target, plannerOptions, dayEntryPointsMap, controller.signal)
           .then((planned) => {
-            if (planningRequestRef.current !== runId || !isMountedRef.current) {
+            if (controller.signal.aborted || planningRequestRef.current !== runId || !isMountedRef.current) {
               return;
             }
             skipNextPlanRef.current = true;
             setModelState(planned);
           })
           .catch((error: unknown) => {
-            if (planningRequestRef.current !== runId || !isMountedRef.current) {
+            if (controller.signal.aborted || planningRequestRef.current !== runId || !isMountedRef.current) {
               return;
             }
             logger.error("Failed to plan itinerary after user change", error);
@@ -484,10 +494,14 @@ export const ItineraryShell = ({
       ? { defaultDayStart: tripBuilderData.dayStartTime }
       : undefined;
 
-    planItineraryClient(nextNormalized, initialPlannerOptions, dayEntryPointsMap)
+    // Abort any in-flight request before starting a new one
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    planItineraryClient(nextNormalized, initialPlannerOptions, dayEntryPointsMap, controller.signal)
       .then((planned) => {
-        // Always apply the result if component is mounted - newer results will overwrite older ones
-        if (!isMountedRef.current) {
+        if (controller.signal.aborted || !isMountedRef.current) {
           return;
         }
         skipSyncRef.current = true;
@@ -497,7 +511,7 @@ export const ItineraryShell = ({
         setSelectedActivityId(null);
       })
       .catch((error: unknown) => {
-        if (!isMountedRef.current) {
+        if (controller.signal.aborted || !isMountedRef.current) {
           return;
         }
         logger.error("Failed to plan itinerary", error);
@@ -518,6 +532,7 @@ export const ItineraryShell = ({
 
     return () => {
       cancelled = true;
+      controller.abort();
       if (planWatchdogRef.current) {
         clearTimeout(planWatchdogRef.current);
         planWatchdogRef.current = null;
@@ -581,7 +596,15 @@ export const ItineraryShell = ({
   // an explicit user action (map pin click, card click).
   const suppressObserverRef = useRef(false);
 
-  // Scroll-linked map panning: observe activity cards in the timeline
+  // Keep selectedActivityId in a ref so the IntersectionObserver callback can read it
+  // without causing the effect to re-run (which would destroy/recreate the observer).
+  const selectedActivityIdRef = useRef(selectedActivityId);
+  useEffect(() => {
+    selectedActivityIdRef.current = selectedActivityId;
+  }, [selectedActivityId]);
+
+  // Scroll-linked map panning: observe activity cards in the timeline.
+  // Only re-runs when the day changes — callback reads selectedActivityId from ref.
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
 
@@ -604,7 +627,7 @@ export const ItineraryShell = ({
         }
         if (bestEntry?.target) {
           const activityId = (bestEntry.target as HTMLElement).dataset.activityId;
-          if (activityId && activityId !== selectedActivityId) {
+          if (activityId && activityId !== selectedActivityIdRef.current) {
             setSelectedActivityId(activityId);
           }
         }
@@ -619,7 +642,7 @@ export const ItineraryShell = ({
     activityCards.forEach((card) => observer.observe(card));
 
     return () => observer.disconnect();
-  }, [selectedActivityId, safeSelectedDay]);
+  }, [safeSelectedDay]);
 
   const handleSelectDayChange = useCallback((dayIndex: number) => {
     // Show brief city interstitial on day change
@@ -739,17 +762,19 @@ export const ItineraryShell = ({
           }}
           className="relative overflow-hidden"
         >
-          <ItineraryMapPanel
-            day={safeSelectedDay}
-            activities={currentDay?.activities ?? []}
-            selectedActivityId={selectedActivityId}
-            onSelectActivity={handleSelectActivity}
-            isPlanning={isPlanning}
-            startPoint={currentDayEntryPoints?.startPoint}
-            endPoint={currentDayEntryPoints?.endPoint}
-            tripStartDate={tripStartDate}
-            dayLabel={currentDay?.dateLabel}
-          />
+          <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
+            <ItineraryMapPanel
+              day={safeSelectedDay}
+              activities={currentDay?.activities ?? []}
+              selectedActivityId={selectedActivityId}
+              onSelectActivity={handleSelectActivity}
+              isPlanning={isPlanning}
+              startPoint={currentDayEntryPoints?.startPoint}
+              endPoint={currentDayEntryPoints?.endPoint}
+              tripStartDate={tripStartDate}
+              dayLabel={currentDay?.dateLabel}
+            />
+          </ErrorBoundary>
 
           {/* Tap-to-expand overlay (when collapsed) */}
           {!mapExpanded && (
@@ -825,27 +850,29 @@ export const ItineraryShell = ({
 
             {/* Timeline */}
             {currentDay ? (
-              <ItineraryTimeline
-                day={currentDay}
-                dayIndex={safeSelectedDay}
-                model={model}
-                setModel={applyModelUpdate}
-                selectedActivityId={selectedActivityId}
-                onSelectActivity={handleSelectActivity}
-                tripStartDate={tripStartDate}
-                tripId={tripId && !isUsingMock ? tripId : undefined}
-                onReorder={handleReorder}
-                onReplace={tripId && !isUsingMock ? handleReplace : undefined}
-                tripBuilderData={tripBuilderData}
-                suggestions={currentDaySuggestions}
-                onAcceptSuggestion={handleAcceptSuggestion}
-                onSkipSuggestion={onSkipSuggestion}
-                loadingSuggestionId={loadingSuggestionId}
-                conflicts={currentDayConflicts}
-                conflictsResult={conflictsResult}
-                guide={currentDayGuide}
-                onBeforeDragReorder={() => { skipAutoOptimizeRef.current = true; }}
-              />
+              <ErrorBoundary>
+                <ItineraryTimeline
+                  day={currentDay}
+                  dayIndex={safeSelectedDay}
+                  model={model}
+                  setModel={applyModelUpdate}
+                  selectedActivityId={selectedActivityId}
+                  onSelectActivity={handleSelectActivity}
+                  tripStartDate={tripStartDate}
+                  tripId={tripId && !isUsingMock ? tripId : undefined}
+                  onReorder={handleReorder}
+                  onReplace={tripId && !isUsingMock ? handleReplace : undefined}
+                  tripBuilderData={tripBuilderData}
+                  suggestions={currentDaySuggestions}
+                  onAcceptSuggestion={handleAcceptSuggestion}
+                  onSkipSuggestion={onSkipSuggestion}
+                  loadingSuggestionId={loadingSuggestionId}
+                  conflicts={currentDayConflicts}
+                  conflictsResult={conflictsResult}
+                  guide={currentDayGuide}
+                  onBeforeDragReorder={() => { skipAutoOptimizeRef.current = true; }}
+                />
+              </ErrorBoundary>
             ) : (
               <p className="text-sm text-stone">
                 This day couldn&apos;t be loaded. Try selecting another.
@@ -882,17 +909,19 @@ export const ItineraryShell = ({
         {/* Right: Sticky Map — desktop only (50%) */}
         <div className="hidden lg:sticky lg:top-[80px] lg:block lg:h-[calc(100dvh-96px)] lg:w-1/2">
           <div className="h-full lg:rounded-2xl lg:overflow-hidden lg:border lg:border-border">
-            <ItineraryMapPanel
-              day={safeSelectedDay}
-              activities={currentDay?.activities ?? []}
-              selectedActivityId={selectedActivityId}
-              onSelectActivity={handleSelectActivity}
-              isPlanning={isPlanning}
-              startPoint={currentDayEntryPoints?.startPoint}
-              endPoint={currentDayEntryPoints?.endPoint}
-              tripStartDate={tripStartDate}
-              dayLabel={currentDay?.dateLabel}
-            />
+            <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
+              <ItineraryMapPanel
+                day={safeSelectedDay}
+                activities={currentDay?.activities ?? []}
+                selectedActivityId={selectedActivityId}
+                onSelectActivity={handleSelectActivity}
+                isPlanning={isPlanning}
+                startPoint={currentDayEntryPoints?.startPoint}
+                endPoint={currentDayEntryPoints?.endPoint}
+                tripStartDate={tripStartDate}
+                dayLabel={currentDay?.dateLabel}
+              />
+            </ErrorBoundary>
           </div>
         </div>
       </div>

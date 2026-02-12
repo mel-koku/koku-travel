@@ -4,6 +4,7 @@ import { findLocationsForActivities } from "@/lib/itineraryLocations";
 import type { ItineraryActivity } from "@/types/itinerary";
 import { badRequest, internalError } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { createRequestContext, addRequestContextHeaders, requireJsonContentType } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 
 /**
@@ -11,12 +12,17 @@ import { logger } from "@/lib/logger";
  * Check availability for one or more itinerary activities
  */
 export async function POST(request: NextRequest) {
+  const context = createRequestContext(request);
+
   // Apply rate limiting: 60 requests per minute
   const rateLimitResponse = await checkRateLimit(request, {
     maxRequests: 60,
     windowMs: 60 * 1000,
   });
-  if (rateLimitResponse) return rateLimitResponse;
+  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
+
+  const contentTypeError = requireJsonContentType(request, context);
+  if (contentTypeError) return contentTypeError;
 
   try {
     const body = await request.json();
@@ -77,10 +83,13 @@ export async function POST(request: NextRequest) {
       }),
     );
 
-    return NextResponse.json({ results: availabilityResults });
+    return addRequestContextHeaders(
+      NextResponse.json({ results: availabilityResults }),
+      context,
+    );
   } catch (error) {
     logger.error("Error checking availability", error instanceof Error ? error : new Error(String(error)));
-    return internalError("Failed to check availability");
+    return addRequestContextHeaders(internalError("Failed to check availability"), context);
   }
 }
 

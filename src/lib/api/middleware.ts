@@ -134,6 +134,9 @@ export function getClientIp(request: NextRequest): string {
   }
 
   // Fallback for development/local environments or untrusted headers
+  logger.warn("IP extraction returned 'unknown' — rate limits will be tightened for this request", {
+    path: request.nextUrl.pathname,
+  });
   return "unknown";
 }
 
@@ -342,6 +345,25 @@ export function handleCorsPreflightRequest(request: NextRequest): NextResponse {
 
   const response = new NextResponse(null, { status: 204 });
   return addCorsHeaders(response, request);
+}
+
+/**
+ * Validates that a POST/PUT/PATCH request has a JSON Content-Type header.
+ * Returns a 400 response if the Content-Type is missing or not JSON.
+ * Should be called early in POST handlers that expect JSON bodies.
+ */
+export function requireJsonContentType(
+  request: NextRequest,
+  context?: RequestContext,
+): NextResponse | null {
+  const contentType = request.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    return NextResponse.json(
+      { error: "Content-Type must be application/json" },
+      { status: 400, headers: context ? { "X-Request-ID": context.requestId } : undefined },
+    );
+  }
+  return null;
 }
 
 /**

@@ -9,6 +9,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
   getOptionalAuth,
+  requireJsonContentType,
 } from "@/lib/api/middleware";
 import { badRequest, internalError } from "@/lib/api/errors";
 
@@ -43,6 +44,9 @@ export async function POST(request: NextRequest) {
   if (rateLimitResponse) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
+
+  const contentTypeError = requireJsonContentType(request, context);
+  if (contentTypeError) return contentTypeError;
 
   // Optional authentication (for future user-specific features)
   const authResult = await getOptionalAuth(request, context);

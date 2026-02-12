@@ -11,8 +11,13 @@ type WishlistContextType = {
 
 const WishlistContext = createContext<WishlistContextType>({
   wishlist: [],
-  toggleWishlist: () => {},
-  isInWishlist: () => false,
+  toggleWishlist: () => {
+    if (process.env.NODE_ENV !== "production") throw new Error("useWishlist must be used within WishlistProvider");
+  },
+  isInWishlist: () => {
+    if (process.env.NODE_ENV !== "production") throw new Error("useWishlist must be used within WishlistProvider");
+    return false;
+  },
 });
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
