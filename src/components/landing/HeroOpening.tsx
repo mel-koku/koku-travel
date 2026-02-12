@@ -249,7 +249,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           </motion.p>
 
           {/* Giant "KOKU" */}
-          <div className="overflow-hidden px-[4vw] pb-[3vw]">
+          <div className="overflow-hidden pl-[4vw] pr-[8vw] pb-[3vw]">
             <motion.h1
               initial={{ y: "125%" }}
               animate={mounted ? { y: "0%" } : { y: "125%" }}
