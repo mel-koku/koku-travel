@@ -167,7 +167,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder={sanityConfig?.entryPointSearchPlaceholder ?? "Search by name, city, or code..."}
-                  className="h-10 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                  className="h-10 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
                 {searchQuery && (
                   <button

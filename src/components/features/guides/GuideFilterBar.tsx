@@ -26,7 +26,7 @@ export function GuideFilterBar({
     <div className="sticky top-20 z-40 bg-background/95 backdrop-blur-xl border-b border-border/50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div
-          className="overflow-x-auto scrollbar-hide py-3"
+          className="overflow-x-auto scrollbar-hide overscroll-contain py-3"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           <div className="flex gap-1 sm:gap-2 min-w-max">

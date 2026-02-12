@@ -470,7 +470,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
   const activeCategory = selectedCategories.length === 1 ? selectedCategories[0]! : null;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       {/* Typographic Intro — always renders immediately for entrance animation */}
       <ExploreIntro totalCount={total} content={content} />
 

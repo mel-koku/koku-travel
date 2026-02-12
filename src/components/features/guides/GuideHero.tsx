@@ -80,7 +80,7 @@ export function GuideHero({
   );
 
   const titleContent = (
-    <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-20 sm:px-8">
+    <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-12 sm:pb-20 sm:px-8">
       <div className="mx-auto w-full max-w-5xl">
         <h1 className="font-serif text-3xl italic leading-[1.05] tracking-display text-white sm:text-4xl lg:text-5xl">
           {title}
@@ -94,7 +94,7 @@ export function GuideHero({
 
   if (prefersReducedMotion) {
     return (
-      <section className="relative -mt-20 h-screen w-full overflow-hidden">
+      <section className="relative -mt-20 h-[100dvh] w-full overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src={featuredImage}
@@ -117,7 +117,7 @@ export function GuideHero({
       className="relative -mt-20 h-[120vh] w-full sm:h-[150vh]"
     >
       {/* Sticky viewport */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden">
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
         {/* Image with subtle scale */}
         <motion.div className="absolute inset-0" style={{ scale: imageScale }}>
           <Image

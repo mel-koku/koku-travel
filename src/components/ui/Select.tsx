@@ -17,7 +17,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      "flex h-9 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background data-[placeholder]:text-stone focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+      "flex h-12 w-full items-center justify-between whitespace-nowrap rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm ring-offset-background data-[placeholder]:text-stone focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
       className
     )}
     {...props}
@@ -174,7 +174,7 @@ const Select = React.forwardRef<HTMLSelectElement, SimpleSelectProps>(
           id={id}
           defaultValue={finalDefaultValue}
           className={cn(
-            "block h-10 w-full appearance-none rounded-xl border border-border bg-background pl-3 pr-10 py-2 text-sm shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
+            "block h-12 w-full appearance-none rounded-xl border border-border bg-background pl-3 pr-10 py-2 text-base shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary",
             disabled && "cursor-not-allowed opacity-50",
             error && "border-error focus-visible:ring-error",
             className

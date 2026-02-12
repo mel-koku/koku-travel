@@ -135,8 +135,8 @@ export const DaySelector = ({
         onChange={handleChange}
         className={
           isDark
-            ? "w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-3 py-2 pr-10 text-sm font-medium text-white shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
-            : "w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-10 text-sm font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+            ? "w-full appearance-none rounded-lg border border-white/10 bg-white/5 px-3 py-2 pr-10 text-base font-medium text-white shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
+            : "w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-10 text-base font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
         }
         aria-label="Select day"
       >

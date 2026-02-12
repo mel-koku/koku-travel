@@ -81,7 +81,7 @@ export function SmartPromptsDrawer({
                   e.stopPropagation();
                   handleDismiss();
                 }}
-                className="rounded-full p-1 text-stone hover:bg-surface"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-stone hover:bg-surface"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -95,7 +95,7 @@ export function SmartPromptsDrawer({
 
           {/* Content */}
           {isExpanded && (
-            <div className="max-h-[60vh] overflow-y-auto px-4 pb-4">
+            <div className="max-h-[60vh] overflow-y-auto px-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
               <div className="flex flex-col gap-3">
                 {gaps.map((gap) => (
                   <SmartPromptCard
@@ -134,7 +134,7 @@ export function SmartPromptsDrawer({
           <button
             type="button"
             onClick={handleDismiss}
-            className="rounded-full p-1 text-stone hover:bg-surface"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-stone hover:bg-surface"
           >
             <X className="h-4 w-4" />
           </button>

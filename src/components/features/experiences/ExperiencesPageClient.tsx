@@ -80,11 +80,11 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
       {/* Filter Bar */}
       {filterTypes.length > 1 && (
         <div className="sticky top-20 z-40 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto overscroll-contain px-4 py-3 sm:px-6 lg:px-8">
             <button
               type="button"
               onClick={() => setSelectedType(null)}
-              className={`shrink-0 rounded-xl px-3 py-1.5 font-mono text-xs uppercase tracking-wide transition-colors ${
+              className={`shrink-0 rounded-xl px-3 py-2.5 font-mono text-xs uppercase tracking-wide transition-colors ${
                 selectedType === null
                   ? "bg-foreground text-background"
                   : "text-stone hover:text-foreground"
@@ -101,7 +101,7 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
                     selectedType === type.value ? null : type.value
                   )
                 }
-                className={`shrink-0 rounded-xl px-3 py-1.5 font-mono text-xs uppercase tracking-wide transition-colors ${
+                className={`shrink-0 rounded-xl px-3 py-2.5 font-mono text-xs uppercase tracking-wide transition-colors ${
                   selectedType === type.value
                     ? "bg-foreground text-background"
                     : "text-stone hover:text-foreground"

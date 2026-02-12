@@ -78,15 +78,14 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
 
   return (
     <>
-      {/* Tall outer container — the user scrolls through this height
-          while the gallery stays pinned and slides horizontally */}
-      <section ref={containerRef} className="relative h-[250vh] bg-background">
+      {/* Desktop: Scroll-pinned horizontal gallery */}
+      <section ref={containerRef} className="relative hidden h-[250vh] bg-background lg:block">
         {/* Sticky viewport — stays visible while user scrolls the 250vh */}
         <div className="sticky top-0 flex h-[100dvh] flex-col justify-center overflow-hidden py-12">
           {/* Gallery row */}
           <motion.div
             ref={galleryRef}
-            className="flex gap-6 px-6"
+            className="flex gap-6 px-6 overscroll-contain"
             style={prefersReducedMotion ? {} : { x: xTranslate }}
           >
             {/* Intro text card */}
@@ -142,6 +141,46 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
               />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Mobile: Simple horizontal scroll gallery */}
+      <section className="bg-background py-12 sm:py-20 lg:hidden">
+        <div className="px-6">
+          <p className="eyebrow-editorial text-brand-primary">
+            {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
+          </p>
+          <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
+            {content?.featuredLocationsHeading ?? "Places that stay with you"}
+          </h2>
+          <p className="mt-2 font-mono text-sm text-foreground-secondary">
+            3,907+ places
+          </p>
+          <p className="mt-4 max-w-md text-base text-foreground-secondary">
+            {content?.featuredLocationsDescription ?? "Handpicked locations that represent the best of Japan \u2014 from hidden shrines to neighborhood favorites."}
+          </p>
+        </div>
+
+        <div className="mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-contain px-6 pb-4 scrollbar-hide">
+          {locations.slice(0, 8).map((location) => (
+            <div key={location.id} className="w-[280px] flex-shrink-0 snap-start sm:w-[320px]">
+              <HorizontalLocationCard
+                location={location}
+                onSelect={setSelectedLocation}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 px-6">
+          <div className="h-px w-8 bg-brand-primary/60 mb-4" />
+          <Link
+            href="/explore"
+            className="link-reveal inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
+          >
+            Explore all
+            <ArrowRightIcon />
+          </Link>
         </div>
       </section>
 

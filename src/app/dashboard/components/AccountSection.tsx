@@ -63,7 +63,7 @@ export function AccountSection({
           <label className="text-sm text-foreground-secondary block">
             Display name
             <input
-              className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
               value={displayName}
               onChange={(e) => onNameChange(e.target.value)}
             />
@@ -147,7 +147,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
           type="email"
           required
           disabled={supabaseUnavailable}
-          className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
           placeholder="name@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
