@@ -27,7 +27,7 @@ export function RegionSummaryPill({
               duration: 0.4,
               ease: [...easeCinematic] as [number, number, number, number],
             }}
-            className="whitespace-nowrap rounded-full border border-border bg-foreground/10 px-6 py-3 text-sm backdrop-blur-xl"
+            className="whitespace-nowrap rounded-full border border-border bg-background/90 px-6 py-3 text-sm shadow-lg backdrop-blur-xl"
           >
             <span className="font-medium text-foreground">
               {selectedCount} {selectedCount === 1 ? "region" : "regions"}
