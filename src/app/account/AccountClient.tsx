@@ -175,7 +175,7 @@ export function AccountClient({ content }: AccountClientProps) {
                 {signedIn && supabase && (
                   <button
                     onClick={() => supabase.auth.signOut()}
-                    className="h-10 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface hover:text-foreground transition"
+                    className="h-12 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface hover:text-foreground transition"
                   >
                     {content?.accountSignOutText ?? "Sign out"}
                   </button>
@@ -265,7 +265,7 @@ function EmailForm({ content }: { content?: PagesContent }) {
         type="email"
         required
         disabled={supabaseUnavailable}
-        className="mt-1 w-full h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+        className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
         placeholder={content?.accountEmailPlaceholder ?? "name@example.com"}
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -274,7 +274,7 @@ function EmailForm({ content }: { content?: PagesContent }) {
     <button
       type="submit"
       disabled={supabaseUnavailable}
-      className="h-10 rounded-xl bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90 transition"
+      className="h-12 rounded-xl bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90 transition"
     >
       {content?.accountSendLinkText ?? "Send sign-in link"}
     </button>

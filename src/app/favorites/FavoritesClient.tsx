@@ -21,7 +21,7 @@ export function FavoritesClient({ content }: FavoritesClientProps) {
       : content?.favoritesSubtitleEmpty ?? "Bookmark the places that catch your eye.";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       <PageHeader
         eyebrow={content?.favoritesEyebrow ?? "Saved"}
         title={content?.favoritesTitle ?? "Favorites"}

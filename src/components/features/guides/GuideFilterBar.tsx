@@ -33,7 +33,7 @@ export function GuideFilterBar({
             <button
               onClick={() => onTypeChange(null)}
               className={cn(
-                "px-3 py-2.5 text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
+                "px-3 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
                 selectedType === null
                   ? "border-brand-primary text-foreground"
                   : "border-transparent text-stone hover:text-foreground"
@@ -50,7 +50,7 @@ export function GuideFilterBar({
                   onTypeChange(selectedType === type.value ? null : type.value)
                 }
                 className={cn(
-                  "px-3 py-2.5 text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
+                  "px-3 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
                   selectedType === type.value
                     ? "border-brand-primary text-foreground"
                     : "border-transparent text-stone hover:text-foreground"

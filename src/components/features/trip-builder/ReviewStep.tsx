@@ -311,7 +311,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             optional
             info={sanityConfig?.reviewAccessTooltip ?? "We'll only suggest places that work for you."}
           >
-            <label className="flex cursor-pointer items-center gap-2">
+            <label className="flex min-h-[44px] cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
@@ -335,7 +335,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
                     <input
                       type="checkbox"
                       value={option.id}
-                      className="h-3.5 w-3.5 rounded border-border text-brand-primary focus:ring-brand-primary"
+                      className="h-4 w-4 rounded border-border text-brand-primary focus:ring-brand-primary"
                       {...register("dietary")}
                     />
                     <span className="text-xs text-foreground-secondary">{option.label}</span>
