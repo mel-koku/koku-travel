@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { cn } from "@/lib/cn";
+import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { ExperienceCard } from "./ExperienceCard";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
@@ -61,55 +63,75 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
 
   return (
     <div>
-      {/* Header */}
-      <section className="py-16 sm:py-24 lg:py-32">
-        <div className="mx-auto max-w-4xl px-6 text-center">
-          <ScrollReveal>
-            <h1 className="font-serif text-4xl italic text-foreground sm:text-5xl lg:text-6xl">
-              Experiences
-            </h1>
-          </ScrollReveal>
-          <ScrollReveal delay={0.3} distance={15}>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-foreground-secondary">
-              Hands-on workshops, cultural immersions, and unforgettable moments across Japan.
-            </p>
-          </ScrollReveal>
-        </div>
+      {/* Editorial Hero */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-32 pb-4 sm:pt-36 sm:pb-6">
+        <p className="font-mono text-xs uppercase tracking-ultra text-stone mb-4">
+          {experiences.length} experiences across Japan
+        </p>
+
+        <SplitText
+          as="h1"
+          className="font-serif italic text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.05] text-foreground max-w-4xl"
+          splitBy="word"
+          animation="clipY"
+          staggerDelay={0.04}
+          duration={0.5}
+          delay={0.1}
+        >
+          The workshops, cruises, and cultural immersions that leave a mark.
+        </SplitText>
+
+        <ScrollReveal delay={0.3} distance={20} duration={0.5}>
+          <p className="text-base text-foreground-secondary max-w-2xl mt-6">
+            Hands-on moments you won&apos;t find in a guidebook. Filter by type and find your next adventure.
+          </p>
+        </ScrollReveal>
       </section>
 
-      {/* Filter Bar */}
+      {/* Filter Bar — underline tabs matching Places & Guides */}
       {filterTypes.length > 1 && (
-        <div className="sticky top-20 z-40 border-b border-border/50 bg-background/80 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto overscroll-contain px-4 py-3 sm:px-6 lg:px-8">
-            <button
-              type="button"
-              onClick={() => setSelectedType(null)}
-              className={`shrink-0 rounded-xl px-3 py-2.5 min-h-[44px] font-mono text-xs uppercase tracking-wide transition-colors ${
-                selectedType === null
-                  ? "bg-foreground text-background"
-                  : "text-stone hover:text-foreground"
-              }`}
+        <div className="sticky top-20 z-40 bg-background/95 backdrop-blur-xl border-b border-border/50">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div
+              className="overflow-x-auto scrollbar-hide overscroll-contain py-3"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              All ({experiences.length})
-            </button>
-            {filterTypes.map((type) => (
-              <button
-                key={type.value}
-                type="button"
-                onClick={() =>
-                  setSelectedType(
-                    selectedType === type.value ? null : type.value
-                  )
-                }
-                className={`shrink-0 rounded-xl px-3 py-2.5 min-h-[44px] font-mono text-xs uppercase tracking-wide transition-colors ${
-                  selectedType === type.value
-                    ? "bg-foreground text-background"
-                    : "text-stone hover:text-foreground"
-                }`}
-              >
-                {type.label} ({type.count})
-              </button>
-            ))}
+              <div className="flex gap-1 sm:gap-2 min-w-max">
+                <button
+                  type="button"
+                  onClick={() => setSelectedType(null)}
+                  className={cn(
+                    "px-3 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
+                    selectedType === null
+                      ? "border-brand-primary text-foreground"
+                      : "border-transparent text-stone hover:text-foreground"
+                  )}
+                >
+                  All
+                  <span className="ml-1.5 text-xs text-stone">{experiences.length}</span>
+                </button>
+                {filterTypes.map((type) => (
+                  <button
+                    key={type.value}
+                    type="button"
+                    onClick={() =>
+                      setSelectedType(
+                        selectedType === type.value ? null : type.value
+                      )
+                    }
+                    className={cn(
+                      "px-3 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
+                      selectedType === type.value
+                        ? "border-brand-primary text-foreground"
+                        : "border-transparent text-stone hover:text-foreground"
+                    )}
+                  >
+                    {type.label}
+                    <span className="ml-1.5 text-xs text-stone">{type.count}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

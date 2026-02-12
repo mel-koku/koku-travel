@@ -27,7 +27,7 @@ export function ExperiencePracticalInfo({
   if (!hasContent) return null;
 
   return (
-    <section className="py-12 sm:py-20">
+    <section className="py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-2xl px-6">
         <h2 className="font-serif text-2xl italic text-foreground mb-8 sm:text-3xl">
           Practical Information
@@ -131,7 +131,7 @@ export function ExperiencePracticalInfo({
                 href={bookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex w-full sm:w-auto items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                className="inline-flex w-full sm:w-auto items-center gap-2 rounded-xl bg-brand-primary px-6 py-3 text-sm font-medium text-white transition-all hover:bg-brand-primary/90"
               >
                 Book This Experience
                 <svg
