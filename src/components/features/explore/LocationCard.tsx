@@ -225,7 +225,7 @@ type HeartIconProps = {
 export function HeartIcon({ active, animating, className, variant = "inline" }: HeartIconProps) {
   const baseClass = className ?? "h-5 w-5";
   const colorClass = variant === "overlay"
-    ? active ? "fill-error stroke-error" : "fill-white/20 stroke-white/70"
+    ? active ? "fill-error stroke-error" : "fill-foreground/20 stroke-foreground/70"
     : active ? "fill-error stroke-error" : "fill-none stroke-current";
 
   return (
