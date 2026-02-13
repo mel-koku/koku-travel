@@ -155,7 +155,7 @@ export function AccountClient({ content }: AccountClientProps) {
         subtitle={content?.accountSubtitle ?? "Profile, sync, and preferences."}
       />
 
-      <section className="bg-background py-12 sm:py-16">
+      <section className="bg-background py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal distance={20}>
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm space-y-6">

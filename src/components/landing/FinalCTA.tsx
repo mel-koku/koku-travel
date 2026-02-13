@@ -13,14 +13,14 @@ type FinalCTAProps = {
 export function FinalCTA({ content }: FinalCTAProps) {
   return (
     <section
-      className="relative min-h-[80vh] overflow-hidden"
+      className="relative overflow-hidden"
     >
       <div className="texture-grain pointer-events-none absolute inset-0 z-20" />
       {/* Solid brand-primary background */}
       <div className="absolute inset-0 bg-brand-primary" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[80vh] items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
+      <div className="relative z-10 flex items-center justify-center px-6 py-24 sm:py-32 lg:py-40 text-center">
         <div className="max-w-2xl">
           <SplitText
             as="h2"

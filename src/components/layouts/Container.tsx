@@ -36,7 +36,7 @@ export function Container({
   return (
     <div
       className={cn(
-        "mx-auto px-4 sm:px-6 md:px-8",
+        "mx-auto px-4 sm:px-6 lg:px-8",
         sizeClassMap[size],
         className,
       )}

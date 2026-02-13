@@ -54,7 +54,7 @@ export default function Footer({ settings }: FooterProps) {
 
   return (
     <footer className="bg-charcoal text-white border-t border-white/10">
-      <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6 py-12 sm:py-20 lg:py-28">
         {/* Top: Brand + Navigation */}
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           {/* Brand Column */}
@@ -69,14 +69,14 @@ export default function Footer({ settings }: FooterProps) {
               <label className="text-xs uppercase tracking-[0.3em] text-white/40">
                 {newsletterLabel}
               </label>
-              <div className="mt-3 flex flex-col sm:flex-row gap-2">
+              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                 <input
                   type="email"
                   placeholder="Your email"
-                  className="flex-1 h-12 rounded-xl border border-white/20 bg-white/5 px-4 text-base text-white placeholder:text-white/30 focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/20"
+                  className="h-12 w-full rounded-xl border border-white/20 bg-white/5 px-4 text-base text-white placeholder:text-white/30 focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/20 sm:flex-1 sm:w-auto"
                 />
-                <Magnetic>
-                  <Button variant="primary">
+                <Magnetic className="w-full sm:w-auto">
+                  <Button variant="primary" className="w-full sm:w-auto">
                     {newsletterButton}
                   </Button>
                 </Magnetic>

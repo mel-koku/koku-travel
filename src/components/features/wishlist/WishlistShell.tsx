@@ -17,7 +17,7 @@ export default function WishlistShell() {
   // Show loading state
   if (isLoading && wishlist.length > 0) {
     return (
-      <section className="bg-background py-12 sm:py-16">
+      <section className="bg-background py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({ length: Math.min(wishlist.length, 8) }).map((_, i) => (
@@ -35,7 +35,7 @@ export default function WishlistShell() {
   // Show error state
   if (error) {
     return (
-      <section className="bg-background py-12 sm:py-16">
+      <section className="bg-background py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="py-32 text-center text-destructive">
             <p>Couldn&apos;t load your favorites — try refreshing.</p>
@@ -52,7 +52,7 @@ export default function WishlistShell() {
   }
 
   return (
-    <section className="relative bg-background py-12 sm:py-16">
+    <section className="relative bg-background py-12 sm:py-16 lg:py-20">
       {/* Grid grain texture */}
       <div className="texture-grain pointer-events-none absolute inset-0" />
 
