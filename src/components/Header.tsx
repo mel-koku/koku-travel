@@ -260,7 +260,7 @@ export default function Header() {
                 href="/trip-builder"
                 onMouseEnter={() => setCursorState("link")}
                 onMouseLeave={() => setCursorState("default")}
-                className="hidden h-10 items-center rounded-xl bg-brand-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-brand-primary/90 lg:flex"
+                className="hidden h-10 items-center rounded-xl bg-brand-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98] lg:flex"
               >
                 Plan a Trip
               </Link>

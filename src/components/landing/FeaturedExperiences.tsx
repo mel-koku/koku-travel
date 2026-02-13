@@ -38,11 +38,9 @@ export function FeaturedExperiences({
           </div>
           <Link
             href="/experiences"
-            className="link-reveal group flex items-center gap-2 text-foreground transition-colors hover:text-brand-primary"
+            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
-            <span className="text-sm font-medium uppercase tracking-wider">
-              Explore experiences
-            </span>
+            Explore experiences
             <svg
               className="h-4 w-4 transition-transform group-hover:translate-x-1"
               fill="none"

@@ -318,7 +318,9 @@ html.lenis-stopped {
 /* Link underline reveal animation */
 .link-reveal {
   position: relative;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .link-reveal::after {
