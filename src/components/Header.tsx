@@ -216,12 +216,6 @@ export default function Header() {
                 <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
                   Travel
                 </span>
-                <span className="text-sm font-light text-foreground-secondary">
-                  ·
-                </span>
-                <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
-                  Japan
-                </span>
               </span>
             </Link>
           </Magnetic>
