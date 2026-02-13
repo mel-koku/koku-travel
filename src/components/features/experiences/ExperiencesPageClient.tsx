@@ -6,9 +6,11 @@ import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { ExperienceCard } from "./ExperienceCard";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
+import type { PagesContent } from "@/types/sanitySiteContent";
 
 type ExperiencesPageClientProps = {
   experiences: ExperienceSummary[];
+  content?: PagesContent;
 };
 
 const EXPERIENCE_TYPE_OPTIONS: { value: ExperienceType; label: string }[] = [
@@ -20,7 +22,7 @@ const EXPERIENCE_TYPE_OPTIONS: { value: ExperienceType; label: string }[] = [
   { value: "rental", label: "Rental" },
 ];
 
-export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProps) {
+export function ExperiencesPageClient({ experiences, content }: ExperiencesPageClientProps) {
   const [selectedType, setSelectedType] = useState<ExperienceType | null>(null);
 
   const typeCounts = useMemo(() => {
@@ -52,10 +54,10 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4">
         <p className="font-serif italic text-lg text-foreground">
-          Experiences are on the way
+          {content?.experiencesEmptyHeading ?? "Experiences are on the way"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
-          We&apos;re curating immersive Japan experiences. Check back soon.
+          {content?.experiencesEmptyDescription ?? "We're curating immersive Japan experiences. Check back soon."}
         </p>
       </div>
     );
@@ -78,12 +80,12 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
           duration={0.5}
           delay={0.1}
         >
-          The workshops, cruises, and cultural immersions that leave a mark.
+          {content?.experiencesHeading ?? "The workshops, cruises, and cultural immersions that leave a mark."}
         </SplitText>
 
         <ScrollReveal delay={0.3} distance={20} duration={0.5}>
           <p className="text-base text-foreground-secondary max-w-2xl mt-6">
-            Hands-on moments you won&apos;t find in a guidebook. Filter by type and find your next adventure.
+            {content?.experiencesDescription ?? "Hands-on moments you won't find in a guidebook. Filter by type and find your next adventure."}
           </p>
         </ScrollReveal>
       </section>
@@ -150,10 +152,10 @@ export function ExperiencesPageClient({ experiences }: ExperiencesPageClientProp
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="font-serif italic text-lg text-foreground">
-              Nothing here yet
+              {content?.experiencesFilteredEmptyHeading ?? "Nothing here yet"}
             </p>
             <p className="mt-2 text-sm text-stone">
-              Try selecting a different category above.
+              {content?.experiencesFilteredEmptyDescription ?? "Try selecting a different category above."}
             </p>
           </div>
         )}

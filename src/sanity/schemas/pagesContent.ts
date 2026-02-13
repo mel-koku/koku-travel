@@ -6,11 +6,14 @@ export const pagesContent = defineType({
   type: "document",
   fieldsets: [
     { name: "explore", title: "Explore Page", options: { collapsible: true, collapsed: true } },
+    { name: "experiencesListing", title: "Experiences Listing Page", options: { collapsible: true, collapsed: true } },
     { name: "guidesListing", title: "Guides Listing Page", options: { collapsible: true, collapsed: true } },
     { name: "authors", title: "Authors Page", options: { collapsible: true, collapsed: true } },
     { name: "favorites", title: "Favorites Page", options: { collapsible: true, collapsed: true } },
     { name: "dashboard", title: "Dashboard Page", options: { collapsible: true, collapsed: true } },
     { name: "account", title: "Account Page", options: { collapsible: true, collapsed: true } },
+    { name: "signIn", title: "Sign In Page", options: { collapsible: true, collapsed: true } },
+    { name: "notFound", title: "404 Page", options: { collapsible: true, collapsed: true } },
     { name: "itinerary", title: "Itinerary Page", options: { collapsible: true, collapsed: true } },
   ],
   fields: [
@@ -50,6 +53,50 @@ export const pagesContent = defineType({
       fieldset: "explore",
       description: "Use {count} as placeholder for the total number of places.",
       initialValue: "All {count} places. More coming soon.",
+    }),
+
+    // ── Experiences Listing ──────────────────────
+    defineField({
+      name: "experiencesHeading",
+      title: "Hero Heading",
+      type: "string",
+      fieldset: "experiencesListing",
+      initialValue: "The workshops, cruises, and cultural immersions that leave a mark.",
+    }),
+    defineField({
+      name: "experiencesDescription",
+      title: "Hero Description",
+      type: "string",
+      fieldset: "experiencesListing",
+      initialValue: "Hands-on moments you won't find in a guidebook. Filter by type and find your next adventure.",
+    }),
+    defineField({
+      name: "experiencesEmptyHeading",
+      title: "Empty State Heading",
+      type: "string",
+      fieldset: "experiencesListing",
+      initialValue: "Experiences are on the way",
+    }),
+    defineField({
+      name: "experiencesEmptyDescription",
+      title: "Empty State Description",
+      type: "string",
+      fieldset: "experiencesListing",
+      initialValue: "We're curating immersive Japan experiences. Check back soon.",
+    }),
+    defineField({
+      name: "experiencesFilteredEmptyHeading",
+      title: "Filtered Empty State Heading",
+      type: "string",
+      fieldset: "experiencesListing",
+      initialValue: "Nothing here yet",
+    }),
+    defineField({
+      name: "experiencesFilteredEmptyDescription",
+      title: "Filtered Empty State Description",
+      type: "string",
+      fieldset: "experiencesListing",
+      initialValue: "Try selecting a different category above.",
     }),
 
     // ── Guides Listing ──────────────────────────
@@ -314,6 +361,108 @@ export const pagesContent = defineType({
       type: "string",
       fieldset: "account",
       initialValue: "Send sign-in link",
+    }),
+
+    // ── Sign In ─────────────────────────────────
+    defineField({
+      name: "signInHeading",
+      title: "Left Panel Heading",
+      type: "string",
+      fieldset: "signIn",
+      initialValue: "Welcome back",
+    }),
+    defineField({
+      name: "signInDescription",
+      title: "Left Panel Description",
+      type: "string",
+      fieldset: "signIn",
+      initialValue: "Sign in to pick up where you left off.",
+    }),
+    defineField({
+      name: "signInBackgroundImage",
+      title: "Background Image",
+      type: "image",
+      options: { hotspot: true },
+      fieldset: "signIn",
+    }),
+    defineField({
+      name: "signInFormHeading",
+      title: "Form Heading",
+      type: "string",
+      fieldset: "signIn",
+      initialValue: "Sign in with email",
+    }),
+    defineField({
+      name: "signInFormDescription",
+      title: "Form Description",
+      type: "string",
+      fieldset: "signIn",
+      initialValue: "We'll send a magic link to your inbox.",
+    }),
+    defineField({
+      name: "signInSubmitText",
+      title: "Submit Button Text",
+      type: "string",
+      fieldset: "signIn",
+      initialValue: "Send Sign-in Link",
+    }),
+    defineField({
+      name: "signInNoAccountText",
+      title: "No Account Info Text",
+      type: "string",
+      fieldset: "signIn",
+      initialValue: "No account? One is created automatically.",
+    }),
+    defineField({
+      name: "signInGuestText",
+      title: "Guest Link Text",
+      type: "string",
+      fieldset: "signIn",
+      initialValue: "Continue as guest",
+    }),
+
+    // ── 404 Page ───────────────────────────────
+    defineField({
+      name: "notFoundEyebrow",
+      title: "Eyebrow",
+      type: "string",
+      fieldset: "notFound",
+      initialValue: "Page not found",
+    }),
+    defineField({
+      name: "notFoundHeading",
+      title: "Heading",
+      type: "string",
+      fieldset: "notFound",
+      initialValue: "Lost in Translation",
+    }),
+    defineField({
+      name: "notFoundDescription",
+      title: "Description",
+      type: "string",
+      fieldset: "notFound",
+      initialValue: "This path leads nowhere — but Japan still has thousands waiting for you.",
+    }),
+    defineField({
+      name: "notFoundPrimaryCtaText",
+      title: "Primary CTA Text",
+      type: "string",
+      fieldset: "notFound",
+      initialValue: "Take Me Home",
+    }),
+    defineField({
+      name: "notFoundSecondaryCtaText",
+      title: "Secondary CTA Text",
+      type: "string",
+      fieldset: "notFound",
+      initialValue: "Explore Places",
+    }),
+    defineField({
+      name: "notFoundBackgroundImage",
+      title: "Background Image",
+      type: "image",
+      options: { hotspot: true },
+      fieldset: "notFound",
     }),
 
     // ── Itinerary ───────────────────────────────

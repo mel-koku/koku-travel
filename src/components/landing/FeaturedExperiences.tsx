@@ -40,7 +40,7 @@ export function FeaturedExperiences({
             href="/experiences"
             className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
-            Explore experiences
+            {content?.featuredExperiencesCtaText ?? "Explore experiences"}
             <svg
               className="h-4 w-4 transition-transform group-hover:translate-x-1"
               fill="none"
