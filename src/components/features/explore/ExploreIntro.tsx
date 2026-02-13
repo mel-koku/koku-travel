@@ -25,12 +25,12 @@ export function ExploreIntro({ totalCount, content }: ExploreIntroProps) {
         duration={0.5}
         delay={0.1}
       >
-        {content?.exploreHeading ?? "Every temple, backstreet, and the restaurants your guidebook missed."}
+        {content?.exploreHeading ?? "Temples, backstreets, and the restaurants your guidebook missed."}
       </SplitText>
 
       <ScrollReveal delay={0.3} distance={20} duration={0.5}>
         <p className="text-base text-foreground-secondary max-w-2xl mt-6">
-          {content?.exploreSubtitle ?? "Filter by what matters. Tap any place to learn more."}
+          {content?.exploreSubtitle ?? "Filter by what matters to you, or just start scrolling."}
         </p>
       </ScrollReveal>
     </section>

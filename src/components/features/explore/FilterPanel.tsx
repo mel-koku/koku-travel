@@ -241,7 +241,7 @@ export function FilterPanel({
                   type="text"
                   value={query}
                   onChange={(e) => onQueryChange(e.target.value)}
-                  placeholder="Search places..."
+                  placeholder="Search by name, city, or region..."
                   className="w-full rounded-xl border border-border bg-background py-2.5 pl-10 pr-4 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                 />
                 {query && (
@@ -298,7 +298,7 @@ export function FilterPanel({
 
               {/* What type */}
               <FilterSection
-                label="What type"
+                label="Type"
                 activeCount={whatActiveCount}
                 isExpanded={expandedSections.what}
                 onToggle={() => toggleSection("what")}
@@ -394,7 +394,7 @@ export function FilterPanel({
                 <div className="space-y-4">
                   <ToggleOption
                     label="Wheelchair accessible"
-                    description="Only show places with wheelchair accessible entrance"
+                    description="Places with a wheelchair-accessible entrance"
                     checked={wheelchairAccessible}
                     onChange={onWheelchairAccessibleChange}
                   />
@@ -402,7 +402,7 @@ export function FilterPanel({
                   {isFoodCategorySelected && (
                     <ToggleOption
                       label="Vegetarian friendly"
-                      description="Only show restaurants that serve vegetarian food"
+                      description="Restaurants with vegetarian options"
                       checked={vegetarianFriendly}
                       onChange={onVegetarianFriendlyChange}
                     />
