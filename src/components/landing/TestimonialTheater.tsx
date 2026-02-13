@@ -152,7 +152,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
   if (!featured) return null;
 
   return (
-    <section>
+    <section className="bg-background">
       {/* Featured testimonial — full-bleed hero moment */}
       <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
         <Image
