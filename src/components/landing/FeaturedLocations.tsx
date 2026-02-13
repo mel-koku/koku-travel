@@ -110,7 +110,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                 <div className="mt-6 mb-4 h-px w-8 bg-brand-primary/60" />
                 <Link
                   href="/explore"
-                  className="link-reveal inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
+                  className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
                 >
                   Explore all
                   <ArrowRightIcon />
@@ -175,7 +175,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
           <div className="h-px w-8 bg-brand-primary/60 mb-4" />
           <Link
             href="/explore"
-            className="link-reveal inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
+            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
             Explore all
             <ArrowRightIcon />
