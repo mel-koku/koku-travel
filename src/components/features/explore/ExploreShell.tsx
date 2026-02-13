@@ -495,7 +495,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <p className="text-base font-semibold text-error mb-2">{content?.exploreErrorMessage ?? "Unable to load destinations"}</p>
+              <p className="text-base font-semibold text-error mb-2">{content?.exploreErrorMessage ?? "Something went wrong loading places"}</p>
               <p className="text-sm text-error/80 mb-6">{error}</p>
               <button
                 onClick={() => window.location.reload()}
@@ -562,7 +562,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
         {!hasMore && visibleLocations.length > 0 && (
           <div className="py-16 text-center">
             <p className="font-serif italic text-lg text-stone">
-              {(content?.exploreEndMessage ?? "All {count} places. More coming soon.").replace("{count}", sortedLocations.length.toLocaleString())}
+              {(content?.exploreEndMessage ?? "That's all {count}. For now.").replace("{count}", sortedLocations.length.toLocaleString())}
             </p>
           </div>
         )}

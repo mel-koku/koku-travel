@@ -53,10 +53,10 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4">
         <p className="font-serif italic text-lg text-foreground">
-          {content?.guidesEmptyHeading ?? "Guides are on the way"}
+          {content?.guidesEmptyHeading ?? "Guides are in the works"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
-          {content?.guidesEmptyDescription ?? "We're writing curated travel guides. Check back soon."}
+          {content?.guidesEmptyDescription ?? "We're writing them now. Explore places in the meantime."}
         </p>
       </div>
     );
@@ -79,12 +79,12 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
           duration={0.5}
           delay={0.1}
         >
-          {content?.guidesHeading ?? "The local knowledge that turns a good trip into an unforgettable one."}
+          {content?.guidesHeading ?? "What the locals know, written down for the first time."}
         </SplitText>
 
         <ScrollReveal delay={0.3} distance={20} duration={0.5}>
           <p className="text-base text-foreground-secondary max-w-2xl mt-6">
-            {content?.guidesDescription ?? "Curated guides by region, season, and style. Pick a category or start browsing."}
+            {content?.guidesDescription ?? "Organized by region, season, and the kind of trip you're after."}
           </p>
         </ScrollReveal>
       </section>
@@ -111,10 +111,10 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="font-serif italic text-lg text-foreground">
-              {content?.guidesFilteredEmptyHeading ?? "Nothing here yet"}
+              {content?.guidesFilteredEmptyHeading ?? "No guides in this category yet"}
             </p>
             <p className="mt-2 text-sm text-stone">
-              {content?.guidesFilteredEmptyDescription ?? "Try selecting a different category above."}
+              {content?.guidesFilteredEmptyDescription ?? "Try another filter, or browse them all."}
             </p>
           </div>
         )}
