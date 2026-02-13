@@ -181,6 +181,8 @@ export type PagesContent = {
   experiencesFilteredEmptyDescription?: string;
 
   // Guides Listing
+  guidesHeading?: string;
+  guidesDescription?: string;
   guidesEmptyHeading?: string;
   guidesEmptyDescription?: string;
   guidesFilteredEmptyHeading?: string;

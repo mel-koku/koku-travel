@@ -397,6 +397,8 @@ export const pagesContentQuery = groq`
     experiencesEmptyDescription,
     experiencesFilteredEmptyHeading,
     experiencesFilteredEmptyDescription,
+    guidesHeading,
+    guidesDescription,
     guidesEmptyHeading,
     guidesEmptyDescription,
     guidesFilteredEmptyHeading,
