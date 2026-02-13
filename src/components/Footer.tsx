@@ -9,9 +9,9 @@ const defaultNavColumns = [
   {
     title: "Explore",
     links: [
-      { label: "Locations", href: "/explore" },
+      { label: "Places", href: "/explore" },
       { label: "Guides", href: "/guides" },
-      { label: "Trip Builder", href: "/trip-builder" },
+      { label: "Experiences", href: "/experiences" },
     ],
   },
   {
