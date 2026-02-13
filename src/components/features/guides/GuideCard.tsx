@@ -5,7 +5,6 @@ import Link from "next/link";
 import { memo } from "react";
 
 import type { GuideSummary } from "@/types/guide";
-import { easeCinematicCSS } from "@/lib/motion";
 
 type GuideCardProps = {
   guide: GuideSummary;
@@ -38,8 +37,7 @@ export const GuideCard = memo(function GuideCard({ guide }: GuideCardProps) {
             src={imageSrc}
             alt={guide.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            style={{ transitionTimingFunction: easeCinematicCSS }}
+            className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
             sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
             priority={false}
           />

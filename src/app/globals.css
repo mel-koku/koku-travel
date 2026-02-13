@@ -81,52 +81,21 @@
 }
 
 .dark {
-  /* Deeper dark (for contrast sections) */
+  /* Deeper dark (for contrast sections) — only overrides that differ from :root */
   --background: #131110;
-  --foreground: #f0e8dc;
   --card: #1c1915;
-  --card-foreground: #f0e8dc;
   --popover: #1c1915;
-  --popover-foreground: #f0e8dc;
-  --primary: #c4504f;
-  --primary-foreground: #ffffff;
   --secondary: #1c1915;
-  --secondary-foreground: #f0e8dc;
   --muted: #1c1915;
-  --muted-foreground: #9a8d7e;
-  --accent: #3da193;
-  --accent-foreground: #ffffff;
-  --destructive: #d44535;
-  --destructive-foreground: #ffffff;
   --border: #2e2820;
   --input: #2e2820;
-  --ring: #c4504f;
 
-  /* Chart colors (dark) */
-  --chart-1: #c4504f;
-  --chart-2: #3da193;
-  --chart-3: #daa54e;
-  --chart-4: #d4b83d;
-  --chart-5: #9a8d7e;
-
-  /* Sidebar (dark) */
   --sidebar: #131110;
-  --sidebar-foreground: #f0e8dc;
-  --sidebar-primary: #c4504f;
-  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #1c1915;
-  --sidebar-accent-foreground: #f0e8dc;
   --sidebar-border: #2e2820;
-  --sidebar-ring: #c4504f;
 
-  /* Extended palette (dark) */
   --foreground-secondary: #9a8d7e;
   --surface: #1c1915;
-  --brand-primary: #c4504f;
-  --brand-secondary: #daa54e;
-  --success: #3da193;
-  --warning: #d4b83d;
-  --error: #d44535;
 }
 
 /* Light theme option (original warm palette) */
@@ -273,14 +242,6 @@ body {
   @apply font-mono text-xs uppercase tracking-wide text-stone;
 }
 
-.serif-display {
-  @apply font-serif italic tracking-display;
-}
-
-.serif-heading {
-  @apply font-serif italic tracking-heading;
-}
-
 .serif-body {
   @apply font-serif italic;
 }
@@ -334,27 +295,6 @@ body {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Focus ring utility for accessibility */
-.focus-ring {
-  @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2;
-}
-
-/* Button tactile feedback */
-.btn-feedback {
-  @apply transition-transform active:scale-[0.98];
 }
 
 /* Lenis smooth scrolling */
@@ -443,10 +383,9 @@ html.lenis-stopped {
   }
 }
 
-/* Smooth transition utility — matches easeReveal from motion.ts */
-.transition-smooth {
-  transition-duration: 300ms;
-  transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+/* Cinematic easing utility — matches easeCinematic from motion.ts */
+.ease-cinematic {
+  transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 /* Respect reduced motion globally */

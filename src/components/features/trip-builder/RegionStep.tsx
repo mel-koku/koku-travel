@@ -14,7 +14,7 @@ import {
 import type { KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { RegionDescription } from "@/data/regionDescriptions";
-import { easeCinematic } from "@/lib/motion";
+import { easeCinematicMut } from "@/lib/motion";
 
 import { RegionMapCanvas } from "./RegionMapCanvas";
 import { RegionRow } from "./RegionRow";
@@ -204,7 +204,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
           <motion.h2
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [...easeCinematic] as [number, number, number, number], delay: 0.15 }}
+            transition={{ duration: 0.5, ease: easeCinematicMut, delay: 0.15 }}
             className="mt-3 font-serif text-3xl italic tracking-tight text-foreground sm:text-4xl lg:text-5xl"
           >
             {sanityConfig?.regionStepHeading ?? "Where are you headed?"}
@@ -259,7 +259,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                       exit={{ height: 0, opacity: 0 }}
                       transition={{
                         duration: 0.4,
-                        ease: [...easeCinematic] as [number, number, number, number],
+                        ease: easeCinematicMut,
                       }}
                       className="overflow-hidden"
                     >

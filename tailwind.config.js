@@ -1,10 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
   safelist: [
     // Activity color scheme classes (dynamically used in activityColors.ts)
     'bg-brand-primary',
@@ -30,16 +25,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        serif: ["var(--font-instrument-serif)", "Georgia", "serif"],
-        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
-      },
-      letterSpacing: {
-        display: "-0.04em",
-        heading: "-0.02em",
-        wide: "0.15em",
-        ultra: "0.3em",
-      },
       fontSize: {
         'caption': ['0.5rem', { lineHeight: '1.4' }],     // 8px - Legal, fine print
         'small': ['0.707rem', { lineHeight: '1.4' }],    // 11px - Labels, metadata
@@ -76,17 +61,6 @@ module.exports = {
       animation: {
         'heart-pulse': 'heart-pulse 0.5s ease-in-out',
         'shimmer': 'shimmer 2s ease-in-out infinite',
-      },
-      colors: {
-        brand: {
-          primary: "#c4504f",
-          secondary: "#daa54e",
-        },
-        semantic: {
-          success: "#3da193",
-          warning: "#d4b83d",
-          error: "#d44535",
-        },
       },
     },
   },
