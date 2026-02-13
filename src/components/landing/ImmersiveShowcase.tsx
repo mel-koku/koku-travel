@@ -352,7 +352,7 @@ function ImmersiveShowcaseMobile({ acts }: { acts: ActData[] }) {
   return (
     <section className="bg-background">
       {acts.map((act, i) => (
-        <div key={act.number} className="px-6 py-16">
+        <div key={act.number} className={`px-6 sm:py-20 ${i === 0 ? "pt-10 pb-6" : "py-6"}`}>
           <div className="mx-auto max-w-3xl">
             <ScrollReveal delay={0.1}>
               <div className="relative aspect-[16/9] overflow-hidden rounded-xl">
@@ -367,19 +367,19 @@ function ImmersiveShowcaseMobile({ acts }: { acts: ActData[] }) {
               </div>
             </ScrollReveal>
 
-            <div className="mt-8">
+            <div className="mt-5 sm:mt-8">
               <ScrollReveal delay={0.15}>
                 <p className="eyebrow-editorial text-brand-primary">
                   {act.eyebrow}
                 </p>
               </ScrollReveal>
               <ScrollReveal delay={0.2}>
-                <h2 className="mt-4 font-serif italic text-xl tracking-heading text-foreground sm:text-2xl">
+                <h2 className="mt-3 font-serif italic text-xl tracking-heading text-foreground sm:mt-4 sm:text-2xl">
                   {act.title}
                 </h2>
               </ScrollReveal>
               <ScrollReveal delay={0.3}>
-                <p className="mt-4 text-base leading-relaxed text-foreground-secondary">
+                <p className="mt-3 text-base leading-relaxed text-foreground-secondary sm:mt-4">
                   {act.description}
                 </p>
               </ScrollReveal>

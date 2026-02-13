@@ -76,7 +76,7 @@ export function ExperienceHero({
   );
 
   const titleContent = (
-    <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-12 sm:pb-20 sm:px-8">
+    <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-12 sm:pb-20 sm:px-8 lg:px-12">
       <div className="mx-auto w-full max-w-5xl">
         <h1 className="font-serif text-3xl italic leading-[1.05] tracking-display text-white sm:text-4xl lg:text-5xl">
           {title}

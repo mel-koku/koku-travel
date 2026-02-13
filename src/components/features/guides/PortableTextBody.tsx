@@ -123,7 +123,7 @@ const components: PortableTextComponents = {
 
 export function PortableTextBody({ body }: PortableTextBodyProps) {
   return (
-    <article className="py-20 sm:py-28">
+    <article className="py-12 sm:py-20 lg:py-28">
       <PortableText value={body as PortableTextBlock[]} components={components} />
     </article>
   );

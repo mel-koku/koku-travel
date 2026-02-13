@@ -39,7 +39,7 @@ export function Section({
 }: SectionProps) {
   const outerClassName = cn("w-full", className);
   const containerClassName = cn(
-    "py-12 sm:py-16",
+    "py-12 sm:py-16 lg:py-20",
     bleed && "px-0",
   );
 

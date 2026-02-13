@@ -20,10 +20,10 @@ export function FeaturedExperiences({
   }
 
   return (
-    <section className="bg-canvas py-24 sm:py-32">
+    <section className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
-        <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredExperiencesEyebrow ?? "Experiences"}
@@ -57,14 +57,18 @@ export function FeaturedExperiences({
           </Link>
         </div>
 
-        {/* Grid */}
+        {/* Grid — show 2 on mobile, full set on sm+ */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {experiences.map((experience, idx) => (
-            <ExperienceCard
+            <div
               key={experience._id}
-              experience={experience}
-              index={idx}
-            />
+              className={idx >= 2 ? "hidden sm:block" : undefined}
+            >
+              <ExperienceCard
+                experience={experience}
+                index={idx}
+              />
+            </div>
           ))}
         </div>
       </div>

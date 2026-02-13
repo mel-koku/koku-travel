@@ -200,7 +200,7 @@ export default function Header() {
         }}
         transition={headerSpring}
       >
-        <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 sm:px-6 md:px-8">
+        <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
           <Magnetic strength={0.15}>
             <Link

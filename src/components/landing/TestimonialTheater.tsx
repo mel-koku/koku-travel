@@ -165,7 +165,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
         />
         <div className="absolute inset-0 bg-charcoal/60" />
 
-        <div className="relative z-10 max-w-3xl px-6 pb-12 text-center sm:px-12">
+        <div className="relative z-10 max-w-3xl px-6 pb-12 text-center sm:px-8">
           <span className="mb-4 block select-none font-serif italic text-[4rem] leading-none text-white/10 sm:text-[6rem]">
             &ldquo;
           </span>
@@ -183,7 +183,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
             </SplitText>
           </blockquote>
 
-          <div className="mt-8">
+          <div className="mt-8 text-left sm:text-center">
             <p className="text-sm font-medium text-white">
               {featured.author}
             </p>
@@ -196,7 +196,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
 
       {/* Remaining testimonials — horizontal scroll with arrows */}
       {rest.length > 0 && (
-        <div className="pt-16 pb-12">
+        <div className="pt-8 pb-12 sm:pt-12 lg:pt-16">
           <div
             ref={scrollRef}
             onScroll={updateScrollState}

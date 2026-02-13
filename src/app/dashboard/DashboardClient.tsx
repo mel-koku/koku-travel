@@ -267,7 +267,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
       />
 
       {/* Trips Section */}
-      <section id="trips" className="bg-surface py-12 sm:py-16">
+      <section id="trips" className="bg-surface py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardTripsEyebrow ?? "Recent"}</p>
@@ -346,7 +346,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
 
       {/* Account Section (conditional) */}
       {shouldShowAccountSection && (
-        <section className="bg-background py-12 sm:py-16">
+        <section className="bg-background py-12 sm:py-16 lg:py-20">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ScrollReveal>
               <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardAccountEyebrow ?? "Account"}</p>

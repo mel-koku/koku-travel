@@ -71,7 +71,7 @@ export function PageHeader({
       <div className="texture-grain absolute inset-0" />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 text-center sm:py-28">
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-12 text-center sm:py-20 lg:py-28">
         {eyebrow && (
           <ScrollReveal distance={10} delay={0}>
             <p className="eyebrow-editorial text-foreground-secondary">
