@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plane, Search, X } from "lucide-react";
 
@@ -282,6 +282,9 @@ type JapanSilhouetteProps = {
   isLoading: boolean;
 };
 
+const BASE_VB = { x: 0, y: 0, w: 438, h: 516 };
+const MAX_ZOOM = 3;
+
 function JapanSilhouette({
   airports,
   topAirportCodes,
@@ -292,13 +295,124 @@ function JapanSilhouette({
   const topSet = useMemo(() => new Set(topAirportCodes), [topAirportCodes]);
   const [hoveredAirport, setHoveredAirport] = useState<{ iataCode: string; name: string; x: number; y: number } | null>(null);
 
+  // ── Zoom / pan (ref-based — no re-renders during interaction) ──
+  const svgRef = useRef<SVGSVGElement>(null);
+  const vb = useRef({ ...BASE_VB });
+  const isPanning = useRef(false);
+  const panOrigin = useRef({ x: 0, y: 0 });
+  const didDrag = useRef(false);
+
+  const clampVB = useCallback(
+    (x: number, y: number, w: number, h: number) => ({
+      x: Math.max(0, Math.min(x, BASE_VB.w - w)),
+      y: Math.max(0, Math.min(y, BASE_VB.h - h)),
+      w,
+      h,
+    }),
+    []
+  );
+
+  const applyVB = useCallback(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const v = vb.current;
+    svg.setAttribute("viewBox", `${v.x} ${v.y} ${v.w} ${v.h}`);
+    const zoomed = v.w < BASE_VB.w - 1;
+    svg.style.cursor = zoomed
+      ? isPanning.current
+        ? "grabbing"
+        : "grab"
+      : "";
+  }, []);
+
+  // Wheel zoom — { passive: false } to allow preventDefault
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const rect = svg.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) / rect.width;
+      const my = (e.clientY - rect.top) / rect.height;
+      const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+      let nw = vb.current.w * factor;
+      let nh = vb.current.h * factor;
+      if (nw >= BASE_VB.w) {
+        nw = BASE_VB.w;
+        nh = BASE_VB.h;
+      }
+      if (nw < BASE_VB.w / MAX_ZOOM) {
+        nw = BASE_VB.w / MAX_ZOOM;
+        nh = BASE_VB.h / MAX_ZOOM;
+      }
+      vb.current = clampVB(
+        vb.current.x + (vb.current.w - nw) * mx,
+        vb.current.y + (vb.current.h - nh) * my,
+        nw,
+        nh
+      );
+      applyVB();
+    };
+    svg.addEventListener("wheel", onWheel, { passive: false });
+    return () => svg.removeEventListener("wheel", onWheel);
+  }, [clampVB, applyVB]);
+
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
+      if (e.button !== 0) return;
+      isPanning.current = true;
+      didDrag.current = false;
+      panOrigin.current = { x: e.clientX, y: e.clientY };
+    },
+    []
+  );
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
+      if (!isPanning.current) return;
+      const svg = svgRef.current;
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const dx =
+        ((e.clientX - panOrigin.current.x) / rect.width) * vb.current.w;
+      const dy =
+        ((e.clientY - panOrigin.current.y) / rect.height) * vb.current.h;
+      panOrigin.current = { x: e.clientX, y: e.clientY };
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDrag.current = true;
+      vb.current = clampVB(
+        vb.current.x - dx,
+        vb.current.y - dy,
+        vb.current.w,
+        vb.current.h
+      );
+      applyVB();
+    },
+    [clampVB, applyVB]
+  );
+
+  const onPointerUp = useCallback(() => {
+    isPanning.current = false;
+    applyVB();
+  }, [applyVB]);
+
+  const onDblClick = useCallback(() => {
+    vb.current = { ...BASE_VB };
+    applyVB();
+  }, [applyVB]);
+
   return (
     <div className="relative h-full w-full" style={{ maxHeight: "calc(100dvh - 14rem)" }}>
       <svg
+        ref={svgRef}
         viewBox={JAPAN_MAP_VIEWBOX}
         className="h-full w-full"
         aria-hidden
         preserveAspectRatio="xMidYMid meet"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerLeave={onPointerUp}
+        onDoubleClick={onDblClick}
       >
         {/* Proper Japan map — all prefecture outlines */}
         {ALL_PREFECTURE_PATHS.map((d, i) => (
@@ -347,7 +461,7 @@ function JapanSilhouette({
                   r={10}
                   fill="transparent"
                   className="cursor-pointer"
-                  onClick={() => onSelectAirport(airport)}
+                  onClick={() => { if (!didDrag.current) onSelectAirport(airport); }}
                   onMouseEnter={() => setHoveredAirport({ iataCode: airport.iataCode, name: airport.shortName, x: pos.x, y: pos.y })}
                   onMouseLeave={() => setHoveredAirport(null)}
                   role="button"
