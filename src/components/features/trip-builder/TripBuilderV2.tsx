@@ -246,7 +246,7 @@ function StepShell({
               "h-12 flex-1 rounded-xl text-sm font-medium uppercase tracking-wider transition",
               nextDisabled
                 ? "cursor-not-allowed bg-surface text-stone"
-                : "cursor-pointer bg-brand-primary text-white hover:bg-brand-primary/90"
+                : "cursor-pointer bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.98]"
             )}
           >
             {nextLabel}
