@@ -230,26 +230,33 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
       </motion.div>
 
       {/* Scroll indicator — centered at bottom, fades with content */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 1.6 }}
-        style={{ opacity: contentOpacity }}
-        className="absolute inset-x-0 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-10 flex items-center justify-center gap-2 text-[11px] uppercase tracking-ultra text-white/40"
+      <div
+        className="absolute bottom-8 left-1/2 z-10 pb-[env(safe-area-inset-bottom)]"
+        style={{ transform: "translateX(-50%)" }}
       >
-        <span>Scroll</span>
-        <div className="relative h-8 w-px overflow-hidden">
-          <motion.div
-            animate={{ y: [0, 32, 0] }}
-            transition={{
-              duration: durationEpic,
-              repeat: Infinity,
-              ease: easeScrollIndicator,
-            }}
-            className="absolute h-3 w-px bg-gradient-to-b from-transparent via-white/60 to-transparent"
-          />
-        </div>
-      </motion.div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 1.6 }}
+          style={{ opacity: contentOpacity }}
+          className="flex flex-col items-center gap-3"
+        >
+          <span className="text-[11px] uppercase tracking-ultra text-white/40">
+            Scroll
+          </span>
+          <div className="relative h-10 w-px overflow-hidden">
+            <motion.div
+              animate={{ y: [0, 40, 0] }}
+              transition={{
+                duration: durationEpic,
+                repeat: Infinity,
+                ease: easeScrollIndicator,
+              }}
+              className="absolute h-3 w-px bg-gradient-to-b from-transparent via-white/60 to-transparent"
+            />
+          </div>
+        </motion.div>
+      </div>
     </section>
   );
 }
