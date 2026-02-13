@@ -725,9 +725,6 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   // Clear all local data
   const clearAllLocalData = useCallback(() => {
-    if (typeof window !== "undefined" && !window.confirm("Clear all local Koku data on this device?")) {
-      return;
-    }
     const next: InternalState = {
       user: { id: newId(), displayName: "Guest" },
       favorites: [],
@@ -742,6 +739,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     setState(next);
     if (typeof window !== "undefined") {
       localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(next));
+      localStorage.removeItem(WISHLIST_STORAGE_KEY);
+      localStorage.removeItem("koku_user_preferences");
+      localStorage.removeItem("koku:filter-metadata:v3");
+      localStorage.removeItem("koku_trip_step");
     }
   }, []);
 
