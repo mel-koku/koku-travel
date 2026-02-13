@@ -264,6 +264,17 @@ const HEX_COLORS: Record<string, string> = {
   entryPointEnd: "#2d7a6f",
   // Hotel — stone
   hotel: "#9a8d7e",
+  // Explore categories — mapped to existing color families
+  restaurant: "#c6923a",
+  landmark: "#8c2f2f",
+  shrine: "#8c2f2f",
+  temple: "#8c2f2f",
+  museum: "#8c2f2f",
+  park: "#2d7a6f",
+  market: "#c6923a",
+  wellness: "#2d7a6f",
+  viewpoint: "#8c2f2f",
+  bar: "#c6923a",
   // Default — crimson
   default: "#8c2f2f",
 };

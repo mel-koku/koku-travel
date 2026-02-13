@@ -30,7 +30,7 @@ export function ExploreIntro({ totalCount, content }: ExploreIntroProps) {
 
       <ScrollReveal delay={0.3} distance={20} duration={0.5}>
         <p className="text-base text-foreground-secondary max-w-2xl mt-6">
-          {content?.exploreSubtitle ?? "Filter by what matters to you, or just start scrolling."}
+          {content?.exploreSubtitle ?? "Filter by what matters to you, or pan the map to explore."}
         </p>
       </ScrollReveal>
     </section>
