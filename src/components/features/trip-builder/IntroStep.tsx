@@ -20,7 +20,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
   const subheading = sanityConfig?.introSubheading ?? "starts here";
   const description =
     sanityConfig?.introDescription ??
-    "Share what moves you, and we\u2019ll plan the rest \u2014 day by day, from places locals actually go.";
+    "Tell us what you\u2019re into. We\u2019ll build the days around it.";
   const ctaText = sanityConfig?.introCtaText ?? "Start Planning";
   const eyebrow = sanityConfig?.introEyebrow ?? "TRIP BUILDER";
   const accentImage =
@@ -133,7 +133,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 1.8 }}
       >
-        5 steps ahead
+        5 quick steps
       </motion.p>
     </div>
   );

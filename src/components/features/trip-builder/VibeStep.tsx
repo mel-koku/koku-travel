@@ -120,7 +120,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
         </motion.h2>
 
         <p className="mt-2 text-sm text-stone">
-          {sanityConfig?.vibeStepDescription ?? "Pick what excites you \u2014 we'll find places that match."}
+          {sanityConfig?.vibeStepDescription ?? "Choose up to 5. These shape the places we suggest."}
         </p>
 
         <p className="mt-2 font-mono text-sm text-stone">
@@ -209,7 +209,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
       {/* Warning when max reached */}
       {isMaxSelected && (
         <p className="relative z-10 pb-8 text-center text-sm text-warning lg:pb-4">
-          {(sanityConfig?.vibeStepMaxWarning ?? "You've picked {max} \u2014 swap one out to add another.").replace("{max}", String(MAX_VIBE_SELECTION))}
+          {(sanityConfig?.vibeStepMaxWarning ?? "That\u2019s all {max}. Tap one to swap it out.").replace("{max}", String(MAX_VIBE_SELECTION))}
         </p>
       )}
     </div>

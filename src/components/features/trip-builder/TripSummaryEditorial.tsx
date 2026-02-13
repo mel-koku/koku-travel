@@ -55,7 +55,7 @@ export function TripSummaryEditorial({
     if (duration && regionStr) return `${duration} days in ${regionStr}`;
     if (duration) return `${duration} days in Japan`;
     if (regionStr) return `Your trip to ${regionStr}`;
-    return "Your journey, at a glance";
+    return "Here\u2019s what you\u2019ve got so far";
   }, [derivedRegionNames, data.duration]);
 
   // Format dates
@@ -142,7 +142,7 @@ export function TripSummaryEditorial({
                   )}
                 </span>
               ) : (
-                <span className="text-stone">None yet</span>
+                <span className="text-stone">Not set</span>
               )
             }
             onEdit={onEditDates}
@@ -161,7 +161,7 @@ export function TripSummaryEditorial({
                   </span>
                 </span>
               ) : (
-                <span className="text-stone">None yet</span>
+                <span className="text-stone">Not set</span>
               )
             }
             onEdit={onEditEntryPoint}
@@ -184,7 +184,7 @@ export function TripSummaryEditorial({
                   ))}
                 </div>
               ) : (
-                <span className="text-stone">None yet</span>
+                <span className="text-stone">Not set</span>
               )
             }
             onEdit={onEditVibes}
@@ -207,7 +207,7 @@ export function TripSummaryEditorial({
                   ))}
                 </div>
               ) : (
-                <span className="text-stone">None yet</span>
+                <span className="text-stone">Not set</span>
               )
             }
             onEdit={onEditRegions}

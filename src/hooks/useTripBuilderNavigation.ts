@@ -68,7 +68,7 @@ export function useTripBuilderNavigation({
   const handleStartOver = useCallback(() => {
     if (
       window.confirm(
-        sanityConfig?.navStartOverConfirmation ?? "Start over? Your current selections will be cleared.",
+        sanityConfig?.navStartOverConfirmation ?? "Start over? Everything you\u2019ve entered will be cleared.",
       )
     ) {
       reset();
@@ -103,7 +103,7 @@ export function useTripBuilderNavigation({
   const getNextLabel = () => {
     if (currentStep === 0) return sanityConfig?.navStartPlanningLabel ?? "Start Planning";
     if (currentStep === 2) return data.entryPoint ? (sanityConfig?.navContinueLabel ?? "Continue") : (sanityConfig?.navSkipLabel ?? "Skip");
-    if (currentStep === 5) return sanityConfig?.navGenerateLabel ?? "Generate Itinerary";
+    if (currentStep === 5) return sanityConfig?.navGenerateLabel ?? "Build My Itinerary";
     return sanityConfig?.navContinueLabel ?? "Continue";
   };
 

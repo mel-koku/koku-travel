@@ -198,7 +198,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
       {/* Helper text when no duration */}
       {!hasDuration && (
         <p id={`${id}-helper`} className="text-sm text-stone">
-          Set trip duration first to enable budget input
+          Set your dates first to unlock this
         </p>
       )}
 
@@ -212,7 +212,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
       {/* Low budget warning */}
       {showLowBudgetWarning && (
         <p className="text-sm text-warning">
-          Budget is quite low — consider increasing for a comfortable trip
+          That&apos;s a tight budget for Japan &mdash; totally doable, just something to know.
         </p>
       )}
     </div>
