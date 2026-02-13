@@ -101,6 +101,20 @@ export const pagesContent = defineType({
 
     // ── Guides Listing ──────────────────────────
     defineField({
+      name: "guidesHeading",
+      title: "Hero Heading",
+      type: "string",
+      fieldset: "guidesListing",
+      initialValue: "The local knowledge that turns a good trip into an unforgettable one.",
+    }),
+    defineField({
+      name: "guidesDescription",
+      title: "Hero Description",
+      type: "string",
+      fieldset: "guidesListing",
+      initialValue: "Curated guides by region, season, and style. Pick a category or start browsing.",
+    }),
+    defineField({
       name: "guidesEmptyHeading",
       title: "Empty State Heading",
       type: "string",

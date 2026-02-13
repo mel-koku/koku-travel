@@ -2,10 +2,11 @@
 
 import { useState, useMemo } from "react";
 
+import { SplitText } from "@/components/ui/SplitText";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { GuideSummary, GuideType } from "@/types/guide";
-import { GuideHeroSpread } from "./GuideHeroSpread";
 import { GuideFilterBar } from "./GuideFilterBar";
-import { GuideEditorialRow } from "./GuideEditorialRow";
+import { GuideCard } from "./GuideCard";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 type GuidesPageClientProps = {
@@ -43,18 +44,10 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
     [typeCounts]
   );
 
-  const isFiltered = selectedType !== null;
-
   const filteredGuides = useMemo(() => {
-    if (!isFiltered) return guides;
+    if (!selectedType) return guides;
     return guides.filter((g) => g.guideType === selectedType);
-  }, [guides, selectedType, isFiltered]);
-
-  // Hero = first guide (only when "All" is selected)
-  const heroGuide = !isFiltered && guides.length > 0 ? guides[0] : null;
-
-  // Listing = remaining guides (skip hero when showing all)
-  const listingGuides = heroGuide ? filteredGuides.slice(1) : filteredGuides;
+  }, [guides, selectedType]);
 
   if (guides.length === 0) {
     return (
@@ -71,10 +64,32 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
 
   return (
     <div>
-      {/* Zone A — Hero Feature */}
-      {heroGuide && <GuideHeroSpread guide={heroGuide} />}
+      {/* Editorial Hero */}
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-32 pb-4 sm:pt-36 sm:pb-6">
+        <p className="font-mono text-xs uppercase tracking-ultra text-stone mb-4">
+          {guides.length} guides across Japan
+        </p>
 
-      {/* Zone B — Filter Bar */}
+        <SplitText
+          as="h1"
+          className="font-serif italic text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.05] text-foreground max-w-4xl"
+          splitBy="word"
+          animation="clipY"
+          staggerDelay={0.04}
+          duration={0.5}
+          delay={0.1}
+        >
+          {content?.guidesHeading ?? "The local knowledge that turns a good trip into an unforgettable one."}
+        </SplitText>
+
+        <ScrollReveal delay={0.3} distance={20} duration={0.5}>
+          <p className="text-base text-foreground-secondary max-w-2xl mt-6">
+            {content?.guidesDescription ?? "Curated guides by region, season, and style. Pick a category or start browsing."}
+          </p>
+        </ScrollReveal>
+      </section>
+
+      {/* Filter Bar */}
       <GuideFilterBar
         types={filterTypes}
         selectedType={selectedType}
@@ -82,21 +97,15 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
         totalCount={guides.length}
       />
 
-      {/* Zone C — Editorial Listing */}
+      {/* Card Grid */}
       <section
         aria-label="Travel guides"
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-20 lg:py-28"
       >
-        {listingGuides.length > 0 ? (
-          <div className="space-y-10 sm:space-y-16 lg:space-y-24">
-            {listingGuides.map((guide, i) => (
-              <GuideEditorialRow
-                key={guide.id}
-                guide={guide}
-                index={heroGuide ? i + 1 : i}
-                flip={i % 2 === 1}
-                eager={i === 0}
-              />
+        {filteredGuides.length > 0 ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
+            {filteredGuides.map((guide, i) => (
+              <GuideCard key={guide.id} guide={guide} index={i} eager={i < 3} />
             ))}
           </div>
         ) : (
