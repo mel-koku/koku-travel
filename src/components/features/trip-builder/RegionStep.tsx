@@ -3,15 +3,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { MapPin } from "lucide-react";
+import { Check, MapPin } from "lucide-react";
 
+import { cn } from "@/lib/cn";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { REGIONS } from "@/data/regions";
+import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import {
   scoreRegionsForTrip,
-  autoSelectRegions,
+  autoSelectCities,
 } from "@/lib/tripBuilder/regionScoring";
-import type { KnownRegionId } from "@/types/trip";
+import type { KnownCityId, KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { RegionDescription } from "@/data/regionDescriptions";
 import { easeCinematicMut } from "@/lib/motion";
@@ -20,6 +21,7 @@ import { RegionMapCanvas } from "./RegionMapCanvas";
 import { RegionRow } from "./RegionRow";
 import { RegionDetailPanel } from "./RegionDetailPanel";
 import { RegionSummaryPill } from "./RegionSummaryPill";
+import { checkLocationCapacity } from "@/lib/tripBuilder/locationCapacity";
 
 export type RegionStepProps = {
   onValidityChange?: (isValid: boolean) => void;
@@ -103,9 +105,35 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
   }, [sanityRegions]);
 
   const vibes = useMemo(() => data.vibes ?? [], [data.vibes]);
-  const selectedRegions = useMemo(
-    () => (data.regions ?? []) as KnownRegionId[],
-    [data.regions]
+
+  // City-level selection (primary source of truth)
+  const selectedCities = useMemo(
+    () => new Set<KnownCityId>((data.cities ?? []) as KnownCityId[]),
+    [data.cities]
+  );
+
+  // Derive regions from selected cities (for map highlighting & summary)
+  const derivedRegions = useMemo(
+    () => deriveRegionsFromCities(Array.from(selectedCities)),
+    [selectedCities]
+  );
+
+  const derivedRegionNames = useMemo(
+    () =>
+      derivedRegions
+        .map((id) => REGIONS.find((r) => r.id === id)?.name)
+        .filter(Boolean) as string[],
+    [derivedRegions]
+  );
+
+  // Check if selected cities have enough locations for the trip duration
+  const locationWarning = useMemo(
+    () =>
+      checkLocationCapacity(
+        Array.from(selectedCities) as KnownCityId[],
+        data.duration ?? 0,
+      ),
+    [selectedCities, data.duration],
   );
 
   // Score regions and merge Sanity overrides
@@ -118,44 +146,67 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     }));
   }, [vibes, data.entryPoint, sanityRegionMap]);
 
-  // Total cities
-  const totalCities = useMemo(() => {
-    return selectedRegions.reduce((sum, id) => {
-      const region = REGIONS.find((r) => r.id === id);
-      return sum + (region?.cities.length ?? 0);
-    }, 0);
-  }, [selectedRegions]);
-
-  // Auto-select on mount
+  // Auto-select cities on mount
   useEffect(() => {
     if (hasAutoSelected.current) return;
-    if (selectedRegions.length > 0) {
+    if (selectedCities.size > 0) {
       hasAutoSelected.current = true;
       return;
     }
 
-    const autoSelected = autoSelectRegions(vibes, data.entryPoint, data.duration);
-    if (autoSelected.length > 0) {
-      setData((prev) => ({ ...prev, regions: autoSelected }));
+    const autoCities = autoSelectCities(vibes, data.entryPoint, data.duration);
+    if (autoCities.length > 0) {
+      const autoRegions = deriveRegionsFromCities(autoCities);
+      setData((prev) => ({ ...prev, cities: autoCities, regions: autoRegions }));
       hasAutoSelected.current = true;
     }
-  }, [vibes, data.entryPoint, data.duration, selectedRegions.length, setData]);
+  }, [vibes, data.entryPoint, data.duration, selectedCities.size, setData]);
 
   // Validity
   useEffect(() => {
-    onValidityChange?.(selectedRegions.length > 0);
-  }, [selectedRegions.length, onValidityChange]);
+    onValidityChange?.(selectedCities.size > 0);
+  }, [selectedCities.size, onValidityChange]);
 
-  const toggleRegion = useCallback(
+  // Toggle a single city
+  const toggleCity = useCallback(
+    (cityId: KnownCityId) => {
+      setData((prev) => {
+        const current = new Set<KnownCityId>((prev.cities ?? []) as KnownCityId[]);
+        if (current.has(cityId)) {
+          current.delete(cityId);
+        } else {
+          current.add(cityId);
+        }
+        const cities = Array.from(current);
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
+      });
+    },
+    [setData]
+  );
+
+  // Select all cities in a region
+  const selectAllRegion = useCallback(
     (regionId: KnownRegionId) => {
       setData((prev) => {
-        const current = new Set<string>(prev.regions ?? []);
-        if (current.has(regionId)) {
-          current.delete(regionId);
-        } else {
-          current.add(regionId);
-        }
-        return { ...prev, regions: Array.from(current) as KnownRegionId[] };
+        const current = new Set<KnownCityId>((prev.cities ?? []) as KnownCityId[]);
+        const regionCities = REGIONS.find((r) => r.id === regionId)?.cities ?? [];
+        regionCities.forEach((c) => current.add(c.id));
+        const cities = Array.from(current);
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
+      });
+    },
+    [setData]
+  );
+
+  // Deselect all cities in a region
+  const deselectAllRegion = useCallback(
+    (regionId: KnownRegionId) => {
+      setData((prev) => {
+        const current = new Set<KnownCityId>((prev.cities ?? []) as KnownCityId[]);
+        const regionCities = REGIONS.find((r) => r.id === regionId)?.cities ?? [];
+        regionCities.forEach((c) => current.delete(c.id));
+        const cities = Array.from(current);
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
       });
     },
     [setData]
@@ -167,13 +218,23 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     return scoredRegions.find((s) => s.region.id === hoveredRegion)?.region ?? null;
   }, [hoveredRegion, scoredRegions]);
 
-  // Mobile expand handler — toggles selection AND inline detail
+  // Mobile expand handler — expansion only (no selection)
   const handleMobileToggle = useCallback(
     (regionId: KnownRegionId) => {
-      toggleRegion(regionId);
       setExpandedRegion((prev) => (prev === regionId ? null : regionId));
     },
-    [toggleRegion]
+    []
+  );
+
+  // Helper: get city counts for a region
+  const getCityCounts = useCallback(
+    (regionId: KnownRegionId) => {
+      const regionCities = REGIONS.find((r) => r.id === regionId)?.cities ?? [];
+      const total = regionCities.length;
+      const selected = regionCities.filter((c) => selectedCities.has(c.id)).length;
+      return { selected, total };
+    },
+    [selectedCities]
   );
 
   return (
@@ -182,7 +243,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       <div className="fixed inset-0 z-0">
         <RegionMapCanvas
           hoveredRegion={hoveredRegion}
-          selectedRegions={selectedRegions}
+          selectedRegions={derivedRegions}
         />
 
         {/* Grain/texture overlay */}
@@ -211,73 +272,85 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
           </motion.h2>
 
           <p className="mt-3 text-sm text-stone lg:text-base">
-            {sanityConfig?.regionStepDescription ?? "Choose your destinations. We've highlighted the best matches for your travel style."}
+            {sanityConfig?.regionStepDescription ?? "Choose your cities. We've highlighted the best matches for your travel style."}
           </p>
         </div>
 
         {/* Region rows */}
         <div className="mt-8 px-4 pb-32 lg:max-w-[45%] lg:px-8">
-          {scoredRegions.map((scored, i) => (
-            <div key={scored.region.id}>
-              {/* Desktop: hover-driven */}
-              <div className="hidden lg:block">
-                <RegionRow
-                  index={i}
-                  region={scored.region}
-                  matchScore={scored.totalScore}
-                  isSelected={selectedRegions.includes(scored.region.id)}
-                  isHovered={hoveredRegion === scored.region.id}
-                  isRecommended={scored.isRecommended}
-                  isEntryPointRegion={scored.isEntryPointRegion}
-                  onToggle={() => toggleRegion(scored.region.id)}
-                  onHover={() => handleHoverRegion(scored.region.id)}
-                  onLeave={handleLeaveRegion}
-                />
-              </div>
+          {scoredRegions.map((scored, i) => {
+            const { selected, total } = getCityCounts(scored.region.id);
+            return (
+              <div key={scored.region.id}>
+                {/* Desktop: hover-driven */}
+                <div className="hidden lg:block">
+                  <RegionRow
+                    index={i}
+                    region={scored.region}
+                    matchScore={scored.totalScore}
+                    selectedCityCount={selected}
+                    totalCityCount={total}
+                    isHovered={hoveredRegion === scored.region.id}
+                    isRecommended={scored.isRecommended}
+                    isEntryPointRegion={scored.isEntryPointRegion}
+                    onClick={() => handleHoverRegion(scored.region.id)}
+                    onHover={() => handleHoverRegion(scored.region.id)}
+                    onLeave={handleLeaveRegion}
+                  />
+                </div>
 
-              {/* Mobile: tap-driven with inline expand */}
-              <div className="lg:hidden">
-                <RegionRow
-                  index={i}
-                  region={scored.region}
-                  matchScore={scored.totalScore}
-                  isSelected={selectedRegions.includes(scored.region.id)}
-                  isHovered={expandedRegion === scored.region.id}
-                  isRecommended={scored.isRecommended}
-                  isEntryPointRegion={scored.isEntryPointRegion}
-                  onToggle={() => handleMobileToggle(scored.region.id)}
-                  onHover={() => {}}
-                  onLeave={() => {}}
-                />
+                {/* Mobile: tap-driven with inline expand */}
+                <div className="lg:hidden">
+                  <RegionRow
+                    index={i}
+                    region={scored.region}
+                    matchScore={scored.totalScore}
+                    selectedCityCount={selected}
+                    totalCityCount={total}
+                    isHovered={expandedRegion === scored.region.id}
+                    isRecommended={scored.isRecommended}
+                    isEntryPointRegion={scored.isEntryPointRegion}
+                    onClick={() => handleMobileToggle(scored.region.id)}
+                    onHover={() => {}}
+                    onLeave={() => {}}
+                  />
 
-                {/* Mobile inline detail */}
-                <AnimatePresence>
-                  {expandedRegion === scored.region.id && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{
-                        duration: 0.4,
-                        ease: easeCinematicMut,
-                      }}
-                      className="overflow-hidden"
-                    >
-                      <MobileRegionDetail region={scored.region} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  {/* Mobile inline detail */}
+                  <AnimatePresence>
+                    {expandedRegion === scored.region.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{
+                          duration: 0.4,
+                          ease: easeCinematicMut,
+                        }}
+                        className="overflow-hidden"
+                      >
+                        <MobileRegionDetail
+                          region={scored.region}
+                          selectedCities={selectedCities}
+                          onToggleCity={toggleCity}
+                          onSelectAllRegion={selectAllRegion}
+                          onDeselectAllRegion={deselectAllRegion}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
       {/* Summary pill — fixed to viewport */}
       <div className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
         <RegionSummaryPill
-          selectedCount={selectedRegions.length}
-          totalCities={totalCities}
+          selectedCityCount={selectedCities.size}
+          derivedRegionNames={derivedRegionNames}
+          warning={locationWarning}
         />
       </div>
 
@@ -285,8 +358,10 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       <div className="fixed inset-y-0 right-0 z-10 hidden w-[40%] lg:block">
         <RegionDetailPanel
           region={detailRegion}
-          isSelected={hoveredRegion ? selectedRegions.includes(hoveredRegion) : false}
-          onToggle={toggleRegion}
+          selectedCities={selectedCities}
+          onToggleCity={toggleCity}
+          onSelectAllRegion={selectAllRegion}
+          onDeselectAllRegion={deselectAllRegion}
           onPanelEnter={handlePanelEnter}
           onPanelLeave={handlePanelLeave}
         />
@@ -298,8 +373,22 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
 /**
  * Compact inline detail shown on mobile when a region row is expanded.
  */
-function MobileRegionDetail({ region }: { region: import("@/data/regionDescriptions").RegionDescription }) {
+function MobileRegionDetail({
+  region,
+  selectedCities,
+  onToggleCity,
+  onSelectAllRegion,
+  onDeselectAllRegion,
+}: {
+  region: RegionDescription;
+  selectedCities: Set<KnownCityId>;
+  onToggleCity: (cityId: KnownCityId) => void;
+  onSelectAllRegion: (regionId: KnownRegionId) => void;
+  onDeselectAllRegion: (regionId: KnownRegionId) => void;
+}) {
   const regionCities = REGIONS.find((r) => r.id === region.id)?.cities ?? [];
+  const allCitiesSelected =
+    regionCities.length > 0 && regionCities.every((c) => selectedCities.has(c.id));
 
   return (
     <div className="border-b border-border/50 bg-foreground/[0.02] px-4 py-4">
@@ -320,18 +409,62 @@ function MobileRegionDetail({ region }: { region: import("@/data/regionDescripti
         {region.description}
       </p>
 
-      {/* Cities */}
+      {/* Cities — interactive toggles */}
       {regionCities.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {regionCities.map((city) => (
-            <span
-              key={city.id}
-              className="flex items-center gap-1 rounded-lg bg-foreground/5 px-2 py-0.5 text-xs text-foreground-secondary"
-            >
-              <MapPin className="h-3 w-3 text-brand-primary" />
-              {city.name}
+        <div className="mt-3">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-[10px] font-medium uppercase tracking-widest text-stone">
+              Cities
             </span>
-          ))}
+            <button
+              type="button"
+              onClick={() =>
+                allCitiesSelected
+                  ? onDeselectAllRegion(region.id)
+                  : onSelectAllRegion(region.id)
+              }
+              className="text-[10px] font-medium uppercase tracking-wider text-brand-primary hover:text-brand-primary/80"
+            >
+              {allCitiesSelected ? "Deselect All" : "Select All"}
+            </button>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {regionCities.map((city) => {
+              const isSelected = selectedCities.has(city.id);
+              return (
+                <button
+                  key={city.id}
+                  type="button"
+                  onClick={() => onToggleCity(city.id)}
+                  className={cn(
+                    "flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors duration-200",
+                    isSelected
+                      ? "border border-brand-primary/30 bg-brand-primary/5"
+                      : "border border-transparent hover:bg-foreground/5"
+                  )}
+                >
+                  {/* Checkbox */}
+                  <div
+                    className={cn(
+                      "flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors duration-200",
+                      isSelected
+                        ? "bg-brand-primary"
+                        : "border border-border"
+                    )}
+                  >
+                    {isSelected && (
+                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                    )}
+                  </div>
+
+                  <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
+                  <span className="text-sm text-foreground-secondary">
+                    {city.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>

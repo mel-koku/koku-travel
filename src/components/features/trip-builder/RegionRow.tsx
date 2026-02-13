@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Check, Plane, Star } from "lucide-react";
+import { Plane, Star } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { easeCinematicMut } from "@/lib/motion";
 import type { RegionDescription } from "@/data/regionDescriptions";
@@ -10,11 +10,12 @@ type RegionRowProps = {
   index: number;
   region: RegionDescription;
   matchScore: number;
-  isSelected: boolean;
+  selectedCityCount: number;
+  totalCityCount: number;
   isHovered: boolean;
   isRecommended: boolean;
   isEntryPointRegion: boolean;
-  onToggle: () => void;
+  onClick: () => void;
   onHover: () => void;
   onLeave: () => void;
 };
@@ -23,25 +24,27 @@ export function RegionRow({
   index,
   region,
   matchScore,
-  isSelected,
+  selectedCityCount,
+  totalCityCount,
   isHovered,
   isRecommended,
   isEntryPointRegion,
-  onToggle,
+  onClick,
   onHover,
   onLeave,
 }: RegionRowProps) {
   const prefersReducedMotion = useReducedMotion();
+  const hasSelection = selectedCityCount > 0;
 
   return (
     <motion.button
       type="button"
-      onClick={onToggle}
+      onClick={onClick}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       onFocus={onHover}
       onBlur={onLeave}
-      aria-pressed={isSelected}
+      aria-pressed={hasSelection}
       initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{
@@ -52,7 +55,7 @@ export function RegionRow({
       className={cn(
         "group flex w-full cursor-pointer items-center gap-4 border-b px-4 py-4 text-left transition-colors duration-300 lg:px-5 lg:py-5",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        isSelected
+        hasSelection
           ? "border-border bg-brand-primary/5"
           : "border-border/50 hover:border-border",
       )}
@@ -60,7 +63,7 @@ export function RegionRow({
       {/* Index number */}
       <span className={cn(
         "shrink-0 font-mono text-xs tabular-nums transition-colors duration-300",
-        isSelected || isHovered ? "text-foreground-secondary" : "text-stone",
+        hasSelection || isHovered ? "text-foreground-secondary" : "text-stone",
       )}>
         {String(index + 1).padStart(2, "0")}
       </span>
@@ -68,7 +71,7 @@ export function RegionRow({
       {/* Region name */}
       <span className={cn(
         "flex-1 font-serif text-xl italic tracking-tight transition-colors duration-300 sm:text-2xl",
-        isSelected || isHovered ? "text-foreground" : "text-foreground-secondary",
+        hasSelection || isHovered ? "text-foreground" : "text-foreground-secondary",
       )}>
         {region.name}
       </span>
@@ -92,28 +95,38 @@ export function RegionRow({
       {/* Match score */}
       <span className={cn(
         "shrink-0 font-mono text-xs tabular-nums transition-colors duration-300",
-        isSelected || isHovered ? "text-foreground-secondary" : "text-stone",
+        hasSelection || isHovered ? "text-foreground-secondary" : "text-stone",
       )}>
         {matchScore}%
       </span>
 
-      {/* Checkmark */}
-      <div className="flex h-6 w-6 shrink-0 items-center justify-center">
-        {isSelected ? (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-primary"
-          >
-            <Check className="h-3.5 w-3.5 text-white" strokeWidth={3} />
-          </motion.div>
-        ) : (
-          <div className={cn(
-            "h-6 w-6 rounded-full border transition-colors duration-300",
-            isHovered ? "border-foreground/30" : "border-border",
-          )} />
-        )}
+      {/* City dots */}
+      <div className="flex shrink-0 items-center gap-[3px]">
+        {Array.from({ length: totalCityCount }).map((_, i) => {
+          const isFilled = i < selectedCityCount;
+          return prefersReducedMotion ? (
+            <div
+              key={i}
+              className={cn(
+                "h-[6px] w-[6px] rounded-full",
+                isFilled ? "bg-brand-primary" : "border border-border",
+              )}
+            />
+          ) : (
+            <motion.div
+              key={i}
+              initial={false}
+              animate={{
+                scale: isFilled ? 1 : 0.85,
+                backgroundColor: isFilled ? "var(--color-brand-primary)" : "transparent",
+                borderColor: isFilled ? "var(--color-brand-primary)" : "var(--color-border)",
+              }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              className="h-[6px] w-[6px] rounded-full border"
+              style={{ borderWidth: isFilled ? 0 : 1 }}
+            />
+          );
+        })}
       </div>
     </motion.button>
   );

@@ -124,4 +124,16 @@ export function getRegionForCity(cityId: CityId): RegionId | undefined {
   return undefined;
 }
 
-
+/**
+ * Derive unique region IDs from a list of selected cities.
+ * Used to keep `data.regions` in sync when selection is city-driven.
+ */
+export function deriveRegionsFromCities(cityIds: CityId[]): KnownRegionId[] {
+  const regionSet = new Set<KnownRegionId>();
+  for (const cityId of cityIds) {
+    if (isKnownCity(cityId)) {
+      regionSet.add(CITY_TO_REGION[cityId]);
+    }
+  }
+  return Array.from(regionSet);
+}

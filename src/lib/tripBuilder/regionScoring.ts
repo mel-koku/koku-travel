@@ -5,9 +5,10 @@
  * and entry point proximity.
  */
 
-import type { EntryPoint, KnownRegionId } from "@/types/trip";
+import type { EntryPoint, KnownCityId, KnownRegionId } from "@/types/trip";
 import type { VibeId } from "@/data/vibes";
 import { REGION_DESCRIPTIONS, type RegionDescription } from "@/data/regionDescriptions";
+import { REGIONS } from "@/data/regions";
 
 /**
  * Result of scoring a region for a trip.
@@ -189,4 +190,22 @@ export function getRegionsByScore(
   entryPoint?: EntryPoint
 ): RegionScore[] {
   return scoreRegionsForTrip(vibes, entryPoint);
+}
+
+/**
+ * Auto-select cities by first picking top regions (via autoSelectRegions),
+ * then expanding them to all their city IDs.
+ */
+export function autoSelectCities(
+  vibes: VibeId[],
+  entryPoint?: EntryPoint,
+  duration?: number
+): KnownCityId[] {
+  const regionIds = autoSelectRegions(vibes, entryPoint, duration);
+  const cities: KnownCityId[] = [];
+  for (const regionId of regionIds) {
+    const region = REGIONS.find((r) => r.id === regionId);
+    region?.cities.forEach((c) => cities.push(c.id));
+  }
+  return cities;
 }
