@@ -99,6 +99,7 @@ export const LOCATION_LISTING_COLUMNS = `
   min_budget,
   place_id,
   primary_photo_url,
+  coordinates,
   google_primary_type,
   google_types,
   business_status,
@@ -213,6 +214,7 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "min_budget"
   | "place_id"
   | "primary_photo_url"
+  | "coordinates"
   | "google_primary_type"
   | "google_types"
   | "business_status"

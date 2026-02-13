@@ -12,6 +12,26 @@ const FilterPanel = dynamic(
   { ssr: false }
 );
 
+const ExploreMapLayout = dynamic(
+  () => import("./ExploreMapLayout").then((m) => ({ default: m.ExploreMapLayout })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="px-4">
+        <div className="flex flex-col lg:flex-row lg:gap-4">
+          <div className="lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="aspect-[4/3] rounded-xl shimmer" />
+            ))}
+          </div>
+          <div className="hidden lg:block lg:w-1/2 h-[calc(100dvh-176px)] rounded-2xl bg-surface" />
+        </div>
+      </div>
+    ),
+  }
+);
+
+import { featureFlags } from "@/lib/env/featureFlags";
 import { LocationEditorialGrid } from "./LocationEditorialGrid";
 import { CategoryBar } from "./CategoryBar";
 import { ExploreIntro } from "./ExploreIntro";
@@ -469,23 +489,50 @@ export function ExploreShell({ content }: ExploreShellProps) {
   // Determine active category for interstitials
   const activeCategory = selectedCategories.length === 1 ? selectedCategories[0]! : null;
 
+  const mapAvailable = useMemo(
+    () => featureFlags.enableMapbox && !featureFlags.cheapMode,
+    [],
+  );
+
+  // Auto-fetch all pages when map is active so the full dataset is on the map
+  useEffect(() => {
+    if (mapAvailable && hasNextPage && !isLoadingMore) {
+      fetchNextPage();
+    }
+  }, [mapAvailable, hasNextPage, isLoadingMore, fetchNextPage]);
+
   return (
     <div className="min-h-[100dvh] bg-background">
       {/* Typographic Intro — always renders immediately for entrance animation */}
       <ExploreIntro totalCount={total} content={content} />
 
       {isLoading ? (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          <div className="h-10 w-full rounded shimmer mb-8" />
-          <div className="space-y-10">
-            <div className="aspect-[16/9] rounded-xl shimmer" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="aspect-[3/4] rounded-xl shimmer" />
-              ))}
+        mapAvailable ? (
+          /* Map-aware loading skeleton */
+          <div className="px-4">
+            <div className="h-10 w-full rounded shimmer mb-4" />
+            <div className="flex flex-col lg:flex-row lg:gap-4">
+              <div className="lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="aspect-[4/3] rounded-xl shimmer" />
+                ))}
+              </div>
+              <div className="hidden lg:block lg:w-1/2 h-[calc(100dvh-176px)] rounded-2xl shimmer" />
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+            <div className="h-10 w-full rounded shimmer mb-8" />
+            <div className="space-y-10">
+              <div className="aspect-[16/9] rounded-xl shimmer" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 3 }).map((_, index) => (
+                  <div key={index} className="aspect-[3/4] rounded-xl shimmer" />
+                ))}
+              </div>
+            </div>
+          </div>
+        )
       ) : error ? (
         <div className="flex-1 flex items-center justify-center py-20">
           <div className="mx-auto max-w-md px-4 text-center">
@@ -523,50 +570,60 @@ export function ExploreShell({ content }: ExploreShellProps) {
         onQueryChange={setQuery}
       />
 
-      {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-        {/* Loading more indicator */}
-        {activeFilters.length > 0 && hasNextPage && (
-          <div className="mb-6">
-            <p className="text-xs text-foreground-secondary">
-              Searching {locations.length.toLocaleString()} of {total.toLocaleString()} locations{" "}
-              <button
-                onClick={() => fetchNextPage()}
-                disabled={isLoadingMore}
-                className="text-brand-primary hover:underline disabled:opacity-50"
-              >
-                {isLoadingMore ? "Loading..." : "Load more from server"}
-              </button>
-            </p>
-          </div>
-        )}
-
-        {/* Editorial Grid */}
-        <LocationEditorialGrid
-          locations={visibleLocations}
-          onSelect={handleSelectLocation}
+      {/* Main Content — Map layout or editorial grid */}
+      {mapAvailable ? (
+        <ExploreMapLayout
+          filteredLocations={filteredLocations}
+          sortedLocations={sortedLocations}
           totalCount={total}
-          activeCategory={activeCategory}
+          onSelectLocation={handleSelectLocation}
+          isLoading={false}
         />
-
-        {/* Progressive loading sentinel */}
-        {hasMore && (
-          <div ref={sentinelRef} className="py-8 flex justify-center">
-            <div className="h-[2px] w-32 bg-brand-primary/30 rounded-full overflow-hidden">
-              <div className="h-full w-1/3 bg-brand-primary rounded-full animate-pulse" />
+      ) : (
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          {/* Loading more indicator */}
+          {activeFilters.length > 0 && hasNextPage && (
+            <div className="mb-6">
+              <p className="text-xs text-foreground-secondary">
+                Searching {locations.length.toLocaleString()} of {total.toLocaleString()} locations{" "}
+                <button
+                  onClick={() => fetchNextPage()}
+                  disabled={isLoadingMore}
+                  className="text-brand-primary hover:underline disabled:opacity-50"
+                >
+                  {isLoadingMore ? "Loading..." : "Load more from server"}
+                </button>
+              </p>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* End state */}
-        {!hasMore && visibleLocations.length > 0 && (
-          <div className="py-16 text-center">
-            <p className="font-serif italic text-lg text-stone">
-              {(content?.exploreEndMessage ?? "That's all {count}. For now.").replace("{count}", sortedLocations.length.toLocaleString())}
-            </p>
-          </div>
-        )}
-      </main>
+          {/* Editorial Grid */}
+          <LocationEditorialGrid
+            locations={visibleLocations}
+            onSelect={handleSelectLocation}
+            totalCount={total}
+            activeCategory={activeCategory}
+          />
+
+          {/* Progressive loading sentinel */}
+          {hasMore && (
+            <div ref={sentinelRef} className="py-8 flex justify-center">
+              <div className="h-[2px] w-32 bg-brand-primary/30 rounded-full overflow-hidden">
+                <div className="h-full w-1/3 bg-brand-primary rounded-full animate-pulse" />
+              </div>
+            </div>
+          )}
+
+          {/* End state */}
+          {!hasMore && visibleLocations.length > 0 && (
+            <div className="py-16 text-center">
+              <p className="font-serif italic text-lg text-stone">
+                {(content?.exploreEndMessage ?? "That's all {count}. For now.").replace("{count}", sortedLocations.length.toLocaleString())}
+              </p>
+            </div>
+          )}
+        </main>
+      )}
 
       {/* Background Loading Indicator */}
       {isLoadingMore && (
