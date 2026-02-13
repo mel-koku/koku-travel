@@ -7,8 +7,9 @@ import { Calendar, Plane, Sparkles, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getVibeById } from "@/data/vibes";
-import { REGIONS } from "@/data/regions";
+import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
+import type { KnownCityId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type TripSummaryEditorialProps = {
@@ -28,23 +29,34 @@ export function TripSummaryEditorial({
 }: TripSummaryEditorialProps) {
   const { data } = useTripBuilder();
 
+  // Derive region names from cities (primary), fallback to data.regions for backward compat
+  const derivedRegionNames = useMemo(() => {
+    const cities = (data.cities ?? []) as KnownCityId[];
+    if (cities.length > 0) {
+      const regionIds = deriveRegionsFromCities(cities);
+      return regionIds
+        .map((id) => REGIONS.find((r) => r.id === id)?.name)
+        .filter(Boolean) as string[];
+    }
+    // Fallback to data.regions for backward compat
+    return (data.regions ?? [])
+      .map((id) => REGIONS.find((r) => r.id === id)?.name)
+      .filter(Boolean) as string[];
+  }, [data.cities, data.regions]);
+
   // Dynamic headline
   const headline = useMemo(() => {
-    const regionNames = (data.regions ?? [])
-      .map((id) => REGIONS.find((r) => r.id === id)?.name)
-      .filter(Boolean);
-
     const duration = data.duration;
     const regionStr =
-      regionNames.length > 2
-        ? `${regionNames.slice(0, 2).join(", ")} & more`
-        : regionNames.join(" & ");
+      derivedRegionNames.length > 2
+        ? `${derivedRegionNames.slice(0, 2).join(", ")} & more`
+        : derivedRegionNames.join(" & ");
 
     if (duration && regionStr) return `${duration} days in ${regionStr}`;
     if (duration) return `${duration} days in Japan`;
     if (regionStr) return `Your trip to ${regionStr}`;
     return "Your journey, at a glance";
-  }, [data.regions, data.duration]);
+  }, [derivedRegionNames, data.duration]);
 
   // Format dates
   const formattedDates = useMemo(() => {
@@ -64,24 +76,38 @@ export function TripSummaryEditorial({
     [data.vibes]
   );
 
-  const regionNames = useMemo(
-    () =>
-      (data.regions ?? [])
-        .map((id) => REGIONS.find((r) => r.id === id)?.name)
-        .filter(Boolean) as string[],
-    [data.regions]
-  );
+  // City names for destination badges
+  const cityNames = useMemo(() => {
+    const cities = (data.cities ?? []) as KnownCityId[];
+    if (cities.length > 0) {
+      return cities
+        .map((cityId) => {
+          for (const region of REGIONS) {
+            const city = region.cities.find((c) => c.id === cityId);
+            if (city) return city.name;
+          }
+          return null;
+        })
+        .filter(Boolean) as string[];
+    }
+    // Fallback: show region names if no cities
+    return derivedRegionNames;
+  }, [data.cities, derivedRegionNames]);
 
-  // Get hero images from selected regions for composite
+  // Get hero images from derived regions for composite
   const regionImages = useMemo(() => {
-    return (data.regions ?? [])
+    const cities = (data.cities ?? []) as KnownCityId[];
+    const regionIds = cities.length > 0
+      ? deriveRegionsFromCities(cities)
+      : (data.regions ?? []);
+    return regionIds
       .slice(0, 3)
       .map((id) => {
         const desc = REGION_DESCRIPTIONS.find((r) => r.id === id);
         return desc?.heroImage;
       })
       .filter(Boolean) as string[];
-  }, [data.regions]);
+  }, [data.cities, data.regions]);
 
   return (
     <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
@@ -164,14 +190,14 @@ export function TripSummaryEditorial({
             onEdit={onEditVibes}
           />
 
-          {/* Regions */}
+          {/* Destinations */}
           <SummaryItem
             icon={<MapPin className="h-4 w-4" />}
             label="Destinations"
             value={
-              regionNames.length > 0 ? (
+              cityNames.length > 0 ? (
                 <div className="flex flex-wrap gap-1.5">
-                  {regionNames.map((name) => (
+                  {cityNames.map((name) => (
                     <span
                       key={name}
                       className="rounded-full bg-sage/10 px-2.5 py-0.5 text-sm font-medium text-sage"

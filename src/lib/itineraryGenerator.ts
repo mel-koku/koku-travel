@@ -1,5 +1,5 @@
 import { getRegionForCity, REGIONS } from "@/data/regions";
-import { shouldSuggestDayTrip, getDayTripTravelOverhead, type DayTripConfig } from "@/data/dayTrips";
+import { shouldSuggestDayTrip, getDayTripsFromCity, getDayTripTravelOverhead, type DayTripConfig } from "@/data/dayTrips";
 import type { Itinerary, ItineraryTravelMode, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
@@ -163,6 +163,24 @@ export async function generateItinerary(
   } else {
     // Fetch locations filtered by selected cities (after ward consolidation)
     allLocations = await fetchAllLocations({ cities: data.cities });
+
+    // Expand fetch to include day trip target cities for small selections
+    // (1-2 cities) where location exhaustion is likely on longer trips
+    if (data.cities && data.cities.length <= 2) {
+      const dayTripCityIds = new Set<string>();
+      for (const cityId of data.cities) {
+        const trips = getDayTripsFromCity(cityId);
+        trips.forEach((t) => dayTripCityIds.add(t.cityId));
+      }
+      // Remove already-fetched cities
+      data.cities.forEach((c) => dayTripCityIds.delete(c));
+      if (dayTripCityIds.size > 0) {
+        const dayTripLocations = await fetchAllLocations({
+          cities: Array.from(dayTripCityIds),
+        });
+        allLocations = [...allLocations, ...dayTripLocations];
+      }
+    }
   }
   const { locationsByCityKey, locationsByRegionId } = buildLocationMaps(allLocations);
 
@@ -254,9 +272,9 @@ export async function generateItinerary(
     const baseCityLocations = locationsByCityKey.get(cityInfo.key) ?? [];
     const unusedInBaseCity = baseCityLocations.filter((loc) => !usedLocations.has(loc.id));
 
-    // Only suggest day trip if user selected a single city and we're running low on locations
-    const isSingleCityTrip = data.cities && data.cities.length === 1;
-    if (isSingleCityTrip) {
+    // Suggest day trips for small city selections (1-2 cities) when running low on locations
+    const isSmallCitySelection = data.cities && data.cities.length <= 2;
+    if (isSmallCitySelection) {
       activeDayTrip = shouldSuggestDayTrip(
         cityInfo.key,
         daysInCurrentCity,
