@@ -432,7 +432,7 @@ function MobileRegionDetail({
               {allCitiesSelected ? "Deselect All" : "Select All"}
             </button>
           </div>
-          <div className="flex flex-col gap-1.5">
+          <div className="grid grid-cols-2 gap-1.5">
             {regionCities.map((city) => {
               const isSelected = selectedCities.has(city.id);
               return (

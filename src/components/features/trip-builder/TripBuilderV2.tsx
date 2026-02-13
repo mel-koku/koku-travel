@@ -75,6 +75,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
           onStepClick={handleStepClick}
           onStartOver={handleStartOver}
           completedSteps={completedSteps}
+          hideDesktopTrack={currentStep === 4}
         />
       )}
 

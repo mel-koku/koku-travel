@@ -48,7 +48,7 @@ export function RegionDetailPanel({
 
   return (
     <div
-      className="flex h-full w-full pointer-events-auto"
+      className={cn("flex h-full w-full", region ? "pointer-events-auto" : "pointer-events-none")}
       onMouseEnter={onPanelEnter}
       onMouseLeave={onPanelLeave}
       onWheel={handleWheel}
@@ -115,7 +115,7 @@ export function RegionDetailPanel({
                       {allCitiesSelected ? "Deselect All" : "Select All"}
                     </button>
                   </div>
-                  <div className="flex flex-col gap-1.5">
+                  <div className="grid grid-cols-2 gap-1.5">
                     {regionCities.map((city) => {
                       const isSelected = selectedCities.has(city.id);
                       return (
