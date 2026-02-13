@@ -20,6 +20,8 @@ type StepProgressTrackProps = {
   onStepClick: (step: number) => void;
   onStartOver: () => void;
   completedSteps: Set<number>;
+  /** Hide the desktop vertical track (e.g. when a side panel occupies the right edge) */
+  hideDesktopTrack?: boolean;
 };
 
 export function StepProgressTrack({
@@ -28,13 +30,17 @@ export function StepProgressTrack({
   onStepClick,
   onStartOver,
   completedSteps,
+  hideDesktopTrack = false,
 }: StepProgressTrackProps) {
   const prefersReducedMotion = useReducedMotion();
 
   return (
     <>
       {/* Desktop — Vertical tick track, fixed right edge */}
-      <div className="fixed right-8 top-1/2 z-30 hidden -translate-y-1/2 flex-col items-center gap-0 lg:flex">
+      <div className={cn(
+        "fixed right-8 top-1/2 z-30 -translate-y-1/2 flex-col items-center gap-0",
+        hideDesktopTrack ? "hidden" : "hidden lg:flex"
+      )}>
         {/* Vertical line */}
         <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-border/50" />
 
