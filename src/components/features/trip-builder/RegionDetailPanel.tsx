@@ -48,7 +48,7 @@ export function RegionDetailPanel({
 
   return (
     <div
-      className="flex h-full w-full"
+      className="flex h-full w-full pointer-events-auto"
       onMouseEnter={onPanelEnter}
       onMouseLeave={onPanelLeave}
       onWheel={handleWheel}
@@ -86,9 +86,9 @@ export function RegionDetailPanel({
               </div>
             </div>
 
-            {/* Scrollable content area */}
+            {/* Scrollable content area — pb-24 clears the sticky Continue bar */}
             <div
-              className="flex-1 overflow-y-auto p-6"
+              className="flex-1 overflow-y-auto p-6 pb-24"
               style={{ overscrollBehavior: "contain" }}
             >
               <div className="flex flex-col gap-5">
@@ -199,25 +199,6 @@ export function RegionDetailPanel({
                   </ul>
                 </div>
 
-                {/* Batch toggle button */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    allCitiesSelected
-                      ? onDeselectAllRegion(region.id)
-                      : onSelectAllRegion(region.id)
-                  }
-                  className={cn(
-                    "mt-2 w-full shrink-0 rounded-xl py-3 text-sm font-medium uppercase tracking-wider transition-colors",
-                    allCitiesSelected
-                      ? "bg-foreground/10 text-foreground hover:bg-foreground/15"
-                      : "bg-brand-primary text-white hover:bg-brand-primary/90"
-                  )}
-                >
-                  {allCitiesSelected
-                    ? `Deselect All ${region.name}`
-                    : `Select All ${region.name}`}
-                </button>
               </div>
             </div>
           </motion.div>

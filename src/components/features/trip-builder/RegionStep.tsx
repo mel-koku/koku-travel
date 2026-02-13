@@ -280,6 +280,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         <div className="mt-8 px-4 pb-32 lg:max-w-[45%] lg:px-8">
           {scoredRegions.map((scored, i) => {
             const { selected, total } = getCityCounts(scored.region.id);
+            const cityNames = REGIONS.find((r) => r.id === scored.region.id)?.cities.map((c) => c.name) ?? [];
             return (
               <div key={scored.region.id}>
                 {/* Desktop: hover-driven */}
@@ -287,6 +288,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                   <RegionRow
                     index={i}
                     region={scored.region}
+                    cityNames={cityNames}
                     matchScore={scored.totalScore}
                     selectedCityCount={selected}
                     totalCityCount={total}
@@ -304,6 +306,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                   <RegionRow
                     index={i}
                     region={scored.region}
+                    cityNames={cityNames}
                     matchScore={scored.totalScore}
                     selectedCityCount={selected}
                     totalCityCount={total}
@@ -346,7 +349,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       </div>
 
       {/* Summary pill — fixed to viewport */}
-      <div className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
+      <div className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
         <RegionSummaryPill
           selectedCityCount={selectedCities.size}
           derivedRegionNames={derivedRegionNames}
@@ -354,8 +357,9 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         />
       </div>
 
-      {/* Desktop detail panel — fixed to viewport */}
-      <div className="fixed inset-y-0 right-0 z-10 hidden w-[40%] lg:block">
+      {/* Desktop detail panel — fixed to viewport, z-40 to sit above StepProgressTrack (z-30).
+           pointer-events-none on wrapper so it doesn't block clicks when panel is hidden. */}
+      <div className="pointer-events-none fixed inset-y-0 right-0 z-40 hidden w-[40%] lg:block">
         <RegionDetailPanel
           region={detailRegion}
           selectedCities={selectedCities}

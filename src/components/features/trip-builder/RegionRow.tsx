@@ -9,6 +9,7 @@ import type { RegionDescription } from "@/data/regionDescriptions";
 type RegionRowProps = {
   index: number;
   region: RegionDescription;
+  cityNames: string[];
   matchScore: number;
   selectedCityCount: number;
   totalCityCount: number;
@@ -23,6 +24,7 @@ type RegionRowProps = {
 export function RegionRow({
   index,
   region,
+  cityNames,
   matchScore,
   selectedCityCount,
   totalCityCount,
@@ -68,13 +70,20 @@ export function RegionRow({
         {String(index + 1).padStart(2, "0")}
       </span>
 
-      {/* Region name */}
-      <span className={cn(
-        "flex-1 font-serif text-xl italic tracking-tight transition-colors duration-300 sm:text-2xl",
-        hasSelection || isHovered ? "text-foreground" : "text-foreground-secondary",
-      )}>
-        {region.name}
-      </span>
+      {/* Region name + city subtitle */}
+      <div className="flex-1 min-w-0">
+        <span className={cn(
+          "block font-serif text-xl italic tracking-tight transition-colors duration-300 sm:text-2xl",
+          hasSelection || isHovered ? "text-foreground" : "text-foreground-secondary",
+        )}>
+          {region.name}
+        </span>
+        {cityNames.length > 0 && (
+          <span className="block text-xs text-stone transition-colors duration-300 mt-0.5">
+            {cityNames.join(" · ")}
+          </span>
+        )}
+      </div>
 
       {/* Badges */}
       <div className="flex items-center gap-2">
