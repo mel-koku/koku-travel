@@ -23,6 +23,8 @@ import {
   springCursor,
   springInteraction,
   springNavigation,
+  easeRevealMut,
+  easeCinematicMut,
   staggerChar,
   staggerItem,
   staggerSection,
@@ -189,7 +191,7 @@ function DurationDemo() {
                 animate={playing ? { width: "100%" } : { width: "0%" }}
                 transition={{
                   duration: value,
-                  ease: [...easeReveal] as [number, number, number, number],
+                  ease: easeRevealMut,
                 }}
               />
             </div>
@@ -262,7 +264,7 @@ function StaggerDemo() {
                   transition={{
                     duration: durationFast,
                     delay: playing ? i * value : 0,
-                    ease: [...easeReveal] as [number, number, number, number],
+                    ease: easeRevealMut,
                   }}
                 />
               ))}
@@ -315,7 +317,7 @@ function HoverScaleDemo() {
             whileHover={{ scale: value }}
             transition={{
               duration: durationCinematic,
-              ease: [...easeCinematic] as [number, number, number, number],
+              ease: easeCinematicMut,
             }}
           >
             <div className="flex items-baseline gap-3">

@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCursor } from "@/providers/CursorProvider";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { easeCinematicCSS } from "@/lib/motion";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
 
 const EXPERIENCE_TYPE_LABELS: Record<ExperienceType, string> = {
@@ -51,8 +50,7 @@ export function ExperienceCard({ experience, index, eager = false }: ExperienceC
               src={imageUrl}
               alt={experience.title}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-              style={{ transitionTimingFunction: easeCinematicCSS }}
+              className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             />
           ) : (

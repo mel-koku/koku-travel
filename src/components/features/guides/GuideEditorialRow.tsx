@@ -7,7 +7,6 @@ import { memo } from "react";
 import type { GuideSummary } from "@/types/guide";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useCursor } from "@/hooks/useCursor";
-import { easeCinematicCSS } from "@/lib/motion";
 
 const GUIDE_TYPE_LABELS: Record<GuideSummary["guideType"], string> = {
   itinerary: "Itinerary",
@@ -61,8 +60,7 @@ export const GuideEditorialRow = memo(function GuideEditorialRow({
               src={imageSrc}
               alt={guide.title}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-              style={{ transitionTimingFunction: easeCinematicCSS }}
+              className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02]"
               sizes="(min-width: 1024px) 50vw, 100vw"
             />
             {/* Index number */}

@@ -8,7 +8,7 @@ import { useWishlist } from "@/context/WishlistContext";
 import { useAddToItinerary } from "@/hooks/useAddToItinerary";
 import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
-import { easeReveal, durationBase, easeCinematicCSS } from "@/lib/motion";
+import { easeReveal, durationBase } from "@/lib/motion";
 import type { Location } from "@/types/location";
 import { PlusIcon } from "./PlusIcon";
 import { MinusIcon } from "./MinusIcon";
@@ -115,8 +115,7 @@ export const EditorialCard = memo(function EditorialCard({
             src={imageSrc || FALLBACK_IMAGE}
             alt={location.name}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-            style={{ transitionTimingFunction: easeCinematicCSS }}
+            className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
             sizes={
               isFeature
                 ? "(min-width:1280px) 1200px, 100vw"
