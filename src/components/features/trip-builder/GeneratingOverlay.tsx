@@ -6,10 +6,10 @@ import { easeReveal, durationFast } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 const DEFAULT_STATUS_MESSAGES = [
-  "Reading your travel style...",
-  "Mapping the best routes...",
-  "Fitting the pieces together...",
-  "Adding the finishing touches...",
+  "Looking at what you picked...",
+  "Working out the routes...",
+  "Filling in the days...",
+  "Almost done...",
 ];
 
 const MESSAGE_INTERVAL = 2500;
@@ -49,7 +49,7 @@ export function GeneratingOverlay({ sanityConfig }: GeneratingOverlayProps) {
           transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
           className="font-serif text-3xl italic text-foreground sm:text-4xl"
         >
-          {sanityConfig?.generatingHeading ?? "Crafting your journey"}
+          {sanityConfig?.generatingHeading ?? "Building your itinerary"}
         </motion.h2>
 
         {/* Progress bar */}

@@ -115,7 +115,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
           </motion.h2>
 
           <p className="mt-1 text-sm text-stone">
-            {sanityConfig?.entryPointDescription ?? "Optional \u2014 helps us plan smarter routes from your arrival."}
+            {sanityConfig?.entryPointDescription ?? "Optional. If you know your airport, we\u2019ll route from there."}
           </p>
 
           {/* Selected airport display */}
@@ -213,7 +213,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
               </AnimatePresence>
 
               {searchQuery && filteredAirports.length === 0 && (
-                <p className="mt-2 text-center text-sm text-stone">{sanityConfig?.entryPointNoResults ?? "No airports match that search"}</p>
+                <p className="mt-2 text-center text-sm text-stone">{sanityConfig?.entryPointNoResults ?? "No airports found"}</p>
               )}
 
               {/* Popular airports grid — shown when not searching */}

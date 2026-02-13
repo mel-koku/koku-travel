@@ -70,10 +70,10 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
             />
           </svg>
           <h3 className="mt-4 text-sm font-medium text-foreground">
-            Your itinerary preview
+            Itinerary preview
           </h3>
           <p className="mt-2 text-sm text-stone">
-            Start filling in your trip details to see a preview of your itinerary here.
+            Your preview will appear here as you go.
           </p>
         </div>
       </div>
