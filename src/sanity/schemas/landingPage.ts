@@ -17,6 +17,15 @@ export const landingPage = defineType({
   fields: [
     // ── Hero ──────────────────────────────────────
     defineField({
+      name: "heroHeadline",
+      title: "Headline",
+      type: "string",
+      fieldset: "hero",
+      description:
+        "Main editorial statement (max ~60 chars). e.g. 'Travel Japan like the people who live here'",
+      initialValue: "Travel Japan like the people who live here",
+    }),
+    defineField({
       name: "heroTagline",
       title: "Tagline",
       type: "string",
@@ -29,7 +38,7 @@ export const landingPage = defineType({
       type: "text",
       rows: 2,
       fieldset: "hero",
-      initialValue: "Explore {locationCount}+ places curated by people who actually live here.",
+      initialValue: "{locationCount}+ places and experiences we'd actually send our friends to.",
       description: "Use {locationCount} as a placeholder for the dynamic count",
     }),
     defineField({
