@@ -31,10 +31,10 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
   const rest = guides.slice(1, 3);
 
   return (
-    <section className="bg-background py-24 sm:py-32">
+    <section className="bg-background py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
-        <div className="mb-16 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredGuidesEyebrow ?? "Travel Guides"}
@@ -139,13 +139,13 @@ function GuideCard({
           <h3
             className={cn(
               "mt-1 font-serif italic text-white transition-transform duration-500 group-hover:-translate-y-1",
-              featured ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl"
+              featured ? "text-xl sm:text-2xl lg:text-3xl" : "text-xl sm:text-2xl"
             )}
           >
             {guide.title}
           </h3>
           {guide.summary && featured && (
-            <p className="mt-2 text-sm text-white/80 line-clamp-2">
+            <p className="mt-2 hidden text-sm text-white/80 line-clamp-2 lg:block">
               {guide.summary}
             </p>
           )}

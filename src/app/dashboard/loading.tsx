@@ -5,7 +5,7 @@
 export default function DashboardLoading() {
   return (
     <div className="min-h-screen bg-surface pb-16 sm:pb-20 md:pb-24">
-      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 md:px-8">
+      <section className="mx-auto max-w-7xl px-4 pt-6 sm:px-6 sm:pt-8 lg:px-8">
         {/* Header skeleton */}
         <div className="rounded-2xl border border-border bg-background p-4 shadow-md sm:p-6">
           <div className="flex items-center justify-between">

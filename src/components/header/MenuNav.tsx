@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { easeRevealMut, staggerItem, durationMicro } from "@/lib/motion";
 import { useCursor } from "@/providers/CursorProvider";
-import { KokuMark } from "@/components/ui/KokuMark";
 import { useAuthState } from "@/components/ui/IdentityBadge";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
@@ -115,7 +114,6 @@ export function MenuNav({ onClose }: MenuNavProps) {
           onClick={onClose}
           className="flex items-center gap-2"
         >
-          <KokuMark className="h-6 w-6 text-foreground" />
           <span className="flex items-baseline gap-1.5">
             <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
               Koku
