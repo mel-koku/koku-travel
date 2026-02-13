@@ -101,6 +101,7 @@ export const allAuthorsQuery = groq`
 /** Landing page singleton with resolved image URLs */
 export const landingPageQuery = groq`
   *[_type == "landingPage"][0] {
+    heroHeadline,
     heroTagline,
     heroDescription,
     heroPrimaryCtaText,

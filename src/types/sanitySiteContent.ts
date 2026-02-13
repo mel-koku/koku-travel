@@ -2,6 +2,7 @@ import type { SanityImageAsset } from "./sanityGuide";
 
 export type LandingPageContent = {
   // Hero
+  heroHeadline?: string;
   heroTagline?: string;
   heroDescription?: string;
   heroPrimaryCtaText?: string;
