@@ -30,7 +30,7 @@ export const pagesContent = defineType({
       title: "Subtitle",
       type: "string",
       fieldset: "explore",
-      initialValue: "Filter by what matters to you, or just start scrolling.",
+      initialValue: "Filter by what matters to you, or pan the map to explore.",
     }),
     defineField({
       name: "exploreErrorMessage",
