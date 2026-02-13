@@ -17,7 +17,7 @@ const EXPERIENCE_TYPE_OPTIONS: { value: ExperienceType; label: string }[] = [
   { value: "workshop", label: "Workshop" },
   { value: "cruise", label: "Cruise" },
   { value: "tour", label: "Tour" },
-  { value: "experience", label: "Experience" },
+  { value: "experience", label: "Cultural" },
   { value: "adventure", label: "Adventure" },
   { value: "rental", label: "Rental" },
 ];
@@ -54,10 +54,10 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4">
         <p className="font-serif italic text-lg text-foreground">
-          {content?.experiencesEmptyHeading ?? "Experiences are on the way"}
+          {content?.experiencesEmptyHeading ?? "Experiences are in the works"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
-          {content?.experiencesEmptyDescription ?? "We're curating immersive Japan experiences. Check back soon."}
+          {content?.experiencesEmptyDescription ?? "We're putting these together now. Browse places while you wait."}
         </p>
       </div>
     );
@@ -80,12 +80,12 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
           duration={0.5}
           delay={0.1}
         >
-          {content?.experiencesHeading ?? "The workshops, cruises, and cultural immersions that leave a mark."}
+          {content?.experiencesHeading ?? "Workshops, cruises, and the kind of moments you'll talk about for years."}
         </SplitText>
 
         <ScrollReveal delay={0.3} distance={20} duration={0.5}>
           <p className="text-base text-foreground-secondary max-w-2xl mt-6">
-            {content?.experiencesDescription ?? "Hands-on moments you won't find in a guidebook. Filter by type and find your next adventure."}
+            {content?.experiencesDescription ?? "Hands-on moments you won't find in any guidebook."}
           </p>
         </ScrollReveal>
       </section>
@@ -152,10 +152,10 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="font-serif italic text-lg text-foreground">
-              {content?.experiencesFilteredEmptyHeading ?? "Nothing here yet"}
+              {content?.experiencesFilteredEmptyHeading ?? "No experiences of this type yet"}
             </p>
             <p className="mt-2 text-sm text-stone">
-              {content?.experiencesFilteredEmptyDescription ?? "Try selecting a different category above."}
+              {content?.experiencesFilteredEmptyDescription ?? "Try another filter, or see everything."}
             </p>
           </div>
         )}

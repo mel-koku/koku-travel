@@ -21,14 +21,14 @@ const INTERSTITIAL_MESSAGES: Record<string, string> = {
   culture: "Temples, castles, and the stories they hold.",
   food: "From street-side yakitori to multi-course kaiseki.",
   nature: "Mountains, coastlines, and gardens that slow time.",
-  shopping: "Shotengai, department stores, and hidden boutiques.",
+  shopping: "Covered arcades, department stores, and the boutiques in between.",
   view: "The vantage points worth the climb.",
 };
 
 const DEFAULT_INTERSTITIALS = [
-  "Keep scrolling. The best places are the ones you almost missed.",
-  "From neon-lit streets to moss-covered paths.",
-  "Every backstreet has a story.",
+  "Keep going. There's more worth finding.",
+  "Neon-lit streets. Moss-covered paths. Same country.",
+  "Some of these places don't even have English signage. That's the point.",
 ];
 
 const FALLBACK_IMAGE =
@@ -185,9 +185,9 @@ export function LocationEditorialGrid({
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
-        <p className="text-base font-medium text-foreground mb-1">No places match</p>
+        <p className="text-base font-medium text-foreground mb-1">Nothing matched those filters</p>
         <p className="text-sm text-stone text-center max-w-sm">
-          Try adjusting your filters or broadening your search.
+          Try removing a filter or searching for something else.
         </p>
       </div>
     );
