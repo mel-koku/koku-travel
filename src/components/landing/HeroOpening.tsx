@@ -18,6 +18,7 @@ import {
   durationBase,
   durationCinematic,
   durationEpic,
+  easeScrollIndicator,
 } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
@@ -348,7 +349,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
                 transition={{
                   duration: durationEpic,
                   repeat: Infinity,
-                  ease: [0.45, 0, 0.55, 1],
+                  ease: easeScrollIndicator,
                 }}
                 className="absolute h-4 w-px bg-gradient-to-b from-transparent via-foreground/70 to-transparent"
               />

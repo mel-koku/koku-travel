@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { easeCinematic } from "@/lib/motion";
+import { easeCinematicMut } from "@/lib/motion";
 
 type RegionSummaryPillProps = {
   selectedCount: number;
@@ -25,7 +25,7 @@ export function RegionSummaryPill({
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
             transition={{
               duration: 0.4,
-              ease: [...easeCinematic] as [number, number, number, number],
+              ease: easeCinematicMut,
             }}
             className="whitespace-nowrap rounded-full border border-border bg-background/90 px-6 py-3 text-sm shadow-lg backdrop-blur-xl"
           >
@@ -45,7 +45,7 @@ export function RegionSummaryPill({
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
             transition={{
               duration: 0.4,
-              ease: [...easeCinematic] as [number, number, number, number],
+              ease: easeCinematicMut,
             }}
             className="whitespace-nowrap rounded-full border border-warning/30 bg-warning/10 px-6 py-3 text-sm text-warning backdrop-blur-xl"
           >

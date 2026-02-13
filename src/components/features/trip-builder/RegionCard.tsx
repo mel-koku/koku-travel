@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Check, MapPin, Plane, Star } from "lucide-react";
 
 import { cn } from "@/lib/cn";
-import { easeCinematicCSS, springInteraction, durationFast } from "@/lib/motion";
+import { springInteraction, durationFast } from "@/lib/motion";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { REGIONS } from "@/data/regions";
 import type { RegionDescription } from "@/data/regionDescriptions";
@@ -58,10 +58,9 @@ export function RegionCard({
           alt={`${region.name} region`}
           fill
           className={cn(
-            "object-cover transition-transform duration-500",
+            "object-cover transition-transform duration-500 ease-cinematic",
             isSelected ? "scale-[1.04]" : "group-hover:scale-[1.04]"
           )}
-          style={{ transitionTimingFunction: easeCinematicCSS }}
           sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
         />
 

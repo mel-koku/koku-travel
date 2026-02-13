@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef, useState, useEffect } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { easeReveal } from "@/lib/motion";
+import { easeReveal, easeScrollIndicator } from "@/lib/motion";
 
 type LandingHeroProps = {
   locationCount: number;
@@ -143,7 +143,7 @@ export function LandingHero({ locationCount }: LandingHeroProps) {
               {/* Animated pulse */}
               <motion.div
                 animate={{ y: [0, 64, 0] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: [0.45, 0, 0.55, 1] }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: easeScrollIndicator }}
                 className="absolute h-4 w-px bg-gradient-to-b from-transparent via-foreground/60 to-transparent"
               />
             </div>

@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { cn } from "@/lib/cn";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useCursor } from "@/providers/CursorProvider";
 import type { GuideSummary } from "@/types/guide";
-import { staggerItem, easeCinematicCSS } from "@/lib/motion";
+import { staggerItem } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type FeaturedGuidesProps = {
@@ -97,16 +98,16 @@ function GuideCard({
       onMouseLeave={() => isEnabled && setCursorState("default")}
     >
       <div
-        className={`relative h-full ${
+        className={cn(
+          "relative h-full",
           featured ? "aspect-[3/2] lg:aspect-auto" : "aspect-[4/3]"
-        }`}
+        )}
       >
         <Image
           src={imageSrc || "/placeholder.jpg"}
           alt={guide.title}
           fill
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.02] group-active:scale-[1.02]"
-          style={{ transitionTimingFunction: easeCinematicCSS }}
+          className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02] group-active:scale-[1.02]"
           sizes={
             featured
               ? "(min-width: 1024px) 66vw, 100vw"
@@ -138,9 +139,10 @@ function GuideCard({
             </p>
           )}
           <h3
-            className={`mt-1 font-serif italic text-white transition-transform duration-500 group-hover:-translate-y-1 ${
+            className={cn(
+              "mt-1 font-serif italic text-white transition-transform duration-500 group-hover:-translate-y-1",
               featured ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl"
-            }`}
+            )}
           >
             {guide.title}
           </h3>

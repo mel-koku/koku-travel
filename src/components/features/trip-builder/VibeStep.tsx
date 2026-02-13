@@ -12,7 +12,7 @@ import {
 import { motion } from "framer-motion";
 import { VibeCard } from "./VibeCard";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { easeCinematic, easeCinematicCSS } from "@/lib/motion";
+import { easeCinematicMut, easeCinematicCSS } from "@/lib/motion";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -113,7 +113,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
         <motion.h2
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [...easeCinematic] as [number, number, number, number], delay: 0.15 }}
+          transition={{ duration: 0.5, ease: easeCinematicMut, delay: 0.15 }}
           className="mt-3 font-serif text-4xl italic tracking-tight text-foreground sm:text-5xl"
         >
           {sanityConfig?.vibeStepHeading ?? "What moves you?"}

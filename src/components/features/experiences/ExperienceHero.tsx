@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { parallaxHero, durationEpic } from "@/lib/motion";
+import { parallaxHero, durationEpic, easeScrollIndicator } from "@/lib/motion";
 import type { ExperienceType } from "@/types/experience";
 
 type ExperienceHeroProps = {
@@ -141,7 +141,7 @@ export function ExperienceHero({
                 transition={{
                   duration: durationEpic,
                   repeat: Infinity,
-                  ease: [0.45, 0, 0.55, 1],
+                  ease: easeScrollIndicator,
                 }}
                 className="absolute h-4 w-px bg-gradient-to-b from-transparent via-white/50 to-transparent"
               />

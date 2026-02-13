@@ -11,7 +11,7 @@ import {
   type SetStateAction,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { durationFast, durationSlow, easeReveal, easePageTransition } from "@/lib/motion";
+import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
 import { useAppState } from "@/state/AppState";
 import { Itinerary, type ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -703,7 +703,7 @@ export const ItineraryShell = ({
           animate={{ height: mapExpanded ? "100dvh" : "30vh" }}
           transition={{
             duration: durationSlow,
-            ease: [...easePageTransition] as [number, number, number, number],
+            ease: easePageTransitionMut,
           }}
           className="relative overflow-hidden"
         >

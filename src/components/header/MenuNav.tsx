@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { easeReveal, staggerItem, durationMicro } from "@/lib/motion";
+import { easeRevealMut, staggerItem, durationMicro } from "@/lib/motion";
 import { useCursor } from "@/providers/CursorProvider";
 import { KokuMark } from "@/components/ui/KokuMark";
 import { useAuthState } from "@/components/ui/IdentityBadge";
@@ -58,13 +58,13 @@ export function MenuNav({ onClose }: MenuNavProps) {
           y: 0,
           transition: {
             duration: 0.6,
-            ease: [...easeReveal] as [number, number, number, number],
+            ease: easeRevealMut,
           },
         },
         exit: {
           opacity: 0,
           y: 20,
-          transition: { duration: durationMicro, ease: [...easeReveal] as [number, number, number, number] },
+          transition: { duration: durationMicro, ease: easeRevealMut },
         },
       };
 
@@ -78,12 +78,12 @@ export function MenuNav({ onClose }: MenuNavProps) {
           transition: {
             duration: 0.5,
             delay: 0.4,
-            ease: [...easeReveal] as [number, number, number, number],
+            ease: easeRevealMut,
           },
         },
         exit: {
           opacity: 0,
-          transition: { duration: durationMicro, ease: [...easeReveal] as [number, number, number, number] },
+          transition: { duration: durationMicro, ease: easeRevealMut },
         },
       };
 

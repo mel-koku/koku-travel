@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/cn";
 import { SplitText } from "@/components/ui/SplitText";
 import { staggerWord } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
@@ -228,14 +229,20 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
             <button
               aria-label="Scroll left"
               onClick={() => scroll("left")}
-              className={`flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground ${canScrollLeft ? "opacity-100" : "pointer-events-none opacity-30"}`}
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground",
+                canScrollLeft ? "opacity-100" : "pointer-events-none opacity-30"
+              )}
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
             <button
               aria-label="Scroll right"
               onClick={() => scroll("right")}
-              className={`flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground ${canScrollRight ? "opacity-100" : "pointer-events-none opacity-30"}`}
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground",
+                canScrollRight ? "opacity-100" : "pointer-events-none opacity-30"
+              )}
             >
               <ChevronRight className="h-5 w-5" />
             </button>

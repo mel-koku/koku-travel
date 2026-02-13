@@ -15,6 +15,16 @@ export const easeCinematic = [0.215, 0.61, 0.355, 1] as const;
 /** Full-viewport state changes: page wipes, menu overlays, wizard steps */
 export const easePageTransition = [0.76, 0, 0.24, 1] as const;
 
+/** Scroll indicator bounce loops (hero sections) */
+export const easeScrollIndicator = [0.45, 0, 0.55, 1] as const;
+
+// Mutable tuple casts for framer-motion Variants (readonly tuples not accepted)
+type Ease4 = [number, number, number, number];
+export const easeRevealMut: Ease4 = [...easeReveal];
+export const easeCinematicMut: Ease4 = [...easeCinematic];
+export const easePageTransitionMut: Ease4 = [...easePageTransition];
+export const easeScrollIndicatorMut: Ease4 = [...easeScrollIndicator];
+
 // CSS string equivalents (for inline styles & Tailwind arbitrary values)
 export const easeRevealCSS = 'cubic-bezier(0.33, 1, 0.68, 1)';
 export const easeCinematicCSS = 'cubic-bezier(0.215, 0.61, 0.355, 1)';

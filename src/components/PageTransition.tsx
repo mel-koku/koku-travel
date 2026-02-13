@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useLenis } from "@/providers/LenisProvider";
-import { easePageTransition } from "@/lib/motion";
+import { easePageTransitionMut } from "@/lib/motion";
 
 type PageTransitionProps = {
   children: ReactNode;
@@ -85,7 +85,7 @@ export function PageTransition({ children }: PageTransitionProps) {
             animate={{ clipPath: "circle(0% at 50% 50%)" }}
             transition={{
               duration: REVEAL_DURATION,
-              ease: [...easePageTransition] as [number, number, number, number],
+              ease: easePageTransitionMut,
             }}
             style={{ pointerEvents: "all" }}
           />

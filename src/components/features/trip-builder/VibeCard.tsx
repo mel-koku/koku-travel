@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { easeCinematic, easeCinematicCSS, staggerSection, springInteraction } from "@/lib/motion";
+import { easeCinematic, staggerSection, springInteraction } from "@/lib/motion";
 import type { LucideIcon } from "lucide-react";
 
 type VibeCardProps = {
@@ -66,12 +66,9 @@ export function VibeCard({
           alt={name}
           fill
           className={cn(
-            "object-cover transition-transform duration-500",
+            "object-cover transition-transform duration-500 ease-cinematic",
             isHovered || isSelected ? "scale-110" : "scale-100"
           )}
-          style={{
-            transitionTimingFunction: easeCinematicCSS,
-          }}
           sizes="(max-width: 1024px) 72vw, 33vw"
         />
       </div>
@@ -79,14 +76,11 @@ export function VibeCard({
       {/* Gradient overlay — more dramatic, lightens on hover */}
       <div
         className={cn(
-          "absolute inset-0 transition-all duration-700",
+          "absolute inset-0 transition-all duration-700 ease-cinematic",
           isHovered
             ? "bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-charcoal/5"
             : "bg-gradient-to-t from-charcoal/90 via-charcoal/50 to-charcoal/15"
         )}
-        style={{
-          transitionTimingFunction: "cubic-bezier(0.215, 0.61, 0.355, 1)",
-        }}
       />
 
       {/* Editorial index number — top left, fades in on hover */}
@@ -116,14 +110,11 @@ export function VibeCard({
         {/* Accent line — expands + turns brand-primary on hover */}
         <div
           className={cn(
-            "mb-3 h-px transition-all duration-700",
+            "mb-3 h-px transition-all duration-700 ease-cinematic",
             isHovered || isSelected
               ? "w-12 bg-brand-primary"
               : "w-6 bg-white/30"
           )}
-          style={{
-            transitionTimingFunction: easeCinematicCSS,
-          }}
         />
 
         {/* Icon — subtle */}

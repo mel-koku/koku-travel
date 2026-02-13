@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCursor } from "@/providers/CursorProvider";
-import { easeCinematicCSS } from "@/lib/motion";
 import type { ExperienceType } from "@/types/experience";
 import type { ExperienceSummary } from "@/types/experience";
 
@@ -70,8 +69,7 @@ export function ExperienceFooter({
                     src={related.featuredImage?.url || ""}
                     alt={related.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                    style={{ transitionTimingFunction: easeCinematicCSS }}
+                    className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02]"
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />

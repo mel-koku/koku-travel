@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useCursor } from "@/providers/CursorProvider";
+import { springCursor } from "@/lib/motion";
 
 type CursorVariant = "dot" | "ring" | "crosshair" | "icon";
 
@@ -18,7 +19,7 @@ const cursorConfig: Record<
   hidden: { size: 0, opacity: 0, label: "", variant: "dot" },
 };
 
-const springConfig = { stiffness: 400, damping: 25 };
+const springConfig = springCursor;
 
 function CrosshairIcon() {
   return (
