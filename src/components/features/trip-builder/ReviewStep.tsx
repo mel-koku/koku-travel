@@ -56,8 +56,8 @@ const GROUP_TYPE_OPTIONS = [
 
 const PACE_OPTIONS = [
   { label: "Relaxed", value: "relaxed", description: "Slow mornings, long lunches" },
-  { label: "Balanced", value: "balanced", description: "A bit of everything, room to breathe" },
-  { label: "Fast", value: "fast", description: "Dawn to dusk, see it all" },
+  { label: "Balanced", value: "balanced", description: "Mix of sightseeing and downtime" },
+  { label: "Fast", value: "fast", description: "Full days, lots of ground covered" },
 ];
 
 export type ReviewStepProps = {
@@ -199,16 +199,16 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Optional</p>
         <h3 className="mt-1 font-serif text-lg italic text-foreground">
-          {sanityConfig?.reviewHeading ?? "Fine-tune your trip"}
+          {sanityConfig?.reviewHeading ?? "Almost there"}
         </h3>
         <p className="text-sm text-stone">
-          {sanityConfig?.reviewDescription ?? "The more we know, the better your days will feel."}
+          {sanityConfig?.reviewDescription ?? "None of this is required, but it helps."}
         </p>
 
         {/* Responsive grid */}
         <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {/* Budget */}
-          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title={sanityConfig?.reviewBudgetTitle ?? "Budget"} optional info={sanityConfig?.reviewBudgetTooltip ?? "Sets the price range for food and activities."}>
+          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title={sanityConfig?.reviewBudgetTitle ?? "Budget"} optional info={sanityConfig?.reviewBudgetTooltip ?? "Rough range for food and activities."}>
             <BudgetInput
               id="budget-input"
               duration={data.duration}
@@ -261,7 +261,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           </PreferenceCard>
 
           {/* Group */}
-          <PreferenceCard icon={<Users className="h-5 w-5" />} title={sanityConfig?.reviewGroupTitle ?? "Group"} optional info={sanityConfig?.reviewGroupTooltip ?? "Helps us pick the right kind of places."}>
+          <PreferenceCard icon={<Users className="h-5 w-5" />} title={sanityConfig?.reviewGroupTitle ?? "Group"} optional info={sanityConfig?.reviewGroupTooltip ?? "So we suggest the right kind of places."}>
             <div className="grid grid-cols-2 gap-3">
               <FormField id="group-type" label="Type">
                 <Controller
@@ -309,7 +309,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             icon={<Accessibility className="h-5 w-5" />}
             title={sanityConfig?.reviewAccessTitle ?? "Access"}
             optional
-            info={sanityConfig?.reviewAccessTooltip ?? "We'll only suggest places that work for you."}
+            info={sanityConfig?.reviewAccessTooltip ?? "We\u2019ll filter for places that work for you."}
           >
             <button
               type="button"

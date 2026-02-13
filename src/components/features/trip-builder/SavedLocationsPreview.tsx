@@ -33,7 +33,7 @@ export function SavedLocationsPreview({
   if (error) {
     return (
       <div className="rounded-lg border border-border bg-surface p-4">
-        <p className="text-sm text-destructive">Couldn&apos;t load your saved places — try refreshing.</p>
+        <p className="text-sm text-destructive">Couldn&apos;t load your saved places. Try refreshing.</p>
       </div>
     );
   }
@@ -95,7 +95,7 @@ export function SavedLocationsPreview({
                 {!isCitySelected && (
                   <span className="flex items-center gap-1 text-xs text-warning">
                     <AlertTriangle className="h-3 w-3" />
-                    Not in selected cities
+                    Outside your selected cities
                   </span>
                 )}
               </div>

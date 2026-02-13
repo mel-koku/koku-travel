@@ -157,7 +157,7 @@ export const tripBuilderConfig = defineType({
       type: "text",
       rows: 2,
       fieldset: "introStep",
-      initialValue: "Share what moves you, and we'll plan the rest — day by day, from places locals actually go.",
+      initialValue: "Tell us what you\u2019re into. We\u2019ll build the days around it.",
     }),
     defineField({
       name: "introCtaText",
@@ -210,7 +210,7 @@ export const tripBuilderConfig = defineType({
       type: "text",
       rows: 2,
       fieldset: "dateStep",
-      initialValue: "Cherry blossom season, summer festivals, autumn leaves — your dates shape the whole trip. Up to 14 days.",
+      initialValue: "Your dates shape everything \u2014 cherry blossoms, festivals, fall foliage. Up to 14 days.",
     }),
     defineField({
       name: "dateStepBackgroundImage",
@@ -247,7 +247,7 @@ export const tripBuilderConfig = defineType({
       title: "Description",
       type: "string",
       fieldset: "entryPointStep",
-      initialValue: "Optional — helps us plan smarter routes from your arrival.",
+      initialValue: "Optional. If you know your airport, we\u2019ll route from there.",
     }),
     defineField({
       name: "entryPointChangeText",
@@ -268,7 +268,7 @@ export const tripBuilderConfig = defineType({
       title: "No Results Message",
       type: "string",
       fieldset: "entryPointStep",
-      initialValue: "No airports match that search",
+      initialValue: "No airports found",
     }),
     defineField({
       name: "entryPointPopularLabel",
@@ -291,7 +291,7 @@ export const tripBuilderConfig = defineType({
       title: "Description",
       type: "string",
       fieldset: "vibeStep",
-      initialValue: "Pick what excites you — we'll find places that match.",
+      initialValue: "Choose up to 5. These shape the places we suggest.",
     }),
     defineField({
       name: "vibeStepMaxWarning",
@@ -299,7 +299,7 @@ export const tripBuilderConfig = defineType({
       type: "string",
       fieldset: "vibeStep",
       description: "Use {max} as placeholder for the maximum number.",
-      initialValue: "You've picked {max} — swap one out to add another.",
+      initialValue: "That\u2019s all {max}. Tap one to swap it out.",
     }),
 
     // ── Region Step ─────────────────────────────
@@ -315,7 +315,7 @@ export const tripBuilderConfig = defineType({
       title: "Description",
       type: "string",
       fieldset: "regionStep",
-      initialValue: "Choose your destinations. We've highlighted the best matches for your travel style.",
+      initialValue: "Pick your cities. Highlighted ones match your travel style.",
     }),
 
     // ── Review Step ─────────────────────────────
@@ -324,14 +324,14 @@ export const tripBuilderConfig = defineType({
       title: "Heading",
       type: "string",
       fieldset: "reviewStep",
-      initialValue: "Fine-tune your trip",
+      initialValue: "Almost there",
     }),
     defineField({
       name: "reviewDescription",
       title: "Description",
       type: "string",
       fieldset: "reviewStep",
-      initialValue: "The more we know, the better your days will feel.",
+      initialValue: "None of this is required, but it helps.",
     }),
     defineField({
       name: "reviewSavedPlacesLabel",
@@ -352,7 +352,7 @@ export const tripBuilderConfig = defineType({
       title: "Budget Tooltip",
       type: "string",
       fieldset: "reviewStep",
-      initialValue: "Sets the price range for food and activities.",
+      initialValue: "Rough range for food and activities.",
     }),
     defineField({
       name: "reviewPaceTitle",
@@ -380,7 +380,7 @@ export const tripBuilderConfig = defineType({
       title: "Group Tooltip",
       type: "string",
       fieldset: "reviewStep",
-      initialValue: "Helps us pick the right kind of places.",
+      initialValue: "So we suggest the right kind of places.",
     }),
     defineField({
       name: "reviewAccessTitle",
@@ -394,7 +394,7 @@ export const tripBuilderConfig = defineType({
       title: "Access Tooltip",
       type: "string",
       fieldset: "reviewStep",
-      initialValue: "We'll only suggest places that work for you.",
+      initialValue: "We\u2019ll filter for places that work for you.",
     }),
     defineField({
       name: "reviewDietaryLabel",
@@ -432,7 +432,7 @@ export const tripBuilderConfig = defineType({
       title: "Heading",
       type: "string",
       fieldset: "generatingOverlay",
-      initialValue: "Crafting your journey",
+      initialValue: "Building your itinerary",
     }),
     defineField({
       name: "generatingMessages",
@@ -442,10 +442,10 @@ export const tripBuilderConfig = defineType({
       of: [{ type: "string" }],
       description: "Rotating messages shown during generation.",
       initialValue: [
-        "Reading your travel style...",
-        "Mapping the best routes...",
-        "Fitting the pieces together...",
-        "Adding the finishing touches...",
+        "Looking at what you picked...",
+        "Working out the routes...",
+        "Filling in the days...",
+        "Almost done...",
       ],
     }),
 
@@ -483,14 +483,14 @@ export const tripBuilderConfig = defineType({
       title: "Generate Button Label",
       type: "string",
       fieldset: "navigation",
-      initialValue: "Generate Itinerary",
+      initialValue: "Build My Itinerary",
     }),
     defineField({
       name: "navStartOverConfirmation",
       title: "Start Over Confirmation Text",
       type: "string",
       fieldset: "navigation",
-      initialValue: "Start over? Your current selections will be cleared.",
+      initialValue: "Start over? Everything you\u2019ve entered will be cleared.",
     }),
   ],
   preview: {

@@ -96,7 +96,7 @@ export function ItineraryPreview() {
       <div className="flex h-full items-center justify-center p-6 text-center">
         <div className="max-w-xs">
           <p className="text-sm text-stone">
-            Set your trip duration to see daily breakdowns.
+            Pick your dates to see a day-by-day outline.
           </p>
         </div>
       </div>
@@ -111,7 +111,7 @@ export function ItineraryPreview() {
       {isLongTrip && (
         <div className="border-b border-warning/30 bg-warning/10 px-4 py-2">
           <p className="text-xs text-warning">
-            For {duration}-day trips, the preview shows a simplified view. Full details will be available in the generated itinerary.
+            This is a simplified preview for {duration} days. The full itinerary will have more detail.
           </p>
         </div>
       )}
@@ -133,7 +133,7 @@ export function ItineraryPreview() {
       {cities.length === 0 && (
         <div className="border-t border-border bg-surface px-4 py-3">
           <p className="text-xs text-stone">
-            Select cities to see them distributed across your trip days.
+            Add cities to see how the days break down.
           </p>
         </div>
       )}
@@ -141,7 +141,7 @@ export function ItineraryPreview() {
       {interests.length === 0 && cities.length > 0 && (
         <div className="border-t border-border bg-surface px-4 py-3">
           <p className="text-xs text-stone">
-            Select interests to personalize activity suggestions.
+            Pick interests to see activity ideas.
           </p>
         </div>
       )}
