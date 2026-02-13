@@ -252,6 +252,11 @@ export async function generateItinerary(
   const cityDayCounter = new Map<string, number>();
   let lastCityKey = "";
 
+  // Day trip limits: scale with trip length, capped to stay supplementary
+  // 5d→1, 7d→2, 10d→3, 14d→4
+  const MAX_DAY_TRIPS = Math.min(4, Math.ceil(totalDays / 4));
+  let dayTripCount = 0;
+
   for (let dayIndex = 0; dayIndex < totalDays; dayIndex += 1) {
     let cityInfo = expandedCitySequence[dayIndex];
     if (!cityInfo) {
@@ -270,11 +275,19 @@ export async function generateItinerary(
     // Check if we should suggest a day trip (for extended single-city stays)
     let activeDayTrip: DayTripConfig | undefined;
     const baseCityLocations = locationsByCityKey.get(cityInfo.key) ?? [];
-    const unusedInBaseCity = baseCityLocations.filter((loc) => !usedLocations.has(loc.id));
+    // Exclude food categories from the count — the generator never schedules
+    // them as activities, so they inflate the "remaining" count artificially.
+    const unusedInBaseCity = baseCityLocations.filter(
+      (loc) => !usedLocations.has(loc.id) && !isFoodCategory(loc.category),
+    );
 
-    // Suggest day trips for small city selections (1-2 cities) when running low on locations
+    // Suggest day trips for small city selections (1-2 cities) when running low on locations.
+    // Capped at MAX_DAY_TRIPS to keep them supplementary — no spacing constraint since
+    // the exhaustion trigger already gates when trips fire.
     const isSmallCitySelection = data.cities && data.cities.length <= 2;
-    if (isSmallCitySelection) {
+    const canScheduleDayTrip = dayTripCount < MAX_DAY_TRIPS;
+
+    if (isSmallCitySelection && canScheduleDayTrip) {
       activeDayTrip = shouldSuggestDayTrip(
         cityInfo.key,
         daysInCurrentCity,
@@ -292,10 +305,12 @@ export async function generateItinerary(
           const dayTripCityInfo = CITY_INFO_BY_KEY.get(activeDayTrip.cityId);
           if (dayTripCityInfo) {
             cityInfo = dayTripCityInfo;
+            dayTripCount++;
             logger.info(`Day ${dayIndex + 1}: Scheduling day trip from ${lastCityKey} to ${activeDayTrip.cityId}`, {
               daysInBaseCity: daysInCurrentCity,
               unusedInBaseCity: unusedInBaseCity.length,
               unusedInDayTripCity: unusedInDayTripCity.length,
+              dayTripCount,
             });
           }
         } else {
@@ -304,6 +319,8 @@ export async function generateItinerary(
         }
       }
     }
+
+
 
     // Get available locations for this city
     const cityLocations = locationsByCityKey.get(cityInfo.key) ?? [];

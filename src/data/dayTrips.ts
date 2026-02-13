@@ -133,25 +133,17 @@ export function shouldSuggestDayTrip(
   remainingLocationsInCity: number,
   activitiesPerDay: number = 3,
 ): DayTripConfig | undefined {
-  // If we're running low on locations (less than 2 days worth), consider a day trip
-  const locationsNeeded = activitiesPerDay * 2;
+  // Suggest day trips when running low on locations (less than 5 days worth).
+  // The threshold is generous because the generator's filtering (geographic
+  // validation, name dedup, interest matching) reduces effective availability
+  // well below the raw unused count.
+  const locationsNeeded = activitiesPerDay * 5;
   const isRunningLow = remainingLocationsInCity < locationsNeeded;
 
+  if (!isRunningLow) return undefined;
+
   const availableTrips = getSuggestedDayTrips(baseCityId, dayNumberInCity);
-
-  // Suggest day trip if:
-  // 1. Running low on locations, OR
-  // 2. Have spent enough days to warrant variety
-  if (isRunningLow && availableTrips.length > 0) {
-    return availableTrips[0];
-  }
-
-  // For long stays (7+ days), suggest day trips for variety even if not running low
-  if (dayNumberInCity >= 7 && availableTrips.length > 0) {
-    return availableTrips[0];
-  }
-
-  return undefined;
+  return availableTrips[0];
 }
 
 /**
