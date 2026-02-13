@@ -33,11 +33,13 @@ export type LandingPageContent = {
   featuredLocationsEyebrow?: string;
   featuredLocationsHeading?: string;
   featuredLocationsDescription?: string;
+  featuredLocationsCtaText?: string;
 
   // Featured Experiences section header
   featuredExperiencesEyebrow?: string;
   featuredExperiencesHeading?: string;
   featuredExperiencesDescription?: string;
+  featuredExperiencesCtaText?: string;
 
   // Testimonials
   testimonials?: Array<{
@@ -52,6 +54,7 @@ export type LandingPageContent = {
   featuredGuidesEyebrow?: string;
   featuredGuidesHeading?: string;
   featuredGuidesDescription?: string;
+  featuredGuidesCtaText?: string;
 
   // Final CTA
   finalCtaHeading?: string;
@@ -169,6 +172,14 @@ export type PagesContent = {
   exploreRetryText?: string;
   exploreEndMessage?: string;
 
+  // Experiences Listing
+  experiencesHeading?: string;
+  experiencesDescription?: string;
+  experiencesEmptyHeading?: string;
+  experiencesEmptyDescription?: string;
+  experiencesFilteredEmptyHeading?: string;
+  experiencesFilteredEmptyDescription?: string;
+
   // Guides Listing
   guidesEmptyHeading?: string;
   guidesEmptyDescription?: string;
@@ -214,6 +225,24 @@ export type PagesContent = {
   accountEmailLabel?: string;
   accountEmailPlaceholder?: string;
   accountSendLinkText?: string;
+
+  // Sign In
+  signInHeading?: string;
+  signInDescription?: string;
+  signInBackgroundImage?: SanityImageAsset & { url?: string };
+  signInFormHeading?: string;
+  signInFormDescription?: string;
+  signInSubmitText?: string;
+  signInNoAccountText?: string;
+  signInGuestText?: string;
+
+  // 404 Page
+  notFoundEyebrow?: string;
+  notFoundHeading?: string;
+  notFoundDescription?: string;
+  notFoundPrimaryCtaText?: string;
+  notFoundSecondaryCtaText?: string;
+  notFoundBackgroundImage?: SanityImageAsset & { url?: string };
 
   // Itinerary
   itineraryLoadingText?: string;

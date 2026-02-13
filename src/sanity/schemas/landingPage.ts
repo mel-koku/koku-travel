@@ -215,6 +215,14 @@ export const landingPage = defineType({
         "Handpicked locations that represent the best of Japan — from hidden shrines to neighborhood favorites.",
     }),
 
+    defineField({
+      name: "featuredLocationsCtaText",
+      title: "CTA Button Text",
+      type: "string",
+      fieldset: "featuredLocations",
+      initialValue: "Explore all",
+    }),
+
     // ── Featured Experiences ────────────────────────
     defineField({
       name: "featuredExperiencesEyebrow",
@@ -238,6 +246,14 @@ export const landingPage = defineType({
       fieldset: "featuredExperiences",
       initialValue:
         "Workshops, cruises, and adventures that connect you with the culture — not just the scenery.",
+    }),
+
+    defineField({
+      name: "featuredExperiencesCtaText",
+      title: "CTA Button Text",
+      type: "string",
+      fieldset: "featuredExperiences",
+      initialValue: "Explore experiences",
     }),
 
     // ── Testimonials ─────────────────────────────
@@ -319,6 +335,14 @@ export const landingPage = defineType({
       fieldset: "featuredGuides",
       initialValue:
         "Local insights, seasonal tips, and curated itineraries to help you plan a trip that goes beyond the surface.",
+    }),
+
+    defineField({
+      name: "featuredGuidesCtaText",
+      title: "CTA Button Text",
+      type: "string",
+      fieldset: "featuredGuides",
+      initialValue: "Read all guides",
     }),
 
     // ── Final CTA ────────────────────────────────
