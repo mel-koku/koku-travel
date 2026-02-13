@@ -1,29 +1,33 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { MapPin } from "lucide-react";
+import { Check, MapPin } from "lucide-react";
 
 import { cn } from "@/lib/cn";
 import { REGIONS } from "@/data/regions";
 import { VIBES, type VibeId } from "@/data/vibes";
 import type { RegionDescription } from "@/data/regionDescriptions";
-import type { KnownRegionId } from "@/types/trip";
+import type { KnownCityId, KnownRegionId } from "@/types/trip";
 import { easeCinematicMut } from "@/lib/motion";
 
 type RegionDetailPanelProps = {
   region: RegionDescription | null;
-  isSelected: boolean;
-  onToggle: (regionId: KnownRegionId) => void;
+  selectedCities: Set<KnownCityId>;
+  onToggleCity: (cityId: KnownCityId) => void;
+  onSelectAllRegion: (regionId: KnownRegionId) => void;
+  onDeselectAllRegion: (regionId: KnownRegionId) => void;
   onPanelEnter: () => void;
   onPanelLeave: () => void;
 };
 
 export function RegionDetailPanel({
   region,
-  isSelected,
-  onToggle,
+  selectedCities,
+  onToggleCity,
+  onSelectAllRegion,
+  onDeselectAllRegion,
   onPanelEnter,
   onPanelLeave,
 }: RegionDetailPanelProps) {
@@ -31,6 +35,16 @@ export function RegionDetailPanel({
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.stopPropagation();
   }, []);
+
+  const regionCities = useMemo(
+    () => (region ? REGIONS.find((r) => r.id === region.id)?.cities ?? [] : []),
+    [region]
+  );
+
+  const allCitiesSelected = useMemo(
+    () => regionCities.length > 0 && regionCities.every((c) => selectedCities.has(c.id)),
+    [regionCities, selectedCities]
+  );
 
   return (
     <div
@@ -83,23 +97,66 @@ export function RegionDetailPanel({
                   {region.description}
                 </p>
 
-                {/* Cities */}
+                {/* Cities — interactive toggles */}
                 <div>
-                  <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-stone">
-                    Cities
-                  </h4>
-                  <div className="flex flex-wrap gap-2">
-                    {(REGIONS.find((r) => r.id === region.id)?.cities ?? []).map(
-                      (city) => (
-                        <span
+                  <div className="mb-2 flex items-center justify-between">
+                    <h4 className="text-[10px] font-medium uppercase tracking-widest text-stone">
+                      Cities
+                    </h4>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        allCitiesSelected
+                          ? onDeselectAllRegion(region.id)
+                          : onSelectAllRegion(region.id)
+                      }
+                      className="text-[10px] font-medium uppercase tracking-wider text-brand-primary hover:text-brand-primary/80"
+                    >
+                      {allCitiesSelected ? "Deselect All" : "Select All"}
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    {regionCities.map((city) => {
+                      const isSelected = selectedCities.has(city.id);
+                      return (
+                        <button
                           key={city.id}
-                          className="flex items-center gap-1 rounded-lg bg-foreground/5 px-2.5 py-1 text-xs text-foreground-secondary"
+                          type="button"
+                          onClick={() => onToggleCity(city.id)}
+                          className={cn(
+                            "flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors duration-200",
+                            isSelected
+                              ? "border border-brand-primary/30 bg-brand-primary/5"
+                              : "border border-transparent hover:bg-foreground/5"
+                          )}
                         >
-                          <MapPin className="h-3 w-3 text-brand-primary" />
-                          {city.name}
-                        </span>
-                      )
-                    )}
+                          {/* Checkbox */}
+                          <div
+                            className={cn(
+                              "flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors duration-200",
+                              isSelected
+                                ? "bg-brand-primary"
+                                : "border border-border"
+                            )}
+                          >
+                            {isSelected && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                              >
+                                <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                              </motion.div>
+                            )}
+                          </div>
+
+                          <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
+                          <span className="text-sm text-foreground-secondary">
+                            {city.name}
+                          </span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -142,18 +199,24 @@ export function RegionDetailPanel({
                   </ul>
                 </div>
 
-                {/* Toggle button — always visible at bottom of scroll */}
+                {/* Batch toggle button */}
                 <button
                   type="button"
-                  onClick={() => onToggle(region.id)}
+                  onClick={() =>
+                    allCitiesSelected
+                      ? onDeselectAllRegion(region.id)
+                      : onSelectAllRegion(region.id)
+                  }
                   className={cn(
                     "mt-2 w-full shrink-0 rounded-xl py-3 text-sm font-medium uppercase tracking-wider transition-colors",
-                    isSelected
+                    allCitiesSelected
                       ? "bg-foreground/10 text-foreground hover:bg-foreground/15"
                       : "bg-brand-primary text-white hover:bg-brand-primary/90"
                   )}
                 >
-                  {isSelected ? "Remove Region" : "Add Region"}
+                  {allCitiesSelected
+                    ? `Deselect All ${region.name}`
+                    : `Select All ${region.name}`}
                 </button>
               </div>
             </div>
