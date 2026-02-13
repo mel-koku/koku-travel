@@ -129,7 +129,10 @@ export function resolveCitySequence(
     userCities.push(...data.cities);
   }
 
-  if (data.regions && data.regions.length > 0) {
+  // Only expand regions into cities when no explicit cities were selected
+  // (legacy fallback for old region-only selections). With city-first
+  // selection, regions are derived metadata and shouldn't add extra cities.
+  if (userCities.length === 0 && data.regions && data.regions.length > 0) {
     data.regions.forEach((regionId) => {
       const region = REGIONS.find((r) => r.id === regionId);
       region?.cities.forEach((city) => {
