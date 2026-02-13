@@ -26,7 +26,7 @@ function getRedirectUrl(): string {
   return "/auth/callback";
 }
 
-export function SignInClient(_props: SignInClientProps) {
+export function SignInClient({ content }: SignInClientProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [email, setEmail] = useState("");
@@ -75,7 +75,7 @@ export function SignInClient(_props: SignInClientProps) {
           style={prefersReducedMotion ? {} : { scale: imageScale }}
         >
           <Image
-            src="https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=1920&q=80"
+            src={content?.signInBackgroundImage?.url ?? "https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=1920&q=80"}
             alt="Warm Japanese interior"
             fill
             className="object-cover"
@@ -91,12 +91,12 @@ export function SignInClient(_props: SignInClientProps) {
           <div>
             <ScrollReveal>
               <h1 className="font-serif italic text-[clamp(2rem,6vw,4rem)] leading-[1.1] text-white">
-                Welcome back
+                {content?.signInHeading ?? "Welcome back"}
               </h1>
             </ScrollReveal>
             <ScrollReveal delay={0.3} distance={15}>
               <p className="mt-4 max-w-sm text-base text-white/70">
-                Sign in to pick up where you left off.
+                {content?.signInDescription ?? "Sign in to pick up where you left off."}
               </p>
             </ScrollReveal>
           </div>
@@ -114,13 +114,13 @@ export function SignInClient(_props: SignInClientProps) {
 
           <ScrollReveal delay={0.1}>
             <h2 className="mt-4 font-serif italic text-2xl text-foreground sm:text-3xl">
-              Sign in with email
+              {content?.signInFormHeading ?? "Sign in with email"}
             </h2>
           </ScrollReveal>
 
           <ScrollReveal delay={0.3} distance={10}>
             <p className="mt-3 text-sm text-foreground-secondary">
-              We&apos;ll send a magic link to your inbox.
+              {content?.signInFormDescription ?? "We'll send a magic link to your inbox."}
             </p>
           </ScrollReveal>
 
@@ -151,7 +151,7 @@ export function SignInClient(_props: SignInClientProps) {
                 className="relative w-full h-12 rounded-xl bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
-                <span className="relative">Send Sign-in Link</span>
+                <span className="relative">{content?.signInSubmitText ?? "Send Sign-in Link"}</span>
               </button>
             </Magnetic>
 
@@ -167,13 +167,13 @@ export function SignInClient(_props: SignInClientProps) {
             className="mt-8 space-y-3 border-t border-border pt-6"
           >
             <p className="text-xs text-stone">
-              No account? One is created automatically.
+              {content?.signInNoAccountText ?? "No account? One is created automatically."}
             </p>
             <a
               href="/explore"
               className="link-reveal text-sm font-medium uppercase tracking-wide text-foreground-secondary transition-colors hover:text-foreground"
             >
-              Continue as guest
+              {content?.signInGuestText ?? "Continue as guest"}
             </a>
           </motion.div>
         </div>

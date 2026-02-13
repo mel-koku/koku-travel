@@ -1,4 +1,5 @@
 import { getPublishedExperiences } from "@/lib/experiences/experienceService";
+import { getPagesContent } from "@/lib/sanity/contentService";
 import { ExperiencesPageClient } from "@/components/features/experiences/ExperiencesPageClient";
 
 export const metadata = {
@@ -10,11 +11,14 @@ export const metadata = {
 export const revalidate = 3600;
 
 export default async function ExperiencesPage() {
-  const experiences = await getPublishedExperiences();
+  const [experiences, content] = await Promise.all([
+    getPublishedExperiences(),
+    getPagesContent(),
+  ]);
 
   return (
     <div className="min-h-screen bg-background">
-      <ExperiencesPageClient experiences={experiences} />
+      <ExperiencesPageClient experiences={experiences} content={content ?? undefined} />
     </div>
   );
 }
