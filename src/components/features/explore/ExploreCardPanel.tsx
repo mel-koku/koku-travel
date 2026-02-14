@@ -18,8 +18,8 @@ type ExploreCardPanelProps = {
 
 export function ExploreCardPanel({
   locations,
-  totalCount,
-  hasBoundsFilter,
+  totalCount: _totalCount,
+  hasBoundsFilter: _hasBoundsFilter,
   onSelectLocation,
   highlightedLocationId,
   onHoverChange,
@@ -70,10 +70,6 @@ export function ExploreCardPanel({
       card.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
   }, [highlightedLocationId]);
-
-  const countLabel = hasBoundsFilter
-    ? `${locations.length.toLocaleString()} of ${totalCount.toLocaleString()} places in view`
-    : `${totalCount.toLocaleString()} places`;
 
   return (
     <div ref={scrollContainerRef} className="flex flex-col">
