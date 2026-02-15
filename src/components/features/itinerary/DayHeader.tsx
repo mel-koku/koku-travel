@@ -13,6 +13,7 @@ import { DayConflictSummary } from "./ConflictBadge";
 import { DayStartTimePicker } from "./DayStartTimePicker";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
+import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
 
 type DayHeaderProps = {
   day: ItineraryDay;
@@ -31,6 +32,13 @@ type DayHeaderProps = {
   conflicts?: ItineraryConflict[];
   // Day start time callback
   onDayStartTimeChange?: (startTime: string) => void;
+  // Preview props
+  previewState?: PreviewState | null;
+  onConfirmPreview?: () => void;
+  onShowAnother?: () => Promise<void>;
+  onCancelPreview?: () => void;
+  onFilterChange?: (filter: Partial<RefinementFilters>) => void;
+  isPreviewLoading?: boolean;
 };
 
 export function DayHeader({
@@ -47,6 +55,12 @@ export function DayHeader({
   loadingSuggestionId,
   conflicts,
   onDayStartTimeChange,
+  previewState,
+  onConfirmPreview,
+  onShowAnother,
+  onCancelPreview,
+  onFilterChange,
+  isPreviewLoading,
 }: DayHeaderProps) {
 // Calculate the date for this day
   const dayDate = useMemo(() => {
@@ -277,6 +291,12 @@ export function DayHeader({
               onAccept={onAcceptSuggestion}
               onSkip={onSkipSuggestion}
               loadingGapId={loadingSuggestionId}
+              previewState={previewState}
+              onConfirmPreview={onConfirmPreview}
+              onShowAnother={onShowAnother}
+              onCancelPreview={onCancelPreview}
+              onFilterChange={onFilterChange}
+              isPreviewLoading={isPreviewLoading}
             />
           )}
           {/* Day-level travel tips */}

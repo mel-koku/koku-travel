@@ -1,8 +1,11 @@
 "use client";
 
 import {
+  BookOpen,
   Clock,
   Coffee,
+  Info,
+  Leaf,
   Moon,
   Plus,
   ShoppingBag,
@@ -20,8 +23,11 @@ import { Button } from "@/components/ui/Button";
 import type { DetectedGap, GapType } from "@/lib/smartPrompts/gapDetection";
 
 const ICON_MAP: Record<string, LucideIcon> = {
+  BookOpen,
   Clock,
   Coffee,
+  Info,
+  Leaf,
   Moon,
   Plus,
   ShoppingBag,
@@ -65,6 +71,11 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-brand-primary/15 text-brand-primary",
   },
   category_imbalance: {
+    bg: "bg-sage/10",
+    text: "text-sage",
+    badge: "bg-sage/15 text-sage",
+  },
+  guidance: {
     bg: "bg-sage/10",
     text: "text-sage",
     badge: "bg-sage/15 text-sage",
