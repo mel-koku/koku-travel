@@ -59,7 +59,7 @@ export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
         </div>
 
         {/* Meta line */}
-        <p className="mt-4 font-mono text-[10px] uppercase tracking-ultra text-stone">
+        <p className="mt-4 font-mono text-xs uppercase tracking-ultra text-stone">
           {metaParts.join(" \u00b7 ")}
         </p>
 

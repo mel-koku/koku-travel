@@ -218,7 +218,7 @@ export function FilterPanel({
 
             {/* Content — sections stagger in after panel settles */}
             <motion.div
-              className="flex-1 overflow-y-auto px-6 py-6 space-y-1"
+              className="flex-1 overflow-y-auto px-6 py-6 pb-[env(safe-area-inset-bottom)] space-y-1"
               initial="hidden"
               animate="visible"
               variants={{

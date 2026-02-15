@@ -74,7 +74,7 @@ export function ExploreMapLayout({
             ease: easePageTransitionMut,
           }}
           onAnimationComplete={handleAnimationComplete}
-          className="relative overflow-hidden"
+          className={mapExpanded ? "relative overflow-hidden pt-[env(safe-area-inset-top)]" : "relative overflow-hidden"}
         >
           <ErrorBoundary
             fallback={

@@ -151,6 +151,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
                   onChange={field.onChange}
                   error={errors.start?.message}
                   min={today}
+                  aria-describedby={errors.start?.message ? "start-error" : undefined}
                 />
               )}
             />
@@ -185,6 +186,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
                   error={errors.end?.message}
                   min={minEndDate}
                   max={maxEndDate}
+                  aria-describedby={errors.end?.message ? "end-error" : undefined}
                 />
               )}
             />
@@ -199,6 +201,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: durationFast, ease: easeReveal }}
                 className="mt-6"
+                aria-live="polite"
               >
                 <p className="font-mono text-sm text-sage">
                   {calculatedDuration} days &middot;{" "}

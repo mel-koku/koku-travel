@@ -97,6 +97,7 @@ export function ExperienceFooter({
         <Link
           href="/experiences"
           className="link-reveal inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-stone transition-colors hover:text-foreground"
+          aria-label="Back to all experiences"
         >
           <svg
             className="h-4 w-4"
@@ -104,6 +105,7 @@ export function ExperienceFooter({
             viewBox="0 0 24 24"
             stroke="currentColor"
             strokeWidth={1.5}
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
