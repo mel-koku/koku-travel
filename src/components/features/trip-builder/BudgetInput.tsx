@@ -202,19 +202,22 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
         </p>
       )}
 
-      {/* Auto-calculated value display */}
-      {calculatedValue && (
-        <p id={`${id}-calculated`} className="text-sm text-foreground-secondary" aria-live="polite">
-          {calculatedValue.displayText}
-        </p>
-      )}
+      {/* Live region for dynamic feedback */}
+      <div aria-live="polite">
+        {/* Auto-calculated value display */}
+        {calculatedValue && (
+          <p id={`${id}-calculated`} className="text-sm text-foreground-secondary">
+            {calculatedValue.displayText}
+          </p>
+        )}
 
-      {/* Low budget warning */}
-      {showLowBudgetWarning && (
-        <p className="text-sm text-warning" aria-live="polite">
-          That&apos;s a tight budget for Japan &mdash; totally doable, just something to know.
-        </p>
-      )}
+        {/* Low budget warning */}
+        {showLowBudgetWarning && (
+          <p className="text-sm text-warning">
+            That&apos;s a tight budget for Japan &mdash; totally doable, just something to know.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

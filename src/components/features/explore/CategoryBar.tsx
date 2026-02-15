@@ -154,6 +154,7 @@ export function CategoryBar({
             {/* Refine button */}
             <button
               onClick={onFiltersClick}
+              aria-label="Refine filters"
               className={cn(
                 "flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-medium transition",
                 activeFilterCount > 0

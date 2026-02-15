@@ -31,7 +31,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
     prefersReducedMotion
       ? {}
       : {
-          initial: { opacity: 0, y: 12 } as const,
+          initial: { opacity: 0.005, y: 12 } as const,
           animate: { opacity: 1, y: 0 } as const,
           transition: { duration: 0.4, ease: easeReveal, delay },
         };
@@ -58,7 +58,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
             splitBy="word"
             animation="clipY"
             staggerDelay={0.08}
-            delay={0.3}
+            delay={0.05}
           >
             {heading}
           </SplitText>
@@ -70,7 +70,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
             splitBy="char"
             animation="fadeUp"
             staggerDelay={staggerChar}
-            delay={0.6}
+            delay={0.25}
           >
             {subheading}
           </SplitText>
@@ -78,7 +78,7 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
           {/* Description */}
           <motion.p
             className="mt-6 max-w-sm text-base leading-relaxed text-foreground-secondary sm:text-lg"
-            {...fade(1.0)}
+            {...fade(0.45)}
           >
             {description}
           </motion.p>
@@ -87,13 +87,13 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
           <motion.div
             className="mt-10"
             initial={
-              prefersReducedMotion ? {} : { opacity: 0, x: -20 }
+              prefersReducedMotion ? {} : { opacity: 0.005, x: -20 }
             }
             animate={{ opacity: 1, x: 0 }}
             transition={{
               duration: durationBase,
               ease: easeReveal,
-              delay: 1.4,
+              delay: 0.7,
             }}
           >
             {/* Desktop: ArrowLineCTA */}
@@ -128,8 +128,8 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
 
       {/* Step indicator — bottom-left */}
       <motion.p
-        className="absolute bottom-6 left-6 z-10 font-mono text-[10px] uppercase tracking-widest text-stone/60 lg:bottom-10 lg:left-10"
-        initial={prefersReducedMotion ? {} : { opacity: 0 }}
+        className="absolute bottom-6 left-6 z-10 font-mono text-[10px] uppercase tracking-widest text-stone lg:bottom-10 lg:left-10"
+        initial={prefersReducedMotion ? {} : { opacity: 0.005 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 1.8 }}
       >

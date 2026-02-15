@@ -55,7 +55,7 @@ export default function Footer({ settings }: FooterProps) {
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           {/* Brand Column */}
           <div className="lg:col-span-5">
-            <h3 className="font-serif italic text-3xl sm:text-4xl">Koku Travel</h3>
+            <p className="font-serif italic text-3xl sm:text-4xl">Koku Travel</p>
             <p className="mt-4 max-w-md text-base text-white/60">
               {brandDescription}
             </p>
@@ -72,7 +72,7 @@ export default function Footer({ settings }: FooterProps) {
 
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-6 border-t border-white/10 pt-8 sm:flex-row">
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-white/60">
             &copy; {currentYear} Koku Travel. All rights reserved.
           </p>
           <div className="flex items-center gap-3">
@@ -104,7 +104,7 @@ function NavColumn({
 }) {
   return (
     <div>
-      <p className="text-xs uppercase tracking-[0.3em] text-white/40">{title}</p>
+      <p className="text-xs uppercase tracking-[0.3em] text-white/60">{title}</p>
       <ul className="mt-4 space-y-3">
         {links.map((link) => (
           <li key={link.label}>

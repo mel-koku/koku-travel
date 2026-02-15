@@ -233,6 +233,35 @@ export function useAggregatedLocations() {
 }
 
 /**
+ * Single-request hook that fetches all locations from /api/locations/all.
+ * Replaces the 38-page infinite query approach to prevent OOM crashes.
+ *
+ * @returns Object with all locations, total count, and loading state
+ */
+export function useAllLocationsSingle() {
+  const { data, status, error } = useQuery({
+    queryKey: [...locationsKeys.all, "all-single"],
+    queryFn: async () => {
+      const res = await fetch("/api/locations/all");
+      if (!res.ok) throw new Error("Failed to load locations");
+      return res.json() as Promise<{ data: Location[]; total: number }>;
+    },
+    staleTime: LOCATION_STALE_TIME,
+    gcTime: LOCATION_GC_TIME,
+    retry: 1,
+    retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+    refetchOnWindowFocus: false,
+  });
+
+  return {
+    locations: data?.data ?? [],
+    total: data?.total ?? 0,
+    isLoading: status === "pending",
+    error: error instanceof Error ? error.message : null,
+  };
+}
+
+/**
  * React Query hook for server-side location search.
  * Used by the Explore page to find locations not yet loaded client-side.
  * Only fires when query is at least 2 characters.

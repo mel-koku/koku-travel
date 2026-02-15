@@ -34,9 +34,9 @@ export function AuthorCard({ author }: AuthorCardProps) {
       )}
 
       <div className="min-w-0">
-        <h3 className="font-serif text-lg italic text-foreground group-hover:text-brand-primary transition-colors">
+        <p className="font-serif text-lg italic text-foreground group-hover:text-brand-primary transition-colors">
           {author.name}
-        </h3>
+        </p>
         <p className="font-mono text-xs text-stone">
           {author.city && <span>{author.city}</span>}
           {author.city && author.guideCount > 0 && " · "}

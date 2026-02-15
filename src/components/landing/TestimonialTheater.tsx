@@ -213,10 +213,10 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
                   </p>
                 </blockquote>
                 <div className="mt-4">
-                  <p className="text-xs font-medium text-stone">
+                  <p className="text-xs font-medium text-foreground-secondary">
                     {testimonial.author}
                   </p>
-                  <p className="mt-0.5 text-xs text-stone/60">
+                  <p className="mt-0.5 text-xs text-foreground-secondary">
                     {testimonial.location}
                   </p>
                 </div>

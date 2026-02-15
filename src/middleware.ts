@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { createMiddlewareClient } from "@/lib/supabase/middleware";
 
 /**
+ * Public API routes that skip auth entirely (read-only, no session needed).
+ * These get the X-Request-ID header but no supabase.auth.getUser() call.
+ */
+const PUBLIC_API_ROUTES = [
+  "/api/locations",
+  "/api/places",
+  "/api/health",
+];
+
+/**
  * Protected routes that require authentication.
  * These routes will redirect unauthenticated users to the dashboard (which handles login).
  */
@@ -64,6 +74,12 @@ export async function middleware(request: NextRequest) {
   response.headers.set("X-Request-ID", requestId);
   response.headers.set("X-Start-Time", String(startTime));
 
+  // Skip auth for public API routes — no session needed, saves a network round-trip
+  const pathname = request.nextUrl.pathname;
+  if (PUBLIC_API_ROUTES.some((route) => pathname.startsWith(route))) {
+    return response;
+  }
+
   // Create Supabase client for middleware
   const supabase = createMiddlewareClient(request, response);
 
@@ -77,8 +93,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
     error,
   } = await supabase.auth.getUser();
-
-  const pathname = request.nextUrl.pathname;
 
   // Handle protected API routes - return 401 if not authenticated
   if (isProtectedRoute(pathname) && pathname.startsWith("/api/")) {
