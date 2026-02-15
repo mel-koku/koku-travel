@@ -12,6 +12,7 @@ const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
 const DEFAULT_CENTER: [number, number] = [136.9, 35.7]; // Central Japan
 const DEFAULT_ZOOM = 5;
 
+
 type MapboxModule = typeof import("mapbox-gl");
 
 // Eagerly start loading mapbox-gl at module evaluation time (not on mount).
@@ -52,6 +53,7 @@ type ExploreMapProps = {
   onLocationClick: (location: Location) => void;
   highlightedLocationId: string | null;
   onHoverChange: (locationId: string | null) => void;
+  showResetButton?: boolean;
 };
 
 function buildFeatureCollection(locations: Location[]): GeoJSON.FeatureCollection {
@@ -97,6 +99,7 @@ export function ExploreMap({
   onLocationClick,
   highlightedLocationId,
   onHoverChange,
+  showResetButton,
 }: ExploreMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
@@ -276,8 +279,13 @@ export function ExploreMap({
       setMapReady(true);
     });
 
-    // Moveend → report bounds
+    // Moveend → report bounds + detect out-of-Japan
     map.on("moveend", () => {
+      // Skip if container is hidden (display:none parent → 0x0 size).
+      // Both mobile and desktop ExploreMap mount simultaneously;
+      // only the visible one should report state.
+      if (!mapContainerRef.current || mapContainerRef.current.clientWidth === 0) return;
+
       const bounds = map.getBounds();
       if (bounds) {
         const ne = bounds.getNorthEast();
@@ -418,6 +426,27 @@ export function ExploreMap({
     }
   }, [highlightedLocationId, mapReady]);
 
+  // Fly back to Japan bounds
+  const resetToJapan = useCallback(() => {
+    const map = mapInstanceRef.current;
+    const mapboxModule = mapboxModuleRef.current;
+    if (!map || !mapboxModule || !mapReady) return;
+
+    const fc = featureCollectionRef.current;
+    if (fc.features.length > 0) {
+      const bounds = new mapboxModule.LngLatBounds();
+      for (const feature of fc.features) {
+        const geom = feature.geometry as GeoJSON.Point;
+        bounds.extend(geom.coordinates as [number, number]);
+      }
+      if (!bounds.isEmpty()) {
+        map.fitBounds(bounds, { maxZoom: 12, duration: 1200, padding: 40 });
+      }
+    } else {
+      map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 1200 });
+    }
+  }, [mapReady]);
+
   // Expose resize method via imperative ref pattern
   const resizeMap = useCallback(() => {
     mapInstanceRef.current?.resize();
@@ -453,17 +482,33 @@ export function ExploreMap({
   }
 
   return (
-    <div className="relative h-full w-full bg-surface">
+    <div className="h-full w-full bg-surface" style={{ position: "relative" }}>
       {!mapReady && (
-        <div className="absolute inset-0 flex items-center justify-center bg-surface rounded-xl z-[1]">
+        <div className="flex items-center justify-center bg-surface rounded-xl" style={{ position: "absolute", inset: 0, zIndex: 1 }}>
           <p className="text-sm text-foreground-secondary">Loading map...</p>
         </div>
       )}
       <div
         ref={mapContainerRef}
-        className="absolute inset-0 h-full w-full bg-surface"
+        className="h-full w-full bg-surface"
+        style={{ position: "absolute", inset: 0 }}
         aria-label="Map showing locations across Japan"
       />
+      {showResetButton && (
+        <button
+          type="button"
+          onClick={resetToJapan}
+          className="flex items-center gap-1.5 rounded-xl bg-charcoal/80 px-3.5 py-2 text-xs font-medium text-white/90 backdrop-blur-sm shadow-lg transition-colors hover:bg-charcoal active:scale-[0.98]"
+          style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10 }}
+          aria-label="Reset map view to Japan"
+        >
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M8 1.5V4M8 12v2.5M1.5 8H4M12 8h2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          Back to Japan
+        </button>
+      )}
     </div>
   );
 }
