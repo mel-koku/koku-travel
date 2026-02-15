@@ -5,6 +5,7 @@ import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
 import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
 import { debounce } from "@/lib/utils";
+import { mapColors } from "@/lib/mapColors";
 import type { Location } from "@/types/location";
 
 const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
@@ -171,11 +172,11 @@ export function ExploreMap({
           "circle-color": [
             "step",
             ["get", "point_count"],
-            "#c4504f", // brand-primary < 20
+            mapColors.brandPrimary, // < 20
             20,
-            "#daa54e", // brand-secondary 20–99
+            mapColors.brandSecondary, // 20–99
             100,
-            "#3da193", // sage 100+
+            mapColors.sage, // 100+
           ],
           "circle-radius": [
             "step",
@@ -244,8 +245,8 @@ export function ExploreMap({
           "text-allow-overlap": false,
         },
         paint: {
-          "text-color": "#f0e8dc",
-          "text-halo-color": "#1a1714",
+          "text-color": mapColors.foreground,
+          "text-halo-color": mapColors.background,
           "text-halo-width": 1.5,
         },
       });
@@ -438,8 +439,7 @@ export function ExploreMap({
       )}
       <div
         ref={mapContainerRef}
-        className="absolute inset-0 h-full w-full"
-        style={{ background: "#242019" }}
+        className="absolute inset-0 h-full w-full bg-surface"
         aria-label="Map showing locations across Japan"
       />
     </div>

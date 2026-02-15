@@ -342,10 +342,16 @@ html.lenis-stopped {
 }
 
 /*
-  Z-index stack:
-  z-40  — Dropdown menus (portaled)
-  z-50  — Header bar (fixed)
-  z-[100] — Menu overlay (full-screen)
+  Z-index stack (global):
+  z-10/20  — Local overlays (textures, close buttons, content stacking)
+  z-30     — Trip builder bottom bar
+  z-40     — Sticky filter bars, portaled dropdown menus
+  z-50     — Header (fixed), tooltips, popovers, dialogs, location expanded
+  z-60     — Scroll/guide progress bar, custom dropdowns (above header)
+  z-[90]   — Page transitions
+  z-[100]  — Menu overlay (full-screen)
+  z-1200   — Modal
+  z-[1300] — Toasts
   z-[9999] — Custom cursor
 */
 
@@ -388,6 +394,13 @@ html.lenis-stopped {
 /* Cinematic easing utility — matches easeCinematic from motion.ts */
 .ease-cinematic {
   transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+/* Global focus-visible ring for all interactive elements */
+:is(a, button, [role="button"], [tabindex="0"]):focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* Respect reduced motion globally */

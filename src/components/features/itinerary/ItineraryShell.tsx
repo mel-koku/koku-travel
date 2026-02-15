@@ -764,7 +764,7 @@ export const ItineraryShell = ({
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
           {/* Header + Day Selector */}
-          <div className="px-3 pt-4 pb-3 lg:px-4">
+          <div className="px-4 pt-4 pb-3 lg:px-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <div className="flex items-center gap-3">
