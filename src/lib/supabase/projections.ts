@@ -110,6 +110,30 @@ export const LOCATION_LISTING_COLUMNS = `
 `.replace(/\s+/g, "");
 
 /**
+ * Slimmed projection for the explore /api/locations/all endpoint (15 columns).
+ * Drops 6 fields unused by ExploreCompactCard / map: place_id, min_budget,
+ * google_types, business_status, service_options, short_description.
+ */
+export const LOCATION_EXPLORE_COLUMNS = `
+  id,
+  name,
+  region,
+  city,
+  prefecture,
+  category,
+  image,
+  rating,
+  review_count,
+  estimated_duration,
+  primary_photo_url,
+  coordinates,
+  google_primary_type,
+  price_level,
+  accessibility_options,
+  dietary_options
+`.replace(/\s+/g, "");
+
+/**
  * Columns needed for location detail views (18 columns)
  * Used by: LocationExpanded, /api/locations/[id]
  */
@@ -193,6 +217,28 @@ export const LOCATION_PHOTO_COLUMNS = `
  * Subset of LocationDbRow for photo endpoint
  */
 export type LocationPhotoDbRow = Pick<LocationDbRow, "id" | "name" | "place_id" | "image" | "city" | "region" | "category" | "coordinates">;
+
+/**
+ * Subset of LocationDbRow for the explore /api/locations/all endpoint
+ */
+export type LocationExploreDbRow = Pick<LocationDbRow,
+  | "id"
+  | "name"
+  | "region"
+  | "city"
+  | "prefecture"
+  | "category"
+  | "image"
+  | "rating"
+  | "review_count"
+  | "estimated_duration"
+  | "primary_photo_url"
+  | "coordinates"
+  | "google_primary_type"
+  | "price_level"
+  | "accessibility_options"
+  | "dietary_options"
+>;
 
 /**
  * Subset of LocationDbRow for listing endpoint
