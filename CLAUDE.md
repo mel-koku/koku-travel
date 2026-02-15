@@ -182,7 +182,7 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 ### Experiences (`src/components/features/experiences/`)
 - `/experiences` grid filtered by type; `/experiences/[slug]` reuses guide layout
 - Types: workshop, cruise, tour, experience, adventure, rental
-- Sanity-only (34 articles, no Supabase sync), webhook revalidates
+- Sanity-only (56 articles, no Supabase sync), webhook revalidates
 - `FeaturedExperiences` queries `featured == true`, fallback to latest
 
 ### Explore (`src/components/features/explore/`)
@@ -204,7 +204,7 @@ Smart city matching via `src/hooks/useAddToItinerary.ts`. Saved locations queued
 
 ### Database
 - **Locations**: ~3,756 in Supabase. Coords: `lat`/`lng`. Photos in Supabase Storage.
-- **Experiences**: 34 in Sanity — separate from locations/explore/itinerary
+- **Experiences**: 56 in Sanity — separate from locations/explore/itinerary
 - **Health Score**: 100/100 (`npm run dq audit|fix|report`)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, food, entertainment, market, wellness, viewpoint, bar, transport
 
