@@ -6,6 +6,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
 import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
+import { mapColors } from "@/lib/mapColors";
 
 type MapboxModule = typeof import("mapbox-gl");
 
@@ -13,8 +14,8 @@ const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 const DEFAULT_ZOOM = 5;
 const JAPAN_CENTER: [number, number] = [138.2529, 36.2048];
 
-const MARKER_COLOR = "#8c2f2f";
-const ROUTE_COLOR = "#c6923a";
+const MARKER_COLOR = mapColors.brandPrimary;
+const ROUTE_COLOR = mapColors.brandSecondary;
 
 export function TripMap() {
   const { data } = useTripBuilder();

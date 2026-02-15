@@ -18,6 +18,7 @@ import {
   staggerWord,
 } from "@/lib/motion";
 import { urlFor } from "@/sanity/image";
+import { mapColors } from "@/lib/mapColors";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type HeroOpeningProps = {
@@ -80,7 +81,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to top, rgba(26,23,20,0.85) 0%, rgba(26,23,20,0.4) 40%, transparent 65%)",
+                `linear-gradient(to top, ${mapColors.background}d9 0%, ${mapColors.background}66 40%, transparent 65%)`,
             }}
           />
           {/* Left gradient for text readability */}
@@ -88,7 +89,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to right, rgba(26,23,20,0.3) 0%, transparent 50%)",
+                `linear-gradient(to right, ${mapColors.background}4d 0%, transparent 50%)`,
             }}
           />
           <div className="texture-grain pointer-events-none absolute inset-0 z-10" />
@@ -155,7 +156,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to top, rgba(26,23,20,0.85) 0%, rgba(26,23,20,0.4) 40%, transparent 65%)",
+                `linear-gradient(to top, ${mapColors.background}d9 0%, ${mapColors.background}66 40%, transparent 65%)`,
             }}
           />
           {/* Left gradient for text readability */}
@@ -163,7 +164,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             className="absolute inset-0"
             style={{
               background:
-                "linear-gradient(to right, rgba(26,23,20,0.3) 0%, transparent 50%)",
+                `linear-gradient(to right, ${mapColors.background}4d 0%, transparent 50%)`,
             }}
           />
           {/* Grain texture */}

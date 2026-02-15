@@ -8,14 +8,15 @@ import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import type { Coordinates } from "@/data/locationCoordinates";
 import type { RoutingRequest } from "@/lib/routing/types";
+import { mapColors } from "@/lib/mapColors";
 
 const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
 const DEFAULT_ZOOM = 12;
 const DEFAULT_CENTER: [number, number] = [135.7681, 35.0116];
-const ROUTE_LINE = "#8c2f2f"; // brand-primary (bathhouse crimson)
-const ROUTE_LINE_HIGHLIGHT = "#2d7a6f"; // sage (jade teal)
-const MARKER_COLOR = "#8c2f2f"; // brand-primary (bathhouse crimson)
-const MARKER_HIGHLIGHT_COLOR = "#2d7a6f"; // sage (jade teal, selected state)
+const ROUTE_LINE = mapColors.brandPrimary;
+const ROUTE_LINE_HIGHLIGHT = mapColors.sage;
+const MARKER_COLOR = mapColors.brandPrimary;
+const MARKER_HIGHLIGHT_COLOR = mapColors.sage;
 
 type MapboxModule = typeof import("mapbox-gl");
 

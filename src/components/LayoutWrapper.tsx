@@ -50,7 +50,7 @@ export function LayoutWrapper({
                   <div className="flex min-h-screen flex-col">
                     <Header />
                     <ErrorBoundary>
-                      <main className="flex-1">
+                      <main id="main-content" className="flex-1">
                         <PageTransition>{children}</PageTransition>
                       </main>
                     </ErrorBoundary>
