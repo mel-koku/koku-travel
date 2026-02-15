@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/seed-cache.mjs && NODE_OPTIONS='--dns-result-order=ipv4first --max-old-space-size=8192' next dev",
+    "dev:fast": "NODE_OPTIONS='--dns-result-order=ipv4first --max-old-space-size=8192' next dev",
+    "seed-cache": "node scripts/seed-cache.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

@@ -2,12 +2,9 @@
 
 import Image from "next/image";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { motion, useReducedMotion } from "framer-motion";
-
 import { useWishlist } from "@/context/WishlistContext";
 import { useAddToItinerary } from "@/hooks/useAddToItinerary";
 import { resizePhotoUrl } from "@/lib/google/transformations";
-import { easeReveal, durationBase } from "@/lib/motion";
 import type { Location } from "@/types/location";
 import { PlusIcon } from "./PlusIcon";
 import { MinusIcon } from "./MinusIcon";
@@ -22,6 +19,7 @@ type ExploreCompactCardProps = {
   onSelect?: (location: Location) => void;
   isHighlighted?: boolean;
   onHover?: (locationId: string | null) => void;
+  eager?: boolean;
 };
 
 export const ExploreCompactCard = memo(function ExploreCompactCard({
@@ -29,10 +27,10 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
   onSelect,
   isHighlighted,
   onHover,
+  eager = false,
 }: ExploreCompactCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const active = isInWishlist(location.id);
-  const prefersReducedMotion = useReducedMotion();
 
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 400);
 
@@ -79,14 +77,10 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
   );
 
   return (
-    <motion.article
-      className={`group relative text-foreground ${
+    <article
+      className={`group relative text-foreground animate-card-in ${
         isHighlighted ? "ring-2 ring-brand-primary/60 rounded-xl" : ""
       }`}
-      initial={prefersReducedMotion ? {} : { y: 16, opacity: 0 }}
-      whileInView={{ y: 0, opacity: 1 }}
-      viewport={{ once: true, margin: "-5%" }}
-      transition={{ duration: durationBase, ease: easeReveal }}
       data-location-id={location.id}
       onMouseEnter={() => onHover?.(location.id)}
       onMouseLeave={() => onHover?.(null)}
@@ -117,6 +111,7 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
             src={imageSrc || FALLBACK_IMAGE}
             alt={location.name}
             fill
+            priority={eager}
             className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
             sizes="(min-width:1024px) 25vw, (min-width:640px) 50vw, 100vw"
           />
@@ -169,12 +164,12 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
             <p className="text-[10px] uppercase tracking-[0.25em] text-white/60 mb-0.5 font-mono">
               {location.city}
             </p>
-            <h3 className="font-serif italic text-white text-base line-clamp-1">
+            <p className="font-serif italic text-white text-base line-clamp-1">
               {location.name}
-            </h3>
+            </p>
           </div>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 });

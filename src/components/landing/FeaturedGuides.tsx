@@ -136,14 +136,14 @@ function GuideCard({
               {location}
             </p>
           )}
-          <h3
+          <p
             className={cn(
               "mt-1 font-serif italic text-white transition-transform duration-500 group-hover:-translate-y-1",
               featured ? "text-xl sm:text-2xl lg:text-3xl" : "text-xl sm:text-2xl"
             )}
           >
             {guide.title}
-          </h3>
+          </p>
           {guide.summary && featured && (
             <p className="mt-2 hidden text-sm text-white/80 line-clamp-2 lg:block">
               {guide.summary}

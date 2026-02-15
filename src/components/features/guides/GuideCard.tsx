@@ -47,6 +47,7 @@ export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
               src={imageSrc}
               alt={guide.title}
               fill
+              priority={eager}
               className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             />
@@ -64,9 +65,9 @@ export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
         </p>
 
         {/* Title */}
-        <h3 className="mt-1.5 font-serif text-lg italic text-foreground transition-colors group-hover:text-brand-primary sm:text-xl">
+        <p className="mt-1.5 font-serif text-lg italic text-foreground transition-colors group-hover:text-brand-primary sm:text-xl">
           {guide.title}
-        </h3>
+        </p>
 
         {/* Summary */}
         <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-foreground-secondary">

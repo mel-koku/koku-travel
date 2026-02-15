@@ -2,10 +2,33 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { Location } from "@/types/location";
 import { ActiveFilter } from "@/types/filters";
 import { locationMatchesSubTypes, getCategoryById, getSubTypeById, getParentCategoryForDatabaseCategory, CATEGORY_HIERARCHY } from "@/data/categoryHierarchy";
+import { featureFlags } from "@/lib/env/featureFlags";
+import { CategoryBar } from "./CategoryBar";
+import { useAllLocationsSingle, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
+import type { PagesContent } from "@/types/sanitySiteContent";
+
+/* ── Dynamic imports ─────────────────────────────────────────────────
+ * Heavy components are code-split so Turbopack compiles them in
+ * separate chunks. This keeps the initial ExploreShell bundle small
+ * and removes framer-motion from the critical compilation path.
+ * ----------------------------------------------------------------- */
+
+const ExploreIntro = dynamic(
+  () => import("./ExploreIntro").then((m) => ({ default: m.ExploreIntro })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex flex-col items-center justify-center py-24 px-6">
+        <p className="font-serif italic text-2xl sm:text-3xl text-foreground text-center">
+          Explore Japan
+        </p>
+      </div>
+    ),
+  }
+);
 
 const FilterPanel = dynamic(
   () => import("./FilterPanel").then((m) => ({ default: m.FilterPanel })),
@@ -14,30 +37,18 @@ const FilterPanel = dynamic(
 
 const ExploreMapLayout = dynamic(
   () => import("./ExploreMapLayout").then((m) => ({ default: m.ExploreMapLayout })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="px-4">
-        <div className="flex flex-col lg:flex-row lg:gap-4">
-          <div className="lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="aspect-[4/3] rounded-xl shimmer" />
-            ))}
-          </div>
-          <div className="hidden lg:block lg:w-1/2 h-[calc(100dvh-176px)] rounded-2xl bg-surface" />
-        </div>
-      </div>
-    ),
-  }
+  { ssr: false }
 );
 
-import { featureFlags } from "@/lib/env/featureFlags";
-import { LocationEditorialGrid } from "./LocationEditorialGrid";
-import { CategoryBar } from "./CategoryBar";
-import { ExploreIntro } from "./ExploreIntro";
-import { LocationExpanded } from "./LocationExpanded";
-import { useAggregatedLocations, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
-import type { PagesContent } from "@/types/sanitySiteContent";
+const LocationExpanded = dynamic(
+  () => import("./LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
+  { ssr: false }
+);
+
+const LocationEditorialGrid = dynamic(
+  () => import("./LocationEditorialGrid").then((m) => ({ default: m.LocationEditorialGrid })),
+  { ssr: false }
+);
 
 const DURATION_FILTERS = [
   {
@@ -140,11 +151,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
     locations,
     total,
     isLoading,
-    isLoadingMore,
     error,
-    hasNextPage,
-    fetchNextPage,
-  } = useAggregatedLocations();
+  } = useAllLocationsSingle();
   const { data: filterMetadata } = useFilterMetadataQuery();
 
   const [query, setQuery] = useState("");
@@ -494,46 +502,13 @@ export function ExploreShell({ content }: ExploreShellProps) {
     [],
   );
 
-  // Auto-fetch all pages when map is active so the full dataset is on the map
-  useEffect(() => {
-    if (mapAvailable && hasNextPage && !isLoadingMore) {
-      fetchNextPage();
-    }
-  }, [mapAvailable, hasNextPage, isLoadingMore, fetchNextPage]);
-
   return (
     <div className="min-h-[100dvh] bg-background">
       {/* Typographic Intro — always renders immediately for entrance animation */}
       <ExploreIntro totalCount={total} content={content} />
 
-      {isLoading ? (
-        mapAvailable ? (
-          /* Map-aware loading skeleton */
-          <div className="px-4">
-            <div className="h-10 w-full rounded shimmer mb-4" />
-            <div className="flex flex-col lg:flex-row lg:gap-4">
-              <div className="lg:w-1/2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} className="aspect-[4/3] rounded-xl shimmer" />
-                ))}
-              </div>
-              <div className="hidden lg:block lg:w-1/2 h-[calc(100dvh-176px)] rounded-2xl shimmer" />
-            </div>
-          </div>
-        ) : (
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-            <div className="h-10 w-full rounded shimmer mb-8" />
-            <div className="space-y-10">
-              <div className="aspect-[16/9] rounded-xl shimmer" />
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 3 }).map((_, index) => (
-                  <div key={index} className="aspect-[3/4] rounded-xl shimmer" />
-                ))}
-              </div>
-            </div>
-          </div>
-        )
-      ) : error ? (
+      {/* Error state */}
+      {error ? (
         <div className="flex-1 flex items-center justify-center py-20">
           <div className="mx-auto max-w-md px-4 text-center">
             <div className="rounded-2xl border border-error/30 bg-error/10 p-4 sm:p-8">
@@ -543,7 +518,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
                 </svg>
               </div>
               <p className="text-base font-semibold text-error mb-2">{content?.exploreErrorMessage ?? "Something went wrong loading places"}</p>
-              <p className="text-sm text-error/80 mb-6">{error}</p>
+              <p className="text-sm text-error mb-6">{error}</p>
               <button
                 onClick={() => window.location.reload()}
                 className="rounded-xl bg-error px-5 py-2.5 text-sm font-semibold text-white hover:bg-error/90 transition focus:outline-none focus:ring-2 focus:ring-error focus:ring-offset-2"
@@ -555,7 +530,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
         </div>
       ) : (
       <>
-      {/* Sticky Category Bar */}
+      {/* Sticky Category Bar — renders immediately, doesn't wait for data */}
       <CategoryBar
         categories={CATEGORY_TABS}
         selectedCategories={selectedCategories}
@@ -570,33 +545,28 @@ export function ExploreShell({ content }: ExploreShellProps) {
         onQueryChange={setQuery}
       />
 
-      {/* Main Content — Map layout or editorial grid */}
+      {/* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */}
       {mapAvailable ? (
         <ExploreMapLayout
           filteredLocations={filteredLocations}
           sortedLocations={sortedLocations}
           totalCount={total}
           onSelectLocation={handleSelectLocation}
-          isLoading={false}
+          isLoading={isLoading}
         />
+      ) : isLoading ? (
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+          <div className="space-y-10">
+            <div className="aspect-[16/9] rounded-xl shimmer" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="aspect-[3/4] rounded-xl shimmer" />
+              ))}
+            </div>
+          </div>
+        </div>
       ) : (
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          {/* Loading more indicator */}
-          {activeFilters.length > 0 && hasNextPage && (
-            <div className="mb-6">
-              <p className="text-xs text-foreground-secondary">
-                Searching {locations.length.toLocaleString()} of {total.toLocaleString()} locations{" "}
-                <button
-                  onClick={() => fetchNextPage()}
-                  disabled={isLoadingMore}
-                  className="text-brand-primary hover:underline disabled:opacity-50"
-                >
-                  {isLoadingMore ? "Loading..." : "Load more from server"}
-                </button>
-              </p>
-            </div>
-          )}
-
           {/* Editorial Grid */}
           <LocationEditorialGrid
             locations={visibleLocations}
@@ -623,18 +593,6 @@ export function ExploreShell({ content }: ExploreShellProps) {
             </div>
           )}
         </main>
-      )}
-
-      {/* Background Loading Indicator */}
-      {isLoadingMore && (
-        <div className="fixed bottom-4 right-4 bg-background px-4 py-2 rounded-full shadow-lg border border-border z-50">
-          <div className="flex items-center gap-2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-primary" />
-            <p className="text-sm text-foreground-secondary">
-              Loading more... {locations.length} / {total}
-            </p>
-          </div>
-        </div>
       )}
 
       {/* Filter Panel (right slide) */}
@@ -670,14 +628,12 @@ export function ExploreShell({ content }: ExploreShellProps) {
       />
 
       {/* Location Detail Panel */}
-      <AnimatePresence>
-        {expandedLocation && (
-          <LocationExpanded
-            location={expandedLocation}
-            onClose={handleCloseExpanded}
-          />
-        )}
-      </AnimatePresence>
+      {expandedLocation && (
+        <LocationExpanded
+          location={expandedLocation}
+          onClose={handleCloseExpanded}
+        />
+      )}
       </>
       )}
     </div>

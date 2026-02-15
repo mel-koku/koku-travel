@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import { ExploreShell } from "@/components/features/explore/ExploreShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ExploreShellLazy } from "@/components/features/explore/ExploreShellLazy";
 import { getPagesContent } from "@/lib/sanity/contentService";
 
 export const metadata: Metadata = {
@@ -21,7 +21,7 @@ export default async function ExplorePage() {
 
   return (
     <ErrorBoundary>
-      <ExploreShell content={content ?? undefined} />
+      <ExploreShellLazy content={content ?? undefined} />
     </ErrorBoundary>
   );
 }
