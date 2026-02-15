@@ -705,7 +705,7 @@ export const ItineraryShell = ({
             duration: durationSlow,
             ease: easePageTransitionMut,
           }}
-          className="relative overflow-hidden"
+          className={mapExpanded ? "relative overflow-hidden pt-[env(safe-area-inset-top)]" : "relative overflow-hidden"}
         >
           <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
             <ItineraryMapPanel
@@ -814,7 +814,7 @@ export const ItineraryShell = ({
           </div>
 
           {/* Activities List */}
-          <div data-itinerary-activities className="relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 lg:rounded-2xl lg:border">
+          <div data-itinerary-activities className="relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-2xl lg:border">
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (

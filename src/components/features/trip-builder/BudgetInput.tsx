@@ -204,14 +204,14 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
 
       {/* Auto-calculated value display */}
       {calculatedValue && (
-        <p id={`${id}-calculated`} className="text-sm text-foreground-secondary">
+        <p id={`${id}-calculated`} className="text-sm text-foreground-secondary" aria-live="polite">
           {calculatedValue.displayText}
         </p>
       )}
 
       {/* Low budget warning */}
       {showLowBudgetWarning && (
-        <p className="text-sm text-warning">
+        <p className="text-sm text-warning" aria-live="polite">
           That&apos;s a tight budget for Japan &mdash; totally doable, just something to know.
         </p>
       )}

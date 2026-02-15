@@ -37,7 +37,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: durationBase, delay: 0.5 }}
-            className="mx-auto mt-8 max-w-md text-base text-white/80"
+            className="mx-auto mt-8 max-w-md text-base text-white/90"
           >
             {content?.finalCtaDescription ?? "Every trip starts with a single place. Find yours."}
           </motion.p>
@@ -59,7 +59,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             </Magnetic>
             <a
               href="/explore"
-              className="link-reveal mt-6 py-3 text-sm font-medium uppercase tracking-wider text-white/60 transition-colors hover:text-white/90"
+              className="link-reveal mt-6 py-3 text-sm font-medium uppercase tracking-wider text-white/70 transition-colors hover:text-white/90"
             >
               {content?.finalCtaSecondaryText ?? "Browse Locations"}
             </a>
@@ -70,7 +70,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: durationBase, delay: 1 }}
-            className="mt-10 text-sm uppercase tracking-wide text-white/50"
+            className="mt-10 text-sm uppercase tracking-wide text-white/70"
           >
             {content?.finalCtaSubtext ?? "Free to use. No account required."}
           </motion.p>

@@ -72,7 +72,7 @@ export function CategoryBar({
           {/* Category tabs */}
           <div
             ref={scrollContainerRef}
-            className="flex-1 overflow-x-auto scrollbar-hide overscroll-contain"
+            className="flex-1 overflow-x-auto scrollbar-hide scroll-fade-r overscroll-contain"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <div className="flex gap-1 sm:gap-2 min-w-max">
@@ -80,7 +80,7 @@ export function CategoryBar({
               <button
                 onClick={() => toggleCategory("__all__")}
                 className={cn(
-                  "px-3 py-2 text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
+                  "px-4 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
                   selectedCategories.length === 0
                     ? "border-brand-primary text-foreground"
                     : "border-transparent text-stone hover:text-foreground"
@@ -100,7 +100,7 @@ export function CategoryBar({
                     key={category.value}
                     onClick={() => toggleCategory(category.value)}
                     className={cn(
-                      "px-3 py-2 text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
+                      "px-4 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
                       isSelected
                         ? "border-brand-primary text-foreground"
                         : "border-transparent text-stone hover:text-foreground"

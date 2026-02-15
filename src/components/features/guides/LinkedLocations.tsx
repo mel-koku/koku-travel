@@ -96,7 +96,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                     <h3 className="font-serif text-lg italic text-white sm:text-xl">
                       {location.name}
                     </h3>
-                    <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-white/50">
+                    <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-white/70">
                       {location.city}
                       {location.region &&
                         location.city !== location.region &&
