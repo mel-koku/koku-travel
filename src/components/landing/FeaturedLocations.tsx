@@ -100,7 +100,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                   {content?.featuredLocationsHeading ?? "Places that stay with you"}
                 </h2>
                 <p className="mt-2 font-mono text-sm text-foreground-secondary">
-                  3,907+ places
+                  3,700+ places
                 </p>
                 <p className="mt-4 text-base text-foreground-secondary">
                   {content?.featuredLocationsDescription ?? "Handpicked locations that represent the best of Japan \u2014 from hidden shrines to neighborhood favorites."}
@@ -153,7 +153,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
             {content?.featuredLocationsHeading ?? "Places that stay with you"}
           </h2>
           <p className="mt-2 font-mono text-sm text-foreground-secondary">
-            3,907+ places
+            3,700+ places
           </p>
           <p className="mt-4 max-w-md text-base text-foreground-secondary">
             {content?.featuredLocationsDescription ?? "Handpicked locations that represent the best of Japan \u2014 from hidden shrines to neighborhood favorites."}

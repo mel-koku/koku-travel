@@ -67,16 +67,15 @@ export function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
   }, [handleKeyDown]);
 
   // Focus first nav link on open
+  const handleFocusFirstLink = useCallback(() => {
+    const firstLink = document.querySelector<HTMLAnchorElement>(
+      '[data-menu-overlay] nav a'
+    );
+    firstLink?.focus({ preventScroll: true });
+  }, []);
+
   useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        const firstLink = document.querySelector<HTMLAnchorElement>(
-          '[data-menu-overlay] nav a'
-        );
-        firstLink?.focus({ preventScroll: true });
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
+    if (!isOpen) {
       // Return focus to trigger on close
       focusTrigger();
     }
@@ -114,6 +113,11 @@ export function MenuOverlay({ isOpen, onClose }: MenuOverlayProps) {
           initial="hidden"
           animate="visible"
           exit="exit"
+          onAnimationComplete={(definition) => {
+            if (definition === "visible") {
+              handleFocusFirstLink();
+            }
+          }}
         >
           <div className="grid h-full grid-cols-1 lg:grid-cols-5">
             {/* Nav panel: 3 cols on desktop */}

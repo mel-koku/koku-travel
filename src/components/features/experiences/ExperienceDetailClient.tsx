@@ -32,7 +32,7 @@ export function ExperienceDetailClient({
   const authorName = typeof experience.author === "string" ? experience.author : experience.author.name;
 
   return (
-    <div className="min-h-screen bg-background">
+    <article className="min-h-screen bg-background">
       <ExperienceHero
         title={experience.title}
         featuredImage={experience.featuredImage?.url || ""}
@@ -82,6 +82,6 @@ export function ExperienceDetailClient({
       />
 
       <GuideProgressBar contentRef={contentRef} />
-    </div>
+    </article>
   );
 }

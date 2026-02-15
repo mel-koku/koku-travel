@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
-import { Magnetic } from "@/components/ui/Magnetic";
 import type { SiteSettings } from "@/types/sanitySiteContent";
 
 const defaultNavColumns = [
@@ -45,8 +43,6 @@ type FooterProps = {
 export default function Footer({ settings }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const brandDescription = settings?.brandDescription ?? "Curated by people who know Japan from the inside.";
-  const newsletterLabel = settings?.newsletterLabel ?? "Get the inside track";
-  const newsletterButton = settings?.newsletterButtonText ?? "Sign me up";
   const navColumns = settings?.footerNavColumns?.length ? settings.footerNavColumns : defaultNavColumns;
   const socialLinks = settings?.socialLinks?.length
     ? settings.socialLinks.map((s) => ({ label: s.label, href: s.url }))
@@ -64,24 +60,6 @@ export default function Footer({ settings }: FooterProps) {
               {brandDescription}
             </p>
 
-            {/* Newsletter */}
-            <div className="mt-8">
-              <label className="text-xs uppercase tracking-[0.3em] text-white/40">
-                {newsletterLabel}
-              </label>
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-                <input
-                  type="email"
-                  placeholder="Your email"
-                  className="h-12 w-full rounded-xl border border-white/20 bg-white/5 px-4 text-base text-white placeholder:text-white/30 focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/20 sm:flex-1 sm:w-auto"
-                />
-                <Magnetic className="w-full sm:w-auto">
-                  <Button variant="primary" className="w-full sm:w-auto">
-                    {newsletterButton}
-                  </Button>
-                </Magnetic>
-              </div>
-            </div>
           </div>
 
           {/* Navigation Columns */}

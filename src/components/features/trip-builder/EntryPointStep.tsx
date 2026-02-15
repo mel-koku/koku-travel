@@ -465,6 +465,12 @@ function JapanSilhouette({
                   onClick={() => { if (!didDrag.current) onSelectAirport(airport); }}
                   onMouseEnter={() => setHoveredAirport({ iataCode: airport.iataCode, name: airport.shortName, x: pos.x, y: pos.y })}
                   onMouseLeave={() => setHoveredAirport(null)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      if (!didDrag.current) onSelectAirport(airport);
+                    }
+                  }}
                   role="button"
                   tabIndex={0}
                   aria-label={`Select ${airport.name}`}

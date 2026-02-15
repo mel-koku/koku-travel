@@ -314,6 +314,12 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     isRecommended={scored.isRecommended}
                     isEntryPointRegion={scored.isEntryPointRegion}
                     onClick={() => handleMobileToggle(scored.region.id)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleMobileToggle(scored.region.id);
+                      }
+                    }}
                     onHover={() => {}}
                     onLeave={() => {}}
                   />

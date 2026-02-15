@@ -57,7 +57,7 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
   const authorName = typeof author === "string" ? author : author.name;
 
   return (
-    <div className="min-h-screen bg-background">
+    <article className="min-h-screen bg-background">
       <GuideHero
         title={title}
         featuredImage={featuredImage}
@@ -95,6 +95,6 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
       />
 
       <GuideProgressBar contentRef={contentRef} />
-    </div>
+    </article>
   );
 }

@@ -19,6 +19,7 @@ type RegionRowProps = {
   onClick: () => void;
   onHover: () => void;
   onLeave: () => void;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
 };
 
 export function RegionRow({
@@ -34,6 +35,7 @@ export function RegionRow({
   onClick,
   onHover,
   onLeave,
+  onKeyDown,
 }: RegionRowProps) {
   const prefersReducedMotion = useReducedMotion();
   const hasSelection = selectedCityCount > 0;
@@ -46,6 +48,7 @@ export function RegionRow({
       onMouseLeave={onLeave}
       onFocus={onHover}
       onBlur={onLeave}
+      onKeyDown={onKeyDown}
       aria-pressed={hasSelection}
       initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}

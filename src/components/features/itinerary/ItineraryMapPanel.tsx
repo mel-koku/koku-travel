@@ -398,6 +398,8 @@ export const ItineraryMapPanel = ({
             }
           });
           marker.on("click", () => {
+            // Open popup on tap for touch devices (mouseover doesn't fire)
+            marker.openPopup();
             // Only allow selecting activities, not start/end points
             if (!isStartPoint && !isEndPoint) {
               onSelectActivity?.(point.id);

@@ -94,6 +94,13 @@ export function GuidePreamble({
                 ? "border-sage/50 text-sage"
                 : "border-border/50 text-stone hover:border-sage/50 hover:text-sage"
             } ${!user ? "opacity-50 cursor-not-allowed" : ""}`}
+            aria-label={
+              !user
+                ? "Sign in to bookmark"
+                : bookmarked
+                  ? "Remove bookmark"
+                  : "Save to favorites"
+            }
             title={
               !user
                 ? "Sign in to bookmark"

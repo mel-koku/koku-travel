@@ -85,7 +85,7 @@ export function GuideHero({
         <h1 className="font-serif text-3xl italic leading-[1.05] tracking-display text-white sm:text-4xl lg:text-5xl">
           {title}
         </h1>
-        <p className="mt-4 font-mono text-xs uppercase tracking-ultra text-white/50">
+        <p className="mt-4 font-mono text-xs uppercase tracking-ultra text-white/70">
           {metaLine}
         </p>
       </div>
@@ -139,7 +139,7 @@ export function GuideHero({
           style={{ opacity: scrollIndicatorOpacity }}
         >
           <div className="flex flex-col items-center gap-3">
-            <span className="text-[10px] uppercase tracking-ultra text-white/50">
+            <span className="text-[10px] uppercase tracking-ultra text-white/70">
               Scroll
             </span>
             <div className="relative h-12 w-px overflow-hidden">
