@@ -52,6 +52,9 @@ export function ExploreMapLayout({
     ? `${boundsFilteredLocations.length.toLocaleString()} of ${totalCount.toLocaleString()} places in view`
     : `${totalCount.toLocaleString()} places`;
 
+  // Show reset button when the map has loaded bounds but no places are visible
+  const showResetButton = mapBounds !== null && boundsFilteredLocations.length === 0;
+
   // Trigger map resize after mobile expand/collapse animation
   const handleAnimationComplete = useCallback(() => {
     const container = mobileMapRef.current?.querySelector<
@@ -89,6 +92,7 @@ export function ExploreMapLayout({
               onLocationClick={onSelectLocation}
               highlightedLocationId={hoveredLocationId}
               onHoverChange={handleHoverChange}
+              showResetButton={showResetButton}
             />
           </ErrorBoundary>
 
@@ -191,6 +195,7 @@ export function ExploreMapLayout({
                 onLocationClick={onSelectLocation}
                 highlightedLocationId={hoveredLocationId}
                 onHoverChange={handleHoverChange}
+                showResetButton={showResetButton}
               />
             </ErrorBoundary>
             <div className="pointer-events-none absolute top-3 left-3 z-10">
