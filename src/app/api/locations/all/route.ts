@@ -80,28 +80,45 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    const { data, error } = await supabase
-      .from("locations")
-      .select(LOCATION_EXPLORE_COLUMNS)
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
-      .order("name", { ascending: true })
-      .range(0, 9999);
+    // Supabase PostgREST caps results at 1000 rows per request,
+    // so we paginate to fetch all locations.
+    const PAGE_SIZE = 1000;
+    let allRows: LocationExploreDbRow[] = [];
+    let page = 0;
+    let hasMore = true;
 
-    if (error) {
-      logger.error("Failed to fetch all locations", {
-        error,
-        requestId: context.requestId,
-      });
-      return addRequestContextHeaders(
-        internalError("Failed to fetch locations from database", { error: error.message }, {
+    while (hasMore) {
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      const { data: batch, error } = await supabase
+        .from("locations")
+        .select(LOCATION_EXPLORE_COLUMNS)
+        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+        .order("name", { ascending: true })
+        .range(from, to);
+
+      if (error) {
+        logger.error("Failed to fetch locations page", {
+          error,
+          page,
           requestId: context.requestId,
-        }),
-        context,
-      );
+        });
+        return addRequestContextHeaders(
+          internalError("Failed to fetch locations from database", { error: error.message }, {
+            requestId: context.requestId,
+          }),
+          context,
+        );
+      }
+
+      const rows = (batch || []) as unknown as LocationExploreDbRow[];
+      allRows = allRows.concat(rows);
+      hasMore = rows.length === PAGE_SIZE;
+      page++;
     }
 
-    const rows = (data || []) as unknown as LocationExploreDbRow[];
-    const locations: Location[] = rows.map((row) => ({
+    const locations: Location[] = allRows.map((row) => ({
       id: row.id,
       name: row.name,
       region: row.region,
