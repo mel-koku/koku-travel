@@ -70,24 +70,39 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient();
 
-    // Fetch only the columns needed for aggregation (not select("*"))
-    const { data, error } = await supabase
-      .from("locations")
-      .select("city, category, region, prefecture, neighborhood")
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
-      .range(0, 9999);
+    // Supabase PostgREST caps at 1000 rows per request — paginate.
+    const PAGE_SIZE = 1000;
+    let data: { city: string | null; category: string | null; region: string | null; prefecture: string | null; neighborhood: string | null }[] = [];
+    let page = 0;
+    let hasMore = true;
 
-    if (error) {
-      logger.error("Failed to fetch locations for filter metadata", {
-        error,
-        requestId: context.requestId,
-      });
-      return addRequestContextHeaders(
-        internalError("Failed to fetch filter metadata", { error: error.message }, {
+    while (hasMore) {
+      const from = page * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      const { data: batch, error } = await supabase
+        .from("locations")
+        .select("city, category, region, prefecture, neighborhood")
+        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+        .range(from, to);
+
+      if (error) {
+        logger.error("Failed to fetch locations for filter metadata", {
+          error,
+          page,
           requestId: context.requestId,
-        }),
-        context,
-      );
+        });
+        return addRequestContextHeaders(
+          internalError("Failed to fetch filter metadata", { error: error.message }, {
+            requestId: context.requestId,
+          }),
+          context,
+        );
+      }
+
+      data = data.concat(batch || []);
+      hasMore = (batch || []).length === PAGE_SIZE;
+      page++;
     }
 
     // Aggregate counts manually (Supabase doesn't support GROUP BY in select)
