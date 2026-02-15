@@ -190,16 +190,16 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             trigger="load"
             animation="clipY"
             staggerDelay={staggerWord}
-            delay={0.3}
+            delay={0.05}
           >
             {headline}
           </SplitText>
 
           {/* Supporting line */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0.005, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.9, ease: easeReveal }}
+            transition={{ duration: 0.5, delay: 0.4, ease: easeReveal }}
             className="mt-5 max-w-lg text-base text-white/70 sm:text-lg"
           >
             {description}
@@ -207,9 +207,9 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
 
           {/* CTAs */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0.005, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 1.1, ease: easeReveal }}
+            transition={{ duration: 0.4, delay: 0.6, ease: easeReveal }}
             className="mt-8 flex flex-wrap gap-4"
           >
             <Magnetic className="w-full sm:w-auto">

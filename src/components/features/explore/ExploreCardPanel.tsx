@@ -88,13 +88,14 @@ export function ExploreCardPanel({
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 px-4 lg:px-0">
-            {visibleLocations.map((location) => (
+            {visibleLocations.map((location, i) => (
               <ExploreCompactCard
                 key={location.id}
                 location={location}
                 onSelect={onSelectLocation}
                 isHighlighted={highlightedLocationId === location.id}
                 onHover={onHoverChange}
+                eager={i < 4}
               />
             ))}
           </div>

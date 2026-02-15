@@ -32,19 +32,19 @@ const motionTags = {
 
 const animations: Record<string, AnimDef> = {
   clipY: {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 20, opacity: 0.005 },
     visible: { y: 0, opacity: 1 },
   },
   clipX: {
-    hidden: { x: -20, opacity: 0, clipPath: "inset(0 100% 0 0)" },
+    hidden: { x: -20, opacity: 0.005, clipPath: "inset(0 100% 0 0)" },
     visible: { x: 0, opacity: 1, clipPath: "inset(0 0% 0 0)" },
   },
   fadeUp: {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0.005, y: 30 },
     visible: { opacity: 1, y: 0 },
   },
   fadeIn: {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0.005 },
     visible: { opacity: 1 },
   },
 };
@@ -108,6 +108,8 @@ export function SplitText({
     }));
   }, [children, splitBy]);
 
+  const isHeading = ["h1","h2","h3","h4"].includes(Tag);
+
   return (
     <MotionTag
       ref={ref}
@@ -115,8 +117,12 @@ export function SplitText({
       variants={containerVariants}
       initial="hidden"
       animate={shouldAnimate ? "visible" : "hidden"}
-      aria-label={children}
+      aria-label={isHeading ? children : undefined}
     >
+      {/* Visually hidden text for screen readers on non-heading elements */}
+      {!isHeading && (
+        <span className="sr-only">{children}</span>
+      )}
       {splitBy === "char"
         ? (items as { wordKey: string; chars: { key: string; content: string; index: number }[]; spaceIndex: number }[]).map(
             (word, wordIdx, arr) => (

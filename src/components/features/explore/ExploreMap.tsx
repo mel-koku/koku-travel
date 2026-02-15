@@ -14,6 +14,31 @@ const DEFAULT_ZOOM = 5;
 
 type MapboxModule = typeof import("mapbox-gl");
 
+// Eagerly start loading mapbox-gl at module evaluation time (not on mount).
+// This runs as soon as ExploreShell imports ExploreMapLayout → ExploreMap.
+let _mapboxPromise: Promise<MapboxModule> | null = null;
+
+function getMapboxModule(): Promise<MapboxModule> {
+  if (_mapboxPromise) return _mapboxPromise;
+
+  _mapboxPromise = import("mapbox-gl").then((module) => {
+    const mapboxgl = (
+      "default" in module ? module.default : module
+    ) as unknown as MapboxModule;
+    (mapboxgl as MapboxModule & { accessToken: string }).accessToken =
+      mapboxService.getAccessToken() ?? "";
+    import("mapbox-gl/dist/mapbox-gl.css" as string).catch(() => {});
+    return mapboxgl;
+  });
+
+  return _mapboxPromise;
+}
+
+// Kick off the import immediately if mapbox is enabled
+if (typeof window !== "undefined" && featureFlags.enableMapbox) {
+  getMapboxModule();
+}
+
 export type MapBounds = {
   north: number;
   south: number;
@@ -82,6 +107,7 @@ export function ExploreMap({
   const hasFittedBounds = useRef(false);
   const prevHighlightRef = useRef<number | null>(null);
   const locationLookupRef = useRef<Map<number, Location>>(new Map());
+  const featureCollectionRef = useRef<GeoJSON.FeatureCollection>({ type: "FeatureCollection", features: [] });
 
   const mapboxEnabled = useMemo(
     () => featureFlags.enableMapbox && mapboxService.isEnabled(),
@@ -99,8 +125,10 @@ export function ExploreMap({
       }
     }
     locationLookupRef.current = lookup;
+    featureCollectionRef.current = fc;
     return fc;
-  }, [locations]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only when count changes, not on reference identity
+  }, [locations.length]);
 
   // Debounced bounds callback
   const debouncedBoundsChange = useMemo(
@@ -108,19 +136,13 @@ export function ExploreMap({
     [onBoundsChange],
   );
 
-  // Load mapbox module
+  // Load mapbox module (uses eagerly-started promise above)
   useEffect(() => {
     if (!mapboxEnabled) return;
 
     let cancelled = false;
-    import("mapbox-gl")
-      .then((module) => {
-        const mapboxgl = (
-          "default" in module ? module.default : module
-        ) as unknown as MapboxModule;
-        (mapboxgl as MapboxModule & { accessToken: string }).accessToken =
-          mapboxService.getAccessToken() ?? "";
-        import("mapbox-gl/dist/mapbox-gl.css" as string).catch(() => {});
+    getMapboxModule()
+      .then((mapboxgl) => {
         if (!cancelled) {
           mapboxModuleRef.current = mapboxgl;
           setMapboxModuleLoaded(true);
@@ -153,10 +175,10 @@ export function ExploreMap({
     map.addControl(new mapboxModule.NavigationControl(), "top-right");
 
     map.on("load", () => {
-      // Add GeoJSON source with clustering
+      // Add GeoJSON source with clustering — use ref so data is available immediately
       map.addSource(SOURCE_ID, {
         type: "geojson",
-        data: { type: "FeatureCollection", features: [] },
+        data: featureCollectionRef.current,
         cluster: true,
         clusterMaxZoom: 14,
         clusterRadius: 50,

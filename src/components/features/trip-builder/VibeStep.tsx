@@ -123,9 +123,11 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           {sanityConfig?.vibeStepDescription ?? "Choose up to 5. These shape the places we suggest."}
         </p>
 
-        <p className="mt-2 font-mono text-sm text-stone" aria-live="polite">
-          {selectedVibes.length} / {MAX_VIBE_SELECTION} selected
-        </p>
+        <div aria-live="polite">
+          <p className="mt-2 font-mono text-sm text-stone">
+            {selectedVibes.length} / {MAX_VIBE_SELECTION} selected
+          </p>
+        </div>
       </div>
 
       {/* Desktop: Expanding columns */}
