@@ -32,7 +32,7 @@ import { REGIONS } from "@/data/regions";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
-import type { AcceptGapResult } from "@/hooks/useSmartPromptActions";
+import type { AcceptGapResult, PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
 
 // Lazy-load guide builder to keep ~90KB of template data out of the main bundle
 const buildGuideAsync = () => import("@/lib/guide/guideBuilder").then((m) => m.buildGuide);
@@ -52,6 +52,13 @@ type ItineraryShellProps = {
   onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
   onSkipSuggestion?: (gap: DetectedGap) => void;
   loadingSuggestionId?: string | null;
+  // Preview props
+  previewState?: PreviewState | null;
+  onConfirmPreview?: () => void;
+  onShowAnother?: () => Promise<void>;
+  onCancelPreview?: () => void;
+  onFilterChange?: (filter: Partial<RefinementFilters>) => void;
+  isPreviewLoading?: boolean;
 };
 
 const normalizeItinerary = (incoming: Itinerary): Itinerary => {
@@ -112,6 +119,12 @@ export const ItineraryShell = ({
   onAcceptSuggestion,
   onSkipSuggestion,
   loadingSuggestionId,
+  previewState,
+  onConfirmPreview,
+  onShowAnother,
+  onCancelPreview,
+  onFilterChange,
+  isPreviewLoading,
 }: ItineraryShellProps) => {
   const { reorderActivities, replaceActivity, getTripById, dayEntryPoints } = useAppState();
   const [selectedDay, setSelectedDay] = useState(0);
@@ -866,6 +879,12 @@ export const ItineraryShell = ({
                   conflictsResult={conflictsResult}
                   guide={currentDayGuide}
                   onBeforeDragReorder={() => { skipAutoOptimizeRef.current = true; }}
+                  previewState={previewState}
+                  onConfirmPreview={onConfirmPreview}
+                  onShowAnother={onShowAnother}
+                  onCancelPreview={onCancelPreview}
+                  onFilterChange={onFilterChange}
+                  isPreviewLoading={isPreviewLoading}
                 />
               </ErrorBoundary>
             ) : (

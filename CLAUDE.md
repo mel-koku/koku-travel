@@ -176,7 +176,8 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 - **Desktop**: 50-50 split — timeline left, Mapbox right. **Mobile**: 30vh map peek + timeline below.
 - **Guide**: Hybrid composed + template via `src/lib/guide/guideBuilder.ts`
 - **Route Optimizer**: Nearest-neighbor via `src/lib/routeOptimizer.ts`, auto-runs on gen
-- **Smart Prompts**: `/api/smart-prompts/recommend`
+- **Smart Prompts**: `/api/smart-prompts/recommend` — gap detection (`gapDetection.ts`) finds missing meals, light days, timing issues, category imbalance. Click "Add" → preview card with recommendation details → "Add this", "Show another" (max 3), or filter chips (Cheaper, Closer, Indoor, Different cuisine) → confirm inserts activity. Quick meals (konbini) skip preview. `useSmartPromptActions` manages preview state + refinement filters. API accepts `excludeLocationIds` and `refinementFilters` for iterative refinement.
+- **Proactive Guidance**: `detectGuidanceGaps()` fetches high-priority (>=7) etiquette/practical tips from `travel_guidance` table, surfaces as sage-colored smart prompt cards with "Got it" dismiss button. Max 2 per day, lowest priority in gap list.
 - **Travel Guidance**: `travel_guidance` table, matched by category/city/region/season
 
 ### Experiences (`src/components/features/experiences/`)

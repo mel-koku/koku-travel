@@ -13,8 +13,9 @@ import { useAppState } from "@/state/AppState";
 import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
 import type { Itinerary } from "@/types/itinerary";
 import { env } from "@/lib/env";
-import { detectGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import { detectGaps, detectGuidanceGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
+import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 type ItineraryClientProps = {
@@ -37,6 +38,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
   const requestedTripId = searchParams.get("trip");
   const { trips, updateTripItinerary } = useAppState();
   const [isMounted, setIsMounted] = useState(false);
+  const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
 
   // Track mount state to prevent hydration mismatch
   // AppState loads from localStorage in useEffect, so trips may be empty on server
@@ -87,8 +89,8 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
       ? formatDateLabel(selectedTrip.updatedAt)
       : null;
 
-  // Detect gaps for smart prompts
-  const initialGaps = useMemo(() => {
+  // Detect gaps for smart prompts (sync — meals, experiences, etc.)
+  const syncGaps = useMemo(() => {
     if (!activeItinerary) return [];
     return detectGaps(activeItinerary, {
       includeMeals: true,
@@ -98,18 +100,53 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     });
   }, [activeItinerary]);
 
+  // Fetch guidance gaps asynchronously per day
+  useEffect(() => {
+    if (!activeItinerary) {
+      setGuidanceGaps([]);
+      return;
+    }
+
+    let cancelled = false;
+    const season = getCurrentSeason();
+
+    Promise.all(
+      activeItinerary.days.map((day, dayIndex) =>
+        detectGuidanceGaps(day, dayIndex, {
+          fetchDayGuidance,
+          season,
+          maxPerDay: 2,
+        })
+      )
+    ).then((results) => {
+      if (!cancelled) {
+        setGuidanceGaps(results.flat());
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeItinerary]);
+
+  // Merge sync gaps + async guidance gaps
+  const initialGaps = useMemo(() => {
+    return [...syncGaps, ...guidanceGaps];
+  }, [syncGaps, guidanceGaps]);
+
   const smartPrompts = useSmartPrompts(initialGaps);
 
   // Reset prompts when trip changes
   useEffect(() => {
     if (activeItinerary) {
-      const newGaps = detectGaps(activeItinerary, {
+      const newSyncGaps = detectGaps(activeItinerary, {
         includeMeals: true,
         includeTransport: false,
         includeExperiences: true,
         maxGapsPerDay: 2,
       });
-      smartPrompts.resetPrompts(newGaps);
+      // Include any guidance gaps already fetched
+      smartPrompts.resetPrompts([...newSyncGaps, ...guidanceGaps]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only reset on trip change, not on every itinerary update
   }, [selectedTripId]);
@@ -149,6 +186,14 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     smartPrompts.handleSkip(gap);
   }, [smartPrompts]);
 
+  // Wrap confirmPreview to also dismiss the gap from smart prompts
+  const handleConfirmPreview = useCallback(() => {
+    if (smartPromptActions.previewState) {
+      smartPrompts.handleAccept(smartPromptActions.previewState.gap);
+    }
+    smartPromptActions.confirmPreview();
+  }, [smartPromptActions, smartPrompts]);
+
   // Wait for mount to prevent hydration mismatch
   // AppState loads from localStorage which is only available on client
   if (!isMounted) {
@@ -187,6 +232,12 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           onAcceptSuggestion={handleSmartPromptAccept}
           onSkipSuggestion={handleSmartPromptSkip}
           loadingSuggestionId={smartPromptActions.loadingGapId}
+          previewState={smartPromptActions.previewState}
+          onConfirmPreview={handleConfirmPreview}
+          onShowAnother={smartPromptActions.showAnother}
+          onCancelPreview={smartPromptActions.cancelPreview}
+          onFilterChange={smartPromptActions.setRefinementFilter}
+          isPreviewLoading={smartPromptActions.isLoading}
         />
       </ErrorBoundary>
     </div>

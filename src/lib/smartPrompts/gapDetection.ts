@@ -6,6 +6,7 @@
  */
 
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
+import type { TravelGuidance } from "@/types/travelGuidance";
 import { getCoveredMealTypes } from "./foodDetection";
 
 /**
@@ -18,7 +19,8 @@ export type GapType =
   | "long_gap"
   | "early_end"
   | "late_start"
-  | "category_imbalance";
+  | "category_imbalance"
+  | "guidance";
 
 /**
  * A detected gap with contextual information for prompting.
@@ -102,6 +104,11 @@ export type GapAction =
       dominantCategory: string;
       suggestedCategories: string[];
       timeSlot: "morning" | "afternoon" | "evening";
+    }
+  | {
+      type: "acknowledge_guidance";
+      guidanceId: string;
+      guidanceType: string;
     };
 
 
@@ -707,6 +714,7 @@ export function detectGaps(
         category_imbalance: 3,
         transport: 4,
         experience: 5,
+        guidance: 6,
       };
       return priority[a.type] - priority[b.type];
     });
@@ -733,6 +741,7 @@ export function getGapsSummary(gaps: DetectedGap[]): {
     early_end: 0,
     late_start: 0,
     category_imbalance: 0,
+    guidance: 0,
   };
   const byDay: Record<number, number> = {};
 
@@ -746,4 +755,74 @@ export function getGapsSummary(gaps: DetectedGap[]): {
     byType,
     byDay,
   };
+}
+
+/**
+ * Guidance type icon mapping
+ */
+const GUIDANCE_ICON_MAP: Record<string, string> = {
+  etiquette: "BookOpen",
+  practical: "Info",
+  environmental: "Leaf",
+  seasonal: "Calendar",
+};
+
+/**
+ * Detect high-priority guidance tips that should be surfaced as smart prompt cards.
+ * Only etiquette and practical tips with priority >= 7 are included.
+ *
+ * This is async because it fetches from the travel_guidance table.
+ * Call separately from detectGaps() and merge the results.
+ */
+export async function detectGuidanceGaps(
+  day: ItineraryDay,
+  dayIndex: number,
+  options: {
+    fetchDayGuidance: (criteria: {
+      categories: string[];
+      city?: string;
+      region?: string;
+      season?: "spring" | "summer" | "fall" | "winter";
+    }) => Promise<TravelGuidance[]>;
+    season?: "spring" | "summer" | "fall" | "winter";
+    maxPerDay?: number;
+  }
+): Promise<DetectedGap[]> {
+  const { fetchDayGuidance, season, maxPerDay = 2 } = options;
+
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
+
+  const categories = [
+    ...new Set(placeActivities.map((a) => a.tags?.[0]).filter(Boolean) as string[]),
+  ];
+
+  const guidance = await fetchDayGuidance({
+    categories,
+    city: day.cityId,
+    season,
+  });
+
+  // Filter to etiquette/practical with priority >= 7
+  const highPriority = guidance.filter(
+    (g) =>
+      (g.guidanceType === "etiquette" || g.guidanceType === "practical") &&
+      g.priority >= 7
+  );
+
+  return highPriority.slice(0, maxPerDay).map((g) => ({
+    id: `guidance-${day.id}-${g.id}`,
+    type: "guidance" as const,
+    dayIndex,
+    dayId: day.id,
+    title: g.title,
+    description: g.summary,
+    icon: GUIDANCE_ICON_MAP[g.guidanceType] ?? "Info",
+    action: {
+      type: "acknowledge_guidance" as const,
+      guidanceId: g.id,
+      guidanceType: g.guidanceType,
+    },
+  }));
 }

@@ -243,6 +243,13 @@ function createExperienceActivity(
   };
 }
 
+type RefinementFilters = {
+  budget?: "cheaper";
+  indoor?: boolean;
+  cuisineExclude?: string[];
+  proximity?: "closer";
+};
+
 type RecommendRequest = {
   gap: {
     id: string;
@@ -255,6 +262,8 @@ type RecommendRequest = {
   cityId: string;
   tripBuilderData: TripBuilderData;
   usedLocationIds: string[];
+  excludeLocationIds?: string[];
+  refinementFilters?: RefinementFilters;
 };
 
 type RecommendResponse = {
@@ -262,6 +271,69 @@ type RecommendResponse = {
   activity: ItineraryActivity;
   position: number;
 };
+
+/** Categories considered indoor */
+const INDOOR_CATEGORIES = new Set([
+  "museum", "shopping", "restaurant", "bar", "entertainment", "market", "food",
+]);
+
+/**
+ * Apply refinement filters to a list of locations.
+ * Returns a filtered/sorted subset. If a filter would eliminate all results, it's relaxed.
+ */
+function applyRefinementFilters(
+  locations: Location[],
+  filters: RefinementFilters | undefined,
+  dayActivities?: ItineraryActivity[]
+): Location[] {
+  if (!filters) return locations;
+  let result = [...locations];
+
+  // Indoor filter
+  if (filters.indoor) {
+    const indoor = result.filter((l) => l.category && INDOOR_CATEGORIES.has(l.category));
+    if (indoor.length > 0) result = indoor;
+  }
+
+  // Budget filter — exclude expensive (priceLevel >= 3)
+  if (filters.budget === "cheaper") {
+    const cheaper = result.filter((l) => !l.priceLevel || l.priceLevel < 3);
+    if (cheaper.length > 0) result = cheaper;
+  }
+
+  // Cuisine exclude filter
+  if (filters.cuisineExclude && filters.cuisineExclude.length > 0) {
+    const excludeSet = new Set(filters.cuisineExclude.map((c) => c.toLowerCase()));
+    const filtered = result.filter(
+      (l) => !l.googlePrimaryType || !excludeSet.has(l.googlePrimaryType.toLowerCase())
+    );
+    if (filtered.length > 0) result = filtered;
+  }
+
+  // Proximity filter — sort by distance to last activity, take top half
+  if (filters.proximity === "closer" && dayActivities) {
+    const lastPlace = [...dayActivities]
+      .reverse()
+      .find((a): a is Extract<ItineraryActivity, { kind: "place" }> =>
+        a.kind === "place" && !!a.coordinates
+      );
+    if (lastPlace?.coordinates) {
+      const { lat: refLat, lng: refLng } = lastPlace.coordinates;
+      result.sort((a, b) => {
+        const distA = a.coordinates
+          ? Math.hypot(a.coordinates.lat - refLat, a.coordinates.lng - refLng)
+          : Infinity;
+        const distB = b.coordinates
+          ? Math.hypot(b.coordinates.lat - refLat, b.coordinates.lng - refLng)
+          : Infinity;
+        return distA - distB;
+      });
+      result = result.slice(0, Math.max(1, Math.ceil(result.length / 2)));
+    }
+  }
+
+  return result;
+}
 
 /**
  * POST /api/smart-prompts/recommend
@@ -271,7 +343,7 @@ type RecommendResponse = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as RecommendRequest;
-    const { gap, dayActivities, cityId, tripBuilderData, usedLocationIds } = body;
+    const { gap, dayActivities, cityId, tripBuilderData, usedLocationIds, excludeLocationIds, refinementFilters } = body;
 
     if (!gap || !gap.action) {
       return badRequest("Missing required gap action");
@@ -283,6 +355,12 @@ export async function POST(request: NextRequest) {
 
     const supabase = await createClient();
     const usedIds = new Set(usedLocationIds || []);
+    // Merge excluded IDs (previously shown but rejected in preview)
+    if (excludeLocationIds) {
+      for (const id of excludeLocationIds) {
+        usedIds.add(id);
+      }
+    }
     const action = gap.action;
 
     let recommendation: Location | null = null;
@@ -315,12 +393,17 @@ export async function POST(request: NextRequest) {
       const mealAppropriate = filterByMealType(restaurants, action.mealType);
 
       // Filter out already-used locations
-      const available = mealAppropriate.filter((r) => !usedIds.has(r.id));
+      let available = mealAppropriate.filter((r) => !usedIds.has(r.id));
+
+      // Apply refinement filters (cheaper, proximity, cuisine exclude)
+      available = applyRefinementFilters(available, refinementFilters, dayActivities);
 
       if (available.length === 0) {
         const message = restaurants.length === 0
           ? `No restaurant data available for ${cityId}. Try a different city like Kyoto or Fukuoka.`
-          : "All restaurants for this city have already been added to your itinerary.";
+          : refinementFilters
+            ? "No more options with those filters. Try different filters or skip."
+            : "All restaurants for this city have already been added to your itinerary.";
         return NextResponse.json(
           { error: message },
           { status: 404 }
@@ -401,12 +484,17 @@ export async function POST(request: NextRequest) {
       );
 
       // Filter out already-used locations
-      const available = dateFiltered.filter((l) => !usedIds.has(l.id));
+      let available = dateFiltered.filter((l) => !usedIds.has(l.id));
+
+      // Apply refinement filters (indoor, cheaper, proximity)
+      available = applyRefinementFilters(available, refinementFilters, dayActivities);
 
       if (available.length === 0) {
         const message = locations.length === 0
           ? `No experience data available for ${cityId}.`
-          : "All experiences for this city have already been added to your itinerary.";
+          : refinementFilters
+            ? "No more options with those filters. Try different filters or skip."
+            : "All experiences for this city have already been added to your itinerary.";
         return NextResponse.json(
           { error: message },
           { status: 404 }
