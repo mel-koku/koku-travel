@@ -22,9 +22,16 @@ export default async function ExperiencesPage() {
     getPagesContent(),
   ]);
 
+  // Preload LCP image — first experience card's thumbnail/featured image
+  const lcpImageUrl =
+    experiences[0]?.thumbnailImage?.url || experiences[0]?.featuredImage?.url;
+
   return (
-    <div className="min-h-screen bg-background">
-      <ExperiencesPageClient experiences={experiences} content={content ?? undefined} />
-    </div>
+    <>
+      {lcpImageUrl && <link rel="preload" as="image" href={lcpImageUrl} />}
+      <div className="min-h-screen bg-background">
+        <ExperiencesPageClient experiences={experiences} content={content ?? undefined} />
+      </div>
+    </>
   );
 }

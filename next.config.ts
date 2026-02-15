@@ -136,6 +136,7 @@ const nextConfig: NextConfig = {
   images: {
     localPatterns,
     remotePatterns,
+    formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 86400, // 24 hours — prevents frequent re-optimization
     // Skip image optimization proxy in dev — avoids timeout cascade when
     // Turbopack compilation blocks the event loop for 10-30s
