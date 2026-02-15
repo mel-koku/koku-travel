@@ -7,7 +7,6 @@ import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
   createRequestContext,
   addRequestContextHeaders,
-  getOptionalAuth,
 } from "@/lib/api/middleware";
 import {
   parsePaginationParams,
@@ -41,10 +40,6 @@ export async function GET(request: NextRequest) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
 
-  // Optional authentication (for future user-specific filtering)
-  const authResult = await getOptionalAuth(request, context);
-  const finalContext = authResult.context;
-
   try {
     const supabase = await createClient();
     const pagination = parsePaginationParams(request);
@@ -69,13 +64,13 @@ export async function GET(request: NextRequest) {
     if (countError) {
       logger.error("Failed to count locations", {
         error: countError,
-        requestId: finalContext.requestId,
+        requestId: context.requestId,
       });
       return addRequestContextHeaders(
         internalError("Failed to fetch locations from database", { error: countError.message }, {
-          requestId: finalContext.requestId,
+          requestId: context.requestId,
         }),
-        finalContext,
+        context,
       );
     }
 
@@ -97,13 +92,13 @@ export async function GET(request: NextRequest) {
     if (error) {
       logger.error("Failed to fetch locations from Supabase", {
         error,
-        requestId: finalContext.requestId,
+        requestId: context.requestId,
       });
       return addRequestContextHeaders(
         internalError("Failed to fetch locations from database", { error: error.message }, {
-          requestId: finalContext.requestId,
+          requestId: context.requestId,
         }),
-        finalContext,
+        context,
       );
     }
 
@@ -147,16 +142,16 @@ export async function GET(request: NextRequest) {
           "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
         },
       }),
-      finalContext,
+      context,
     );
   } catch (error) {
     logger.error("Unexpected error fetching locations", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
+      requestId: context.requestId,
     });
     const message = error instanceof Error ? error.message : "Failed to load locations.";
     return addRequestContextHeaders(
-      internalError(message, undefined, { requestId: finalContext.requestId }),
-      finalContext,
+      internalError(message, undefined, { requestId: context.requestId }),
+      context,
     );
   }
 }

@@ -6,9 +6,16 @@ import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
   createRequestContext,
   addRequestContextHeaders,
-  getOptionalAuth,
 } from "@/lib/api/middleware";
 import type { FilterOption, FilterMetadata } from "@/types/filters";
+import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
+
+/** Two-tier cache: globalThis + file (survives dev server restarts) */
+const CACHE_TTL = 60 * 60 * 1000; // 1 hour
+const FILE_CACHE_KEY = "filter-options";
+const FILE_CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hours (file cache longer)
+type FilterCache = { data: FilterMetadata; cachedAt: number };
+const _g = globalThis as typeof globalThis & { __filterOptionsCache?: FilterCache };
 
 /**
  * GET /api/locations/filter-options
@@ -30,9 +37,35 @@ export async function GET(request: NextRequest) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
 
-  // Optional authentication (for consistency with other endpoints)
-  const authResult = await getOptionalAuth(request, context);
-  const finalContext = authResult.context;
+  // Tier 1: globalThis cache (fastest)
+  if (_g.__filterOptionsCache && Date.now() - _g.__filterOptionsCache.cachedAt < CACHE_TTL) {
+    return addRequestContextHeaders(
+      NextResponse.json(_g.__filterOptionsCache.data, {
+        status: 200,
+        headers: {
+          "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=7200",
+          "X-Cache": "HIT",
+        },
+      }),
+      context,
+    );
+  }
+
+  // Tier 2: file cache (survives dev server restarts)
+  const fileCached = readFileCache<FilterMetadata>(FILE_CACHE_KEY, FILE_CACHE_TTL);
+  if (fileCached) {
+    _g.__filterOptionsCache = { data: fileCached, cachedAt: Date.now() };
+    return addRequestContextHeaders(
+      NextResponse.json(fileCached, {
+        status: 200,
+        headers: {
+          "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=7200",
+          "X-Cache": "HIT-FILE",
+        },
+      }),
+      context,
+    );
+  }
 
   try {
     const supabase = await createClient();
@@ -41,18 +74,19 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase
       .from("locations")
       .select("city, category, region, prefecture, neighborhood")
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+      .range(0, 9999);
 
     if (error) {
       logger.error("Failed to fetch locations for filter metadata", {
         error,
-        requestId: finalContext.requestId,
+        requestId: context.requestId,
       });
       return addRequestContextHeaders(
         internalError("Failed to fetch filter metadata", { error: error.message }, {
-          requestId: finalContext.requestId,
+          requestId: context.requestId,
         }),
-        finalContext,
+        context,
       );
     }
 
@@ -128,6 +162,10 @@ export async function GET(request: NextRequest) {
       neighborhoods,
     };
 
+    // Cache the result (globalThis + file)
+    _g.__filterOptionsCache = { data: response, cachedAt: Date.now() };
+    writeFileCache(FILE_CACHE_KEY, response);
+
     return addRequestContextHeaders(
       NextResponse.json(response, {
         status: 200,
@@ -136,16 +174,16 @@ export async function GET(request: NextRequest) {
           "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=7200",
         },
       }),
-      finalContext,
+      context,
     );
   } catch (error) {
     logger.error("Unexpected error fetching filter metadata", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
+      requestId: context.requestId,
     });
     const message = error instanceof Error ? error.message : "Failed to load filter metadata.";
     return addRequestContextHeaders(
-      internalError(message, undefined, { requestId: finalContext.requestId }),
-      finalContext,
+      internalError(message, undefined, { requestId: context.requestId }),
+      context,
     );
   }
 }
