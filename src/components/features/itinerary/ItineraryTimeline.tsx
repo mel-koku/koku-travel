@@ -36,6 +36,7 @@ import {
 import type { TripBuilderData } from "@/types/trip";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
+import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
 import { getActivityConflicts } from "@/lib/validation/itineraryConflicts";
 import type { DayGuide } from "@/types/itineraryGuide";
 import { GuideSegmentCard } from "./GuideSegmentCard";
@@ -81,6 +82,13 @@ type ItineraryTimelineProps = {
   guide?: DayGuide | null;
   // Called before a drag-reorder is applied to the model
   onBeforeDragReorder?: () => void;
+  // Preview props
+  previewState?: PreviewState | null;
+  onConfirmPreview?: () => void;
+  onShowAnother?: () => Promise<void>;
+  onCancelPreview?: () => void;
+  onFilterChange?: (filter: Partial<RefinementFilters>) => void;
+  isPreviewLoading?: boolean;
 };
 
 export const ItineraryTimeline = ({
@@ -103,6 +111,12 @@ export const ItineraryTimeline = ({
   conflictsResult,
   guide,
   onBeforeDragReorder,
+  previewState,
+  onConfirmPreview,
+  onShowAnother,
+  onCancelPreview,
+  onFilterChange,
+  isPreviewLoading,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMountedRef = useRef(true);
@@ -542,6 +556,12 @@ export const ItineraryTimeline = ({
             loadingSuggestionId={loadingSuggestionId}
             conflicts={conflicts}
             onDayStartTimeChange={handleDayStartTimeChange}
+            previewState={previewState}
+            onConfirmPreview={onConfirmPreview}
+            onShowAnother={onShowAnother}
+            onCancelPreview={onCancelPreview}
+            onFilterChange={onFilterChange}
+            isPreviewLoading={isPreviewLoading}
           />
 
         {/* City Transition Display */}

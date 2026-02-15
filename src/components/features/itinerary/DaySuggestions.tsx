@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import {
+  BookOpen,
   ChevronDown,
   ChevronUp,
   Coffee,
+  Info,
+  Leaf,
   Lightbulb,
   Moon,
   Plus,
@@ -17,10 +20,15 @@ import {
 
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
+import { SmartPromptPreview } from "./SmartPromptPreview";
 import type { DetectedGap, GapType } from "@/lib/smartPrompts/gapDetection";
+import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
 
 const ICON_MAP: Record<string, LucideIcon> = {
+  BookOpen,
   Coffee,
+  Info,
+  Leaf,
   Moon,
   Plus,
   Sunrise,
@@ -58,6 +66,10 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     bg: "bg-semantic-error/10",
     text: "text-semantic-error",
   },
+  guidance: {
+    bg: "bg-sage/10",
+    text: "text-sage",
+  },
 };
 
 export type DaySuggestionsProps = {
@@ -66,6 +78,13 @@ export type DaySuggestionsProps = {
   onSkip: (gap: DetectedGap) => void;
   loadingGapId?: string | null;
   className?: string;
+  // Preview props
+  previewState?: PreviewState | null;
+  onConfirmPreview?: () => void;
+  onShowAnother?: () => Promise<void>;
+  onCancelPreview?: () => void;
+  onFilterChange?: (filter: Partial<RefinementFilters>) => void;
+  isPreviewLoading?: boolean;
 };
 
 export function DaySuggestions({
@@ -74,6 +93,12 @@ export function DaySuggestions({
   onSkip,
   loadingGapId,
   className,
+  previewState,
+  onConfirmPreview,
+  onShowAnother,
+  onCancelPreview,
+  onFilterChange,
+  isPreviewLoading,
 }: DaySuggestionsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -110,6 +135,27 @@ export function DaySuggestions({
               const Icon = ICON_MAP[gap.icon] ?? Plus;
               const colors = TYPE_COLORS[gap.type];
               const isLoading = loadingGapId === gap.id;
+              const isGuidance = gap.type === "guidance";
+              const hasPreview = previewState?.gap.id === gap.id;
+
+              // Render preview card instead of normal gap card
+              if (hasPreview && previewState && onConfirmPreview && onShowAnother && onCancelPreview && onFilterChange) {
+                return (
+                  <SmartPromptPreview
+                    key={gap.id}
+                    recommendation={previewState.recommendation}
+                    gapTitle={gap.title}
+                    showCount={previewState.showCount}
+                    activeFilters={previewState.activeFilters}
+                    isMeal={gap.action.type === "add_meal"}
+                    isLoading={isPreviewLoading ?? false}
+                    onConfirm={onConfirmPreview}
+                    onShowAnother={onShowAnother}
+                    onCancel={onCancelPreview}
+                    onFilterChange={onFilterChange}
+                  />
+                );
+              }
 
               return (
                 <div
@@ -134,23 +180,36 @@ export function DaySuggestions({
 
                   {/* Actions */}
                   <div className="flex shrink-0 gap-2">
-                    <Button
-                      variant="primary"
-                      size="chip"
-                      onClick={() => onAccept(gap)}
-                      disabled={isLoading}
-                      isLoading={isLoading}
-                    >
-                      {isLoading ? <span className="sr-only">Adding...</span> : "Add"}
-                    </Button>
-                    <Button
-                      variant="brand-ghost"
-                      size="chip"
-                      onClick={() => onSkip(gap)}
-                      disabled={isLoading}
-                    >
-                      Skip
-                    </Button>
+                    {isGuidance ? (
+                      <Button
+                        variant="brand-ghost"
+                        size="chip"
+                        onClick={() => onSkip(gap)}
+                        disabled={isLoading}
+                      >
+                        Got it
+                      </Button>
+                    ) : (
+                      <>
+                        <Button
+                          variant="primary"
+                          size="chip"
+                          onClick={() => onAccept(gap)}
+                          disabled={isLoading}
+                          isLoading={isLoading}
+                        >
+                          {isLoading ? <span className="sr-only">Adding...</span> : "Add"}
+                        </Button>
+                        <Button
+                          variant="brand-ghost"
+                          size="chip"
+                          onClick={() => onSkip(gap)}
+                          disabled={isLoading}
+                        >
+                          Skip
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               );
