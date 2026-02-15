@@ -15,6 +15,7 @@ import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locati
 import { getFeaturedGuides } from "@/lib/guides/guideService";
 import { getFeaturedExperiences } from "@/lib/experiences/experienceService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
+import { urlFor } from "@/sanity/image";
 
 export const metadata: Metadata = {
   title: "Koku Travel - Discover Japan with Local Experts",
@@ -38,39 +39,48 @@ export default async function Home() {
       getLandingPageContent(),
     ]);
 
+  // Preload LCP hero image — browser starts fetching before parsing full DOM
+  const heroImage = landingContent?.heroImage;
+  const lcpImageUrl = heroImage
+    ? urlFor(heroImage).width(1920).quality(85).url()
+    : "https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1920&q=80";
+
   return (
-    <main className="flex flex-col">
-      <HeroOpening
-        locationCount={locationCount}
-        content={landingContent ?? undefined}
-      />
-      <Philosophy
-        locationCount={locationCount}
-        content={landingContent ?? undefined}
-      />
-      <ErrorBoundary fallback={null}>
-        <ImmersiveShowcase content={landingContent ?? undefined} />
-      </ErrorBoundary>
-      <ErrorBoundary fallback={null}>
-        <FeaturedLocations
-          locations={featuredLocations}
+    <>
+      <link rel="preload" as="image" href={lcpImageUrl} />
+      <main className="flex flex-col">
+        <HeroOpening
+          locationCount={locationCount}
           content={landingContent ?? undefined}
         />
-      </ErrorBoundary>
-      <ErrorBoundary fallback={null}>
-        <FeaturedExperiences
-          experiences={featuredExperiences}
+        <Philosophy
+          locationCount={locationCount}
           content={landingContent ?? undefined}
         />
-      </ErrorBoundary>
-      <ErrorBoundary fallback={null}>
-        <TestimonialTheater content={landingContent ?? undefined} />
-      </ErrorBoundary>
-      <FeaturedGuides
-        guides={featuredGuides}
-        content={landingContent ?? undefined}
-      />
-      <FinalCTA content={landingContent ?? undefined} />
-    </main>
+        <ErrorBoundary fallback={null}>
+          <ImmersiveShowcase content={landingContent ?? undefined} />
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
+          <FeaturedLocations
+            locations={featuredLocations}
+            content={landingContent ?? undefined}
+          />
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
+          <FeaturedExperiences
+            experiences={featuredExperiences}
+            content={landingContent ?? undefined}
+          />
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
+          <TestimonialTheater content={landingContent ?? undefined} />
+        </ErrorBoundary>
+        <FeaturedGuides
+          guides={featuredGuides}
+          content={landingContent ?? undefined}
+        />
+        <FinalCTA content={landingContent ?? undefined} />
+      </main>
+    </>
   );
 }

@@ -138,7 +138,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
       >
         <motion.div
           className="absolute inset-0"
-          initial={{ opacity: 0, scale: 1.08 }}
+          initial={{ opacity: 0.005, scale: 1.08 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: easeCinematic }}
         >

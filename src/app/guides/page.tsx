@@ -22,9 +22,15 @@ export default async function GuidesPage() {
     getPagesContent(),
   ]);
 
+  // Preload LCP image — first guide card's thumbnail/featured image
+  const lcpImageUrl = guides[0]?.thumbnailImage || guides[0]?.featuredImage;
+
   return (
-    <div className="min-h-screen bg-background">
-      <GuidesPageClient guides={guides} content={content ?? undefined} />
-    </div>
+    <>
+      {lcpImageUrl && <link rel="preload" as="image" href={lcpImageUrl} />}
+      <div className="min-h-screen bg-background">
+        <GuidesPageClient guides={guides} content={content ?? undefined} />
+      </div>
+    </>
   );
 }
