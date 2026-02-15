@@ -6,6 +6,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
+import { mapColors } from "@/lib/mapColors";
 
 type MapboxModule = typeof import("mapbox-gl");
 
@@ -13,7 +14,7 @@ const MAP_STYLE = "mapbox://styles/mapbox/light-v11";
 const DEFAULT_ZOOM = 4.5;
 const JAPAN_CENTER: [number, number] = [138.2529, 36.2048];
 
-const SELECTED_COLOR = "#8c2f2f";
+const SELECTED_COLOR = mapColors.brandPrimary;
 const UNSELECTED_COLOR = "#9a8d7e";
 
 export function RegionMap() {

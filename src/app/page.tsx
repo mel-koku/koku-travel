@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+
 import {
   HeroOpening,
   Philosophy,
@@ -13,6 +15,16 @@ import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locati
 import { getFeaturedGuides } from "@/lib/guides/guideService";
 import { getFeaturedExperiences } from "@/lib/experiences/experienceService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
+
+export const metadata: Metadata = {
+  title: "Koku Travel - Discover Japan with Local Experts",
+  description: "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+  openGraph: {
+    title: "Koku Travel - Discover Japan with Local Experts",
+    description: "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+    siteName: "Koku Travel",
+  },
+};
 
 export const revalidate = 3600;
 

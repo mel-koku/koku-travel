@@ -110,7 +110,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
                 <input
                   id={noteStartId}
                   type="time"
-                  className="h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="h-10 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   value={noteStartTime}
                   onChange={(event) => {
                     const value = event.target.value;
@@ -130,7 +130,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
                 <input
                   id={noteEndId}
                   type="time"
-                  className="h-10 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                  className="h-10 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                   value={noteEndTime}
                   onChange={(event) => {
                     const value = event.target.value;

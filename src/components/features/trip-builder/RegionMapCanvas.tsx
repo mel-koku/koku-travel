@@ -2,6 +2,7 @@
 
 import { useTheme } from "next-themes";
 import { JAPAN_MAP_VIEWBOX, REGION_PREFECTURES, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
+import { mapColors } from "@/lib/mapColors";
 import type { KnownRegionId } from "@/types/trip";
 
 type RegionMapCanvasProps = {
@@ -61,14 +62,14 @@ export function RegionMapCanvas({
               d={d}
               fill={
                 isSelected
-                  ? "rgba(196, 80, 79, 0.2)"
+                  ? `${mapColors.brandPrimary}33`
                   : isHovered
                     ? palette.hoverFill
                     : palette.baseFill
               }
               stroke={
                 isSelected
-                  ? "rgba(196, 80, 79, 0.8)"
+                  ? `${mapColors.brandPrimary}cc`
                   : isHovered
                     ? palette.hoverStroke
                     : palette.baseStroke

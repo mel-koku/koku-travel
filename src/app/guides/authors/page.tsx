@@ -8,6 +8,12 @@ export const metadata: Metadata = {
   title: "Local Guide Authors | Koku Travel",
   description:
     "Meet the local experts who share their insider knowledge of Japan through our travel guides.",
+  openGraph: {
+    title: "Local Guide Authors | Koku Travel",
+    description:
+      "Meet the local experts who share their insider knowledge of Japan through our travel guides.",
+    siteName: "Koku Travel",
+  },
 };
 
 export const revalidate = 3600;
