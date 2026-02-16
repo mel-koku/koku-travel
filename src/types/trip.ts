@@ -190,11 +190,6 @@ export type TripBuilderData = {
    * Defaults to "09:00" if not specified.
    */
   dayStartTime?: string;
-  /**
-   * Location IDs queued from Explore page to include when generating a trip.
-   * These are places the user wants to visit, added before creating a trip.
-   */
-  savedLocationIds?: string[];
 };
 
 /**
