@@ -7,21 +7,21 @@ import type { LocationWarning } from "@/lib/tripBuilder/locationCapacity";
 
 type RegionSummaryPillProps = {
   selectedCityCount: number;
-  derivedRegionNames: string[];
+  selectedCityNames: string[];
   warning?: LocationWarning | null;
 };
 
 export function RegionSummaryPill({
   selectedCityCount,
-  derivedRegionNames,
+  selectedCityNames,
   warning,
 }: RegionSummaryPillProps) {
   const prefersReducedMotion = useReducedMotion();
 
-  const regionLabel =
-    derivedRegionNames.length > 2
-      ? `${derivedRegionNames.slice(0, 2).join(", ")} & more`
-      : derivedRegionNames.join(", ");
+  const cityLabel =
+    selectedCityNames.length > 4
+      ? `${selectedCityNames.slice(0, 4).join(", ")} +${selectedCityNames.length - 4}`
+      : selectedCityNames.join(", ");
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -36,17 +36,10 @@ export function RegionSummaryPill({
               duration: 0.4,
               ease: easeCinematicMut,
             }}
-            className="whitespace-nowrap rounded-full border border-border bg-background/90 px-6 py-3 text-sm shadow-lg backdrop-blur-xl"
+            className="max-w-[90vw] truncate rounded-full border border-border bg-background/90 px-6 py-3 text-sm shadow-lg backdrop-blur-xl"
           >
             <span className="font-medium text-foreground">
-              {selectedCityCount} {selectedCityCount === 1 ? "city" : "cities"}
-            </span>
-            {regionLabel && (
-              <>
-                <span className="mx-2 text-stone">|</span>
-                <span className="text-foreground-secondary">{regionLabel}</span>
-              </>
-            )}
+              {cityLabel}</span>
           </motion.div>
         ) : (
           <motion.div

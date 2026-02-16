@@ -193,17 +193,46 @@ export function getRegionsByScore(
 }
 
 /**
- * Auto-select cities by first picking top regions (via autoSelectRegions),
- * then expanding them to all their city IDs.
+ * Auto-select cities from exactly 2 regions:
+ * 1. The entry point's region (closest to arrival)
+ * 2. The highest-scoring region by vibe match (if different from #1)
+ *
+ * Falls back to the top 2 scored regions when no entry point is set.
  */
 export function autoSelectCities(
   vibes: VibeId[],
   entryPoint?: EntryPoint,
-  duration?: number
+  _duration?: number
 ): KnownCityId[] {
-  const regionIds = autoSelectRegions(vibes, entryPoint, duration);
+  const scored = scoreRegionsForTrip(vibes, entryPoint);
+  const picked = new Set<KnownRegionId>();
+
+  // 1. Entry point region (closest to arrival)
+  const entryRegion = scored.find((s) => s.isEntryPointRegion);
+  if (entryRegion) {
+    picked.add(entryRegion.region.id);
+  }
+
+  // 2. Highest-scoring region that isn't already picked
+  for (const s of scored) {
+    if (!picked.has(s.region.id)) {
+      picked.add(s.region.id);
+      break;
+    }
+  }
+
+  // If still only 1 (entry point was also top scorer), grab the next best
+  if (picked.size < 2) {
+    for (const s of scored) {
+      if (!picked.has(s.region.id)) {
+        picked.add(s.region.id);
+        break;
+      }
+    }
+  }
+
   const cities: KnownCityId[] = [];
-  for (const regionId of regionIds) {
+  for (const regionId of picked) {
     const region = REGIONS.find((r) => r.id === regionId);
     region?.cities.forEach((c) => cities.push(c.id));
   }

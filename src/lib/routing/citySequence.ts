@@ -112,13 +112,17 @@ export function resolveCitySequence(
     if (!cityKey || seen.has(cityKey)) {
       return;
     }
-    const info = CITY_INFO_BY_KEY.get(cityKey);
-    if (!info) {
-      return;
-    }
     if (!locationsByCityKey.has(cityKey)) {
       return;
     }
+    // Use existing info or create a fallback for dynamic cities
+    const info = CITY_INFO_BY_KEY.get(cityKey) ?? (() => {
+      const regionIdFromLabel = REGION_ID_BY_LABEL.get(cityKey);
+      const label = cityKey.charAt(0).toUpperCase() + cityKey.slice(1);
+      const fallback: CityInfo = { key: cityKey, label, regionId: regionIdFromLabel };
+      CITY_INFO_BY_KEY.set(cityKey, fallback);
+      return fallback;
+    })();
     sequence.push(info);
     seen.add(cityKey);
   }
