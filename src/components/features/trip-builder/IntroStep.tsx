@@ -126,15 +126,6 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
         </div>
       </div>
 
-      {/* Step indicator — bottom-left */}
-      <motion.p
-        className="absolute bottom-6 left-6 z-10 font-mono text-[10px] uppercase tracking-widest text-stone lg:bottom-10 lg:left-10"
-        initial={prefersReducedMotion ? {} : { opacity: 0.005 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4, delay: 1.8 }}
-      >
-        5 quick steps
-      </motion.p>
     </div>
   );
 }
