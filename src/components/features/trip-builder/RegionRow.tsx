@@ -1,10 +1,12 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Plane, Star } from "lucide-react";
+import { Check, Minus, Plane, Star } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { easeCinematicMut } from "@/lib/motion";
 import type { RegionDescription } from "@/data/regionDescriptions";
+
+export type RegionSelectionState = "none" | "partial" | "full";
 
 type RegionRowProps = {
   index: number;
@@ -18,6 +20,7 @@ type RegionRowProps = {
   isHovered: boolean;
   isRecommended: boolean;
   isEntryPointRegion: boolean;
+  regionSelectionState: RegionSelectionState;
   onClick: () => void;
   onHover: () => void;
   onLeave: () => void;
@@ -36,6 +39,7 @@ export function RegionRow({
   isHovered,
   isRecommended,
   isEntryPointRegion,
+  regionSelectionState,
   onClick,
   onHover,
   onLeave,
@@ -69,6 +73,25 @@ export function RegionRow({
           : "border-border/50 hover:border-border",
       )}
     >
+      {/* Selection checkbox */}
+      <span
+        className={cn(
+          "flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors duration-300",
+          regionSelectionState === "full"
+            ? "border-brand-primary bg-brand-primary"
+            : regionSelectionState === "partial"
+              ? "border-brand-primary bg-brand-primary/20"
+              : "border-border",
+        )}
+      >
+        {regionSelectionState === "full" && (
+          <Check className="h-2.5 w-2.5 text-white" />
+        )}
+        {regionSelectionState === "partial" && (
+          <Minus className="h-2.5 w-2.5 text-brand-primary" />
+        )}
+      </span>
+
       {/* Index number */}
       <span className={cn(
         "shrink-0 font-mono text-xs tabular-nums transition-colors duration-300",
@@ -77,19 +100,25 @@ export function RegionRow({
         {String(index + 1).padStart(2, "0")}
       </span>
 
-      {/* City names (primary) + region subtitle */}
+      {/* Region label + city names */}
       <div className="flex-1 min-w-0">
+        <span className={cn(
+          "block text-[10px] font-medium uppercase tracking-[0.15em] transition-colors duration-300",
+          hasSelection || isHovered ? "text-brand-primary" : "text-stone",
+        )}>
+          {regionName} Region
+        </span>
         <span className={cn(
           "block font-serif text-xl italic tracking-tight transition-colors duration-300 sm:text-2xl",
           hasSelection || isHovered ? "text-foreground" : "text-foreground-secondary",
         )}>
           {cityNames.length > 0 ? cityNames.join(" · ") : region.name}
         </span>
-        <span className="block text-xs text-stone transition-colors duration-300 mt-0.5">
-          {additionalCityCount > 0
-            ? `+${additionalCityCount} more cities in ${regionName}`
-            : regionName}
-        </span>
+        {additionalCityCount > 0 && (
+          <span className="block text-xs text-stone transition-colors duration-300 mt-0.5">
+            +{additionalCityCount} more cities
+          </span>
+        )}
       </div>
 
       {/* Badges */}

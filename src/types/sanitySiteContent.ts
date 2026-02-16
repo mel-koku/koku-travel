@@ -98,6 +98,7 @@ export type TripBuilderConfig = {
     description: string;
     highlights?: string[];
     heroImage?: SanityImageAsset & { url?: string };
+    galleryImages?: Array<SanityImageAsset & { url?: string }>;
   }>;
 
   // Intro Step

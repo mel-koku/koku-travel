@@ -125,6 +125,14 @@ export const tripBuilderConfig = defineType({
               type: "image",
               options: { hotspot: true },
             }),
+            defineField({
+              name: "galleryImages",
+              title: "Gallery Images",
+              type: "array",
+              description: "Additional images for this region (used in review step composite). Hero image is always included.",
+              of: [{ type: "image", options: { hotspot: true } }],
+              validation: (rule) => rule.max(4),
+            }),
           ],
           preview: {
             select: { name: "name", tagline: "tagline", regionId: "regionId" },

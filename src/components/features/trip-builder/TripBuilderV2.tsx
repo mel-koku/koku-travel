@@ -196,7 +196,7 @@ function StepShell({
   const resolvedBackLabel = backLabel ?? "Back";
 
   return (
-    <div className="flex min-h-[calc(100dvh-5rem)] flex-col">
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col pb-20">
       {/* Content area — grows to fill, page scrolls naturally */}
       <div
         className={cn(
@@ -207,8 +207,8 @@ function StepShell({
         {children}
       </div>
 
-      {/* Navigation — sticky to viewport bottom, detaches at section end */}
-      <div className="sticky bottom-0 z-30 hidden border-t border-border/10 bg-background lg:block">
+      {/* Navigation — fixed to viewport bottom, always on top */}
+      <div className="fixed inset-x-0 bottom-0 z-50 hidden border-t border-border/10 bg-background lg:block">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8 lg:pr-24">
           <button
             type="button"
@@ -227,8 +227,8 @@ function StepShell({
         </div>
       </div>
 
-      {/* Mobile Bottom Bar — sticky */}
-      <div className="sticky bottom-0 z-30 border-t border-border/20 bg-background p-4 lg:hidden">
+      {/* Mobile Bottom Bar — fixed to viewport bottom, always on top */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-background p-4 lg:hidden">
         <div className="flex items-center gap-3">
           <button
             type="button"
