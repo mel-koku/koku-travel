@@ -208,7 +208,7 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 - **Key files**: `src/lib/chat/systemPrompt.ts`, `src/lib/chat/tools.ts`, `src/lib/chat/locationSearch.ts`
 
 ### Explore → Itinerary
-Smart city matching via `src/hooks/useAddToItinerary.ts`. Saved locations queued in `TripBuilderContext` → prioritized during generation.
+Favorites-only flow: users heart locations on Explore. During trip generation, `TripBuilderClient` passes `favoriteIds` from `AppState.favorites` to `/api/itinerary/plan`. The generator matches favorites to trip cities and injects them as priority activities tagged `"favorite"`. No "Add to trip" button on explore cards.
 
 ---
 

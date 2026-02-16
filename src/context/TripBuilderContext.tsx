@@ -34,7 +34,6 @@ const createDefaultData = (): TripBuilderData => ({
   entryPoint: undefined,
   accessibility: undefined,
   dayStartTime: undefined,
-  savedLocationIds: [],
 });
 
 const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
@@ -51,7 +50,6 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedRegions = sanitizeRegions(raw.regions);
   const normalizedCities = sanitizeCities(raw.cities);
   const normalizedDayStartTime = sanitizeDayStartTime(raw.dayStartTime);
-  const normalizedSavedLocationIds = sanitizeSavedLocationIds(raw.savedLocationIds);
   // Only include known TripBuilderData fields — never spread ...raw
   // to prevent stale localStorage keys from reaching .strict() schema validation
   return {
@@ -72,7 +70,6 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     weatherPreferences: raw.weatherPreferences ?? base.weatherPreferences,
     travelerProfile: raw.travelerProfile ?? base.travelerProfile,
     dayStartTime: normalizedDayStartTime,
-    savedLocationIds: normalizedSavedLocationIds,
   };
 };
 
@@ -118,7 +115,6 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
           entryPoint: normalizedStored.entryPoint,
           accessibility: normalizedStored.accessibility,
           dayStartTime: normalizedStored.dayStartTime,
-          savedLocationIds: normalizedStored.savedLocationIds,
         };
       });
     }
@@ -392,21 +388,6 @@ function sanitizeDayStartTime(dayStartTime?: string): string | undefined {
 
   // Normalize to HH:MM format
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-}
-
-/**
- * Sanitize savedLocationIds - deduplicated, trimmed, max 50 items
- */
-function sanitizeSavedLocationIds(ids?: string[]): string[] {
-  if (!ids || !Array.isArray(ids)) return [];
-  const seen = new Set<string>();
-  return ids
-    .filter((id) => {
-      if (typeof id !== "string" || !id.trim() || seen.has(id)) return false;
-      seen.add(id);
-      return true;
-    })
-    .slice(0, 50);
 }
 
 

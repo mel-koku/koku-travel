@@ -25,8 +25,8 @@ export { GeneratingOverlay } from "./GeneratingOverlay";
 // Shared components
 export { BudgetInput } from "./BudgetInput";
 export type { BudgetInputProps, BudgetMode, BudgetValue } from "./BudgetInput";
-export { SavedLocationsPreview } from "./SavedLocationsPreview";
-export type { SavedLocationsPreviewProps } from "./SavedLocationsPreview";
+export { FavoritesInTripPreview } from "./FavoritesInTripPreview";
+export type { FavoritesInTripPreviewProps } from "./FavoritesInTripPreview";
 
 // Legacy components (still used elsewhere)
 export { EssentialsForm } from "./EssentialsForm";

@@ -21,8 +21,8 @@ type PlanApiResponse = {
 
 function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConfig }) {
   const router = useRouter();
-  const { data, reset, setData } = useTripBuilder();
-  const { createTrip } = useAppState();
+  const { data, reset } = useTripBuilder();
+  const { createTrip, favorites } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +36,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           builderData: data as TripBuilderData,
+          favoriteIds: favorites.length > 0 ? favorites : undefined,
         }),
       });
 
@@ -58,14 +59,13 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         builderData: data as TripBuilderData,
       });
 
-      setData((prev) => ({ ...prev, savedLocationIds: [] }));
       reset();
       router.push(`/itinerary?trip=${tripId}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setIsGenerating(false);
     }
-  }, [data, createTrip, reset, setData, router]);
+  }, [data, createTrip, reset, router, favorites]);
 
   return (
     <>

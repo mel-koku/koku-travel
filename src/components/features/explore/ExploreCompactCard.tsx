@@ -1,14 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useWishlist } from "@/context/WishlistContext";
-import { useAddToItinerary } from "@/hooks/useAddToItinerary";
+import { useFirstFavoriteToast } from "@/hooks/useFirstFavoriteToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import type { Location } from "@/types/location";
-import { PlusIcon } from "./PlusIcon";
-import { MinusIcon } from "./MinusIcon";
-import { TripPickerModal } from "./TripPickerModal";
 import { HeartIcon } from "./LocationCard";
 
 const FALLBACK_IMAGE =
@@ -31,18 +28,10 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
 }: ExploreCompactCardProps) {
   const { isInWishlist, toggleWishlist } = useWishlist();
   const active = isInWishlist(location.id);
+  const showFirstFavoriteToast = useFirstFavoriteToast();
 
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 400);
 
-  const {
-    trips,
-    needsTripPicker,
-    isInItinerary,
-    addToItinerary,
-    removeFromItinerary,
-  } = useAddToItinerary();
-  const locationInItinerary = isInItinerary(location.id);
-  const [tripPickerOpen, setTripPickerOpen] = useState(false);
   const [heartAnimating, setHeartAnimating] = useState(false);
   const wasInWishlist = useRef(active);
 
@@ -55,27 +44,6 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
     wasInWishlist.current = active;
   }, [active]);
 
-  const handleToggleItinerary = useCallback(
-    (event: React.MouseEvent) => {
-      event.stopPropagation();
-      if (locationInItinerary) {
-        removeFromItinerary(location.id);
-      } else if (needsTripPicker) {
-        setTripPickerOpen(true);
-      } else {
-        addToItinerary(location.id, location);
-      }
-    },
-    [locationInItinerary, needsTripPicker, addToItinerary, removeFromItinerary, location],
-  );
-
-  const handleTripSelect = useCallback(
-    (tripId: string) => {
-      addToItinerary(location.id, location, tripId);
-    },
-    [addToItinerary, location],
-  );
-
   return (
     <article
       className={`group relative text-foreground animate-card-in ${
@@ -85,14 +53,6 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
       onMouseEnter={() => onHover?.(location.id)}
       onMouseLeave={() => onHover?.(null)}
     >
-      <TripPickerModal
-        isOpen={tripPickerOpen}
-        onClose={() => setTripPickerOpen(false)}
-        trips={trips}
-        onSelectTrip={handleTripSelect}
-        locationName={location.name}
-      />
-
       <div
         onClick={() => onSelect?.(location)}
         className="relative block w-full text-left cursor-pointer rounded-xl"
@@ -128,33 +88,15 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
               type="button"
               onClick={(event) => {
                 event.stopPropagation();
+                if (!active) showFirstFavoriteToast();
                 toggleWishlist(location.id);
               }}
-              aria-label={active ? "Remove from favorites" : "Add to favorites"}
-              className="pointer-events-auto flex h-9 w-9 items-center justify-center rounded-full bg-surface/90 backdrop-blur-md shadow-lg transition-all hover:bg-surface hover:scale-105 active:scale-95"
+              aria-label={active ? "Remove from favorites" : "Save for trip"}
+              className="pointer-events-auto flex h-8 items-center gap-1 rounded-full bg-surface/90 px-2.5 backdrop-blur-md shadow-lg transition-all hover:bg-surface hover:scale-105 active:scale-95"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
-            </button>
-
-            <button
-              type="button"
-              onClick={handleToggleItinerary}
-              aria-label={
-                locationInItinerary ? "Remove from itinerary" : "Add to itinerary"
-              }
-              className={`pointer-events-auto flex h-8 items-center gap-1 rounded-full px-2.5 backdrop-blur-sm shadow-lg transition-all hover:scale-105 active:scale-95 ${
-                locationInItinerary
-                  ? "bg-sage/90 text-white hover:bg-sage"
-                  : "bg-surface/90 text-foreground hover:bg-surface"
-              }`}
-            >
-              {locationInItinerary ? (
-                <MinusIcon className="h-3.5 w-3.5" />
-              ) : (
-                <PlusIcon className="h-3.5 w-3.5" />
-              )}
-              <span className="text-[11px] font-medium">
-                {locationInItinerary ? "Added" : "Add"}
+              <span className="text-[11px] font-medium text-foreground">
+                {active ? "Saved" : "Save"}
               </span>
             </button>
           </div>

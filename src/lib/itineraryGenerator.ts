@@ -143,10 +143,10 @@ export type GenerateItineraryOptions = {
    */
   locations?: Location[];
   /**
-   * Location IDs that the user has saved/queued from the Explore page.
+   * Location IDs that the user has favorited from the Explore page.
    * These locations will be prioritized and included in the generated itinerary.
    */
-  savedLocationIds?: string[];
+  favoriteIds?: string[];
 };
 
 export async function generateItinerary(
@@ -226,21 +226,21 @@ export async function generateItinerary(
 
   const days: Itinerary["days"] = [];
 
-  // Build map of saved/queued locations by city for prioritization
-  const savedLocationIds = new Set(options?.savedLocationIds ?? []);
-  const savedLocationsByCity = new Map<string, Location[]>();
-  if (savedLocationIds.size > 0) {
+  // Build map of favorited locations by city for prioritization
+  const favoriteIdSet = new Set(options?.favoriteIds ?? []);
+  const favoritesByCity = new Map<string, Location[]>();
+  if (favoriteIdSet.size > 0) {
     for (const loc of allLocations) {
-      if (savedLocationIds.has(loc.id)) {
+      if (favoriteIdSet.has(loc.id)) {
         const cityKey = normalizeKey(loc.city);
-        const list = savedLocationsByCity.get(cityKey) ?? [];
+        const list = favoritesByCity.get(cityKey) ?? [];
         list.push(loc);
-        savedLocationsByCity.set(cityKey, list);
+        favoritesByCity.set(cityKey, list);
       }
     }
-    logger.info("Saved locations to include", {
-      totalSaved: savedLocationIds.size,
-      foundInData: Array.from(savedLocationsByCity.entries()).map(([city, locs]) => ({
+    logger.info("Favorite locations to include", {
+      totalFavorites: favoriteIdSet.size,
+      foundInData: Array.from(favoritesByCity.entries()).map(([city, locs]) => ({
         city,
         count: locs.length,
         names: locs.map((l) => l.name),
@@ -379,52 +379,52 @@ export async function generateItinerary(
     const dayNeighborhoods: string[] = [];
     let lastLocation: Location | undefined;
 
-    // Add saved/queued locations for this city first (user explicitly requested these)
-    const savedForCity = savedLocationsByCity.get(cityInfo.key) ?? [];
-    for (const savedLoc of savedForCity) {
+    // Add favorited locations for this city first (user explicitly favorited these)
+    const favoritesForCity = favoritesByCity.get(cityInfo.key) ?? [];
+    for (const favLoc of favoritesForCity) {
       // Skip if already used
-      if (usedLocations.has(savedLoc.id)) continue;
-      const normalizedName = savedLoc.name.toLowerCase().trim();
+      if (usedLocations.has(favLoc.id)) continue;
+      const normalizedName = favLoc.name.toLowerCase().trim();
       if (usedLocationNames.has(normalizedName)) continue;
 
-      const locationDuration = getLocationDurationMinutes(savedLoc);
-      const isFood = isFoodCategory(savedLoc.category);
-      const timeSlot = "morning" as const; // Saved locations start in morning
+      const locationDuration = getLocationDurationMinutes(favLoc);
+      const isFood = isFoodCategory(favLoc.category);
+      const timeSlot = "morning" as const; // Favorite locations start in morning
 
-      // Build activity for saved location
+      // Build activity for favorited location
       const activity: Extract<ItineraryActivity, { kind: "place" }> = {
         kind: "place",
-        id: `${savedLoc.id}-${dayIndex + 1}-saved`,
-        title: savedLoc.name,
+        id: `${favLoc.id}-${dayIndex + 1}-fav`,
+        title: favLoc.name,
         timeOfDay: timeSlot,
         durationMin: locationDuration,
-        locationId: savedLoc.id,
-        coordinates: savedLoc.coordinates,
-        neighborhood: savedLoc.neighborhood ?? savedLoc.city,
-        tags: savedLoc.category ? [savedLoc.category, "saved"] : ["saved"],
-        notes: "Added from your saved places",
-        ...(savedLoc.description && { description: savedLoc.description }),
+        locationId: favLoc.id,
+        coordinates: favLoc.coordinates,
+        neighborhood: favLoc.neighborhood ?? favLoc.city,
+        tags: favLoc.category ? [favLoc.category, "favorite"] : ["favorite"],
+        notes: "From your favorites",
+        ...(favLoc.description && { description: favLoc.description }),
         ...(isFood && { mealType: inferMealTypeFromTimeSlot(timeSlot) }),
       };
 
       dayActivities.push(activity);
-      usedLocations.add(savedLoc.id);
+      usedLocations.add(favLoc.id);
       usedLocationNames.add(normalizedName);
 
       // Track for diversity
-      if (savedLoc.category) {
-        dayCategories.push(savedLoc.category);
+      if (favLoc.category) {
+        dayCategories.push(favLoc.category);
       }
-      const locNeighborhood = savedLoc.neighborhood ?? savedLoc.city;
+      const locNeighborhood = favLoc.neighborhood ?? favLoc.city;
       if (locNeighborhood) {
         dayNeighborhoods.push(locNeighborhood);
       }
-      lastLocation = savedLoc;
+      lastLocation = favLoc;
 
       // Update time slot usage
       timeSlotUsage.set(timeSlot, (timeSlotUsage.get(timeSlot) ?? 0) + locationDuration);
 
-      logger.info(`Day ${dayIndex + 1}: Added saved location "${savedLoc.name}"`);
+      logger.info(`Day ${dayIndex + 1}: Added favorite location "${favLoc.name}"`);
     }
 
     // Track assigned meal types to prevent multiple lunches/dinners per day
