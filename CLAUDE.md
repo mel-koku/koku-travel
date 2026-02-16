@@ -154,7 +154,7 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 ### Singletons
 - **`landingPage`**: Hero, philosophy stats, showcase acts (3), featured sections headers, testimonials (1-5), final CTA
 - **`siteSettings`**: Brand description, newsletter, footer nav, social links
-- **`tripBuilderConfig`**: Vibes + regions (readOnly IDs) + step content. Logic-critical fields stay code-side.
+- **`tripBuilderConfig`**: Vibes + regions (readOnly IDs) + step content. Logic-critical fields stay code-side. Regions have `heroImage` + `galleryImages[]` (max 4, used in review step composite).
 - **`pagesContent`**: All non-landing page text
 
 ---
@@ -168,6 +168,9 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 
 ### Trip Builder (`src/components/features/trip-builder/`)
 6 steps: Intro(0) → Dates(1) → EntryPoint(2) → Vibes(3) → Regions(4) → Review(5). Clip-path wipe transitions. `StepProgressTrack` nav. `GeneratingOverlay` loading.
+- **Region Step (04)**: Region rows with checkbox indicator (none/partial/full). Click row → toggle all known cities. Hover → detail panel with `RegionCitySelector` (searchable city dropdown). First region panel default-open. `isPanelHovered` ref prevents panel close on input focus.
+- **Review Step (05)**: 3-photo composite from selected regions' hero + `galleryImages` (Sanity), padded from other regions. Nav bar fixed `z-50`.
+- **Nav buttons**: Fixed to viewport bottom (`z-50`), not sticky. `pb-20` on shell wrapper for content clearance.
 
 ### Guide Article (`src/components/features/guides/`)
 5 zones: Hero (sticky parallax) → Preamble → Body (editorial rhythm) → Locations (asymmetric grid) → Footer + `GuideProgressBar`.
