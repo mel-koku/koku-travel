@@ -233,7 +233,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
         location.name.toLowerCase().includes(normalizedQuery) ||
         location.city.toLowerCase().includes(normalizedQuery) ||
         location.prefecture?.toLowerCase().includes(normalizedQuery) ||
-        location.region.toLowerCase().includes(normalizedQuery);
+        location.region.toLowerCase().includes(normalizedQuery) ||
+        location.category.toLowerCase().includes(normalizedQuery);
 
       const matchesPrefecture = selectedPrefectures.length === 0
         ? true
