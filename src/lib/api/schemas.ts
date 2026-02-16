@@ -361,10 +361,6 @@ export const tripBuilderDataSchema = z.object({
 export const planRequestSchema = z.object({
   builderData: tripBuilderDataSchema,
   tripId: tripIdSchema,
-  /**
-   * Location IDs queued from Explore page to include when generating the trip.
-   */
-  savedLocationIds: z.array(z.string().min(1).max(255)).max(50).optional(),
 }).strict();
 
 /**

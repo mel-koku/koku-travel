@@ -298,7 +298,7 @@ export function useAddToItinerary(): AddToItineraryResult {
         showToast(`Added to ${tripName}`, {
           variant: "success",
           actionLabel: "View",
-          actionHref: `/trip-builder/${newTripId}`,
+          actionHref: `/itinerary?trip=${newTripId}`,
         });
         return;
       }
@@ -336,7 +336,7 @@ export function useAddToItinerary(): AddToItineraryResult {
       showToast(`Added to Day ${dayIndex + 1} of ${targetTrip.name}`, {
         variant: "success",
         actionLabel: "View",
-        actionHref: `/trip-builder/${targetTrip.id}`,
+        actionHref: `/itinerary?trip=${targetTrip.id}`,
       });
     },
     [
