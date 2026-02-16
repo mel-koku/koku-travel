@@ -525,6 +525,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
           isLoading={isLoading}
           isChatOpen={isChatOpen}
           onChatClose={() => setIsChatOpen(false)}
+          hasActiveChips={activeFilters.filter((f) => f.type !== "search").length > 0}
         />
       ) : isLoading ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
