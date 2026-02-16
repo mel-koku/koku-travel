@@ -98,6 +98,7 @@ export async function POST(request: NextRequest) {
         NextResponse.json({
           trip: cachedResult.trip,
           itinerary: cachedResult.itinerary,
+          dayIntros: cachedResult.dayIntros,
           validation: tripValidation,
           itineraryValidation: {
             valid: itineraryValidation.valid,
@@ -124,14 +125,14 @@ export async function POST(request: NextRequest) {
 
     // Generate trip (returns both domain model and raw itinerary)
     // Include favoriteIds if provided (user's favorited locations from Explore page)
-    const { trip, itinerary } = await generateTripFromBuilderData(
+    const { trip, itinerary, dayIntros } = await generateTripFromBuilderData(
       builderData,
       finalTripId,
       favoriteIds
     );
 
     // Cache the generated itinerary for future requests
-    await cacheItinerary(builderData, trip, itinerary);
+    await cacheItinerary(builderData, trip, itinerary, dayIntros);
 
     // Validate trip constraints (domain-level validation)
     const tripValidation = validateTripConstraints(trip);
@@ -154,6 +155,7 @@ export async function POST(request: NextRequest) {
       NextResponse.json({
         trip,
         itinerary,
+        dayIntros,
         validation: tripValidation,
         itineraryValidation: {
           valid: itineraryValidation.valid,

@@ -234,6 +234,7 @@ function buildDayGuide(
   dayIndex: number,
   totalDays: number,
   season: string,
+  aiIntro?: string,
 ): DayGuide {
   const activities = getPlaceActivities(day);
   const city = getCityFromDay(day);
@@ -248,9 +249,18 @@ function buildDayGuide(
     .filter((r): r is ResolvedCategory => r !== null)
     .map((r) => r.sub);
 
-  // ── Day Intro (composed from activity names) ──
+  // ── Day Intro (AI-generated if available, otherwise composed from templates) ──
   const position = getDayPosition(dayIndex, totalDays);
-  const intro = composeDayIntro(city, activities, dayId, season, position);
+  const intro = aiIntro
+    ? {
+        id: `guide-${dayId}-intro`,
+        type: "day_intro" as const,
+        content: aiIntro,
+        icon: "🌅",
+        dayId,
+        afterActivityId: null,
+      }
+    : composeDayIntro(city, activities, dayId, season, position);
 
   // ── Transitions + Cultural Moments ──
   let culturalMomentUsed = false;
@@ -382,6 +392,7 @@ function buildDayGuide(
 export function buildGuide(
   itinerary: Itinerary,
   tripBuilderData?: TripBuilderData,
+  dayIntros?: Record<string, string>,
 ): TripGuide {
   ensureInitialized();
 
@@ -391,7 +402,7 @@ export function buildGuide(
 
   // Build per-day guides
   const dayGuides: DayGuide[] = days.map((day, index) =>
-    buildDayGuide(day, index, totalDays, season),
+    buildDayGuide(day, index, totalDays, season, dayIntros?.[day.id]),
   );
 
   // ── Trip Overview ──

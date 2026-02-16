@@ -47,6 +47,7 @@ type ItineraryShellProps = {
   isUsingMock: boolean;
   tripStartDate?: string; // ISO date string (yyyy-mm-dd)
   tripBuilderData?: TripBuilderData;
+  dayIntros?: Record<string, string>;
   // Smart suggestions (all days)
   suggestions?: DetectedGap[];
   onAcceptSuggestion?: (gap: DetectedGap) => Promise<AcceptGapResult>;
@@ -115,6 +116,7 @@ export const ItineraryShell = ({
   isUsingMock,
   tripStartDate,
   tripBuilderData,
+  dayIntros,
   suggestions,
   onAcceptSuggestion,
   onSkipSuggestion,
@@ -585,11 +587,11 @@ export const ItineraryShell = ({
     let cancelled = false;
     buildGuideAsync().then((buildGuide) => {
       if (!cancelled) {
-        setTripGuide(buildGuide(model, tripBuilderData));
+        setTripGuide(buildGuide(model, tripBuilderData, dayIntros));
       }
     });
     return () => { cancelled = true; };
-  }, [model, tripBuilderData]);
+  }, [model, tripBuilderData, dayIntros]);
 
   const currentDayGuide = useMemo(() => {
     if (!tripGuide || !currentDay) return null;
