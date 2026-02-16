@@ -136,6 +136,7 @@ export async function GET(request: NextRequest) {
       accessibilityOptions: row.accessibility_options ?? undefined,
       dietaryOptions: row.dietary_options ?? undefined,
       coordinates: row.coordinates ?? undefined,
+      isHiddenGem: row.is_hidden_gem ?? undefined,
     }));
 
     // Cache the result in-memory

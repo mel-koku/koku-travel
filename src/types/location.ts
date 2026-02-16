@@ -346,6 +346,12 @@ export type Location = {
    */
   isFeatured?: boolean;
 
+  /**
+   * Whether this location is a curated hidden gem.
+   * Used for the "Hidden Gems" vibe filter on the explore page.
+   */
+  isHiddenGem?: boolean;
+
   // ============================================
   // Seasonal Availability Fields
   // ============================================

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import { easeReveal, durationFast } from "@/lib/motion";
-import { CATEGORY_HIERARCHY, getSubTypesForCategories } from "@/data/categoryHierarchy";
+import { VIBES, type VibeId } from "@/data/vibes";
 
 type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
@@ -24,12 +24,9 @@ type FilterPanelProps = {
   prefectureOptions: readonly { value: string; label: string }[];
   selectedPrefectures: string[];
   onPrefecturesChange: (prefectures: string[]) => void;
-  // Category filter
-  selectedCategories: string[];
-  onCategoriesChange: (categories: string[]) => void;
-  // Sub-type filter
-  selectedSubTypes: string[];
-  onSubTypesChange: (subTypes: string[]) => void;
+  // Vibe filter
+  selectedVibes: VibeId[];
+  onVibesChange: (vibes: VibeId[]) => void;
   // Price filter
   selectedPriceLevel: number | null;
   onPriceLevelChange: (priceLevel: number | null) => void;
@@ -69,10 +66,8 @@ export function FilterPanel({
   prefectureOptions,
   selectedPrefectures,
   onPrefecturesChange,
-  selectedCategories,
-  onCategoriesChange,
-  selectedSubTypes,
-  onSubTypesChange,
+  selectedVibes,
+  onVibesChange,
   selectedPriceLevel,
   onPriceLevelChange,
   durationOptions,
@@ -90,8 +85,7 @@ export function FilterPanel({
 }: FilterPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const isFoodCategorySelected = selectedCategories.includes("food");
-  const availableSubTypes = getSubTypesForCategories(selectedCategories);
+  const isFoodVibeSelected = selectedVibes.includes("foodie_paradise");
 
   // Section expand/collapse state
   const [expandedSections, setExpandedSections] = useState({
@@ -110,7 +104,7 @@ export function FilterPanel({
   // Active filter counts for badges
   const sortActiveCount = selectedSort !== "recommended" ? 1 : 0;
   const whereActiveCount = selectedPrefectures.length;
-  const whatActiveCount = selectedCategories.length + selectedSubTypes.length;
+  const whatActiveCount = selectedVibes.length;
   const durationActiveCount = selectedDuration ? 1 : 0;
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
   const togglesActiveCount = (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
@@ -132,25 +126,14 @@ export function FilterPanel({
     };
   }, [isOpen, onClose]);
 
-  const toggleCategory = (categoryId: string) => {
-    if (selectedCategories.includes(categoryId)) {
-      onCategoriesChange(selectedCategories.filter((c) => c !== categoryId));
-      const categorySubTypes = CATEGORY_HIERARCHY.find((c) => c.id === categoryId)?.subTypes || [];
-      const subTypeIds = categorySubTypes.map((st) => st.id);
-      onSubTypesChange(selectedSubTypes.filter((st) => !subTypeIds.includes(st)));
-      if (categoryId === "food") {
+  const toggleVibe = (vibeId: VibeId) => {
+    if (selectedVibes.includes(vibeId)) {
+      onVibesChange(selectedVibes.filter((v) => v !== vibeId));
+      if (vibeId === "foodie_paradise") {
         onVegetarianFriendlyChange(false);
       }
     } else {
-      onCategoriesChange([...selectedCategories, categoryId]);
-    }
-  };
-
-  const toggleSubType = (subTypeId: string) => {
-    if (selectedSubTypes.includes(subTypeId)) {
-      onSubTypesChange(selectedSubTypes.filter((st) => st !== subTypeId));
-    } else {
-      onSubTypesChange([...selectedSubTypes, subTypeId]);
+      onVibesChange([...selectedVibes, vibeId]);
     }
   };
 
@@ -165,8 +148,7 @@ export function FilterPanel({
   const hasActiveFilters =
     query ||
     selectedPrefectures.length > 0 ||
-    selectedCategories.length > 0 ||
-    selectedSubTypes.length > 0 ||
+    selectedVibes.length > 0 ||
     selectedPriceLevel !== null ||
     selectedDuration ||
     wheelchairAccessible ||
@@ -296,40 +278,23 @@ export function FilterPanel({
                 </div>
               </FilterSection>
 
-              {/* What type */}
+              {/* Vibe */}
               <FilterSection
-                label="Type"
+                label="Vibe"
                 activeCount={whatActiveCount}
                 isExpanded={expandedSections.what}
                 onToggle={() => toggleSection("what")}
               >
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {CATEGORY_HIERARCHY.map((category) => (
+                <div className="flex flex-wrap gap-2">
+                  {VIBES.map((vibe) => (
                     <PanelChip
-                      key={category.id}
-                      label={category.label}
-                      isSelected={selectedCategories.includes(category.id)}
-                      onClick={() => toggleCategory(category.id)}
+                      key={vibe.id}
+                      label={vibe.name}
+                      isSelected={selectedVibes.includes(vibe.id)}
+                      onClick={() => toggleVibe(vibe.id)}
                     />
                   ))}
                 </div>
-
-                {availableSubTypes.length > 0 && (
-                  <div className="bg-surface/50 p-3 rounded-xl">
-                    <p className="text-xs text-stone mb-2">Narrow down:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {availableSubTypes.map((subType) => (
-                        <PanelChip
-                          key={subType.id}
-                          label={subType.label}
-                          isSelected={selectedSubTypes.includes(subType.id)}
-                          onClick={() => toggleSubType(subType.id)}
-                          size="small"
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
               </FilterSection>
 
               {/* Duration */}
@@ -399,7 +364,7 @@ export function FilterPanel({
                     onChange={onWheelchairAccessibleChange}
                   />
 
-                  {isFoodCategorySelected && (
+                  {isFoodVibeSelected && (
                     <ToggleOption
                       label="Vegetarian friendly"
                       description="Restaurants with vegetarian options"
