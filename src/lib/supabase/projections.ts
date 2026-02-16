@@ -66,6 +66,7 @@ export type LocationDbRow = {
     servesDinner?: boolean;
   } | null;
   is_featured: boolean | null;
+  is_hidden_gem: boolean | null;
   // Enhanced enrichment fields
   good_for_children: boolean | null;
   good_for_groups: boolean | null;
@@ -130,7 +131,8 @@ export const LOCATION_EXPLORE_COLUMNS = `
   google_primary_type,
   price_level,
   accessibility_options,
-  dietary_options
+  dietary_options,
+  is_hidden_gem
 `.replace(/\s+/g, "");
 
 /**
@@ -238,6 +240,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "price_level"
   | "accessibility_options"
   | "dietary_options"
+  | "is_hidden_gem"
 >;
 
 /**

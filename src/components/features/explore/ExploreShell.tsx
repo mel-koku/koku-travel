@@ -4,7 +4,8 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Location } from "@/types/location";
 import { ActiveFilter } from "@/types/filters";
-import { locationMatchesSubTypes, getCategoryById, getSubTypeById, getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
+import { locationMatchesVibes } from "@/data/vibeFilterMapping";
+import { VIBES, type VibeId } from "@/data/vibes";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
 import { useAllLocationsSingle, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
@@ -155,8 +156,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
   const [selectedPrefectures, setSelectedPrefectures] = useState<string[]>([]);
   const [selectedPriceLevel, setSelectedPriceLevel] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedSubTypes, setSelectedSubTypes] = useState<string[]>([]);
+  const [selectedVibes, setSelectedVibes] = useState<VibeId[]>([]);
   const [wheelchairAccessible, setWheelchairAccessible] = useState(false);
   const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
   const [page, setPage] = useState(1);
@@ -175,8 +175,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
     selectedPrefectures,
     selectedPriceLevel,
     selectedDuration,
-    selectedCategories,
-    selectedSubTypes,
+    selectedVibes,
     wheelchairAccessible,
     vegetarianFriendly,
     selectedSort,
@@ -250,16 +249,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
         ? durationFilter.predicate(location.durationMinutes)
         : true;
 
-      const matchesCategory = selectedCategories.length === 0
-        ? true
-        : (() => {
-            const parentCategory = getParentCategoryForDatabaseCategory(location.category);
-            return parentCategory !== null && selectedCategories.includes(parentCategory);
-          })();
-
-      const matchesSubType = selectedSubTypes.length === 0
-        ? true
-        : locationMatchesSubTypes(location, selectedSubTypes);
+      const matchesVibe = locationMatchesVibes(location, selectedVibes);
 
       const matchesWheelchair = !wheelchairAccessible
         ? true
@@ -274,13 +264,12 @@ export function ExploreShell({ content }: ExploreShellProps) {
         matchesPrefecture &&
         matchesPriceLevel &&
         matchesDuration &&
-        matchesCategory &&
-        matchesSubType &&
+        matchesVibe &&
         matchesWheelchair &&
         matchesVegetarian
       );
     });
-  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedCategories, selectedSubTypes, wheelchairAccessible, vegetarianFriendly]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, wheelchairAccessible, vegetarianFriendly]);
 
   const sortedLocations = useMemo(() => {
     const sorted = [...filteredLocations];
@@ -369,24 +358,13 @@ export function ExploreShell({ content }: ExploreShellProps) {
       });
     }
 
-    for (const categoryId of selectedCategories) {
-      const category = getCategoryById(categoryId);
-      if (category) {
+    for (const vibeId of selectedVibes) {
+      const vibe = VIBES.find((v) => v.id === vibeId);
+      if (vibe) {
         filters.push({
-          type: "category",
-          value: categoryId,
-          label: category.label,
-        });
-      }
-    }
-
-    for (const subTypeId of selectedSubTypes) {
-      const subType = getSubTypeById(subTypeId);
-      if (subType) {
-        filters.push({
-          type: "subType",
-          value: subTypeId,
-          label: subType.label,
+          type: "vibe",
+          value: vibeId,
+          label: vibe.name,
         });
       }
     }
@@ -432,8 +410,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
     query,
     selectedPrefectures,
     prefectureOptions,
-    selectedCategories,
-    selectedSubTypes,
+    selectedVibes,
     selectedDuration,
     selectedPriceLevel,
     wheelchairAccessible,
@@ -450,11 +427,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
       case "prefecture":
         setSelectedPrefectures((prev) => prev.filter((p) => p !== filter.value));
         break;
-      case "category":
-        setSelectedCategories((prev) => prev.filter((c) => c !== filter.value));
-        break;
-      case "subType":
-        setSelectedSubTypes((prev) => prev.filter((st) => st !== filter.value));
+      case "vibe":
+        setSelectedVibes((prev) => prev.filter((v) => v !== filter.value));
         break;
       case "duration":
         setSelectedDuration(null);
@@ -476,8 +450,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
     setSelectedPrefectures([]);
     setSelectedPriceLevel(null);
     setSelectedDuration(null);
-    setSelectedCategories([]);
-    setSelectedSubTypes([]);
+    setSelectedVibes([]);
     setWheelchairAccessible(false);
     setVegetarianFriendly(false);
   }, []);
@@ -490,8 +463,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
     setExpandedLocation(null);
   }, []);
 
-  // Determine active category for interstitials
-  const activeCategory = selectedCategories.length === 1 ? selectedCategories[0]! : null;
+  // Determine active category for interstitials (null when using vibe filters)
+  const activeCategory = null;
 
   const mapAvailable = useMemo(
     () => featureFlags.enableMapbox && !featureFlags.cheapMode,
@@ -603,10 +576,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
         prefectureOptions={prefectureOptions}
         selectedPrefectures={selectedPrefectures}
         onPrefecturesChange={setSelectedPrefectures}
-        selectedCategories={selectedCategories}
-        onCategoriesChange={setSelectedCategories}
-        selectedSubTypes={selectedSubTypes}
-        onSubTypesChange={setSelectedSubTypes}
+        selectedVibes={selectedVibes}
+        onVibesChange={setSelectedVibes}
         selectedPriceLevel={selectedPriceLevel}
         onPriceLevelChange={setSelectedPriceLevel}
         durationOptions={DURATION_FILTERS.map(({ id, label }) => ({
