@@ -8,6 +8,8 @@ export type RegionDescription = {
   id: KnownRegionId;
   name: string;
   heroImage: string;
+  /** Additional images from Sanity (used in review step composite) */
+  galleryImages?: string[];
   tagline: string;
   description: string;
   highlights: string[];

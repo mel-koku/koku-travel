@@ -94,19 +94,48 @@ export function TripSummaryEditorial({
     return derivedRegionNames;
   }, [data.cities, derivedRegionNames]);
 
-  // Get hero images from derived regions for composite
+  // Get images from derived regions for composite — always 3.
+  // Uses gallery images from Sanity when available, falls back to hero images.
   const regionImages = useMemo(() => {
     const cities = (data.cities ?? []) as KnownCityId[];
     const regionIds = cities.length > 0
       ? deriveRegionsFromCities(cities)
       : (data.regions ?? []);
-    return regionIds
-      .slice(0, 3)
-      .map((id) => {
-        const desc = REGION_DESCRIPTIONS.find((r) => r.id === id);
-        return desc?.heroImage;
-      })
-      .filter(Boolean) as string[];
+
+    const images: string[] = [];
+    const usedSet = new Set<string>();
+
+    // Collect hero + gallery images from selected regions
+    for (const id of regionIds) {
+      if (images.length >= 3) break;
+      const desc = REGION_DESCRIPTIONS.find((r) => r.id === id);
+      if (!desc) continue;
+
+      if (!usedSet.has(desc.heroImage)) {
+        images.push(desc.heroImage);
+        usedSet.add(desc.heroImage);
+      }
+      for (const g of desc.galleryImages ?? []) {
+        if (images.length >= 3) break;
+        if (!usedSet.has(g)) {
+          images.push(g);
+          usedSet.add(g);
+        }
+      }
+    }
+
+    // Pad to 3 with hero images from other regions
+    if (images.length < 3) {
+      for (const desc of REGION_DESCRIPTIONS) {
+        if (images.length >= 3) break;
+        if (!usedSet.has(desc.heroImage)) {
+          images.push(desc.heroImage);
+          usedSet.add(desc.heroImage);
+        }
+      }
+    }
+
+    return images;
   }, [data.cities, data.regions]);
 
   return (

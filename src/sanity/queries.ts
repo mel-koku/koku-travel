@@ -205,6 +205,10 @@ export const tripBuilderConfigQuery = groq`
       "heroImage": heroImage {
         ...,
         "url": asset->url
+      },
+      "galleryImages": galleryImages[] {
+        ...,
+        "url": asset->url
       }
     },
     introHeading,

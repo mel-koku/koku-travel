@@ -6,16 +6,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { VIBES, type VibeId } from "@/data/vibes";
 import type { RegionDescription } from "@/data/regionDescriptions";
+import type { CityId } from "@/types/trip";
 import { easeCinematicMut } from "@/lib/motion";
+import { RegionCitySelector } from "./RegionCitySelector";
 
 type RegionDetailPanelProps = {
   region: RegionDescription | null;
+  selectedCities: Set<CityId>;
+  onToggleCity: (cityId: CityId) => void;
   onPanelEnter: () => void;
   onPanelLeave: () => void;
 };
 
 export function RegionDetailPanel({
   region,
+  selectedCities,
+  onToggleCity,
   onPanelEnter,
   onPanelLeave,
 }: RegionDetailPanelProps) {
@@ -113,6 +119,14 @@ export function RegionDetailPanel({
                     ))}
                   </ul>
                 </div>
+
+                {/* City selector */}
+                <RegionCitySelector
+                  regionName={region.name}
+                  selectedCities={selectedCities}
+                  onToggleCity={onToggleCity}
+                  variant="desktop"
+                />
 
               </div>
             </div>
