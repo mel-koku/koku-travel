@@ -192,7 +192,7 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 - **Mobile (<lg)**: 30vh map peek (tap to expand 70dvh) + card list below.
 - **Fallback**: `CHEAP_MODE=true` or no Mapbox token → editorial grid (`LocationEditorialGrid`), no map.
 - **Components**: `ExploreShellLazy` → `ExploreShell` (state/filters, code-split with `dynamic()`) → `ExploreMapLayout` (split layout, bounds filter) → `ExploreMap` (Mapbox GL, GeoJSON clustering) + `ExploreCardPanel` → `ExploreCompactCard`
-- **Data**: Single-request `/api/locations/all` fetches all ~3,756 locations (15-column slim projection). Two-tier cache (globalThis 30min + file 2hr). `coordinates` included for map.
+- **Data**: Single-request `/api/locations/all` fetches all ~3,839 locations (15-column slim projection). Two-tier cache (globalThis 30min + file 2hr). `coordinates` included for map.
 - **Map layers**: Cluster circles (stepped color by count), individual points (colored by category via `getCategoryHexColor`), name labels at zoom 10+.
 - **Lenis**: `data-lenis-prevent` on map container only (scroll-zoom). Cards flow with page scroll.
 
@@ -204,7 +204,7 @@ Smart city matching via `src/hooks/useAddToItinerary.ts`. Saved locations queued
 ## Data & Quality
 
 ### Database
-- **Locations**: ~3,756 in Supabase. Coords: `lat`/`lng`. Photos in Supabase Storage.
+- **Locations**: ~3,839 in Supabase. Coords: `lat`/`lng`. Photos in Supabase Storage.
 - **Experiences**: 56 in Sanity — separate from locations/explore/itinerary
 - **Health Score**: 100/100 (`npm run dq audit|fix|report`)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, food, entertainment, market, wellness, viewpoint, bar, transport
