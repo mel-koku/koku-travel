@@ -41,10 +41,10 @@ export function AskKokuChat() {
   const hasMessages = messages.length > 0;
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex min-h-0 h-full flex-col">
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-3 py-4"
+        className="min-h-0 flex-1 overflow-y-auto px-3 py-4"
         data-lenis-prevent
       >
         {!hasMessages ? (
@@ -78,12 +78,14 @@ export function AskKokuChat() {
         )}
       </div>
 
-      <AskKokuInput
-        value={input}
-        onChange={setInput}
-        onSubmit={onSubmit}
-        isLoading={isLoading}
-      />
+      <div className="shrink-0">
+        <AskKokuInput
+          value={input}
+          onChange={setInput}
+          onSubmit={onSubmit}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }
