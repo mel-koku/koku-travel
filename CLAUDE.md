@@ -196,6 +196,15 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 - **Map layers**: Cluster circles (stepped color by count), individual points (colored by category via `getCategoryHexColor`), name labels at zoom 10+.
 - **Lenis**: `data-lenis-prevent` on map container only (scroll-zoom). Cards flow with page scroll.
 
+### Ask Koku (`src/components/features/ask-koku/`)
+- **AI Chat**: Conversational assistant powered by Gemini via Vercel AI SDK (`ai` + `@ai-sdk/google`)
+- **API**: `POST /api/chat` — streaming chat with tool calls (location search, guidance lookup)
+- **Tools**: `searchLocations` (Supabase query by category/city/region), `getTravelTips` (guidance service)
+- **UI**: `AskKokuButton` (floating FAB, hidden on `/studio`, `/trip-builder`, `/explore`) + `AskKokuPanel` (right-slide panel with backdrop)
+- **Explore integration**: Red CTA button in `CategoryBar` → right-slide chat panel in `ExploreMapLayout` (matches `LocationExpanded` pattern: backdrop + `x: "100%"` slide, 480px on desktop, full-screen on mobile)
+- **Components**: `AskKokuChat` (messages + suggestions + input), `AskKokuMessage` (renders text + location cards), `AskKokuLocationCard`, `AskKokuSuggestions`
+- **Key files**: `src/lib/chat/systemPrompt.ts`, `src/lib/chat/tools.ts`, `src/lib/chat/locationSearch.ts`
+
 ### Explore → Itinerary
 Smart city matching via `src/hooks/useAddToItinerary.ts`. Saved locations queued in `TripBuilderContext` → prioritized during generation.
 
@@ -236,6 +245,8 @@ Smart city matching via `src/hooks/useAddToItinerary.ts`. Saved locations queued
 | `CHEAP_MODE=true` | Skip Mapbox, use heuristic times | No |
 | `ROUTING_PROVIDER` | `"mapbox"` or `"google"` | No |
 | `ROUTING_MAPBOX_ACCESS_TOKEN` | Mapbox API token | Yes |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini API key (Ask Koku chat) | Yes |
+| `ENABLE_CHAT` | Enable/disable chat (`"false"` to disable) | No |
 
 ## Dev Commands
 
@@ -252,4 +263,4 @@ npm run dq report        # Health score report
 - `seed-cache` pre-populates `/tmp/koku-travel-cache/` with locations + filter metadata so the first request after restart is instant
 - Image optimization is disabled in dev (`unoptimized: true`) to avoid timeout cascades during Turbopack compilation
 - Sanity content fetches have a 4s timeout + file cache — prevents 60s+ hangs when Turbopack blocks the event loop
-- Middleware skips auth for `/api/locations`, `/api/places`, `/api/health` (PUBLIC_API_ROUTES)
+- Middleware skips auth for `/api/locations`, `/api/places`, `/api/health`, `/api/chat` (PUBLIC_API_ROUTES)
