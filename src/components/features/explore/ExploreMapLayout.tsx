@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
+import { cn } from "@/lib/cn";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { durationSlow, durationFast, easePageTransitionMut, easeReveal } from "@/lib/motion";
 import { ExploreMap, type MapBounds } from "./ExploreMap";
@@ -18,6 +19,7 @@ type ExploreMapLayoutProps = {
   isLoading?: boolean;
   isChatOpen?: boolean;
   onChatClose?: () => void;
+  hasActiveChips?: boolean;
 };
 
 export function ExploreMapLayout({
@@ -28,6 +30,7 @@ export function ExploreMapLayout({
   isLoading,
   isChatOpen = false,
   onChatClose,
+  hasActiveChips = false,
 }: ExploreMapLayoutProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
@@ -187,7 +190,12 @@ export function ExploreMapLayout({
         </div>
 
         {/* Right: Sticky map pins to viewport while cards scroll */}
-        <div className="lg:sticky lg:top-[160px] lg:h-[calc(100dvh-176px)] lg:w-1/2 lg:self-start">
+        <div className={cn(
+          "lg:sticky lg:w-1/2 lg:self-start transition-all duration-300",
+          hasActiveChips
+            ? "lg:top-[196px] lg:h-[calc(100dvh-212px)]"
+            : "lg:top-[160px] lg:h-[calc(100dvh-176px)]"
+        )}>
           <div data-lenis-prevent className="relative h-full rounded-2xl overflow-hidden border border-border">
             <ErrorBoundary
               fallback={
