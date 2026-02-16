@@ -36,7 +36,6 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           builderData: data as TripBuilderData,
-          savedLocationIds: data.savedLocationIds,
         }),
       });
 

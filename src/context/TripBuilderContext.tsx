@@ -141,10 +141,11 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
       debounceTimeoutRef.current = null;
     }, DEBOUNCE_DELAY_MS);
 
-    // Cleanup timeout on unmount
+    // Flush pending write on unmount so data isn't lost
     return () => {
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
+        setLocal(TRIP_BUILDER_STORAGE_KEY, normalizeData(data));
         debounceTimeoutRef.current = null;
       }
     };
