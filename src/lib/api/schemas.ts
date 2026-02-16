@@ -351,8 +351,6 @@ export const tripBuilderDataSchema = z.object({
   travelerProfile: travelerProfileSchema,
   // Day start time in HH:MM format (24-hour)
   dayStartTime: timeSchema,
-  // Location IDs queued from Explore page to include when generating a trip
-  savedLocationIds: z.array(z.string().min(1).max(255)).max(50).optional(),
 }).strict();
 
 /**
@@ -361,6 +359,7 @@ export const tripBuilderDataSchema = z.object({
 export const planRequestSchema = z.object({
   builderData: tripBuilderDataSchema,
   tripId: tripIdSchema,
+  favoriteIds: z.array(z.string().min(1).max(255)).max(200).optional(),
 }).strict();
 
 /**

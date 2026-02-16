@@ -166,18 +166,18 @@ export type GeneratedTripResult = {
  *
  * @param builderData - Trip configuration data
  * @param tripId - Unique identifier for the trip
- * @param savedLocationIds - Optional array of location IDs queued from Explore page
+ * @param favoriteIds - Optional array of favorited location IDs to include in generation
  */
 export async function generateTripFromBuilderData(
   builderData: TripBuilderData,
   tripId: string,
-  savedLocationIds?: string[],
+  favoriteIds?: string[],
 ): Promise<GeneratedTripResult> {
   // Fetch locations filtered by selected cities (after ward consolidation)
   const allLocations = await fetchAllLocations({ cities: builderData.cities });
 
-  // Generate itinerary using existing generator, including saved locations
-  const rawItinerary = await generateItinerary(builderData, { savedLocationIds });
+  // Generate itinerary using existing generator, including favorited locations
+  const rawItinerary = await generateItinerary(builderData, { favoriteIds });
 
   // Optimize route order before planning times
   const optimizedItinerary = optimizeItineraryRoutes(rawItinerary, builderData);

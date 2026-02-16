@@ -8,13 +8,10 @@ import type { Location, LocationDetails } from "@/types/location";
 import { useLenis } from "@/providers/LenisProvider";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import { useWishlist } from "@/context/WishlistContext";
-import { useAddToItinerary } from "@/hooks/useAddToItinerary";
+import { useFirstFavoriteToast } from "@/hooks/useFirstFavoriteToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { HeartIcon } from "./LocationCard";
-import { PlusIcon } from "./PlusIcon";
-import { MinusIcon } from "./MinusIcon";
-import { TripPickerModal } from "./TripPickerModal";
 
 type LocationExpandedProps = {
   location: Location;
@@ -44,12 +41,10 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   const { status, details, fetchedLocation } = useLocationDetailsQuery(location.id);
   const locationWithDetails = fetchedLocation ?? location;
   const { isInWishlist, toggleWishlist } = useWishlist();
-  const { trips, needsTripPicker, isInItinerary, addToItinerary, removeFromItinerary } = useAddToItinerary();
-  const [tripPickerOpen, setTripPickerOpen] = useState(false);
+  const showFirstFavoriteToast = useFirstFavoriteToast();
   const [heartAnimating, setHeartAnimating] = useState(false);
 
   const isFavorite = isInWishlist(location.id);
-  const locationInItinerary = isInItinerary(location.id);
   const wasInWishlist = useRef(isFavorite);
 
   const displayName = useMemo(() => {
@@ -70,25 +65,9 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   }, [isFavorite]);
 
   const handleToggleFavorite = useCallback(() => {
+    if (!isFavorite) showFirstFavoriteToast();
     toggleWishlist(location.id);
-  }, [location.id, toggleWishlist]);
-
-  const handleToggleItinerary = useCallback(() => {
-    if (locationInItinerary) {
-      removeFromItinerary(location.id);
-    } else if (needsTripPicker) {
-      setTripPickerOpen(true);
-    } else {
-      addToItinerary(location.id, location);
-    }
-  }, [location, locationInItinerary, needsTripPicker, addToItinerary, removeFromItinerary]);
-
-  const handleTripSelect = useCallback(
-    (tripId: string) => {
-      addToItinerary(location.id, location, tripId);
-    },
-    [addToItinerary, location]
-  );
+  }, [location.id, toggleWishlist, isFavorite, showFirstFavoriteToast]);
 
   // Lock body scroll
   useEffect(() => {
@@ -188,28 +167,9 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           >
             <HeartIcon active={isFavorite} animating={heartAnimating} variant="inline" />
           </button>
-          <button
-            type="button"
-            onClick={handleToggleItinerary}
-            className={`flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-sm font-medium shadow-sm transition-transform hover:scale-105 ${
-              locationInItinerary
-                ? "bg-sage text-white hover:bg-sage/90"
-                : "bg-surface text-foreground hover:bg-border/50"
-            }`}
-            aria-label={locationInItinerary ? "Remove from itinerary" : "Add to itinerary"}
-          >
-            {locationInItinerary ? (
-              <>
-                <MinusIcon className="h-4 w-4" />
-                Remove from trip
-              </>
-            ) : (
-              <>
-                <PlusIcon className="h-4 w-4" />
-                Add to trip
-              </>
-            )}
-          </button>
+          <span className="text-sm text-stone">
+            {isFavorite ? "Saved to favorites" : "Save to include in your trip"}
+          </span>
         </div>
 
         {/* Detail content */}
@@ -366,14 +326,6 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         </div>
       </motion.div>
 
-      {/* Trip picker modal */}
-      <TripPickerModal
-        isOpen={tripPickerOpen}
-        onClose={() => setTripPickerOpen(false)}
-        trips={trips}
-        onSelectTrip={handleTripSelect}
-        locationName={displayName}
-      />
     </>
   );
 }

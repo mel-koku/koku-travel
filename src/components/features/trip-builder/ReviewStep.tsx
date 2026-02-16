@@ -8,14 +8,13 @@ import {
   Users,
   Accessibility,
   StickyNote,
-  MapPin,
 } from "lucide-react";
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
 import { PlanningWarningsList } from "./PlanningWarning";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
-import { SavedLocationsPreview } from "./SavedLocationsPreview";
+import { FavoritesInTripPreview } from "./FavoritesInTripPreview";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
 import { FormField } from "@/components/ui/FormField";
@@ -68,16 +67,6 @@ export type ReviewStepProps = {
 
 export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: ReviewStepProps) {
   const { data, setData } = useTripBuilder();
-
-  const handleRemoveSavedLocation = useCallback(
-    (locationId: string) => {
-      setData((prev) => ({
-        ...prev,
-        savedLocationIds: prev.savedLocationIds?.filter((id) => id !== locationId),
-      }));
-    },
-    [setData]
-  );
 
   const [budgetMode, setBudgetMode] = useState<BudgetMode>("perDay");
 
@@ -175,25 +164,8 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
       {/* Planning Warnings */}
       {warnings.length > 0 && <PlanningWarningsList warnings={warnings} />}
 
-      {/* Saved Locations */}
-      {(data.savedLocationIds?.length ?? 0) > 0 && (
-        <div>
-          <div className="mb-3 flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-sage" />
-            <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Queued</p>
-              <h3 className="font-serif text-lg italic text-foreground">
-                {sanityConfig?.reviewSavedPlacesLabel ?? "Saved Places"} ({data.savedLocationIds?.length})
-              </h3>
-            </div>
-          </div>
-          <SavedLocationsPreview
-            locationIds={data.savedLocationIds ?? []}
-            selectedCities={data.cities}
-            onRemove={handleRemoveSavedLocation}
-          />
-        </div>
-      )}
+      {/* Favorites that match selected cities */}
+      <FavoritesInTripPreview selectedCities={data.cities} />
 
       {/* Preferences — Horizontal scroll row */}
       <div>
