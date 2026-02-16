@@ -168,6 +168,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
   const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // IntersectionObserver for progressive loading
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -543,6 +544,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
         onClearAllFilters={clearAllFilters}
         query={query}
         onQueryChange={setQuery}
+        onAskKokuClick={() => setIsChatOpen(true)}
+        isChatOpen={isChatOpen}
       />
 
       {/* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */}
@@ -553,6 +556,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
           totalCount={total}
           onSelectLocation={handleSelectLocation}
           isLoading={isLoading}
+          isChatOpen={isChatOpen}
+          onChatClose={() => setIsChatOpen(false)}
         />
       ) : isLoading ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">

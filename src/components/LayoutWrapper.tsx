@@ -22,6 +22,15 @@ const CustomCursor = dynamic(
   { ssr: false },
 );
 
+// Lazy-load Ask Koku chat FAB — not critical path
+const AskKokuButton = dynamic(
+  () =>
+    import("@/components/features/ask-koku/AskKokuButton").then(
+      (m) => m.AskKokuButton,
+    ),
+  { ssr: false },
+);
+
 export function LayoutWrapper({
   children,
   siteSettings,
@@ -57,6 +66,7 @@ export function LayoutWrapper({
                     <Footer settings={siteSettings} />
                   </div>
                   <CustomCursor />
+                  <AskKokuButton />
                 </CursorProvider>
               </LenisProvider>
             </WishlistProvider>

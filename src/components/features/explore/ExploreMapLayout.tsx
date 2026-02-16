@@ -2,10 +2,12 @@
 
 import { useCallback, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { durationSlow, durationFast, easePageTransitionMut, easeReveal } from "@/lib/motion";
 import { ExploreMap, type MapBounds } from "./ExploreMap";
 import { ExploreCardPanel } from "./ExploreCardPanel";
+import { AskKokuChat } from "@/components/features/ask-koku/AskKokuChat";
 import type { Location } from "@/types/location";
 
 type ExploreMapLayoutProps = {
@@ -14,6 +16,8 @@ type ExploreMapLayoutProps = {
   totalCount: number;
   onSelectLocation: (location: Location) => void;
   isLoading?: boolean;
+  isChatOpen?: boolean;
+  onChatClose?: () => void;
 };
 
 export function ExploreMapLayout({
@@ -22,6 +26,8 @@ export function ExploreMapLayout({
   totalCount,
   onSelectLocation,
   isLoading,
+  isChatOpen = false,
+  onChatClose,
 }: ExploreMapLayoutProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
@@ -162,6 +168,7 @@ export function ExploreMapLayout({
           onHoverChange={handleHoverChange}
           isLoading={isLoading}
         />
+
       </div>
 
       {/* Desktop layout (lg+) — cards in normal flow, map sticky */}
@@ -203,9 +210,48 @@ export function ExploreMapLayout({
                 {countLabel}
               </span>
             </div>
+
           </div>
         </div>
       </div>
+
+      {/* Chat panel — right slide (matches LocationExpanded) */}
+      <AnimatePresence>
+        {isChatOpen && (
+          <>
+            <motion.div
+              className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: durationFast, ease: easeReveal }}
+              onClick={onChatClose}
+            />
+            <motion.div
+              data-lenis-prevent
+              className="fixed z-50 flex flex-col bg-background shadow-2xl
+                inset-0 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[480px] sm:max-w-[95vw] sm:border-l sm:border-border"
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: durationFast, ease: easeReveal }}
+              style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
+            >
+              <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
+                <h2 className="font-serif italic text-lg text-foreground">Ask Koku</h2>
+                <button
+                  onClick={onChatClose}
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-md backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"
+                  aria-label="Close chat"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <AskKokuChat />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }
