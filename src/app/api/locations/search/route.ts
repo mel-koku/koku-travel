@@ -7,7 +7,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
 } from "@/lib/api/middleware";
-import { escapePostgrestValue } from "@/lib/supabase/sanitize";
+import { shouldUseFts, buildIlikeFilter, sanitizeTsQuery } from "@/lib/supabase/search";
 
 /**
  * Lightweight search result for autocomplete
@@ -77,15 +77,24 @@ export async function GET(request: NextRequest) {
 
     const supabase = await createClient();
 
-    // Search across multiple fields using OR with ilike
-    // Order by name relevance (exact match first, then starts with, then contains)
-    const { data, error } = await supabase
+    // FTS for queries >= 3 chars (stemming: "skiing" → "ski"), ILIKE fallback for short prefixes
+    let searchQuery = supabase
       .from("locations")
       .select("id, name, city, region, category, place_id, image, rating")
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
-      .or(
-        `name.ilike.%${escapePostgrestValue(query)}%,city.ilike.%${escapePostgrestValue(query)}%,region.ilike.%${escapePostgrestValue(query)}%,category.ilike.%${escapePostgrestValue(query)}%`
-      )
+      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+
+    if (shouldUseFts(query)) {
+      searchQuery = searchQuery.textSearch("search_vector", sanitizeTsQuery(query), {
+        type: "websearch",
+        config: "english",
+      });
+    } else {
+      searchQuery = searchQuery.or(
+        buildIlikeFilter(query, ["name", "city", "region", "category"])
+      );
+    }
+
+    const { data, error } = await searchQuery
       .order("name", { ascending: true })
       .limit(limit);
 
