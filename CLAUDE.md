@@ -192,6 +192,7 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 - **Mobile (<lg)**: 30vh map peek (tap to expand 70dvh) + card list below.
 - **Fallback**: `CHEAP_MODE=true` or no Mapbox token → editorial grid (`LocationEditorialGrid`), no map.
 - **Components**: `ExploreShellLazy` → `ExploreShell` (state/filters, code-split with `dynamic()`) → `ExploreMapLayout` (split layout, bounds filter) → `ExploreMap` (Mapbox GL, GeoJSON clustering) + `ExploreCardPanel` → `ExploreCompactCard`
+- **CategoryBar**: Centered search input (with red search icon CTA) + Refine button + Ask Koku button. Lives visually in hero, sticks on scroll (sentinel-based `IntersectionObserver` detects stuck state, adds backdrop). Category filtering moved entirely to `FilterPanel`.
 - **Data**: Single-request `/api/locations/all` fetches all ~3,839 locations (15-column slim projection). Two-tier cache (globalThis 30min + file 2hr). `coordinates` included for map.
 - **Map layers**: Cluster circles (stepped color by count), individual points (colored by category via `getCategoryHexColor`), name labels at zoom 10+.
 - **Lenis**: `data-lenis-prevent` on map container only (scroll-zoom). Cards flow with page scroll.
@@ -201,7 +202,7 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 - **API**: `POST /api/chat` — streaming chat with tool calls (location search, guidance lookup)
 - **Tools**: `searchLocations` (Supabase query by category/city/region), `getTravelTips` (guidance service)
 - **UI**: `AskKokuButton` (floating FAB, hidden on `/studio`, `/trip-builder`, `/explore`) + `AskKokuPanel` (right-slide panel with backdrop)
-- **Explore integration**: Red CTA button in `CategoryBar` → right-slide chat panel in `ExploreMapLayout` (matches `LocationExpanded` pattern: backdrop + `x: "100%"` slide, 480px on desktop, full-screen on mobile)
+- **Explore integration**: Outline button in `CategoryBar` → right-slide chat panel in `ExploreMapLayout` (matches `LocationExpanded` pattern: backdrop + `x: "100%"` slide, 480px on desktop, full-screen on mobile)
 - **Components**: `AskKokuChat` (messages + suggestions + input), `AskKokuMessage` (renders text + location cards), `AskKokuLocationCard`, `AskKokuSuggestions`
 - **Key files**: `src/lib/chat/systemPrompt.ts`, `src/lib/chat/tools.ts`, `src/lib/chat/locationSearch.ts`
 
