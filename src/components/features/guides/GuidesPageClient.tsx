@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 
-import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { GuideSummary, GuideType } from "@/types/guide";
 import { GuideFilterBar } from "./GuideFilterBar";
@@ -65,25 +64,19 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
   return (
     <div>
       {/* Editorial Hero */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-32 pb-4 sm:pt-36 sm:pb-6">
-        <p className="font-mono text-xs uppercase tracking-ultra text-stone mb-4">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-6 sm:pt-20 sm:pb-8 lg:pt-24 text-center">
+        <p className="font-mono text-xs uppercase tracking-ultra text-stone mb-3">
           {guides.length} guides across Japan
         </p>
 
-        <SplitText
-          as="h1"
-          className="font-serif italic text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.05] text-foreground max-w-4xl"
-          splitBy="word"
-          animation="clipY"
-          staggerDelay={0.04}
-          duration={0.5}
-          delay={0.1}
-        >
-          {content?.guidesHeading ?? "What the locals know, written down for the first time."}
-        </SplitText>
+        <ScrollReveal delay={0.1} distance={20} duration={0.5}>
+          <h1 className="font-serif italic text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
+            {content?.guidesHeading ?? "What the locals know, written down for the first time."}
+          </h1>
+        </ScrollReveal>
 
-        <ScrollReveal delay={0.3} distance={20} duration={0.5}>
-          <p className="text-base text-foreground-secondary max-w-2xl mt-6">
+        <ScrollReveal delay={0.2} distance={20} duration={0.5}>
+          <p className="text-base text-foreground-secondary max-w-2xl mx-auto mt-5 leading-relaxed">
             {content?.guidesDescription ?? "Organized by region, season, and the kind of trip you're after."}
           </p>
         </ScrollReveal>
