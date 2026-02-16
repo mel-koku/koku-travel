@@ -12,12 +12,14 @@ export type StoredTrip = {
   updatedAt: string;
   itinerary: Itinerary;
   builderData: TripBuilderData;
+  dayIntros?: Record<string, string>;
 };
 
 export type CreateTripInput = {
   name: string;
   itinerary: Itinerary;
   builderData: TripBuilderData;
+  dayIntros?: Record<string, string>;
 };
 
 export type EditHistoryState = {

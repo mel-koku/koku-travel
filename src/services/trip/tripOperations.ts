@@ -33,6 +33,7 @@ export function createTripRecord(input: CreateTripInput): StoredTrip {
     updatedAt: timestamp,
     itinerary: input.itinerary,
     builderData: input.builderData,
+    dayIntros: input.dayIntros,
   };
 }
 
@@ -167,7 +168,7 @@ export function sanitizeTrips(raw: unknown): StoredTrip[] {
       if (!builderData || typeof builderData !== "object") {
         return null;
       }
-      return {
+      const trip: StoredTrip = {
         id: record.id,
         name: record.name,
         createdAt:
@@ -180,7 +181,11 @@ export function sanitizeTrips(raw: unknown): StoredTrip[] {
             : new Date().toISOString(),
         itinerary: itinerary as Itinerary,
         builderData: builderData,
-      } satisfies StoredTrip;
+      };
+      if (record.dayIntros && typeof record.dayIntros === "object") {
+        trip.dayIntros = record.dayIntros;
+      }
+      return trip;
     })
     .filter((entry): entry is StoredTrip => Boolean(entry));
 }

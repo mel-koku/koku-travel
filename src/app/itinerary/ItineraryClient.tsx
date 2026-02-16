@@ -228,6 +228,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
           isUsingMock={isUsingMock}
           tripStartDate={selectedTrip?.builderData?.dates?.start}
           tripBuilderData={selectedTrip?.builderData}
+          dayIntros={selectedTrip?.dayIntros}
           suggestions={smartPrompts.gaps}
           onAcceptSuggestion={handleSmartPromptAccept}
           onSkipSuggestion={handleSmartPromptSkip}

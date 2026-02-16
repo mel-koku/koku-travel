@@ -11,6 +11,7 @@ import { logger } from "@/lib/logger";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { isDiningLocation } from "@/lib/mealFiltering";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
+import { generateDayIntros } from "./dayIntroGenerator";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -158,6 +159,7 @@ function optimizeItineraryRoutes(
 export type GeneratedTripResult = {
   trip: Trip;
   itinerary: Itinerary;
+  dayIntros?: Record<string, string>;
 };
 
 /**
@@ -225,10 +227,13 @@ export async function generateTripFromBuilderData(
   // itinerary = { ...itinerary, days: daysWithMeals };
   void isDiningLocation; // Silence unused import warning (used in commented code above)
 
+  // Generate personalized day intros via Gemini (non-blocking — falls back to templates)
+  const dayIntros = await generateDayIntros(itinerary, builderData).catch(() => null);
+
   // Convert to Trip domain model
   const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);
 
-  return { trip, itinerary };
+  return { trip, itinerary, dayIntros: dayIntros ?? undefined };
 }
 
 /**

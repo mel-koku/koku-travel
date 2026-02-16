@@ -16,6 +16,7 @@ import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 type PlanApiResponse = {
   trip: { id: string };
   itinerary: Itinerary;
+  dayIntros?: Record<string, string>;
   validation: { valid: boolean; issues: string[] };
 };
 
@@ -57,6 +58,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         name: tripName,
         itinerary: result.itinerary,
         builderData: data as TripBuilderData,
+        dayIntros: result.dayIntros,
       });
 
       reset();
