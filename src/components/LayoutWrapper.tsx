@@ -40,6 +40,7 @@ export function LayoutWrapper({
 }) {
   const pathname = usePathname();
   const isStudio = pathname.startsWith("/studio");
+  const isTripBuilder = pathname.startsWith("/trip-builder");
 
   // Sanity Studio manages its own scroll, layout, and UI chrome —
   // skip Lenis, Header, Footer, PageTransition, and cursor overlay
@@ -63,7 +64,7 @@ export function LayoutWrapper({
                         <PageTransition>{children}</PageTransition>
                       </main>
                     </ErrorBoundary>
-                    <Footer settings={siteSettings} />
+                    {!isTripBuilder && <Footer settings={siteSettings} />}
                   </div>
                   <CustomCursor />
                   <AskKokuButton />
