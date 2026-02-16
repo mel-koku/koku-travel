@@ -5,7 +5,7 @@ import type { DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
 import { loadWishlist } from "@/lib/wishlistStorage";
 import { APP_STATE_STORAGE_KEY, APP_STATE_DEBOUNCE_MS, STABLE_DEFAULT_USER_ID } from "@/lib/constants";
-import { WISHLIST_STORAGE_KEY } from "@/lib/constants/storage";
+import { WISHLIST_STORAGE_KEY, TRIP_BUILDER_STORAGE_KEY } from "@/lib/constants/storage";
 import type { Session, User } from "@supabase/supabase-js";
 import React, {
   createContext,
@@ -743,6 +743,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem("koku_user_preferences");
       localStorage.removeItem("koku:filter-metadata:v3");
       localStorage.removeItem("koku_trip_step");
+      localStorage.removeItem(TRIP_BUILDER_STORAGE_KEY);
     }
   }, []);
 
