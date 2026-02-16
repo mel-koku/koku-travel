@@ -539,6 +539,9 @@ export function ExploreShell({ content }: ExploreShellProps) {
         isChatOpen={isChatOpen}
       />
 
+      {/* Breathing room between search bar and content */}
+      <div className="h-4 sm:h-6" aria-hidden="true" />
+
       {/* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */}
       {mapAvailable ? (
         <ExploreMapLayout
