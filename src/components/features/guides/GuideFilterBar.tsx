@@ -29,7 +29,7 @@ export function GuideFilterBar({
           className="overflow-x-auto scrollbar-hide scroll-fade-r overscroll-contain py-3"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="flex gap-1 sm:gap-2 min-w-max">
+          <div className="flex justify-center gap-1 sm:gap-2 min-w-max">
             <button
               onClick={() => onTypeChange(null)}
               className={cn(
