@@ -168,24 +168,31 @@ function composeTransition(
     { name: nextActivity.title },
   );
 
-  let content: string;
-  if (nextActivity.description) {
-    const desc = nextActivity.description;
-    // Truncate long descriptions
-    const short = desc.length > 150 ? desc.slice(0, 147) + "..." : desc;
-    content = `${bridge} — ${short.charAt(0).toLowerCase() + short.slice(1)}`;
-  } else {
-    content = `${bridge}.`;
-  }
+  const desc = nextActivity.description!;
+  const short = desc.length > 150 ? desc.slice(0, 147) + "..." : desc;
 
   return {
     id: `guide-${dayId}-tr-${index}`,
     type: "activity_context",
-    content,
+    content: `${bridge} — ${short}`,
     dayId,
     afterActivityId: prevActivity.id,
   };
 }
+
+const SUMMARY_CLOSERS_MULTI: string[] = [
+  "{opener} {first} to {last}.",
+  "{opener} From {first} to {last} — good ground covered.",
+  "{opener} {last} was a solid way to wind down.",
+  "{opener} {first} started it, {last} closed it out.",
+  "{opener} A full day, {first} to {last}.",
+];
+
+const SUMMARY_CLOSERS_SINGLE: string[] = [
+  "{opener} {activity} was worth the time.",
+  "{opener} Just {activity} today — sometimes that's enough.",
+  "{opener} A focused day around {activity}.",
+];
 
 function composeDaySummary(
   city: string,
@@ -194,23 +201,28 @@ function composeDaySummary(
 ): GuideSegment {
   let content: string;
   const displayCity = capitalize(city);
+  const opener = pickPhrase(SUMMARY_OPENERS, `${dayId}-summary`, {
+    city: displayCity,
+  });
 
   if (activities.length >= 2) {
-    const opener = pickPhrase(SUMMARY_OPENERS, `${dayId}-summary`, {
-      city: displayCity,
-    });
     const first = activities[0]!.title;
     const last = activities[activities.length - 1]!.title;
-    content = `${opener} From ${first} to ${last}, you got a real taste of ${displayCity}. Rest up for tomorrow!`;
-  } else if (activities.length === 1) {
-    const opener = pickPhrase(SUMMARY_OPENERS, `${dayId}-summary`, {
+    content = pickPhrase(SUMMARY_CLOSERS_MULTI, `${dayId}-summary-close`, {
+      opener,
+      first,
+      last,
       city: displayCity,
     });
-    content = `${opener} ${activities[0]!.title} was a great way to spend the day in ${displayCity}. Rest up for tomorrow!`;
+  } else if (activities.length === 1) {
+    content = pickPhrase(SUMMARY_CLOSERS_SINGLE, `${dayId}-summary-close`, {
+      opener,
+      activity: activities[0]!.title,
+      city: displayCity,
+    });
   } else {
-    // Fallback to template when no activities
     const summaryTemplate = matchDaySummary(city, "mixed", `${dayId}-summary`);
-    content = summaryTemplate?.content ?? `That's a wrap on ${displayCity}! Rest up for tomorrow.`;
+    content = summaryTemplate?.content ?? `That wraps ${displayCity}.`;
   }
 
   return {
@@ -270,8 +282,9 @@ function buildDayGuide(
     const currActivity = activities[i]!;
     const currResolved = resolved[i];
 
-    // Transitions — composed from next activity name + description
-    if (shouldShowTransition(i, activities.length)) {
+    // Transitions — only when the next activity has a description worth sharing.
+    // Without a description, the transition just restates the next card's name — noise.
+    if (shouldShowTransition(i, activities.length) && currActivity.description) {
       segments.push(
         composeTransition(prevActivity, currActivity, dayId, i),
       );
