@@ -33,6 +33,10 @@ type EnvConfig = {
   ENABLE_GOOGLE_PLACES?: string;
   ENABLE_MAPBOX?: string;
   CHEAP_MODE?: string;
+
+  // AI Chat
+  GOOGLE_GENERATIVE_AI_API_KEY?: string;
+  ENABLE_CHAT?: string;
 };
 
 type RequiredEnvKeys =
@@ -92,6 +96,8 @@ function createLenientConfig(): EnvConfig {
     ENABLE_GOOGLE_PLACES: process.env.ENABLE_GOOGLE_PLACES,
     ENABLE_MAPBOX: process.env.ENABLE_MAPBOX,
     CHEAP_MODE: process.env.CHEAP_MODE,
+    GOOGLE_GENERATIVE_AI_API_KEY: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+    ENABLE_CHAT: process.env.ENABLE_CHAT,
   };
 }
 
@@ -154,6 +160,8 @@ function validateEnv(): EnvConfig {
     ENABLE_GOOGLE_PLACES: getOptionalEnv("ENABLE_GOOGLE_PLACES"),
     ENABLE_MAPBOX: getOptionalEnv("ENABLE_MAPBOX"),
     CHEAP_MODE: getOptionalEnv("CHEAP_MODE"),
+    GOOGLE_GENERATIVE_AI_API_KEY: getOptionalEnv("GOOGLE_GENERATIVE_AI_API_KEY"),
+    ENABLE_CHAT: getOptionalEnv("ENABLE_CHAT"),
   };
 }
 
@@ -214,5 +222,8 @@ export const env = {
   },
   get isCheapMode() {
     return envConfig.CHEAP_MODE === "true";
+  },
+  get isChatEnabled() {
+    return envConfig.ENABLE_CHAT !== "false";
   },
 } as const;

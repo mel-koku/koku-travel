@@ -245,6 +245,55 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
  * Includes Google Places enrichment fields for filtering
  */
 // Note: Add "is_featured" once migration 20260124_add_is_featured_column.sql is run
+/**
+ * Columns needed for AI chat responses (18 columns)
+ * Used by: Ask Koku chat tools
+ */
+export const LOCATION_CHAT_COLUMNS = `
+  id,
+  name,
+  city,
+  region,
+  prefecture,
+  category,
+  image,
+  short_description,
+  editorial_summary,
+  description,
+  rating,
+  review_count,
+  price_level,
+  estimated_duration,
+  operating_hours,
+  coordinates,
+  primary_photo_url,
+  business_status
+`.replace(/\s+/g, "");
+
+/**
+ * Subset of LocationDbRow for AI chat responses
+ */
+export type LocationChatDbRow = Pick<LocationDbRow,
+  | "id"
+  | "name"
+  | "city"
+  | "region"
+  | "prefecture"
+  | "category"
+  | "image"
+  | "short_description"
+  | "editorial_summary"
+  | "description"
+  | "rating"
+  | "review_count"
+  | "price_level"
+  | "estimated_duration"
+  | "operating_hours"
+  | "coordinates"
+  | "primary_photo_url"
+  | "business_status"
+>;
+
 export type LocationListingDbRow = Pick<LocationDbRow,
   | "id"
   | "name"

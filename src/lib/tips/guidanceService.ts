@@ -4,6 +4,11 @@ import { rowToTravelGuidance } from "@/types/travelGuidance";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 
+/** Minimal Supabase client interface for guidance queries */
+type SupabaseLike = {
+  from: (table: string) => ReturnType<NonNullable<ReturnType<typeof createClient>>["from"]>;
+};
+
 /**
  * Criteria for matching travel guidance to an activity.
  */
@@ -42,8 +47,9 @@ export function getCurrentSeason(date?: Date): "spring" | "summer" | "fall" | "w
  */
 export async function fetchMatchingGuidance(
   criteria: GuidanceMatchCriteria,
+  externalClient?: SupabaseLike,
 ): Promise<TravelGuidance[]> {
-  const supabase = createClient();
+  const supabase = externalClient ?? createClient();
   if (!supabase) {
     logger.warn("Supabase client not available, skipping guidance fetch");
     return [];
@@ -237,8 +243,9 @@ export type DayGuidanceCriteria = {
  */
 export async function fetchDayGuidance(
   criteria: DayGuidanceCriteria,
+  externalClient?: SupabaseLike,
 ): Promise<TravelGuidance[]> {
-  const supabase = createClient();
+  const supabase = externalClient ?? createClient();
   if (!supabase) {
     logger.warn("Supabase client not available, skipping guidance fetch");
     return [];

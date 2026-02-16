@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useCallback } from "react";
+import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ActiveFilter } from "@/types/filters";
 
@@ -18,6 +19,9 @@ type CategoryBarProps = {
   /** Inline search */
   query?: string;
   onQueryChange?: (value: string) => void;
+  /** Ask Koku chat integration */
+  onAskKokuClick?: () => void;
+  isChatOpen?: boolean;
 };
 
 export function CategoryBar({
@@ -32,6 +36,8 @@ export function CategoryBar({
   onClearAllFilters,
   query = "",
   onQueryChange,
+  onAskKokuClick,
+  isChatOpen = false,
 }: CategoryBarProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -148,6 +154,23 @@ export function CategoryBar({
                 <svg className="h-4 w-4 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
+              </button>
+            )}
+
+            {/* Ask Koku button */}
+            {onAskKokuClick && (
+              <button
+                onClick={onAskKokuClick}
+                aria-label="Ask Koku"
+                className={cn(
+                  "flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition",
+                  isChatOpen
+                    ? "bg-brand-primary/80 text-white shadow-md"
+                    : "bg-brand-primary text-white shadow-sm hover:bg-brand-primary/90 hover:shadow-md active:scale-[0.98]"
+                )}
+              >
+                <MessageCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Ask Koku</span>
               </button>
             )}
 

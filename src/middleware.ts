@@ -9,6 +9,7 @@ const PUBLIC_API_ROUTES = [
   "/api/locations",
   "/api/places",
   "/api/health",
+  "/api/chat",
 ];
 
 /**
