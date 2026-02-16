@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { google } from "@ai-sdk/google";
 import { env } from "@/lib/env";
@@ -10,6 +10,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
 } from "@/lib/api/middleware";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   const context = createRequestContext(request);
@@ -18,6 +19,17 @@ export async function POST(request: NextRequest) {
   if (!env.isChatEnabled) {
     return addRequestContextHeaders(
       serviceUnavailable("Chat is currently disabled", {
+        route: "/api/chat",
+        requestId: context.requestId,
+      }),
+      context,
+    );
+  }
+
+  // API key check
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return addRequestContextHeaders(
+      serviceUnavailable("Chat is not configured", {
         route: "/api/chat",
         requestId: context.requestId,
       }),
@@ -34,21 +46,49 @@ export async function POST(request: NextRequest) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
 
-  const { messages } = await request.json();
+  try {
+    const { messages } = await request.json();
 
-  // Cap conversation to last 20 messages for cost control
-  const recentMessages = messages.slice(-20);
+    // Cap conversation to last 20 messages for cost control
+    const recentMessages = messages.slice(-20);
 
-  const modelMessages = await convertToModelMessages(recentMessages);
+    const modelMessages = await convertToModelMessages(recentMessages);
 
-  const result = streamText({
-    model: google("gemini-2.0-flash"),
-    system: SYSTEM_PROMPT,
-    messages: modelMessages,
-    tools: chatTools,
-    maxOutputTokens: 1024,
-    stopWhen: stepCountIs(3),
-  });
+    const result = streamText({
+      model: google("gemini-2.5-flash"),
+      system: SYSTEM_PROMPT,
+      messages: modelMessages,
+      tools: chatTools,
+      maxOutputTokens: 1024,
+      maxRetries: 1,
+      stopWhen: stepCountIs(3),
+    });
 
-  return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse();
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : String(error);
+    const isQuotaError =
+      message.includes("quota") ||
+      message.includes("RESOURCE_EXHAUSTED") ||
+      message.includes("429");
+
+    if (isQuotaError) {
+      logger.warn("Gemini API quota exceeded", { route: "/api/chat" });
+      return NextResponse.json(
+        { error: "Chat is temporarily unavailable. Try again later." },
+        { status: 503 },
+      );
+    }
+
+    logger.error(
+      "Chat API error",
+      error instanceof Error ? error : new Error(message),
+      { route: "/api/chat", requestId: context.requestId },
+    );
+    return NextResponse.json(
+      { error: "Something went wrong. Try again." },
+      { status: 500 },
+    );
+  }
 }
