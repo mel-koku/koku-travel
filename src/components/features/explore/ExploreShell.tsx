@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Location } from "@/types/location";
 import { ActiveFilter } from "@/types/filters";
-import { locationMatchesSubTypes, getCategoryById, getSubTypeById, getParentCategoryForDatabaseCategory, CATEGORY_HIERARCHY } from "@/data/categoryHierarchy";
+import { locationMatchesSubTypes, getCategoryById, getSubTypeById, getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
 import { useAllLocationsSingle, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
@@ -136,11 +136,6 @@ function generateFallbackReviewCount(locationId: string): number {
   return 50 + (hash % 450);
 }
 
-// Category tabs for the CategoryBar
-const CATEGORY_TABS = CATEGORY_HIERARCHY.map((c) => ({
-  value: c.id,
-  label: c.label,
-}));
 
 type ExploreShellProps = {
   content?: PagesContent;
@@ -445,7 +440,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
     vegetarianFriendly,
   ]);
 
-  const activeFilterCount = activeFilters.filter((f) => f.type !== "search" && f.type !== "category").length;
+  const activeFilterCount = activeFilters.filter((f) => f.type !== "search").length;
 
   const removeFilter = useCallback((filter: ActiveFilter) => {
     switch (filter.type) {
@@ -533,12 +528,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
       <>
       {/* Sticky Category Bar — renders immediately, doesn't wait for data */}
       <CategoryBar
-        categories={CATEGORY_TABS}
-        selectedCategories={selectedCategories}
-        onCategoriesChange={setSelectedCategories}
         onFiltersClick={() => setIsFilterPanelOpen(true)}
         activeFilterCount={activeFilterCount}
-        totalCount={total}
         activeFilters={activeFilters}
         onRemoveFilter={removeFilter}
         onClearAllFilters={clearAllFilters}

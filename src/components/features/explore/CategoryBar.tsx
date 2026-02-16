@@ -1,22 +1,18 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ActiveFilter } from "@/types/filters";
 
 type CategoryBarProps = {
-  categories: readonly { value: string; label: string }[];
-  selectedCategories: string[];
-  onCategoriesChange: (categories: string[]) => void;
   onFiltersClick: () => void;
   activeFilterCount: number;
-  totalCount: number;
-  /** Active filters to render as chips below tabs */
+  /** Active filters to render as removable chips */
   activeFilters?: ActiveFilter[];
   onRemoveFilter?: (filter: ActiveFilter) => void;
   onClearAllFilters?: () => void;
-  /** Inline search */
+  /** Search */
   query?: string;
   onQueryChange?: (value: string) => void;
   /** Ask Koku chat integration */
@@ -25,12 +21,8 @@ type CategoryBarProps = {
 };
 
 export function CategoryBar({
-  categories,
-  selectedCategories,
-  onCategoriesChange,
   onFiltersClick,
   activeFilterCount,
-  totalCount,
   activeFilters = [],
   onRemoveFilter,
   onClearAllFilters,
@@ -39,150 +31,86 @@ export function CategoryBar({
   onAskKokuClick,
   isChatOpen = false,
 }: CategoryBarProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [searchExpanded, setSearchExpanded] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const [isStuck, setIsStuck] = useState(false);
 
-  const toggleCategory = (categoryValue: string) => {
-    if (categoryValue === "__all__") {
-      // "All" tab clears category selection
-      onCategoriesChange([]);
-      return;
-    }
-    if (selectedCategories.includes(categoryValue)) {
-      onCategoriesChange(selectedCategories.filter((c) => c !== categoryValue));
-    } else {
-      onCategoriesChange([...selectedCategories, categoryValue]);
-    }
-  };
+  // Detect when the bar becomes sticky via a sentinel element
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
 
-  const handleSearchToggle = useCallback(() => {
-    if (searchExpanded) {
-      setSearchExpanded(false);
-      onQueryChange?.("");
-    } else {
-      setSearchExpanded(true);
-      // Focus input after expansion
-      setTimeout(() => searchInputRef.current?.focus(), 100);
-    }
-  }, [searchExpanded, onQueryChange]);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // When sentinel scrolls out of view, the bar is stuck
+        setIsStuck(!entry!.isIntersecting);
+      },
+      { threshold: 0, rootMargin: "-80px 0px 0px 0px" }
+    );
 
-  // Non-search active filters (for chip display)
-  const chipFilters = activeFilters.filter((f) => f.type !== "search" && f.type !== "category");
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
+
+  // Show all active filters as chips
+  const chipFilters = activeFilters.filter((f) => f.type !== "search");
   const hasChips = chipFilters.length > 0;
 
   return (
-    <div className="sticky top-20 z-40 bg-background/95 backdrop-blur-xl border-b border-border/50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-2 sm:gap-4 py-3">
-          {/* Category tabs */}
+    <>
+      {/* Sentinel — sits right above the sticky bar to detect stuck state */}
+      <div ref={sentinelRef} className="h-0 w-full" aria-hidden="true" />
+
+      <div
+        className={cn(
+          "sticky top-20 z-40",
+          isStuck
+            ? "bg-background/95 backdrop-blur-xl border-b border-border/50"
+            : "bg-transparent border-b border-transparent"
+        )}
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div
-            ref={scrollContainerRef}
-            className="flex-1 overflow-x-auto scrollbar-hide scroll-fade-r overscroll-contain"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            className={cn(
+              "flex items-center justify-center gap-2 sm:gap-3 py-3",
+            )}
           >
-            <div className="flex gap-2 min-w-max py-0.5">
-              {/* All chip */}
-              <button
-                onClick={() => toggleCategory("__all__")}
-                className={cn(
-                  "rounded-xl border px-4 py-2 min-h-[44px] text-sm font-medium whitespace-nowrap transition-all",
-                  selectedCategories.length === 0
-                    ? "border-brand-primary bg-brand-primary text-white"
-                    : "border-border bg-background text-foreground-secondary hover:border-brand-primary"
-                )}
+            {/* Search input */}
+            <div className="relative w-full max-w-sm min-w-0">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone pointer-events-none"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
               >
-                All
-                <span className={cn(
-                  "ml-1 text-xs",
-                  selectedCategories.length === 0 ? "text-white/70" : "text-stone"
-                )}>
-                  {totalCount.toLocaleString()}
-                </span>
-              </button>
-
-              {categories.map((category) => {
-                const isSelected = selectedCategories.includes(category.value);
-
-                return (
-                  <button
-                    key={category.value}
-                    onClick={() => toggleCategory(category.value)}
-                    className={cn(
-                      "rounded-xl border px-4 py-2 min-h-[44px] text-sm font-medium whitespace-nowrap transition-all",
-                      isSelected
-                        ? "border-brand-primary bg-brand-primary text-white"
-                        : "border-border bg-background text-foreground-secondary hover:border-brand-primary"
-                    )}
-                  >
-                    {category.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right side: search + refine */}
-          <div className="flex items-center gap-2 shrink-0">
-            {/* Inline search */}
-            {searchExpanded ? (
-              <div className="flex items-center gap-1 rounded-xl border border-border bg-background px-3 py-1.5">
-                <svg className="h-4 w-4 text-stone shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  value={query}
-                  onChange={(e) => onQueryChange?.(e.target.value)}
-                  placeholder="Search..."
-                  className="w-32 sm:w-44 bg-transparent text-base placeholder:text-stone focus:outline-none"
-                />
-                <button
-                  onClick={handleSearchToggle}
-                  className="p-2 rounded hover:bg-surface"
-                  aria-label="Close search"
-                >
-                  <svg className="h-3.5 w-3.5 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={query}
+                onChange={(e) => onQueryChange?.(e.target.value)}
+                placeholder="Search places in Japan..."
+                className="w-full rounded-xl border border-border bg-surface/50 pl-9 pr-12 py-2.5 text-base text-foreground placeholder:text-stone focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/20 transition"
+              />
               <button
-                onClick={handleSearchToggle}
-                className="flex h-11 w-11 items-center justify-center rounded-xl border border-border hover:bg-surface transition"
+                onClick={() => searchInputRef.current?.focus()}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.95] transition"
                 aria-label="Search"
               >
-                <svg className="h-4 w-4 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
-            )}
-
-            {/* Ask Koku button */}
-            {onAskKokuClick && (
-              <button
-                onClick={onAskKokuClick}
-                aria-label="Ask Koku"
-                className={cn(
-                  "flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-semibold transition",
-                  isChatOpen
-                    ? "bg-brand-primary/80 text-white shadow-md"
-                    : "bg-brand-primary text-white shadow-sm hover:bg-brand-primary/90 hover:shadow-md active:scale-[0.98]"
-                )}
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">Ask Koku</span>
-              </button>
-            )}
+            </div>
 
             {/* Refine button */}
             <button
               onClick={onFiltersClick}
               aria-label="Refine filters"
               className={cn(
-                "flex items-center gap-1.5 rounded-xl border px-3 py-2 text-sm font-medium transition",
+                "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0",
                 activeFilterCount > 0
                   ? "border-brand-primary text-brand-primary"
                   : "border-border text-stone hover:border-brand-primary hover:text-foreground"
@@ -198,42 +126,59 @@ export function CategoryBar({
                 </span>
               )}
             </button>
-          </div>
-        </div>
 
-        {/* Active filter chips */}
-        {hasChips && (
-          <div className="flex flex-wrap items-center gap-2 pb-3">
-            {chipFilters.map((filter, index) => (
+            {/* Ask Koku button */}
+            {onAskKokuClick && (
               <button
-                key={`${filter.type}-${filter.value}-${index}`}
-                onClick={() => onRemoveFilter?.(filter)}
-                className="inline-flex items-center gap-1 rounded-xl bg-surface px-2.5 py-1 text-xs font-medium text-foreground-secondary hover:bg-border/50 border border-border/50 transition group"
-                aria-label={`Remove ${filter.label} filter`}
+                onClick={onAskKokuClick}
+                aria-label="Ask Koku"
+                className={cn(
+                  "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0",
+                  isChatOpen
+                    ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                    : "border-brand-primary/60 text-brand-primary hover:border-brand-primary hover:bg-brand-primary/5 active:scale-[0.98]"
+                )}
               >
-                <span>{filter.label}</span>
-                <svg
-                  className="h-3 w-3 text-stone group-hover:text-foreground-secondary transition"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            ))}
-            {chipFilters.length > 1 && (
-              <button
-                onClick={onClearAllFilters}
-                className="text-xs font-medium text-stone hover:text-foreground-secondary underline underline-offset-2 transition ml-1"
-              >
-                Clear all
+                <MessageCircle className="h-4 w-4" />
+                <span className="hidden sm:inline">Ask Koku</span>
               </button>
             )}
           </div>
-        )}
+
+          {/* Active filter chips */}
+          {hasChips && (
+            <div className="flex flex-wrap items-center justify-center gap-2 pb-3">
+              {chipFilters.map((filter, index) => (
+                <button
+                  key={`${filter.type}-${filter.value}-${index}`}
+                  onClick={() => onRemoveFilter?.(filter)}
+                  className="inline-flex items-center gap-1 rounded-xl bg-surface px-2.5 py-1 text-xs font-medium text-foreground-secondary hover:bg-border/50 border border-border/50 transition group"
+                  aria-label={`Remove ${filter.label} filter`}
+                >
+                  <span>{filter.label}</span>
+                  <svg
+                    className="h-3 w-3 text-stone group-hover:text-foreground-secondary transition"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              ))}
+              {chipFilters.length > 1 && (
+                <button
+                  onClick={onClearAllFilters}
+                  className="text-xs font-medium text-stone hover:text-foreground-secondary underline underline-offset-2 transition ml-1"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

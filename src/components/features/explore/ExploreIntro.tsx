@@ -10,7 +10,7 @@ type ExploreIntroProps = {
 
 export function ExploreIntro({ totalCount, content }: ExploreIntroProps) {
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-6 sm:pt-20 sm:pb-8 lg:pt-24 text-center">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 pb-2 sm:pt-20 sm:pb-3 lg:pt-24 text-center">
       <p className="font-mono text-xs uppercase tracking-ultra text-stone mb-3">
         {totalCount.toLocaleString()} places across Japan
       </p>
@@ -23,7 +23,7 @@ export function ExploreIntro({ totalCount, content }: ExploreIntroProps) {
 
       <ScrollReveal delay={0.2} distance={20} duration={0.5}>
         <p className="text-base text-foreground-secondary max-w-2xl mx-auto mt-5 leading-relaxed">
-          {content?.exploreSubtitle ?? "Not sure where to start? Ask Koku for recommendations — or filter by category and explore the map."}
+          {content?.exploreSubtitle ?? "Search by name, refine by category and region, or ask Koku for personalized picks."}
         </p>
       </ScrollReveal>
     </section>
