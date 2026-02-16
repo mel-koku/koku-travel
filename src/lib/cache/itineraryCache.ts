@@ -22,6 +22,7 @@ const CACHE_KEY_PREFIX = "@koku-travel/itinerary";
 type CachedItineraryResult = {
   trip: Trip;
   itinerary: Itinerary;
+  dayIntros?: Record<string, string>;
   cachedAt: string;
 };
 
@@ -140,7 +141,7 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
  */
 export async function getCachedItinerary(
   builderData: TripBuilderData,
-): Promise<{ trip: Trip; itinerary: Itinerary } | null> {
+): Promise<{ trip: Trip; itinerary: Itinerary; dayIntros?: Record<string, string> } | null> {
   initializeRedis();
 
   if (!redisAvailable || !redisClient) {
@@ -157,6 +158,7 @@ export async function getCachedItinerary(
       return {
         trip: cached.trip,
         itinerary: cached.itinerary,
+        dayIntros: cached.dayIntros,
       };
     }
 
@@ -182,6 +184,7 @@ export async function cacheItinerary(
   builderData: TripBuilderData,
   trip: Trip,
   itinerary: Itinerary,
+  dayIntros?: Record<string, string>,
 ): Promise<void> {
   initializeRedis();
 
@@ -195,6 +198,7 @@ export async function cacheItinerary(
     const cacheValue: CachedItineraryResult = {
       trip,
       itinerary,
+      dayIntros,
       cachedAt: new Date().toISOString(),
     };
 
