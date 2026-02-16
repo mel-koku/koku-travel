@@ -192,8 +192,9 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 - **Mobile (<lg)**: 30vh map peek (tap to expand 70dvh) + card list below.
 - **Fallback**: `CHEAP_MODE=true` or no Mapbox token → editorial grid (`LocationEditorialGrid`), no map.
 - **Components**: `ExploreShellLazy` → `ExploreShell` (state/filters, code-split with `dynamic()`) → `ExploreMapLayout` (split layout, bounds filter) → `ExploreMap` (Mapbox GL, GeoJSON clustering) + `ExploreCardPanel` → `ExploreCompactCard`
-- **CategoryBar**: Centered search input (with red search icon CTA) + Refine button + Ask Koku button. Lives visually in hero, sticks on scroll (sentinel-based `IntersectionObserver` detects stuck state, adds backdrop). Category filtering moved entirely to `FilterPanel`.
-- **Data**: Single-request `/api/locations/all` fetches all ~3,839 locations (15-column slim projection). Two-tier cache (globalThis 30min + file 2hr). `coordinates` included for map.
+- **CategoryBar**: Centered search input (with red search icon CTA) + Refine button + Ask Koku button. Lives visually in hero, sticks on scroll (sentinel-based `IntersectionObserver` detects stuck state, adds backdrop).
+- **FilterPanel vibes**: Refine panel uses 5 vibe filters (Cultural Heritage, Foodie Paradise, Hidden Gems, Neon & Nightlife, Nature & Adventure) mapped to DB categories via `src/data/vibeFilterMapping.ts`. Hidden Gems uses `is_hidden_gem` boolean column (276 flagged locations). Multi-select OR logic.
+- **Data**: Single-request `/api/locations/all` fetches all ~3,839 locations (17-column slim projection incl. `is_hidden_gem`). Two-tier cache (globalThis 30min + file 2hr). `coordinates` included for map.
 - **Map layers**: Cluster circles (stepped color by count), individual points (colored by category via `getCategoryHexColor`), name labels at zoom 10+.
 - **Lenis**: `data-lenis-prevent` on map container only (scroll-zoom). Cards flow with page scroll.
 
@@ -214,7 +215,7 @@ Smart city matching via `src/hooks/useAddToItinerary.ts`. Saved locations queued
 ## Data & Quality
 
 ### Database
-- **Locations**: ~3,839 in Supabase. Coords: `lat`/`lng`. Photos in Supabase Storage.
+- **Locations**: ~3,839 in Supabase. Coords: `lat`/`lng`. Photos in Supabase Storage. 276 flagged `is_hidden_gem`.
 - **Experiences**: 56 in Sanity — separate from locations/explore/itinerary
 - **Health Score**: 100/100 (`npm run dq audit|fix|report`)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, food, entertainment, market, wellness, viewpoint, bar, transport
