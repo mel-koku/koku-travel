@@ -1,35 +1,21 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, MapPin } from "lucide-react";
-
 import { cn } from "@/lib/cn";
-import { REGIONS } from "@/data/regions";
 import { VIBES, type VibeId } from "@/data/vibes";
 import type { RegionDescription } from "@/data/regionDescriptions";
-import type { CityId, KnownRegionId } from "@/types/trip";
 import { easeCinematicMut } from "@/lib/motion";
 
 type RegionDetailPanelProps = {
   region: RegionDescription | null;
-  selectedCities: Set<CityId>;
-  dynamicSelectedCities: { id: string; name: string }[];
-  onToggleCity: (cityId: CityId) => void;
-  onSelectAllRegion: (regionId: KnownRegionId) => void;
-  onDeselectAllRegion: (regionId: KnownRegionId) => void;
   onPanelEnter: () => void;
   onPanelLeave: () => void;
 };
 
 export function RegionDetailPanel({
   region,
-  selectedCities,
-  dynamicSelectedCities,
-  onToggleCity,
-  onSelectAllRegion,
-  onDeselectAllRegion,
   onPanelEnter,
   onPanelLeave,
 }: RegionDetailPanelProps) {
@@ -37,16 +23,6 @@ export function RegionDetailPanel({
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.stopPropagation();
   }, []);
-
-  const regionCities = useMemo(
-    () => (region ? REGIONS.find((r) => r.id === region.id)?.cities ?? [] : []),
-    [region]
-  );
-
-  const allCitiesSelected = useMemo(
-    () => regionCities.length > 0 && regionCities.every((c) => selectedCities.has(c.id)),
-    [regionCities, selectedCities]
-  );
 
   return (
     <div
@@ -98,102 +74,6 @@ export function RegionDetailPanel({
                 <p className="text-sm leading-relaxed text-foreground-secondary">
                   {region.description}
                 </p>
-
-                {/* Cities — interactive toggles */}
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
-                    <h4 className="text-[10px] font-medium uppercase tracking-widest text-stone">
-                      Cities
-                    </h4>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        allCitiesSelected
-                          ? onDeselectAllRegion(region.id)
-                          : onSelectAllRegion(region.id)
-                      }
-                      className="text-[10px] font-medium uppercase tracking-wider text-brand-primary hover:text-brand-primary/80"
-                    >
-                      {allCitiesSelected ? "Deselect All" : "Select All"}
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    {regionCities.map((city) => {
-                      const isSelected = selectedCities.has(city.id);
-                      return (
-                        <button
-                          key={city.id}
-                          type="button"
-                          onClick={() => onToggleCity(city.id)}
-                          className={cn(
-                            "flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors duration-200",
-                            isSelected
-                              ? "border border-brand-primary/30 bg-brand-primary/5"
-                              : "border border-transparent hover:bg-foreground/5"
-                          )}
-                        >
-                          {/* Checkbox */}
-                          <div
-                            className={cn(
-                              "flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors duration-200",
-                              isSelected
-                                ? "bg-brand-primary"
-                                : "border border-border"
-                            )}
-                          >
-                            {isSelected && (
-                              <motion.div
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                              >
-                                <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                              </motion.div>
-                            )}
-                          </div>
-
-                          <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
-                          <span className="text-sm text-foreground-secondary">
-                            {city.name}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Dynamic cities — "Also selected" */}
-                {dynamicSelectedCities.length > 0 && (
-                  <div>
-                    <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-stone">
-                      Also selected
-                    </h4>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {dynamicSelectedCities.map((city) => (
-                        <button
-                          key={city.id}
-                          type="button"
-                          onClick={() => onToggleCity(city.id)}
-                          className="flex min-h-[44px] items-center gap-3 rounded-xl border border-brand-primary/30 bg-brand-primary/5 px-3 py-2 text-left transition-colors duration-200"
-                        >
-                          <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-brand-primary transition-colors duration-200">
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                            >
-                              <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                            </motion.div>
-                          </div>
-                          <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
-                          <span className="text-sm text-foreground-secondary">
-                            {city.name}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
                 {/* Best for vibes */}
                 <div>

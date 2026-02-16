@@ -3,9 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { Check, MapPin, X } from "lucide-react";
+import { X } from "lucide-react";
 
-import { cn } from "@/lib/cn";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import {
@@ -13,9 +12,10 @@ import {
   autoSelectCities,
 } from "@/lib/tripBuilder/regionScoring";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
-import type { CityId, KnownCityId, KnownRegionId } from "@/types/trip";
+import type { CityId, KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { RegionDescription } from "@/data/regionDescriptions";
+import { VIBES, type VibeId } from "@/data/vibes";
 import { easeCinematicMut } from "@/lib/motion";
 
 import { RegionMapCanvas } from "./RegionMapCanvas";
@@ -197,34 +197,6 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     [setData]
   );
 
-  // Select all known cities in a region
-  const selectAllRegion = useCallback(
-    (regionId: KnownRegionId) => {
-      setData((prev) => {
-        const current = new Set<CityId>(prev.cities ?? []);
-        const regionCities = REGIONS.find((r) => r.id === regionId)?.cities ?? [];
-        regionCities.forEach((c) => current.add(c.id));
-        const cities = Array.from(current);
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
-      });
-    },
-    [setData]
-  );
-
-  // Deselect all known cities in a region
-  const deselectAllRegion = useCallback(
-    (regionId: KnownRegionId) => {
-      setData((prev) => {
-        const current = new Set<CityId>(prev.cities ?? []);
-        const regionCities = REGIONS.find((r) => r.id === regionId)?.cities ?? [];
-        regionCities.forEach((c) => current.delete(c.id));
-        const cities = Array.from(current);
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
-      });
-    },
-    [setData]
-  );
-
   // Detail panel region (from hover on desktop)
   const detailRegion = useMemo(() => {
     if (!hoveredRegion) return null;
@@ -257,23 +229,6 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       return Math.max(0, totalInRegion - knownCityCount);
     },
     [allCitiesByRegion]
-  );
-
-  // Compute dynamic selected cities for a given region (selected but not in the 17 known)
-  const getDynamicCitiesForRegion = useCallback(
-    (regionName: string) => {
-      const knownIds = new Set(REGIONS.flatMap((r) => r.cities.map((c) => c.id)));
-      const result: { id: string; name: string }[] = [];
-      for (const cityId of selectedCities) {
-        if (knownIds.has(cityId as KnownCityId)) continue;
-        const cityData = allCitiesData.find((c) => c.city.toLowerCase() === cityId);
-        if (cityData?.region === regionName) {
-          result.push({ id: cityId, name: cityData.city });
-        }
-      }
-      return result;
-    },
-    [selectedCities, allCitiesData]
   );
 
   return (
@@ -356,7 +311,6 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
             const cityNames = regionDef?.cities.map((c) => c.name) ?? [];
             const regionName = scored.region.name;
             const additionalCityCount = getAdditionalCityCount(regionName, cityNames.length);
-            const dynamicCities = getDynamicCitiesForRegion(regionName);
             return (
               <div key={scored.region.id}>
                 {/* Desktop: hover-driven */}
@@ -419,11 +373,6 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                       >
                         <MobileRegionDetail
                           region={scored.region}
-                          selectedCities={selectedCities}
-                          dynamicSelectedCities={dynamicCities}
-                          onToggleCity={toggleCity}
-                          onSelectAllRegion={selectAllRegion}
-                          onDeselectAllRegion={deselectAllRegion}
                         />
                       </motion.div>
                     )}
@@ -440,11 +389,6 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       <div className="pointer-events-none fixed inset-y-0 right-0 z-40 hidden w-[40%] lg:block">
         <RegionDetailPanel
           region={detailRegion}
-          selectedCities={selectedCities}
-          dynamicSelectedCities={detailRegion ? getDynamicCitiesForRegion(detailRegion.name) : []}
-          onToggleCity={toggleCity}
-          onSelectAllRegion={selectAllRegion}
-          onDeselectAllRegion={deselectAllRegion}
           onPanelEnter={handlePanelEnter}
           onPanelLeave={handlePanelLeave}
         />
@@ -458,23 +402,9 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
  */
 function MobileRegionDetail({
   region,
-  selectedCities,
-  dynamicSelectedCities,
-  onToggleCity,
-  onSelectAllRegion,
-  onDeselectAllRegion,
 }: {
   region: RegionDescription;
-  selectedCities: Set<CityId>;
-  dynamicSelectedCities: { id: string; name: string }[];
-  onToggleCity: (cityId: CityId) => void;
-  onSelectAllRegion: (regionId: KnownRegionId) => void;
-  onDeselectAllRegion: (regionId: KnownRegionId) => void;
 }) {
-  const regionCities = REGIONS.find((r) => r.id === region.id)?.cities ?? [];
-  const allCitiesSelected =
-    regionCities.length > 0 && regionCities.every((c) => selectedCities.has(c.id));
-
   return (
     <div className="border-b border-border/50 bg-foreground/[0.02] px-4 py-4">
       {/* Hero image */}
@@ -494,89 +424,46 @@ function MobileRegionDetail({
         {region.description}
       </p>
 
-      {/* Cities — interactive toggles */}
-      {regionCities.length > 0 && (
+      {/* Best for vibes */}
+      {region.bestFor.length > 0 && (
         <div className="mt-3">
-          <div className="mb-2 flex items-center justify-between">
-            <span className="text-[10px] font-medium uppercase tracking-widest text-stone">
-              Cities
-            </span>
-            <button
-              type="button"
-              onClick={() =>
-                allCitiesSelected
-                  ? onDeselectAllRegion(region.id)
-                  : onSelectAllRegion(region.id)
-              }
-              className="text-[10px] font-medium uppercase tracking-wider text-brand-primary hover:text-brand-primary/80"
-            >
-              {allCitiesSelected ? "Deselect All" : "Select All"}
-            </button>
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
-            {regionCities.map((city) => {
-              const isSelected = selectedCities.has(city.id);
+          <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-stone">
+            Best for
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {region.bestFor.map((vibeId: VibeId) => {
+              const vibe = VIBES.find((v) => v.id === vibeId);
+              if (!vibe) return null;
               return (
-                <button
-                  key={city.id}
-                  type="button"
-                  onClick={() => onToggleCity(city.id)}
-                  className={cn(
-                    "flex min-h-[44px] items-center gap-3 rounded-xl px-3 py-2 text-left transition-colors duration-200",
-                    isSelected
-                      ? "border border-brand-primary/30 bg-brand-primary/5"
-                      : "border border-transparent hover:bg-foreground/5"
-                  )}
+                <span
+                  key={vibeId}
+                  className="rounded-lg bg-brand-primary/10 px-2.5 py-1 text-xs font-medium text-brand-primary"
                 >
-                  {/* Checkbox */}
-                  <div
-                    className={cn(
-                      "flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors duration-200",
-                      isSelected
-                        ? "bg-brand-primary"
-                        : "border border-border"
-                    )}
-                  >
-                    {isSelected && (
-                      <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                    )}
-                  </div>
-
-                  <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
-                  <span className="text-sm text-foreground-secondary">
-                    {city.name}
-                  </span>
-                </button>
+                  {vibe.name}
+                </span>
               );
             })}
           </div>
         </div>
       )}
 
-      {/* Dynamic cities — "Also selected" */}
-      {dynamicSelectedCities.length > 0 && (
+      {/* Highlights */}
+      {region.highlights.length > 0 && (
         <div className="mt-3">
           <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-stone">
-            Also selected
+            Highlights
           </span>
-          <div className="grid grid-cols-2 gap-1.5">
-            {dynamicSelectedCities.map((city) => (
-              <button
-                key={city.id}
-                type="button"
-                onClick={() => onToggleCity(city.id)}
-                className="flex min-h-[44px] items-center gap-3 rounded-xl border border-brand-primary/30 bg-brand-primary/5 px-3 py-2 text-left transition-colors duration-200"
+          <ul className="space-y-1.5">
+            {region.highlights.map((h) => (
+              <li
+                key={h}
+                className="flex items-center gap-2 text-sm text-foreground-secondary"
               >
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-brand-primary transition-colors duration-200">
-                  <Check className="h-3 w-3 text-white" strokeWidth={3} />
-                </div>
-                <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
-                <span className="text-sm text-foreground-secondary">
-                  {city.name}
-                </span>
-              </button>
+                <span className="h-1 w-1 shrink-0 rounded-full bg-brand-primary" />
+                {h}
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       )}
     </div>
