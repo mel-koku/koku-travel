@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { Check, MapPin } from "lucide-react";
+import { Check, MapPin, X } from "lucide-react";
 
 import { cn } from "@/lib/cn";
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -12,7 +12,8 @@ import {
   scoreRegionsForTrip,
   autoSelectCities,
 } from "@/lib/tripBuilder/regionScoring";
-import type { KnownCityId, KnownRegionId } from "@/types/trip";
+import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
+import type { CityId, KnownCityId, KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { RegionDescription } from "@/data/regionDescriptions";
 import { easeCinematicMut } from "@/lib/motion";
@@ -20,8 +21,7 @@ import { easeCinematicMut } from "@/lib/motion";
 import { RegionMapCanvas } from "./RegionMapCanvas";
 import { RegionRow } from "./RegionRow";
 import { RegionDetailPanel } from "./RegionDetailPanel";
-import { RegionSummaryPill } from "./RegionSummaryPill";
-import { checkLocationCapacity } from "@/lib/tripBuilder/locationCapacity";
+import { CitySearchBar } from "./CitySearchBar";
 
 export type RegionStepProps = {
   onValidityChange?: (isValid: boolean) => void;
@@ -106,11 +106,26 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
 
   const vibes = useMemo(() => data.vibes ?? [], [data.vibes]);
 
-  // City-level selection (primary source of truth)
+  // City-level selection (primary source of truth) — includes both known and dynamic cities
   const selectedCities = useMemo(
-    () => new Set<KnownCityId>((data.cities ?? []) as KnownCityId[]),
+    () => new Set<CityId>(data.cities ?? []),
     [data.cities]
   );
+
+  // All 640 cities grouped by region (lazy-loaded, cached)
+  const allCitiesByRegion = useMemo(() => {
+    const cities = getAllCities();
+    const byRegion = new Map<string, number>();
+    for (const c of cities) {
+      if (c.region) {
+        byRegion.set(c.region, (byRegion.get(c.region) ?? 0) + 1);
+      }
+    }
+    return byRegion;
+  }, []);
+
+  // All cities data for looking up dynamic city metadata
+  const allCitiesData = useMemo(() => getAllCities(), []);
 
   // Derive regions from selected cities (for map highlighting & summary)
   const derivedRegions = useMemo(
@@ -118,23 +133,21 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     [selectedCities]
   );
 
-  const derivedRegionNames = useMemo(
-    () =>
-      derivedRegions
-        .map((id) => REGIONS.find((r) => r.id === id)?.name)
-        .filter(Boolean) as string[],
-    [derivedRegions]
-  );
-
-  // Check if selected cities have enough locations for the trip duration
-  const locationWarning = useMemo(
-    () =>
-      checkLocationCapacity(
-        Array.from(selectedCities) as KnownCityId[],
-        data.duration ?? 0,
-      ),
-    [selectedCities, data.duration],
-  );
+  // Build display names for all selected cities (known + dynamic)
+  const selectedCityNames = useMemo(() => {
+    const knownCityMap = new Map<string, string>();
+    for (const r of REGIONS) {
+      for (const c of r.cities) {
+        knownCityMap.set(c.id, c.name);
+      }
+    }
+    return Array.from(selectedCities).map((id) => {
+      const known = knownCityMap.get(id);
+      if (known) return known;
+      const dynamic = allCitiesData.find((c) => c.city.toLowerCase() === id);
+      return dynamic?.city ?? id.charAt(0).toUpperCase() + id.slice(1);
+    });
+  }, [selectedCities, allCitiesData]);
 
   // Score regions and merge Sanity overrides
   const scoredRegions = useMemo(() => {
@@ -167,11 +180,11 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     onValidityChange?.(selectedCities.size > 0);
   }, [selectedCities.size, onValidityChange]);
 
-  // Toggle a single city
+  // Toggle a single city (known or dynamic)
   const toggleCity = useCallback(
-    (cityId: KnownCityId) => {
+    (cityId: CityId) => {
       setData((prev) => {
-        const current = new Set<KnownCityId>((prev.cities ?? []) as KnownCityId[]);
+        const current = new Set<CityId>(prev.cities ?? []);
         if (current.has(cityId)) {
           current.delete(cityId);
         } else {
@@ -184,11 +197,11 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     [setData]
   );
 
-  // Select all cities in a region
+  // Select all known cities in a region
   const selectAllRegion = useCallback(
     (regionId: KnownRegionId) => {
       setData((prev) => {
-        const current = new Set<KnownCityId>((prev.cities ?? []) as KnownCityId[]);
+        const current = new Set<CityId>(prev.cities ?? []);
         const regionCities = REGIONS.find((r) => r.id === regionId)?.cities ?? [];
         regionCities.forEach((c) => current.add(c.id));
         const cities = Array.from(current);
@@ -198,11 +211,11 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     [setData]
   );
 
-  // Deselect all cities in a region
+  // Deselect all known cities in a region
   const deselectAllRegion = useCallback(
     (regionId: KnownRegionId) => {
       setData((prev) => {
-        const current = new Set<KnownCityId>((prev.cities ?? []) as KnownCityId[]);
+        const current = new Set<CityId>(prev.cities ?? []);
         const regionCities = REGIONS.find((r) => r.id === regionId)?.cities ?? [];
         regionCities.forEach((c) => current.delete(c.id));
         const cities = Array.from(current);
@@ -226,7 +239,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     []
   );
 
-  // Helper: get city counts for a region
+  // Helper: get city counts for a region (known cities only for dots)
   const getCityCounts = useCallback(
     (regionId: KnownRegionId) => {
       const regionCities = REGIONS.find((r) => r.id === regionId)?.cities ?? [];
@@ -235,6 +248,32 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       return { selected, total };
     },
     [selectedCities]
+  );
+
+  // Compute additional city count per region (total DB cities minus known cities)
+  const getAdditionalCityCount = useCallback(
+    (regionName: string, knownCityCount: number) => {
+      const totalInRegion = allCitiesByRegion.get(regionName) ?? 0;
+      return Math.max(0, totalInRegion - knownCityCount);
+    },
+    [allCitiesByRegion]
+  );
+
+  // Compute dynamic selected cities for a given region (selected but not in the 17 known)
+  const getDynamicCitiesForRegion = useCallback(
+    (regionName: string) => {
+      const knownIds = new Set(REGIONS.flatMap((r) => r.cities.map((c) => c.id)));
+      const result: { id: string; name: string }[] = [];
+      for (const cityId of selectedCities) {
+        if (knownIds.has(cityId as KnownCityId)) continue;
+        const cityData = allCitiesData.find((c) => c.city.toLowerCase() === cityId);
+        if (cityData?.region === regionName) {
+          result.push({ id: cityId, name: cityData.city });
+        }
+      }
+      return result;
+    },
+    [selectedCities, allCitiesData]
   );
 
   return (
@@ -274,13 +313,50 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
           <p className="mt-3 text-sm text-stone lg:text-base">
             {sanityConfig?.regionStepDescription ?? "Pick your cities. Highlighted ones match your travel style."}
           </p>
+
+          <CitySearchBar
+            selectedCities={selectedCities}
+            onSelectCity={toggleCity}
+          />
+
+          {/* Selected city chips */}
+          {selectedCities.size > 0 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {selectedCityNames.map((name, i) => {
+                const cityId = Array.from(selectedCities)[i];
+                return (
+                  <motion.button
+                    key={cityId}
+                    type="button"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
+                    onClick={() => toggleCity(cityId!)}
+                    className="flex items-center gap-1.5 rounded-full border border-brand-primary/30 bg-brand-primary/5 px-3 py-1.5 text-sm text-foreground-secondary transition-colors hover:border-brand-primary/50 hover:bg-brand-primary/10"
+                  >
+                    {name}
+                    <X className="h-3 w-3 text-stone hover:text-foreground" />
+                  </motion.button>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-warning">
+              Select at least one city
+            </p>
+          )}
         </div>
 
         {/* Region rows */}
         <div className="mt-8 px-4 pb-32 lg:max-w-[45%] lg:px-8">
           {scoredRegions.map((scored, i) => {
             const { selected, total } = getCityCounts(scored.region.id);
-            const cityNames = REGIONS.find((r) => r.id === scored.region.id)?.cities.map((c) => c.name) ?? [];
+            const regionDef = REGIONS.find((r) => r.id === scored.region.id);
+            const cityNames = regionDef?.cities.map((c) => c.name) ?? [];
+            const regionName = scored.region.name;
+            const additionalCityCount = getAdditionalCityCount(regionName, cityNames.length);
+            const dynamicCities = getDynamicCitiesForRegion(regionName);
             return (
               <div key={scored.region.id}>
                 {/* Desktop: hover-driven */}
@@ -289,6 +365,8 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     index={i}
                     region={scored.region}
                     cityNames={cityNames}
+                    regionName={regionName}
+                    additionalCityCount={additionalCityCount}
                     matchScore={scored.totalScore}
                     selectedCityCount={selected}
                     totalCityCount={total}
@@ -307,6 +385,8 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     index={i}
                     region={scored.region}
                     cityNames={cityNames}
+                    regionName={regionName}
+                    additionalCityCount={additionalCityCount}
                     matchScore={scored.totalScore}
                     selectedCityCount={selected}
                     totalCityCount={total}
@@ -340,6 +420,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                         <MobileRegionDetail
                           region={scored.region}
                           selectedCities={selectedCities}
+                          dynamicSelectedCities={dynamicCities}
                           onToggleCity={toggleCity}
                           onSelectAllRegion={selectAllRegion}
                           onDeselectAllRegion={deselectAllRegion}
@@ -354,21 +435,13 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         </div>
       </div>
 
-      {/* Summary pill — fixed to viewport */}
-      <div className="fixed bottom-[calc(7rem+env(safe-area-inset-bottom))] left-1/2 z-20 -translate-x-1/2">
-        <RegionSummaryPill
-          selectedCityCount={selectedCities.size}
-          derivedRegionNames={derivedRegionNames}
-          warning={locationWarning}
-        />
-      </div>
-
       {/* Desktop detail panel — fixed to viewport, z-40 to sit above StepProgressTrack (z-30).
            pointer-events-none on wrapper so it doesn't block clicks when panel is hidden. */}
       <div className="pointer-events-none fixed inset-y-0 right-0 z-40 hidden w-[40%] lg:block">
         <RegionDetailPanel
           region={detailRegion}
           selectedCities={selectedCities}
+          dynamicSelectedCities={detailRegion ? getDynamicCitiesForRegion(detailRegion.name) : []}
           onToggleCity={toggleCity}
           onSelectAllRegion={selectAllRegion}
           onDeselectAllRegion={deselectAllRegion}
@@ -386,13 +459,15 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
 function MobileRegionDetail({
   region,
   selectedCities,
+  dynamicSelectedCities,
   onToggleCity,
   onSelectAllRegion,
   onDeselectAllRegion,
 }: {
   region: RegionDescription;
-  selectedCities: Set<KnownCityId>;
-  onToggleCity: (cityId: KnownCityId) => void;
+  selectedCities: Set<CityId>;
+  dynamicSelectedCities: { id: string; name: string }[];
+  onToggleCity: (cityId: CityId) => void;
   onSelectAllRegion: (regionId: KnownRegionId) => void;
   onDeselectAllRegion: (regionId: KnownRegionId) => void;
 }) {
@@ -474,6 +549,33 @@ function MobileRegionDetail({
                 </button>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Dynamic cities — "Also selected" */}
+      {dynamicSelectedCities.length > 0 && (
+        <div className="mt-3">
+          <span className="mb-2 block text-[10px] font-medium uppercase tracking-widest text-stone">
+            Also selected
+          </span>
+          <div className="grid grid-cols-2 gap-1.5">
+            {dynamicSelectedCities.map((city) => (
+              <button
+                key={city.id}
+                type="button"
+                onClick={() => onToggleCity(city.id)}
+                className="flex min-h-[44px] items-center gap-3 rounded-xl border border-brand-primary/30 bg-brand-primary/5 px-3 py-2 text-left transition-colors duration-200"
+              >
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-brand-primary transition-colors duration-200">
+                  <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                </div>
+                <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
+                <span className="text-sm text-foreground-secondary">
+                  {city.name}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -20,6 +20,28 @@ export function useTripBuilderNavigation({
   const { data, reset } = useTripBuilder();
   const [currentStep, setCurrentStep] = useState<Step>(0);
   const [direction, setDirection] = useState(1);
+
+  // Detect when trip builder data is cleared externally (e.g. "Clear local data")
+  // by tracking whether we've ever seen non-empty data in this session.
+  const hadData = useRef(false);
+
+  const dataIsEmpty =
+    !data.dates?.start &&
+    (!data.vibes || data.vibes.length === 0) &&
+    (!data.cities || data.cities.length === 0) &&
+    !data.entryPoint;
+
+  useEffect(() => {
+    if (!dataIsEmpty) {
+      hadData.current = true;
+    }
+    // Data went from non-empty → empty while past intro: external clear
+    if (dataIsEmpty && hadData.current && currentStep > 0) {
+      hadData.current = false;
+      setCurrentStep(0);
+      setDirection(-1);
+    }
+  }, [dataIsEmpty, currentStep]);
 
   // Step validity states
   const [datesValid, setDatesValid] = useState(false);

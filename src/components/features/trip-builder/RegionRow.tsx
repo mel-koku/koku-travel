@@ -10,6 +10,8 @@ type RegionRowProps = {
   index: number;
   region: RegionDescription;
   cityNames: string[];
+  regionName: string;
+  additionalCityCount: number;
   matchScore: number;
   selectedCityCount: number;
   totalCityCount: number;
@@ -26,6 +28,8 @@ export function RegionRow({
   index,
   region,
   cityNames,
+  regionName,
+  additionalCityCount,
   matchScore,
   selectedCityCount,
   totalCityCount,
@@ -73,19 +77,19 @@ export function RegionRow({
         {String(index + 1).padStart(2, "0")}
       </span>
 
-      {/* Region name + city subtitle */}
+      {/* City names (primary) + region subtitle */}
       <div className="flex-1 min-w-0">
         <span className={cn(
           "block font-serif text-xl italic tracking-tight transition-colors duration-300 sm:text-2xl",
           hasSelection || isHovered ? "text-foreground" : "text-foreground-secondary",
         )}>
-          {region.name}
+          {cityNames.length > 0 ? cityNames.join(" · ") : region.name}
         </span>
-        {cityNames.length > 0 && (
-          <span className="block text-xs text-stone transition-colors duration-300 mt-0.5">
-            {cityNames.join(" · ")}
-          </span>
-        )}
+        <span className="block text-xs text-stone transition-colors duration-300 mt-0.5">
+          {additionalCityCount > 0
+            ? `+${additionalCityCount} more cities in ${regionName}`
+            : regionName}
+        </span>
       </div>
 
       {/* Badges */}

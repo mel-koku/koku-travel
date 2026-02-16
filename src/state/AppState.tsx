@@ -744,6 +744,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       localStorage.removeItem("koku:filter-metadata:v3");
       localStorage.removeItem("koku_trip_step");
       localStorage.removeItem(TRIP_BUILDER_STORAGE_KEY);
+      // Notify other contexts (e.g. TripBuilderContext) that local data was wiped
+      window.dispatchEvent(new CustomEvent("koku:local-data-cleared"));
     }
   }, []);
 

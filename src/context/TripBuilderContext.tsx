@@ -160,6 +160,13 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
     }
   }, []);
 
+  // Reset in-memory state when AppState clears all local data
+  useEffect(() => {
+    const handleClear = () => reset();
+    window.addEventListener("koku:local-data-cleared", handleClear);
+    return () => window.removeEventListener("koku:local-data-cleared", handleClear);
+  }, [reset]);
+
   const setDataNormalized = useCallback(
     (updater: React.SetStateAction<TripBuilderData>) => {
       // Prevent setData calls during hydration to avoid race conditions
