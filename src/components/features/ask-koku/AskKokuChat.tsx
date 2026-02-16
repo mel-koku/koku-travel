@@ -67,7 +67,11 @@ export function AskKokuChat() {
             )}
             {error && (
               <div className="rounded-xl bg-error/10 px-4 py-2.5 text-sm text-error">
-                Something went wrong. Try again.
+                {error.message?.includes("quota") ||
+                error.message?.includes("503") ||
+                error.message?.includes("429")
+                  ? "Koku is taking a break. Try again in a minute."
+                  : "Something went wrong. Try again."}
               </div>
             )}
           </div>
