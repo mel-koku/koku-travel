@@ -81,19 +81,22 @@ export function CategoryBar({
             className="flex-1 overflow-x-auto scrollbar-hide scroll-fade-r overscroll-contain"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
-            <div className="flex gap-1 sm:gap-2 min-w-max">
-              {/* All tab */}
+            <div className="flex gap-2 min-w-max py-0.5">
+              {/* All chip */}
               <button
                 onClick={() => toggleCategory("__all__")}
                 className={cn(
-                  "px-4 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
+                  "rounded-xl border px-4 py-2 min-h-[44px] text-sm font-medium whitespace-nowrap transition-all",
                   selectedCategories.length === 0
-                    ? "border-brand-primary text-foreground"
-                    : "border-transparent text-stone hover:text-foreground"
+                    ? "border-brand-primary bg-brand-primary text-white"
+                    : "border-border bg-background text-foreground-secondary hover:border-brand-primary"
                 )}
               >
                 All
-                <span className="ml-1 text-xs text-stone">
+                <span className={cn(
+                  "ml-1 text-xs",
+                  selectedCategories.length === 0 ? "text-white/70" : "text-stone"
+                )}>
                   {totalCount.toLocaleString()}
                 </span>
               </button>
@@ -106,10 +109,10 @@ export function CategoryBar({
                     key={category.value}
                     onClick={() => toggleCategory(category.value)}
                     className={cn(
-                      "px-4 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
+                      "rounded-xl border px-4 py-2 min-h-[44px] text-sm font-medium whitespace-nowrap transition-all",
                       isSelected
-                        ? "border-brand-primary text-foreground"
-                        : "border-transparent text-stone hover:text-foreground"
+                        ? "border-brand-primary bg-brand-primary text-white"
+                        : "border-border bg-background text-foreground-secondary hover:border-brand-primary"
                     )}
                   >
                     {category.label}
