@@ -374,64 +374,66 @@ export function getTipTopicForDay(subCategories: string[]): string {
 
 const CITY_SPECIFIC_OPENERS: Record<string, string[]> = {
   kyoto: [
-    "Ohayou, Kyoto!",
-    "The ancient capital awaits!",
-    "Kyoto has so much in store today!",
+    "Kyoto today.",
+    "The ancient capital.",
+    "Kyoto — temples, tea, and quiet streets.",
   ],
   osaka: [
-    "Osaka, let's go!",
-    "Ready for some Osaka energy?",
-    "The kitchen of Japan is calling!",
+    "Osaka today.",
+    "Osaka — loud, warm, and well-fed.",
+    "Japan's kitchen.",
   ],
   tokyo: [
-    "Tokyo, here we go!",
-    "Ready to dive into Tokyo?",
-    "The big city awaits!",
+    "Tokyo today.",
+    "Tokyo — where every neighborhood is a different city.",
+    "The big one.",
   ],
   nara: [
-    "Nara is ready for you!",
-    "Time to explore ancient Nara!",
+    "Nara today.",
+    "Nara — ancient, compact, deer everywhere.",
   ],
   kobe: [
-    "Good morning, Kobe!",
-    "Kobe's harbor city charm awaits!",
+    "Kobe today.",
+    "Kobe — harbor, hills, and good beef.",
   ],
   hiroshima: [
-    "Hiroshima awaits!",
-    "A meaningful day in Hiroshima!",
+    "Hiroshima today.",
+    "Hiroshima — forward-looking, worth the weight.",
   ],
   fukuoka: [
-    "Fukuoka, let's explore!",
-    "Ready for some Hakata vibes?",
+    "Fukuoka today.",
+    "Fukuoka — Kyushu's easygoing capital.",
   ],
   kanazawa: [
-    "Kanazawa is calling!",
-    "Time to explore the Hokuriku gem!",
+    "Kanazawa today.",
+    "Kanazawa — gardens, gold leaf, and fresh crab.",
   ],
 };
 
 export const DAY_INTRO_OPENERS: string[] = [
-  "Good morning, {city}!",
-  "Ready to explore {city}?",
-  "{city} is calling!",
-  "Rise and shine — {city} awaits!",
-  "A new day in {city}!",
+  "{city} today.",
+  "A new day in {city}.",
+  "{city} — here's the plan.",
+  "Morning in {city}.",
+  "{city}, day ahead.",
 ];
 
 export const TRANSITION_BRIDGES: string[] = [
-  "Next up is {name}",
-  "You're heading to {name} next",
-  "Time for {name}",
-  "Onward to {name}",
-  "Up next: {name}",
+  "{name} is next",
+  "From here, {name}",
+  "Then, {name}",
+  "On to {name}",
+  "{name} after this",
+  "Heading to {name}",
+  "Not far from here: {name}",
 ];
 
 export const SUMMARY_OPENERS: string[] = [
-  "What a day!",
-  "That's a wrap on {city}!",
-  "Another great day in {city}!",
-  "Well done, {city} explorer!",
-  "And that's {city} for today!",
+  "That's {city} for today.",
+  "{city}, done.",
+  "Day's done.",
+  "That wraps {city}.",
+  "{city}, covered.",
 ];
 
 /**

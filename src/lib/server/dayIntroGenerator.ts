@@ -72,28 +72,47 @@ export async function generateDayIntros(
   }
   const introSchema = z.object(schemaShape);
 
-  const prompt = `You are writing day introductions for a Japan travel itinerary.
+  const prompt = `You are a sharp UX writer. Say less. Talk to the person. Cut the filler. Trust the reader. Warm but never gushing. Concrete over clever. Every word earns its place.
 
-Context:
+You're writing day intros for a Japan travel itinerary.
+
+Traveler:
 - Season: ${season}
-- Traveler: ${group}
+- Group: ${group}
 - Pace: ${pace}
 - Vibes: ${vibes}
-- Trip length: ${days.length} days
+- ${days.length} days total
 
-Daily activities:
+Itinerary:
 ${dayContext}
 
-Write a short "Today's Plan" intro for each day (1-2 sentences, max 180 characters).
+Write one "Today's Plan" intro per day. 1-2 sentences, max 180 characters.
 
-Rules:
-- Reference specific activity names from that day — don't be generic
-- Vary sentence openings across days (no two should start the same way)
-- Match the traveler's pace and group type in tone
-- Be concrete and grounded — say what they'll actually do
-- No emoji, no exclamation marks, no filler words like "amazing" or "incredible"
-- No "you'll love" or "get ready" — just describe the day plainly
-- First day can reference arrival; last day can reference wrapping up
+How to write these:
+- Capture the FEEL of the day — the neighborhood vibe, a sensory detail, a contrast, a mood shift. Not the schedule.
+- One place name to anchor it. Two max. Weave in, never list.
+- NEVER enumerate activities. These patterns are banned:
+  - "A taste of X, then a sip of Y"
+  - "X in the morning, Y in the afternoon"
+  - "[category] at [place] and [category] at [place]"
+  - "Settle into / Ease into / Kick off with"
+- Consequences, not mechanics. "The temples are quieter this early" not "visit temples in the morning."
+- Vary openings across days — place, feeling, time of day, sensory detail. No two should start the same way.
+- First day can nod to arrival. Last day can nod to leaving. Middle days just set the tone.
+- No emoji. No exclamation marks. No "amazing/incredible/unforgettable." No "get ready." No "you'll love."
+
+Yes:
+- "Kitano's Western mansions sit above a Japanese port city. That contrast is Kobe in a nutshell."
+- "Nara moves at its own speed. Deer on the temple paths, ancient wood creaking underfoot."
+- "Morning in a Kyoto teahouse, afternoon under ten thousand vermillion gates. The contrast is the point."
+- "The shrines are quieter before the tour buses arrive. Worth the early start."
+- "Osaka after dark is a different city. Neon, noise, and the smell of takoyaki from every corner."
+
+No:
+- "Settle into Kobe, its port history visible from Harborland. A taste of Western influence at Weathercock House, then a sip of local sake."
+- "Explore temples at Kinkaku-ji and enjoy food at Nishiki Market, then visit nature at Arashiyama."
+- "Today features a mix of cultural landmarks and culinary experiences across the city."
+- "Start your morning at X, then head to Y for Z."
 
 Return a JSON object mapping each day ID to its intro string.`;
 
