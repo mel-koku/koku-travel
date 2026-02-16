@@ -9,13 +9,14 @@ import { cn } from "@/lib/cn";
 import { REGIONS } from "@/data/regions";
 import { VIBES, type VibeId } from "@/data/vibes";
 import type { RegionDescription } from "@/data/regionDescriptions";
-import type { KnownCityId, KnownRegionId } from "@/types/trip";
+import type { CityId, KnownRegionId } from "@/types/trip";
 import { easeCinematicMut } from "@/lib/motion";
 
 type RegionDetailPanelProps = {
   region: RegionDescription | null;
-  selectedCities: Set<KnownCityId>;
-  onToggleCity: (cityId: KnownCityId) => void;
+  selectedCities: Set<CityId>;
+  dynamicSelectedCities: { id: string; name: string }[];
+  onToggleCity: (cityId: CityId) => void;
   onSelectAllRegion: (regionId: KnownRegionId) => void;
   onDeselectAllRegion: (regionId: KnownRegionId) => void;
   onPanelEnter: () => void;
@@ -25,6 +26,7 @@ type RegionDetailPanelProps = {
 export function RegionDetailPanel({
   region,
   selectedCities,
+  dynamicSelectedCities,
   onToggleCity,
   onSelectAllRegion,
   onDeselectAllRegion,
@@ -159,6 +161,39 @@ export function RegionDetailPanel({
                     })}
                   </div>
                 </div>
+
+                {/* Dynamic cities — "Also selected" */}
+                {dynamicSelectedCities.length > 0 && (
+                  <div>
+                    <h4 className="mb-2 text-[10px] font-medium uppercase tracking-widest text-stone">
+                      Also selected
+                    </h4>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {dynamicSelectedCities.map((city) => (
+                        <button
+                          key={city.id}
+                          type="button"
+                          onClick={() => onToggleCity(city.id)}
+                          className="flex min-h-[44px] items-center gap-3 rounded-xl border border-brand-primary/30 bg-brand-primary/5 px-3 py-2 text-left transition-colors duration-200"
+                        >
+                          <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded bg-brand-primary transition-colors duration-200">
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                            >
+                              <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                            </motion.div>
+                          </div>
+                          <MapPin className="h-3.5 w-3.5 shrink-0 text-brand-primary" />
+                          <span className="text-sm text-foreground-secondary">
+                            {city.name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Best for vibes */}
                 <div>

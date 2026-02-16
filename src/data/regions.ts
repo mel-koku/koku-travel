@@ -1,4 +1,5 @@
 import type { KnownCityId, KnownRegionId, CityId, RegionId } from "../types/trip";
+import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 
 export type Region = {
   id: KnownRegionId;
@@ -114,12 +115,23 @@ export function isKnownCity(cityId: string): cityId is KnownCityId {
   return ALL_CITY_IDS.includes(cityId as KnownCityId);
 }
 
+/** Map from lowercase region name to region ID for dynamic city lookup */
+const REGION_NAME_TO_ID = new Map<string, KnownRegionId>(
+  REGIONS.map((r) => [r.name.toLowerCase(), r.id])
+);
+
 /**
- * Get the region for a city, returns undefined for unknown cities
+ * Get the region for a city, returns undefined for unknown cities.
+ * Falls back to cityInterests metadata for dynamic (non-known) cities.
  */
 export function getRegionForCity(cityId: CityId): RegionId | undefined {
   if (isKnownCity(cityId)) {
     return CITY_TO_REGION[cityId];
+  }
+  // Dynamic city — look up region from cityInterests metadata
+  const meta = getCityMetadata(cityId);
+  if (meta?.region) {
+    return REGION_NAME_TO_ID.get(meta.region.toLowerCase());
   }
   return undefined;
 }
@@ -127,12 +139,18 @@ export function getRegionForCity(cityId: CityId): RegionId | undefined {
 /**
  * Derive unique region IDs from a list of selected cities.
  * Used to keep `data.regions` in sync when selection is city-driven.
+ * Supports both known (17 static) and dynamic cities via metadata lookup.
  */
 export function deriveRegionsFromCities(cityIds: CityId[]): KnownRegionId[] {
   const regionSet = new Set<KnownRegionId>();
   for (const cityId of cityIds) {
     if (isKnownCity(cityId)) {
       regionSet.add(CITY_TO_REGION[cityId]);
+    } else {
+      const regionId = getRegionForCity(cityId);
+      if (regionId && REGION_NAME_TO_ID.has(regionId) || REGIONS.some((r) => r.id === regionId)) {
+        regionSet.add(regionId as KnownRegionId);
+      }
     }
   }
   return Array.from(regionSet);
