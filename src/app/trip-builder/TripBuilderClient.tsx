@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 
@@ -106,7 +106,9 @@ export default function TripBuilderClient({ sanityConfig }: { sanityConfig?: Tri
   return (
     <ErrorBoundary>
       <TripBuilderProvider>
-        <TripBuilderV2Content sanityConfig={sanityConfig} />
+        <Suspense>
+          <TripBuilderV2Content sanityConfig={sanityConfig} />
+        </Suspense>
       </TripBuilderProvider>
     </ErrorBoundary>
   );

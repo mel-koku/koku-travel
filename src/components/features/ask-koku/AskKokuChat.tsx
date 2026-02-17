@@ -6,7 +6,11 @@ import { AskKokuMessage } from "./AskKokuMessage";
 import { AskKokuSuggestions } from "./AskKokuSuggestions";
 import { AskKokuInput } from "./AskKokuInput";
 
-export function AskKokuChat() {
+type AskKokuChatProps = {
+  onClose?: () => void;
+};
+
+export function AskKokuChat({ onClose }: AskKokuChatProps) {
   const {
     messages,
     sendMessage,
@@ -52,7 +56,7 @@ export function AskKokuChat() {
         ) : (
           <div className="flex flex-col gap-3">
             {messages.map((message) => (
-              <AskKokuMessage key={message.id} message={message} />
+              <AskKokuMessage key={message.id} message={message} onClosePanel={onClose} />
             ))}
             {isLoading && (
               <div className="flex justify-start">

@@ -203,11 +203,12 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 
 ### Ask Koku (`src/components/features/ask-koku/`)
 - **AI Chat**: Conversational assistant powered by Gemini via Vercel AI SDK (`ai` + `@ai-sdk/google`)
-- **API**: `POST /api/chat` — streaming chat with tool calls (location search, guidance lookup)
-- **Tools**: `searchLocations` (Supabase query by category/city/region), `getTravelTips` (guidance service)
-- **UI**: `AskKokuButton` (floating FAB, hidden on `/studio`, `/trip-builder`, `/explore`) + `AskKokuPanel` (right-slide panel with backdrop)
+- **API**: `POST /api/chat` — streaming chat with tool calls (location search, guidance lookup, trip planning)
+- **Tools**: `searchLocations` (Supabase query by category/city/region), `getTravelTips` (guidance service), `buildTripPlan` (structured trip extraction → trip builder)
+- **UI**: `AskKokuButton` (floating FAB, hidden on `/studio`, `/explore`; shifted to `bottom-20` on `/trip-builder`) + `AskKokuPanel` (right-slide panel with backdrop)
 - **Explore integration**: Outline button in `CategoryBar` → right-slide chat panel in `ExploreMapLayout` (matches `LocationExpanded` pattern: backdrop + `x: "100%"` slide, 480px on desktop, full-screen on mobile)
-- **Components**: `AskKokuChat` (messages + suggestions + input), `AskKokuMessage` (renders text + location cards), `AskKokuLocationCard`, `AskKokuSuggestions`
+- **Trip Builder integration**: `buildTripPlan` tool extracts dates/cities/vibes/style from natural language → `AskKokuTripPlanCard` shows confirmation card → "Start Planning" writes to localStorage + navigates to `/trip-builder?step=5` (Review step). On-page updates via `koku:trip-plan-from-chat` custom event. `useTripBuilderNavigation` reads `?step=5` param, sets validity states, cleans URL.
+- **Components**: `AskKokuChat` (messages + suggestions + input), `AskKokuMessage` (renders text + trip plan card + location cards), `AskKokuLocationCard`, `AskKokuTripPlanCard`, `AskKokuSuggestions`
 - **Key files**: `src/lib/chat/systemPrompt.ts`, `src/lib/chat/tools.ts`, `src/lib/chat/locationSearch.ts`
 
 ### Explore → Itinerary
