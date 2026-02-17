@@ -228,7 +228,7 @@ function StepShell({
       </div>
 
       {/* Mobile Bottom Bar — fixed to viewport bottom, always on top */}
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-background p-4 lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-background px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:hidden">
         <div className="flex items-center gap-3">
           <button
             type="button"

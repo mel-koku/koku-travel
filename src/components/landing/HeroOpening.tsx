@@ -96,7 +96,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
         </div>
 
         {/* Content — bottom-left editorial */}
-        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left sm:px-8 lg:px-16">
+        <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left sm:px-8 lg:px-12">
           <div className="max-w-2xl">
             <h1 className="font-serif text-3xl italic leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl">
               {headline}
@@ -174,7 +174,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
 
       {/* Content layer: bottom-left editorial, fades out on scroll */}
       <motion.div
-        className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left sm:px-8 lg:px-16"
+        className="absolute inset-0 z-10 flex flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left sm:px-8 lg:px-12"
         style={{
           opacity: contentOpacity,
           y: contentY,

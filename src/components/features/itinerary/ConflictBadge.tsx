@@ -67,7 +67,7 @@ export function ConflictBadge({
 
   // Summary variant with expandable details
   return (
-    <div className={cn("rounded-lg border", styles.badge, className)}>
+    <div className={cn("rounded-xl border", styles.badge, className)}>
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
@@ -112,7 +112,7 @@ function ConflictItem({ conflict }: ConflictItemProps) {
   return (
     <div
       className={cn(
-        "rounded-lg border p-2",
+        "rounded-xl border p-2",
         severityStyles[conflict.severity]
       )}
     >

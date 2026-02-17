@@ -19,7 +19,7 @@ type AuthorProfileProps = {
 
 export function AuthorProfile({ author }: AuthorProfileProps) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       {/* Header */}
       <section className="pb-16 pt-32 sm:pt-40">
         <div className="mx-auto max-w-3xl px-6">
@@ -103,7 +103,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
 
       {/* Guides */}
       {author.guides.length > 0 && (
-        <section className="pb-20 sm:pb-28">
+        <section className="pb-12 sm:pb-20 lg:pb-28">
           <div className="mx-auto max-w-5xl px-6">
             <ScrollReveal distance={20}>
               <h2 className="font-serif text-2xl italic text-foreground mb-8">

@@ -176,7 +176,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
                   type="button"
                   onClick={() => field.onChange(option.value)}
                   className={cn(
-                    "flex items-start gap-3 rounded-lg border p-3 text-left transition",
+                    "flex items-start gap-3 rounded-xl border p-3 text-left transition",
                     field.value === option.value
                       ? "border-sage/20 bg-sage/10 ring-1 ring-brand-primary"
                       : "border-border hover:bg-surface"
@@ -310,7 +310,7 @@ export function PreferenceCards({ onValidityChange }: PreferenceCardsProps) {
         <textarea
           id="additional-notes"
           placeholder="A birthday dinner in Kyoto, avoiding steep stairs, must-see spots..."
-          className="w-full rounded-lg border border-border px-3 py-2 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+          className="w-full rounded-xl border border-border px-3 py-2 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
           rows={4}
           {...register("additionalNotes")}
         />

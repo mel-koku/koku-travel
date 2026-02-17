@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { easeReveal } from "@/lib/motion";
+import { easeReveal, durationFast, durationBase } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 const defaultActs = [
@@ -236,7 +236,7 @@ function Act({
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                transition={{ duration: 0.4, ease: easeReveal }}
+                transition={{ duration: durationFast, ease: easeReveal }}
                 className="eyebrow-editorial text-brand-primary"
               >
                 {act.eyebrow}
@@ -244,7 +244,7 @@ function Act({
               <motion.h2
                 initial={{ opacity: 0, y: 12 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-                transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
+                transition={{ duration: durationBase, ease: easeReveal, delay: 0.1 }}
                 className="mt-4 font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
               >
                 {act.title}
@@ -252,7 +252,7 @@ function Act({
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                transition={{ duration: 0.4, ease: easeReveal, delay: 0.4 }}
+                transition={{ duration: durationFast, ease: easeReveal, delay: 0.4 }}
                 className="mt-6 text-base leading-relaxed text-white/80"
               >
                 {act.description}
@@ -274,7 +274,7 @@ function Act({
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                transition={{ duration: 0.4, ease: easeReveal }}
+                transition={{ duration: durationFast, ease: easeReveal }}
                 className="eyebrow-editorial text-brand-primary"
               >
                 {act.eyebrow}
@@ -282,7 +282,7 @@ function Act({
               <motion.h2
                 initial={{ opacity: 0, y: 12 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-                transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
+                transition={{ duration: durationBase, ease: easeReveal, delay: 0.1 }}
                 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl"
               >
                 {act.title}
@@ -290,7 +290,7 @@ function Act({
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                transition={{ duration: 0.4, ease: easeReveal, delay: 0.4 }}
+                transition={{ duration: durationFast, ease: easeReveal, delay: 0.4 }}
                 className="mt-6 text-base leading-relaxed text-foreground-secondary"
               >
                 {act.description}
@@ -319,7 +319,7 @@ function Act({
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                transition={{ duration: 0.4, ease: easeReveal }}
+                transition={{ duration: durationFast, ease: easeReveal }}
                 className="eyebrow-editorial text-brand-primary"
               >
                 {act.eyebrow}
@@ -327,7 +327,7 @@ function Act({
               <motion.h2
                 initial={{ opacity: 0, y: 12 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
-                transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
+                transition={{ duration: durationBase, ease: easeReveal, delay: 0.1 }}
                 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl"
               >
                 {act.title}
@@ -335,7 +335,7 @@ function Act({
               <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                transition={{ duration: 0.4, ease: easeReveal, delay: 0.4 }}
+                transition={{ duration: durationFast, ease: easeReveal, delay: 0.4 }}
                 className="mt-6 text-base leading-relaxed text-foreground-secondary"
               >
                 {act.description}

@@ -54,7 +54,7 @@ export function SmartPromptsDrawer({
           className
         )}
       >
-        <div className="rounded-t-2xl border-t border-x border-border bg-background shadow-lg">
+        <div className="rounded-t-2xl border-t border-x border-border bg-background pb-[env(safe-area-inset-bottom)] shadow-lg">
           {/* Handle */}
           <div
             role="button"
