@@ -34,7 +34,7 @@ export function AskKokuLocationCard({
       href={`/explore?location=${id}`}
       className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-2 transition-colors hover:border-brand-primary/30"
     >
-      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
+      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
         <Image
           src={imageSrc}
           alt={name}

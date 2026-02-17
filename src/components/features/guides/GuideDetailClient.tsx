@@ -57,7 +57,7 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
   const authorName = typeof author === "string" ? author : author.name;
 
   return (
-    <article className="min-h-screen bg-background">
+    <article className="min-h-[100dvh] bg-background">
       <GuideHero
         title={title}
         featuredImage={featuredImage}

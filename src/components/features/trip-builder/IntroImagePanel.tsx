@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { easeCinematic, durationCinematic, easeCinematicCSS } from "@/lib/motion";
+import { easeCinematic, durationCinematic, durationFast, easeCinematicCSS } from "@/lib/motion";
 
 type IntroImagePanelProps = {
   src: string;
@@ -67,7 +67,7 @@ export function IntroImagePanel({
           className="font-mono text-[10px] uppercase tracking-widest text-stone"
           initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.4, delay: 1.6 }}
+          transition={{ duration: durationFast, delay: 1.6 }}
         >
           {caption}
         </motion.p>

@@ -118,7 +118,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
       </div>
 
       {/* Right half — Form */}
-      <div className="flex flex-1 flex-col justify-center px-6 py-8 lg:w-1/2 lg:px-16">
+      <div className="flex flex-1 flex-col justify-center px-6 py-8 lg:w-1/2 lg:px-12">
         <div className="mx-auto w-full max-w-md">
           <p className="text-xs font-medium uppercase tracking-[0.25em] text-brand-primary">
             STEP 01

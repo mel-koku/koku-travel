@@ -103,14 +103,14 @@ export function SmartPromptCard({
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-lg border border-border bg-background p-3",
+        "flex items-start gap-3 rounded-xl border border-border bg-background p-3",
         className
       )}
     >
       {/* Icon */}
       <div
         className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
           colors.bg
         )}
       >
