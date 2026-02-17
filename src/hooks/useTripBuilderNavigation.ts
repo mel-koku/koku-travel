@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -17,8 +18,18 @@ export function useTripBuilderNavigation({
   onComplete,
   sanityConfig,
 }: UseTripBuilderNavigationOptions) {
-  const { data, reset } = useTripBuilder();
-  const [currentStep, setCurrentStep] = useState<Step>(0);
+  const { data, setData, reset } = useTripBuilder();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Check for ?step=5 deep link (from Ask Koku chat)
+  const initialStep = searchParams.get("step");
+  const didDeepLink = useRef(false);
+
+  const [currentStep, setCurrentStep] = useState<Step>(() => {
+    if (initialStep === "5") return 5;
+    return 0;
+  });
   const [direction, setDirection] = useState(1);
 
   // Detect when trip builder data is cleared externally (e.g. "Clear local data")
@@ -43,11 +54,35 @@ export function useTripBuilderNavigation({
     }
   }, [dataIsEmpty, currentStep]);
 
-  // Step validity states
-  const [datesValid, setDatesValid] = useState(false);
-  const [vibesValid, setVibesValid] = useState(false);
-  const [regionsValid, setRegionsValid] = useState(false);
+  // Handle ?step=5 deep link — set validity and clean URL
+  const [datesValid, setDatesValid] = useState(initialStep === "5");
+  const [vibesValid, setVibesValid] = useState(initialStep === "5");
+  const [regionsValid, setRegionsValid] = useState(initialStep === "5");
   const [reviewValid, setReviewValid] = useState(true);
+
+  useEffect(() => {
+    if (initialStep === "5" && !didDeepLink.current) {
+      didDeepLink.current = true;
+      router.replace("/trip-builder", { scroll: false });
+    }
+  }, [initialStep, router]);
+
+  // Listen for Ask Koku trip plan updates when already on /trip-builder
+  useEffect(() => {
+    const handleChatPlan = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail) {
+        setData(detail);
+        setDatesValid(true);
+        setVibesValid(true);
+        setRegionsValid(true);
+        setDirection(1);
+        setCurrentStep(5);
+      }
+    };
+    window.addEventListener("koku:trip-plan-from-chat", handleChatPlan);
+    return () => window.removeEventListener("koku:trip-plan-from-chat", handleChatPlan);
+  }, [setData]);
 
   // Track completed steps
   const completedSteps = useMemo(() => {
