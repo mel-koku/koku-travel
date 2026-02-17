@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 import { VIBES, type VibeId } from "@/data/vibes";
 import type { RegionDescription } from "@/data/regionDescriptions";
 import type { CityId } from "@/types/trip";
-import { easeCinematicMut } from "@/lib/motion";
+import { easeCinematicMut, durationBase } from "@/lib/motion";
 import { RegionCitySelector } from "./RegionCitySelector";
 
 type RegionDetailPanelProps = {
@@ -45,7 +45,7 @@ export function RegionDetailPanel({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{
-              duration: 0.5,
+              duration: durationBase,
               ease: easeCinematicMut,
             }}
             className="flex h-full w-full flex-col border-l border-border bg-background/95 backdrop-blur-xl"

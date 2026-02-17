@@ -32,7 +32,7 @@ export function ExperienceDetailClient({
   const authorName = typeof experience.author === "string" ? experience.author : experience.author.name;
 
   return (
-    <article className="min-h-screen bg-background">
+    <article className="min-h-[100dvh] bg-background">
       <ExperienceHero
         title={experience.title}
         featuredImage={experience.featuredImage?.url || ""}

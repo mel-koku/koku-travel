@@ -25,7 +25,7 @@ export function AskKokuButton() {
       {/* FAB */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className={`fixed right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg transition-transform hover:shadow-xl active:scale-[0.95] ${isTripBuilder ? "bottom-20" : "bottom-6"}`}
+        className={`fixed right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg transition-transform hover:shadow-xl active:scale-[0.95] ${isTripBuilder ? "bottom-[calc(5rem+env(safe-area-inset-bottom))]" : "bottom-[calc(1.5rem+env(safe-area-inset-bottom))]"}`}
         aria-label={open ? "Close chat" : "Ask Koku"}
       >
         <AnimatePresence mode="wait" initial={false}>

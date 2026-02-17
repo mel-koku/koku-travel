@@ -10,7 +10,7 @@ type ExploreIntroProps = {
 
 export function ExploreIntro({ totalCount, content }: ExploreIntroProps) {
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-2 sm:pt-20 sm:pb-3 lg:pt-24 text-center">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-12 pb-4 sm:pt-20 sm:pb-6 lg:pt-28 text-center">
       <p className="font-mono text-xs uppercase tracking-ultra text-stone">
         {totalCount.toLocaleString()} places across Japan
       </p>

@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useCursor } from "@/providers/CursorProvider";
 import { Tooltip } from "@/components/ui/Tooltip";
+import { durationFast } from "@/lib/motion";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -48,7 +49,7 @@ export function ThemeToggle() {
               initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: -90, scale: 0.6 }}
               animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, rotate: 0, scale: 1 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: 90, scale: 0.6 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: durationFast }}
             >
               <circle cx="12" cy="12" r="4" />
               <path d="M12 2v2" />
@@ -74,7 +75,7 @@ export function ThemeToggle() {
               initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: 90, scale: 0.6 }}
               animate={prefersReducedMotion ? { opacity: 1 } : { opacity: 1, rotate: 0, scale: 1 }}
               exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, rotate: -90, scale: 0.6 }}
-              transition={{ duration: 0.25 }}
+              transition={{ duration: durationFast }}
             >
               <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
             </motion.svg>

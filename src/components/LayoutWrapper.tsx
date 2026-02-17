@@ -57,7 +57,7 @@ export function LayoutWrapper({
               <LenisProvider>
                 <CursorProvider>
                   <ScrollProgressBar />
-                  <div className="flex min-h-screen flex-col">
+                  <div className="flex min-h-[100dvh] flex-col">
                     <Header />
                     <ErrorBoundary>
                       <main id="main-content" className="flex-1">

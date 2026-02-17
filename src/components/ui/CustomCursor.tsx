@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useCursor } from "@/providers/CursorProvider";
-import { springCursor } from "@/lib/motion";
+import { springCursor, durationMicro } from "@/lib/motion";
 
 type CursorVariant = "dot" | "ring" | "crosshair" | "icon";
 
@@ -78,7 +78,7 @@ export function CustomCursor() {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: durationMicro }}
             >
               <CrosshairIcon />
             </motion.span>
@@ -90,7 +90,7 @@ export function CustomCursor() {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: durationMicro }}
             >
               <PlusIcon />
             </motion.span>
@@ -102,7 +102,7 @@ export function CustomCursor() {
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.5 }}
-              transition={{ duration: 0.15 }}
+              transition={{ duration: durationMicro }}
             >
               {config.label}
             </motion.span>

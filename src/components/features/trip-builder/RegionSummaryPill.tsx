@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { AlertTriangle } from "lucide-react";
-import { easeCinematicMut } from "@/lib/motion";
+import { easeCinematicMut, durationFast } from "@/lib/motion";
 import type { LocationWarning } from "@/lib/tripBuilder/locationCapacity";
 
 type RegionSummaryPillProps = {
@@ -33,7 +33,7 @@ export function RegionSummaryPill({
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
             transition={{
-              duration: 0.4,
+              duration: durationFast,
               ease: easeCinematicMut,
             }}
             className="max-w-[90vw] truncate rounded-full border border-border bg-background/90 px-6 py-3 text-sm shadow-lg backdrop-blur-xl"
@@ -48,7 +48,7 @@ export function RegionSummaryPill({
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
             transition={{
-              duration: 0.4,
+              duration: durationFast,
               ease: easeCinematicMut,
             }}
             className="whitespace-nowrap rounded-full border border-warning/30 bg-warning/10 px-6 py-3 text-sm text-warning backdrop-blur-xl"
@@ -67,7 +67,7 @@ export function RegionSummaryPill({
             animate={{ opacity: 1, y: 0 }}
             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
             transition={{
-              duration: 0.3,
+              duration: durationFast,
               ease: easeCinematicMut,
             }}
             className="flex items-start gap-2 rounded-xl border border-brand-secondary/20 bg-background/90 px-4 py-2.5 text-xs shadow-lg backdrop-blur-xl"
