@@ -10,6 +10,10 @@ import { getPublishedGuides } from "@/lib/guides/guideService";
 import { getPublishedExperiences } from "@/lib/experiences/experienceService";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
+import { ALL_CITY_IDS, REGIONS, deriveRegionsFromCities } from "@/data/regions";
+import { VIBES } from "@/data/vibes";
+import { VALID_VIBE_IDS } from "@/types/trip";
+import type { VibeId, TripStyle, KnownCityId } from "@/types/trip";
 
 export const chatTools = {
   searchLocations: tool({
@@ -276,6 +280,127 @@ export const chatTools = {
         );
         return { experiences: [], count: 0 };
       }
+    },
+  }),
+
+  buildTripPlan: tool({
+    description:
+      "Build a structured trip plan from the user's natural language description. Use when the user wants to plan a trip, create an itinerary, or describes travel dates/destinations. Call this with the FULL set of params each time (not incremental).",
+    inputSchema: z.object({
+      startDate: z
+        .string()
+        .optional()
+        .describe("Trip start date in YYYY-MM-DD format"),
+      endDate: z
+        .string()
+        .optional()
+        .describe("Trip end date in YYYY-MM-DD format"),
+      duration: z
+        .number()
+        .min(1)
+        .max(14)
+        .optional()
+        .describe("Trip duration in days (1-14). Used if no exact dates given."),
+      cities: z
+        .array(z.string())
+        .describe(
+          "City IDs the user wants to visit. Valid IDs: kyoto, osaka, nara, kobe, tokyo, yokohama, nagoya, kanazawa, fukuoka, nagasaki, sapporo, hakodate, sendai, hiroshima, matsuyama, takamatsu, naha",
+        ),
+      vibes: z
+        .array(z.string())
+        .optional()
+        .describe(
+          "Travel vibe IDs (max 3). Valid IDs: cultural_heritage (temples, shrines, traditional arts), foodie_paradise (ramen, sushi, izakayas, street food), hidden_gems (off-the-beaten-path, photo spots), neon_nightlife (city lights, shopping, entertainment), nature_adventure (mountains, gardens, outdoor wellness)",
+        ),
+      style: z
+        .enum(["relaxed", "balanced", "fast"])
+        .optional()
+        .describe(
+          "Trip pace: relaxed (fewer activities, more downtime), balanced (mix of sightseeing and rest), fast (packed schedule, see as much as possible)",
+        ),
+      entryAirport: z
+        .string()
+        .optional()
+        .describe("IATA airport code for arrival (e.g. NRT, KIX, HND)"),
+    }),
+    execute: async (params) => {
+      // Validate cities
+      const validCities: KnownCityId[] = [];
+      const unknownCities: string[] = [];
+      for (const city of params.cities) {
+        const cityLower = city.toLowerCase();
+        if ((ALL_CITY_IDS as readonly string[]).includes(cityLower)) {
+          validCities.push(cityLower as KnownCityId);
+        } else {
+          unknownCities.push(city);
+        }
+      }
+
+      if (validCities.length === 0) {
+        return {
+          type: "tripPlan" as const,
+          error: "None of the specified cities are available. Available cities: " +
+            REGIONS.flatMap((r) => r.cities.map((c) => c.name)).join(", "),
+          unknownCities,
+        };
+      }
+
+      // Derive regions from cities
+      const regions = deriveRegionsFromCities(validCities);
+
+      // Validate vibes
+      const validVibes: VibeId[] = [];
+      if (params.vibes) {
+        for (const vibe of params.vibes.slice(0, 3)) {
+          if (VALID_VIBE_IDS.has(vibe as VibeId)) {
+            validVibes.push(vibe as VibeId);
+          }
+        }
+      }
+
+      // Calculate duration from dates if both provided
+      let duration = params.duration;
+      if (params.startDate && params.endDate) {
+        const start = new Date(params.startDate);
+        const end = new Date(params.endDate);
+        const diffMs = end.getTime() - start.getTime();
+        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+        if (diffDays > 0 && diffDays <= 14) {
+          duration = diffDays;
+        }
+      }
+
+      // Build city display names
+      const cityNames = validCities.map((cityId) => {
+        for (const region of REGIONS) {
+          const city = region.cities.find((c) => c.id === cityId);
+          if (city) return city.name;
+        }
+        return cityId;
+      });
+
+      // Build vibe display names
+      const vibeNames = validVibes.map((vibeId) => {
+        const vibe = VIBES.find((v) => v.id === vibeId);
+        return vibe ? vibe.name : vibeId;
+      });
+
+      return {
+        type: "tripPlan" as const,
+        plan: {
+          startDate: params.startDate,
+          endDate: params.endDate,
+          duration,
+          cities: validCities,
+          regions,
+          vibes: validVibes,
+          style: (params.style as TripStyle) || undefined,
+          entryAirport: params.entryAirport,
+        },
+        unknownCities,
+        cityNames,
+        vibeNames,
+      };
     },
   }),
 };

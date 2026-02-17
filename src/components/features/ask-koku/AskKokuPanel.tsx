@@ -31,7 +31,7 @@ export function AskKokuPanel({ onClose }: AskKokuPanelProps) {
       </div>
 
       {/* Chat area */}
-      <AskKokuChat />
+      <AskKokuChat onClose={onClose} />
     </motion.div>
   );
 }

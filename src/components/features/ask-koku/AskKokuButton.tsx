@@ -7,23 +7,25 @@ import { MessageCircle, X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { AskKokuPanel } from "./AskKokuPanel";
 
-const HIDDEN_PATHS = ["/studio", "/trip-builder", "/explore"];
+const HIDDEN_PATHS = ["/studio", "/explore"];
 
 export function AskKokuButton() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  // Hide on studio and trip-builder
+  // Hide on studio and explore
   if (HIDDEN_PATHS.some((p) => pathname.startsWith(p))) {
     return null;
   }
+
+  const isTripBuilder = pathname.startsWith("/trip-builder");
 
   return (
     <>
       {/* FAB */}
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg transition-transform hover:shadow-xl active:scale-[0.95]"
+        className={`fixed right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-brand-primary text-white shadow-lg transition-transform hover:shadow-xl active:scale-[0.95] ${isTripBuilder ? "bottom-20" : "bottom-6"}`}
         aria-label={open ? "Close chat" : "Ask Koku"}
       >
         <AnimatePresence mode="wait" initial={false}>

@@ -255,7 +255,7 @@ export function ExploreMapLayout({
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <AskKokuChat />
+              <AskKokuChat onClose={onChatClose} />
             </motion.div>
           </>
         )}
