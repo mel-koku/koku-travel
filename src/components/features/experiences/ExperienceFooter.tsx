@@ -64,14 +64,16 @@ export function ExperienceFooter({
                 onMouseEnter={() => isEnabled && setCursorState("read")}
                 onMouseLeave={() => isEnabled && setCursorState("default")}
               >
-                <div className="relative aspect-[4/3] w-full">
-                  <Image
-                    src={related.featuredImage?.url || ""}
-                    alt={related.title}
-                    fill
-                    className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02]"
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                  />
+                <div className="relative aspect-[4/3] w-full bg-charcoal">
+                  {related.featuredImage?.url && (
+                    <Image
+                      src={related.featuredImage.url}
+                      alt={related.title}
+                      fill
+                      className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02]"
+                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/10 via-transparent to-transparent" />
                 </div>

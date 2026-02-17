@@ -91,15 +91,17 @@ export function ExperienceHero({
   if (prefersReducedMotion) {
     return (
       <section className="relative -mt-20 h-[100dvh] w-full overflow-hidden">
-        <div className="absolute inset-0">
-          <Image
-            src={featuredImage}
-            alt={title}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
+        <div className="absolute inset-0 bg-charcoal">
+          {featuredImage && (
+            <Image
+              src={featuredImage}
+              alt={title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+          )}
         </div>
         {overlays}
         {titleContent}
@@ -113,15 +115,17 @@ export function ExperienceHero({
       className="relative -mt-20 h-[120vh] w-full sm:h-[150vh]"
     >
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
-        <motion.div className="absolute inset-0" style={{ scale: imageScale }}>
-          <Image
-            src={featuredImage}
-            alt={title}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
+        <motion.div className="absolute inset-0 bg-charcoal" style={{ scale: imageScale }}>
+          {featuredImage && (
+            <Image
+              src={featuredImage}
+              alt={title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+          )}
         </motion.div>
 
         {overlays}

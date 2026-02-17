@@ -25,9 +25,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return { title: "Experience Not Found | Koku Travel" };
   }
 
-  const imageUrl =
-    experience.featuredImage?.url ||
-    urlFor(experience.featuredImage).width(1200).url();
+  const imageUrl = experience.featuredImage?.url
+    || (experience.featuredImage
+      ? urlFor(experience.featuredImage).width(1200).url()
+      : undefined);
 
   return {
     title: `${experience.title} | Koku Travel`,
@@ -35,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title: experience.title,
       description: experience.summary,
-      images: [imageUrl],
+      ...(imageUrl && { images: [imageUrl] }),
       type: "article",
     },
   };
