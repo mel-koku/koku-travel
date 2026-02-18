@@ -363,6 +363,14 @@ export async function POST(request: NextRequest) {
     }
     const action = gap.action;
 
+    // Compute the actual date for this day (for operating hours lookups)
+    let tripDate: string | undefined;
+    if (tripBuilderData?.dates?.start && typeof gap.dayIndex === "number") {
+      const d = new Date(tripBuilderData.dates.start);
+      d.setDate(d.getDate() + gap.dayIndex);
+      tripDate = d.toISOString().split("T")[0];
+    }
+
     let recommendation: Location | null = null;
     let activity: ItineraryActivity | null = null;
     let position = 0;
@@ -390,7 +398,7 @@ export async function POST(request: NextRequest) {
       );
 
       // Filter by meal type (e.g., no breweries for breakfast)
-      const mealAppropriate = filterByMealType(restaurants, action.mealType);
+      const mealAppropriate = filterByMealType(restaurants, action.mealType, tripDate);
 
       // Filter out already-used locations
       let available = mealAppropriate.filter((r) => !usedIds.has(r.id));
@@ -532,6 +540,208 @@ export async function POST(request: NextRequest) {
       recommendation = topScore.location;
       activity = createExperienceActivity(recommendation, action.timeSlot);
       position = calculateExperiencePosition(dayActivities, action.timeSlot);
+    } else if (action.type === "fill_long_gap") {
+      // Fetch non-food locations that fit within the gap duration
+      const { data: rows, error } = await supabase
+        .from("locations")
+        .select(LOCATION_ITINERARY_COLUMNS)
+        .ilike("city", cityId)
+        .not("category", "in", '("restaurant","food","cafe","bar")')
+        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+        .limit(100);
+
+      if (error) {
+        logger.error("Failed to fetch locations for gap fill", { error, cityId });
+        return internalError("Failed to fetch gap fill recommendations");
+      }
+
+      const locations = (rows || []).map((row) =>
+        transformDbRowToLocation(row as unknown as LocationDbRow)
+      );
+
+      // Filter by duration fit (activity should fit within the gap)
+      let available = locations
+        .filter((l) => !usedIds.has(l.id))
+        .filter((l) => {
+          const duration = l.recommendedVisit?.typicalMinutes ?? 90;
+          return duration <= action.gapMinutes;
+        });
+
+      available = applyRefinementFilters(available, refinementFilters, dayActivities);
+
+      if (available.length === 0) {
+        return NextResponse.json(
+          { error: "No suitable activities found to fill this gap." },
+          { status: 404 }
+        );
+      }
+
+      const scored = available.map((location) =>
+        scoreLocation(location, {
+          interests: tripBuilderData.interests ?? [],
+          travelStyle: tripBuilderData.style ?? "balanced",
+          availableMinutes: action.gapMinutes,
+          recentCategories: dayActivities
+            .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
+            .map((a) => a.tags?.[0] ?? "")
+            .filter(Boolean),
+          timeSlot: action.timeSlot,
+        })
+      );
+
+      scored.sort((a, b) => b.score - a.score);
+      const topScore = scored[0];
+
+      if (!topScore) {
+        return NextResponse.json(
+          { error: "Could not find a suitable activity for this gap." },
+          { status: 404 }
+        );
+      }
+
+      recommendation = topScore.location;
+      activity = createExperienceActivity(recommendation, action.timeSlot);
+      position = calculateExperiencePosition(dayActivities, action.timeSlot);
+
+    } else if (action.type === "extend_day") {
+      // Fetch activities for the target time slot (morning or evening extension)
+      const timeSlot = action.direction === "morning" ? "morning" : "evening";
+      const { data: rows, error } = await supabase
+        .from("locations")
+        .select(LOCATION_ITINERARY_COLUMNS)
+        .ilike("city", cityId)
+        .not("category", "in", '("restaurant","food")')
+        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+        .limit(100);
+
+      if (error) {
+        logger.error("Failed to fetch locations for day extension", { error, cityId });
+        return internalError("Failed to fetch extension recommendations");
+      }
+
+      const locations = (rows || []).map((row) =>
+        transformDbRowToLocation(row as unknown as LocationDbRow)
+      );
+
+      let available = locations.filter((l) => !usedIds.has(l.id));
+      available = applyRefinementFilters(available, refinementFilters, dayActivities);
+
+      if (available.length === 0) {
+        return NextResponse.json(
+          { error: `No activities found to extend your ${action.direction}.` },
+          { status: 404 }
+        );
+      }
+
+      const scored = available.map((location) =>
+        scoreLocation(location, {
+          interests: tripBuilderData.interests ?? [],
+          travelStyle: tripBuilderData.style ?? "balanced",
+          availableMinutes: 120,
+          recentCategories: dayActivities
+            .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
+            .map((a) => a.tags?.[0] ?? "")
+            .filter(Boolean),
+          timeSlot,
+        })
+      );
+
+      scored.sort((a, b) => b.score - a.score);
+      const topScore = scored[0];
+
+      if (!topScore) {
+        return NextResponse.json(
+          { error: `Could not find a suitable ${action.direction} activity.` },
+          { status: 404 }
+        );
+      }
+
+      recommendation = topScore.location;
+      activity = createExperienceActivity(recommendation, timeSlot);
+      position = action.direction === "morning" ? 0 : dayActivities.length;
+
+    } else if (action.type === "diversify_categories") {
+      // Fetch locations matching suggested categories
+      const categories = action.suggestedCategories;
+      const { data: rows, error } = await supabase
+        .from("locations")
+        .select(LOCATION_ITINERARY_COLUMNS)
+        .ilike("city", cityId)
+        .in("category", categories)
+        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
+        .limit(100);
+
+      if (error) {
+        logger.error("Failed to fetch locations for diversification", { error, cityId });
+        return internalError("Failed to fetch diversification recommendations");
+      }
+
+      const locations = (rows || []).map((row) =>
+        transformDbRowToLocation(row as unknown as LocationDbRow)
+      );
+
+      let available = locations.filter((l) => !usedIds.has(l.id));
+      available = applyRefinementFilters(available, refinementFilters, dayActivities);
+
+      if (available.length === 0) {
+        return NextResponse.json(
+          { error: "No alternative activities found for diversification." },
+          { status: 404 }
+        );
+      }
+
+      const scored = available.map((location) =>
+        scoreLocation(location, {
+          interests: tripBuilderData.interests ?? [],
+          travelStyle: tripBuilderData.style ?? "balanced",
+          availableMinutes: 120,
+          recentCategories: dayActivities
+            .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
+            .map((a) => a.tags?.[0] ?? "")
+            .filter(Boolean),
+          timeSlot: action.timeSlot,
+        })
+      );
+
+      scored.sort((a, b) => b.score - a.score);
+      const topScore = scored[0];
+
+      if (!topScore) {
+        return NextResponse.json(
+          { error: "Could not find a suitable alternative activity." },
+          { status: 404 }
+        );
+      }
+
+      recommendation = topScore.location;
+      activity = createExperienceActivity(recommendation, action.timeSlot);
+      position = calculateExperiencePosition(dayActivities, action.timeSlot);
+
+    } else if (action.type === "add_transport") {
+      // Return a note activity with transit information (no location needed)
+      const fromActivity = dayActivities.find((a) => a.id === action.fromActivityId);
+      const toActivity = dayActivities.find((a) => a.id === action.toActivityId);
+      const fromName = fromActivity?.title ?? "previous stop";
+      const toName = toActivity?.title ?? "next stop";
+
+      activity = {
+        kind: "note",
+        id: generateActivityId(),
+        title: "Note",
+        timeOfDay: fromActivity?.timeOfDay ?? "afternoon",
+        notes: `**Transit: ${fromName} → ${toName}**\n\nUse your IC card (Suica/ICOCA) for trains and buses. Check Google Maps or Navitime for the fastest route.`,
+      };
+
+      // Position after the "from" activity
+      const fromIndex = dayActivities.findIndex((a) => a.id === action.fromActivityId);
+      position = fromIndex >= 0 ? fromIndex + 1 : dayActivities.length;
+
+      // Transport notes don't have a location recommendation
+      return NextResponse.json({
+        recommendation: null,
+        activity,
+        position,
+      }, { status: 200 });
     } else {
       return badRequest(`Unknown action type: ${(action as { type: string }).type}`);
     }

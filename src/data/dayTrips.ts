@@ -94,6 +94,126 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       description: "Japan's bustling capital",
     },
   ],
+  // Chubu
+  nagoya: [
+    {
+      cityId: "kyoto",
+      travelMinutes: 35,
+      minDaysBeforeSuggesting: 3,
+      description: "Ancient temples and tea culture",
+    },
+    {
+      cityId: "kanazawa",
+      travelMinutes: 180,
+      minDaysBeforeSuggesting: 4,
+      description: "Samurai districts and Kenrokuen Garden",
+    },
+  ],
+  kanazawa: [
+    {
+      cityId: "nagoya",
+      travelMinutes: 180,
+      minDaysBeforeSuggesting: 3,
+      description: "Castle town and Nagoya cuisine",
+    },
+  ],
+  // Kyushu
+  fukuoka: [
+    {
+      cityId: "nagasaki",
+      travelMinutes: 115,
+      minDaysBeforeSuggesting: 3,
+      description: "Historic port city with Dutch heritage",
+    },
+  ],
+  nagasaki: [
+    {
+      cityId: "fukuoka",
+      travelMinutes: 115,
+      minDaysBeforeSuggesting: 3,
+      description: "Ramen capital and yatai food stalls",
+    },
+  ],
+  // Chugoku
+  hiroshima: [
+    {
+      cityId: "kobe",
+      travelMinutes: 70,
+      minDaysBeforeSuggesting: 3,
+      description: "Harbor city with famous beef",
+    },
+    {
+      cityId: "matsuyama",
+      travelMinutes: 160,
+      minDaysBeforeSuggesting: 4,
+      description: "Dogo Onsen and hilltop castle",
+    },
+  ],
+  kobe: [
+    {
+      cityId: "osaka",
+      travelMinutes: 25,
+      minDaysBeforeSuggesting: 3,
+      description: "Street food capital and vibrant nightlife",
+    },
+    {
+      cityId: "kyoto",
+      travelMinutes: 50,
+      minDaysBeforeSuggesting: 3,
+      description: "Zen gardens and geisha districts",
+    },
+  ],
+  // Hokkaido
+  sapporo: [
+    {
+      cityId: "hakodate",
+      travelMinutes: 210,
+      minDaysBeforeSuggesting: 4,
+      description: "Million-dollar night view and morning market",
+    },
+  ],
+  hakodate: [
+    {
+      cityId: "sapporo",
+      travelMinutes: 210,
+      minDaysBeforeSuggesting: 3,
+      description: "Miso ramen and Hokkaido's capital",
+    },
+  ],
+  // Tohoku
+  sendai: [
+    {
+      cityId: "tokyo",
+      travelMinutes: 100,
+      minDaysBeforeSuggesting: 3,
+      description: "Japan's capital — endless things to do",
+    },
+  ],
+  // Shikoku
+  matsuyama: [
+    {
+      cityId: "takamatsu",
+      travelMinutes: 155,
+      minDaysBeforeSuggesting: 3,
+      description: "Ritsurin Garden and sanuki udon",
+    },
+  ],
+  takamatsu: [
+    {
+      cityId: "matsuyama",
+      travelMinutes: 155,
+      minDaysBeforeSuggesting: 3,
+      description: "Dogo Onsen and castle town charm",
+    },
+    {
+      cityId: "osaka",
+      travelMinutes: 105,
+      minDaysBeforeSuggesting: 3,
+      description: "Japan's kitchen — takoyaki, okonomiyaki, nightlife",
+    },
+  ],
+  // Okinawa
+  naha: [],
 };
 
 /**

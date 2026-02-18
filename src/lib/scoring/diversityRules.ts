@@ -43,7 +43,7 @@ export function applyDiversityFilter(
     return candidates;
   }
 
-  // Adjust scores based on diversity
+  // Apply streak penalty: reduce score for categories that appeared recently
   return filtered.map((candidate) => {
     const category = candidate.location.category;
     if (!category) {
@@ -51,12 +51,14 @@ export function applyDiversityFilter(
     }
 
     const streakCount = countCategoryStreak(context.recentCategories, category);
-    const adjustedScore = candidate.score;
-    void streakCount; // Intentionally unused - kept for future use
-    void adjustedScore; // Intentionally unused - kept for future use
+    if (streakCount > 0) {
+      // Penalize repeat categories (-5 per consecutive repeat)
+      return {
+        ...candidate,
+        score: candidate.score - streakCount * 5,
+      };
+    }
 
-    // The diversity bonus is already included in the score from locationScoring
-    // But we can apply additional penalties here if needed
     return candidate;
   });
 }

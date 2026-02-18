@@ -30,6 +30,19 @@ export function calculateDistance(coord1: Coordinates, coord2: Coordinates): num
 }
 
 /**
+ * Calculate distance between two coordinates using Haversine formula.
+ * @param coord1 First coordinate point
+ * @param coord2 Second coordinate point
+ * @returns Distance in meters
+ */
+export function calculateDistanceMeters(
+  coord1: Coordinates,
+  coord2: Coordinates,
+): number {
+  return calculateDistance(coord1, coord2) * 1000;
+}
+
+/**
  * Convert degrees to radians.
  */
 function toRadians(degrees: number): number {

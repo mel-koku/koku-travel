@@ -1,6 +1,6 @@
 import { getRegionForCity, REGIONS } from "@/data/regions";
-import { shouldSuggestDayTrip, getDayTripsFromCity, getDayTripTravelOverhead, type DayTripConfig } from "@/data/dayTrips";
-import type { Itinerary, ItineraryTravelMode, ItineraryActivity } from "@/types/itinerary";
+import { shouldSuggestDayTrip, getDayTripsFromCity, type DayTripConfig } from "@/data/dayTrips";
+import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { CityId, InterestId, RegionId, TripBuilderData } from "@/types/trip";
 import type { TripWeatherContext, WeatherForecast } from "@/types/weather";
@@ -8,6 +8,7 @@ import { getCategoryDefaultDuration } from "./durationExtractor";
 import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
 import { fetchAllLocations } from "@/lib/locations/locationService";
+import { normalizeKey } from "@/lib/utils/stringUtils";
 
 // Import from extracted modules
 import { isLocationValidForCity } from "@/lib/geo/validation";
@@ -28,7 +29,7 @@ import { pickLocationForTimeSlot } from "@/lib/selection/locationPicker";
 /**
  * Food-related location categories for meal detection.
  */
-const FOOD_CATEGORIES = new Set(["restaurant", "food", "cafe", "bar", "market"]);
+const FOOD_CATEGORIES = new Set(["restaurant", "food", "cafe", "bar"]);
 
 /**
  * Check if a location category indicates a food/dining establishment.
@@ -51,6 +52,37 @@ function inferMealTypeFromTimeSlot(
     case "evening":
       return "dinner";
   }
+}
+
+/**
+ * Pick a time slot for a favorited location based on its category.
+ * Falls back to the least-used slot when the preferred slot is >80% capacity.
+ */
+function pickTimeSlotForFavorite(
+  category: string,
+  timeSlotUsage: Map<string, number>,
+): "morning" | "afternoon" | "evening" {
+  const cat = category.toLowerCase();
+
+  // Category → preferred time slot mapping
+  const EVENING_CATS = new Set(["bar", "entertainment"]);
+  const AFTERNOON_CATS = new Set(["museum", "shopping", "mall"]);
+  const MORNING_CATS = new Set(["shrine", "temple", "park", "garden", "market", "nature", "viewpoint"]);
+
+  let preferred: "morning" | "afternoon" | "evening" = "morning";
+  if (EVENING_CATS.has(cat)) preferred = "evening";
+  else if (AFTERNOON_CATS.has(cat)) preferred = "afternoon";
+  else if (MORNING_CATS.has(cat)) preferred = "morning";
+
+  // Check if preferred slot is over 80% capacity
+  const capacities = { morning: 180, afternoon: 300, evening: 240 };
+  const usage = timeSlotUsage.get(preferred) ?? 0;
+  if (usage < capacities[preferred] * 0.8) return preferred;
+
+  // Overflow to the least-used slot
+  const slots: ("morning" | "afternoon" | "evening")[] = ["morning", "afternoon", "evening"];
+  slots.sort((a, b) => (timeSlotUsage.get(a) ?? 0) - (timeSlotUsage.get(b) ?? 0));
+  return slots[0]!;
 }
 
 const DEFAULT_TOTAL_DAYS = 5;
@@ -113,25 +145,6 @@ function buildLocationMaps(locations: Location[]): {
   };
 }
 
-function inferTravelMode(
-  location: Location | undefined,
-  previousLocation: Location | undefined,
-): ItineraryTravelMode {
-  if (previousLocation?.preferredTransitModes?.length) {
-    const firstMode = previousLocation.preferredTransitModes[0];
-    if (firstMode) {
-      return firstMode;
-    }
-  }
-  if (location?.preferredTransitModes?.length) {
-    const firstMode = location.preferredTransitModes[0];
-    if (firstMode) {
-      return firstMode;
-    }
-  }
-  return "walk";
-}
-void inferTravelMode; // Intentionally unused - kept for future use
 
 /**
  * Options for generating an itinerary
@@ -389,7 +402,9 @@ export async function generateItinerary(
 
       const locationDuration = getLocationDurationMinutes(favLoc);
       const isFood = isFoodCategory(favLoc.category);
-      const timeSlot = "morning" as const; // Favorite locations start in morning
+
+      // Assign time slot based on category instead of hardcoding morning
+      const timeSlot = pickTimeSlotForFavorite(favLoc.category, timeSlotUsage);
 
       // Build activity for favorited location
       const activity: Extract<ItineraryActivity, { kind: "place" }> = {
@@ -435,10 +450,6 @@ export async function generateItinerary(
     let locationsExhausted = false;
     let exhaustionAttempts = 0;
     const maxExhaustionAttempts = 3; // Try 3 different interests before giving up
-
-    // Calculate day trip travel overhead (reduces available time in morning and evening slots)
-    const dayTripOverhead = activeDayTrip ? getDayTripTravelOverhead(activeDayTrip) : 0;
-    void dayTripOverhead; // Used via activeDayTrip.travelMinutes in slot adjustments
 
     // Fill each time slot intelligently
     for (const timeSlot of TIME_OF_DAY_SEQUENCE) {
@@ -662,16 +673,6 @@ export async function generateItinerary(
       }
     }
 
-    const previousDay = dayIndex > 0 ? days[dayIndex - 1] : undefined;
-    const previousLocation =
-      previousDay && previousDay.activities.length > 0
-        ? allLocations.find((loc) => {
-            const lastActivity = previousDay.activities[previousDay.activities.length - 1];
-            return lastActivity && loc.name === lastActivity.title;
-          })
-        : undefined;
-    void previousLocation; // Intentionally unused - kept for future use
-
     // Determine city ID for this day
     const dayCityId = cityInfo.key as CityId | undefined;
 
@@ -689,9 +690,21 @@ export async function generateItinerary(
       dateLabel = `Day ${dayIndex + 1} (Day Trip: ${baseCityLabel} → ${cityInfo.label})`;
     }
 
+    // Compute weekday from trip start date + day index
+    const WEEKDAY_NAMES: import("@/types/location").Weekday[] = [
+      "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday",
+    ];
+    let weekday: import("@/types/location").Weekday | undefined;
+    if (data.dates.start) {
+      const d = new Date(data.dates.start);
+      d.setDate(d.getDate() + dayIndex);
+      weekday = WEEKDAY_NAMES[d.getDay()];
+    }
+
     days.push({
       id: dayId,
       dateLabel,
+      weekday,
       cityId: dayCityId,
       activities: dayActivities,
       // Add metadata about day trip if applicable
@@ -812,9 +825,6 @@ function getLocationDurationMinutes(location: Location): number {
   return 90;
 }
 
-function normalizeKey(value?: string): string {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
-}
 
 function capitalize(str: string): string {
   if (!str) return "";

@@ -26,8 +26,10 @@ import {
   resolveActivityCategory,
   getSeason,
   getDayPosition,
+  getDayVibe,
   getTipTopicForDay,
   matchDayIntro,
+  matchTransition,
   matchCulturalMoment,
   matchPracticalTip,
   matchDaySummary,
@@ -93,6 +95,8 @@ const CULTURAL_SUBCATEGORIES = new Set([
   "garden",
   "museum",
   "restaurant",
+  "cafe",
+  "bar",
 ]);
 
 // ── Composition helpers ─────────────────────────────────────────────
@@ -161,7 +165,33 @@ function composeTransition(
   nextActivity: PlaceActivity,
   dayId: string,
   index: number,
+  city: string,
 ): GuideSegment {
+  // Try rich city/category-specific transition template first
+  const prevCat = resolveActivityCategory(prevActivity.tags);
+  const nextCat = resolveActivityCategory(nextActivity.tags);
+  const fromParent = prevCat?.parent ?? "any";
+  const toParent = nextCat?.parent ?? "any";
+
+  const transitionTemplate = matchTransition(
+    fromParent,
+    toParent,
+    city,
+    `${dayId}-tr-${index}`,
+  );
+
+  if (transitionTemplate) {
+    return {
+      id: `guide-${dayId}-tr-${index}`,
+      type: "activity_context",
+      content: transitionTemplate.content,
+      dayId,
+      afterActivityId: prevActivity.id,
+      templateId: transitionTemplate.id,
+    };
+  }
+
+  // Fall back to composed bridge phrase
   const bridge = pickPhrase(
     TRANSITION_BRIDGES,
     `${dayId}-tr-${index}`,
@@ -198,6 +228,7 @@ function composeDaySummary(
   city: string,
   activities: PlaceActivity[],
   dayId: string,
+  vibe: string = "mixed",
 ): GuideSegment {
   let content: string;
   const displayCity = capitalize(city);
@@ -206,14 +237,20 @@ function composeDaySummary(
   });
 
   if (activities.length >= 2) {
-    const first = activities[0]!.title;
-    const last = activities[activities.length - 1]!.title;
-    content = pickPhrase(SUMMARY_CLOSERS_MULTI, `${dayId}-summary-close`, {
-      opener,
-      first,
-      last,
-      city: displayCity,
-    });
+    // Try vibe-specific template first, fall back to composed
+    const summaryTemplate = matchDaySummary(city, vibe, `${dayId}-summary`);
+    if (summaryTemplate) {
+      content = summaryTemplate.content;
+    } else {
+      const first = activities[0]!.title;
+      const last = activities[activities.length - 1]!.title;
+      content = pickPhrase(SUMMARY_CLOSERS_MULTI, `${dayId}-summary-close`, {
+        opener,
+        first,
+        last,
+        city: displayCity,
+      });
+    }
   } else if (activities.length === 1) {
     content = pickPhrase(SUMMARY_CLOSERS_SINGLE, `${dayId}-summary-close`, {
       opener,
@@ -221,7 +258,7 @@ function composeDaySummary(
       city: displayCity,
     });
   } else {
-    const summaryTemplate = matchDaySummary(city, "mixed", `${dayId}-summary`);
+    const summaryTemplate = matchDaySummary(city, vibe, `${dayId}-summary`);
     content = summaryTemplate?.content ?? `That wraps ${displayCity}.`;
   }
 
@@ -286,7 +323,7 @@ function buildDayGuide(
     // Without a description, the transition just restates the next card's name — noise.
     if (shouldShowTransition(i, activities.length) && currActivity.description) {
       segments.push(
-        composeTransition(prevActivity, currActivity, dayId, i),
+        composeTransition(prevActivity, currActivity, dayId, i, city),
       );
     }
 
@@ -365,8 +402,12 @@ function buildDayGuide(
     });
   }
 
-  // ── Day Summary (composed from activity names) ──
-  const summary = composeDaySummary(city, activities, dayId);
+  // ── Day Summary (composed from activity names, vibe-aware) ──
+  const parentCategories = resolved
+    .filter((r): r is ResolvedCategory => r !== null)
+    .map((r) => r.parent);
+  const vibe = getDayVibe(parentCategories);
+  const summary = composeDaySummary(city, activities, dayId, vibe);
 
   // Sort segments by their placement position in the activity list.
   // afterActivityId: placed after that activity (use activity index).

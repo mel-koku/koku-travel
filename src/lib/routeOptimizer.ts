@@ -1,27 +1,7 @@
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { EntryPoint } from "@/types/trip";
 import { getActivityCoordinates } from "./itineraryCoordinates";
-
-/**
- * Calculate the straight-line distance between two coordinates in meters
- */
-function haversineDistance(
-  coord1: { lat: number; lng: number },
-  coord2: { lat: number; lng: number },
-): number {
-  const R = 6371e3; // Earth's radius in meters
-  const φ1 = (coord1.lat * Math.PI) / 180;
-  const φ2 = (coord2.lat * Math.PI) / 180;
-  const Δφ = ((coord2.lat - coord1.lat) * Math.PI) / 180;
-  const Δλ = ((coord2.lng - coord1.lng) * Math.PI) / 180;
-
-  const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c;
-}
+import { calculateDistanceMeters } from "@/lib/utils/geoUtils";
 
 export type OptimizeRouteResult = {
   /** Activity IDs in optimized order */
@@ -63,9 +43,6 @@ export function optimizeRouteOrder(
   const placeActivities = activities.filter(
     (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
   );
-  const noteActivities = activities.filter((a) => a.kind === "note");
-  void noteActivities; // Intentionally unused - kept for future use
-
   if (placeActivities.length === 0) {
     // No place activities to optimize, return original order
     return {
@@ -113,7 +90,7 @@ export function optimizeRouteOrder(
       const coords = activityCoords.get(activityId);
       if (!coords) continue;
 
-      const distance = haversineDistance(currentCoords, coords);
+      const distance = calculateDistanceMeters(currentCoords, coords);
       if (distance < nearestDistance) {
         nearestDistance = distance;
         nearestId = activityId;
@@ -145,7 +122,7 @@ export function optimizeRouteOrder(
         const coords = activityCoords.get(activityId);
         if (!coords) continue;
 
-        const distance = haversineDistance(endCoords, coords);
+        const distance = calculateDistanceMeters(endCoords, coords);
         if (distance < nearestToEndDistance) {
           nearestToEndDistance = distance;
           nearestToEndId = activityId;
