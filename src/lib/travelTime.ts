@@ -1,12 +1,39 @@
 import type { CityId, EntryPoint } from "../types/trip";
-import { getNearestCity } from "@/data/entryPoints";
+import { getNearestCity, getCityCenterCoordinates } from "@/data/entryPoints";
+import { calculateDistanceMeters } from "@/lib/utils/geoUtils";
 
+/**
+ * Travel time matrix in minutes between known cities.
+ * Values represent typical shinkansen / limited express / transit times.
+ * Only one direction needs to be defined — lookup falls back to inverse.
+ */
 const MATRIX: Record<CityId, Partial<Record<CityId, number>>> = {
-  kyoto: { osaka: 30, nara: 45, tokyo: 150 },
-  osaka: { kyoto: 30, nara: 45, tokyo: 150 },
-  nara: { kyoto: 45, osaka: 45, tokyo: 180 },
-  tokyo: { kyoto: 150, osaka: 150, yokohama: 25 },
-  yokohama: { tokyo: 25 },
+  // Kansai cluster
+  kyoto: { osaka: 30, nara: 45, kobe: 50, tokyo: 135, nagoya: 35, hiroshima: 100, kanazawa: 130, fukuoka: 175 },
+  osaka: { nara: 40, kobe: 25, tokyo: 150, nagoya: 55, hiroshima: 90, fukuoka: 155, kanazawa: 155 },
+  nara: { kobe: 70 },
+  kobe: { hiroshima: 70, fukuoka: 135 },
+  // Kanto cluster
+  tokyo: { yokohama: 25, nagoya: 100, sendai: 100, kanazawa: 155, sapporo: 250, hakodate: 240 },
+  yokohama: { nagoya: 80 },
+  // Chubu
+  nagoya: { kanazawa: 180 },
+  // Kyushu
+  fukuoka: { nagasaki: 115, hiroshima: 65 },
+  nagasaki: {},
+  // Hokkaido
+  sapporo: { hakodate: 210 },
+  hakodate: {},
+  // Tohoku
+  sendai: { hakodate: 180 },
+  // Chugoku
+  hiroshima: {},
+  // Shikoku
+  matsuyama: { hiroshima: 160, takamatsu: 155, osaka: 240 },
+  takamatsu: { osaka: 105, okayama: 55 },
+  // Okinawa (flight-only — no rail)
+  naha: {},
+  kanazawa: {},
 };
 
 /**
@@ -18,40 +45,6 @@ export function travelMinutes(a: CityId, b: CityId): number | undefined {
   return MATRIX[a]?.[b] ?? MATRIX[b]?.[a];
 }
 
-/**
- * Calculate distance between two coordinates using Haversine formula
- */
-function calculateDistanceMeters(
-  coord1: { lat: number; lng: number },
-  coord2: { lat: number; lng: number },
-): number {
-  const R = 6371e3; // Earth radius in meters
-  const φ1 = (coord1.lat * Math.PI) / 180;
-  const φ2 = (coord2.lat * Math.PI) / 180;
-  const Δφ = ((coord2.lat - coord1.lat) * Math.PI) / 180;
-  const Δλ = ((coord2.lng - coord1.lng) * Math.PI) / 180;
-
-  const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c;
-}
-
-/**
- * Get city center coordinates for travel time estimation
- */
-function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: number } {
-  const centers: Record<CityId, { lat: number; lng: number }> = {
-    kyoto: { lat: 35.0116, lng: 135.7681 },
-    osaka: { lat: 34.6937, lng: 135.5023 },
-    nara: { lat: 34.6851, lng: 135.8048 },
-    tokyo: { lat: 35.6762, lng: 139.6503 },
-    yokohama: { lat: 35.4437, lng: 139.638 },
-  };
-  return centers[cityId] ?? { lat: 35.0, lng: 135.0 };
-}
 
 /**
  * Estimate travel time from an entry point to a city in minutes.

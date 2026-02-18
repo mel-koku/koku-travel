@@ -121,6 +121,7 @@ export type MealType = "breakfast" | "lunch" | "dinner" | "snack";
 export function filterByMealType(
   restaurants: Location[],
   mealType: MealType,
+  tripDate?: string,
 ): Location[] {
   return restaurants.filter((restaurant) => {
     const mealOptions = restaurant.mealOptions;
@@ -170,9 +171,9 @@ export function filterByMealType(
 
       // Check operating hours - breakfast places should open before 10am
       if (restaurant.operatingHours?.periods) {
-        const today = new Date().getDay(); // 0 = Sunday
+        const dayIndex = tripDate ? new Date(tripDate).getDay() : new Date().getDay();
         const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-        const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[today]);
+        const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[dayIndex]);
         if (todayPeriod?.open) {
           const openHour = parseInt(todayPeriod.open.split(":")[0] ?? "12", 10);
           // If opens after 11am, not a breakfast place
@@ -205,9 +206,9 @@ export function filterByMealType(
 
       // Check operating hours - exclude places that only open for dinner (after 5pm)
       if (restaurant.operatingHours?.periods) {
-        const today = new Date().getDay(); // 0 = Sunday
+        const dayIndex = tripDate ? new Date(tripDate).getDay() : new Date().getDay();
         const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-        const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[today]);
+        const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[dayIndex]);
         if (todayPeriod?.open) {
           const openHour = parseInt(todayPeriod.open.split(":")[0] ?? "12", 10);
           // If opens at 5pm or later, it's a dinner-only place
@@ -234,9 +235,9 @@ export function filterByMealType(
 
       // Check operating hours - exclude places that close early (before 6pm)
       if (restaurant.operatingHours?.periods) {
-        const today = new Date().getDay(); // 0 = Sunday
+        const dayIndex = tripDate ? new Date(tripDate).getDay() : new Date().getDay();
         const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-        const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[today]);
+        const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[dayIndex]);
         if (todayPeriod?.close) {
           const closeHour = parseInt(todayPeriod.close.split(":")[0] ?? "22", 10);
           // If closes before 6pm, it's not open for dinner

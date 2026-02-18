@@ -177,9 +177,12 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 
 ### Itinerary (`src/components/features/itinerary/`)
 - **Desktop**: 50-50 split — timeline left, Mapbox right. **Mobile**: 30vh map peek + timeline below.
-- **Guide**: Hybrid composed + template via `src/lib/guide/guideBuilder.ts`
-- **Route Optimizer**: Nearest-neighbor via `src/lib/routeOptimizer.ts`, auto-runs on gen
-- **Smart Prompts**: `/api/smart-prompts/recommend` — gap detection (`gapDetection.ts`) finds missing meals, light days, timing issues, category imbalance. Click "Add" → preview card with recommendation details → "Add this", "Show another" (max 3), or filter chips (Cheaper, Closer, Indoor, Different cuisine) → confirm inserts activity. Quick meals (konbini) skip preview. `useSmartPromptActions` manages preview state + refinement filters. API accepts `excludeLocationIds` and `refinementFilters` for iterative refinement.
+- **Guide**: Hybrid composed + template via `src/lib/guide/guideBuilder.ts`. Vibe-specific day summaries (`getDayVibe`), city-specific transitions (`matchTransition` with bridge phrase fallback), cafe/bar cultural subcategories.
+- **Route Optimizer**: Nearest-neighbor via `src/lib/routeOptimizer.ts`, auto-runs on gen. Day 1 starts from entry point; days 2+ start from city center.
+- **Travel Time**: `src/lib/travelTime.ts` — matrix covers all 17 `KnownCityId` cities with real shinkansen/train times. Fallback to haversine estimate for unknown pairs.
+- **Day Trips**: `src/data/dayTrips.ts` — mappings for all 17 cities.
+- **Scheduling**: Markets are experience activities (not food). Favorites distributed by category-aware time slot (bars→evening, museums→afternoon, shrines→morning). Generated days include weekday for operating hours checks.
+- **Smart Prompts**: `/api/smart-prompts/recommend` — gap detection (`gapDetection.ts`) finds missing meals, light days, timing issues, category imbalance. All action types implemented: `add_meal`, `add_activity`, `fill_long_gap`, `extend_day`, `diversify_categories`, `add_transport`. Click "Add" → preview card → "Add this", "Show another" (max 3), or filter chips → confirm inserts activity. Quick meals (konbini) skip preview. Dismissed prompts persist in localStorage per trip (`koku:dismissed-prompts:{tripId}`). `useSmartPromptActions` manages preview state + refinement filters. API accepts `excludeLocationIds`, `refinementFilters`, and `tripDate` for date-aware meal filtering.
 - **Proactive Guidance**: `detectGuidanceGaps()` fetches high-priority (>=7) etiquette/practical tips from `travel_guidance` table, surfaces as sage-colored smart prompt cards with "Got it" dismiss button. Max 2 per day, lowest priority in gap list.
 - **Travel Guidance**: `travel_guidance` table, matched by category/city/region/season
 
@@ -223,6 +226,11 @@ Favorites-only flow: users heart locations on Explore. During trip generation, `
 - **Experiences**: 56 in Sanity — separate from locations/explore/itinerary
 - **Health Score**: 100/100 (`npm run dq audit|fix|report`)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, food, entertainment, market, wellness, viewpoint, bar, transport
+
+### Shared Utilities
+- **Distance**: `calculateDistance` (km) and `calculateDistanceMeters` from `src/lib/utils/geoUtils.ts` — single Haversine source
+- **String**: `normalizeKey` from `src/lib/utils/stringUtils.ts` — `trim().toLowerCase()` for city/key normalization
+- **Season**: `getSeason()` returns `"fall"` not `"autumn"` — consistent across `templateMatcher.ts` and `dayIntroGenerator.ts`
 
 ### Gotchas
 - Supabase anon key blocked by RLS on writes — use `SUPABASE_SERVICE_ROLE_KEY`

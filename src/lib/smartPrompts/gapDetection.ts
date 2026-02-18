@@ -237,11 +237,10 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
     });
   }
 
-  // Check for dinner (evening activities without dinner)
-  const eveningActivities = activities.filter((a) => a.timeOfDay === "evening");
+  // Check for dinner (any day with activities but no dinner)
   const hasDinner = coveredMealTypes.has("dinner");
 
-  if (eveningActivities.length > 0 && !hasDinner) {
+  if (activities.length > 0 && !hasDinner) {
     const lastAfternoonActivity = activities.filter((a) => a.timeOfDay === "afternoon").pop();
     const cityName = day.cityId ?? "the area";
 
@@ -728,35 +727,6 @@ export function detectGaps(
 /**
  * Get a summary of gaps by type.
  */
-export function getGapsSummary(gaps: DetectedGap[]): {
-  total: number;
-  byType: Record<GapType, number>;
-  byDay: Record<number, number>;
-} {
-  const byType: Record<GapType, number> = {
-    meal: 0,
-    transport: 0,
-    experience: 0,
-    long_gap: 0,
-    early_end: 0,
-    late_start: 0,
-    category_imbalance: 0,
-    guidance: 0,
-  };
-  const byDay: Record<number, number> = {};
-
-  for (const gap of gaps) {
-    byType[gap.type]++;
-    byDay[gap.dayIndex] = (byDay[gap.dayIndex] ?? 0) + 1;
-  }
-
-  return {
-    total: gaps.length,
-    byType,
-    byDay,
-  };
-}
-
 /**
  * Guidance type icon mapping
  */

@@ -81,19 +81,19 @@ export function detectMealGap(
   const prevMinutesTotal = prevHours * 60 + prevMinutes;
   const nextMinutesTotal = nextHours * 60 + nextMinutes;
 
-  // Check if we're past breakfast window and before lunch
-  if (prevMinutesTotal >= 9 * 60 && nextMinutesTotal <= 12 * 60) {
-    return { hasGap: true, mealType: "breakfast" };
-  }
+  // Check if a meal window falls between previousEndTime and nextStartTime.
+  // Breakfast: 7:00–9:00, Lunch: 12:00–14:00, Dinner: 18:00–21:00
+  const MEAL_WINDOWS: { meal: MealType; start: number; end: number }[] = [
+    { meal: "breakfast", start: 7 * 60, end: 9 * 60 },
+    { meal: "lunch", start: 12 * 60, end: 14 * 60 },
+    { meal: "dinner", start: 18 * 60, end: 21 * 60 },
+  ];
 
-  // Check if we're past lunch window and before dinner
-  if (prevMinutesTotal >= 14 * 60 && nextMinutesTotal <= 18 * 60) {
-    return { hasGap: true, mealType: "lunch" };
-  }
-
-  // Check if we're past dinner window
-  if (prevMinutesTotal >= 21 * 60) {
-    return { hasGap: true, mealType: "dinner" };
+  for (const { meal, start, end } of MEAL_WINDOWS) {
+    // A meal window is "in the gap" if the window overlaps with [prevEnd, nextStart]
+    if (prevMinutesTotal <= end && nextMinutesTotal >= start) {
+      return { hasGap: true, mealType: meal };
+    }
   }
 
   return { hasGap: false, mealType: null };
