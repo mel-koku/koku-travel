@@ -1,32 +1,23 @@
 import type { CityId } from "@/types/trip";
 import { REGIONS } from "./regions";
+import { calculateDistanceMeters } from "@/lib/utils/geoUtils";
 
 /**
- * Calculate distance between two coordinates using Haversine formula
- * Returns distance in meters
+ * Calculate distance between two coordinates using Haversine formula.
+ * Returns distance in meters.
+ * @deprecated Use `calculateDistanceMeters` from `@/lib/utils/geoUtils` directly.
  */
 export function calculateDistance(
   coord1: { lat: number; lng: number },
   coord2: { lat: number; lng: number },
 ): number {
-  const R = 6371e3; // Earth radius in meters
-  const φ1 = (coord1.lat * Math.PI) / 180;
-  const φ2 = (coord2.lat * Math.PI) / 180;
-  const Δφ = ((coord2.lat - coord1.lat) * Math.PI) / 180;
-  const Δλ = ((coord2.lng - coord1.lng) * Math.PI) / 180;
-
-  const a =
-    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c;
+  return calculateDistanceMeters(coord1, coord2);
 }
 
 /**
  * Approximate city center coordinates
  */
-function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: number } {
+export function getCityCenterCoordinates(cityId: CityId): { lat: number; lng: number } {
   const centers: Record<string, { lat: number; lng: number }> = {
     kyoto: { lat: 35.0116, lng: 135.7681 },
     osaka: { lat: 34.6937, lng: 135.5023 },

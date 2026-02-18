@@ -11,6 +11,7 @@ import { logger } from "@/lib/logger";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { isDiningLocation } from "@/lib/mealFiltering";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
+import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { generateDayIntros } from "./dayIntroGenerator";
 
 /**
@@ -135,8 +136,15 @@ function optimizeItineraryRoutes(
   // Use entry point as start for all days (airport/station where trip begins)
   const startPoint = builderData.entryPoint;
 
-  const optimizedDays = itinerary.days.map((day) => {
-    const result = optimizeRouteOrder(day.activities, startPoint);
+  const optimizedDays = itinerary.days.map((day, dayIndex) => {
+    // Day 1: start from entry point. Days 2+: start from city center (hotel proxy).
+    let dayStartPoint = startPoint;
+    if (dayIndex > 0 && day.cityId) {
+      const cityCoords = getCityCenterCoordinates(day.cityId);
+      // Only coordinates are used by optimizeRouteOrder, so we can safely cast
+      dayStartPoint = { coordinates: cityCoords } as typeof startPoint;
+    }
+    const result = optimizeRouteOrder(day.activities, dayStartPoint);
 
     if (!result.orderChanged) {
       return day;

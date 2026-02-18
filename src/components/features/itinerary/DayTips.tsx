@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import type { ItineraryDay } from "@/types/itinerary";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
+import { getRegionForCity } from "@/data/regions";
 
 type DayTipsProps = {
   day: ItineraryDay;
@@ -63,10 +64,11 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
     async function loadTips() {
       setIsLoading(true);
       try {
+        const regionId = day.cityId ? getRegionForCity(day.cityId) : undefined;
         const guidance = await fetchDayGuidance({
           categories: dayCategories,
           city: day.cityId,
-          region: day.cityId, // Often same as city in our data
+          region: regionId,
           season: getCurrentSeason(dayDate),
         });
 

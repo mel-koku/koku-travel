@@ -20,7 +20,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
   },
   {
     id: "di-3",
-    key: "kyoto:shrine:autumn:any",
+    key: "kyoto:shrine:fall:any",
     content:
       "Kyoto in autumn is pure magic. The vermillion of torii gates against fiery maple leaves is one of those sights that stays with you forever. Have your camera ready.",
     icon: "🍁",
@@ -469,7 +469,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
   },
   {
     id: "di-58",
-    key: "generic:temple:autumn:any",
+    key: "generic:temple:fall:any",
     content:
       "There's a reason people travel from all over the world for Japanese autumn. Red and gold maples framing a centuries-old temple — it's one of those scenes that makes you catch your breath.",
     icon: "🍁",
@@ -585,7 +585,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
   },
   {
     id: "di-74",
-    key: "generic:any:autumn:any",
+    key: "generic:any:fall:any",
     content:
       "Autumn might just be Japan's most beautiful season. The maple trees turn from green to gold to deep crimson, the air gets crisp, and the food shifts to hearty, warming dishes.",
     icon: "🍂",
@@ -631,7 +631,7 @@ export const DAY_INTRO_TEMPLATES: DayIntroTemplate[] = [
   },
   {
     id: "di-80",
-    key: "generic:any:autumn:first",
+    key: "generic:any:fall:first",
     content:
       "You've arrived at the perfect time. Autumn in Japan is crisp air, warm colors, and some of the best food of the year. The harvest season means everything tastes a little more special.",
     icon: "🍁",

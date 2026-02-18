@@ -6,7 +6,7 @@ import type { TripOverviewTemplate } from "@/types/itineraryGuide";
  *
  * Key dimensions:
  *   cities: alphabetically sorted, joined with "+" (e.g. "kyoto+osaka")
- *   season: spring, summer, autumn, winter, any
+ *   season: spring, summer, fall, winter, any
  *
  * "generic" acts as a city-level fallback.
  */
@@ -21,7 +21,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
   },
   {
     id: "to-2",
-    key: "kyoto+osaka:autumn",
+    key: "kyoto+osaka:fall",
     content:
       "Kyoto in autumn is a painter's dream, and pairing it with Osaka means you get fiery red maples by day and sizzling street food by night. Two cities, two completely different vibes, one incredible trip.",
     icon: "🍁",
@@ -60,7 +60,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
   },
   {
     id: "to-7",
-    key: "kyoto+nara+osaka:autumn",
+    key: "kyoto+nara+osaka:fall",
     content:
       "Autumn across the Kansai region is something special. Kyoto's maple-lined paths, Nara's golden park canopy, and Osaka's cozy street food scene all come together into one unforgettable journey through fall colors and flavors.",
     icon: "🍁",
@@ -83,7 +83,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
   },
   {
     id: "to-10",
-    key: "osaka+tokyo:autumn",
+    key: "osaka+tokyo:fall",
     content:
       "East meets west — Tokyo's cutting-edge cool alongside Osaka's warm, unfiltered energy, all wrapped in autumn colors. The shinkansen ride between them is an experience in itself. Two cities, double the adventure.",
     icon: "🍁",
@@ -156,7 +156,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
   },
   {
     id: "to-19",
-    key: "kyoto:autumn",
+    key: "kyoto:fall",
     content:
       "Kyoto in autumn might be the most beautiful place on earth. Every temple, every garden, every winding street becomes a canvas of red, gold, and orange. Take your time — this city rewards those who linger.",
     icon: "🍁",
@@ -240,7 +240,7 @@ export const TRIP_OVERVIEW_TEMPLATES: TripOverviewTemplate[] = [
   },
   {
     id: "to-29",
-    key: "generic:autumn",
+    key: "generic:fall",
     content:
       "Autumn in Japan is pure magic — crisp air, fiery foliage, and a warmth to the food and culture that perfectly matches the season. Your itinerary is set, and every day ahead has something worth remembering.",
     icon: "🍁",

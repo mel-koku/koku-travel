@@ -1,7 +1,7 @@
 import type { Location } from "@/types/location";
 import type { InterestId } from "@/types/trip";
 import type { WeatherForecast } from "@/types/weather";
-import { calculateDistance, estimateTravelTime } from "@/lib/utils/geoUtils";
+import { calculateDistance } from "@/lib/utils/geoUtils";
 import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { scoreWeatherFit } from "@/lib/weather/weatherScoring";
 import { scoreTimeOfDayFit, checkOpeningHoursFit } from "./timeOptimization";
@@ -115,20 +115,6 @@ const CATEGORY_TO_INTERESTS: Record<string, InterestId[]> = {
   view: ["photography", "nature"],
 };
 
-/**
- * Interest to category mapping (reverse of above).
- */
-const INTEREST_TO_CATEGORIES: Record<InterestId, string[]> = {
-  culture: ["shrine", "temple", "landmark", "historic", "museum"],
-  food: ["restaurant", "market"],
-  nature: ["park", "garden"],
-  nightlife: ["bar", "entertainment"],
-  shopping: ["shopping", "market"],
-  photography: ["landmark", "viewpoint", "park"],
-  wellness: ["park", "garden"],
-  history: ["shrine", "temple", "historic", "museum"],
-};
-void INTEREST_TO_CATEGORIES; // Intentionally unused - kept for future use
 
 /**
  * Score how well a location matches user interests.
@@ -237,8 +223,6 @@ function scoreLogisticalFit(
   // Distance scoring with hard cutoffs and stronger penalties
   if (criteria.currentLocation && location.coordinates) {
     const distanceKm = calculateDistance(criteria.currentLocation, location.coordinates);
-    const travelTime = estimateTravelTime(distanceKm, "walk");
-    void travelTime; // Intentionally unused - kept for future use
 
     // CRITICAL: Hard cutoff for locations way too far away
     // This catches data corruption where locations have wrong city assignments

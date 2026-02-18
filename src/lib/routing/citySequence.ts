@@ -9,6 +9,7 @@ import { getRegionForCity, REGIONS } from "@/data/regions";
 import type { CityId, RegionId, TripBuilderData } from "@/types/trip";
 import type { Location } from "@/types/location";
 import { getNearestCityToEntryPoint, travelMinutes } from "@/lib/travelTime";
+import { normalizeKey } from "@/lib/utils/stringUtils";
 
 export type CityInfo = {
   key: string;
@@ -21,10 +22,6 @@ const DEFAULT_CITY_ROTATION: readonly CityId[] = ["kyoto", "tokyo", "osaka"] as 
 // Build region and city lookup maps from REGIONS data
 const REGION_ID_BY_LABEL = new Map<string, RegionId>();
 const CITY_INFO_BY_KEY = new Map<string, CityInfo>();
-
-function normalizeKey(value?: string): string {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
-}
 
 REGIONS.forEach((region) => {
   REGION_ID_BY_LABEL.set(normalizeKey(region.name), region.id);

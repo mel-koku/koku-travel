@@ -170,10 +170,31 @@ export function SmartPromptsDrawer({
 /**
  * Hook to manage smart prompts state.
  */
-export function useSmartPrompts(initialGaps: DetectedGap[]) {
+export function useSmartPrompts(initialGaps: DetectedGap[], tripId?: string) {
   const [gaps, setGaps] = useState<DetectedGap[]>(initialGaps);
-  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
   const [acceptedIds, setAcceptedIds] = useState<Set<string>>(new Set());
+
+  // Load dismissed prompts from localStorage on mount / trip change
+  const storageKey = tripId ? `koku:dismissed-prompts:${tripId}` : null;
+  const [skippedIds, setSkippedIds] = useState<Set<string>>(() => {
+    if (!storageKey || typeof window === "undefined") return new Set();
+    try {
+      const stored = localStorage.getItem(storageKey);
+      return stored ? new Set(JSON.parse(stored) as string[]) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+
+  // Persist skipped IDs to localStorage when they change
+  useEffect(() => {
+    if (!storageKey || typeof window === "undefined") return;
+    try {
+      localStorage.setItem(storageKey, JSON.stringify([...skippedIds]));
+    } catch {
+      // localStorage full or unavailable — ignore
+    }
+  }, [skippedIds, storageKey]);
 
   // Sync gaps when initialGaps changes (preserve accepted/skipped state)
   useEffect(() => {

@@ -110,8 +110,9 @@ export function checkOpeningHoursFit(
 
   // Check if any operating period covers the time slot
   for (const period of operatingHours.periods) {
-    // If weekday specified, check if period matches
-    if (weekday && period.day !== weekday) {
+    // If weekday specified and period has a specific day, check if they match.
+    // Periods without a day (generic "open every day") always match.
+    if (weekday && period.day && period.day !== weekday) {
       continue;
     }
 

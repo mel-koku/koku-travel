@@ -134,7 +134,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     return [...syncGaps, ...guidanceGaps];
   }, [syncGaps, guidanceGaps]);
 
-  const smartPrompts = useSmartPrompts(initialGaps);
+  const smartPrompts = useSmartPrompts(initialGaps, selectedTripId ?? undefined);
 
   // Reset prompts when trip changes
   useEffect(() => {

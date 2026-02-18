@@ -6,6 +6,7 @@
  */
 
 import { REGIONS } from "@/data/regions";
+import { normalizeKey } from "@/lib/utils/stringUtils";
 import type { Location } from "@/types/location";
 import type { RegionId } from "@/types/trip";
 import { calculateDistance } from "@/lib/utils/geoUtils";
@@ -124,12 +125,6 @@ export function findRegionByCoordinates(lat: number, lng: number): string | null
   return null;
 }
 
-/**
- * Normalize a string key (trim and lowercase).
- */
-function normalizeKey(value?: string): string {
-  return typeof value === "string" ? value.trim().toLowerCase() : "";
-}
 
 /**
  * Validate that a location is geographically appropriate for a city.

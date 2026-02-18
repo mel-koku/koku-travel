@@ -3,15 +3,20 @@
 import { useState } from "react";
 import {
   BookOpen,
+  Calendar,
   ChevronDown,
   ChevronUp,
+  Clock,
   Coffee,
   Info,
   Leaf,
   Lightbulb,
   Moon,
   Plus,
+  ShoppingBag,
+  Shuffle,
   Sunrise,
+  Sunset,
   Train,
   Utensils,
   UtensilsCrossed,
@@ -26,12 +31,17 @@ import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActi
 
 const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
+  Calendar,
+  Clock,
   Coffee,
   Info,
   Leaf,
   Moon,
   Plus,
+  ShoppingBag,
+  Shuffle,
   Sunrise,
+  Sunset,
   Train,
   Utensils,
   UtensilsCrossed,
@@ -43,28 +53,28 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     text: "text-brand-secondary",
   },
   transport: {
-    bg: "bg-warm-gray/10",
-    text: "text-foreground-secondary",
-  },
-  experience: {
     bg: "bg-brand-primary/10",
     text: "text-brand-primary",
   },
-  long_gap: {
+  experience: {
     bg: "bg-sage/10",
     text: "text-sage",
   },
-  early_end: {
+  long_gap: {
     bg: "bg-warning/10",
     text: "text-warning",
   },
-  late_start: {
-    bg: "bg-stone/10",
-    text: "text-stone",
-  },
-  category_imbalance: {
+  early_end: {
     bg: "bg-semantic-error/10",
     text: "text-semantic-error",
+  },
+  late_start: {
+    bg: "bg-brand-primary/10",
+    text: "text-brand-primary",
+  },
+  category_imbalance: {
+    bg: "bg-sage/10",
+    text: "text-sage",
   },
   guidance: {
     bg: "bg-sage/10",
