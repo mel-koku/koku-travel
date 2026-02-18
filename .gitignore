@@ -1,6 +1,12 @@
 # Claude Code project instructions (local only)
 CLAUDE.md
 
+# Internal docs (local only)
+PITCH.md
+itinerary-generation-explained.md
+itinerary-system-audit.md
+simplified.md
+
 # Logs
 logs
 *.log
