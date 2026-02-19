@@ -25,7 +25,39 @@ export type GuidanceMatchCriteria = {
   season?: "spring" | "summer" | "fall" | "winter";
   /** Additional tags/keywords from the location or activity */
   tags?: string[];
+  /** Location name (for cuisine-specificity matching) */
+  locationName?: string;
 };
+
+/**
+ * Tags that indicate a tip is about a specific cuisine, chain, or venue.
+ * When a tip's tags contain any of these, the location's name or googleTypes
+ * must also relate to that identifier — otherwise the tip is excluded.
+ * Prevents: ramen tips on gyukatsu restaurants, Robot Restaurant tips on
+ * sushi bars, TeamLab tips on random museums, etc.
+ */
+const SPECIFICITY_TAGS = new Set([
+  // Cuisine types
+  "ramen", "tonkotsu", "miso ramen", "shoyu ramen", "tsukemen", "tantanmen",
+  "sushi", "nigiri", "chirashi", "omakase", "kaitenzushi",
+  "izakaya", "yakitori",
+  "kushikatsu", "hitsumabushi", "unagi",
+  "gyudon", "okonomiyaki", "monjayaki", "takoyaki",
+  "udon", "soba", "tempura", "kaiseki",
+  "yakiniku", "tonkatsu", "gyukatsu", "curry",
+  "kaedama", "hakata",
+  // Chain / brand names
+  "ichiran", "ippudo", "mos burger", "saizeriya",
+  "doutor", "komeda", "ootoya", "yayoiken",
+  "tenya", "marugame seimen", "yoshinoya", "matsuya", "sukiya",
+  "sushiro", "kura sushi", "hamazushi", "torikizoku",
+  "don quijote", "donki", "coco ichibanya",
+  // Venue / attraction names
+  "robot restaurant", "teamlab", "ghibli",
+  "disneysea", "disneyland", "usj", "universal studios",
+  "oedo onsen", "oedo-onsen", "spa world", "spa-world",
+  "super potato", "kabuki-za",
+]);
 
 /**
  * Get the current season based on the current date or a specific date.
@@ -126,6 +158,31 @@ function calculateMatchScore(
     return 0;
   }
 
+  // EXCLUSION: Specificity check.
+  // If a tip's tags contain specific identifiers (cuisine types, chain names,
+  // venue names), only show it at locations that relate to those identifiers.
+  // Prevents: ramen tips on gyukatsu restaurants, Robot Restaurant tips on
+  // sushi bars, TeamLab tips on random museums, chain tips on unrelated venues.
+  if (categoryMatched) {
+    const specificTags = guidance.tags.filter((t) =>
+      SPECIFICITY_TAGS.has(t.toLowerCase()),
+    );
+    if (specificTags.length > 0) {
+      const nameLower = (criteria.locationName ?? "").toLowerCase();
+      const criteriaTagsLower = (criteria.tags ?? []).map((t) => t.toLowerCase());
+      const locationRelevant = specificTags.some((ct) => {
+        const ctLower = ct.toLowerCase();
+        return (
+          nameLower.includes(ctLower) ||
+          criteriaTagsLower.some((lt) => lt.includes(ctLower))
+        );
+      });
+      if (!locationRelevant) {
+        return 0;
+      }
+    }
+  }
+
   // EXCLUSION: If tip has specific location IDs, only match if this location is listed
   if (guidance.locationIds.length > 0) {
     if (!criteria.locationId || !guidance.locationIds.includes(criteria.locationId)) {
@@ -198,6 +255,7 @@ export function buildCriteriaFromLocation(
     locationId: location.id,
     season: getCurrentSeason(activityDate),
     tags: location.googleTypes ?? [],
+    locationName: location.name,
   };
 }
 
