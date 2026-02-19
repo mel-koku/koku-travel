@@ -61,7 +61,7 @@ export type ItineraryScheduledVisit = {
   /**
    * Execution confidence for the scheduled time.
    */
-  status?: "scheduled" | "tentative" | "out-of-hours";
+  status?: "scheduled" | "tentative" | "out-of-hours" | "closed";
 };
 
 export type ItineraryTravelMode = LocationTransitMode | "transit" | "rideshare";

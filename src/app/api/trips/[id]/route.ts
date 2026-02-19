@@ -51,7 +51,7 @@ const scheduledVisitSchema = z.object({
   arrivalBufferMinutes: z.number().optional(),
   departureBufferMinutes: z.number().optional(),
   operatingWindow: operatingWindowSchema.optional(),
-  status: z.enum(["scheduled", "tentative", "out-of-hours"]).optional(),
+  status: z.enum(["scheduled", "tentative", "out-of-hours", "closed"]).optional(),
 });
 
 /**

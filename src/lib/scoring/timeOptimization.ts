@@ -69,13 +69,26 @@ export function scoreTimeOfDayFit(
   };
 }
 
+const MINUTES_IN_DAY = 24 * 60;
+
+function parseTimeToMinutes(time: string): number {
+  const parts = time.split(":");
+  const hours = parseInt(parts[0] ?? "0", 10);
+  const minutes = parseInt(parts[1] ?? "0", 10);
+  return hours * 60 + minutes;
+}
+
 /**
- * Check if location has opening hours that conflict with the time slot
+ * Check if location has opening hours that allow a meaningful visit in the time slot.
+ *
+ * Uses minute-level overlap to ensure the location is open long enough
+ * for at least `minVisitMinutes` (default 30) within the slot.
  */
 export function checkOpeningHoursFit(
   location: Location,
   timeSlot: "morning" | "afternoon" | "evening",
   date?: string, // ISO date string for weekday calculation
+  minVisitMinutes = 30,
 ): { fits: boolean; reasoning: string } {
   const operatingHours = location.operatingHours;
   if (!operatingHours || !operatingHours.periods || operatingHours.periods.length === 0) {
@@ -85,11 +98,11 @@ export function checkOpeningHoursFit(
     };
   }
 
-  // Map time slot to hour range
+  // Map time slot to minute ranges
   const timeSlotRanges: Record<"morning" | "afternoon" | "evening", { start: number; end: number }> = {
-    morning: { start: 9, end: 12 },
-    afternoon: { start: 12, end: 17 },
-    evening: { start: 17, end: 21 },
+    morning: { start: 9 * 60, end: 12 * 60 },
+    afternoon: { start: 12 * 60, end: 17 * 60 },
+    evening: { start: 17 * 60, end: 21 * 60 },
   };
 
   const slotRange = timeSlotRanges[timeSlot];
@@ -108,7 +121,7 @@ export function checkOpeningHoursFit(
     weekday = weekdays[dateObj.getDay()];
   }
 
-  // Check if any operating period covers the time slot
+  // Check if any operating period allows a meaningful visit during the slot
   for (const period of operatingHours.periods) {
     // If weekday specified and period has a specific day, check if they match.
     // Periods without a day (generic "open every day") always match.
@@ -116,29 +129,31 @@ export function checkOpeningHoursFit(
       continue;
     }
 
-    const openHour = parseInt(period.open.split(":")[0] ?? "0", 10);
-    let closeHour = parseInt(period.close.split(":")[0] ?? "24", 10);
-    
+    const openMinutes = parseTimeToMinutes(period.open);
+    let closeMinutes = parseTimeToMinutes(period.close);
+
     // Handle overnight periods
     if (period.isOvernight) {
-      closeHour += 24;
+      closeMinutes += MINUTES_IN_DAY;
     }
 
-    // Check if time slot overlaps with operating hours
-    // Two ranges overlap if: range1.start < range2.end && range1.end > range2.start
-    // Time slot overlaps operating hours if: slotStart < closeHour && slotEnd > openHour
-    if (slotRange.start < closeHour && slotRange.end > openHour) {
+    // Compute actual overlap in minutes
+    const overlapStart = Math.max(slotRange.start, openMinutes);
+    const overlapEnd = Math.min(slotRange.end, closeMinutes);
+    const overlapMinutes = Math.max(0, overlapEnd - overlapStart);
+
+    if (overlapMinutes >= minVisitMinutes) {
       return {
         fits: true,
-        reasoning: `Open during ${timeSlot} (${period.open}-${period.close})`,
+        reasoning: `Open during ${timeSlot} (${period.open}-${period.close}, ${overlapMinutes}min available)`,
       };
     }
   }
 
-  // No matching period found
+  // No matching period found with enough visit time
   return {
     fits: false,
-    reasoning: `May not be open during ${timeSlot} based on operating hours`,
+    reasoning: `Insufficient opening hours during ${timeSlot} (need ${minVisitMinutes}min)`,
   };
 }
 

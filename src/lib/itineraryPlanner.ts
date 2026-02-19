@@ -164,9 +164,10 @@ function evaluateOperatingWindow(
 ): {
   adjustedArrival: number;
   adjustedDeparture: number;
+  effectiveVisitMinutes: number;
   arrivalBuffer?: number;
   departureBuffer?: number;
-  status: "scheduled" | "tentative" | "out-of-hours";
+  status: "scheduled" | "tentative" | "out-of-hours" | "closed";
   window?: {
     opensAt: string;
     closesAt: string;
@@ -179,6 +180,7 @@ function evaluateOperatingWindow(
     return {
       adjustedArrival: arrivalMinutes,
       adjustedDeparture: arrivalMinutes + durationMinutes,
+      effectiveVisitMinutes: durationMinutes,
       status: "tentative",
       window: undefined,
     };
@@ -192,7 +194,7 @@ function evaluateOperatingWindow(
   let adjustedDeparture = arrivalMinutes + durationMinutes;
   let arrivalBuffer: number | undefined;
   let departureBuffer: number | undefined;
-  let scheduleStatus: "scheduled" | "tentative" | "out-of-hours" = "scheduled";
+  let scheduleStatus: "scheduled" | "tentative" | "out-of-hours" | "closed" = "scheduled";
   let windowStatus: "within" | "outside" | "unknown" = "within";
 
   if (adjustedArrival < openMinutes) {
@@ -201,8 +203,9 @@ function evaluateOperatingWindow(
     adjustedDeparture = adjustedArrival + durationMinutes;
   }
 
-  if (adjustedArrival > closeMinutes) {
-    scheduleStatus = "out-of-hours";
+  // Arriving at or after closing — location is closed (not visitable)
+  if (adjustedArrival >= closeMinutes) {
+    scheduleStatus = "closed";
     windowStatus = "outside";
   } else if (adjustedDeparture > closeMinutes) {
     departureBuffer = adjustedDeparture - closeMinutes;
@@ -211,9 +214,12 @@ function evaluateOperatingWindow(
     windowStatus = "outside";
   }
 
+  const effectiveVisitMinutes = Math.max(0, adjustedDeparture - adjustedArrival);
+
   return {
     adjustedArrival,
     adjustedDeparture,
+    effectiveVisitMinutes,
     arrivalBuffer,
     departureBuffer,
     status: scheduleStatus,
@@ -547,9 +553,38 @@ async function planItineraryDay(
     }
 
     const meta = metaByActivityId.get(activity.id)!;
+
+    // Pre-check: estimate arrival after travel and verify location is open
+    const resolvedForPreCheck = resolvedRouteByActivityId.get(activity.id);
+    const estimatedTravelMin = resolvedForPreCheck
+      ? Math.max(1, Math.round(resolvedForPreCheck.route.durationSeconds / 60))
+      : 0;
+    const estimatedArrival = cursorMinutes + estimatedTravelMin;
+
+    const preCheckPeriod = getOperatingPeriodForDay(meta.location?.operatingHours, day.weekday);
+    const preCheck = evaluateOperatingWindow(preCheckPeriod, estimatedArrival, meta.visitDuration);
+
+    if (preCheck.status === "closed") {
+      logger.warn("Skipping activity — location is closed at estimated arrival", {
+        activity: activity.title,
+        estimatedArrival: formatTime(estimatedArrival),
+        closesAt: preCheck.window?.closesAt,
+      });
+      continue;
+    }
+
+    if (preCheck.status === "out-of-hours" && preCheck.effectiveVisitMinutes < 20) {
+      logger.warn("Skipping activity — insufficient visit time before closing", {
+        activity: activity.title,
+        effectiveVisitMinutes: preCheck.effectiveVisitMinutes,
+        closesAt: preCheck.window?.closesAt,
+      });
+      continue;
+    }
+
     const plannerActivity: ItineraryActivity = { ...activity };
 
-    const resolved = resolvedRouteByActivityId.get(activity.id);
+    const resolved = resolvedForPreCheck;
     if (resolved) {
       const { route, travelMode } = resolved;
       const travelInstructions = route.legs.flatMap((leg) =>
