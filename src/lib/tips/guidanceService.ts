@@ -126,37 +126,44 @@ function calculateMatchScore(
     return 0;
   }
 
-  // Location ID match (highest specificity)
-  if (criteria.locationId && guidance.locationIds.length > 0) {
-    if (guidance.locationIds.includes(criteria.locationId)) {
-      score += 15;
+  // EXCLUSION: If tip has specific location IDs, only match if this location is listed
+  if (guidance.locationIds.length > 0) {
+    if (!criteria.locationId || !guidance.locationIds.includes(criteria.locationId)) {
+      return 0;
     }
+    score += 15;
   }
 
-  // City match
-  if (criteria.city && guidance.cities.length > 0) {
+  // EXCLUSION: If tip has specific cities, only show if location's city matches
+  if (guidance.cities.length > 0) {
+    if (!criteria.city) {
+      return 0;
+    }
     const cityLower = criteria.city.toLowerCase();
-    if (guidance.cities.some((c) => c.toLowerCase() === cityLower)) {
-      score += 5;
+    if (!guidance.cities.some((c) => c.toLowerCase() === cityLower)) {
+      return 0;
     }
+    score += 5;
   }
 
-  // Region match
-  if (criteria.region && guidance.regions.length > 0) {
+  // EXCLUSION: If tip has specific regions, only show if location's region matches
+  if (guidance.regions.length > 0) {
+    if (!criteria.region) {
+      return 0;
+    }
     const regionLower = criteria.region.toLowerCase();
-    if (guidance.regions.some((r) => r.toLowerCase() === regionLower)) {
-      score += 3;
+    if (!guidance.regions.some((r) => r.toLowerCase() === regionLower)) {
+      return 0;
     }
+    score += 3;
   }
 
-  // Season match
-  if (criteria.season && guidance.seasons.length > 0) {
-    if (guidance.seasons.includes(criteria.season)) {
-      score += 4;
-    } else {
-      // If guidance is season-specific and doesn't match, reduce score
-      score -= 5;
+  // EXCLUSION: If tip is season-specific, only show in matching season
+  if (guidance.seasons.length > 0) {
+    if (!criteria.season || !guidance.seasons.includes(criteria.season)) {
+      return 0;
     }
+    score += 4;
   }
 
   // Tag match
