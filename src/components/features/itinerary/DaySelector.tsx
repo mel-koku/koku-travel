@@ -6,6 +6,8 @@ import { ChevronDown, Check } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { durationFast, easeReveal } from "@/lib/motion";
 
+type DayHealthLevel = "good" | "fair" | "poor";
+
 type DaySelectorProps = {
   totalDays: number;
   selected: number;
@@ -17,6 +19,8 @@ type DaySelectorProps = {
   autoScrollToToday?: boolean;
   /** Visual variant — "default" for light bg, "dark" for charcoal banner */
   variant?: "default" | "dark";
+  /** Per-day health levels for indicator dots (optional) */
+  dayHealthLevels?: DayHealthLevel[];
 };
 
 /**
@@ -56,6 +60,7 @@ export const DaySelector = ({
   labels = [],
   tripStartDate,
   autoScrollToToday = true,
+  dayHealthLevels,
 }: DaySelectorProps) => {
   const hasAutoScrolled = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -206,6 +211,7 @@ export const DaySelector = ({
           >
             {days.map(({ index, label, isToday }) => {
               const isSelected = index === selected;
+              const healthLevel = dayHealthLevels?.[index];
               return (
                 <button
                   key={index}
@@ -228,6 +234,14 @@ export const DaySelector = ({
                       <span className="ml-2 text-xs text-sage">(Today)</span>
                     )}
                   </span>
+                  {healthLevel && healthLevel !== "good" && (
+                    <span
+                      className={cn(
+                        "ml-auto h-2 w-2 shrink-0 rounded-full",
+                        healthLevel === "fair" ? "bg-warning" : "bg-error"
+                      )}
+                    />
+                  )}
                 </button>
               );
             })}

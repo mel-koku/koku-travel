@@ -33,6 +33,8 @@ import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult, PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
+import { TripConfidenceDashboard } from "./TripConfidenceDashboard";
+import { calculateTripHealth, getHealthLevel } from "@/lib/itinerary/tripHealth";
 
 // Lazy-load guide builder to keep ~90KB of template data out of the main bundle
 const buildGuideAsync = () => import("@/lib/guide/guideBuilder").then((m) => m.buildGuide);
@@ -135,6 +137,7 @@ export const ItineraryShell = ({
   const [planningError, setPlanningError] = useState<string | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -581,6 +584,12 @@ export const ItineraryShell = ({
     return detectItineraryConflicts(model);
   }, [model]);
 
+  // Compute per-day health levels for DaySelector dots
+  const dayHealthLevels = useMemo(() => {
+    const health = calculateTripHealth(model, conflictsResult.conflicts);
+    return health.days.map((d) => getHealthLevel(d.score));
+  }, [model, conflictsResult]);
+
   // Build guide (lazy-loaded to avoid bundling ~90KB of template data)
   const [tripGuide, setTripGuide] = useState<Awaited<ReturnType<typeof import("@/lib/guide/guideBuilder").buildGuide>> | null>(null);
   useEffect(() => {
@@ -815,21 +824,58 @@ export const ItineraryShell = ({
                   </div>
                 )}
               </div>
-              <div className="w-full sm:w-auto sm:min-w-[280px]">
-                <DaySelector
-                  totalDays={days.length}
-                  selected={safeSelectedDay}
-                  onChange={handleSelectDayChange}
-                  labels={days.map((day) => day.dateLabel ?? "")}
-                  tripStartDate={tripStartDate}
-                  variant="default"
-                />
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <div className="flex-1 sm:min-w-[280px]">
+                  <DaySelector
+                    totalDays={days.length}
+                    selected={safeSelectedDay}
+                    onChange={handleSelectDayChange}
+                    labels={days.map((day) => day.dateLabel ?? "")}
+                    tripStartDate={tripStartDate}
+                    variant="default"
+                    dayHealthLevels={dayHealthLevels}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowDashboard((prev) => !prev)}
+                  className={`flex h-[42px] items-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition shrink-0 ${
+                    showDashboard
+                      ? "border-sage bg-sage/10 text-sage"
+                      : "border-border text-stone hover:border-sage hover:text-foreground"
+                  }`}
+                  aria-label="Trip overview"
+                  title="Trip overview"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <span className="hidden sm:inline">Overview</span>
+                </button>
               </div>
             </div>
           </div>
 
+          {/* Trip Confidence Dashboard */}
+          <AnimatePresence>
+            {showDashboard && (
+              <div className="px-4 pb-6">
+                <TripConfidenceDashboard
+                  itinerary={model}
+                  conflicts={conflictsResult.conflicts}
+                  tripStartDate={tripStartDate}
+                  onClose={() => setShowDashboard(false)}
+                  onSelectDay={(dayIndex) => {
+                    handleSelectDayChange(dayIndex);
+                    setShowDashboard(false);
+                  }}
+                />
+              </div>
+            )}
+          </AnimatePresence>
+
           {/* Activities List */}
-          <div data-itinerary-activities className="relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-2xl lg:border">
+          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-2xl lg:border ${showDashboard ? "hidden" : ""}`}>
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (

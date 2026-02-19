@@ -2,13 +2,15 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Location } from "@/types/location";
 import { ActiveFilter } from "@/types/filters";
 import { locationMatchesVibes } from "@/data/vibeFilterMapping";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
-import { useAllLocationsSingle, useFilterMetadataQuery, useLocationSearchQuery } from "@/hooks/useLocationsQuery";
+import { useAllLocationsSingle, useFilterMetadataQuery, useLocationSearchQuery, useNearbyLocationsQuery } from "@/hooks/useLocationsQuery";
+import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
@@ -48,6 +50,11 @@ const LocationExpanded = dynamic(
 
 const LocationEditorialGrid = dynamic(
   () => import("./LocationEditorialGrid").then((m) => ({ default: m.LocationEditorialGrid })),
+  { ssr: false }
+);
+
+const DiscoverNowPanel = dynamic(
+  () => import("./DiscoverNowPanel").then((m) => ({ default: m.DiscoverNowPanel })),
   { ssr: false }
 );
 
@@ -164,6 +171,49 @@ export function ExploreShell({ content }: ExploreShellProps) {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Discover Now mode
+  const searchParams = useSearchParams();
+  const [isDiscoverMode, setIsDiscoverMode] = useState(
+    () => searchParams.get("mode") === "discover",
+  );
+  const [discoverCategory, setDiscoverCategory] = useState("");
+  const geoLocation = useCurrentLocation();
+
+  const {
+    data: nearbyData,
+    isLoading: isNearbyLoading,
+    error: nearbyError,
+  } = useNearbyLocationsQuery(
+    geoLocation.position?.lat ?? null,
+    geoLocation.position?.lng ?? null,
+    { category: discoverCategory || undefined, openNow: true, radius: 1.5, limit: 20 },
+  );
+
+  const handleDiscoverToggle = useCallback(() => {
+    setIsDiscoverMode((prev) => !prev);
+  }, []);
+
+  // Sync discover mode side-effects (URL + geolocation) outside setState
+  useEffect(() => {
+    if (isDiscoverMode) {
+      geoLocation.request();
+      window.history.replaceState(null, "", "/explore?mode=discover");
+    } else {
+      // Only update URL if it currently has mode param
+      if (window.location.search.includes("mode=")) {
+        window.history.replaceState(null, "", "/explore");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDiscoverMode]);
+
+  const handleSurpriseMe = useCallback(() => {
+    const pool = nearbyData?.data;
+    if (!pool || pool.length === 0) return;
+    const pick = pool[Math.floor(Math.random() * Math.min(pool.length, 10))];
+    if (pick) setExpandedLocation(pick);
+  }, [nearbyData]);
 
   // IntersectionObserver for progressive loading
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -511,13 +561,50 @@ export function ExploreShell({ content }: ExploreShellProps) {
         onQueryChange={setQuery}
         onAskKokuClick={() => setIsChatOpen(true)}
         isChatOpen={isChatOpen}
+        isDiscoverMode={isDiscoverMode}
+        onDiscoverToggle={handleDiscoverToggle}
       />
 
       {/* Breathing room between search bar and content */}
       <div className="h-4 sm:h-6" aria-hidden="true" />
 
-      {/* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */}
-      {mapAvailable ? (
+      {/* Discover Now mode */}
+      {isDiscoverMode ? (
+        <main className="mx-auto max-w-2xl pb-24">
+          {geoLocation.isLoading ? (
+            <div className="flex flex-col items-center justify-center py-16 px-6">
+              <div className="h-8 w-8 rounded-full border-2 border-sage border-t-transparent animate-spin mb-4" />
+              <p className="text-sm text-stone">Locating you...</p>
+            </div>
+          ) : geoLocation.error ? (
+            <div className="mx-4 rounded-xl border border-border bg-surface/30 p-8 text-center">
+              <p className="font-serif italic text-lg text-foreground mb-2">
+                Location unavailable
+              </p>
+              <p className="text-sm text-stone mb-4">{geoLocation.error}</p>
+              <button
+                onClick={geoLocation.request}
+                className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary/90 transition"
+              >
+                Try again
+              </button>
+            </div>
+          ) : (
+            <DiscoverNowPanel
+              locations={nearbyData?.data ?? []}
+              isLoading={isNearbyLoading}
+              error={nearbyError instanceof Error ? nearbyError.message : null}
+              selectedCategory={discoverCategory}
+              onCategoryChange={setDiscoverCategory}
+              onSelectLocation={handleSelectLocation}
+              onSurpriseMe={handleSurpriseMe}
+            />
+          )}
+        </main>
+      ) :
+
+      /* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */
+      mapAvailable ? (
         <ExploreMapLayout
           filteredLocations={filteredLocations}
           sortedLocations={sortedLocations}

@@ -445,3 +445,27 @@ html.lenis-stopped {
     scroll-behavior: auto !important;
   }
 }
+
+/* Print stylesheet for itinerary export */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  header,
+  nav,
+  footer,
+  [data-lenis-prevent],
+  button:not([data-print-visible]),
+  [role="dialog"] {
+    display: none !important;
+  }
+  [data-itinerary-activities] {
+    overflow: visible !important;
+    border: none !important;
+    height: auto !important;
+  }
+  .lg\:w-1\/2 {
+    width: 100% !important;
+  }
+}

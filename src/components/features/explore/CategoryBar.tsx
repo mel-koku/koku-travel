@@ -18,6 +18,9 @@ type CategoryBarProps = {
   /** Ask Koku chat integration */
   onAskKokuClick?: () => void;
   isChatOpen?: boolean;
+  /** Discover Now mode */
+  isDiscoverMode?: boolean;
+  onDiscoverToggle?: () => void;
 };
 
 export function CategoryBar({
@@ -30,6 +33,8 @@ export function CategoryBar({
   onQueryChange,
   onAskKokuClick,
   isChatOpen = false,
+  isDiscoverMode = false,
+  onDiscoverToggle,
 }: CategoryBarProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -126,6 +131,26 @@ export function CategoryBar({
                 </span>
               )}
             </button>
+
+            {/* Discover Now toggle */}
+            {onDiscoverToggle && (
+              <button
+                onClick={onDiscoverToggle}
+                aria-label={isDiscoverMode ? "Exit Discover Now" : "Discover Now"}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0",
+                  isDiscoverMode
+                    ? "border-sage bg-sage/10 text-sage"
+                    : "border-border text-stone hover:border-sage hover:text-foreground"
+                )}
+              >
+                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="9" />
+                  <path strokeLinecap="round" d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36z" />
+                </svg>
+                <span className="hidden sm:inline">{isDiscoverMode ? "Browse" : "Discover"}</span>
+              </button>
+            )}
 
             {/* Ask Koku button */}
             {onAskKokuClick && (

@@ -7,6 +7,7 @@ import { useFirstFavoriteToast } from "@/hooks/useFirstFavoriteToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import type { Location } from "@/types/location";
 import { HeartIcon } from "./LocationCard";
+import { PracticalBadges } from "@/components/ui/PracticalBadges";
 
 const FALLBACK_IMAGE =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -109,6 +110,9 @@ export const ExploreCompactCard = memo(function ExploreCompactCard({
             <p className="font-serif italic text-white text-base line-clamp-1">
               {location.name}
             </p>
+            <div className="mt-1">
+              <PracticalBadges location={location} variant="overlay" max={2} />
+            </div>
           </div>
         </div>
       </div>
