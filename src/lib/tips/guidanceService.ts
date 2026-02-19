@@ -57,6 +57,24 @@ const SPECIFICITY_TAGS = new Set([
   "disneysea", "disneyland", "usj", "universal studios",
   "oedo onsen", "oedo-onsen", "spa world", "spa-world",
   "super potato", "kabuki-za",
+  // Landmarks — Kyoto
+  "fushimi inari", "kinkaku", "kinkakuji", "kiyomizu",
+  "arashiyama", "bamboo grove", "nishiki market",
+  // Landmarks — Nara
+  "todai-ji", "todaiji", "nara park",
+  // Landmarks — Tokyo
+  "shibuya crossing", "golden gai", "akihabara", "harajuku",
+  "imperial palace", "edo-tokyo",
+  // Landmarks — Osaka
+  "dotonbori", "osaka castle",
+  // Landmarks — Kanazawa
+  "kenrokuen", "kenroku-en", "omicho",
+  // Landmarks — Hiroshima
+  "miyajima", "itsukushima", "hiroshima peace",
+  // Landmarks — other regions
+  "dogo onsen", "naoshima", "koyasan", "kumano kodo",
+  "izumo taisha", "goryokaku", "hakone", "nikko", "toshogu",
+  "kamakura", "mt fuji", "mount fuji", "ginzan onsen",
 ]);
 
 /**
