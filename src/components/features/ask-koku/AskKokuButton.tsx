@@ -6,8 +6,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { AskKokuPanel } from "./AskKokuPanel";
+import type { AskKokuContext } from "./AskKokuSuggestions";
 
 const HIDDEN_PATHS = ["/studio", "/explore"];
+
+function deriveContext(pathname: string): AskKokuContext {
+  if (pathname.startsWith("/explore")) return "explore";
+  if (pathname.startsWith("/trip-builder")) return "trip-builder";
+  if (pathname.startsWith("/dashboard")) return "dashboard";
+  if (pathname.includes("/itinerary")) return "itinerary";
+  return "default";
+}
 
 export function AskKokuButton() {
   const [open, setOpen] = useState(false);
@@ -19,6 +28,7 @@ export function AskKokuButton() {
   }
 
   const isTripBuilder = pathname.startsWith("/trip-builder");
+  const context = deriveContext(pathname);
 
   return (
     <>
@@ -55,7 +65,9 @@ export function AskKokuButton() {
 
       {/* Panel */}
       <AnimatePresence>
-        {open && <AskKokuPanel onClose={() => setOpen(false)} />}
+        {open && (
+          <AskKokuPanel onClose={() => setOpen(false)} context={context} />
+        )}
       </AnimatePresence>
     </>
   );

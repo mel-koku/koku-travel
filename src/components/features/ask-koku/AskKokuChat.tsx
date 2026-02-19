@@ -1,22 +1,33 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useEffect, useRef, useCallback, useState } from "react";
+import { DefaultChatTransport } from "ai";
+import { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import { AskKokuMessage } from "./AskKokuMessage";
-import { AskKokuSuggestions } from "./AskKokuSuggestions";
+import { AskKokuSuggestions, type AskKokuContext } from "./AskKokuSuggestions";
 import { AskKokuInput } from "./AskKokuInput";
 
 type AskKokuChatProps = {
   onClose?: () => void;
+  context?: AskKokuContext;
 };
 
-export function AskKokuChat({ onClose }: AskKokuChatProps) {
+export function AskKokuChat({ onClose, context = "default" }: AskKokuChatProps) {
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/chat",
+        headers: { "X-Koku-Context": context },
+      }),
+    [context],
+  );
+
   const {
     messages,
     sendMessage,
     status,
     error,
-  } = useChat();
+  } = useChat({ transport });
 
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -52,7 +63,7 @@ export function AskKokuChat({ onClose }: AskKokuChatProps) {
         data-lenis-prevent
       >
         {!hasMessages ? (
-          <AskKokuSuggestions onSelect={handleSuggestion} />
+          <AskKokuSuggestions onSelect={handleSuggestion} context={context} />
         ) : (
           <div className="flex flex-col gap-3">
             {messages.map((message) => (

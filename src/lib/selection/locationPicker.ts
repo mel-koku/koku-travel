@@ -23,6 +23,7 @@ export type ScoredLocation = Location & {
   _scoringReasoning?: string[];
   _scoreBreakdown?: ScoreBreakdown;
   _isReturnVisit?: boolean;
+  _runnerUps?: { name: string; id: string }[];
 };
 
 /**
@@ -196,14 +197,22 @@ export function pickLocationForTimeSlot(
     return fallback ? { ...fallback } : undefined;
   }
 
-  const selected = topCandidates[Math.floor(Math.random() * topCandidates.length)];
+  const selectedIndex = Math.floor(Math.random() * topCandidates.length);
+  const selected = topCandidates[selectedIndex];
 
   // Return location with reasoning metadata attached
   if (selected?.location) {
+    // Collect runner-ups: top 3 candidates that weren't selected
+    const runnerUps = topCandidates
+      .filter((_, i) => i !== selectedIndex)
+      .slice(0, 3)
+      .map((c) => ({ name: c.location.name, id: c.location.id }));
+
     return {
       ...selected.location,
       _scoringReasoning: selected.reasoning,
       _scoreBreakdown: selected.breakdown,
+      _runnerUps: runnerUps.length > 0 ? runnerUps : undefined,
     };
   }
 

@@ -1,5 +1,6 @@
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
+import type { Location } from "@/types/location";
 
 export type DayHealth = {
   dayId: string;
@@ -9,7 +10,7 @@ export type DayHealth = {
 };
 
 export type HealthIssue = {
-  type: "conflict" | "gap" | "checklist";
+  type: "conflict" | "gap" | "checklist" | "accessibility";
   severity: "error" | "warning" | "info";
   message: string;
   activityTitle?: string;
@@ -19,7 +20,7 @@ export type HealthIssue = {
 export type ChecklistItem = {
   id: string;
   label: string;
-  category: "reservation" | "cash" | "hours" | "transport";
+  category: "reservation" | "cash" | "hours" | "transport" | "accessibility";
   dayIndex: number;
   activityTitle: string;
 };
@@ -224,4 +225,166 @@ export function formatItineraryForExport(
   }
 
   return lines.join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// CSV Export
+// ---------------------------------------------------------------------------
+
+/** Escape a CSV field — wrap in double-quotes if it contains commas, quotes, or newlines. */
+function escapeCSV(value: string): string {
+  if (value.includes(",") || value.includes('"') || value.includes("\n")) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+/**
+ * Format an itinerary as CSV with BOM prefix for Excel compatibility.
+ * Columns: Day, Date, Time, Place, Category, Duration, Neighborhood, Travel Mode, Travel Duration, Notes
+ */
+export function formatItineraryForCSV(
+  itinerary: Itinerary,
+  tripStartDate?: string,
+): string {
+  const BOM = "\uFEFF";
+  const headers = [
+    "Day",
+    "Date",
+    "Time",
+    "Place",
+    "Category",
+    "Duration (min)",
+    "Neighborhood",
+    "Travel Mode",
+    "Travel Duration (min)",
+    "Notes",
+  ];
+
+  const rows: string[] = [headers.map(escapeCSV).join(",")];
+
+  for (const [dayIndex, day] of itinerary.days.entries()) {
+    let dateStr = "";
+    if (tripStartDate) {
+      const [year, month, dayNum] = tripStartDate.split("-").map(Number);
+      if (year && month && dayNum) {
+        const date = new Date(year, month - 1, dayNum);
+        date.setDate(date.getDate() + dayIndex);
+        dateStr = date.toISOString().split("T")[0] ?? "";
+      }
+    }
+
+    for (const activity of day.activities) {
+      if (activity.kind !== "place") continue;
+
+      const time = activity.schedule
+        ? `${activity.schedule.arrivalTime}-${activity.schedule.departureTime}`
+        : activity.timeOfDay;
+
+      const travelMode = activity.travelToNext?.mode ?? "";
+      const travelDur = activity.travelToNext?.durationMinutes?.toString() ?? "";
+
+      const row = [
+        `Day ${dayIndex + 1}`,
+        dateStr,
+        time,
+        activity.title,
+        activity.tags?.[0] ?? "",
+        activity.durationMin?.toString() ?? "",
+        activity.neighborhood ?? "",
+        travelMode,
+        travelDur,
+        activity.notes ?? "",
+      ];
+
+      rows.push(row.map(escapeCSV).join(","));
+    }
+  }
+
+  return BOM + rows.join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Accessibility Analysis
+// ---------------------------------------------------------------------------
+
+export type AccessibilityResult = {
+  totalActivities: number;
+  accessibleCount: number;
+  unknownCount: number;
+  inaccessibleCount: number;
+  issues: HealthIssue[];
+  checklist: ChecklistItem[];
+};
+
+/**
+ * Analyze accessibility across an itinerary for travelers with mobility needs.
+ * Returns issues for days with clusters of inaccessible locations and
+ * checklist items for unconfirmed venues.
+ */
+export function analyzeAccessibility(
+  itinerary: Itinerary,
+  locationMap: Map<string, Location>,
+): AccessibilityResult {
+  let totalActivities = 0;
+  let accessibleCount = 0;
+  let unknownCount = 0;
+  let inaccessibleCount = 0;
+  const issues: HealthIssue[] = [];
+  const checklist: ChecklistItem[] = [];
+
+  for (const [dayIndex, day] of itinerary.days.entries()) {
+    let consecutiveInaccessible = 0;
+
+    for (const activity of day.activities) {
+      if (activity.kind !== "place" || !activity.locationId) continue;
+      totalActivities++;
+
+      const loc = locationMap.get(activity.locationId);
+      const a11y = loc?.accessibilityOptions;
+
+      if (!a11y) {
+        unknownCount++;
+        checklist.push({
+          id: `a11y-${activity.id}`,
+          label: `Confirm accessibility at ${activity.title}`,
+          category: "accessibility",
+          dayIndex,
+          activityTitle: activity.title,
+        });
+        // Unknown counts as potentially inaccessible for clustering
+        consecutiveInaccessible++;
+        continue;
+      }
+
+      if (a11y.wheelchairAccessibleEntrance) {
+        accessibleCount++;
+        consecutiveInaccessible = 0;
+      } else {
+        inaccessibleCount++;
+        consecutiveInaccessible++;
+      }
+
+      // Flag cluster of 3+ consecutive inaccessible/unknown locations
+      if (consecutiveInaccessible >= 3) {
+        issues.push({
+          type: "accessibility",
+          severity: "warning",
+          message: `${consecutiveInaccessible} consecutive activities without confirmed wheelchair access on Day ${dayIndex + 1}.`,
+          dayIndex,
+        });
+        // Reset to avoid duplicate warnings for the same streak
+        consecutiveInaccessible = 0;
+      }
+    }
+  }
+
+  return {
+    totalActivities,
+    accessibleCount,
+    unknownCount,
+    inaccessibleCount,
+    issues,
+    checklist,
+  };
 }
