@@ -110,11 +110,20 @@ function calculateMatchScore(
   }
 
   // Category match (most important)
+  let categoryMatched = false;
   if (criteria.category && guidance.categories.length > 0) {
     const categoryLower = criteria.category.toLowerCase();
     if (guidance.categories.some((c) => c.toLowerCase() === categoryLower)) {
       score += 10;
+      categoryMatched = true;
     }
+  }
+
+  // Exclusion: if a tip targets specific categories but the location's
+  // category isn't among them, this tip is about a different kind of place.
+  // City/region alone shouldn't be enough to surface it.
+  if (criteria.category && guidance.categories.length > 0 && !categoryMatched) {
+    return 0;
   }
 
   // Location ID match (highest specificity)

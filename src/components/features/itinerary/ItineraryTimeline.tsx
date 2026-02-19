@@ -45,6 +45,7 @@ import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { REGIONS } from "@/data/regions";
+import { useToast } from "@/context/ToastContext";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
 
 function formatCityName(cityId: string): string {
@@ -120,6 +121,7 @@ export const ItineraryTimeline = ({
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMountedRef = useRef(true);
+  const { showToast } = useToast();
 
   useEffect(() => {
     return () => {
@@ -521,6 +523,102 @@ export const ItineraryTimeline = ({
     [dayIndex, setModel]
   );
 
+  const handleDelayRemaining = useCallback(
+    (delayMinutes: number) => {
+      // Get current time as minutes since midnight
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      const parseTime = (t: string): number | null => {
+        const m = t.match(/^(\d{1,2}):(\d{2})$/);
+        if (!m) return null;
+        return parseInt(m[1]!, 10) * 60 + parseInt(m[2]!, 10);
+      };
+
+      const formatTime = (mins: number): string => {
+        const clamped = Math.min(mins, 23 * 60 + 59);
+        const h = Math.floor(clamped / 60);
+        const m = clamped % 60;
+        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+      };
+
+      setModel((current) => {
+        const currentDay = current.days[dayIndex];
+        if (!currentDay) return current;
+
+        const activities = currentDay.activities ?? [];
+        const placeActs = activities
+          .map((a, i) => ({ a, i }))
+          .filter((x): x is { a: Extract<ItineraryActivity, { kind: "place" }>; i: number } => x.a.kind === "place");
+
+        // Find first activity at or after current time
+        let startIdx = 0;
+        for (let j = 0; j < placeActs.length; j++) {
+          const act = placeActs[j]!.a;
+          const timeStr = act.manualStartTime ?? act.schedule?.arrivalTime;
+          if (timeStr) {
+            const t = parseTime(timeStr);
+            if (t !== null && t >= currentMinutes) {
+              startIdx = j;
+              break;
+            }
+          }
+          // If no time found, default to shifting all
+          if (j === placeActs.length - 1) startIdx = 0;
+        }
+
+        let shifted = 0;
+        const nextActivities = [...activities];
+
+        for (let j = startIdx; j < placeActs.length; j++) {
+          const { a: act, i: actIndex } = placeActs[j]!;
+          const arrTime = act.schedule?.arrivalTime;
+          const depTime = act.schedule?.departureTime;
+          const manual = act.manualStartTime;
+
+          const baseTime = manual ?? arrTime;
+          if (!baseTime) continue;
+
+          const parsed = parseTime(baseTime);
+          if (parsed === null) continue;
+
+          const newStart = formatTime(parsed + delayMinutes);
+          let newDep = depTime;
+          if (depTime) {
+            const depParsed = parseTime(depTime);
+            if (depParsed !== null) {
+              newDep = formatTime(depParsed + delayMinutes);
+            }
+          }
+
+          nextActivities[actIndex] = {
+            ...act,
+            manualStartTime: newStart,
+            schedule: act.schedule
+              ? { ...act.schedule, arrivalTime: newStart, departureTime: newDep ?? act.schedule.departureTime }
+              : undefined,
+          };
+          shifted++;
+        }
+
+        if (shifted === 0) return current;
+
+        const nextDays = [...current.days];
+        nextDays[dayIndex] = { ...currentDay, activities: nextActivities };
+        return { ...current, days: nextDays };
+      });
+
+      // Show toast after state update (count computed inline)
+      const activities = day.activities ?? [];
+      const placeActs = activities.filter((a) => a.kind === "place");
+      const label = delayMinutes >= 60
+        ? `${Math.floor(delayMinutes / 60)}h${delayMinutes % 60 ? ` ${delayMinutes % 60}m` : ""}`
+        : `${delayMinutes}m`;
+      showToast(`Shifted ${placeActs.length} activities by ${label}`);
+    },
+    [dayIndex, setModel, day.activities, showToast],
+  );
+
   // Get the active activity for DragOverlay
   const activeActivity = activeId
     ? extendedActivities.find((a) => a.id === activeId)
@@ -556,6 +654,7 @@ export const ItineraryTimeline = ({
             loadingSuggestionId={loadingSuggestionId}
             conflicts={conflicts}
             onDayStartTimeChange={handleDayStartTimeChange}
+            onDelayRemaining={handleDelayRemaining}
             previewState={previewState}
             onConfirmPreview={onConfirmPreview}
             onShowAnother={onShowAnother}

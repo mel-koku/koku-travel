@@ -12,6 +12,7 @@ import { useFirstFavoriteToast } from "@/hooks/useFirstFavoriteToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
+import { cn } from "@/lib/cn";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon } from "./LocationCard";
 
@@ -38,7 +39,6 @@ function getBestDescription(location: Location, details: LocationDetails | null)
 }
 
 export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
-  const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
   const { pause, resume } = useLenis();
   const { status, details, fetchedLocation } = useLocationDetailsQuery(location.id);
   const locationWithDetails = fetchedLocation ?? location;
@@ -48,6 +48,32 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
 
   const isFavorite = isInWishlist(location.id);
   const wasInWishlist = useRef(isFavorite);
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  // Reset active photo when location changes
+  useEffect(() => {
+    setActivePhotoIndex(0);
+  }, [location.id]);
+
+  // Build deduplicated photo list: hero first, then details photos
+  const allPhotos = useMemo(() => {
+    const hero = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
+    const detailPhotos = (details?.photos ?? [])
+      .map((p) => p.proxyUrl)
+      .filter((url): url is string => Boolean(url));
+
+    // Start with hero, then add detail photos that aren't the same as hero
+    const photos: string[] = [];
+    if (hero) photos.push(hero);
+    for (const url of detailPhotos) {
+      // Deduplicate by comparing the photoName param
+      const heroName = hero ? new URL(hero, "http://x").searchParams.get("photoName") : null;
+      const detailName = new URL(url, "http://x").searchParams.get("photoName");
+      if (heroName && detailName && heroName === detailName) continue;
+      if (!photos.includes(url)) photos.push(url);
+    }
+    return photos.slice(0, 5);
+  }, [location.primaryPhotoUrl, location.image, details?.photos]);
 
   const displayName = useMemo(() => {
     return getLocationDisplayName(details?.displayName, location);
@@ -188,7 +214,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         {/* Hero image — flush edges */}
         <div className="relative aspect-[16/9] w-full overflow-hidden">
           <Image
-            src={imageSrc || "/placeholder.jpg"}
+            src={allPhotos[activePhotoIndex] || "/placeholder.jpg"}
             alt={displayName}
             fill
             className="object-cover"
@@ -207,6 +233,33 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             </h2>
           </div>
         </div>
+
+        {/* Photo thumbnail strip */}
+        {allPhotos.length > 1 && (
+          <div className="flex gap-1.5 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 py-2">
+            {allPhotos.map((src, i) => (
+              <button
+                key={src}
+                type="button"
+                onClick={() => setActivePhotoIndex(i)}
+                className={cn(
+                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-lg transition",
+                  i === activePhotoIndex
+                    ? "ring-2 ring-brand-primary ring-offset-1 ring-offset-background"
+                    : "opacity-60 hover:opacity-100"
+                )}
+              >
+                <Image
+                  src={resizePhotoUrl(src, 128) || src}
+                  alt={`${displayName} photo ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                />
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Action bar */}
         <div className="flex items-center gap-3 px-6 py-4 border-b border-border">

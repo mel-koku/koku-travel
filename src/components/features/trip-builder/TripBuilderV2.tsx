@@ -54,6 +54,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
     setRegionsValid,
     setReviewValid,
     goToStep,
+    quickStart,
     handleNext,
     handleBack,
     handleStartOver,
@@ -90,7 +91,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
           exit="exit"
           className="min-h-[calc(100dvh-5rem)]"
         >
-          {currentStep === 0 && <IntroStep onStart={() => goToStep(1)} sanityConfig={sanityConfig} />}
+          {currentStep === 0 && <IntroStep onStart={() => goToStep(1)} onQuickStart={quickStart} sanityConfig={sanityConfig} />}
 
           {currentStep === 1 && (
             <StepShell

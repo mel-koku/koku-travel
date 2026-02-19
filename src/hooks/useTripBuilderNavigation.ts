@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import type { TripBuilderData } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5;
@@ -107,6 +108,18 @@ export function useTripBuilderNavigation({
     [currentStep],
   );
 
+  const quickStart = useCallback(
+    (partialData: Partial<TripBuilderData>) => {
+      setData((prev) => ({ ...prev, ...partialData }));
+      setDatesValid(true);
+      setVibesValid(true);
+      setRegionsValid(true);
+      setDirection(1);
+      setCurrentStep(5);
+    },
+    [setData],
+  );
+
   const handleNext = useCallback(() => {
     if (currentStep === 0) goToStep(1);
     else if (currentStep === 1 && datesValid) goToStep(2);
@@ -176,6 +189,7 @@ export function useTripBuilderNavigation({
     setReviewValid,
     // Navigation
     goToStep,
+    quickStart,
     handleNext,
     handleBack,
     handleStartOver,
