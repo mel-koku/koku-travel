@@ -25,6 +25,7 @@ import { ActivityConflictIndicator } from "./ConflictBadge";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { PracticalBadges } from "@/components/ui/PracticalBadges";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -664,6 +665,11 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   </svg>
                   {isExpanded ? "Less info" : "More info"}
                 </button>
+              </div>
+
+              {/* Practical Intel Badges */}
+              <div className="mt-1.5">
+                <PracticalBadges location={placeLocation} showOpenStatus={false} max={3} />
               </div>
 
               {/* Status Badges */}
