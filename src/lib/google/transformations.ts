@@ -9,8 +9,8 @@ import type { LocationDetails, LocationPhoto, LocationReview } from "@/types/loc
 
 const MAX_REVIEWS = 5;
 /** Runtime calls use RUNTIME_FIELD_MASK which only returns photo names (no dimensions/attributions).
- *  We limit to 1 photo to minimize response size. Enrichment scripts use their own transform. */
-const MAX_PHOTOS = 1;
+ *  We return up to 5 photos for the gallery UI. Enrichment scripts use their own transform. */
+const MAX_PHOTOS = 5;
 
 /**
  * Rewrites a photo proxy URL to use a different maxWidthPx.

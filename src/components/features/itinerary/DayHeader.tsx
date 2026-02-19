@@ -11,6 +11,7 @@ import { DaySuggestions } from "./DaySuggestions";
 import { DayTips } from "./DayTips";
 import { DayConflictSummary } from "./ConflictBadge";
 import { DayStartTimePicker } from "./DayStartTimePicker";
+import { RunningLatePopover } from "./RunningLatePopover";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
@@ -32,6 +33,8 @@ type DayHeaderProps = {
   conflicts?: ItineraryConflict[];
   // Day start time callback
   onDayStartTimeChange?: (startTime: string) => void;
+  // Running late delay callback
+  onDelayRemaining?: (delayMinutes: number) => void;
   // Preview props
   previewState?: PreviewState | null;
   onConfirmPreview?: () => void;
@@ -55,6 +58,7 @@ export function DayHeader({
   loadingSuggestionId,
   conflicts,
   onDayStartTimeChange,
+  onDelayRemaining,
   previewState,
   onConfirmPreview,
   onShowAnother,
@@ -224,6 +228,44 @@ export function DayHeader({
     }
   }, [totalDuration]);
 
+  // Budget breakdown — rough daily cost estimate from priceLevel
+  const PRICE_RANGES: Record<number, { min: number; max: number }> = {
+    0: { min: 0, max: 0 },
+    1: { min: 500, max: 1500 },
+    2: { min: 1500, max: 3000 },
+    3: { min: 3000, max: 8000 },
+    4: { min: 8000, max: 15000 },
+  };
+
+  const costEstimate = useMemo(() => {
+    let totalMin = 0;
+    let totalMax = 0;
+    let priceDataCount = 0;
+
+    for (const activity of placeActivities) {
+      const location = locationsMap.get(activity.id);
+      const level = location?.priceLevel;
+      if (level !== undefined && level !== null) {
+        const range = PRICE_RANGES[level];
+        if (range) {
+          totalMin += range.min;
+          totalMax += range.max;
+          priceDataCount++;
+        }
+      }
+    }
+
+    if (priceDataCount < 2) return null;
+
+    const fmtYen = (v: number) => (v >= 10000 ? `¥${Math.round(v / 1000)}k` : `¥${v.toLocaleString()}`);
+    return `~${fmtYen(totalMin)}–${fmtYen(totalMax)}`;
+  }, [placeActivities, locationsMap]);
+
+  const hasScheduledActivities = useMemo(
+    () => placeActivities.some((a) => a.schedule?.arrivalTime || a.manualStartTime),
+    [placeActivities],
+  );
+
   return (
     <div className="mb-6 rounded-xl border border-border bg-surface p-4 sm:p-5">
       <div className="flex flex-col gap-3">
@@ -267,6 +309,17 @@ export function DayHeader({
               <span className="text-foreground-secondary">· at locations</span>
             )}
           </div>
+          {costEstimate && (
+            <>
+              <span className="text-stone">|</span>
+              <span
+                className="font-mono text-xs text-stone"
+                title="Rough estimate based on typical prices"
+              >
+                {costEstimate}
+              </span>
+            </>
+          )}
           {onDayStartTimeChange && (
             <>
               <span className="text-stone">|</span>
@@ -274,6 +327,12 @@ export function DayHeader({
                 currentTime={day.bounds?.startTime ?? "09:00"}
                 onChange={onDayStartTimeChange}
               />
+            </>
+          )}
+          {onDelayRemaining && hasScheduledActivities && (
+            <>
+              <span className="text-stone">|</span>
+              <RunningLatePopover onApplyDelay={onDelayRemaining} />
             </>
           )}
         </div>

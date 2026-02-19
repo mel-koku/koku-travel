@@ -1,20 +1,68 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { useState, useCallback } from "react";
+import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { ArrowLineCTA } from "@/components/features/trip-builder/ArrowLineCTA";
 import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
 import { easeReveal, staggerChar, durationBase, magneticCTA } from "@/lib/motion";
+import { cn } from "@/lib/cn";
+import { deriveRegionsFromCities } from "@/data/regions";
+import { vibesToInterests } from "@/data/vibes";
+import type { TripBuilderData, CityId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import type { VibeId } from "@/data/vibes";
+
+const QUICK_PRESETS = [
+  { id: "tokyo", label: "Tokyo", cities: ["tokyo"] },
+  { id: "kyoto-osaka", label: "Kyoto & Osaka", cities: ["kyoto", "osaka"] },
+  { id: "tokyo-kyoto", label: "Tokyo + Kyoto", cities: ["tokyo", "kyoto", "osaka"] },
+  { id: "hokkaido", label: "Hokkaido", cities: ["sapporo", "hakodate"] },
+  { id: "kyushu", label: "Kyushu", cities: ["fukuoka", "nagasaki"] },
+] as const;
+
+const DURATION_OPTIONS = [3, 5, 7, 10] as const;
 
 type IntroStepProps = {
   onStart: () => void;
+  onQuickStart?: (data: Partial<TripBuilderData>) => void;
   sanityConfig?: TripBuilderConfig;
 };
 
-export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
+export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProps) {
   const prefersReducedMotion = useReducedMotion();
+  const [showQuickPlan, setShowQuickPlan] = useState(false);
+  const [quickDuration, setQuickDuration] = useState<number>(5);
+  const [quickPreset, setQuickPreset] = useState("tokyo-kyoto");
+
+  const handleQuickStart = useCallback(() => {
+    if (!onQuickStart) return;
+    const preset = QUICK_PRESETS.find((p) => p.id === quickPreset) ?? QUICK_PRESETS[2];
+    const cities = preset.cities as unknown as CityId[];
+    const regions = deriveRegionsFromCities(cities);
+    const vibes: VibeId[] = ["cultural_heritage", "foodie_paradise"];
+    const interests = vibesToInterests(vibes);
+
+    // Start date 2 weeks from now
+    const start = new Date();
+    start.setDate(start.getDate() + 14);
+    const end = new Date(start);
+    end.setDate(end.getDate() + quickDuration - 1);
+
+    const fmt = (d: Date) =>
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+    onQuickStart({
+      duration: quickDuration,
+      dates: { start: fmt(start), end: fmt(end) },
+      vibes,
+      interests,
+      regions,
+      cities,
+      style: "balanced",
+    });
+  }, [onQuickStart, quickPreset, quickDuration]);
 
   const heading = sanityConfig?.introHeading ?? "Your Japan";
   const subheading = sanityConfig?.introSubheading ?? "starts here";
@@ -114,6 +162,94 @@ export function IntroStep({ onStart, sanityConfig }: IntroStepProps) {
               </Magnetic>
             </div>
           </motion.div>
+
+          {/* Quick Plan — express mode */}
+          {onQuickStart && (
+            <motion.div
+              className="mt-8"
+              {...fade(0.85)}
+            >
+              {!showQuickPlan ? (
+                <button
+                  type="button"
+                  onClick={() => setShowQuickPlan(true)}
+                  className="text-sm text-foreground-secondary transition-colors hover:text-foreground"
+                >
+                  Short on time?{" "}
+                  <span className="font-semibold text-brand-primary">Quick Plan</span>
+                </button>
+              ) : (
+                <AnimatePresence>
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3, ease: easeReveal }}
+                    className="overflow-hidden"
+                  >
+                    <div className="rounded-xl border border-border bg-surface p-5 max-w-sm space-y-4">
+                      <p className="text-sm font-medium text-foreground">
+                        Pick a duration and destination
+                      </p>
+
+                      {/* Duration buttons */}
+                      <div className="space-y-1.5">
+                        <p className="text-xs text-stone uppercase tracking-wide">Duration</p>
+                        <div className="flex gap-2">
+                          {DURATION_OPTIONS.map((d) => (
+                            <button
+                              key={d}
+                              type="button"
+                              onClick={() => setQuickDuration(d)}
+                              className={cn(
+                                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                                d === quickDuration
+                                  ? "bg-brand-primary text-white"
+                                  : "bg-background text-foreground-secondary hover:text-foreground"
+                              )}
+                            >
+                              {d}d
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Destination preset chips */}
+                      <div className="space-y-1.5">
+                        <p className="text-xs text-stone uppercase tracking-wide">Destination</p>
+                        <div className="flex flex-wrap gap-2">
+                          {QUICK_PRESETS.map((p) => (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => setQuickPreset(p.id)}
+                              className={cn(
+                                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                                p.id === quickPreset
+                                  ? "bg-brand-primary text-white"
+                                  : "bg-background text-foreground-secondary hover:text-foreground"
+                              )}
+                            >
+                              {p.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Go button */}
+                      <button
+                        type="button"
+                        onClick={handleQuickStart}
+                        className="h-10 w-full rounded-xl bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98]"
+                      >
+                        Go
+                      </button>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </motion.div>
+          )}
         </div>
 
         {/* ── RIGHT COLUMN — Image Panel ── */}
