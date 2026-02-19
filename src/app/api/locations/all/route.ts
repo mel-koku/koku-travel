@@ -137,6 +137,11 @@ export async function GET(request: NextRequest) {
       dietaryOptions: row.dietary_options ?? undefined,
       coordinates: row.coordinates ?? undefined,
       isHiddenGem: row.is_hidden_gem ?? undefined,
+      nameJapanese: row.name_japanese ?? undefined,
+      nearestStation: row.nearest_station ?? undefined,
+      cashOnly: row.cash_only ?? undefined,
+      reservationInfo: row.reservation_info ?? undefined,
+      operatingHours: row.operating_hours ?? undefined,
     }));
 
     // Cache the result in-memory

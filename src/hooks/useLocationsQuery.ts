@@ -311,3 +311,42 @@ export function prefetchFilterMetadata(
     staleTime: FILTER_METADATA_STALE_TIME,
   });
 }
+
+/**
+ * React Query hook for fetching nearby locations.
+ * Only fires when lat/lng are provided.
+ */
+export type NearbyLocation = Location & { distance: number };
+
+export function useNearbyLocationsQuery(
+  lat: number | null,
+  lng: number | null,
+  options?: { radius?: number; category?: string; openNow?: boolean; limit?: number },
+) {
+  const radius = options?.radius ?? 1.5;
+  const category = options?.category ?? "";
+  const openNow = options?.openNow ?? true;
+  const limit = options?.limit ?? 20;
+
+  return useQuery({
+    queryKey: [...locationsKeys.all, "nearby", lat, lng, radius, category, openNow, limit],
+    queryFn: async (): Promise<{ data: NearbyLocation[]; total: number }> => {
+      const params = new URLSearchParams({
+        lat: String(lat),
+        lng: String(lng),
+        radius: String(radius),
+        openNow: String(openNow),
+        limit: String(limit),
+      });
+      if (category) params.set("category", category);
+
+      const res = await fetch(`/api/locations/nearby?${params}`);
+      if (!res.ok) throw new Error("Failed to load nearby locations");
+      return res.json() as Promise<{ data: NearbyLocation[]; total: number }>;
+    },
+    enabled: lat !== null && lng !== null,
+    staleTime: 2 * 60_000, // 2 min — nearby results change with time (open/closed)
+    gcTime: 5 * 60_000,
+    refetchOnWindowFocus: false,
+  });
+}

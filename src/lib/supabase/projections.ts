@@ -76,6 +76,11 @@ export type LocationDbRow = {
   // Seasonal availability fields
   is_seasonal: boolean | null;
   seasonal_type: SeasonalType | null;
+  // Practical travel info (Gemini-enriched)
+  name_japanese: string | null;
+  nearest_station: string | null;
+  cash_only: boolean | null;
+  reservation_info: "required" | "recommended" | null;
 };
 
 /**
@@ -132,7 +137,12 @@ export const LOCATION_EXPLORE_COLUMNS = `
   price_level,
   accessibility_options,
   dietary_options,
-  is_hidden_gem
+  is_hidden_gem,
+  name_japanese,
+  nearest_station,
+  cash_only,
+  reservation_info,
+  operating_hours
 `.replace(/\s+/g, "");
 
 /**
@@ -241,6 +251,11 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "accessibility_options"
   | "dietary_options"
   | "is_hidden_gem"
+  | "name_japanese"
+  | "nearest_station"
+  | "cash_only"
+  | "reservation_info"
+  | "operating_hours"
 >;
 
 /**
