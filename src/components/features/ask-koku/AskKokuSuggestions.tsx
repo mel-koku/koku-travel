@@ -1,11 +1,24 @@
 "use client";
 
-const SUGGESTIONS = [
+const SUGGESTION_POOL = [
   "Best ramen spots in Tokyo?",
-  "Tips for visiting temples?",
   "Plan 3 days in Kyoto",
+  "What's open near me right now?",
+  "Is it safe to walk at night?",
+  "What should I pack for Japan?",
+  "Surprise me in Osaka!",
+  "Tips for visiting temples?",
+  "Do I need a JR Pass?",
+  "How do I say 'thank you'?",
+  "Best spots for families in Tokyo?",
+  "What's the etiquette at onsen?",
   "Do I need cash in Japan?",
 ];
+
+// Shuffle once at module load — stable across re-renders, fresh per session
+const SUGGESTIONS = [...SUGGESTION_POOL]
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 6);
 
 type AskKokuSuggestionsProps = {
   onSelect: (suggestion: string) => void;
