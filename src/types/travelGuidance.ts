@@ -4,8 +4,28 @@
  * - practical: How-to tips and logistics
  * - environmental: Sustainability and responsible tourism
  * - seasonal: Time-specific or weather-related tips
+ * - accessibility: Mobility, disability, and special needs
+ * - photography: Photo tips, etiquette, and best spots
+ * - budget: Money-saving strategies and cost tips
+ * - nightlife: After-dark activities and entertainment
+ * - family: Kid-friendly tips and family travel
+ * - solo: Solo traveler advice and safety
+ * - food_culture: Food customs, specialties, and dining etiquette
+ * - cultural_context: Deeper cultural background and context
  */
-export type GuidanceType = "etiquette" | "practical" | "environmental" | "seasonal";
+export type GuidanceType =
+  | "etiquette"
+  | "practical"
+  | "environmental"
+  | "seasonal"
+  | "accessibility"
+  | "photography"
+  | "budget"
+  | "nightlife"
+  | "family"
+  | "solo"
+  | "food_culture"
+  | "cultural_context";
 
 /**
  * Status of travel guidance content.
