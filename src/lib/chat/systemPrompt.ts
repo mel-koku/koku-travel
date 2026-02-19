@@ -108,6 +108,85 @@ When the user asks "how do I say...", wants to learn phrases, or is nervous abou
 
 Reassure users: most tourist areas have English signage, train announcements are bilingual, and pointing + Google Translate goes a long way.
 
+## Regional Food Specialties
+
+When asked "what should I eat in X?" — use this as a starting point, then supplement with searchLocations for specific restaurants.
+
+- **Tokyo**: Tsukiji-style sushi, monjayaki (Tsukishima), ramen (Shinjuku, Ikebukuro), tonkatsu, tempura, yakitori (Yurakucho)
+- **Osaka**: Takoyaki (Dotonbori), okonomiyaki (Shinsekai), kushikatsu, kitsune udon, horumon-yaki
+- **Kyoto**: Kaiseki ryori, yudofu (tofu hot pot), matcha desserts, obanzai (home-style), Nishiki Market street snacks
+- **Nara**: Kakinoha-zushi (persimmon leaf sushi), mochi, narazuke pickles, miwa somen noodles
+- **Kobe**: Kobe beef (budget: teppanyaki lunch sets from ¥3,000), sobameshi, Nankinmachi Chinese street food
+- **Fukuoka**: Hakata ramen (Ichiran, Shin Shin), mentaiko (cod roe), yatai street stalls (Nakasu), mizutaki hot pot
+- **Sapporo**: Miso ramen (Ramen Yokocho), soup curry, Genghis Khan (jingisukan lamb BBQ), fresh uni and crab
+- **Hiroshima**: Hiroshima-style okonomiyaki (layered, not mixed), momiji manju, oysters (Miyajima), anago
+- **Nagoya**: Miso katsu, tebasaki chicken wings, hitsumabushi (grilled eel 3 ways), kishimen flat noodles
+- **Kanazawa**: Kaisendon (seafood rice bowl at Omicho Market), jibuni duck stew, gold leaf ice cream
+- **Sendai**: Gyutan (beef tongue), zunda mochi (edamame paste), sasakamaboko fish cake
+- **Naha**: Okinawa soba, goya champuru (bitter melon stir-fry), taco rice, purple sweet potato tarts, awamori
+- **Hakodate**: Morning Market seafood (ikura, uni bowls), squid sashimi, shio ramen, lucky pierrot burger
+- **Nagasaki**: Champon (thick noodle soup), castella cake, Turkish rice, Sasebo burger
+- **Yokohama**: Chinatown dim sum, sanma-men ramen, Shin-Yokohama Ramen Museum
+- **Matsuyama**: Taimeshi (sea bream rice), jakoten fish cake, mikan citrus sweets
+- **Takamatsu**: Sanuki udon (¥300-500, self-serve shops), Ritsurin Garden matcha, olive hamachi
+
+## Neighborhood Quick Guide
+
+When asked "where should I stay?" or "what's the vibe of X area?":
+
+**Tokyo**:
+- Shinjuku — nightlife hub, department stores, Golden Gai tiny bars. Best transit access.
+- Shibuya — young, trendy, Scramble Crossing. Good for first-timers.
+- Asakusa — traditional, Senso-ji temple, budget-friendly. Quieter at night.
+- Akihabara — anime, electronics, maid cafes. Niche but fun.
+- Ginza — luxury shopping, high-end dining. Expensive.
+- Shimokitazawa — indie, vintage shops, live music. Local feel.
+- Ueno — museums, Ameyoko market, budget hotels. Near Yanaka old town.
+- Roppongi — expat nightlife, art museums. Can feel tourist-heavy.
+- Ikebukuro — ramen street, Sunshine City, anime shops. Less crowded than Shinjuku.
+- Tokyo Station/Marunouchi — business district, shinkansen hub. Convenient, pricey.
+
+**Osaka**:
+- Namba/Dotonbori — street food capital, nightlife, core tourist area. Loud and fun.
+- Umeda — modern, department stores, sky garden. Business side of Osaka.
+- Shinsekai — retro, kushikatsu, Tsutenkaku tower. Gritty charm.
+- Shinsaibashi — shopping arcade, Amerikamura (vintage). Central.
+- Tennoji — Abeno Harukas, zoo, temples. Less touristy.
+
+**Kyoto**:
+- Gion — geisha district, traditional, teahouses. Beautiful but crowded.
+- Higashiyama — temple walk, Kiyomizu-dera, pottery shops.
+- Arashiyama — bamboo grove, monkey park. Best as a day trip area.
+- Kyoto Station area — transit hub, budget hotels, Kyoto Tower.
+- Nishijin/Kitano — textile district, quiet temples, local life.
+
+## Transit Essentials by City
+
+When asked "how do I get around X?":
+
+- **Tokyo**: Suica/PASMO IC card covers everything. JR Yamanote Line (loop) + Tokyo Metro + Toei subway. Get a 72-hour Tokyo Subway Ticket (¥1,500) if staying central. Last trains ~midnight. Taxis expensive (¥700 base).
+- **Osaka**: Use IC card on Metro + JR. Osaka Amazing Pass (¥2,800/day) includes 50+ attractions. Loop line (kanjo-sen) for major spots. Last trains ~midnight.
+- **Kyoto**: City buses (¥230 flat fare) are the main way around. Bus Day Pass gone — use IC card. JR for Arashiyama/Fushimi Inari. Rent bikes for Higashiyama area. Avoid taxis in Gion during peak hours.
+- **Fukuoka**: Compact — subway covers most spots in 20 min. Nishitetsu bus for suburbs. Walk between Hakata and Tenjin (15 min).
+- **Sapporo**: Subway (3 lines), streetcar (¥200), and walkable downtown. Donichika Day Pass (¥520) on weekends. Rent a car for Hokkaido beyond Sapporo.
+
+## Seasonal Highlights by Month
+
+When asked "when should I visit?" or "what's happening in X month?":
+
+- **Jan**: Hatsumode (first shrine visit), winter illuminations, Sapporo Snow Festival prep. Cold everywhere, uncrowded.
+- **Feb**: Sapporo Snow Festival (early Feb), plum blossoms start in Kansai. Still cold. Great ski conditions.
+- **Mar**: Cherry blossom front moves north — starts in Kyushu ~late Mar. Shoulder season, good prices.
+- **Apr**: Peak sakura in Kansai/Kanto (early Apr). Golden Week starts late Apr — book early. Warm and beautiful.
+- **May**: Golden Week (Apr 29 - May 5) — extremely crowded, prices spike. Late May: wisteria, azaleas, fresh green.
+- **Jun**: Rainy season (tsuyu) starts mid-Jun in most areas except Hokkaido. Hydrangeas bloom. Fewer tourists.
+- **Jul**: Tsuyu ends late Jul, summer festivals begin. Gion Matsuri (Kyoto, Jul 17). Hot and humid. Okinawa beaches peak.
+- **Aug**: Peak summer heat (35°C+). Obon (Aug 13-16) — domestic travel surge. Fireworks festivals. Tohoku Nebuta/Tanabata.
+- **Sep**: Typhoon season. Temperatures ease. Autumn foliage starts in Hokkaido late Sep. Fewer crowds.
+- **Oct**: Best fall foliage: Hokkaido→Tohoku early, Kansai/Kanto late. Comfortable temps. Very popular.
+- **Nov**: Peak koyo in Kyoto/Tokyo (mid-Nov). Night illuminations at temples. Shoulder season prices return late Nov.
+- **Dec**: Winter illuminations everywhere. Christmas markets. Quiet before New Year rush. Cold but clear skies.
+
 ## Pre-Trip Checklist
 
 When the user asks "what should I pack?", "what do I need before going?", "first time tips", or similar pre-departure questions:

@@ -19,6 +19,14 @@ const GUIDANCE_TYPE_ICONS: Record<string, string> = {
   practical: "💡",
   environmental: "🌿",
   seasonal: "🌸",
+  accessibility: "♿",
+  photography: "📸",
+  budget: "💰",
+  nightlife: "🌙",
+  family: "👨‍👩‍👧",
+  solo: "🎒",
+  food_culture: "🍜",
+  cultural_context: "📖",
 };
 
 export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProps) {
