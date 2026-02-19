@@ -217,6 +217,199 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 ### Explore → Itinerary
 Favorites-only flow: users heart locations on Explore. During trip generation, `TripBuilderClient` passes `favoriteIds` from `AppState.favorites` to `/api/itinerary/plan`. The generator matches favorites to trip cities and injects them as priority activities tagged `"favorite"`. No "Add to trip" button on explore cards.
 
+### Dashboard (`src/app/dashboard/DashboardClient.tsx`)
+- Trip list with soft-delete (undo within timeout via `restoreTrip`)
+- Inline itinerary preview per trip (`DashboardItineraryPreview`)
+- Account + Stats sub-sections
+- First authenticated load: calls `syncLocalToCloudOnce()` to merge local data to Supabase
+- Unauthenticated state shows sign-in prompt (main login entry point)
+
+### Guide Authors (`src/app/guides/authors/`)
+- `/guides/authors` lists all Sanity authors; `/guides/authors/[slug]` shows author profile + their guides
+- ISR `revalidate = 3600`, text from `pagesContent` singleton
+
+---
+
+## Client State & Sync
+
+### AppState (`src/state/AppState.tsx`)
+Global React Context — single source of truth for all client-side state.
+- **Persists** to `localStorage` (key: `APP_STATE_STORAGE_KEY`, debounced writes)
+- **Shape**: `user`, `favorites`, `guideBookmarks`, `trips`, `isLoadingRefresh`, `loadingBookmarks`, `dayEntryPoints`, `editHistory`, `currentHistoryIndex` + all action functions
+- **Auth sync**: Listens to Supabase `onAuthStateChange` → `refreshFromSupabase()` fetches favorites, bookmarks, trips in parallel → merges remote trips with local via timestamp-based conflict resolution (`mergeTrips`)
+- **Trip mutations**: Debounced 2s before syncing to Supabase (`TRIP_SYNC_DEBOUNCE_MS`)
+- **Legacy migration**: Bootstraps from localStorage, merges legacy `WISHLIST_STORAGE_KEY` favorites, then deletes the legacy key
+- **WishlistContext** (`src/context/WishlistContext.tsx`): Thin adapter re-exposing `AppState.favorites` as `useWishlist()`
+
+### Undo/Redo (`src/services/trip/editHistory.ts`)
+Full snapshot-based undo/redo for itinerary edits, per trip.
+- Stores `previousItinerary` + `nextItinerary` snapshots (not diffs)
+- Capped at `MAX_EDIT_HISTORY_ENTRIES`, oldest dropped
+- Edit types: `replaceActivity`, `deleteActivity`, `reorderActivities`, `addActivity`
+- Exposed via `canUndo(tripId)` / `canRedo(tripId)` / `undo(tripId)` / `redo(tripId)` from `useAppState()`
+
+### Sync Layer (`src/services/sync/`)
+- **`favoriteSync.ts`**: Optimistic toggle with `shouldRevert` on Supabase failure
+- **`bookmarkSync.ts`**: Same optimistic pattern
+- **`tripSync.ts`**: Create, upsert, delete. `mergeTrips` resolves local vs remote by `updatedAt` timestamp
+- **`accountSync.ts`** (`src/lib/accountSync.ts`): One-time `syncLocalToCloudOnce()` on first sign-in — pushes local favorites/bookmarks with bidirectional reconciliation
+
+### Providers (`src/providers/`)
+- **QueryProvider**: TanStack React Query wrapper
+- **LenisProvider**: Lenis smooth scroll, exposes `useLenis()`
+- **CursorProvider**: Custom cursor state via `useCursor()`
+
+### TanStack Query Hooks (`src/hooks/`)
+`useLocationsQuery`, `useFavoritesQuery`, `useBookmarksQuery`, `useLocationDetailsQuery`, `useActivityLocations`, `useReplacementCandidates`, `useLocationSearch`, `usePlacesAutocomplete` (Google Places + LRU cache), `usePlanItinerary` (mutation for `/api/itinerary/plan`), `useFirstFavoriteToast`
+
+---
+
+## Scoring & Intelligence
+
+### Location Scoring (`src/lib/scoring/locationScoring.ts`)
+10-factor scoring system used by refinement engine and location picker.
+
+| Factor | Max Pts | Notes |
+|--------|---------|-------|
+| Interest match | 30 | Category → interest mapping table |
+| Rating quality | 25 | Rating (0-15) + review count (0-10) |
+| Logistical fit | -100 to 20 | **Hard -100 penalty for >50km** (data corruption guard) |
+| Budget fit | 10 | Google `priceLevel` preferred; `minBudget` fallback |
+| Accessibility | 0-10 | `accessibilityOptions` from Google Places |
+| Diversity bonus | -5 to +5 | Category streak penalty |
+| Neighborhood diversity | -5 to +5 | Consecutive same-area penalty |
+| Weather fit | -10 to +10 | Indoor/outdoor vs weather condition |
+| Time-of-day optimization | -5 to +10 | `OPTIMAL_TIMES_BY_CATEGORY` lookup |
+| Group fit | -8 to +8 | Group type preferences + `goodForGroups` flag |
+
+### Diversity Rules (`src/lib/scoring/diversityRules.ts`)
+- Max 2 consecutive same-category activities (3rd filtered)
+- Max 2 consecutive same-neighborhood activities
+- `calculateDiversityScore()` returns 0-100
+
+### Weather Integration (`src/lib/weather/`)
+- OpenWeatherMap 5-day forecast API
+- **Only 5 cities have coordinates**: Tokyo, Osaka, Kyoto, Nara, Yokohama — all others get mock data (every 5th day rainy, 15-25°C)
+- Aggregates 3-hour slots to daily; any rain → day marked rainy
+- Outdoor categories penalized -5 to -8 in rain; indoor boosted +4 to +5
+
+### User Preference Learning (`src/lib/learning/`)
+- Persists to `localStorage` key `koku_user_preferences`
+- Events: `favorite` (+2 category), `unfavorite` (-0.5), `replace` (-1), `skip` (-0.5)
+- `calculateLocationPreferenceScore()` returns -5 to +5 adjustment
+
+### Trip Planning Warnings (`src/lib/planning/tripWarnings.ts`)
+Non-blocking warnings on Review step:
+- **Pacing**: 3 cities/3 days → caution; 5+ cities/5 days → warning
+- **Distance**: Hokkaido + Kyushu/Okinawa → special warning; >800km gap → caution
+- **Holidays**: New Year, Golden Week, Obon, Silver Week
+- **Seasonal**: Rainy season, cherry blossom, autumn leaves, summer heat, winter
+
+### Conflict Detection (`src/lib/validation/itineraryConflicts.ts`)
+`detectItineraryConflicts(itinerary)` scans all days for:
+- `closed_during_visit` (error) — outside operating hours, handles overnight venues
+- `insufficient_travel_time` (warning/error) — gap < travel duration
+- `overlapping_activities` (error) — departure > next arrival
+- `reservation_recommended` (info) — kaiseki/omakase, high-rated dinner spots
+
+### Day Refinement (`src/lib/server/refinementEngine.ts`, `POST /api/itinerary/refine`)
+6 types: `too_busy` (remove by pace), `too_light` (fetch + score + add), `more_food`, `more_culture`, `more_kid_friendly`, `more_rest`
+
+### Region Scoring (`src/lib/tripBuilder/regionScoring.ts`)
+- 70% vibe match + 30% proximity weight
+- Entry point region always first
+- `autoSelectRegions`: 1 region (≤5d), 2 (≤9d), 3 (10+d)
+
+### City Relevance (`src/lib/tripBuilder/cityRelevance.ts`)
+Pre-computed from `src/data/cityInterests.json` (220KB, lazy-loaded). Scores cities by location count matching selected interests, normalized to 100%.
+
+### Location Capacity (`src/lib/tripBuilder/locationCapacity.ts`)
+Warns if selected cities lack enough non-food locations to fill trip (3 activities/day × duration, 30% headroom). Shows day-trip suggestions.
+
+### Traveler Profile (`src/lib/domain/travelerProfile.ts`)
+Internal domain object built from `TripBuilderData` via `buildTravelerProfile()`. Fields: pace, interests, budget, mobility, dietary, group (solo/couple/family/friends/business), weatherPreferences, experienceLevel.
+
+---
+
+## Infrastructure
+
+### Auth System (Supabase Auth)
+- **Middleware** (`src/middleware.ts`): Adds `X-Request-ID` + `X-Start-Time` headers. Public routes skip `getUser()`. Protected routes (`/api/trips`, `/api/favorites`, `/api/bookmarks`) return 401. Auth routes redirect authenticated users to `/dashboard`.
+- **Client**: `src/lib/supabase/client.ts` (browser), `src/lib/supabase/server.ts` (server components)
+- **OAuth callback**: `src/app/auth/callback/route.ts`
+- **Sign-in**: `/signin` page (not `/auth/login`)
+- **Graceful degradation**: If Supabase not configured, middleware passes through
+
+### Rate Limiting (`src/lib/api/rateLimit.ts`)
+Two-tier: Upstash Redis (production) → in-memory Map (dev fallback).
+
+| Route | Limit |
+|-------|-------|
+| `/api/locations` | 100/min |
+| `/api/places/*` | 60/min |
+| `/api/itinerary/plan` | 20/min |
+| `/api/itinerary/refine` | 30/min |
+| `/api/itinerary/availability` | 30/min |
+| `/api/routing/*` | 100/min |
+| `/api/health` | 200/min |
+| `/api/sanity/webhook` | 30/min |
+
+Key format: `{clientIp}:{pathname}`. No-IP clients capped at 20/min.
+
+### Itinerary Cache (`src/lib/cache/itineraryCache.ts`)
+24-hour Redis cache (key prefix `@koku-travel/itinerary`). Cache key is 32-bit hash of normalized builder data (sorted cities, interests, dates, style, budget, accessibility). Returns full `{ trip, itinerary, dayIntros }`.
+
+### Routing System (`src/lib/routing/`)
+Multi-provider with automatic fallback. Resolution: `ROUTING_PROVIDER` env → first enabled (Mapbox → Google). 5s timeout per provider; falls back to heuristic on failure. Heuristic uses Haversine + average speeds per travel mode.
+
+| File | Purpose |
+|------|---------|
+| `provider.ts` | Provider resolution + fallback chain |
+| `mapbox.ts` | Mapbox Directions API |
+| `google.ts` | Google Directions API |
+| `heuristic.ts` | Haversine + speed estimates |
+| `cache.ts` | In-memory route cache |
+| `citySequence.ts` | Inter-city travel ordering |
+
+### Cost Control (`src/lib/cost/`, `src/lib/env/featureFlags.ts`)
+- **Google Places limiter**: Max 50 API calls per trip ID. Resets on completion. Disabled by `CHEAP_MODE` or `ENABLE_GOOGLE_PLACES=false`.
+- **Mapbox limiter**: Similar pattern
+- **Feature flags**: `featureFlags.enableGooglePlaces`, `.enableMapbox`, `.cheapMode` — computed getters checking env vars at runtime
+
+### API Security (`src/lib/api/`)
+| Module | Purpose |
+|--------|---------|
+| `sanitization.ts` | `sanitizePath()`, `sanitizeRedirectUrl()` (blocks `javascript:`, `data:`, protocol-relative), `sanitizeString()`, `isSafeIdentifier()` |
+| `middleware.ts` | `createRequestContext()`, `requireAuth()`, `getOptionalAuth()`, `requireJsonContentType()`, `getClientIp()` |
+| `bodySizeLimit.ts` | Request body size enforcement |
+| `schemas.ts` | Zod schemas for API validation |
+| `errors.ts` | Standardized error responses |
+| `pagination.ts` | Pagination helpers |
+
+### Availability Service (`src/lib/availability/availabilityService.ts`, `GET /api/itinerary/availability`)
+Checks location `operatingHours.periods[]` from DB (no Google Places call). Supports overnight venues. Flags restaurants with rating ≥ 4.5 as requiring reservations.
+
+### Observability
+- **Logger** (`src/lib/logger.ts`): Wraps Sentry (`@sentry/nextjs`). Sanitizes sensitive keys (password, token, secret, key, authorization) from context up to depth 10.
+- **Web Vitals** (`src/lib/web-vitals.ts`, `src/components/WebVitals.tsx`): CLS, LCP, INP, FCP, TTFB forwarded to Google Analytics via `gtag` or custom `NEXT_PUBLIC_ANALYTICS_ENDPOINT`.
+- **Performance** (`src/lib/api/performance.ts`): `trackApiPerformance()` logs slow requests (>1s)
+
+### Env Validation (`src/lib/env.ts`)
+- Runs at module load. Production without `VALIDATE_ENV=false`: throws if Supabase vars missing.
+- `VALIDATE_ENV=false` blocked in Vercel production (`VERCEL_ENV=production`)
+- Exports typed `env` object with getters
+
+### File Cache (`src/lib/api/fileCache.ts`)
+Synchronous `fs`-based cache at `/tmp/koku-travel-cache/`. Needed because Turbopack blocks event loop → async Supabase fetches timeout. `seed-cache` pre-populates this.
+
+### Sitemap + SEO
+- Dynamic sitemap at `/sitemap.xml`: static routes + all published guides + experiences
+- Uses `NEXT_PUBLIC_SITE_URL`, defaults to `https://kokutravel.com`
+- `robots.ts` for crawler directives
+
+### UI Kit Dev Pages (`/ui/*`)
+8 pages: index, `/ui/colors`, `/ui/typography`, `/ui/cards`, `/ui/components`, `/ui/layout`, `/ui/motion`, `/ui/overlays`
+
 ---
 
 ## Data & Quality
@@ -245,22 +438,48 @@ Favorites-only flow: users heart locations on Explore. During trip generation, `
 
 ## Environment Variables
 
+### Core Services
 | Variable | Purpose | Sensitive |
 |----------|---------|-----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | No |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase read-only key | No |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase admin (bypasses RLS) | Yes |
 | `NEXT_PUBLIC_SANITY_PROJECT_ID` | Sanity project ID | No |
 | `NEXT_PUBLIC_SANITY_DATASET` | Sanity dataset | No |
 | `SANITY_API_VERSION` | Sanity API version | No |
 | `SANITY_API_READ_TOKEN` | Sanity read access | Yes |
 | `SANITY_API_WRITE_TOKEN` | Sanity write access | Yes |
 | `SANITY_REVALIDATE_SECRET` | Webhook auth | Yes |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL | No |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase read-only key | No |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase admin (bypasses RLS) | Yes |
-| `CHEAP_MODE=true` | Skip Mapbox, use heuristic times | No |
-| `ROUTING_PROVIDER` | `"mapbox"` or `"google"` | No |
-| `ROUTING_MAPBOX_ACCESS_TOKEN` | Mapbox API token | Yes |
+
+### External APIs
+| Variable | Purpose | Sensitive |
+|----------|---------|-----------|
 | `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini API key (Ask Koku chat) | Yes |
+| `GOOGLE_PLACES_API_KEY` | Google Places details/photos | Yes |
+| `ROUTING_MAPBOX_ACCESS_TOKEN` | Mapbox routing API token | Yes |
+| `ROUTING_GOOGLE_MAPS_API_KEY` | Google Directions API | Yes |
+| `GOOGLE_DIRECTIONS_API_KEY` | Google Directions (alt key) | Yes |
+| `NEXT_PUBLIC_OPENWEATHER_API_KEY` | OpenWeatherMap forecasts (5 cities only) | Yes |
+
+### Infrastructure
+| Variable | Purpose | Sensitive |
+|----------|---------|-----------|
+| `UPSTASH_REDIS_REST_URL` | Redis for rate limiting + itinerary cache | Yes |
+| `UPSTASH_REDIS_REST_TOKEN` | Redis auth token | Yes |
+| `NEXT_PUBLIC_SITE_URL` | Sitemap base URL (default: kokutravel.com) | No |
+| `NEXT_PUBLIC_ANALYTICS_ENDPOINT` | Custom analytics endpoint | No |
+
+### Feature Flags
+| Variable | Purpose | Sensitive |
+|----------|---------|-----------|
+| `CHEAP_MODE=true` | Skip Mapbox, use heuristic times, no external APIs | No |
+| `ROUTING_PROVIDER` | `"mapbox"` or `"google"` | No |
 | `ENABLE_CHAT` | Enable/disable chat (`"false"` to disable) | No |
+| `ENABLE_GOOGLE_PLACES` | `"false"` to disable Google Places calls | No |
+| `ENABLE_MAPBOX` | `"false"` to disable Mapbox | No |
+| `ENFORCE_REDIS_RATE_LIMIT` | `"false"` to bypass Redis requirement in prod (emergency) | No |
+| `VALIDATE_ENV` | `"false"` to skip env validation (blocked in Vercel prod) | No |
+| `NEXT_PUBLIC_USE_MOCK_ITINERARY` | Use mock itinerary data (skip generation) | No |
 
 ## Dev Commands
 
