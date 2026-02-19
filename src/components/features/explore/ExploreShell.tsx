@@ -180,14 +180,20 @@ export function ExploreShell({ content }: ExploreShellProps) {
   const [discoverCategory, setDiscoverCategory] = useState("");
   const geoLocation = useCurrentLocation();
 
+  // Fallback to Tokyo Station when geolocation is denied/unavailable
+  const FALLBACK_POSITION = { lat: 35.6812, lng: 139.7671 };
+  const usingFallback = !geoLocation.isLoading && geoLocation.error !== null && !geoLocation.position;
+  const discoverLat = geoLocation.position?.lat ?? (usingFallback ? FALLBACK_POSITION.lat : null);
+  const discoverLng = geoLocation.position?.lng ?? (usingFallback ? FALLBACK_POSITION.lng : null);
+
   const {
     data: nearbyData,
     isLoading: isNearbyLoading,
     error: nearbyError,
   } = useNearbyLocationsQuery(
-    geoLocation.position?.lat ?? null,
-    geoLocation.position?.lng ?? null,
-    { category: discoverCategory || undefined, openNow: true, radius: 1.5, limit: 20 },
+    discoverLat,
+    discoverLng,
+    { category: discoverCategory || undefined, openNow: true, radius: usingFallback ? 5 : 1.5, limit: 20 },
   );
 
   const handleDiscoverToggle = useCallback(() => {
@@ -576,29 +582,35 @@ export function ExploreShell({ content }: ExploreShellProps) {
               <div className="h-8 w-8 rounded-full border-2 border-sage border-t-transparent animate-spin mb-4" />
               <p className="text-sm text-stone">Locating you...</p>
             </div>
-          ) : geoLocation.error ? (
-            <div className="mx-4 rounded-xl border border-border bg-surface/30 p-8 text-center">
-              <p className="font-serif italic text-lg text-foreground mb-2">
-                Location unavailable
-              </p>
-              <p className="text-sm text-stone mb-4">{geoLocation.error}</p>
-              <button
-                onClick={geoLocation.request}
-                className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white hover:bg-brand-primary/90 transition"
-              >
-                Try again
-              </button>
-            </div>
           ) : (
-            <DiscoverNowPanel
-              locations={nearbyData?.data ?? []}
-              isLoading={isNearbyLoading}
-              error={nearbyError instanceof Error ? nearbyError.message : null}
-              selectedCategory={discoverCategory}
-              onCategoryChange={setDiscoverCategory}
-              onSelectLocation={handleSelectLocation}
-              onSurpriseMe={handleSurpriseMe}
-            />
+            <>
+              {usingFallback && (
+                <div className="mx-4 mb-6 rounded-xl border border-border bg-surface/30 px-5 py-4 flex items-start gap-3">
+                  <svg className="h-5 w-5 text-warning shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <div>
+                    <p className="text-sm text-foreground">
+                      Showing places near Tokyo Station as a default.
+                    </p>
+                    <p className="text-xs text-stone mt-1">
+                      Enable location access in your browser settings to discover places near you.
+                    </p>
+                  </div>
+                </div>
+              )}
+              <DiscoverNowPanel
+                locations={nearbyData?.data ?? []}
+                isLoading={isNearbyLoading}
+                error={nearbyError instanceof Error ? nearbyError.message : null}
+                selectedCategory={discoverCategory}
+                onCategoryChange={setDiscoverCategory}
+                onSelectLocation={handleSelectLocation}
+                onSurpriseMe={handleSurpriseMe}
+              />
+            </>
           )}
         </main>
       ) :
