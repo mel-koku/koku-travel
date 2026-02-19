@@ -113,10 +113,11 @@ export function checkOpeningHoursFit(
     };
   }
 
-  // Get weekday if date provided
+  // Get weekday if date provided (parse locally to avoid UTC drift)
   let weekday: string | undefined;
   if (date) {
-    const dateObj = new Date(date);
+    const parts = date.split("-");
+    const dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
     const weekdays = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
     weekday = weekdays[dateObj.getDay()];
   }

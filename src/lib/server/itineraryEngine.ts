@@ -192,11 +192,24 @@ export async function generateTripFromBuilderData(
   // Optimize route order before planning times
   const optimizedItinerary = optimizeItineraryRoutes(rawItinerary, builderData);
 
+  // Build dayEntryPoints so the planner knows where each day starts
+  // Day 1: entry point (airport/station). Days 2+: city center (hotel proxy).
+  const dayEntryPoints: Record<string, { startPoint?: { coordinates: { lat: number; lng: number } } }> = {};
+  for (let i = 0; i < optimizedItinerary.days.length; i++) {
+    const day = optimizedItinerary.days[i];
+    if (!day) continue;
+    if (i === 0 && builderData.entryPoint?.coordinates) {
+      dayEntryPoints[day.id] = { startPoint: { coordinates: builderData.entryPoint.coordinates } };
+    } else if (day.cityId) {
+      dayEntryPoints[day.id] = { startPoint: { coordinates: getCityCenterCoordinates(day.cityId) } };
+    }
+  }
+
   // Schedule the itinerary to add arrival/departure times
   // This uses the dayStartTime from builderData or defaults to 09:00
   const itinerary = await planItinerary(optimizedItinerary, {
     defaultDayStart: builderData.dayStartTime ?? "09:00",
-  });
+  }, dayEntryPoints);
   logger.info("Scheduled itinerary with times", {
     dayStartTime: builderData.dayStartTime ?? "09:00",
     daysCount: itinerary.days.length,
