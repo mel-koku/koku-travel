@@ -4,12 +4,14 @@ import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { AskKokuChat } from "./AskKokuChat";
+import type { AskKokuContext } from "./AskKokuSuggestions";
 
 type AskKokuPanelProps = {
   onClose: () => void;
+  context?: AskKokuContext;
 };
 
-export function AskKokuPanel({ onClose }: AskKokuPanelProps) {
+export function AskKokuPanel({ onClose, context }: AskKokuPanelProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -31,7 +33,7 @@ export function AskKokuPanel({ onClose }: AskKokuPanelProps) {
       </div>
 
       {/* Chat area */}
-      <AskKokuChat onClose={onClose} />
+      <AskKokuChat onClose={onClose} context={context} />
     </motion.div>
   );
 }

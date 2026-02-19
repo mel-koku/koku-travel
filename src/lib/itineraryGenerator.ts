@@ -25,6 +25,7 @@ import {
   resolveCitySequence,
 } from "@/lib/routing/citySequence";
 import { pickLocationForTimeSlot } from "@/lib/selection/locationPicker";
+import { formatRecommendationReason } from "@/lib/scoring/reasonFormatter";
 
 /**
  * Food-related location categories for meal detection.
@@ -418,6 +419,7 @@ export async function generateItinerary(
         neighborhood: favLoc.neighborhood ?? favLoc.city,
         tags: favLoc.category ? [favLoc.category, "favorite"] : ["favorite"],
         notes: "From your favorites",
+        recommendationReason: { primaryReason: "From your favorites" },
         ...(favLoc.description && { description: favLoc.description }),
         ...(isFood && { mealType: inferMealTypeFromTimeSlot(timeSlot) }),
       };
@@ -515,12 +517,13 @@ export async function generateItinerary(
           usedLocationNames, // Pass used names to prevent same-name duplicates
         );
         
-        const location = locationResult && "_scoringReasoning" in locationResult 
-          ? (locationResult as Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown })
+        const location = locationResult && "_scoringReasoning" in locationResult
+          ? (locationResult as Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown; _runnerUps?: { name: string; id: string }[] })
           : locationResult;
         const scoringData = location && "_scoringReasoning" in location ? {
           reasoning: location._scoringReasoning,
           breakdown: location._scoreBreakdown,
+          runnerUps: (location as { _runnerUps?: { name: string; id: string }[] })._runnerUps,
         } : null;
 
         if (!location) {
@@ -577,17 +580,12 @@ export async function generateItinerary(
             const locationKey = normalizeKey(location.city);
             dayCityUsage.set(locationKey, (dayCityUsage.get(locationKey) ?? 0) + 1);
             // Build recommendation reason from scoring data
-            const recommendationReason = scoringData?.reasoning && scoringData.reasoning.length > 0 ? {
-              primaryReason: scoringData.reasoning[0] ?? "Selected based on your interests and preferences",
-              factors: scoringData.breakdown ? [
-                { factor: "Interest Match", score: scoringData.breakdown.interestMatch, reasoning: scoringData.reasoning[0] ?? "" },
-                { factor: "Rating Quality", score: scoringData.breakdown.ratingQuality, reasoning: scoringData.reasoning[1] ?? "" },
-                { factor: "Logistical Fit", score: scoringData.breakdown.logisticalFit, reasoning: scoringData.reasoning[2] ?? "" },
-                { factor: "Budget Fit", score: scoringData.breakdown.budgetFit, reasoning: scoringData.reasoning[3] ?? "" },
-                { factor: "Accessibility", score: scoringData.breakdown.accessibilityFit, reasoning: scoringData.reasoning[4] ?? "" },
-                { factor: "Diversity", score: scoringData.breakdown.diversityBonus, reasoning: scoringData.reasoning[5] ?? "" },
-              ].filter(f => f.reasoning) : undefined,
-            } : undefined;
+            const recommendationReason = scoringData?.breakdown
+              ? formatRecommendationReason(scoringData.breakdown, location, {
+                  timeSlot,
+                  alternativesConsidered: scoringData.runnerUps?.map((r) => r.name),
+                })
+              : undefined;
 
             // Build activity object with optional meal info for food locations
             // Only assign one full meal per slot (breakfast/lunch/dinner). Additional food places become "snacks"

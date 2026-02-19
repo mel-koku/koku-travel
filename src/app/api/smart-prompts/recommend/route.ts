@@ -200,6 +200,9 @@ function createMealActivity(
     coordinates: restaurant.coordinates,
     mealType: mealType,
     notes: `${mealType.charAt(0).toUpperCase() + mealType.slice(1)} recommendation`,
+    recommendationReason: {
+      primaryReason: `Suggested to fill a ${mealType} gap in your day`,
+    },
   };
 }
 
@@ -240,6 +243,9 @@ function createExperienceActivity(
     tags: location.category ? [location.category] : undefined,
     locationId: location.id,
     coordinates: location.coordinates,
+    recommendationReason: {
+      primaryReason: "Suggested to fill a gap in your day",
+    },
   };
 }
 

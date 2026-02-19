@@ -47,16 +47,36 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { messages } = await request.json();
+    const body = await request.json();
+    const messages = body.messages;
+    const context = body.context ?? request.headers.get("X-Koku-Context");
 
     // Cap conversation to last 20 messages for cost control
     const recentMessages = messages.slice(-20);
+
+    // Build context-aware system prompt
+    let systemPrompt = SYSTEM_PROMPT;
+    if (context) {
+      const contextParts: string[] = [];
+      if (context === "explore") {
+        contextParts.push("The user is currently browsing the Explore map. Prioritize nearby discovery, open-now suggestions, and location-specific advice.");
+      } else if (context === "itinerary") {
+        contextParts.push("The user is viewing their itinerary. Prioritize schedule advice, logistics between stops, and meal suggestions for gaps in their day.");
+      } else if (context === "trip-builder") {
+        contextParts.push("The user is building a trip. Help with city selection, duration planning, and vibe matching.");
+      } else if (context === "dashboard") {
+        contextParts.push("The user is on their dashboard. Help with trip comparisons, general planning, and pre-trip preparation.");
+      }
+      if (contextParts.length > 0) {
+        systemPrompt += `\n\n## Current Context\n\n${contextParts.join("\n")}`;
+      }
+    }
 
     const modelMessages = await convertToModelMessages(recentMessages);
 
     const result = streamText({
       model: google("gemini-2.5-flash"),
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: modelMessages,
       tools: chatTools,
       maxOutputTokens: 1024,
