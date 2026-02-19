@@ -151,7 +151,7 @@ async function determineVisitDuration(
 }
 
 function getOperatingPeriodForDay(hours: LocationOperatingHours | undefined, weekday?: Weekday): LocationOperatingPeriod | null {
-  if (!hours || !weekday) {
+  if (!hours || !weekday || !Array.isArray(hours.periods)) {
     return null;
   }
   return hours.periods.find((period) => period.day === weekday) ?? null;
