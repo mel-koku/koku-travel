@@ -451,15 +451,25 @@ html.lenis-stopped {
   body {
     background: white !important;
     color: black !important;
+    font-size: 12pt !important;
   }
+
+  /* Hide non-content elements */
   header,
   nav,
   footer,
   [data-lenis-prevent],
   button:not([data-print-visible]),
-  [role="dialog"] {
+  [role="dialog"],
+  [data-map-container],
+  [data-smart-prompts],
+  [data-sidebar],
+  [data-ask-koku],
+  [data-confidence-dashboard] {
     display: none !important;
   }
+
+  /* Expand itinerary to full width */
   [data-itinerary-activities] {
     overflow: visible !important;
     border: none !important;
@@ -467,5 +477,59 @@ html.lenis-stopped {
   }
   .lg\:w-1\/2 {
     width: 100% !important;
+  }
+
+  /* Page breaks between days */
+  [data-itinerary-day] {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    page-break-after: auto;
+  }
+  [data-itinerary-day]:not(:first-child) {
+    page-break-before: auto;
+  }
+
+  /* Activity rows — compact for print */
+  [data-activity-row] {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 4pt 0 !important;
+    border-bottom: 0.5pt solid #ccc !important;
+  }
+
+  /* Trip name header for print */
+  [data-print-header] {
+    display: block !important;
+    font-size: 18pt;
+    font-weight: bold;
+    margin-bottom: 12pt;
+    text-align: center;
+  }
+
+  /* Footer attribution */
+  [data-print-footer] {
+    display: block !important;
+    text-align: center;
+    font-size: 9pt;
+    color: #888;
+    margin-top: 24pt;
+    page-break-before: auto;
+  }
+
+  /* Hide images to save ink */
+  [data-activity-image] {
+    display: none !important;
+  }
+
+  /* Links — show URL */
+  a[href]::after {
+    content: none;
+  }
+
+  /* Remove backgrounds and shadows */
+  * {
+    box-shadow: none !important;
+    text-shadow: none !important;
   }
 }

@@ -4,10 +4,13 @@ import { memo, useCallback, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Itinerary } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
+import type { Location } from "@/types/location";
 import {
   calculateTripHealth,
   getHealthLevel,
   formatItineraryForExport,
+  formatItineraryForCSV,
+  analyzeAccessibility,
   type DayHealth,
   type ChecklistItem,
 } from "@/lib/itinerary/tripHealth";
@@ -17,21 +20,34 @@ type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
   conflicts: ItineraryConflict[];
   tripStartDate?: string;
+  tripCities?: string[];
   onClose: () => void;
   onSelectDay?: (dayIndex: number) => void;
+  /** Map of location ID → Location for accessibility analysis */
+  locationMap?: Map<string, Location>;
+  /** Whether traveler has mobility needs */
+  mobilityNeeds?: boolean;
 };
 
 export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   itinerary,
   conflicts,
   tripStartDate,
+  tripCities,
   onClose,
   onSelectDay,
+  locationMap,
+  mobilityNeeds,
 }: TripConfidenceDashboardProps) {
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
     [itinerary, conflicts],
   );
+
+  const accessibility = useMemo(() => {
+    if (!mobilityNeeds || !locationMap) return null;
+    return analyzeAccessibility(itinerary, locationMap);
+  }, [mobilityNeeds, locationMap, itinerary]);
 
   const [checkedItems, setCheckedItems] = useState<Set<string>>(
     () => loadChecklist(),
@@ -60,6 +76,19 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   const handlePrint = useCallback(() => {
     window.print();
   }, []);
+
+  const handleCSV = useCallback(() => {
+    const csv = formatItineraryForCSV(itinerary, tripStartDate);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const cities = tripCities?.join("-") ?? "trip";
+    const date = tripStartDate ?? new Date().toISOString().split("T")[0];
+    a.href = url;
+    a.download = `koku-trip-${cities}-${date}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [itinerary, tripStartDate, tripCities]);
 
   const level = getHealthLevel(health.overall);
 
@@ -185,12 +214,54 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         </div>
       )}
 
+      {/* Accessibility — only when traveler has mobility needs */}
+      {accessibility && (
+        <div className="space-y-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
+            Accessibility
+          </h3>
+          <div className="rounded-xl border border-border bg-surface/30 p-3 space-y-2">
+            <p className="text-sm text-foreground">
+              {accessibility.accessibleCount} of {accessibility.totalActivities} activities
+              have confirmed wheelchair access
+            </p>
+            {accessibility.unknownCount > 0 && (
+              <p className="text-xs text-stone">
+                {accessibility.unknownCount} unconfirmed — check before you go.
+              </p>
+            )}
+            {accessibility.issues.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {accessibility.issues.map((issue, i) => (
+                  <div key={i} className="flex items-start gap-2 text-xs">
+                    <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-warning" />
+                    <span className="text-stone">{issue.message}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          {accessibility.checklist.length > 0 && (
+            <div className="rounded-xl border border-border bg-surface/30 divide-y divide-border/50">
+              {accessibility.checklist.map((item) => (
+                <ChecklistRow
+                  key={item.id}
+                  item={item}
+                  checked={checkedItems.has(item.id)}
+                  onToggle={() => toggleChecked(item.id)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Export Actions */}
       <div className="space-y-2">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
           Export
         </h3>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
             onClick={handleCopy}
             className="flex items-center gap-1.5 rounded-xl border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
@@ -211,6 +282,15 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
                 Copy
               </>
             )}
+          </button>
+          <button
+            onClick={handleCSV}
+            className="flex items-center gap-1.5 rounded-xl border border-border bg-surface/50 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-surface transition"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            CSV
           </button>
           <button
             onClick={handlePrint}
@@ -383,6 +463,13 @@ function CategoryIcon({ category }: { category: ChecklistItem["category"] }) {
         <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
           <circle cx="12" cy="12" r="9" />
           <path d="M12 7v10M9 9h4.5a1.5 1.5 0 010 3H9.5a1.5 1.5 0 000 3H15" strokeLinecap="round" />
+        </svg>
+      );
+    case "accessibility":
+      return (
+        <svg className={cls} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}>
+          <circle cx="12" cy="4.5" r="1.5" />
+          <path d="M7 8h10M12 8v4m-3 4a3 3 0 006 0M9 12l-2 4m6-4l2 4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
     default:
