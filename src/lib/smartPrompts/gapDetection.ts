@@ -735,6 +735,14 @@ const GUIDANCE_ICON_MAP: Record<string, string> = {
   practical: "Info",
   environmental: "Leaf",
   seasonal: "Calendar",
+  accessibility: "Accessibility",
+  photography: "Camera",
+  budget: "PiggyBank",
+  nightlife: "Moon",
+  family: "Users",
+  solo: "User",
+  food_culture: "UtensilsCrossed",
+  cultural_context: "BookMarked",
 };
 
 /**
@@ -774,11 +782,16 @@ export async function detectGuidanceGaps(
     season,
   });
 
-  // Filter to etiquette/practical with priority >= 7
+  // Filter to high-value types with priority >= 7
+  const HIGH_PRIORITY_TYPES = new Set([
+    "etiquette",
+    "practical",
+    "accessibility",
+    "food_culture",
+    "cultural_context",
+  ]);
   const highPriority = guidance.filter(
-    (g) =>
-      (g.guidanceType === "etiquette" || g.guidanceType === "practical") &&
-      g.priority >= 7
+    (g) => HIGH_PRIORITY_TYPES.has(g.guidanceType) && g.priority >= 7
   );
 
   return highPriority.slice(0, maxPerDay).map((g) => ({
