@@ -241,12 +241,14 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
   const hasDinner = coveredMealTypes.has("dinner");
 
   if (activities.length > 0 && !hasDinner) {
+    const lastActivity = activities[activities.length - 1];
     const lastAfternoonActivity = activities.filter((a) => a.timeOfDay === "afternoon").pop();
+    const contextActivity = lastAfternoonActivity ?? lastActivity;
     const cityName = day.cityId ?? "the area";
 
     let description = `End Day ${dayIndex + 1} with a memorable dinner`;
-    if (lastAfternoonActivity) {
-      description = `After ${lastAfternoonActivity.title}, find a great dinner spot in ${cityName}`;
+    if (contextActivity) {
+      description = `After ${contextActivity.title}, find a great dinner spot in ${cityName}`;
     }
 
     // Restaurant dinner option
@@ -263,8 +265,8 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
         mealType: "dinner",
         timeSlot: "evening",
         context: {
-          previousActivityName: lastAfternoonActivity?.title,
-          nearbyArea: lastAfternoonActivity?.neighborhood ?? cityName,
+          previousActivityName: contextActivity?.title,
+          nearbyArea: contextActivity?.neighborhood ?? cityName,
         },
       },
     });
@@ -283,8 +285,8 @@ function detectMealGaps(day: ItineraryDay, dayIndex: number): DetectedGap[] {
         mealType: "dinner",
         timeSlot: "evening",
         context: {
-          previousActivityName: lastAfternoonActivity?.title,
-          nearbyArea: lastAfternoonActivity?.neighborhood ?? cityName,
+          previousActivityName: contextActivity?.title,
+          nearbyArea: contextActivity?.neighborhood ?? cityName,
         },
       },
     });

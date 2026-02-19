@@ -217,7 +217,7 @@ export async function generateItinerary(
     const uniqueCities = new Set<CityId>();
     for (const cityInfo of expandedCitySequence) {
       const cityId = cityInfo.key as CityId;
-      if (cityId && ["kyoto", "osaka", "nara", "tokyo", "yokohama"].includes(cityId)) {
+      if (cityId) {
         uniqueCities.add(cityId);
       }
     }
@@ -694,9 +694,12 @@ export async function generateItinerary(
     ];
     let weekday: import("@/types/location").Weekday | undefined;
     if (data.dates.start) {
-      const d = new Date(data.dates.start);
+      const parts = data.dates.start.split("-");
+      const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
       d.setDate(d.getDate() + dayIndex);
       weekday = WEEKDAY_NAMES[d.getDay()];
+    } else {
+      weekday = "wednesday"; // Mid-week default, most venues open
     }
 
     days.push({

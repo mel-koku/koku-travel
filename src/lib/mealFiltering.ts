@@ -11,6 +11,16 @@
 import type { Location } from "@/types/location";
 
 /**
+ * Parse a "YYYY-MM-DD" trip date string into a weekday index (0=Sun..6=Sat)
+ * without UTC drift. `new Date("2025-02-20")` is parsed as UTC midnight, so
+ * `.getDay()` can return the wrong weekday in negative-offset timezones.
+ */
+function parseTripDateDay(tripDate: string): number {
+  const parts = tripDate.split("-");
+  return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])).getDay();
+}
+
+/**
  * Google types that are NOT appropriate for breakfast
  */
 export const NOT_BREAKFAST_TYPES = new Set([
@@ -76,7 +86,7 @@ export const DESSERT_KEYWORDS = [
 /**
  * Categories that indicate dining establishments
  */
-export const DINING_CATEGORIES = ["restaurant", "bar", "market", "food"];
+export const DINING_CATEGORIES = ["restaurant", "bar", "food"];
 
 /**
  * Google Places types that indicate dining establishments
@@ -171,7 +181,7 @@ export function filterByMealType(
 
       // Check operating hours - breakfast places should open before 10am
       if (restaurant.operatingHours?.periods) {
-        const dayIndex = tripDate ? new Date(tripDate).getDay() : new Date().getDay();
+        const dayIndex = tripDate ? parseTripDateDay(tripDate) : new Date().getDay();
         const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
         const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[dayIndex]);
         if (todayPeriod?.open) {
@@ -206,7 +216,7 @@ export function filterByMealType(
 
       // Check operating hours - exclude places that only open for dinner (after 5pm)
       if (restaurant.operatingHours?.periods) {
-        const dayIndex = tripDate ? new Date(tripDate).getDay() : new Date().getDay();
+        const dayIndex = tripDate ? parseTripDateDay(tripDate) : new Date().getDay();
         const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
         const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[dayIndex]);
         if (todayPeriod?.open) {
@@ -235,7 +245,7 @@ export function filterByMealType(
 
       // Check operating hours - exclude places that close early (before 6pm)
       if (restaurant.operatingHours?.periods) {
-        const dayIndex = tripDate ? new Date(tripDate).getDay() : new Date().getDay();
+        const dayIndex = tripDate ? parseTripDateDay(tripDate) : new Date().getDay();
         const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
         const todayPeriod = restaurant.operatingHours.periods.find((p) => p.day === dayNames[dayIndex]);
         if (todayPeriod?.close) {

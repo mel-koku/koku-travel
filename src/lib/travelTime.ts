@@ -19,21 +19,22 @@ const MATRIX: Record<CityId, Partial<Record<CityId, number>>> = {
   // Chubu
   nagoya: { kanazawa: 180 },
   // Kyushu
-  fukuoka: { nagasaki: 115, hiroshima: 65 },
+  fukuoka: { nagasaki: 115, hiroshima: 65, matsuyama: 195 },
   nagasaki: {},
   // Hokkaido
   sapporo: { hakodate: 210 },
   hakodate: {},
   // Tohoku
-  sendai: { hakodate: 180 },
+  sendai: { hakodate: 180, sapporo: 270 },
   // Chugoku
-  hiroshima: {},
+  hiroshima: { takamatsu: 180 },
   // Shikoku
   matsuyama: { hiroshima: 160, takamatsu: 155, osaka: 240 },
   takamatsu: { osaka: 105, okayama: 55 },
-  // Okinawa (flight-only — no rail)
-  naha: {},
-  kanazawa: {},
+  // Okinawa (flight-only — all times are flight + transfer)
+  naha: { tokyo: 180, osaka: 165, fukuoka: 120, nagoya: 170, sapporo: 240, sendai: 200, nagasaki: 135 },
+  // Hokuriku
+  kanazawa: { hiroshima: 210, fukuoka: 240, sendai: 230 },
 };
 
 /**
