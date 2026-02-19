@@ -107,14 +107,15 @@ export function pickLocationForTimeSlot(
       return openingHoursCheck.fits;
     });
 
-    // If all candidates filtered out, fall back to unused (better than no location)
+    // If all candidates filtered out by operating hours, return undefined.
+    // The generator handles this gracefully (tries next interest, suggests day trips).
     if (candidates.length === 0) {
-      logger.warn("All locations filtered out by opening hours, using unfiltered list", {
+      logger.info("All locations filtered out by operating hours", {
         timeSlot,
         date,
         unusedCount: unused.length,
       });
-      candidates = unused;
+      return undefined;
     }
   }
 
