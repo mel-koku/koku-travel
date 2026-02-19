@@ -386,6 +386,42 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             </section>
           )}
 
+          {/* Review snippets */}
+          {details?.reviews && details.reviews.length > 0 && (
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+                Reviews
+              </h3>
+              <div className="space-y-3">
+                {details.reviews
+                  .filter((r) => r.text && r.text.length > 20)
+                  .slice(0, 3)
+                  .map((review, i) => (
+                    <div key={i} className="rounded-xl bg-surface p-3">
+                      <div className="flex items-center gap-2 mb-1.5">
+                        {review.rating && (
+                          <span className="flex items-center gap-0.5">
+                            {Array.from({ length: review.rating }, (_, j) => (
+                              <svg key={j} className="h-3 w-3 text-warning" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="m12 17.27 5.18 3.11-1.64-5.81L20.9 9.9l-6-0.52L12 4 9.1 9.38l-6 .52 5.36 4.67L6.82 20.38 12 17.27z" />
+                              </svg>
+                            ))}
+                          </span>
+                        )}
+                        <span className="text-xs text-stone">{review.authorName}</span>
+                        {review.relativePublishTimeDescription && (
+                          <span className="text-xs text-stone">&middot; {review.relativePublishTimeDescription}</span>
+                        )}
+                      </div>
+                      <p className="text-sm leading-relaxed text-foreground-secondary line-clamp-3">
+                        {review.text}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            </section>
+          )}
+
           {/* Loading indicator */}
           {status === "loading" && (
             <div className="flex items-center gap-2 text-sm text-stone">
