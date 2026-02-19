@@ -34,6 +34,9 @@ type FilterPanelProps = {
   durationOptions: readonly { value: string; label: string }[];
   selectedDuration: string | null;
   onDurationChange: (duration: string | null) => void;
+  // Open Now filter
+  openNow: boolean;
+  onOpenNowChange: (value: boolean) => void;
   // Accessibility filter
   wheelchairAccessible: boolean;
   onWheelchairAccessibleChange: (value: boolean) => void;
@@ -73,6 +76,8 @@ export function FilterPanel({
   durationOptions,
   selectedDuration,
   onDurationChange,
+  openNow,
+  onOpenNowChange,
   wheelchairAccessible,
   onWheelchairAccessibleChange,
   vegetarianFriendly,
@@ -107,7 +112,7 @@ export function FilterPanel({
   const whatActiveCount = selectedVibes.length;
   const durationActiveCount = selectedDuration ? 1 : 0;
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
-  const togglesActiveCount = (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
+  const togglesActiveCount = (openNow ? 1 : 0) + (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
 
   // Close on escape key
   useEffect(() => {
@@ -151,6 +156,7 @@ export function FilterPanel({
     selectedVibes.length > 0 ||
     selectedPriceLevel !== null ||
     selectedDuration ||
+    openNow ||
     wheelchairAccessible ||
     vegetarianFriendly ||
     selectedSort !== "recommended";
@@ -357,6 +363,13 @@ export function FilterPanel({
                 onToggle={() => toggleSection("toggles")}
               >
                 <div className="space-y-4">
+                  <ToggleOption
+                    label="Open now"
+                    description="Only show places currently open"
+                    checked={openNow}
+                    onChange={onOpenNowChange}
+                  />
+
                   <ToggleOption
                     label="Wheelchair accessible"
                     description="Places with a wheelchair-accessible entrance"

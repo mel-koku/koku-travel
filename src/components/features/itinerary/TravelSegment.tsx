@@ -16,6 +16,8 @@ type TravelSegmentProps = {
   timezone?: string;
   onModeChange: (mode: ItineraryTravelSegment["mode"]) => void;
   isRecalculating?: boolean;
+  /** Gap in minutes between previous departure and current arrival */
+  gapMinutes?: number;
 };
 
 export function TravelSegment({
@@ -27,6 +29,7 @@ export function TravelSegment({
   timezone,
   onModeChange,
   isRecalculating = false,
+  gapMinutes,
 }: TravelSegmentProps) {
   const [directionsOpen, setDirectionsOpen] = useState(false);
 
@@ -79,6 +82,7 @@ export function TravelSegment({
 
   const isLoading = isRecalculating || segment.durationMinutes === 0;
   const showEstimatedBadge = segment.isEstimated && !isLoading;
+  const isTight = !isLoading && gapMinutes !== undefined && gapMinutes < segment.durationMinutes + 5;
 
   return (
     <>
@@ -131,6 +135,14 @@ export function TravelSegment({
               title="Estimated travel time (actual may vary)"
             >
               ~est
+            </span>
+          )}
+          {isTight && (
+            <span
+              className="text-xs text-warning font-medium"
+              title={`Only ${gapMinutes} min gap for ~${segment.durationMinutes} min travel`}
+            >
+              Tight
             </span>
           )}
           {segment.distanceMeters && (

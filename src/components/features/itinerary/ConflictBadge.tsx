@@ -147,12 +147,20 @@ export function DayConflictSummary({
     return null;
   }
 
+  const tightCount = dayConflicts.filter((c) => c.type === "insufficient_travel_time").length;
+
   return (
-    <ConflictBadge
-      conflicts={dayConflicts}
-      variant="summary"
-      className={className}
-    />
+    <div className={className}>
+      <ConflictBadge
+        conflicts={dayConflicts}
+        variant="summary"
+      />
+      {tightCount > 0 && (
+        <p className="mt-2 text-xs text-warning">
+          {tightCount} tight {tightCount === 1 ? "connection" : "connections"} today — consider a slower pace
+        </p>
+      )}
+    </div>
   );
 }
 

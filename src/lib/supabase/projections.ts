@@ -142,7 +142,11 @@ export const LOCATION_EXPLORE_COLUMNS = `
   nearest_station,
   cash_only,
   reservation_info,
-  operating_hours
+  operating_hours,
+  good_for_children,
+  good_for_groups,
+  meal_options,
+  service_options
 `.replace(/\s+/g, "");
 
 /**
@@ -256,6 +260,10 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "cash_only"
   | "reservation_info"
   | "operating_hours"
+  | "good_for_children"
+  | "good_for_groups"
+  | "meal_options"
+  | "service_options"
 >;
 
 /**

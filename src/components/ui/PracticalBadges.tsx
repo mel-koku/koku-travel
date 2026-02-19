@@ -47,6 +47,16 @@ export const PracticalBadges = memo(function PracticalBadges({
     });
   }
 
+  // Price level
+  if (location.priceLevel && location.priceLevel > 0) {
+    badges.push({
+      key: "price",
+      icon: <PriceIcon />,
+      label: "¥".repeat(location.priceLevel),
+      tone: "neutral",
+    });
+  }
+
   // Nearest station (truncate to station name only if too long)
   if (location.nearestStation) {
     const station = location.nearestStation.length > 28
@@ -136,6 +146,15 @@ function ReservationIcon() {
     <svg className="h-2.5 w-2.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}>
       <rect x="3" y="3" width="10" height="10" rx="1.5" />
       <path d="M3 6h10M6 3v3M10 3v3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function PriceIcon() {
+  return (
+    <svg className="h-2.5 w-2.5 shrink-0" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.5}>
+      <circle cx="8" cy="8" r="6.5" />
+      <path d="M8 4.5v7M6 6.5h3.5a1.25 1.25 0 010 2.5H6" strokeLinecap="round" />
     </svg>
   );
 }

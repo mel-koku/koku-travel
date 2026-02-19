@@ -8,6 +8,7 @@ import { ActiveFilter } from "@/types/filters";
 import { locationMatchesVibes } from "@/data/vibeFilterMapping";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { featureFlags } from "@/lib/env/featureFlags";
+import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { CategoryBar } from "./CategoryBar";
 import { useAllLocationsSingle, useFilterMetadataQuery, useLocationSearchQuery, useNearbyLocationsQuery } from "@/hooks/useLocationsQuery";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
@@ -164,6 +165,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
   const [selectedPriceLevel, setSelectedPriceLevel] = useState<number | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<string | null>(null);
   const [selectedVibes, setSelectedVibes] = useState<VibeId[]>([]);
+  const [openNow, setOpenNow] = useState(false);
   const [wheelchairAccessible, setWheelchairAccessible] = useState(false);
   const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
   const [page, setPage] = useState(1);
@@ -232,6 +234,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
     selectedPriceLevel,
     selectedDuration,
     selectedVibes,
+    openNow,
     wheelchairAccessible,
     vegetarianFriendly,
     selectedSort,
@@ -308,6 +311,10 @@ export function ExploreShell({ content }: ExploreShellProps) {
 
       const matchesVibe = locationMatchesVibes(location, selectedVibes);
 
+      const matchesOpenNow = !openNow
+        ? true
+        : getOpenStatus(location.operatingHours).state === "open";
+
       const matchesWheelchair = !wheelchairAccessible
         ? true
         : location.accessibilityOptions?.wheelchairAccessibleEntrance === true;
@@ -322,11 +329,12 @@ export function ExploreShell({ content }: ExploreShellProps) {
         matchesPriceLevel &&
         matchesDuration &&
         matchesVibe &&
+        matchesOpenNow &&
         matchesWheelchair &&
         matchesVegetarian
       );
     });
-  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, wheelchairAccessible, vegetarianFriendly]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly]);
 
   const sortedLocations = useMemo(() => {
     const sorted = [...filteredLocations];
@@ -446,6 +454,14 @@ export function ExploreShell({ content }: ExploreShellProps) {
       });
     }
 
+    if (openNow) {
+      filters.push({
+        type: "openNow",
+        value: "true",
+        label: "Open now",
+      });
+    }
+
     if (wheelchairAccessible) {
       filters.push({
         type: "wheelchair",
@@ -470,6 +486,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
     selectedVibes,
     selectedDuration,
     selectedPriceLevel,
+    openNow,
     wheelchairAccessible,
     vegetarianFriendly,
   ]);
@@ -493,6 +510,9 @@ export function ExploreShell({ content }: ExploreShellProps) {
       case "priceLevel":
         setSelectedPriceLevel(null);
         break;
+      case "openNow":
+        setOpenNow(false);
+        break;
       case "wheelchair":
         setWheelchairAccessible(false);
         break;
@@ -508,6 +528,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
     setSelectedPriceLevel(null);
     setSelectedDuration(null);
     setSelectedVibes([]);
+    setOpenNow(false);
     setWheelchairAccessible(false);
     setVegetarianFriendly(false);
   }, []);
@@ -687,6 +708,8 @@ export function ExploreShell({ content }: ExploreShellProps) {
         }))}
         selectedDuration={selectedDuration}
         onDurationChange={setSelectedDuration}
+        openNow={openNow}
+        onOpenNowChange={setOpenNow}
         wheelchairAccessible={wheelchairAccessible}
         onWheelchairAccessibleChange={setWheelchairAccessible}
         vegetarianFriendly={vegetarianFriendly}

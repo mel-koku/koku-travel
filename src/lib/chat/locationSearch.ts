@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { LOCATION_CHAT_COLUMNS } from "@/lib/supabase/projections";
 import type { LocationChatDbRow } from "@/lib/supabase/projections";
+import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { logger } from "@/lib/logger";
 
 export type ChatLocationResult = {
@@ -113,6 +114,7 @@ export type NearbySearchParams = {
   lng: number;
   radiusKm?: number;
   category?: string;
+  openNow?: boolean;
   limit?: number;
 };
 
@@ -154,7 +156,7 @@ export async function searchNearbyLocations(
     }
 
     // Haversine sort
-    const rows = (data as unknown as LocationChatDbRow[])
+    let rows = (data as unknown as LocationChatDbRow[])
       .map((row) => {
         const coords = row.coordinates;
         if (!coords) return { row, distance: Infinity };
@@ -170,10 +172,16 @@ export async function searchNearbyLocations(
         return { row, distance };
       })
       .filter(({ distance }) => distance <= radiusKm)
-      .sort((a, b) => a.distance - b.distance)
-      .slice(0, limit);
+      .sort((a, b) => a.distance - b.distance);
 
-    return rows.map(({ row }) => transformChatRow(row));
+    // Filter by open now if requested
+    if (params.openNow) {
+      rows = rows.filter(({ row }) =>
+        getOpenStatus(row.operating_hours).state === "open",
+      );
+    }
+
+    return rows.slice(0, limit).map(({ row }) => transformChatRow(row));
   } catch (error) {
     logger.error(
       "Chat nearby search error",

@@ -96,6 +96,18 @@ function TravelSegmentWrapper({
     }
   };
 
+  // Compute gap between previous departure and current arrival
+  const gapMinutes = (() => {
+    const prevDep = previousActivity.schedule?.departureTime;
+    const currArr = activity.schedule?.arrivalTime;
+    if (!prevDep || !currArr) return undefined;
+    const [ph, pm] = prevDep.split(":").map(Number);
+    const [ch, cm] = currArr.split(":").map(Number);
+    if (ph === undefined || pm === undefined || ch === undefined || cm === undefined) return undefined;
+    if (isNaN(ph) || isNaN(pm) || isNaN(ch) || isNaN(cm)) return undefined;
+    return (ch * 60 + cm) - (ph * 60 + pm);
+  })();
+
   return (
     <TravelSegment
       segment={travelFromPrevious}
@@ -106,6 +118,7 @@ function TravelSegmentWrapper({
       timezone={dayTimezone}
       onModeChange={handleModeChange}
       isRecalculating={isRecalculatingRoute}
+      gapMinutes={gapMinutes}
     />
   );
 }
