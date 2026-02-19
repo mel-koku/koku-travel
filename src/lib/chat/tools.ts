@@ -5,6 +5,7 @@ import {
   searchNearbyLocations,
   getLocationDetailForChat,
 } from "./locationSearch";
+import { getOpenStatus, formatOpenStatus } from "@/lib/availability/isOpenNow";
 import { fetchMatchingGuidance } from "@/lib/tips/guidanceService";
 import { getPublishedGuides } from "@/lib/guides/guideService";
 import { getPublishedExperiences } from "@/lib/experiences/experienceService";
@@ -66,7 +67,14 @@ export const chatTools = {
     execute: async ({ locationId }) => {
       const result = await getLocationDetailForChat(locationId);
       if (!result) return { error: "Location not found" };
-      return { location: result };
+      const openStatus = getOpenStatus(result.operatingHours);
+      return {
+        location: result,
+        openStatus: {
+          state: openStatus.state,
+          label: formatOpenStatus(openStatus),
+        },
+      };
     },
   }),
 
@@ -84,6 +92,10 @@ export const chatTools = {
         .string()
         .optional()
         .describe("Filter results by category"),
+      openNow: z
+        .boolean()
+        .optional()
+        .describe("Only return locations currently open"),
     }),
     execute: async (params) => {
       const results = await searchNearbyLocations(params);
@@ -280,6 +292,48 @@ export const chatTools = {
         );
         return { experiences: [], count: 0 };
       }
+    },
+  }),
+
+  compareLocations: tool({
+    description:
+      "Compare 2-3 locations side by side. Use when the user asks to compare places, e.g. 'compare Senso-ji and Meiji Shrine' or 'which ryokan is better'.",
+    inputSchema: z.object({
+      locationIds: z
+        .array(z.string())
+        .min(2)
+        .max(3)
+        .describe("Location IDs to compare"),
+    }),
+    execute: async ({ locationIds }) => {
+      const results = await Promise.all(
+        locationIds.map((id) => getLocationDetailForChat(id)),
+      );
+      const locations = results
+        .filter((r): r is NonNullable<typeof r> => r !== null)
+        .map((loc) => {
+          const openStatus = getOpenStatus(loc.operatingHours);
+          return {
+            id: loc.id,
+            name: loc.name,
+            category: loc.category,
+            city: loc.city,
+            region: loc.region,
+            rating: loc.rating,
+            reviewCount: loc.reviewCount,
+            priceLevel: loc.priceLevel,
+            estimatedDuration: loc.estimatedDuration,
+            shortDescription: loc.shortDescription,
+            openStatus: {
+              state: openStatus.state,
+              label: formatOpenStatus(openStatus),
+            },
+          };
+        });
+      if (locations.length < 2) {
+        return { error: "Could not find enough locations to compare" };
+      }
+      return { locations, count: locations.length };
     },
   }),
 

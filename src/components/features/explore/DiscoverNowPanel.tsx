@@ -42,6 +42,15 @@ export function DiscoverNowPanel({
 }: DiscoverNowPanelProps) {
   return (
     <div className="space-y-4">
+      {/* Open now indicator */}
+      <div className="flex items-center gap-2 px-4 sm:px-6 lg:px-8">
+        <span className="relative flex h-2 w-2">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-sage" />
+        </span>
+        <span className="text-xs text-sage font-medium">Showing open now</span>
+      </div>
+
       {/* Category chips */}
       <div className="flex flex-wrap items-center gap-1.5 px-4 sm:px-6 lg:px-8">
         {CATEGORY_CHIPS.map((chip) => (
