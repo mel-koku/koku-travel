@@ -55,6 +55,11 @@ export interface LocationScoringCriteria {
     type?: "solo" | "couple" | "family" | "friends" | "business";
     childrenAges?: number[];
   };
+  /**
+   * Current interest being rotated — gives a +10 bonus to locations
+   * whose category matches this specific interest.
+   */
+  currentInterest?: InterestId;
 }
 
 /**
@@ -118,11 +123,12 @@ const CATEGORY_TO_INTERESTS: Record<string, InterestId[]> = {
 
 /**
  * Score how well a location matches user interests.
- * Range: 0-30 points
+ * Range: 0-40 points (base 0-30 + up to 10 rotation bonus)
  */
 function scoreInterestMatch(
   location: Location,
   interests: InterestId[],
+  currentInterest?: InterestId,
 ): { score: number; reasoning: string } {
   const locationCategory = location.category;
   if (!locationCategory) {
@@ -135,29 +141,32 @@ function scoreInterestMatch(
     matchingInterests.includes(interest),
   );
 
+  let score: number;
+  let reasoning: string;
+
   if (matchedInterests.length === 0) {
-    return {
-      score: 5,
-      reasoning: `Category "${locationCategory}" doesn't match any selected interests`,
-    };
+    score = 5;
+    reasoning = `Category "${locationCategory}" doesn't match any selected interests`;
+  } else if (matchedInterests.length === interests.length) {
+    // Perfect match gets full points
+    score = 30;
+    reasoning = `Perfect match: "${locationCategory}" aligns with all interests (${matchedInterests.join(", ")})`;
+  } else {
+    // Partial match gets proportional score
+    const matchRatio = matchedInterests.length / interests.length;
+    score = Math.round(15 + matchRatio * 15); // 15-30 range
+    reasoning = `Partial match: "${locationCategory}" aligns with ${matchedInterests.length} of ${interests.length} interests (${matchedInterests.join(", ")})`;
   }
 
-  // Perfect match gets full points
-  if (matchedInterests.length === interests.length) {
-    return {
-      score: 30,
-      reasoning: `Perfect match: "${locationCategory}" aligns with all interests (${matchedInterests.join(", ")})`,
-    };
+  // Rotation bonus: +10 when the location's category matches the current
+  // rotation interest. This favors the interest being rotated without
+  // overwhelming rating (0-25) or logistical fit (-100 to 20).
+  if (currentInterest && matchingInterests.includes(currentInterest)) {
+    score += 10;
+    reasoning += ` +rotation bonus for "${currentInterest}"`;
   }
 
-  // Partial match gets proportional score
-  const matchRatio = matchedInterests.length / interests.length;
-  const score = Math.round(15 + matchRatio * 15); // 15-30 range
-
-  return {
-    score,
-    reasoning: `Partial match: "${locationCategory}" aligns with ${matchedInterests.length} of ${interests.length} interests (${matchedInterests.join(", ")})`,
-  };
+  return { score, reasoning };
 }
 
 /**
@@ -717,7 +726,7 @@ export function scoreLocation(
   location: Location,
   criteria: LocationScoringCriteria,
 ): LocationScore {
-  const interestResult = scoreInterestMatch(location, criteria.interests);
+  const interestResult = scoreInterestMatch(location, criteria.interests, criteria.currentInterest);
   const ratingResult = scoreRatingQuality(location);
   const logisticalResult = scoreLogisticalFit(location, criteria);
   const budgetResult = scoreBudgetFit(location, {

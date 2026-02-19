@@ -159,6 +159,7 @@ export function pickLocationForTimeSlot(
     timeSlot,
     date,
     group,
+    currentInterest: interest,
   };
 
   const scored = candidates

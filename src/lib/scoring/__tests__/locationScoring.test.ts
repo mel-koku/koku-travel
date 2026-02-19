@@ -52,6 +52,47 @@ describe("Location Scoring", () => {
       expect(result.breakdown.interestMatch).toBeGreaterThan(10);
       expect(result.breakdown.interestMatch).toBeLessThan(30);
     });
+
+    it("should apply rotation bonus when currentInterest matches category", () => {
+      const withRotation = scoreLocation(mockLocation, {
+        interests: ["culture", "food", "shopping"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        currentInterest: "culture", // temple maps to culture
+      });
+
+      const withoutRotation = scoreLocation(mockLocation, {
+        interests: ["culture", "food", "shopping"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+      });
+
+      // Rotation bonus should add +10
+      expect(withRotation.breakdown.interestMatch).toBe(
+        withoutRotation.breakdown.interestMatch + 10,
+      );
+    });
+
+    it("should not apply rotation bonus when currentInterest does not match", () => {
+      const result = scoreLocation(mockLocation, {
+        interests: ["culture", "food", "shopping"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+        currentInterest: "nightlife", // temple does not map to nightlife
+      });
+
+      const baseline = scoreLocation(mockLocation, {
+        interests: ["culture", "food", "shopping"],
+        travelStyle: "balanced",
+        availableMinutes: 120,
+        recentCategories: [],
+      });
+
+      expect(result.breakdown.interestMatch).toBe(baseline.breakdown.interestMatch);
+    });
   });
 
   describe("Rating Quality", () => {
