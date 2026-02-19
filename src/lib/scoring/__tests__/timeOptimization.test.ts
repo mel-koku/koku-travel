@@ -20,10 +20,11 @@ describe("Time Optimization", () => {
         },
       };
 
-      // Monday morning (9am-12pm) - should fit
+      // Monday morning (9am-12pm) - should fit (180min overlap)
       const result = checkOpeningHoursFit(location, "morning", "2024-01-01"); // Monday
       expect(result.fits).toBe(true);
       expect(result.reasoning).toContain("Open during morning");
+      expect(result.reasoning).toContain("180min available");
     });
 
     it("should return true when location opens mid-slot (bug fix)", () => {
@@ -84,10 +85,10 @@ describe("Time Optimization", () => {
         },
       };
 
-      // Monday morning (9am-12pm) - location opens at 2pm
+      // Monday morning (9am-12pm) - location opens at 2pm, 0 overlap
       const result = checkOpeningHoursFit(location, "morning", "2024-01-01"); // Monday
       expect(result.fits).toBe(false);
-      expect(result.reasoning).toContain("May not be open during morning");
+      expect(result.reasoning).toContain("Insufficient opening hours during morning");
     });
 
     it("should return false when location closes before time slot starts", () => {
@@ -213,6 +214,68 @@ describe("Time Optimization", () => {
       // Evening (5pm-9pm) - should fit
       const result = checkOpeningHoursFit(location, "evening", "2024-01-01");
       expect(result.fits).toBe(true);
+    });
+
+    it("should reject when overlap is less than minimum visit duration", () => {
+      const location: Location = {
+        id: "test-location",
+        name: "Test Location",
+        city: "Kyoto",
+        region: "Kansai",
+        category: "landmark",
+        operatingHours: {
+          timezone: "Asia/Tokyo",
+          periods: [
+            { day: "monday", open: "09:00", close: "17:20" },
+          ],
+        },
+      };
+
+      // Evening slot (17:00-21:00) — only 20min overlap (17:00-17:20), below 30min default
+      const result = checkOpeningHoursFit(location, "evening", "2024-01-01");
+      expect(result.fits).toBe(false);
+      expect(result.reasoning).toContain("Insufficient opening hours");
+    });
+
+    it("should accept when overlap meets minimum visit duration", () => {
+      const location: Location = {
+        id: "test-location",
+        name: "Test Location",
+        city: "Kyoto",
+        region: "Kansai",
+        category: "landmark",
+        operatingHours: {
+          timezone: "Asia/Tokyo",
+          periods: [
+            { day: "monday", open: "09:00", close: "17:30" },
+          ],
+        },
+      };
+
+      // Evening slot (17:00-21:00) — 30min overlap (17:00-17:30), exactly meets 30min default
+      const result = checkOpeningHoursFit(location, "evening", "2024-01-01");
+      expect(result.fits).toBe(true);
+      expect(result.reasoning).toContain("30min available");
+    });
+
+    it("should respect custom minVisitMinutes parameter", () => {
+      const location: Location = {
+        id: "test-location",
+        name: "Test Location",
+        city: "Kyoto",
+        region: "Kansai",
+        category: "landmark",
+        operatingHours: {
+          timezone: "Asia/Tokyo",
+          periods: [
+            { day: "monday", open: "09:00", close: "17:30" },
+          ],
+        },
+      };
+
+      // 30min overlap — passes with default 30, fails with 60
+      expect(checkOpeningHoursFit(location, "evening", "2024-01-01", 30).fits).toBe(true);
+      expect(checkOpeningHoursFit(location, "evening", "2024-01-01", 60).fits).toBe(false);
     });
   });
 
