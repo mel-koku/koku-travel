@@ -81,6 +81,16 @@ function parseTimeToMinutes(timeStr: string | undefined): number | null {
   return hours * 60 + minutes;
 }
 
+/**
+ * Format minutes since midnight to HH:MM string
+ */
+function formatMinutesToTime(totalMinutes: number): string {
+  const clamped = Math.max(0, Math.min(totalMinutes, 23 * 60 + 59));
+  const h = Math.floor(clamped / 60);
+  const m = Math.round(clamped % 60);
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
 
 /**
  * Check if a time is outside operating hours
@@ -210,6 +220,15 @@ function detectTravelTimeConflicts(
 
     // If gap is less than travel time, we have a conflict
     if (gapMinutes < travelTime) {
+      let message: string;
+      if (gapMinutes < 0) {
+        const suggestedArrival = formatMinutesToTime(prevDeparture + travelTime + 5);
+        message = `Schedule overlaps by ${Math.abs(gapMinutes)} min. Remove one activity or shift arrival to ${suggestedArrival}.`;
+      } else {
+        const suggestedDeparture = formatMinutesToTime(prevDeparture - (travelTime - gapMinutes + 5));
+        message = `Only ${gapMinutes} min gap but travel takes ~${travelTime} min. Leave by ${suggestedDeparture} or switch to a faster mode.`;
+      }
+
       conflicts.push({
         id: `travel-${current.id}`,
         type: "insufficient_travel_time",
@@ -219,10 +238,7 @@ function detectTravelTimeConflicts(
         dayId,
         dayIndex,
         title: "Travel Time Issue",
-        message:
-          gapMinutes < 0
-            ? `Arrives before leaving ${previous.title}! Schedule overlaps by ${Math.abs(gapMinutes)} min.`
-            : `Only ${gapMinutes} min between activities, but travel takes ~${travelTime} min`,
+        message,
         icon: "🚃",
         details: {
           travelTime,

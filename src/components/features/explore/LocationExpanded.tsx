@@ -11,6 +11,8 @@ import { useWishlist } from "@/context/WishlistContext";
 import { useFirstFavoriteToast } from "@/hooks/useFirstFavoriteToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
+import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon } from "./LocationCard";
 
 type LocationExpandedProps = {
@@ -54,6 +56,55 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   const description = useMemo(() => {
     return getBestDescription(locationWithDetails, details);
   }, [locationWithDetails, details]);
+
+  const mealLabels = useMemo(() => {
+    const m = locationWithDetails.mealOptions;
+    if (!m) return null;
+    const parts: string[] = [];
+    if (m.servesBreakfast) parts.push("Breakfast");
+    if (m.servesBrunch) parts.push("Brunch");
+    if (m.servesLunch) parts.push("Lunch");
+    if (m.servesDinner) parts.push("Dinner");
+    return parts.length > 0 ? parts.join(", ") : null;
+  }, [locationWithDetails.mealOptions]);
+
+  const serviceLabels = useMemo(() => {
+    const s = locationWithDetails.serviceOptions;
+    if (!s) return null;
+    const parts: string[] = [];
+    if (s.dineIn) parts.push("Dine-in");
+    if (s.takeout) parts.push("Takeout");
+    if (s.delivery) parts.push("Delivery");
+    return parts.length > 0 ? parts.join(", ") : null;
+  }, [locationWithDetails.serviceOptions]);
+
+  const accessibilityBadges = useMemo(() => {
+    const a = locationWithDetails.accessibilityOptions;
+    if (!a) return [];
+    const badges: { key: string; label: string }[] = [];
+    if (a.wheelchairAccessibleEntrance) badges.push({ key: "entrance", label: "Wheelchair entrance" });
+    if (a.wheelchairAccessibleParking) badges.push({ key: "parking", label: "Wheelchair parking" });
+    if (a.wheelchairAccessibleRestroom) badges.push({ key: "restroom", label: "Wheelchair restroom" });
+    if (a.wheelchairAccessibleSeating) badges.push({ key: "seating", label: "Wheelchair seating" });
+    return badges;
+  }, [locationWithDetails.accessibilityOptions]);
+
+  const goodForPills = useMemo(() => {
+    const pills: { key: string; label: string }[] = [];
+    if (locationWithDetails.goodForChildren) pills.push({ key: "children", label: "Families" });
+    if (locationWithDetails.goodForGroups) pills.push({ key: "groups", label: "Groups" });
+    return pills;
+  }, [locationWithDetails.goodForChildren, locationWithDetails.goodForGroups]);
+
+  // Guidance tips
+  const [tips, setTips] = useState<TravelGuidance[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    fetchGuidanceForLocation(locationWithDetails)
+      .then((result) => { if (!cancelled) setTips(result.slice(0, 3)); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [locationWithDetails]);
 
   useEffect(() => {
     if (isFavorite && !wasInWishlist.current) {
@@ -201,6 +252,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 Est. {location.estimatedDuration}
               </span>
             )}
+            {locationWithDetails.priceLevel !== undefined && locationWithDetails.priceLevel !== null && (
+              <span className="text-stone font-mono text-xs">
+                {locationWithDetails.priceLevel === 0 ? "Free" : "¥".repeat(locationWithDetails.priceLevel)}
+              </span>
+            )}
           </div>
 
           {/* Description */}
@@ -213,8 +269,31 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             </section>
           )}
 
+          {/* Local tips */}
+          {tips.length > 0 && (
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+                Local tips
+              </h3>
+              <div className="space-y-2">
+                {tips.map((tip) => (
+                  <div
+                    key={tip.id}
+                    className="flex gap-2.5 rounded-xl bg-sage/5 border border-sage/10 p-3"
+                  >
+                    {tip.icon && <span className="text-base shrink-0">{tip.icon}</span>}
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-foreground">{tip.title}</p>
+                      <p className="text-xs text-foreground-secondary mt-0.5">{tip.summary}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Practical info */}
-          {(location.nameJapanese || location.nearestStation || location.cashOnly !== undefined || location.reservationInfo) && (
+          {(location.nameJapanese || location.nearestStation || location.cashOnly !== undefined || location.reservationInfo || locationWithDetails.dietaryOptions?.servesVegetarianFood || mealLabels || serviceLabels) && (
             <section className="space-y-3">
               <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
                 Practical info
@@ -244,7 +323,66 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                     <dd className="text-foreground-secondary">{location.reservationInfo}</dd>
                   </div>
                 )}
+                {locationWithDetails.dietaryOptions?.servesVegetarianFood && (
+                  <div className="flex gap-2">
+                    <dt className="text-stone shrink-0 w-28">Dietary</dt>
+                    <dd className="text-foreground-secondary">Vegetarian options</dd>
+                  </div>
+                )}
+                {mealLabels && (
+                  <div className="flex gap-2">
+                    <dt className="text-stone shrink-0 w-28">Meals</dt>
+                    <dd className="text-foreground-secondary">{mealLabels}</dd>
+                  </div>
+                )}
+                {serviceLabels && (
+                  <div className="flex gap-2">
+                    <dt className="text-stone shrink-0 w-28">Service</dt>
+                    <dd className="text-foreground-secondary">{serviceLabels}</dd>
+                  </div>
+                )}
               </dl>
+            </section>
+          )}
+
+          {/* Accessibility */}
+          {accessibilityBadges.length > 0 && (
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+                Accessibility
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
+                {accessibilityBadges.map((badge) => (
+                  <span
+                    key={badge.key}
+                    className="inline-flex items-center gap-1 rounded-full bg-sage/10 px-2.5 py-1 text-xs text-sage"
+                  >
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {badge.label}
+                  </span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Good for */}
+          {goodForPills.length > 0 && (
+            <section className="space-y-2">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+                Good for
+              </h3>
+              <div className="flex flex-wrap gap-1.5">
+                {goodForPills.map((pill) => (
+                  <span
+                    key={pill.key}
+                    className="rounded-xl bg-surface px-3 py-1 text-sm text-foreground-secondary"
+                  >
+                    {pill.label}
+                  </span>
+                ))}
+              </div>
             </section>
           )}
 

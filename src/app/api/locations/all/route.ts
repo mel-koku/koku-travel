@@ -142,6 +142,10 @@ export async function GET(request: NextRequest) {
       cashOnly: row.cash_only ?? undefined,
       reservationInfo: row.reservation_info ?? undefined,
       operatingHours: row.operating_hours ?? undefined,
+      goodForChildren: row.good_for_children ?? undefined,
+      goodForGroups: row.good_for_groups ?? undefined,
+      mealOptions: row.meal_options ?? undefined,
+      serviceOptions: row.service_options ?? undefined,
     }));
 
     // Cache the result in-memory
