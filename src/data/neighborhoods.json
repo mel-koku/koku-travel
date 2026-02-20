@@ -1,0 +1,331 @@
+{
+  "tokyo": [
+    { "name": "Shibuya", "lat": 35.658, "lng": 139.7016, "radiusKm": 1.5 },
+    { "name": "Shinjuku", "lat": 35.6938, "lng": 139.7034, "radiusKm": 1.5 },
+    { "name": "Harajuku", "lat": 35.6702, "lng": 139.7027, "radiusKm": 0.8 },
+    { "name": "Omotesando", "lat": 35.6654, "lng": 139.7122, "radiusKm": 0.7 },
+    { "name": "Asakusa", "lat": 35.7148, "lng": 139.7967, "radiusKm": 1.2 },
+    { "name": "Ueno", "lat": 35.7141, "lng": 139.7774, "radiusKm": 1.2 },
+    { "name": "Akihabara", "lat": 35.6984, "lng": 139.7731, "radiusKm": 0.8 },
+    { "name": "Ginza", "lat": 35.6717, "lng": 139.7649, "radiusKm": 1.0 },
+    { "name": "Tsukiji", "lat": 35.6654, "lng": 139.7707, "radiusKm": 0.8 },
+    { "name": "Roppongi", "lat": 35.6627, "lng": 139.7311, "radiusKm": 1.0 },
+    { "name": "Aoyama", "lat": 35.671, "lng": 139.7196, "radiusKm": 0.8 },
+    { "name": "Ebisu", "lat": 35.6467, "lng": 139.71, "radiusKm": 0.8 },
+    { "name": "Daikanyama", "lat": 35.6487, "lng": 139.703, "radiusKm": 0.6 },
+    { "name": "Nakameguro", "lat": 35.644, "lng": 139.6987, "radiusKm": 0.8 },
+    {
+      "name": "Shimokitazawa",
+      "lat": 35.6614,
+      "lng": 139.668,
+      "radiusKm": 0.8
+    },
+    { "name": "Ikebukuro", "lat": 35.7295, "lng": 139.7109, "radiusKm": 1.2 },
+    { "name": "Yanaka", "lat": 35.7248, "lng": 139.7669, "radiusKm": 0.8 },
+    { "name": "Nihonbashi", "lat": 35.6839, "lng": 139.7744, "radiusKm": 0.8 },
+    { "name": "Marunouchi", "lat": 35.6812, "lng": 139.7671, "radiusKm": 0.8 },
+    {
+      "name": "Tokyo Station",
+      "lat": 35.6812,
+      "lng": 139.7671,
+      "radiusKm": 0.6
+    },
+    { "name": "Odaiba", "lat": 35.6267, "lng": 139.7762, "radiusKm": 1.5 },
+    { "name": "Koenji", "lat": 35.7054, "lng": 139.6494, "radiusKm": 0.8 },
+    { "name": "Kichijoji", "lat": 35.703, "lng": 139.5795, "radiusKm": 1.2 },
+    { "name": "Ryogoku", "lat": 35.6961, "lng": 139.7943, "radiusKm": 0.8 },
+    { "name": "Sumida", "lat": 35.7107, "lng": 139.8036, "radiusKm": 1.2 },
+    { "name": "Meguro", "lat": 35.634, "lng": 139.7157, "radiusKm": 1.0 },
+    { "name": "Shimizu", "lat": 35.6281, "lng": 139.7393, "radiusKm": 0.8 },
+    { "name": "Toyosu", "lat": 35.6461, "lng": 139.7918, "radiusKm": 1.0 }
+  ],
+  "kyoto": [
+    { "name": "Higashiyama", "lat": 34.9987, "lng": 135.7813, "radiusKm": 1.5 },
+    { "name": "Gion", "lat": 35.0036, "lng": 135.7756, "radiusKm": 0.8 },
+    { "name": "Arashiyama", "lat": 35.0094, "lng": 135.6722, "radiusKm": 1.5 },
+    { "name": "Kinkakuji", "lat": 35.0394, "lng": 135.7292, "radiusKm": 1.2 },
+    { "name": "Fushimi", "lat": 34.951, "lng": 135.7727, "radiusKm": 1.5 },
+    { "name": "Nishiki", "lat": 35.005, "lng": 135.7649, "radiusKm": 0.6 },
+    { "name": "Kawaramachi", "lat": 35.004, "lng": 135.7691, "radiusKm": 0.8 },
+    { "name": "Pontocho", "lat": 35.0068, "lng": 135.7706, "radiusKm": 0.5 },
+    {
+      "name": "Kyoto Station",
+      "lat": 34.9858,
+      "lng": 135.7588,
+      "radiusKm": 1.0
+    },
+    { "name": "Kitano", "lat": 35.0317, "lng": 135.7352, "radiusKm": 1.2 },
+    {
+      "name": "Philosophers Path",
+      "lat": 35.0177,
+      "lng": 135.7942,
+      "radiusKm": 1.0
+    },
+    { "name": "Nijo", "lat": 35.0142, "lng": 135.7481, "radiusKm": 1.0 },
+    { "name": "Kurama", "lat": 35.1167, "lng": 135.7681, "radiusKm": 2.0 },
+    { "name": "Uji", "lat": 34.8884, "lng": 135.8008, "radiusKm": 2.0 },
+    { "name": "Sagano", "lat": 35.0191, "lng": 135.6648, "radiusKm": 1.2 }
+  ],
+  "osaka": [
+    { "name": "Dotonbori", "lat": 34.6687, "lng": 135.5013, "radiusKm": 0.8 },
+    { "name": "Namba", "lat": 34.6659, "lng": 135.5013, "radiusKm": 1.0 },
+    { "name": "Shinsaibashi", "lat": 34.675, "lng": 135.5009, "radiusKm": 0.8 },
+    { "name": "Umeda", "lat": 34.7024, "lng": 135.4959, "radiusKm": 1.2 },
+    { "name": "Shinsekai", "lat": 34.6524, "lng": 135.5064, "radiusKm": 0.8 },
+    { "name": "Tennoji", "lat": 34.6476, "lng": 135.5133, "radiusKm": 1.2 },
+    {
+      "name": "Osaka Castle",
+      "lat": 34.6873,
+      "lng": 135.5259,
+      "radiusKm": 1.0
+    },
+    { "name": "Kuromon", "lat": 34.6622, "lng": 135.5071, "radiusKm": 0.6 },
+    { "name": "Nakanoshima", "lat": 34.6913, "lng": 135.4985, "radiusKm": 1.0 },
+    { "name": "Amerikamura", "lat": 34.6728, "lng": 135.4979, "radiusKm": 0.5 },
+    { "name": "Tsuruhashi", "lat": 34.664, "lng": 135.531, "radiusKm": 0.8 },
+    { "name": "Sumiyoshi", "lat": 34.6129, "lng": 135.4929, "radiusKm": 1.5 },
+    { "name": "Osaka Bay", "lat": 34.6546, "lng": 135.432, "radiusKm": 2.0 },
+    { "name": "Temma", "lat": 34.6993, "lng": 135.5117, "radiusKm": 0.8 },
+    { "name": "Horie", "lat": 34.6748, "lng": 135.4908, "radiusKm": 0.7 }
+  ],
+  "yokohama": [
+    {
+      "name": "Minato Mirai",
+      "lat": 35.4559,
+      "lng": 139.6327,
+      "radiusKm": 1.2
+    },
+    { "name": "Chinatown", "lat": 35.4422, "lng": 139.6474, "radiusKm": 0.8 },
+    { "name": "Motomachi", "lat": 35.4374, "lng": 139.6515, "radiusKm": 0.8 },
+    { "name": "Yamashita", "lat": 35.4443, "lng": 139.653, "radiusKm": 1.0 },
+    {
+      "name": "Yokohama Station",
+      "lat": 35.466,
+      "lng": 139.6226,
+      "radiusKm": 1.0
+    },
+    { "name": "Kannai", "lat": 35.4476, "lng": 139.6368, "radiusKm": 1.0 },
+    { "name": "Noge", "lat": 35.4474, "lng": 139.6278, "radiusKm": 0.7 },
+    { "name": "Sankeien", "lat": 35.4169, "lng": 139.6584, "radiusKm": 1.0 }
+  ],
+  "nara": [
+    { "name": "Nara Park", "lat": 34.6851, "lng": 135.8398, "radiusKm": 1.5 },
+    { "name": "Naramachi", "lat": 34.6775, "lng": 135.8305, "radiusKm": 1.0 },
+    { "name": "Todai-ji", "lat": 34.6891, "lng": 135.8398, "radiusKm": 0.8 },
+    {
+      "name": "Nishi-no-Kyo",
+      "lat": 34.6756,
+      "lng": 135.7849,
+      "radiusKm": 1.5
+    },
+    { "name": "Nara Station", "lat": 34.6797, "lng": 135.82, "radiusKm": 0.8 },
+    { "name": "Ikaruga", "lat": 34.6148, "lng": 135.7339, "radiusKm": 2.0 }
+  ],
+  "kobe": [
+    { "name": "Sannomiya", "lat": 34.6947, "lng": 135.1958, "radiusKm": 1.0 },
+    { "name": "Kitano", "lat": 34.701, "lng": 135.1902, "radiusKm": 0.8 },
+    {
+      "name": "Meriken Park",
+      "lat": 34.6838,
+      "lng": 135.1879,
+      "radiusKm": 0.8
+    },
+    { "name": "Nankinmachi", "lat": 34.6891, "lng": 135.1867, "radiusKm": 0.5 },
+    { "name": "Harborland", "lat": 34.68, "lng": 135.18, "radiusKm": 1.0 },
+    { "name": "Motomachi", "lat": 34.6898, "lng": 135.1878, "radiusKm": 0.8 },
+    { "name": "Arima Onsen", "lat": 34.7972, "lng": 135.2487, "radiusKm": 1.5 },
+    { "name": "Rokko", "lat": 34.758, "lng": 135.2348, "radiusKm": 2.0 }
+  ],
+  "nagoya": [
+    { "name": "Sakae", "lat": 35.1706, "lng": 136.9085, "radiusKm": 1.2 },
+    {
+      "name": "Nagoya Station",
+      "lat": 35.1709,
+      "lng": 136.8815,
+      "radiusKm": 1.0
+    },
+    { "name": "Osu", "lat": 35.1577, "lng": 136.9012, "radiusKm": 1.0 },
+    {
+      "name": "Nagoya Castle",
+      "lat": 35.1855,
+      "lng": 136.899,
+      "radiusKm": 1.0
+    },
+    { "name": "Atsuta", "lat": 35.1274, "lng": 136.9084, "radiusKm": 1.2 },
+    { "name": "Fushimi", "lat": 35.1648, "lng": 136.8975, "radiusKm": 0.8 },
+    { "name": "Tsurumai", "lat": 35.1583, "lng": 136.9193, "radiusKm": 1.0 },
+    { "name": "Nagoya Port", "lat": 35.0841, "lng": 136.8842, "radiusKm": 1.5 }
+  ],
+  "fukuoka": [
+    { "name": "Tenjin", "lat": 33.5902, "lng": 130.399, "radiusKm": 1.0 },
+    { "name": "Hakata", "lat": 33.5897, "lng": 130.4207, "radiusKm": 1.2 },
+    { "name": "Nakasu", "lat": 33.5925, "lng": 130.4072, "radiusKm": 0.7 },
+    { "name": "Ohori Park", "lat": 33.5856, "lng": 130.3777, "radiusKm": 1.0 },
+    { "name": "Daimyo", "lat": 33.5888, "lng": 130.3917, "radiusKm": 0.6 },
+    { "name": "Momochi", "lat": 33.5929, "lng": 130.3525, "radiusKm": 1.2 },
+    { "name": "Canal City", "lat": 33.5893, "lng": 130.4114, "radiusKm": 0.7 },
+    { "name": "Yanagibashi", "lat": 33.587, "lng": 130.4093, "radiusKm": 0.5 }
+  ],
+  "sapporo": [
+    { "name": "Odori", "lat": 43.06, "lng": 141.3545, "radiusKm": 1.0 },
+    { "name": "Susukino", "lat": 43.0536, "lng": 141.352, "radiusKm": 1.0 },
+    {
+      "name": "Sapporo Station",
+      "lat": 43.0687,
+      "lng": 141.3508,
+      "radiusKm": 1.0
+    },
+    { "name": "Tanukikoji", "lat": 43.0567, "lng": 141.3525, "radiusKm": 0.6 },
+    { "name": "Maruyama", "lat": 43.053, "lng": 141.323, "radiusKm": 1.5 },
+    { "name": "Moerenuma", "lat": 43.1137, "lng": 141.3983, "radiusKm": 2.0 },
+    {
+      "name": "Shiroi Koibito Park",
+      "lat": 43.0821,
+      "lng": 141.2753,
+      "radiusKm": 1.5
+    },
+    { "name": "Jozankei", "lat": 42.9697, "lng": 141.1658, "radiusKm": 2.5 }
+  ],
+  "sendai": [
+    {
+      "name": "Sendai Station",
+      "lat": 38.2604,
+      "lng": 140.8823,
+      "radiusKm": 1.0
+    },
+    { "name": "Ichibancho", "lat": 38.2614, "lng": 140.8722, "radiusKm": 0.8 },
+    { "name": "Kokubuncho", "lat": 38.265, "lng": 140.8722, "radiusKm": 0.7 },
+    { "name": "Aoba Castle", "lat": 38.2531, "lng": 140.8563, "radiusKm": 1.2 },
+    { "name": "Matsushima", "lat": 38.365, "lng": 141.061, "radiusKm": 2.5 },
+    { "name": "Akiu Onsen", "lat": 38.2203, "lng": 140.7017, "radiusKm": 2.0 }
+  ],
+  "hiroshima": [
+    { "name": "Peace Park", "lat": 34.3955, "lng": 132.4536, "radiusKm": 1.0 },
+    { "name": "Hondori", "lat": 34.391, "lng": 132.46, "radiusKm": 0.8 },
+    {
+      "name": "Hiroshima Station",
+      "lat": 34.3979,
+      "lng": 132.4753,
+      "radiusKm": 1.0
+    },
+    { "name": "Shukkeien", "lat": 34.3981, "lng": 132.4672, "radiusKm": 0.7 },
+    {
+      "name": "Hiroshima Castle",
+      "lat": 34.4015,
+      "lng": 132.4595,
+      "radiusKm": 0.8
+    },
+    { "name": "Miyajima", "lat": 34.296, "lng": 132.3196, "radiusKm": 2.5 },
+    { "name": "Nagarekawa", "lat": 34.3882, "lng": 132.4606, "radiusKm": 0.6 }
+  ],
+  "kanazawa": [
+    { "name": "Kenrokuen", "lat": 36.5613, "lng": 136.6625, "radiusKm": 1.0 },
+    {
+      "name": "Higashi Chaya",
+      "lat": 36.5735,
+      "lng": 136.6672,
+      "radiusKm": 0.8
+    },
+    { "name": "Kazuemachi", "lat": 36.569, "lng": 136.661, "radiusKm": 0.5 },
+    { "name": "Nishi Chaya", "lat": 36.5603, "lng": 136.6459, "radiusKm": 0.7 },
+    { "name": "Omicho", "lat": 36.5713, "lng": 136.6555, "radiusKm": 0.6 },
+    {
+      "name": "Kanazawa Station",
+      "lat": 36.5781,
+      "lng": 136.6479,
+      "radiusKm": 1.0
+    },
+    { "name": "Nagamachi", "lat": 36.5632, "lng": 136.6513, "radiusKm": 0.7 }
+  ],
+  "naha": [
+    {
+      "name": "Kokusai Street",
+      "lat": 26.2152,
+      "lng": 127.6846,
+      "radiusKm": 1.0
+    },
+    { "name": "Shuri", "lat": 26.217, "lng": 127.7196, "radiusKm": 1.5 },
+    { "name": "Makishi", "lat": 26.2137, "lng": 127.6869, "radiusKm": 0.7 },
+    { "name": "Tsuboya", "lat": 26.2119, "lng": 127.6903, "radiusKm": 0.6 },
+    { "name": "Naha Port", "lat": 26.2256, "lng": 127.6696, "radiusKm": 1.0 },
+    { "name": "Omoromachi", "lat": 26.2271, "lng": 127.6944, "radiusKm": 1.0 },
+    { "name": "Chatan", "lat": 26.326, "lng": 127.7672, "radiusKm": 2.5 },
+    { "name": "Naminoue", "lat": 26.2236, "lng": 127.6718, "radiusKm": 0.8 }
+  ],
+  "matsuyama": [
+    {
+      "name": "Matsuyama Castle",
+      "lat": 33.8454,
+      "lng": 132.7655,
+      "radiusKm": 1.0
+    },
+    { "name": "Dogo Onsen", "lat": 33.8527, "lng": 132.7885, "radiusKm": 1.0 },
+    { "name": "Okaido", "lat": 33.839, "lng": 132.7654, "radiusKm": 0.8 },
+    {
+      "name": "Matsuyama Station",
+      "lat": 33.8383,
+      "lng": 132.7499,
+      "radiusKm": 1.0
+    },
+    { "name": "Gintengai", "lat": 33.841, "lng": 132.7687, "radiusKm": 0.6 }
+  ],
+  "takamatsu": [
+    { "name": "Ritsurin", "lat": 34.33, "lng": 134.0467, "radiusKm": 1.2 },
+    {
+      "name": "Takamatsu Station",
+      "lat": 34.3505,
+      "lng": 134.0467,
+      "radiusKm": 1.0
+    },
+    {
+      "name": "Marugamemachi",
+      "lat": 34.344,
+      "lng": 134.0488,
+      "radiusKm": 0.7
+    },
+    { "name": "Sunport", "lat": 34.3519, "lng": 134.0477, "radiusKm": 0.8 },
+    { "name": "Yashima", "lat": 34.3597, "lng": 134.1006, "radiusKm": 1.5 }
+  ],
+  "hakodate": [
+    { "name": "Motomachi", "lat": 41.7663, "lng": 140.7109, "radiusKm": 1.0 },
+    { "name": "Bay Area", "lat": 41.7691, "lng": 140.72, "radiusKm": 1.0 },
+    {
+      "name": "Hakodate Station",
+      "lat": 41.7737,
+      "lng": 140.7268,
+      "radiusKm": 0.8
+    },
+    {
+      "name": "Mount Hakodate",
+      "lat": 41.7582,
+      "lng": 140.7017,
+      "radiusKm": 1.5
+    },
+    { "name": "Goryokaku", "lat": 41.7966, "lng": 140.754, "radiusKm": 1.2 },
+    {
+      "name": "Yunokawa Onsen",
+      "lat": 41.775,
+      "lng": 140.7883,
+      "radiusKm": 1.5
+    }
+  ],
+  "nagasaki": [
+    { "name": "Dejima", "lat": 32.7433, "lng": 129.8717, "radiusKm": 0.8 },
+    {
+      "name": "Glover Garden",
+      "lat": 32.7347,
+      "lng": 129.8669,
+      "radiusKm": 0.8
+    },
+    { "name": "Chinatown", "lat": 32.7437, "lng": 129.8762, "radiusKm": 0.6 },
+    { "name": "Peace Park", "lat": 32.7748, "lng": 129.8635, "radiusKm": 1.0 },
+    {
+      "name": "Nagasaki Station",
+      "lat": 32.7513,
+      "lng": 129.8692,
+      "radiusKm": 0.8
+    },
+    { "name": "Hamano-machi", "lat": 32.7462, "lng": 129.877, "radiusKm": 0.6 },
+    { "name": "Inasayama", "lat": 32.753, "lng": 129.8505, "radiusKm": 1.5 }
+  ]
+}
