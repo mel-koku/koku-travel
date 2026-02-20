@@ -27,14 +27,18 @@ vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn().mockImplementation(async () => ({
     from: () => ({
       select: () => ({
-        not: () => ({
-          neq: () => ({
-            select: () => Promise.resolve(mockSupabaseResponse),
-          }),
+        or: () => ({
+          range: () => Promise.resolve(mockSupabaseResponse),
         }),
       }),
     }),
   })),
+}));
+
+// Mock file cache to prevent filesystem side effects
+vi.mock("@/lib/api/fileCache", () => ({
+  readFileCache: vi.fn().mockReturnValue(null),
+  writeFileCache: vi.fn(),
 }));
 
 // Helper to create mock location data for aggregation
@@ -55,6 +59,9 @@ describe("GET /api/locations/filter-options", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSupabaseResponse = { data: createMockAggregationData(), error: null };
+    // Clear globalThis cache to prevent stale data between tests
+    const _g = globalThis as typeof globalThis & { __filterOptionsCache?: unknown };
+    delete _g.__filterOptionsCache;
   });
 
   describe("Rate limiting", () => {

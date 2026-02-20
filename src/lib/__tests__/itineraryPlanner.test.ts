@@ -177,8 +177,8 @@ describe("planItinerary", () => {
 
     expect(secondActivity.kind).toBe("place");
     if (secondActivity.kind === "place") {
-      // Now uses consolidated "transit" mode instead of specific transit type
-      expect(secondActivity.travelFromPrevious?.mode).toBe("transit");
+      // When transit result is used, mode is set to "train"
+      expect(secondActivity.travelFromPrevious?.mode).toBe("train");
       expect(secondActivity.travelFromPrevious?.departureTime).toBe("10:10");
       expect(secondActivity.travelFromPrevious?.arrivalTime).toBe("10:30"); // 20 min transit
       expect(secondActivity.travelFromPrevious?.instructions).toEqual([
@@ -191,8 +191,12 @@ describe("planItinerary", () => {
   });
 
   it("keeps walking mode when the walk is short", async () => {
+    // Return short distance (<1km) so transit lookup is NOT triggered
     mockRequestRoute.mockImplementation((request: RoutingRequest) => {
-      return Promise.resolve(buildRoute(request.mode, 480));
+      return Promise.resolve({
+        ...buildRoute(request.mode, 480),
+        distanceMeters: 800, // 0.8km — below TRANSIT_DISTANCE_THRESHOLD_KM
+      });
     });
 
     const itinerary = createTestItinerary();

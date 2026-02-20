@@ -1,6 +1,57 @@
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 
+// Mock IntersectionObserver for jsdom (used by Framer Motion's useInView)
+class MockIntersectionObserver {
+  readonly root: Element | null = null;
+  readonly rootMargin: string = "0px";
+  readonly thresholds: ReadonlyArray<number> = [0];
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+  takeRecords = vi.fn().mockReturnValue([]);
+}
+globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
+
+// Mock ResizeObserver for jsdom (used by Radix UI components)
+class MockResizeObserver {
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+}
+globalThis.ResizeObserver = MockResizeObserver as unknown as typeof ResizeObserver;
+
+// Mock window.matchMedia for jsdom (used by Framer Motion and responsive components)
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+});
+
+// Mock Element.hasPointerCapture for jsdom (used by Radix UI Select)
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = vi.fn().mockReturnValue(false);
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = vi.fn();
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = vi.fn();
+}
+
+// Mock scrollIntoView for jsdom (used by Radix UI)
+if (!Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = vi.fn();
+}
+
 // Set default environment variables for tests
 process.env.GOOGLE_PLACES_API_KEY = process.env.GOOGLE_PLACES_API_KEY || "test-api-key";
 
