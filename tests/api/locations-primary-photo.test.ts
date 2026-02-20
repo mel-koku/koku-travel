@@ -188,9 +188,9 @@ describe("GET /api/locations/[id]/primary-photo", () => {
       const response = await GET(request, context);
 
       expect(response.status).toBe(200);
-      // Cache headers increased since data is from DB, not real-time API
+      // 30-day cache since data is from DB (photos don't change frequently)
       expect(response.headers.get("Cache-Control")).toBe(
-        "public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400",
+        "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800",
       );
     });
   });

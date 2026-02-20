@@ -6,8 +6,6 @@ import {
   generateAccessibilityTests,
   generateDisabledStateTests,
   generateErrorStateTests,
-  generateInputInteractionTests,
-  generateControlledTests,
 } from "../utils/componentTestFactory";
 
 const mockOptions = [
@@ -16,7 +14,7 @@ const mockOptions = [
   { label: "Option 3", value: "3" },
 ];
 
-// Configure shared tests
+// Configure shared tests (only those compatible with Radix UI Select)
 const selectConfig = {
   name: "Select",
   renderDefault: () => <Select options={mockOptions} />,
@@ -30,26 +28,18 @@ const selectConfig = {
   errorClasses: ["border-error"],
 };
 
-// Generate common tests from factory
+// Generate common tests from factory (skip input/controlled — Radix Select is not a native <select>)
 generateAccessibilityTests(selectConfig);
 generateDisabledStateTests(selectConfig);
 generateErrorStateTests(selectConfig);
-generateInputInteractionTests(selectConfig);
-generateControlledTests(selectConfig, {
-  controlledValue: "1",
-  uncontrolledValue: "1",
-});
 
 // Select-specific tests
 describe("Select", () => {
   describe("Rendering", () => {
-    it("should render with options", () => {
+    it("should render trigger element", () => {
       render(<Select options={mockOptions} />);
       const select = screen.getByRole("combobox");
       expect(select).toBeInTheDocument();
-      expect(screen.getByText("Option 1")).toBeInTheDocument();
-      expect(screen.getByText("Option 2")).toBeInTheDocument();
-      expect(screen.getByText("Option 3")).toBeInTheDocument();
     });
 
     it("should render with placeholder", () => {
@@ -57,15 +47,9 @@ describe("Select", () => {
       expect(screen.getByText("Choose an option")).toBeInTheDocument();
     });
 
-    it("should render disabled options", () => {
-      const optionsWithDisabled = [
-        ...mockOptions,
-        { label: "Disabled Option", value: "4", disabled: true },
-      ];
-      render(<Select options={optionsWithDisabled} />);
-      const disabledOption = screen.getByText("Disabled Option");
-      expect(disabledOption).toBeInTheDocument();
-      expect((disabledOption as HTMLOptionElement).disabled).toBe(true);
+    it("should show selected value text", () => {
+      render(<Select options={mockOptions} value="2" />);
+      expect(screen.getByText("Option 2")).toBeInTheDocument();
     });
   });
 
@@ -78,12 +62,22 @@ describe("Select", () => {
   });
 
   describe("User interaction", () => {
-    it("should update selected value when option is selected", async () => {
+    it("should call onChange when option is selected", async () => {
+      const handleChange = vi.fn();
       const user = userEvent.setup();
-      render(<Select options={mockOptions} />);
-      const select = screen.getByRole("combobox") as HTMLSelectElement;
-      await user.selectOptions(select, "2");
-      expect(select.value).toBe("2");
+      render(<Select options={mockOptions} onChange={handleChange} />);
+      const trigger = screen.getByRole("combobox");
+      // Open the dropdown
+      await user.click(trigger);
+      // Select an option from the opened dropdown
+      const option = screen.getByText("Option 2");
+      await user.click(option);
+      expect(handleChange).toHaveBeenCalledWith({ target: { value: "2" } });
+    });
+
+    it("should show error message when error and id are provided", () => {
+      render(<Select options={mockOptions} id="test-select" error="Required field" />);
+      expect(screen.getByRole("alert")).toHaveTextContent("Required field");
     });
   });
 });
