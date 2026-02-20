@@ -27,10 +27,8 @@ vi.mock("@/lib/supabase/server", () => ({
   createClient: vi.fn().mockImplementation(async () => ({
     from: () => ({
       select: () => ({
-        not: () => ({
-          neq: () => ({
-            order: () => Promise.resolve(mockSupabaseResponse),
-          }),
+        or: () => ({
+          order: () => Promise.resolve(mockSupabaseResponse),
         }),
       }),
     }),

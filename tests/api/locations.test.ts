@@ -29,27 +29,31 @@ let mockSupabaseCountResponse: { count: number | null; error: unknown } = { coun
 let mockSupabaseDataResponse: { data: unknown[]; error: unknown } = { data: [], error: null };
 
 function createCountQueryBuilder(getResponse: () => { count: number | null; error: unknown }) {
-  const builder = {
-    eq: () => builder,
-    ilike: () => builder,
-    then: (resolve: (value: { count: number | null; error: unknown }) => void) => {
-      resolve(getResponse());
-    },
+  const builder: Record<string, unknown> = {};
+  const proxy = () => builder;
+  builder.eq = proxy;
+  builder.or = proxy;
+  builder.ilike = proxy;
+  builder.textSearch = proxy;
+  builder.then = (resolve: (value: { count: number | null; error: unknown }) => void) => {
+    resolve(getResponse());
   };
   return builder;
 }
 
 function createDataQueryBuilder(getResponse: () => { data: unknown[]; error: unknown }) {
-  const builder = {
-    eq: () => builder,
-    ilike: () => builder,
-    order: () => builder,
-    range: () => ({
-      then: (resolve: (value: { data: unknown[]; error: unknown }) => void) => {
-        resolve(getResponse());
-      },
-    }),
-  };
+  const builder: Record<string, unknown> = {};
+  const proxy = () => builder;
+  builder.eq = proxy;
+  builder.or = proxy;
+  builder.ilike = proxy;
+  builder.textSearch = proxy;
+  builder.order = proxy;
+  builder.range = () => ({
+    then: (resolve: (value: { data: unknown[]; error: unknown }) => void) => {
+      resolve(getResponse());
+    },
+  });
   return builder;
 }
 
@@ -60,20 +64,12 @@ vi.mock("@/lib/supabase/server", () => ({
         if (options?.head) {
           const countBuilder = createCountQueryBuilder(() => mockSupabaseCountResponse);
           return {
-            not: () => ({
-              neq: () => ({
-                neq: () => countBuilder,
-              }),
-            }),
+            or: () => countBuilder,
           };
         }
         const dataBuilder = createDataQueryBuilder(() => mockSupabaseDataResponse);
         return {
-          not: () => ({
-            neq: () => ({
-              neq: () => dataBuilder,
-            }),
-          }),
+          or: () => dataBuilder,
         };
       },
     }),
@@ -225,11 +221,11 @@ describe("GET /api/locations", () => {
       expect(location.primaryPhotoUrl).toBeDefined();
     });
 
-    it("should filter out locations without place_id", async () => {
+    it("should include locations regardless of place_id", async () => {
       const locationsWithMissingPlaceId = [
         ...createMockLocations(5),
-        { ...createMockLocations(1)[0], place_id: null },
-        { ...createMockLocations(1)[0], place_id: "" },
+        { ...createMockLocations(1)[0], id: "no-place-id-1", place_id: null },
+        { ...createMockLocations(1)[0], id: "no-place-id-2", place_id: "" },
       ];
       mockSupabaseDataResponse = { data: locationsWithMissingPlaceId, error: null };
 
@@ -238,7 +234,8 @@ describe("GET /api/locations", () => {
 
       expect(response.status).toBe(200);
       const data = await response.json();
-      expect(data.data.length).toBe(5);
+      // Route returns all locations from DB — no client-side place_id filtering
+      expect(data.data.length).toBe(7);
     });
 
     it("should include prefecture field in response", async () => {

@@ -18,6 +18,7 @@ vi.mock("@/lib/api/middleware", () => ({
     user: null,
     context: { requestId: "test-request-id" },
   }),
+  requireJsonContentType: vi.fn().mockReturnValue(null),
 }));
 
 // Mock routing module

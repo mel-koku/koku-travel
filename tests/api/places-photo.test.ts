@@ -81,7 +81,7 @@ describe("GET /api/places/photo", () => {
       expect(response.status).toBe(200);
       expect(fetchPhotoStream).toHaveBeenCalledWith(
         "places/ChIJN1t_tDeuEmsRUsoyG83frY4/photos/test-ref",
-        {},
+        { maxWidthPx: 800, maxHeightPx: undefined },
       );
     });
   });
@@ -97,35 +97,35 @@ describe("GET /api/places/photo", () => {
       const response = await GET(request);
 
       expect(response.status).toBe(200);
-      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", { maxWidthPx: 2000 });
+      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", { maxWidthPx: 2000, maxHeightPx: undefined });
     });
 
     it("should reject maxWidthPx exceeding 4000", async () => {
       const mockResponse = createMockPhotoStreamResponse();
       vi.mocked(fetchPhotoStream).mockResolvedValueOnce(mockResponse);
-      
+
       const request = createMockRequest(
         "https://example.com/api/places/photo?photoName=places/test/photos/ref&maxWidthPx=5000",
       );
       const response = await GET(request);
 
-      expect(response.status).toBe(200); // parsePositiveInt returns undefined for invalid values
-      // The function will call fetchPhotoStream with undefined maxWidthPx (invalid values are ignored)
-      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", {});
+      expect(response.status).toBe(200);
+      // parsePositiveInt returns null for out-of-range values, route falls back to 800
+      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", { maxWidthPx: 800, maxHeightPx: undefined });
     });
 
     it("should reject maxWidthPx less than 1", async () => {
       const mockResponse = createMockPhotoStreamResponse();
       vi.mocked(fetchPhotoStream).mockResolvedValueOnce(mockResponse);
-      
+
       const request = createMockRequest(
         "https://example.com/api/places/photo?photoName=places/test/photos/ref&maxWidthPx=0",
       );
       const response = await GET(request);
 
-      expect(response.status).toBe(200); // parsePositiveInt returns null for invalid values
-      // Invalid values are ignored, so fetchPhotoStream is called without maxWidthPx
-      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", {});
+      expect(response.status).toBe(200);
+      // parsePositiveInt returns null for invalid values, route falls back to 800
+      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", { maxWidthPx: 800, maxHeightPx: undefined });
     });
 
     it("should validate maxHeightPx is within 1-4000 range", async () => {
@@ -138,7 +138,7 @@ describe("GET /api/places/photo", () => {
       const response = await GET(request);
 
       expect(response.status).toBe(200);
-      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", { maxHeightPx: 1500 });
+      expect(fetchPhotoStream).toHaveBeenCalledWith("places/test/photos/ref", { maxWidthPx: 800, maxHeightPx: 1500 });
     });
 
     it("should accept both maxWidthPx and maxHeightPx", async () => {
@@ -219,7 +219,7 @@ describe("GET /api/places/photo", () => {
 
       expect(response.status).toBe(200);
       expect(response.headers.get("Cache-Control")).toBe(
-        "public, max-age=86400, s-maxage=86400, stale-while-revalidate=43200",
+        "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800",
       );
     });
   });

@@ -18,6 +18,20 @@ vi.mock("@/lib/api/middleware", () => ({
     user: null,
     context: { requestId: "test-request-id" },
   }),
+  requireJsonContentType: vi.fn().mockReturnValue(null),
+}));
+
+vi.mock("@/lib/cache/itineraryCache", () => ({
+  getCachedItinerary: vi.fn().mockResolvedValue(null),
+  cacheItinerary: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock("@/lib/validation/itineraryValidator", () => ({
+  validateItinerary: vi.fn().mockReturnValue({
+    valid: true,
+    issues: [],
+    summary: { errorCount: 0, warningCount: 0, duplicateLocations: 0 },
+  }),
 }));
 
 // Mock the itinerary engine
@@ -257,6 +271,7 @@ describe("POST /api/itinerary/plan", () => {
       expect(mockGenerateTripFromBuilderData).toHaveBeenCalledWith(
         expect.anything(),
         customTripId,
+        undefined,
       );
     });
 
@@ -272,6 +287,7 @@ describe("POST /api/itinerary/plan", () => {
       expect(mockGenerateTripFromBuilderData).toHaveBeenCalledWith(
         expect.anything(),
         expect.stringMatching(/^trip-\d+-[a-z0-9]+$/),
+        undefined,
       );
     });
 
