@@ -28,7 +28,6 @@ import { logger } from "@/lib/logger";
 import {
   type StoredTrip,
   type CreateTripInput,
-  type EditHistoryState,
   createTripRecord,
   updateTripItinerary as updateTripItineraryOp,
   renameTrip as renameTripOp,
@@ -37,20 +36,7 @@ import {
   getTripById as getTripByIdOp,
   sanitizeTrips,
 } from "@/services/trip";
-import {
-  replaceActivity as replaceActivityOp,
-  deleteActivity as deleteActivityOp,
-  reorderActivities as reorderActivitiesOp,
-  addActivity as addActivityOp,
-} from "@/services/trip";
-import {
-  createEditHistoryEntry,
-  addEditToHistory,
-  performUndo,
-  performRedo,
-  canUndo as canUndoCheck,
-  canRedo as canRedoCheck,
-} from "@/services/trip";
+import { useEditHistory, type EditHistoryInternalState } from "./useEditHistory";
 import {
   syncFavoriteToggle,
   syncBookmarkToggle,
@@ -244,7 +230,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       }
 
       setState(nextState);
-      localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(nextState));
+      try {
+        localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(nextState));
+      } catch (e) {
+        logger.warn("Failed to persist state to localStorage", { error: e instanceof Error ? e.message : String(e) });
+      }
 
       if (legacyFavorites.length > 0) {
         localStorage.removeItem(WISHLIST_STORAGE_KEY);
@@ -346,11 +336,59 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         editHistory: state.editHistory,
         currentHistoryIndex: state.currentHistoryIndex,
       };
-      localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(persistedState));
+      try {
+        localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(persistedState));
+      } catch (e) {
+        logger.warn("Failed to persist state to localStorage (debounced)", { error: e instanceof Error ? e.message : String(e) });
+      }
     }, APP_STATE_DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
   }, [state.user, state.favorites, state.guideBookmarks, state.trips, state.dayEntryPoints, state.editHistory, state.currentHistoryIndex]);
+
+  // Ref tracking current trips so beforeunload/visibilitychange can flush without stale closures
+  const tripsRef = useRef(state.trips);
+  useEffect(() => {
+    tripsRef.current = state.trips;
+  }, [state.trips]);
+
+  // Flush pending trip syncs on tab close / background to prevent data loss from 2s debounce
+  useEffect(() => {
+    if (typeof window === "undefined" || !supabase) return;
+
+    const flushPendingSyncs = () => {
+      const pending = tripSyncTimeouts.current;
+      if (pending.size === 0) return;
+
+      const currentTrips = tripsRef.current;
+      pending.forEach((timeout, tripId) => {
+        clearTimeout(timeout);
+        const trip = currentTrips.find((t) => t.id === tripId);
+        if (trip) {
+          void syncTripSave(supabase, trip);
+        }
+      });
+      pending.clear();
+    };
+
+    const handleBeforeUnload = () => {
+      flushPendingSyncs();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        flushPendingSyncs();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [supabase]);
 
   // Cleanup pending trip sync timeouts on unmount
   useEffect(() => {
@@ -567,175 +605,34 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
-  // Helper for itinerary updates with history
-  const updateItineraryWithHistory = useCallback(
-    (
-      tripId: string,
-      dayId: string,
-      editType: ItineraryEdit["type"],
-      updater: (itinerary: Itinerary) => Itinerary,
-      metadata?: Record<string, unknown>,
-    ) => {
-      setState((s) => {
-        const trip = s.trips.find((t) => t.id === tripId);
-        if (!trip) return s;
+  // Edit history actions (extracted into useEditHistory hook)
+  // setState is compatible because InternalState ⊇ EditHistoryInternalState
+  // and the hook's updater spreads unchanged fields through.
+  const editHistoryActions = useEditHistory({
+    setState: setState as unknown as (updater: (s: EditHistoryInternalState) => EditHistoryInternalState) => void,
+    supabase,
+    tripSyncTimeouts,
+    syncTripSave,
+    tripSyncDebounceMs: TRIP_SYNC_DEBOUNCE_MS,
+  });
 
-        const previousItinerary = trip.itinerary;
-        const nextItinerary = updater(previousItinerary);
-
-        const edit = createEditHistoryEntry(tripId, dayId, editType, previousItinerary, nextItinerary, metadata);
-
-        const historyState: EditHistoryState = {
-          editHistory: s.editHistory,
-          currentHistoryIndex: s.currentHistoryIndex,
-        };
-        const newHistoryState = addEditToHistory(historyState, tripId, edit);
-
-        const updatedTrips = s.trips.map((t) =>
-          t.id === tripId
-            ? { ...t, itinerary: nextItinerary, updatedAt: new Date().toISOString() }
-            : t,
-        );
-
-        // Schedule debounced sync for activity changes
-        if (supabase) {
-          // Clear any existing timeout for this trip
-          const existingTimeout = tripSyncTimeouts.current.get(tripId);
-          if (existingTimeout) {
-            clearTimeout(existingTimeout);
-          }
-
-          // Schedule new sync after debounce delay
-          const timeout = setTimeout(() => {
-            const updatedTrip = updatedTrips.find((t) => t.id === tripId);
-            if (updatedTrip) {
-              void syncTripSave(supabase, updatedTrip);
-            }
-            tripSyncTimeouts.current.delete(tripId);
-          }, TRIP_SYNC_DEBOUNCE_MS);
-
-          tripSyncTimeouts.current.set(tripId, timeout);
-        }
-
-        return {
-          ...s,
-          trips: updatedTrips,
-          editHistory: newHistoryState.editHistory,
-          currentHistoryIndex: newHistoryState.currentHistoryIndex,
-        };
-      });
-    },
-    [supabase],
-  );
-
-  // Activity actions
-  const replaceActivity = useCallback(
-    (tripId: string, dayId: string, activityId: string, newActivity: ItineraryActivity) => {
-      updateItineraryWithHistory(
-        tripId,
-        dayId,
-        "replaceActivity",
-        (itinerary) => replaceActivityOp(itinerary, dayId, activityId, newActivity),
-        { activityId, newActivityId: newActivity.id },
-      );
-    },
-    [updateItineraryWithHistory],
-  );
-
-  const deleteActivity = useCallback(
-    (tripId: string, dayId: string, activityId: string) => {
-      updateItineraryWithHistory(
-        tripId,
-        dayId,
-        "deleteActivity",
-        (itinerary) => deleteActivityOp(itinerary, dayId, activityId),
-        { activityId },
-      );
-    },
-    [updateItineraryWithHistory],
-  );
-
-  const reorderActivities = useCallback(
-    (tripId: string, dayId: string, activityIds: string[]) => {
-      updateItineraryWithHistory(
-        tripId,
-        dayId,
-        "reorderActivities",
-        (itinerary) => reorderActivitiesOp(itinerary, dayId, activityIds),
-        { activityIds },
-      );
-    },
-    [updateItineraryWithHistory],
-  );
-
-  const addActivity = useCallback(
-    (tripId: string, dayId: string, activity: ItineraryActivity, position?: number) => {
-      updateItineraryWithHistory(
-        tripId,
-        dayId,
-        "addActivity",
-        (itinerary) => addActivityOp(itinerary, dayId, activity, position),
-        { activityId: activity.id, position },
-      );
-    },
-    [updateItineraryWithHistory],
-  );
-
-  // Undo/redo actions
-  const undo = useCallback(
-    (tripId: string) => {
-      setState((s) => {
-        const historyState: EditHistoryState = {
-          editHistory: s.editHistory,
-          currentHistoryIndex: s.currentHistoryIndex,
-        };
-        const result = performUndo(s.trips, historyState, tripId);
-        if (!result) return s;
-
-        return {
-          ...s,
-          trips: result.trips,
-          editHistory: result.historyState.editHistory,
-          currentHistoryIndex: result.historyState.currentHistoryIndex,
-        };
-      });
-    },
-    [],
-  );
-
-  const redo = useCallback(
-    (tripId: string) => {
-      setState((s) => {
-        const historyState: EditHistoryState = {
-          editHistory: s.editHistory,
-          currentHistoryIndex: s.currentHistoryIndex,
-        };
-        const result = performRedo(s.trips, historyState, tripId);
-        if (!result) return s;
-
-        return {
-          ...s,
-          trips: result.trips,
-          editHistory: result.historyState.editHistory,
-          currentHistoryIndex: result.historyState.currentHistoryIndex,
-        };
-      });
-    },
-    [],
-  );
+  const {
+    replaceActivity, deleteActivity, reorderActivities, addActivity,
+    undo, redo, canUndoCheck: canUndoFn, canRedoCheck: canRedoFn,
+  } = editHistoryActions;
 
   const canUndo = useCallback(
     (tripId: string) => {
-      return canUndoCheck({ editHistory: state.editHistory, currentHistoryIndex: state.currentHistoryIndex }, tripId);
+      return canUndoFn({ editHistory: state.editHistory, currentHistoryIndex: state.currentHistoryIndex }, tripId);
     },
-    [state.currentHistoryIndex, state.editHistory],
+    [state.currentHistoryIndex, state.editHistory, canUndoFn],
   );
 
   const canRedo = useCallback(
     (tripId: string) => {
-      return canRedoCheck({ editHistory: state.editHistory, currentHistoryIndex: state.currentHistoryIndex }, tripId);
+      return canRedoFn({ editHistory: state.editHistory, currentHistoryIndex: state.currentHistoryIndex }, tripId);
     },
-    [state.editHistory, state.currentHistoryIndex],
+    [state.editHistory, state.currentHistoryIndex, canRedoFn],
   );
 
   // Clear all local data
@@ -753,7 +650,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     };
     setState(next);
     if (typeof window !== "undefined") {
-      localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(next));
+      try {
+        localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(next));
+      } catch (e) {
+        logger.warn("Failed to persist cleared state to localStorage", { error: e instanceof Error ? e.message : String(e) });
+      }
       localStorage.removeItem(WISHLIST_STORAGE_KEY);
       localStorage.removeItem(USER_PREFERENCES_STORAGE_KEY);
       localStorage.removeItem(FILTER_METADATA_STORAGE_KEY);
