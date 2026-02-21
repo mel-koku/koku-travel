@@ -9,6 +9,7 @@ import { generateObject } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 
@@ -130,7 +131,7 @@ Return a JSON object mapping each day ID to its intro string.`;
     return result.object as Record<string, string>;
   } catch (error) {
     logger.warn("Failed to generate AI day intros, falling back to templates", {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
     });
     return null;
   }

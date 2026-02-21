@@ -7,6 +7,7 @@ import type { TripWeatherContext, WeatherForecast } from "@/types/weather";
 import { getCategoryDefaultDuration } from "./durationExtractor";
 import { fetchWeatherForecast } from "./weather/weatherService";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { normalizeKey } from "@/lib/utils/stringUtils";
 
@@ -238,7 +239,7 @@ export async function generateItinerary(
         }
       } catch (error) {
         // Weather fetch failed, continue without weather data
-        logger.warn(`Failed to fetch weather for ${cityId}`, { error: error instanceof Error ? error.message : String(error) });
+        logger.warn(`Failed to fetch weather for ${cityId}`, { error: getErrorMessage(error) });
       }
     }
   }

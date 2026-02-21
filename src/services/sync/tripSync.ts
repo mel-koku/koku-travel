@@ -7,6 +7,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import type { SyncResult } from "./types";
 import type { StoredTrip } from "@/services/trip/types";
 import type { Itinerary } from "@/types/itinerary";
@@ -64,7 +65,7 @@ export async function fetchTrips(
     const rows = (data ?? []) as TripRow[];
     return { success: true, data: rows.map(rowToStoredTrip) };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = getErrorMessage(error);
     logger.error("Error fetching trips", new Error(message));
     return { success: false, error: message };
   }
@@ -98,7 +99,7 @@ export async function fetchTripById(
 
     return { success: true, data: rowToStoredTrip(data as TripRow) };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = getErrorMessage(error);
     logger.error("Error fetching trip", new Error(message));
     return { success: false, error: message };
   }

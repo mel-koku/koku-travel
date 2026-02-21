@@ -5,8 +5,10 @@
  * for duplicate requests with the same parameters.
  */
 
+import crypto from "crypto";
 import { Redis } from "@upstash/redis";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { env } from "@/lib/env";
 import type { TripBuilderData } from "@/types/trip";
 import type { Trip } from "@/types/tripDomain";
@@ -53,7 +55,7 @@ function initializeRedis(): void {
       logger.info("Redis itinerary cache initialized");
     } catch (error) {
       logger.warn("Failed to initialize Redis for itinerary cache", {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error),
       });
       redisAvailable = false;
     }
@@ -67,7 +69,8 @@ function initializeRedis(): void {
  * Generates a deterministic cache key from builder data
  *
  * Creates a SHA256 hash of normalized builder data to ensure
- * identical inputs produce identical cache keys.
+ * identical inputs produce identical cache keys with negligible
+ * collision probability.
  *
  * @param builderData - Trip builder data to generate key from
  * @returns Cache key string
@@ -77,17 +80,9 @@ export function generateCacheKey(builderData: TripBuilderData): string {
   const normalized = normalizeBuilderData(builderData);
   const jsonString = JSON.stringify(normalized);
 
-  // Simple hash function for cache key
-  let hash = 0;
-  for (let i = 0; i < jsonString.length; i++) {
-    const char = jsonString.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-
-  // Convert to hex and make positive
-  const hashHex = Math.abs(hash).toString(16).padStart(8, "0");
-  return `${CACHE_KEY_PREFIX}:${hashHex}`;
+  // Use crypto SHA-256 for collision-resistant hashing
+  const hash = crypto.createHash("sha256").update(jsonString).digest("hex").slice(0, 16);
+  return `${CACHE_KEY_PREFIX}:${hash}`;
 }
 
 /**
@@ -166,7 +161,7 @@ export async function getCachedItinerary(
     return null;
   } catch (error) {
     logger.warn("Failed to get cached itinerary", {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       cacheKey,
     });
     return null;
@@ -212,7 +207,7 @@ export async function cacheItinerary(
     });
   } catch (error) {
     logger.warn("Failed to cache itinerary", {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       cacheKey,
     });
   }
@@ -239,7 +234,7 @@ export async function invalidateCachedItinerary(
     logger.debug("Itinerary cache invalidated", { cacheKey });
   } catch (error) {
     logger.warn("Failed to invalidate cached itinerary", {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       cacheKey,
     });
   }
