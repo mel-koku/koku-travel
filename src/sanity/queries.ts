@@ -322,6 +322,7 @@ export const experienceBySlugQuery = groq`
     tags,
     city,
     region,
+    "locationIds": locationIds[].locationId,
     readingTimeMinutes,
     editorialStatus,
     featured,
@@ -381,6 +382,7 @@ export const allPublishedExperiencesQuery = groq`
     estimatedCost,
     city,
     region,
+    "locationIds": locationIds[].locationId,
     readingTimeMinutes,
     tags,
     publishedAt

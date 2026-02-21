@@ -22,6 +22,7 @@ export type ExperienceSummary = {
   estimatedCost?: string;
   city?: string;
   region?: string;
+  locationIds?: string[];
   readingTimeMinutes?: number;
   tags?: string[];
   publishedAt?: string;

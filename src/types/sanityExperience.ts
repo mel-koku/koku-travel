@@ -26,6 +26,7 @@ export type SanityExperience = {
   tags?: string[];
   city?: string;
   region?: string;
+  locationIds?: string[];
   readingTimeMinutes?: number;
   editorialStatus: "draft" | "in_review" | "published" | "archived";
   featured: boolean;

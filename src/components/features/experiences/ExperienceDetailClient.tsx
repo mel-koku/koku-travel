@@ -9,19 +9,24 @@ import { ExperienceQuickFacts } from "./ExperienceQuickFacts";
 import { GuidePreamble } from "@/components/features/guides/GuidePreamble";
 import { PortableTextBody } from "@/components/features/guides/PortableTextBody";
 import { ExperiencePracticalInfo } from "./ExperiencePracticalInfo";
+import { ExperiencePlanCTA } from "./ExperiencePlanCTA";
 import { ExperienceFooter } from "./ExperienceFooter";
+import { LinkedLocations } from "@/components/features/guides/LinkedLocations";
 import { GuideProgressBar } from "@/components/features/guides/GuideProgressBar";
 import { useAppState } from "@/state/AppState";
 import { useBookmarks } from "@/hooks/useBookmarksQuery";
+import type { Location } from "@/types/location";
 
 type ExperienceDetailClientProps = {
   experience: SanityExperience;
   relatedExperiences: ExperienceSummary[];
+  locations?: Location[];
 };
 
 export function ExperienceDetailClient({
   experience,
   relatedExperiences,
+  locations = [],
 }: ExperienceDetailClientProps) {
   const { user } = useAppState();
   const { isBookmarked, toggleBookmark, isToggling } = useBookmarks(user?.id);
@@ -73,6 +78,16 @@ export function ExperienceDetailClient({
         meetingPoint={experience.meetingPoint}
         nearestStation={experience.nearestStation}
         bookingUrl={experience.bookingUrl}
+      />
+
+      {locations.length > 0 && <LinkedLocations locations={locations} />}
+
+      <ExperiencePlanCTA
+        experienceSlug={experience.slug}
+        experienceTitle={experience.title}
+        locationIds={experience.locationIds ?? []}
+        city={experience.city}
+        region={experience.region}
       />
 
       <ExperienceFooter

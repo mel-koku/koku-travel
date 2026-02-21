@@ -198,6 +198,11 @@ export async function generateItinerary(
   }
   const { locationsByCityKey, locationsByRegionId } = buildLocationMaps(allLocations);
 
+  // Build content location ID set for editorial scoring boost
+  const contentLocationIds = data.contentContext?.locationIds?.length
+    ? new Set(data.contentContext.locationIds)
+    : undefined;
+
   const citySequence = resolveCitySequence(data, locationsByCityKey, allLocations);
   const expandedCitySequence = expandCitySequenceForDays(citySequence, totalDays);
   const interestSequence = resolveInterestSequence(data);
@@ -515,6 +520,7 @@ export async function generateItinerary(
           data.group, // Pass group information
           dayNeighborhoods, // Pass recent neighborhoods for geographic diversity
           usedLocationNames, // Pass used names to prevent same-name duplicates
+          contentLocationIds, // Pass content location IDs for editorial boost
         );
         
         const location = locationResult && "_scoringReasoning" in locationResult
@@ -625,12 +631,20 @@ export async function generateItinerary(
               ...(mealNote && { notes: mealNote }),
             };
 
+            // Tag activities from editorial content
+            if (contentLocationIds?.has(location.id)) {
+              activity.tags = [...(activity.tags ?? []), "content-pick"];
+              if (activity.recommendationReason) {
+                activity.recommendationReason.primaryReason = `Featured in "${data.contentContext?.title}"`;
+              }
+            }
+
             dayActivities.push(activity);
             usedLocations.add(location.id);
             usedLocationNames.add(normalizedName);
             remainingTime -= timeNeeded;
             timeSlotUsage.set(timeSlot, (timeSlotUsage.get(timeSlot) ?? 0) + timeNeeded);
-            
+
             // Track category, neighborhood, and location for diversity and distance
             if (location.category) {
               dayCategories.push(location.category);

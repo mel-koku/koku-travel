@@ -223,6 +223,13 @@ export const experience = defineType({
       type: "string",
     }),
     defineField({
+      name: "locationIds",
+      title: "Linked Locations",
+      type: "array",
+      of: [{ type: "locationRef" }],
+      description: "Supabase locations related to this experience",
+    }),
+    defineField({
       name: "readingTimeMinutes",
       title: "Reading Time (minutes)",
       type: "number",
