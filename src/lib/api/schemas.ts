@@ -334,6 +334,18 @@ const timeSchema = z
   .regex(/^([01]?\d|2[0-3]):[0-5]\d$/, "Time must be in HH:MM format (24-hour)")
   .optional();
 
+/**
+ * Schema for content context (guide/experience → trip builder bridge)
+ */
+const contentContextSchema = z.object({
+  type: z.enum(["guide", "experience"]),
+  slug: z.string().min(1).max(500),
+  title: z.string().min(1).max(500),
+  locationIds: z.array(z.string().min(1).max(255)).max(50),
+  city: z.string().max(255).optional(),
+  region: z.string().max(255).optional(),
+}).strict().optional();
+
 export const tripBuilderDataSchema = z.object({
   duration: z.number().int().min(1).max(14).optional(),
   dates: travelDatesSchema,
@@ -351,6 +363,8 @@ export const tripBuilderDataSchema = z.object({
   travelerProfile: travelerProfileSchema,
   // Day start time in HH:MM format (24-hour)
   dayStartTime: timeSchema,
+  // Content context from guide/experience CTA
+  contentContext: contentContextSchema,
 }).strict();
 
 /**

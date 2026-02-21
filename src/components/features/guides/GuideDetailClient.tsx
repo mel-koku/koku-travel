@@ -12,6 +12,7 @@ import { GuidePreamble } from "./GuidePreamble";
 import { GuideContent } from "./GuideContent";
 import { PortableTextBody } from "./PortableTextBody";
 import { LinkedLocations } from "./LinkedLocations";
+import { GuidePlanCTA } from "./GuidePlanCTA";
 import { GuideFooter } from "./GuideFooter";
 import { GuideProgressBar } from "./GuideProgressBar";
 
@@ -52,6 +53,8 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
   const city = isSanity ? sg!.city : g!.city;
   const region = isSanity ? sg!.region : g!.region;
   const readingTimeMinutes = isSanity ? sg!.readingTimeMinutes : g!.readingTimeMinutes;
+  const locationIds = isSanity ? sg!.locationIds || [] : g!.locationIds || [];
+  const slug = isSanity ? sg!.slug : g!.id;
   const featuredImage = isSanity ? sg!.featuredImage?.url || "" : g!.featuredImage;
   const author: string | SanityAuthor = isSanity ? sg!.author : g!.author;
   const authorName = typeof author === "string" ? author : author.name;
@@ -87,6 +90,14 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
       </div>
 
       <LinkedLocations locations={locations} />
+
+      <GuidePlanCTA
+        guideSlug={slug}
+        guideTitle={title}
+        locationIds={locationIds}
+        city={city}
+        region={region}
+      />
 
       <GuideFooter
         authorName={authorName}

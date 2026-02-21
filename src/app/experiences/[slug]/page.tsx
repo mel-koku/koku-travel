@@ -6,6 +6,7 @@ import {
   getSanityExperienceBySlug,
   getRelatedExperiences,
 } from "@/lib/experiences/experienceService";
+import { fetchLocationsByIds } from "@/lib/locations/locationService";
 import { ExperienceDetailClient } from "@/components/features/experiences/ExperienceDetailClient";
 import { urlFor } from "@/sanity/image";
 
@@ -52,16 +53,18 @@ export default async function ExperienceDetailPage({ params }: Props) {
     notFound();
   }
 
-  const relatedExperiences = await getRelatedExperiences(
-    experience.experienceType,
-    experience.slug,
-    3
-  );
+  const [relatedExperiences, locations] = await Promise.all([
+    getRelatedExperiences(experience.experienceType, experience.slug, 3),
+    experience.locationIds?.length
+      ? fetchLocationsByIds(experience.locationIds)
+      : Promise.resolve([]),
+  ]);
 
   return (
     <ExperienceDetailClient
       experience={experience}
       relatedExperiences={relatedExperiences}
+      locations={locations}
     />
   );
 }

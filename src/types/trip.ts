@@ -190,6 +190,19 @@ export type TripBuilderData = {
    * Defaults to "09:00" if not specified.
    */
   dayStartTime?: string;
+  /**
+   * Content context from a guide or experience page CTA.
+   * When present, locations from this content get a scoring boost
+   * and are visually attributed in the generated itinerary.
+   */
+  contentContext?: {
+    type: "guide" | "experience";
+    slug: string;
+    title: string;
+    locationIds: string[];
+    city?: string;
+    region?: string;
+  };
 };
 
 /**
