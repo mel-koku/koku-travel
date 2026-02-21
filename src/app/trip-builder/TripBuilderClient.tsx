@@ -32,11 +32,27 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
     setError(null);
 
     try {
+      // Read transient content context from guide/experience CTA bridge
+      let contentContext: TripBuilderData["contentContext"];
+      try {
+        const raw = localStorage.getItem("koku:content-context");
+        if (raw) {
+          contentContext = JSON.parse(raw);
+        }
+      } catch {
+        // Malformed JSON — ignore
+      }
+
+      const builderData: TripBuilderData = {
+        ...(data as TripBuilderData),
+        ...(contentContext ? { contentContext } : {}),
+      };
+
       const response = await fetch("/api/itinerary/plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          builderData: data as TripBuilderData,
+          builderData,
           favoriteIds: favorites.length > 0 ? favorites : undefined,
         }),
       });
@@ -60,6 +76,9 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         builderData: data as TripBuilderData,
         dayIntros: result.dayIntros,
       });
+
+      // Clear transient content context after successful trip creation
+      localStorage.removeItem("koku:content-context");
 
       reset();
       router.push(`/itinerary?trip=${tripId}`);
