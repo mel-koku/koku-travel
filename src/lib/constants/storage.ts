@@ -17,3 +17,38 @@ export const TRIP_BUILDER_STORAGE_KEY = "koku_trip_builder";
  * LocalStorage key for wishlist/favorites (legacy, migrated to APP_STATE_STORAGE_KEY)
  */
 export const WISHLIST_STORAGE_KEY = "koku_wishlist";
+
+/**
+ * LocalStorage key for filter metadata (cities, categories, regions)
+ */
+export const FILTER_METADATA_STORAGE_KEY = "koku:filter-metadata:v3";
+
+/**
+ * LocalStorage key prefix for dismissed smart prompts (per trip)
+ */
+export const DISMISSED_PROMPTS_PREFIX = "koku:dismissed-prompts:";
+
+/**
+ * LocalStorage key for trip confidence checklist
+ */
+export const CONFIDENCE_CHECKLIST_STORAGE_KEY = "koku:trip-checklist";
+
+/**
+ * LocalStorage key for first-favorite educational toast
+ */
+export const FIRST_FAVORITE_TOAST_STORAGE_KEY = "koku_first_favorite_toast_shown";
+
+/**
+ * LocalStorage key for user preference learning data
+ */
+export const USER_PREFERENCES_STORAGE_KEY = "koku_user_preferences";
+
+/**
+ * SessionStorage key for cached geolocation
+ */
+export const GEOLOCATION_STORAGE_KEY = "koku:geolocation";
+
+/**
+ * LocalStorage key for trip step tracker
+ */
+export const TRIP_STEP_STORAGE_KEY = "koku_trip_step";

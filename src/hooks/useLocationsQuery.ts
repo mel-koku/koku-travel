@@ -13,9 +13,10 @@ import {
   FILTER_METADATA_GC_TIME,
   DAY,
 } from "@/lib/constants/time";
+import { FILTER_METADATA_STORAGE_KEY } from "@/lib/constants/storage";
+import { getLocal, setLocal, removeLocal } from "@/lib/storageHelpers";
 
-// localStorage key and TTL for filter metadata persistence
-const FILTER_METADATA_STORAGE_KEY = "koku:filter-metadata:v3";
+// TTL for filter metadata persistence
 const FILTER_METADATA_STORAGE_TTL = DAY; // 24 hours
 
 type StoredFilterMetadata = {
@@ -27,41 +28,26 @@ type StoredFilterMetadata = {
  * Gets filter metadata from localStorage if available and not expired
  */
 function getFilterMetadataFromStorage(): FilterMetadata | null {
-  if (typeof window === "undefined") return null;
+  const stored = getLocal<StoredFilterMetadata>(FILTER_METADATA_STORAGE_KEY);
+  if (!stored) return null;
 
-  try {
-    const stored = localStorage.getItem(FILTER_METADATA_STORAGE_KEY);
-    if (!stored) return null;
-
-    const parsed = JSON.parse(stored) as StoredFilterMetadata;
-    const age = Date.now() - parsed.cachedAt;
-
-    if (age > FILTER_METADATA_STORAGE_TTL) {
-      localStorage.removeItem(FILTER_METADATA_STORAGE_KEY);
-      return null;
-    }
-
-    return parsed.data;
-  } catch {
+  const age = Date.now() - stored.cachedAt;
+  if (age > FILTER_METADATA_STORAGE_TTL) {
+    removeLocal(FILTER_METADATA_STORAGE_KEY);
     return null;
   }
+
+  return stored.data;
 }
 
 /**
  * Saves filter metadata to localStorage
  */
 function setFilterMetadataToStorage(data: FilterMetadata): void {
-  if (typeof window === "undefined") return;
-
-  try {
-    const stored: StoredFilterMetadata = {
-      data,
-      cachedAt: Date.now(),
-    };
-    localStorage.setItem(FILTER_METADATA_STORAGE_KEY, JSON.stringify(stored));
-  } catch {
-    // Ignore storage errors (quota exceeded, etc.)
-  }
+  setLocal<StoredFilterMetadata>(FILTER_METADATA_STORAGE_KEY, {
+    data,
+    cachedAt: Date.now(),
+  });
 }
 
 /**

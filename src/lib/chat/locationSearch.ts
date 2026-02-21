@@ -3,6 +3,7 @@ import { LOCATION_CHAT_COLUMNS } from "@/lib/supabase/projections";
 import type { LocationChatDbRow } from "@/lib/supabase/projections";
 import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { logger } from "@/lib/logger";
+import { calculateDistance } from "@/lib/utils/geoUtils";
 
 export type ChatLocationResult = {
   id: string;
@@ -155,20 +156,15 @@ export async function searchNearbyLocations(
       return [];
     }
 
-    // Haversine sort
+    // Sort by distance using shared Haversine
     let rows = (data as unknown as LocationChatDbRow[])
       .map((row) => {
         const coords = row.coordinates;
         if (!coords) return { row, distance: Infinity };
-        const R = 6371;
-        const dLat = ((coords.lat - params.lat) * Math.PI) / 180;
-        const dLng = ((coords.lng - params.lng) * Math.PI) / 180;
-        const a =
-          Math.sin(dLat / 2) ** 2 +
-          Math.cos((params.lat * Math.PI) / 180) *
-            Math.cos((coords.lat * Math.PI) / 180) *
-            Math.sin(dLng / 2) ** 2;
-        const distance = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const distance = calculateDistance(
+          { lat: params.lat, lng: params.lng },
+          coords,
+        );
         return { row, distance };
       })
       .filter(({ distance }) => distance <= radiusKm)

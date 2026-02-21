@@ -2,8 +2,8 @@
 
 import { useCallback, useRef } from "react";
 import { useToast } from "@/context/ToastContext";
-
-const STORAGE_KEY = "koku_first_favorite_toast_shown";
+import { FIRST_FAVORITE_TOAST_STORAGE_KEY } from "@/lib/constants/storage";
+import { getLocal, setLocal } from "@/lib/storageHelpers";
 
 /**
  * Shows a one-time educational toast the first time a user favorites
@@ -15,22 +15,13 @@ export function useFirstFavoriteToast() {
 
   const maybeShowToast = useCallback(() => {
     if (shownRef.current) return;
-    try {
-      if (typeof window !== "undefined" && window.localStorage.getItem(STORAGE_KEY)) {
-        shownRef.current = true;
-        return;
-      }
-    } catch {
-      // localStorage unavailable
+    if (getLocal(FIRST_FAVORITE_TOAST_STORAGE_KEY)) {
+      shownRef.current = true;
       return;
     }
 
     shownRef.current = true;
-    try {
-      window.localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      // Ignore storage errors
-    }
+    setLocal(FIRST_FAVORITE_TOAST_STORAGE_KEY, "1");
 
     showToast("Your favorites are automatically included when you build a trip.", {
       variant: "info",

@@ -17,6 +17,12 @@ import { logger } from "./logger";
 
 import { requestRoute } from "./routing";
 import { toItineraryMode } from "./routing/types";
+import { parseTimeToMinutes as parseTime } from "@/lib/utils/timeUtils";
+import {
+  TRANSIT_DISTANCE_THRESHOLD_KM,
+  SHORT_DISTANCE_TRAIN_THRESHOLD_MIN,
+  LONG_DISTANCE_TRAIN_THRESHOLD_MIN,
+} from "@/lib/constants/planning";
 
 type PlannerOptions = {
   defaultDayStart?: string;
@@ -38,29 +44,6 @@ type Coordinates = {
 } | null;
 
 const MINUTES_IN_DAY = 24 * 60;
-
-/** Distance threshold (km) above which transit routing is preferred over walking */
-const TRANSIT_DISTANCE_THRESHOLD_KM = 1;
-/** Travel time threshold (minutes) for short-distance train classification */
-const SHORT_DISTANCE_TRAIN_THRESHOLD_MIN = 60;
-/** Travel time threshold (minutes) for long-distance shinkansen classification */
-const LONG_DISTANCE_TRAIN_THRESHOLD_MIN = 120;
-
-function parseTime(value?: string | null): number | null {
-  if (!value) {
-    return null;
-  }
-  const match = value.match(/^(\d{1,2}):(\d{2})$/);
-  if (!match) {
-    return null;
-  }
-  const hours = Number(match[1]);
-  const minutes = Number(match[2]);
-  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
-    return null;
-  }
-  return hours * 60 + minutes;
-}
 
 function formatTime(totalMinutes: number): string {
   const normalized = ((totalMinutes % MINUTES_IN_DAY) + MINUTES_IN_DAY) % MINUTES_IN_DAY;

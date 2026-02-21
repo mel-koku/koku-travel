@@ -8,6 +8,14 @@ import { findMealRecommendation } from "@/lib/mealPlanning";
 import { scoreLocation } from "@/lib/scoring/locationScoring";
 import { logger } from "@/lib/logger";
 import { internalError, badRequest } from "@/lib/api/errors";
+import { checkRateLimit } from "@/lib/api/rateLimit";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import {
+  createRequestContext,
+  addRequestContextHeaders,
+  requireJsonContentType,
+} from "@/lib/api/middleware";
+import { validateRequestBody, recommendRequestSchema } from "@/lib/api/schemas";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import {
   isSeasonalLocationRelevant,
@@ -347,16 +355,31 @@ function applyRefinementFilters(
  * Fetches and scores recommendations for smart prompt suggestions.
  */
 export async function POST(request: NextRequest) {
+  const context = createRequestContext(request);
+
+  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.SMART_PROMPTS);
+  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
+
+  const contentTypeError = requireJsonContentType(request, context);
+  if (contentTypeError) return contentTypeError;
+
   try {
-    const body = await request.json() as RecommendRequest;
+    const validation = await validateRequestBody(request, recommendRequestSchema);
+    if (!validation.success) {
+      return addRequestContextHeaders(
+        badRequest("Invalid request body", { errors: validation.error.issues }),
+        context,
+      );
+    }
+    const body = validation.data as RecommendRequest;
     const { gap, dayActivities, cityId, tripBuilderData, usedLocationIds, excludeLocationIds, refinementFilters } = body;
 
     if (!gap || !gap.action) {
-      return badRequest("Missing required gap action");
+      return addRequestContextHeaders(badRequest("Missing required gap action"), context);
     }
 
     if (!cityId) {
-      return badRequest("Missing cityId");
+      return addRequestContextHeaders(badRequest("Missing cityId"), context);
     }
 
     const supabase = await createClient();
