@@ -43,8 +43,6 @@ const eslintConfig = defineConfig([
     "coverage/**",
     // Allow console in scripts (development tools)
     "scripts/**",
-    // Ignore non-existent files that may be cached by IDE
-    "**/LanguageDropdown.tsx",
   ]),
 ]);
 
