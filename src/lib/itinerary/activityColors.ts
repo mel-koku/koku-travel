@@ -323,3 +323,12 @@ export function getCategoryHexColor(category: string | undefined): string {
   const color = HEX_COLORS[lowerCategory];
   return color ?? defaultColor;
 }
+
+/**
+ * Get color scheme (badge, background, border classes) for a category string.
+ */
+export function getCategoryColorScheme(category: string | undefined): ActivityColorScheme {
+  if (!category) return COLOR_SCHEMES.default;
+  const key = category.toLowerCase() as ColorSchemeKey;
+  return COLOR_SCHEMES[key] ?? COLOR_SCHEMES.default;
+}
