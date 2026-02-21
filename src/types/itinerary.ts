@@ -90,6 +90,17 @@ export type ItineraryCityTransition = {
   notes?: string;
 };
 
+/**
+ * A single activity in an itinerary day.
+ *
+ * This is the **canonical activity type** used throughout the itinerary system —
+ * rendering, editing, undo/redo, smart prompts, and persistence.
+ *
+ * Contrast with `TripActivity` in tripDomain.ts, which is the planning-phase
+ * representation used during initial generation (has `location?: Location` and
+ * structured scoring factors). Once a trip is generated, activities are stored
+ * as `ItineraryActivity`.
+ */
 export type ItineraryActivity =
   | {
       kind: "place";

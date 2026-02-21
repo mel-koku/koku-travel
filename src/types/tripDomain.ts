@@ -47,7 +47,10 @@ export type RecommendationReason = {
 };
 
 /**
- * Alternative activity suggestion
+ * A pre-scored alternative to a planned activity, surfaced during replacement.
+ *
+ * Used by the replacement picker and refinement engine to present options
+ * when a user wants to swap an activity. Not persisted — generated on demand.
  */
 export type ActivityAlternative = {
   /**
@@ -109,7 +112,11 @@ export type ActivityTip = {
 };
 
 /**
- * A single activity in a trip day
+ * Planning-phase activity representation used during trip generation.
+ *
+ * Contains the full `Location` object and structured scoring factors.
+ * After generation, activities are converted to `ItineraryActivity` (itinerary.ts)
+ * which is the canonical type used for rendering, editing, and persistence.
  */
 export type TripActivity = {
   /**
