@@ -4,6 +4,7 @@ import { Redis } from "@upstash/redis";
 import { logger } from "../logger";
 import { env } from "../env";
 import { getClientIp } from "./middleware";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 
 /**
  * Rate limit configuration constants
@@ -84,22 +85,32 @@ function initializeRedis(): void {
         })
         .catch((error) => {
           logger.warn("Failed to connect to Upstash Redis, falling back to in-memory rate limiting", {
-            error: error instanceof Error ? error.message : String(error),
+            error: getErrorMessage(error),
           });
           redisAvailable = false;
         });
     } catch (error) {
       logger.warn("Failed to initialize Upstash Redis, falling back to in-memory rate limiting", {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error),
       });
       redisAvailable = false;
     }
   } else {
     const envLevel = getEnvironmentLevel();
+    const isVercelProduction = process.env.VERCEL_ENV === "production";
     const enforceRedis = process.env.ENFORCE_REDIS_RATE_LIMIT !== "false";
 
-    if (envLevel === "production" && enforceRedis) {
-      // In production, Redis is required for proper rate limiting across instances
+    if (isVercelProduction) {
+      // Vercel production: Redis is unconditionally required — ENFORCE_REDIS_RATE_LIMIT bypass
+      // is NOT allowed because in-memory rate limiting is per-instance in serverless.
+      const errorMessage =
+        "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in Vercel production. " +
+        "In-memory rate limiting does NOT work with serverless instances. " +
+        "Please configure Upstash Redis for production deployments.";
+      logger.error(errorMessage);
+      throw new Error(errorMessage);
+    } else if (envLevel === "production" && enforceRedis) {
+      // Non-Vercel production with enforcement enabled
       const errorMessage =
         "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production. " +
         "In-memory rate limiting does NOT work correctly with multiple server instances. " +
@@ -108,7 +119,7 @@ function initializeRedis(): void {
       logger.error(errorMessage);
       throw new Error(errorMessage);
     } else if (envLevel === "production") {
-      // Production with bypass - critical warning
+      // Non-Vercel production with bypass
       logger.error(
         "CRITICAL: Running production without Redis rate limiting. " +
         "This MUST be resolved. Configure Upstash Redis and set ENFORCE_REDIS_RATE_LIMIT=true.",
@@ -330,7 +341,7 @@ export async function checkRateLimit(
   } catch (error) {
     // If Redis fails, log and fall back to in-memory
     logger.warn("Redis rate limiting failed, falling back to in-memory", {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
       ip,
     });
   }
