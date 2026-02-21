@@ -7,7 +7,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
 } from "@/lib/api/middleware";
-import { shouldUseFts, buildIlikeFilter, sanitizeTsQuery } from "@/lib/supabase/search";
+import { applySearchFilter } from "@/lib/supabase/searchFilters";
 
 /**
  * Lightweight search result for autocomplete
@@ -78,23 +78,12 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     // FTS for queries >= 3 chars (stemming: "skiing" → "ski"), ILIKE fallback for short prefixes
-    let searchQuery = supabase
+    const baseQuery = supabase
       .from("locations")
       .select("id, name, city, region, category, place_id, image, rating")
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
-    if (shouldUseFts(query)) {
-      searchQuery = searchQuery.textSearch("search_vector", sanitizeTsQuery(query), {
-        type: "websearch",
-        config: "english",
-      });
-    } else {
-      searchQuery = searchQuery.or(
-        buildIlikeFilter(query, ["name", "city", "region", "category"])
-      );
-    }
-
-    const { data, error } = await searchQuery
+    const { data, error } = await applySearchFilter(baseQuery, query)
       .order("name", { ascending: true })
       .limit(limit);
 

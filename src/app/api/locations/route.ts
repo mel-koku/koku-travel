@@ -13,7 +13,7 @@ import {
   createPaginatedResponse,
 } from "@/lib/api/pagination";
 import { LOCATION_LISTING_COLUMNS, type LocationListingDbRow } from "@/lib/supabase/projections";
-import { shouldUseFts, buildIlikeFilter, sanitizeTsQuery } from "@/lib/supabase/search";
+import { applySearchFilter } from "@/lib/supabase/searchFilters";
 
 /**
  * GET /api/locations
@@ -60,16 +60,7 @@ export async function GET(request: NextRequest) {
     if (region) countQuery = countQuery.eq("region", region);
     if (category) countQuery = countQuery.eq("category", category);
     if (search) {
-      if (shouldUseFts(search)) {
-        countQuery = countQuery.textSearch("search_vector", sanitizeTsQuery(search), {
-          type: "websearch",
-          config: "english",
-        });
-      } else {
-        countQuery = countQuery.or(
-          buildIlikeFilter(search, ["name", "city", "region", "category"])
-        );
-      }
+      countQuery = applySearchFilter(countQuery, search);
     }
     const { count, error: countError } = await countQuery;
 
@@ -97,16 +88,7 @@ export async function GET(request: NextRequest) {
     if (region) dataQuery = dataQuery.eq("region", region);
     if (category) dataQuery = dataQuery.eq("category", category);
     if (search) {
-      if (shouldUseFts(search)) {
-        dataQuery = dataQuery.textSearch("search_vector", sanitizeTsQuery(search), {
-          type: "websearch",
-          config: "english",
-        });
-      } else {
-        dataQuery = dataQuery.or(
-          buildIlikeFilter(search, ["name", "city", "region", "category"])
-        );
-      }
+      dataQuery = applySearchFilter(dataQuery, search);
     }
     const { data, error } = await dataQuery
       .order("name", { ascending: true })
