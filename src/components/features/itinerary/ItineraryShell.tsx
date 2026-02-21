@@ -6,20 +6,17 @@ import {
   useRef,
   useState,
   useCallback,
-  type Dispatch,
   type RefObject,
-  type SetStateAction,
 } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
 import { useAppState } from "@/state/AppState";
-import { Itinerary, type ItineraryActivity } from "@/types/itinerary";
+import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { WhatsNextCard } from "./WhatsNextCard";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
-import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { logger } from "@/lib/logger";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
@@ -29,15 +26,14 @@ import {
   type ReplacementCandidate,
 } from "@/hooks/useReplacementCandidates";
 import { REGIONS } from "@/data/regions";
-import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult, PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
 import { TripConfidenceDashboard } from "./TripConfidenceDashboard";
 import { calculateTripHealth, getHealthLevel } from "@/lib/itinerary/tripHealth";
-
-// Lazy-load guide builder to keep ~90KB of template data out of the main bundle
-const buildGuideAsync = () => import("@/lib/guide/guideBuilder").then((m) => m.buildGuide);
+import { useItineraryPlanning } from "./hooks/useItineraryPlanning";
+import { useItineraryScrollSync } from "./hooks/useItineraryScrollSync";
+import { useItineraryGuide } from "./hooks/useItineraryGuide";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -64,50 +60,6 @@ type ItineraryShellProps = {
   isPreviewLoading?: boolean;
 };
 
-const normalizeItinerary = (incoming: Itinerary): Itinerary => {
-  return {
-    days: (incoming.days ?? []).map((day, index) => ({
-      ...day,
-      // Ensure day has an ID for backward compatibility
-      id: day.id ?? `day-${index + 1}-legacy-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
-      activities: (day.activities ?? []).map((activity) => {
-        if (
-          activity &&
-          typeof activity === "object" &&
-          "kind" in activity &&
-          activity.kind
-        ) {
-          const typedActivity = activity as ItineraryActivity;
-          if (typedActivity.kind === "note") {
-            return {
-              ...typedActivity,
-              startTime:
-                typedActivity.startTime !== undefined
-                  ? typedActivity.startTime
-                  : undefined,
-              endTime:
-                typedActivity.endTime !== undefined
-                  ? typedActivity.endTime
-                  : undefined,
-            };
-          }
-          return typedActivity;
-        }
-
-        const legacyActivity = activity as Omit<
-          Extract<ItineraryActivity, { kind: "place" }>,
-          "kind"
-        >;
-
-        return {
-          kind: "place",
-          ...legacyActivity,
-        };
-      }),
-    })),
-  };
-};
-
 export const ItineraryShell = ({
   itinerary,
   tripId,
@@ -130,22 +82,35 @@ export const ItineraryShell = ({
   onFilterChange,
   isPreviewLoading,
 }: ItineraryShellProps) => {
-  const { reorderActivities, replaceActivity, getTripById, dayEntryPoints } = useAppState();
+  const { reorderActivities, replaceActivity, getTripById, dayEntryPoints, undo, redo, canUndo, canRedo } = useAppState();
+
+  // Planning hook — model state, travel-time replanning, route optimization
+  const {
+    model,
+    setModelState,
+    isPlanning,
+    setIsPlanning,
+    planningError,
+    setPlanningError,
+    applyModelUpdate,
+    scheduleUserPlanning,
+    scheduleUserPlanningRef,
+    skipAutoOptimizeRef,
+  } = useItineraryPlanning({
+    itinerary,
+    tripBuilderData,
+    dayEntryPoints,
+    tripId,
+    onItineraryChange,
+  });
+
   const [selectedDay, setSelectedDay] = useState(0);
-  const [model, setModelState] = useState<Itinerary>(() => normalizeItinerary(itinerary));
-  const [isPlanning, setIsPlanning] = useState(false);
-  const [planningError, setPlanningError] = useState<string | null>(null);
-  const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
-  // Ref to store scheduleUserPlanning for use in handleReplaceSelect (avoids initialization order issues)
-  const scheduleUserPlanningRef = useRef<((next: Itinerary) => void) | null>(null);
-  // When true, skip auto-optimization in scheduleUserPlanning (e.g. after drag reorder)
-  const skipAutoOptimizeRef = useRef(false);
 
   // Mutation hook for fetching replacement candidates
   const replacementMutation = useReplacementCandidates();
@@ -173,42 +138,6 @@ export const ItineraryShell = ({
       .map((cityId) => cityIdToName[cityId] ?? cityId)
       .filter(Boolean);
   }, [tripBuilderData, cityIdToName]);
-
-  const buildDayEntryPointsMap = useCallback(
-    (target: Itinerary) => {
-      if (!tripId) {
-        return {};
-      }
-      const map: Record<
-        string,
-        {
-          startPoint?: { coordinates: { lat: number; lng: number } };
-          endPoint?: { coordinates: { lat: number; lng: number } };
-        }
-      > = {};
-
-      for (const day of target.days ?? []) {
-        if (!day?.id) {
-          continue;
-        }
-        const entryPoints = dayEntryPoints[`${tripId}-${day.id}`];
-        if (!entryPoints) {
-          continue;
-        }
-        const { startPoint, endPoint } = entryPoints;
-        if (!startPoint && !endPoint) {
-          continue;
-        }
-        map[day.id] = {
-          startPoint: startPoint ? { coordinates: startPoint.coordinates } : undefined,
-          endPoint: endPoint ? { coordinates: endPoint.coordinates } : undefined,
-        };
-      }
-
-      return map;
-    },
-    [tripId, dayEntryPoints],
-  );
 
   const handleReorder = useCallback(
     (dayId: string, activityIds: string[]) => {
@@ -292,7 +221,7 @@ export const ItineraryShell = ({
       setReplacementActivityId(null);
       setReplacementCandidates([]);
     },
-    [tripId, isUsingMock, replacementActivityId, model, selectedDay, replaceActivity],
+    [tripId, isUsingMock, replacementActivityId, model, selectedDay, replaceActivity, setModelState, scheduleUserPlanningRef],
   );
 
   useEffect(() => {
@@ -300,271 +229,28 @@ export const ItineraryShell = ({
       finalHeadingRef.current.focus();
     }
   }, [finalHeadingRef]);
-  // Shallow fingerprint instead of full JSON.stringify (~O(days*activities) vs O(entire tree))
-  const itineraryFingerprint = useMemo(() => {
-    const days = itinerary.days ?? [];
-    return days
-      .map((d) => `${d.id}:${d.activities?.length ?? 0}:${d.activities?.map((a) => a.id).join(",")}`)
-      .join("|");
-  }, [itinerary]);
-  const previousFingerprintRef = useRef<string | null>(null);
-  const skipSyncRef = useRef(true);
-  const skipNextPlanRef = useRef(false);
-  const planTimeoutRef = useRef<number | null>(null);
-  const planWatchdogRef = useRef<number | null>(null);
-  const pendingPlanRef = useRef<Itinerary | null>(null);
-  // Counter to detect stale planning results (incremented on each new request)
-  const planningRequestRef = useRef(0);
-  const isMountedRef = useRef(true);
-  // AbortController for in-flight fetch requests — aborted on unmount or superseded
-  const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Keyboard shortcuts for undo/redo (Cmd+Z / Cmd+Shift+Z / Cmd+Y)
   useEffect(() => {
-    // Reset to true on mount (handles React Strict Mode double-mounting)
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-      abortControllerRef.current?.abort();
-      if (planTimeoutRef.current) {
-        clearTimeout(planTimeoutRef.current);
-        planTimeoutRef.current = null;
-      }
-      if (planWatchdogRef.current) {
-        clearTimeout(planWatchdogRef.current);
-        planWatchdogRef.current = null;
+    if (!tripId || isUsingMock) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
+
+      const isCmd = e.metaKey || e.ctrlKey;
+      if (!isCmd) return;
+
+      if (e.key === "z" && !e.shiftKey) {
+        if (canUndo(tripId)) { e.preventDefault(); undo(tripId); }
+      } else if ((e.key === "z" && e.shiftKey) || e.key === "y") {
+        if (canRedo(tripId)) { e.preventDefault(); redo(tripId); }
       }
     };
-  }, []);
 
-  const scheduleUserPlanning = useCallback(
-    (next: Itinerary) => {
-      pendingPlanRef.current = next;
-      if (planTimeoutRef.current) {
-        clearTimeout(planTimeoutRef.current);
-        planTimeoutRef.current = null;
-      }
-
-      const runId = ++planningRequestRef.current;
-
-      planTimeoutRef.current = window.setTimeout(() => {
-        planTimeoutRef.current = null;
-        let target = pendingPlanRef.current;
-        if (!target) {
-          if (planningRequestRef.current === runId && isMountedRef.current) {
-            setIsPlanning(false);
-          }
-          return;
-        }
-
-        if (planWatchdogRef.current) {
-          clearTimeout(planWatchdogRef.current);
-        }
-        planWatchdogRef.current = window.setTimeout(() => {
-          if (!isMountedRef.current || planningRequestRef.current !== runId) {
-            return;
-          }
-          logger.warn("Travel planning watchdog fired, falling back to previous schedule");
-          pendingPlanRef.current = null;
-          setPlanningError((prev) => prev ?? "We couldn't refresh travel times right now. Showing previous estimates.");
-          setIsPlanning(false);
-        }, 15000);
-
-        setPlanningError(null);
-        setIsPlanning(true);
-
-        // Auto-optimize route order before replanning (unless skipped for drag reorder)
-        if (skipAutoOptimizeRef.current) {
-          skipAutoOptimizeRef.current = false;
-        } else {
-          const startPoint = tripBuilderData?.entryPoint;
-          if (startPoint) {
-            let optimized = false;
-            const nextDays = target.days.map((day) => {
-              const result = optimizeRouteOrder(day.activities, startPoint);
-              if (!result.orderChanged) return day;
-              optimized = true;
-              const activityMap = new Map(day.activities.map((a) => [a.id, a]));
-              const reordered = result.order
-                .map((id) => activityMap.get(id))
-                .filter((a): a is ItineraryActivity => a !== undefined);
-              return { ...day, activities: reordered };
-            });
-            if (optimized) {
-              target = { ...target, days: nextDays };
-              pendingPlanRef.current = target;
-              // Also update the visual model immediately so user sees the reorder
-              setModelState(target);
-            }
-          }
-        }
-
-        const dayEntryPointsMap = buildDayEntryPointsMap(target);
-        const plannerOptions = tripBuilderData?.dayStartTime
-          ? { defaultDayStart: tripBuilderData.dayStartTime }
-          : undefined;
-
-        // Abort any in-flight request before starting a new one
-        abortControllerRef.current?.abort();
-        const controller = new AbortController();
-        abortControllerRef.current = controller;
-
-        planItineraryClient(target, plannerOptions, dayEntryPointsMap, controller.signal)
-          .then((planned) => {
-            if (controller.signal.aborted || planningRequestRef.current !== runId || !isMountedRef.current) {
-              return;
-            }
-            skipNextPlanRef.current = true;
-            setModelState(planned);
-          })
-          .catch((error: unknown) => {
-            if (controller.signal.aborted || planningRequestRef.current !== runId || !isMountedRef.current) {
-              return;
-            }
-            logger.error("Failed to plan itinerary after user change", error);
-            setPlanningError(error instanceof Error ? error.message : "Unknown error");
-          })
-          .finally(() => {
-            if (planningRequestRef.current === runId && isMountedRef.current) {
-              pendingPlanRef.current = null;
-              setIsPlanning(false);
-            }
-            if (planWatchdogRef.current) {
-              clearTimeout(planWatchdogRef.current);
-              planWatchdogRef.current = null;
-            }
-          });
-      }, 450);
-    },
-    [setIsPlanning, setModelState, setPlanningError, buildDayEntryPointsMap, tripBuilderData],
-  );
-
-  // Keep ref in sync with scheduleUserPlanning for use in handleReplaceSelect
-  useEffect(() => {
-    scheduleUserPlanningRef.current = scheduleUserPlanning;
-  }, [scheduleUserPlanning]);
-
-  const applyModelUpdate = useCallback<Dispatch<SetStateAction<Itinerary>>>(
-    (updater) => {
-      setModelState((current) => {
-        const next =
-          typeof updater === "function"
-            ? (updater as (prev: Itinerary) => Itinerary)(current)
-            : updater;
-
-        if (next === current) {
-          return current;
-        }
-
-        if (skipNextPlanRef.current) {
-          skipNextPlanRef.current = false;
-          return next;
-        }
-
-        scheduleUserPlanning(next);
-        return next;
-      });
-    },
-    [scheduleUserPlanning],
-  );
-
-  useEffect(() => {
-    if (previousFingerprintRef.current === itineraryFingerprint) {
-      return;
-    }
-    previousFingerprintRef.current = itineraryFingerprint;
-    const nextNormalized = normalizeItinerary(itinerary);
-    if (planTimeoutRef.current) {
-      clearTimeout(planTimeoutRef.current);
-      planTimeoutRef.current = null;
-    }
-    pendingPlanRef.current = null;
-    skipNextPlanRef.current = true;
-    skipSyncRef.current = true;
-    // Use setTimeout to avoid calling setState synchronously within effect
-    setTimeout(() => {
-      setModelState(nextNormalized);
-      setSelectedActivityId(null);
-    }, 0);
-
-    let cancelled = false;
-    const runId = ++planningRequestRef.current;
-
-    if (planWatchdogRef.current) {
-      clearTimeout(planWatchdogRef.current);
-    }
-    planWatchdogRef.current = window.setTimeout(() => {
-      if (!isMountedRef.current || planningRequestRef.current !== runId) {
-        return;
-      }
-      logger.warn("Initial travel planning watchdog fired, using existing itinerary data");
-      setPlanningError((prev) => prev ?? "We couldn't refresh travel times right now. Showing previous estimates.");
-      setIsPlanning(false);
-    }, 15000);
-
-    // Use setTimeout to avoid calling setState synchronously within effect
-    setTimeout(() => {
-      setIsPlanning(true);
-      setPlanningError(null);
-    }, 0);
-
-    const dayEntryPointsMap = buildDayEntryPointsMap(nextNormalized);
-    const initialPlannerOptions = tripBuilderData?.dayStartTime
-      ? { defaultDayStart: tripBuilderData.dayStartTime }
-      : undefined;
-
-    // Abort any in-flight request before starting a new one
-    abortControllerRef.current?.abort();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    planItineraryClient(nextNormalized, initialPlannerOptions, dayEntryPointsMap, controller.signal)
-      .then((planned) => {
-        if (controller.signal.aborted || !isMountedRef.current) {
-          return;
-        }
-        skipSyncRef.current = true;
-        skipNextPlanRef.current = true;
-        setModelState(planned);
-        // Don't reset selectedDay - preserve user's day selection
-        setSelectedActivityId(null);
-      })
-      .catch((error: unknown) => {
-        if (controller.signal.aborted || !isMountedRef.current) {
-          return;
-        }
-        logger.error("Failed to plan itinerary", error);
-        skipSyncRef.current = true;
-        skipNextPlanRef.current = true;
-        setModelState(nextNormalized);
-        setPlanningError(error instanceof Error ? error.message : "Unknown error");
-      })
-      .finally(() => {
-        if (!cancelled && planningRequestRef.current === runId && isMountedRef.current) {
-          setIsPlanning(false);
-        }
-        if (planWatchdogRef.current) {
-          clearTimeout(planWatchdogRef.current);
-          planWatchdogRef.current = null;
-        }
-      });
-
-    return () => {
-      cancelled = true;
-      controller.abort();
-      if (planWatchdogRef.current) {
-        clearTimeout(planWatchdogRef.current);
-        planWatchdogRef.current = null;
-      }
-    };
-  }, [itineraryFingerprint, itinerary, tripId, buildDayEntryPointsMap, tripBuilderData]);
-
-  useEffect(() => {
-    if (skipSyncRef.current) {
-      skipSyncRef.current = false;
-      return;
-    }
-    onItineraryChange?.(model);
-  }, [model, onItineraryChange]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [tripId, isUsingMock, undo, redo, canUndo, canRedo]);
 
   const days = model.days ?? [];
   const safeSelectedDay =
@@ -590,22 +276,8 @@ export const ItineraryShell = ({
     return health.days.map((d) => getHealthLevel(d.score));
   }, [model, conflictsResult]);
 
-  // Build guide (lazy-loaded to avoid bundling ~90KB of template data)
-  const [tripGuide, setTripGuide] = useState<Awaited<ReturnType<typeof import("@/lib/guide/guideBuilder").buildGuide>> | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    buildGuideAsync().then((buildGuide) => {
-      if (!cancelled) {
-        setTripGuide(buildGuide(model, tripBuilderData, dayIntros));
-      }
-    });
-    return () => { cancelled = true; };
-  }, [model, tripBuilderData, dayIntros]);
-
-  const currentDayGuide = useMemo(() => {
-    if (!tripGuide || !currentDay) return null;
-    return tripGuide.days.find((dg) => dg.dayId === currentDay.id) ?? null;
-  }, [tripGuide, currentDay]);
+  // Guide hook — lazy-loads ~90KB of template data
+  const { currentDayGuide } = useItineraryGuide(model, tripBuilderData, dayIntros, currentDay?.id);
 
   // Get conflicts for the current day
   const currentDayConflicts = useMemo(() => {
@@ -613,63 +285,13 @@ export const ItineraryShell = ({
     return getDayConflicts(conflictsResult, currentDay.id);
   }, [conflictsResult, currentDay]);
 
+  // Scroll sync hook — IntersectionObserver-based activity highlighting
+  const { selectedActivityId, setSelectedActivityId, handleSelectActivity } =
+    useItineraryScrollSync(safeSelectedDay);
+
   const [dayTransitionLabel, setDayTransitionLabel] = useState<string | null>(null);
 
-  // Suppression flag: when true, IntersectionObserver won't override selectedActivityId.
-  // This prevents the observer from racing against programmatic scrollIntoView after
-  // an explicit user action (map pin click, card click).
-  const suppressObserverRef = useRef(false);
-
-  // Keep selectedActivityId in a ref so the IntersectionObserver callback can read it
-  // without causing the effect to re-run (which would destroy/recreate the observer).
-  const selectedActivityIdRef = useRef(selectedActivityId);
-  useEffect(() => {
-    selectedActivityIdRef.current = selectedActivityId;
-  }, [selectedActivityId]);
-
-  // Scroll-linked map panning: observe activity cards in the timeline.
-  // Only re-runs when the day changes — callback reads selectedActivityId from ref.
-  useEffect(() => {
-    if (typeof IntersectionObserver === "undefined") return;
-
-    const activityListEl = document.querySelector("[data-itinerary-activities]");
-    if (!activityListEl) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Skip if an explicit selection is in progress (scrollIntoView still animating)
-        if (suppressObserverRef.current) return;
-
-        // Find the most visible activity card
-        let bestEntry: IntersectionObserverEntry | null = null;
-        let bestRatio = 0;
-        for (const entry of entries) {
-          if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
-            bestRatio = entry.intersectionRatio;
-            bestEntry = entry;
-          }
-        }
-        if (bestEntry?.target) {
-          const activityId = (bestEntry.target as HTMLElement).dataset.activityId;
-          if (activityId && activityId !== selectedActivityIdRef.current) {
-            setSelectedActivityId(activityId);
-          }
-        }
-      },
-      {
-        root: activityListEl,
-        threshold: [0.3, 0.5, 0.8],
-      }
-    );
-
-    const activityCards = activityListEl.querySelectorAll("[data-activity-id]");
-    activityCards.forEach((card) => observer.observe(card));
-
-    return () => observer.disconnect();
-  }, [safeSelectedDay]);
-
   const handleSelectDayChange = useCallback((dayIndex: number) => {
-    // Show brief city interstitial on day change
     const targetDay = model.days[dayIndex];
     if (targetDay?.dateLabel) {
       const cityName = targetDay.dateLabel.replace(/Day \d+\s*(\(([^)]+)\))?/, "$2").trim();
@@ -680,26 +302,7 @@ export const ItineraryShell = ({
     }
     setSelectedDay(dayIndex);
     setSelectedActivityId(null);
-  }, [model.days]);
-
-  const handleSelectActivity = useCallback((activityId: string | null) => {
-    setSelectedActivityId(activityId);
-    if (!activityId) {
-      return;
-    }
-    // Suppress IntersectionObserver during programmatic scroll so it doesn't
-    // immediately override the selection with whichever card is currently visible.
-    suppressObserverRef.current = true;
-    setTimeout(() => { suppressObserverRef.current = false; }, 1000);
-
-    window.requestAnimationFrame(() => {
-      const element = document.querySelector<HTMLElement>(
-        `[data-activity-id="${activityId}"]`,
-      );
-      element?.scrollIntoView({ behavior: "smooth", block: "center" });
-      element?.focus({ preventScroll: true });
-    });
-  }, []);
+  }, [model.days, setSelectedActivityId]);
 
   // Wrapper for onAcceptSuggestion - the prop change from AppState will trigger
   // replanning via the serializedItinerary effect
@@ -716,7 +319,7 @@ export const ItineraryShell = ({
         setIsPlanning(true);
       }
     },
-    [onAcceptSuggestion],
+    [onAcceptSuggestion, setIsPlanning],
   );
 
   return (
