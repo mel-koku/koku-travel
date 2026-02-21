@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { forwardRef, memo, useMemo, useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
 
@@ -11,21 +11,21 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { useActivityLocation } from "@/hooks/useActivityLocations";
 import { DragHandle } from "./DragHandle";
-import { StarIcon } from "./activityIcons";
 import {
   getShortOverview,
   getLocationRating,
   getLocationReviewCount,
-  numberFormatter,
 } from "./activityUtils";
-import { easeReveal, durationFast } from "@/lib/motion";
+import { easeReveal } from "@/lib/motion";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGenerator";
-import { ActivityConflictIndicator } from "./ConflictBadge";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
 import { resizePhotoUrl } from "@/lib/google/transformations";
-import { PracticalBadges } from "@/components/ui/PracticalBadges";
+import { PlaceActivityHeader } from "./PlaceActivityHeader";
+import { PlaceActivityDetails } from "./PlaceActivityDetails";
+import { PlaceActivityReasoning } from "./PlaceActivityReasoning";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -223,7 +223,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     ref,
   ) => {
     const [notesOpen, setNotesOpen] = useState(() => Boolean(activity.notes));
-    const [reasoningOpen, setReasoningOpen] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
     const [tempManualTime, setTempManualTime] = useState(activity.manualStartTime ?? "");
     const [availabilityStatus, setAvailabilityStatus] = useState<{
@@ -344,7 +343,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           }
           logger.warn("Failed to check availability", {
             activityId,
-            error: error instanceof Error ? error.message : String(error),
+            error: getErrorMessage(error),
           });
         });
 
@@ -613,172 +612,29 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
             {/* Info Section */}
             <div className="p-3 sm:p-4">
-              {/* Title Row */}
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-base font-semibold leading-tight text-foreground sm:text-lg">
-                    {placeLocation.name}
-                  </h3>
-                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                    <span className="text-xs text-foreground-secondary">
-                      {placeLocation.city}
-                      {placeLocation.city && placeLocation.region && placeLocation.city !== placeLocation.region ? `, ${placeLocation.region}` : ""}
-                    </span>
-                    {rating ? (
-                      <div className="flex items-center gap-0.5 font-mono text-[11px] font-medium text-foreground">
-                        <StarIcon />
-                        <span>{rating.toFixed(1)}</span>
-                        {reviewCount ? (
-                          <span className="font-normal text-stone">
-                            ({numberFormatter.format(reviewCount)})
-                          </span>
-                        ) : null}
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
+              <PlaceActivityHeader
+                activity={activity}
+                placeLocation={placeLocation}
+                rating={rating}
+                reviewCount={reviewCount}
+                durationLabel={durationLabel}
+                summary={summary}
+                isExpanded={isExpanded}
+                onToggleExpand={handleMoreInfo}
+                availabilityStatus={availabilityStatus}
+                schedule={schedule}
+                isOutOfHours={isOutOfHours}
+                waitLabel={waitLabel}
+                conflicts={conflicts}
+              />
 
-              {/* Tags Row */}
-              <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-                {placeLocation.category ? (
-                  <span className="inline-block rounded-xl bg-sand/50 px-2 py-0.5 text-[11px] font-medium text-foreground-secondary capitalize">
-                    {placeLocation.category}
-                  </span>
-                ) : null}
-                {activity.tags?.includes("content-pick") ? (
-                  <span className="inline-block rounded-xl bg-brand-primary/10 px-2 py-0.5 text-[11px] font-medium text-brand-primary">
-                    Recommended
-                  </span>
-                ) : null}
-                {durationLabel ? (
-                  <span className="inline-block rounded-full bg-sage/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-sage">
-                    {durationLabel.replace("~", "")}
-                  </span>
-                ) : null}
-                <button
-                  type="button"
-                  onClick={handleMoreInfo}
-                  className="inline-flex items-center gap-1 rounded-full border border-sage/30 bg-background px-2 py-0.5 text-[11px] font-semibold text-sage shadow-sm transition hover:bg-sage/10"
-                >
-                  <svg className={`h-3 w-3 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    {isExpanded ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    )}
-                  </svg>
-                  {isExpanded ? "Less info" : "More info"}
-                </button>
-              </div>
-
-              {/* Practical Intel Badges */}
-              <div className="mt-1.5">
-                <PracticalBadges location={placeLocation} showOpenStatus={false} max={3} />
-              </div>
-
-              {/* Status Badges */}
-              {(availabilityStatus || (schedule?.operatingWindow?.status === "outside") || isOutOfHours || waitLabel || (conflicts && conflicts.length > 0)) && (
-                <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-                  {availabilityStatus && availabilityStatus.status === "closed" && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
-                      Closed
-                    </span>
-                  )}
-                  {availabilityStatus && availabilityStatus.status === "busy" && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-                      Busy
-                    </span>
-                  )}
-                  {(availabilityStatus?.status === "requires_reservation" || availabilityStatus?.reservationRequired) && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-                      Reservation recommended
-                    </span>
-                  )}
-                  {(schedule?.operatingWindow?.status === "outside" || isOutOfHours) && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
-                      Outside hours
-                    </span>
-                  )}
-                  {waitLabel && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-                      {waitLabel}
-                    </span>
-                  )}
-                  {conflicts && conflicts.length > 0 && (
-                    <ActivityConflictIndicator conflicts={conflicts} />
-                  )}
-                </div>
-              )}
-
-              {/* Description */}
-              {summary && (
-                <p className={`mt-3 text-xs leading-relaxed text-foreground-secondary ${isExpanded ? "" : "line-clamp-2"}`}>{summary}</p>
-              )}
-
-              {/* Expanded Detail Content */}
-              <AnimatePresence>
-                {isExpanded && (
-                  <motion.div
-                    initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, height: 0 }}
-                    transition={{ duration: durationFast, ease: easeReveal }}
-                    className="overflow-hidden"
-                  >
-                    {/* Full description — prefer location.description (most specific), then shortDescription, then editorialSummary */}
-                    {(() => {
-                      const best =
-                        (placeLocation?.description?.trim() || null) ??
-                        (placeLocation?.shortDescription?.trim() || null) ??
-                        (locationDetails?.editorialSummary?.trim() || null);
-                      return best && best !== summary ? (
-                        <p className="mt-2 text-sm leading-relaxed text-foreground-secondary">{best}</p>
-                      ) : null;
-                    })()}
-
-                    {/* Operating hours — only show if we have at least 3 days (filters out bad 1-day data for open areas/attractions) */}
-                    {locationDetails?.regularOpeningHours && locationDetails.regularOpeningHours.length >= 3 && (
-                      <div className="mt-3 rounded-lg bg-surface/70 p-2.5">
-                        <p className="mb-1.5 text-xs font-semibold text-foreground">Hours</p>
-                        <div className="space-y-0.5">
-                          {locationDetails.regularOpeningHours.slice(0, 7).map((hours, idx) => (
-                            <p key={idx} className="text-[11px] text-foreground-secondary">{hours}</p>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* All tips when expanded (show more than 2) */}
-                    {tips.length > 2 && (
-                      <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
-                        <p className="mb-1.5 text-xs font-semibold text-foreground">All Tips</p>
-                        <div className="space-y-1">
-                          {tips.slice(2).map((tip, index) => (
-                            <div key={index} className="flex items-start gap-1.5 text-xs text-foreground-secondary">
-                              <span className="shrink-0">{tip.icon ?? "💡"}</span>
-                              <span>
-                                <span className="font-medium">{tip.title}:</span> {tip.message}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Address if available */}
-                    {locationDetails?.formattedAddress && (
-                      <div className="mt-3 flex items-start gap-1.5 text-xs text-foreground-secondary">
-                        <svg className="mt-0.5 h-3.5 w-3.5 shrink-0 text-stone" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        <span>{locationDetails.formattedAddress}</span>
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <PlaceActivityDetails
+                isExpanded={isExpanded}
+                placeLocation={placeLocation}
+                locationDetails={locationDetails ?? null}
+                summary={summary}
+                tips={tips}
+              />
 
               {/* Tips Section */}
               {tips.length > 0 && (
@@ -797,91 +653,11 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </div>
               )}
 
-              {/* Why this recommendation */}
               {activity.recommendationReason && (
-                <div className="mt-3">
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      setReasoningOpen((prev) => !prev);
-                    }}
-                    className="flex w-full items-center justify-between text-left text-xs font-medium text-sage hover:text-sage/80"
-                  >
-                    <span>
-                      Why this place?
-                      {activity.recommendationReason.alternativesConsidered &&
-                        activity.recommendationReason.alternativesConsidered.length > 0 && (
-                          <span className="ml-1.5 text-[10px] font-normal text-stone">
-                            ({activity.recommendationReason.alternativesConsidered.length} alternatives considered)
-                          </span>
-                        )}
-                    </span>
-                    <svg className={`h-4 w-4 transition-transform ${reasoningOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
-                  {reasoningOpen && (
-                    <div className="mt-2 rounded-lg bg-surface/70 p-2 text-xs text-foreground-secondary">
-                      <p className="font-medium">{activity.recommendationReason.primaryReason}</p>
-                      {activity.recommendationReason.factors && activity.recommendationReason.factors.length > 0 && (
-                        <ul className="mt-1.5 space-y-1 pl-1">
-                          {activity.recommendationReason.factors.map((factor, idx) => (
-                            <li key={idx} className="flex items-start gap-1.5 text-[11px]">
-                              <span
-                                className={`shrink-0 font-mono text-[10px] ${
-                                  factor.score > 0
-                                    ? "text-sage"
-                                    : factor.score < 0
-                                      ? "text-terracotta"
-                                      : "text-stone"
-                                }`}
-                              >
-                                {factor.score > 0 ? "+" : ""}{factor.score}
-                              </span>
-                              <span
-                                className={
-                                  factor.score > 0
-                                    ? "text-foreground-secondary"
-                                    : factor.score < 0
-                                      ? "text-foreground-secondary/70"
-                                      : "text-stone"
-                                }
-                              >
-                                <span className="font-medium">{factor.factor}</span>
-                                {factor.reasoning && ` — ${factor.reasoning}`}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                      {/* Alternatives considered */}
-                      {activity.recommendationReason.alternativesConsidered &&
-                        activity.recommendationReason.alternativesConsidered.length > 0 && (
-                          <div className="mt-2 border-t border-border/30 pt-2">
-                            <p className="text-[10px] font-medium text-stone">Also considered:</p>
-                            <div className="mt-1 flex flex-wrap gap-1">
-                              {activity.recommendationReason.alternativesConsidered.map((alt) => (
-                                <button
-                                  key={alt}
-                                  type="button"
-                                  onClick={(event) => {
-                                    event.preventDefault();
-                                    event.stopPropagation();
-                                    onReplace?.();
-                                  }}
-                                  className="rounded-lg border border-border/50 bg-surface/50 px-2 py-0.5 text-[10px] text-foreground-secondary transition hover:border-brand-primary/30 hover:text-brand-primary"
-                                >
-                                  {alt}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                    </div>
-                  )}
-                </div>
+                <PlaceActivityReasoning
+                  recommendationReason={activity.recommendationReason}
+                  onReplace={onReplace}
+                />
               )}
             </div>
 
