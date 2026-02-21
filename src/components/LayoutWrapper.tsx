@@ -58,13 +58,19 @@ export function LayoutWrapper({
                 <CursorProvider>
                   <ScrollProgressBar />
                   <div className="flex min-h-[100dvh] flex-col">
-                    <Header />
+                    <ErrorBoundary fallback={<></>}>
+                      <Header />
+                    </ErrorBoundary>
                     <ErrorBoundary>
                       <main id="main-content" className="flex-1">
                         <PageTransition>{children}</PageTransition>
                       </main>
                     </ErrorBoundary>
-                    {!isTripBuilder && <Footer settings={siteSettings} />}
+                    {!isTripBuilder && (
+                      <ErrorBoundary fallback={<></>}>
+                        <Footer settings={siteSettings} />
+                      </ErrorBoundary>
+                    )}
                   </div>
                   <CustomCursor />
                   <AskKokuButton />
