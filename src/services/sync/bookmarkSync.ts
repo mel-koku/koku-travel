@@ -7,6 +7,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import type { SyncResult, GuideBookmarkRow } from "./types";
 
 /**
@@ -30,7 +31,7 @@ export async function fetchGuideBookmarks(
     const rows = (data ?? []) as GuideBookmarkRow[];
     return { success: true, data: rows.map((row) => row.guide_id) };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = getErrorMessage(error);
     logger.error("Error fetching guide bookmarks", new Error(message));
     return { success: false, error: message };
   }

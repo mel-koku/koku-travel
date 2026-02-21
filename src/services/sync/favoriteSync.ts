@@ -7,6 +7,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import type { SyncResult, FavoriteRow } from "./types";
 
 /**
@@ -39,7 +40,7 @@ export async function fetchFavorites(
     const rows = (data ?? []) as FavoriteRow[];
     return { success: true, data: rows.map((row) => row.place_id) };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = getErrorMessage(error);
     logger.error("Error fetching favorites", new Error(message));
     return { success: false, error: message };
   }
@@ -72,7 +73,7 @@ export async function fetchFavoritesWithLocationId(
       })),
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
+    const message = getErrorMessage(error);
     logger.error("Error fetching favorites with location_id", new Error(message));
     return { success: false, error: message };
   }

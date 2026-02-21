@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import { detectCategoryStreak, detectNeighborhoodStreak } from "@/lib/scoring/diversityRules";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 
 /**
  * Validation issue severity levels
@@ -444,7 +445,7 @@ export async function validateLocationIdsExist(
     };
   } catch (error) {
     logger.warn("Error validating locationIds", {
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
     });
     // Don't block save on validation errors
     return { valid: true, missingIds: [] };

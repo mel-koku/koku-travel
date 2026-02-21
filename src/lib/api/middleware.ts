@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { unauthorized, badRequest } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { trackApiPerformance } from "@/lib/api/performance";
 import type { User } from "@supabase/supabase-js";
 
@@ -213,9 +214,9 @@ export async function getOptionalAuth(
     logger.warn("Error getting optional auth", {
       requestId: context?.requestId,
       ip: context?.ip,
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
     });
-    
+
     const finalContext: RequestContext = {
       ...(context || createRequestContext(request)),
     };
