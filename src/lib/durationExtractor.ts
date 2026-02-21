@@ -22,10 +22,10 @@ const CATEGORY_DEFAULT_DURATIONS: Record<string, number> = {
   restaurant: 60, // Dining - typical meal duration
   bar: 90, // Bars - evening drinks
   entertainment: 120, // Shows, events
+  onsen: 90, // Hot springs - soaking + relaxation
 
   // Generic fallback categories (for legacy data)
   culture: 90, // Generic cultural sites
-  food: 60, // Generic dining
   nature: 120, // Generic nature (hiking, etc.)
   shopping: 90, // Generic shopping
   view: 30, // Generic viewpoints
@@ -64,6 +64,18 @@ export function getCategoryDefaultDuration(category: string): number {
  */
 export function getMealDuration(mealType: string): number {
   return MEAL_DURATIONS[mealType] ?? CATEGORY_DEFAULT_DURATIONS.restaurant ?? 60;
+}
+
+/**
+ * Returns a fallback duration in minutes based on pace tags.
+ * quick-stop → 40 min, half-day → 120 min, full-day → 240 min.
+ */
+export function getDurationFromPaceTag(tags: string[] | undefined): number | null {
+  if (!tags) return null;
+  if (tags.includes("quick-stop")) return 40;
+  if (tags.includes("half-day")) return 120;
+  if (tags.includes("full-day")) return 240;
+  return null;
 }
 
 /**

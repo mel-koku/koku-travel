@@ -86,7 +86,7 @@ export const DESSERT_KEYWORDS = [
 /**
  * Categories that indicate dining establishments
  */
-export const DINING_CATEGORIES = ["restaurant", "bar", "food"];
+export const DINING_CATEGORIES = ["restaurant", "bar"];
 
 /**
  * Google Places types that indicate dining establishments
@@ -102,7 +102,6 @@ export const DINING_GOOGLE_TYPES = [
   "japanese_restaurant",
   "fast_food_restaurant",
   "meal_takeaway",
-  "food",
 ];
 
 /**

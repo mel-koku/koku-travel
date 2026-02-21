@@ -96,16 +96,16 @@ export function mapGoogleTypeToCategory(
     type === "meal_takeaway" ||
     type === "meal_delivery"
   ) {
-    return { category: "food", subType: "restaurant" };
+    return { category: "restaurant", subType: "restaurant" };
   }
   if (type === "cafe" || type === "coffee_shop" || type === "bakery" || type === "ice_cream_shop") {
-    return { category: "food", subType: "cafe" };
+    return { category: "restaurant", subType: "cafe" };
   }
   if (type === "bar" || type === "night_club" || type === "wine_bar" || type === "cocktail_bar") {
-    return { category: "food", subType: "bar" };
+    return { category: "bar", subType: "bar" };
   }
   if (type === "market" || type === "supermarket" || type === "grocery_store" || type === "food_store") {
-    return { category: "food", subType: "market" };
+    return { category: "market", subType: "market" };
   }
 
   // Nature
@@ -173,7 +173,7 @@ export function mapGoogleTypeToCategory(
   if (types && types.length > 0) {
     for (const t of types) {
       if (t === "lodging") return { category: "hotel", subType: "hotel" };
-      if (t === "restaurant" || t === "food") return { category: "food", subType: "restaurant" };
+      if (t === "restaurant" || t === "food") return { category: "restaurant", subType: "restaurant" };
       if (t === "tourist_attraction") return { category: "view" };
       if (t === "park") return { category: "nature", subType: "park" };
       if (t === "store" || t === "shopping_mall") return { category: "shopping" };

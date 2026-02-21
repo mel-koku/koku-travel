@@ -15,7 +15,7 @@ export const VIBE_FILTER_MAP: Record<
     ],
   },
   foodie_paradise: {
-    dbCategories: ["restaurant", "cafe", "bar", "market", "food"],
+    dbCategories: ["restaurant", "cafe", "bar", "market"],
   },
   hidden_gems: {
     dbCategories: [], // cross-category — uses is_hidden_gem flag

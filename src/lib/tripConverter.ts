@@ -13,7 +13,7 @@ export function convertTripToItinerary(trip: Trip): Itinerary {
       timeOfDay: activity.timeSlot,
       durationMin: activity.duration,
       neighborhood: activity.location?.neighborhood ?? activity.location?.city ?? day.cityId,
-      tags: activity.location?.category ? [activity.location.category] : [],
+      tags: [...(activity.location?.tags ?? []), ...(activity.location?.category ? [activity.location.category] : [])],
       locationId: activity.locationId,
       coordinates: activity.location?.coordinates,
       schedule: activity.startTime && activity.endTime

@@ -81,6 +81,8 @@ export type LocationDbRow = {
   nearest_station: string | null;
   cash_only: boolean | null;
   reservation_info: "required" | "recommended" | null;
+  tags: string[] | null;
+  cuisine_type: string | null;
 };
 
 /**
@@ -112,7 +114,8 @@ export const LOCATION_LISTING_COLUMNS = `
   price_level,
   accessibility_options,
   dietary_options,
-  service_options
+  service_options,
+  tags
 `.replace(/\s+/g, "");
 
 /**
@@ -146,7 +149,8 @@ export const LOCATION_EXPLORE_COLUMNS = `
   good_for_children,
   good_for_groups,
   meal_options,
-  service_options
+  service_options,
+  tags
 `.replace(/\s+/g, "");
 
 /**
@@ -211,7 +215,9 @@ export const LOCATION_ITINERARY_COLUMNS = `
   seasonal_type,
   price_level,
   accessibility_options,
-  dietary_options
+  dietary_options,
+  tags,
+  cuisine_type
 `.replace(/\s+/g, "");
 
 /**
@@ -264,6 +270,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "good_for_groups"
   | "meal_options"
   | "service_options"
+  | "tags"
 >;
 
 /**
@@ -343,4 +350,5 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "accessibility_options"
   | "dietary_options"
   | "service_options"
+  | "tags"
 >;

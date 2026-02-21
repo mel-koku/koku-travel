@@ -288,7 +288,7 @@ type RecommendResponse = {
 
 /** Categories considered indoor */
 const INDOOR_CATEGORIES = new Set([
-  "museum", "shopping", "restaurant", "bar", "entertainment", "market", "food",
+  "museum", "shopping", "restaurant", "bar", "entertainment", "market",
 ]);
 
 /**
@@ -303,9 +303,11 @@ function applyRefinementFilters(
   if (!filters) return locations;
   let result = [...locations];
 
-  // Indoor filter
+  // Indoor filter — check tags first, then fall back to category
   if (filters.indoor) {
-    const indoor = result.filter((l) => l.category && INDOOR_CATEGORIES.has(l.category));
+    const indoor = result.filter((l) =>
+      l.tags?.includes("indoor") || (l.category && INDOOR_CATEGORIES.has(l.category))
+    );
     if (indoor.length > 0) result = indoor;
   }
 
@@ -413,7 +415,7 @@ export async function POST(request: NextRequest) {
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
         .ilike("city", cityId)
-        .in("category", ["restaurant", "food"])
+        .eq("category", "restaurant")
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .limit(100);
 
@@ -489,7 +491,6 @@ export async function POST(request: NextRequest) {
         .select(LOCATION_ITINERARY_COLUMNS)
         .ilike("city", cityId)
         .neq("category", "restaurant")
-        .neq("category", "food")
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .limit(100);
 
@@ -575,7 +576,7 @@ export async function POST(request: NextRequest) {
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
         .ilike("city", cityId)
-        .not("category", "in", '("restaurant","food","cafe","bar")')
+        .not("category", "in", '("restaurant","cafe","bar")')
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .limit(100);
 
@@ -639,7 +640,7 @@ export async function POST(request: NextRequest) {
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
         .ilike("city", cityId)
-        .not("category", "in", '("restaurant","food")')
+        .not("category", "in", '("restaurant")')
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .limit(100);
 

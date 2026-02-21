@@ -613,14 +613,15 @@ function detectCategoryImbalance(day: ItineraryDay, dayIndex: number): DetectedG
  */
 function getSuggestedAlternatives(dominantCategory: string): string[] {
   const alternatives: Record<string, string[]> = {
-    temple: ["garden", "shopping", "food", "museum"],
-    shrine: ["garden", "market", "food", "nature"],
+    temple: ["garden", "shopping", "restaurant", "museum"],
+    shrine: ["garden", "market", "restaurant", "nature"],
     museum: ["garden", "shopping", "cafe", "nature"],
     shopping: ["temple", "garden", "museum", "nature"],
-    food: ["temple", "garden", "museum", "nature"],
+    restaurant: ["temple", "garden", "museum", "nature"],
     garden: ["temple", "museum", "shopping", "cafe"],
-    nature: ["temple", "museum", "shopping", "food"],
-    landmark: ["garden", "shopping", "food", "museum"],
+    nature: ["temple", "museum", "shopping", "restaurant"],
+    landmark: ["garden", "shopping", "restaurant", "museum"],
+    onsen: ["temple", "garden", "nature", "cafe"],
   };
 
   return alternatives[dominantCategory] ?? ["garden", "cafe", "shopping"];
@@ -635,11 +636,13 @@ function formatCategoryName(category: string): string {
     shrine: "shrines",
     museum: "museums",
     shopping: "shopping spots",
-    food: "food spots",
+    restaurant: "restaurants",
     garden: "gardens",
     nature: "nature spots",
     landmark: "landmarks",
     cafe: "cafes",
+    onsen: "onsen spots",
+    bar: "bars",
   };
 
   return names[category] ?? category;
