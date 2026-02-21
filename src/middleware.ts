@@ -2,24 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { createMiddlewareClient } from "@/lib/supabase/middleware";
 
 /**
- * Public API routes that skip auth entirely (read-only, no session needed).
+ * Public API routes that skip auth entirely (read-only or unauthenticated access).
  * These get the X-Request-ID header but no supabase.auth.getUser() call.
+ *
+ * SECURITY: Default-protect — all /api/ routes require auth UNLESS listed here.
+ * When adding a new API route, decide explicitly: add it here if public, otherwise
+ * it's automatically protected.
  */
 const PUBLIC_API_ROUTES = [
   "/api/locations",
   "/api/places",
   "/api/health",
   "/api/chat",
-];
-
-/**
- * Protected routes that require authentication.
- * These routes will redirect unauthenticated users to the dashboard (which handles login).
- */
-const PROTECTED_ROUTES = [
-  "/api/trips",
-  "/api/favorites",
-  "/api/bookmarks",
+  "/api/itinerary",
+  "/api/routing",
+  "/api/smart-prompts",
+  "/api/sanity/webhook",
+  "/api/airports",
+  "/api/cities",
 ];
 
 /**
@@ -29,13 +29,6 @@ const AUTH_ROUTES = [
   "/auth/login",
   "/auth/signup",
 ];
-
-/**
- * Checks if a path matches any of the protected route patterns.
- */
-function isProtectedRoute(pathname: string): boolean {
-  return PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
-}
 
 /**
  * Checks if a path is an auth route.
@@ -95,23 +88,21 @@ export async function middleware(request: NextRequest) {
     error,
   } = await supabase.auth.getUser();
 
-  // Handle protected API routes - return 401 if not authenticated
-  if (isProtectedRoute(pathname) && pathname.startsWith("/api/")) {
-    if (error || !user) {
-      return NextResponse.json(
-        {
-          error: "Authentication required",
-          code: "UNAUTHORIZED",
-          requestId,
+  // Default-protect: all /api/ routes require auth unless explicitly public
+  if (pathname.startsWith("/api/") && (error || !user)) {
+    return NextResponse.json(
+      {
+        error: "Authentication required",
+        code: "UNAUTHORIZED",
+        requestId,
+      },
+      {
+        status: 401,
+        headers: {
+          "X-Request-ID": requestId,
         },
-        {
-          status: 401,
-          headers: {
-            "X-Request-ID": requestId,
-          },
-        }
-      );
-    }
+      }
+    );
   }
 
   // Redirect authenticated users away from auth pages
