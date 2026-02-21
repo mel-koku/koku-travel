@@ -199,8 +199,8 @@ States: dot, ring (link), icon/plus (view), crosshair (explore), labeled ring (r
 - **Fallback**: `CHEAP_MODE=true` or no Mapbox token → editorial grid (`LocationEditorialGrid`), no map.
 - **Components**: `ExploreShellLazy` → `ExploreShell` (state/filters, code-split with `dynamic()`) → `ExploreMapLayout` (split layout, bounds filter) → `ExploreMap` (Mapbox GL, GeoJSON clustering) + `ExploreCardPanel` → `ExploreCompactCard`
 - **CategoryBar**: Centered search input (with red search icon CTA) + Refine button + Ask Koku button. Lives visually in hero, sticks on scroll (sentinel-based `IntersectionObserver` detects stuck state, adds backdrop).
-- **FilterPanel vibes**: Refine panel uses 5 vibe filters (Cultural Heritage, Foodie Paradise, Hidden Gems, Neon & Nightlife, Nature & Adventure) mapped to DB categories via `src/data/vibeFilterMapping.ts`. Hidden Gems uses `is_hidden_gem` boolean column (276 flagged locations). Multi-select OR logic.
-- **Data**: Single-request `/api/locations/all` fetches all ~3,839 locations (17-column slim projection incl. `is_hidden_gem`). Two-tier cache (globalThis 30min + file 2hr). `coordinates` included for map.
+- **FilterPanel vibes**: Refine panel uses 5 vibe filters (Cultural Heritage, Foodie Paradise, Hidden Gems, Neon & Nightlife, Nature & Adventure) mapped to DB categories via `src/data/vibeFilterMapping.ts`. Hidden Gems uses `is_hidden_gem` boolean column (658 flagged locations across all 47 prefectures). Multi-select OR logic.
+- **Data**: Single-request `/api/locations/all` fetches all ~4,221 locations (17-column slim projection incl. `is_hidden_gem`). Two-tier cache (globalThis 30min + file 2hr). `coordinates` included for map.
 - **Map layers**: Cluster circles (stepped color by count), individual points (colored by category via `getCategoryHexColor`), name labels at zoom 10+.
 - **Lenis**: `data-lenis-prevent` on map container only (scroll-zoom). Cards flow with page scroll.
 
@@ -288,8 +288,7 @@ Full snapshot-based undo/redo for itinerary edits, per trip.
 - `calculateDiversityScore()` returns 0-100
 
 ### Weather Integration (`src/lib/weather/`)
-- OpenWeatherMap 5-day forecast API
-- **Only 5 cities have coordinates**: Tokyo, Osaka, Kyoto, Nara, Yokohama — all others get mock data (every 5th day rainy, 15-25°C)
+- OpenWeatherMap 5-day forecast API — covers all 17 `KnownCityId` cities
 - Aggregates 3-hour slots to daily; any rain → day marked rainy
 - Outdoor categories penalized -5 to -8 in rain; indoor boosted +4 to +5
 
@@ -415,9 +414,9 @@ Synchronous `fs`-based cache at `/tmp/koku-travel-cache/`. Needed because Turbop
 ## Data & Quality
 
 ### Database
-- **Locations**: ~3,839 in Supabase. Coords: `lat`/`lng`. Photos in Supabase Storage. 276 flagged `is_hidden_gem`.
+- **Locations**: ~4,221 in Supabase. Coords: `lat`/`lng`. Photos in Supabase Storage. 658 flagged `is_hidden_gem` (all 47 prefectures covered).
 - **Experiences**: 56 in Sanity — separate from locations/explore/itinerary
-- **Health Score**: 100/100 (`npm run dq audit|fix|report`)
+- **Health Score**: 98/100 (`npm run dq audit|fix|report`)
 - **Categories**: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, food, entertainment, market, wellness, viewpoint, bar, transport
 
 ### Shared Utilities
