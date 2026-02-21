@@ -1,4 +1,5 @@
 import { logger } from "../logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import type { RequestContext } from "./middleware";
 
 /**
@@ -132,7 +133,7 @@ export async function measureDuration<T>(
     const duration = Date.now() - startTime;
     logger.warn(`Operation failed: ${label}`, {
       duration: `${duration}ms`,
-      error: error instanceof Error ? error.message : String(error),
+      error: getErrorMessage(error),
     });
     throw error;
   }

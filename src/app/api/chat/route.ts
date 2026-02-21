@@ -11,6 +11,7 @@ import {
   addRequestContextHeaders,
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 
 export async function POST(request: NextRequest) {
   const context = createRequestContext(request);
@@ -86,8 +87,7 @@ export async function POST(request: NextRequest) {
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : String(error);
+    const message = getErrorMessage(error);
     const isQuotaError =
       message.includes("quota") ||
       message.includes("RESOURCE_EXHAUSTED") ||

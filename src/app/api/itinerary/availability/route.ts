@@ -8,6 +8,7 @@ import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createRequestContext, addRequestContextHeaders, requireJsonContentType } from "@/lib/api/middleware";
 import { validateRequestBody, availabilityRequestSchema } from "@/lib/api/schemas";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 
 /**
  * POST /api/itinerary/availability
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
         } catch (error) {
           logger.warn("Failed to check availability", {
             activityId: activity.id,
-            error: error instanceof Error ? error.message : String(error),
+            error: getErrorMessage(error),
           });
           return {
             activityId: activity.id,
