@@ -67,6 +67,8 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
     priceLevel: "price_level" in row ? (row.price_level as 0 | 1 | 2 | 3 | 4 | null) ?? undefined : undefined,
     accessibilityOptions: "accessibility_options" in row ? row.accessibility_options ?? undefined : undefined,
     dietaryOptions: "dietary_options" in row ? row.dietary_options ?? undefined : undefined,
+    // Tags are present in both LocationDbRow and LocationListingDbRow
+    tags: "tags" in row ? row.tags ?? undefined : undefined,
   };
 
   // Extended fields only present in full LocationDbRow
@@ -91,6 +93,13 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
       // Seasonal fields
       isSeasonal: fullRow.is_seasonal ?? undefined,
       seasonalType: fullRow.seasonal_type ?? undefined,
+      // Enrichment fields used by scoring (tags, cuisine, hidden gems, practical info)
+      cuisineType: fullRow.cuisine_type ?? undefined,
+      isHiddenGem: fullRow.is_hidden_gem ?? undefined,
+      cashOnly: fullRow.cash_only ?? undefined,
+      reservationInfo: fullRow.reservation_info ?? undefined,
+      nameJapanese: fullRow.name_japanese ?? undefined,
+      nearestStation: fullRow.nearest_station ?? undefined,
     };
   }
 
