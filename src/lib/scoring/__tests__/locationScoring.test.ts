@@ -276,7 +276,7 @@ describe("Location Scoring", () => {
       });
 
       expect(result.reasoning).toBeInstanceOf(Array);
-      expect(result.reasoning.length).toBe(12); // One for each factor (interest, rating, logistical, budget, accessibility, diversity, neighborhood, weather, time optimization, opening hours, group fit, seasonal fit)
+      expect(result.reasoning.length).toBe(12); // One for each factor (interest, rating, logistical, budget, accessibility, diversity, neighborhood, weather, time optimization, opening hours, group fit, seasonal fit) — content fit only appears when contentLocationIds is set
       result.reasoning.forEach((reason) => {
         expect(typeof reason).toBe("string");
         expect(reason.length).toBeGreaterThan(0);

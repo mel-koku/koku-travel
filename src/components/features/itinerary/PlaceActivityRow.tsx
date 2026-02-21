@@ -646,6 +646,11 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     {placeLocation.category}
                   </span>
                 ) : null}
+                {activity.tags?.includes("content-pick") ? (
+                  <span className="inline-block rounded-xl bg-brand-primary/10 px-2 py-0.5 text-[11px] font-medium text-brand-primary">
+                    Recommended
+                  </span>
+                ) : null}
                 {durationLabel ? (
                   <span className="inline-block rounded-full bg-sage/10 px-2 py-0.5 font-mono text-[11px] font-semibold text-sage">
                     {durationLabel.replace("~", "")}

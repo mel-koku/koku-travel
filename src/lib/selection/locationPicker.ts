@@ -84,6 +84,7 @@ export function pickLocationForTimeSlot(
   },
   recentNeighborhoods: string[] = [],
   usedLocationNames: Set<string> = new Set(),
+  contentLocationIds?: Set<string>,
 ): ScoredLocation | undefined {
   // Filter by both ID and name to prevent duplicates (including same-name different branches)
   const unused = list.filter((loc) => {
@@ -160,6 +161,7 @@ export function pickLocationForTimeSlot(
     date,
     group,
     currentInterest: interest,
+    contentLocationIds,
   };
 
   const scored = candidates

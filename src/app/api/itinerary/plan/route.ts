@@ -81,8 +81,9 @@ export async function POST(request: NextRequest) {
 
   try {
     // Check cache first (before expensive generation)
-    // Skip cache when user has favorites — each user's favorites differ, making cache hits unlikely
-    const cachedResult = (!favoriteIds || favoriteIds.length === 0)
+    // Skip cache when user has favorites or content context — these are personalized
+    const hasPersonalization = (favoriteIds && favoriteIds.length > 0) || builderData.contentContext;
+    const cachedResult = !hasPersonalization
       ? await getCachedItinerary(builderData)
       : null;
     if (cachedResult) {

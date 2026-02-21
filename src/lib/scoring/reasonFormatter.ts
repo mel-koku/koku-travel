@@ -41,6 +41,7 @@ const FACTOR_META: Record<
   timeOptimization: { label: "Time-of-day fit", maxMagnitude: 10 },
   groupFit: { label: "Group fit", maxMagnitude: 8 },
   seasonalFit: { label: "Seasonal match", maxMagnitude: 5 },
+  contentFit: { label: "Editorial recommendation", maxMagnitude: 20 },
 };
 
 // ---------------------------------------------------------------------------
@@ -110,6 +111,10 @@ function humanizeFactor(
     case "groupFit":
       if (score >= 5) return "Great for your group";
       if (score <= -3) return "May not suit your group well";
+      return "";
+
+    case "contentFit":
+      if (score >= 15) return "Featured in editorial content";
       return "";
 
     default:

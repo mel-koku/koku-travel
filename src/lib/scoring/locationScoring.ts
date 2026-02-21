@@ -82,6 +82,11 @@ export interface LocationScoringCriteria {
    * Trip month (1-12) for seasonal tag scoring.
    */
   tripMonth?: number;
+  /**
+   * Location IDs from a guide/experience content context.
+   * Locations in this set get a +20 scoring boost.
+   */
+  contentLocationIds?: Set<string>;
 }
 
 /**
@@ -99,6 +104,7 @@ export interface ScoreBreakdown {
   timeOptimization: number;
   groupFit: number;
   seasonalFit: number;
+  contentFit: number;
 }
 
 /**
@@ -780,6 +786,22 @@ function scoreSeasonalMatch(
 }
 
 /**
+ * Score content fit: +20 when the location is referenced by a guide or experience.
+ */
+function scoreContentFit(
+  location: Location,
+  contentLocationIds?: Set<string>,
+): { score: number; reasoning: string } {
+  if (!contentLocationIds || contentLocationIds.size === 0) {
+    return { score: 0, reasoning: "" };
+  }
+  if (contentLocationIds.has(location.id)) {
+    return { score: 20, reasoning: "Featured in editorial content" };
+  }
+  return { score: 0, reasoning: "" };
+}
+
+/**
  * Score a location based on all criteria.
  */
 export function scoreLocation(
@@ -820,6 +842,9 @@ export function scoreLocation(
   // Seasonal scoring
   const seasonalResult = scoreSeasonalMatch(location, criteria.tripMonth);
 
+  // Content fit scoring (guide/experience editorial boost)
+  const contentResult = scoreContentFit(location, criteria.contentLocationIds);
+
   const breakdown: ScoreBreakdown = {
     interestMatch: interestResult.score,
     ratingQuality: ratingResult.score,
@@ -832,6 +857,7 @@ export function scoreLocation(
     timeOptimization: finalTimeScore,
     groupFit: groupResult.scoreAdjustment,
     seasonalFit: seasonalResult.scoreAdjustment,
+    contentFit: contentResult.score,
   };
 
   const totalScore =
@@ -845,7 +871,8 @@ export function scoreLocation(
     breakdown.weatherFit +
     breakdown.timeOptimization +
     breakdown.groupFit +
-    breakdown.seasonalFit;
+    breakdown.seasonalFit +
+    breakdown.contentFit;
 
   const reasoning = [
     interestResult.reasoning,
@@ -860,6 +887,7 @@ export function scoreLocation(
     openingHoursResult.reasoning,
     groupResult.reasoning,
     seasonalResult.reasoning,
+    ...(contentResult.reasoning ? [contentResult.reasoning] : []),
   ];
 
   return {
