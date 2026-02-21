@@ -30,7 +30,7 @@ import { formatRecommendationReason } from "@/lib/scoring/reasonFormatter";
 /**
  * Food-related location categories for meal detection.
  */
-const FOOD_CATEGORIES = new Set(["restaurant", "food", "cafe", "bar"]);
+const FOOD_CATEGORIES = new Set(["restaurant", "cafe", "bar"]);
 
 /**
  * Check if a location category indicates a food/dining establishment.

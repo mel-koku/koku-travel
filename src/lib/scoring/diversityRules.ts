@@ -7,6 +7,9 @@ import type { LocationScore } from "./locationScoring";
 export interface DiversityContext {
   recentCategories: string[];
   recentNeighborhoods?: string[];
+  recentCuisineTypes?: string[];
+  recentAtmospheres?: string[];
+  dayPaceTags?: string[]; // pace tags for activities already scheduled today
   visitedLocationIds: Set<string>;
   currentDay: number;
   energyLevel: number; // 0-100, decreases as day progresses
@@ -223,5 +226,101 @@ export function detectNeighborhoodStreak(
   }
 
   return { neighborhood: maxNeighborhood, count: maxStreak };
+}
+
+/**
+ * Penalize back-to-back meals with the same cuisine type.
+ * Returns a score adjustment (-3 for same, 0 otherwise).
+ */
+export function scoreCuisineDiversity(
+  location: Location,
+  recentCuisineTypes: string[],
+): { scoreAdjustment: number; reasoning: string } {
+  const cuisineType = location.cuisineType;
+  if (!cuisineType || cuisineType === "general" || recentCuisineTypes.length === 0) {
+    return { scoreAdjustment: 0, reasoning: "No cuisine type data" };
+  }
+
+  const lastCuisine = recentCuisineTypes[recentCuisineTypes.length - 1];
+  if (lastCuisine === cuisineType) {
+    return {
+      scoreAdjustment: -3,
+      reasoning: `Back-to-back ${cuisineType} meals — prefer variety`,
+    };
+  }
+
+  return { scoreAdjustment: 0, reasoning: "Different cuisine type" };
+}
+
+/**
+ * Check if adding a location would exceed pace limits for the day.
+ * Max 2 half-day, max 1 full-day per day.
+ */
+export function wouldExceedPaceLimit(
+  location: Location,
+  dayPaceTags: string[],
+): boolean {
+  const locationPace = location.tags?.find((t) =>
+    ["quick-stop", "half-day", "full-day"].includes(t)
+  );
+
+  if (!locationPace) return false;
+
+  if (locationPace === "full-day") {
+    const fullDayCount = dayPaceTags.filter((t) => t === "full-day").length;
+    return fullDayCount >= 1;
+  }
+
+  if (locationPace === "half-day") {
+    const halfDayCount = dayPaceTags.filter((t) => t === "half-day").length;
+    return halfDayCount >= 2;
+  }
+
+  return false;
+}
+
+/**
+ * Boost locations with opposite atmosphere after 2 consecutive same-atmosphere activities.
+ * Returns score adjustment: +5 for opposite, 0 otherwise.
+ */
+export function scoreAtmosphereDiversity(
+  location: Location,
+  recentAtmospheres: string[],
+): { scoreAdjustment: number; reasoning: string } {
+  if (recentAtmospheres.length < 2) {
+    return { scoreAdjustment: 0, reasoning: "Not enough atmosphere data" };
+  }
+
+  const last = recentAtmospheres[recentAtmospheres.length - 1] ?? "";
+  const secondLast = recentAtmospheres[recentAtmospheres.length - 2] ?? "";
+
+  // Only apply if 2 consecutive same atmosphere
+  if (!last || last !== secondLast) {
+    return { scoreAdjustment: 0, reasoning: "No atmosphere streak" };
+  }
+
+  const locationAtmo = location.tags?.find((t) =>
+    ["quiet", "lively", "contemplative", "neutral"].includes(t)
+  );
+
+  if (!locationAtmo) {
+    return { scoreAdjustment: 0, reasoning: "No atmosphere tag" };
+  }
+
+  const OPPOSITES: Record<string, string[]> = {
+    quiet: ["lively"],
+    lively: ["quiet", "contemplative"],
+    contemplative: ["lively"],
+    neutral: [],
+  };
+
+  if (OPPOSITES[last]?.includes(locationAtmo)) {
+    return {
+      scoreAdjustment: 5,
+      reasoning: `${locationAtmo} atmosphere balances streak of ${last}`,
+    };
+  }
+
+  return { scoreAdjustment: 0, reasoning: "No atmosphere contrast" };
 }
 

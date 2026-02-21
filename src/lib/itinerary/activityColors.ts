@@ -72,13 +72,6 @@ const COLOR_SCHEMES = {
     badge: "bg-brand-secondary",
     badgeText: "text-white",
   },
-  // Food (non-meal) — amber
-  food: {
-    border: "border-l-brand-secondary",
-    background: "bg-brand-secondary/10",
-    badge: "bg-brand-secondary",
-    badgeText: "text-white",
-  },
   // Travel — warm gray (utilitarian)
   travel: {
     border: "border-l-warm-gray",
@@ -171,8 +164,8 @@ export function getActivityColorScheme(
     const primaryTag = activity.tags[0]?.toLowerCase();
     if (primaryTag) {
       // Check for meal-related tags
-      if (primaryTag === "food" || primaryTag === "restaurant" || primaryTag === "cafe") {
-        return COLOR_SCHEMES.food;
+      if (primaryTag === "restaurant" || primaryTag === "cafe") {
+        return COLOR_SCHEMES.breakfast; // Use meal amber scheme
       }
       const tagScheme = COLOR_SCHEMES[primaryTag as ColorSchemeKey];
       if (tagScheme) {
@@ -252,8 +245,6 @@ const HEX_COLORS: Record<string, string> = {
   shopping: "#d4a017",
   // Entertainment — amber
   entertainment: "#c6923a",
-  // Food — amber
-  food: "#c6923a",
   // Travel — warm gray
   travel: "#5a4f44",
   transport: "#5a4f44",
@@ -273,6 +264,8 @@ const HEX_COLORS: Record<string, string> = {
   park: "#2d7a6f",
   market: "#c6923a",
   wellness: "#2d7a6f",
+  garden: "#2d7a6f",
+  onsen: "#2d7a6f",
   viewpoint: "#8c2f2f",
   bar: "#c6923a",
   // Default — crimson
@@ -308,8 +301,8 @@ export function getActivityHexColor(activity: ItineraryActivity): string {
     if (activity.tags?.length) {
       const primaryTag = activity.tags[0]?.toLowerCase();
       if (primaryTag) {
-        if (primaryTag === "food" || primaryTag === "restaurant" || primaryTag === "cafe") {
-          return HEX_COLORS.food ?? defaultColor;
+        if (primaryTag === "restaurant" || primaryTag === "cafe") {
+          return HEX_COLORS.restaurant ?? defaultColor;
         }
         const tagColor = HEX_COLORS[primaryTag];
         if (tagColor) return tagColor;

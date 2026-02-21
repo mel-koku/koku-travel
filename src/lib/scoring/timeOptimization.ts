@@ -18,6 +18,11 @@ const OPTIMAL_TIMES_BY_CATEGORY: Record<string, Array<"morning" | "afternoon" | 
   entertainment: ["evening"], // Evening entertainment
   landmark: ["morning", "afternoon"], // Better lighting, less crowds
   historic: ["morning", "afternoon"], // Better visibility
+  nature: ["morning", "afternoon"], // Best lighting, cooler temps
+  culture: ["morning", "afternoon"], // Indoor cultural sites
+  cafe: ["morning", "afternoon"], // Coffee/tea times
+  wellness: ["morning", "evening"], // Relaxation before/after activities
+  onsen: ["afternoon", "evening"], // Post-sightseeing soak
 };
 
 /**

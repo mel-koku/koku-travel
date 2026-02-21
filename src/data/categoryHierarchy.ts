@@ -278,7 +278,6 @@ const DATABASE_CATEGORY_TO_PARENT: Record<string, string> = {
   cafe: "food",
   bar: "food",
   market: "food",
-  food: "food",
   // Nature
   park: "nature",
   garden: "nature",

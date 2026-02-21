@@ -39,7 +39,7 @@ export const chatTools = {
         .string()
         .optional()
         .describe(
-          "Filter by category: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, food, entertainment, market, wellness, viewpoint, bar, transport",
+          "Filter by category: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, entertainment, market, wellness, viewpoint, bar, garden, onsen",
         ),
       priceLevel: z
         .number()
