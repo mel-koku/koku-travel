@@ -9,6 +9,7 @@
  */
 
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
+import { parseTimeToMinutes } from "@/lib/utils/timeUtils";
 
 /**
  * Conflict types
@@ -68,18 +69,7 @@ export type ItineraryConflictsResult = {
   };
 };
 
-/**
- * Parse time string (HH:MM) to minutes since midnight
- */
-function parseTimeToMinutes(timeStr: string | undefined): number | null {
-  if (!timeStr) return null;
-  const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
-  if (!match) return null;
-  const hours = parseInt(match[1] ?? "0", 10);
-  const minutes = parseInt(match[2] ?? "0", 10);
-  if (isNaN(hours) || isNaN(minutes)) return null;
-  return hours * 60 + minutes;
-}
+// parseTimeToMinutes imported from @/lib/utils/timeUtils
 
 /**
  * Format minutes since midnight to HH:MM string

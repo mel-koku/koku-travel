@@ -89,6 +89,7 @@ export function FilterPanel({
   onSortChange,
 }: FilterPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<Element | null>(null);
 
   const isFoodVibeSelected = selectedVibes.includes("foodie_paradise");
 
@@ -114,20 +115,24 @@ export function FilterPanel({
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
   const togglesActiveCount = (openNow ? 1 : 0) + (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
 
-  // Close on escape key
+  // Close on escape key + focus management
   useEffect(() => {
+    if (!isOpen) return;
+
+    triggerRef.current = document.activeElement;
+    document.body.style.overflow = "hidden";
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
-    }
+    document.addEventListener("keydown", handleEscape);
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "";
+      if (triggerRef.current instanceof HTMLElement) {
+        triggerRef.current.focus();
+      }
     };
   }, [isOpen, onClose]);
 

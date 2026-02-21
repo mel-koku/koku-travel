@@ -1,6 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { GEOLOCATION_STORAGE_KEY } from "@/lib/constants/storage";
+import { getSession, setSession, removeSession } from "@/lib/storageHelpers";
 
 export type GeoPosition = {
   lat: number;
@@ -16,33 +18,22 @@ type CurrentLocationState = {
   request: () => void;
 };
 
-const CACHE_KEY = "koku:geolocation";
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
+type CachedGeo = { position: GeoPosition; cachedAt: number };
+
 function getCached(): GeoPosition | null {
-  try {
-    const raw = sessionStorage.getItem(CACHE_KEY);
-    if (!raw) return null;
-    const { position, cachedAt } = JSON.parse(raw);
-    if (Date.now() - cachedAt > CACHE_TTL) {
-      sessionStorage.removeItem(CACHE_KEY);
-      return null;
-    }
-    return position as GeoPosition;
-  } catch {
+  const cached = getSession<CachedGeo>(GEOLOCATION_STORAGE_KEY);
+  if (!cached) return null;
+  if (Date.now() - cached.cachedAt > CACHE_TTL) {
+    removeSession(GEOLOCATION_STORAGE_KEY);
     return null;
   }
+  return cached.position;
 }
 
 function setCache(position: GeoPosition) {
-  try {
-    sessionStorage.setItem(
-      CACHE_KEY,
-      JSON.stringify({ position, cachedAt: Date.now() }),
-    );
-  } catch {
-    // sessionStorage may be unavailable
-  }
+  setSession<CachedGeo>(GEOLOCATION_STORAGE_KEY, { position, cachedAt: Date.now() });
 }
 
 /**

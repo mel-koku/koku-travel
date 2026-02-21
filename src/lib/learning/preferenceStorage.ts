@@ -1,58 +1,38 @@
 import type { UserPreferences, PreferenceEvent } from "@/types/userPreferences";
 import { DEFAULT_USER_PREFERENCES } from "@/types/userPreferences";
-import { logger } from "@/lib/logger";
-
-const STORAGE_KEY = "koku_user_preferences";
+import { USER_PREFERENCES_STORAGE_KEY } from "@/lib/constants/storage";
+import { getLocal, setLocal, removeLocal } from "@/lib/storageHelpers";
 
 /**
  * Load user preferences from localStorage
  */
 export function loadUserPreferences(): UserPreferences {
-  if (typeof window === "undefined") {
+  const parsed = getLocal<UserPreferences>(USER_PREFERENCES_STORAGE_KEY);
+  if (!parsed) {
     return DEFAULT_USER_PREFERENCES;
   }
 
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      return DEFAULT_USER_PREFERENCES;
-    }
-
-    const parsed = JSON.parse(stored) as UserPreferences;
-    
-    // Validate and merge with defaults
-    return {
-      replacedActivities: parsed.replacedActivities ?? [],
-      skippedActivities: parsed.skippedActivities ?? [],
-      favoriteActivities: parsed.favoriteActivities ?? [],
-      preferredCategories: parsed.preferredCategories ?? {},
-      preferredPriceRanges: parsed.preferredPriceRanges ?? {},
-      preferredActivityTypes: parsed.preferredActivityTypes ?? {},
-      lastUpdated: parsed.lastUpdated ?? new Date().toISOString(),
-    };
-  } catch (error) {
-    logger.warn("Failed to load user preferences", { error: error instanceof Error ? error.message : String(error) });
-    return DEFAULT_USER_PREFERENCES;
-  }
+  // Validate and merge with defaults
+  return {
+    replacedActivities: parsed.replacedActivities ?? [],
+    skippedActivities: parsed.skippedActivities ?? [],
+    favoriteActivities: parsed.favoriteActivities ?? [],
+    preferredCategories: parsed.preferredCategories ?? {},
+    preferredPriceRanges: parsed.preferredPriceRanges ?? {},
+    preferredActivityTypes: parsed.preferredActivityTypes ?? {},
+    lastUpdated: parsed.lastUpdated ?? new Date().toISOString(),
+  };
 }
 
 /**
  * Save user preferences to localStorage
  */
 export function saveUserPreferences(preferences: UserPreferences): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  try {
-    const updated = {
-      ...preferences,
-      lastUpdated: new Date().toISOString(),
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  } catch (error) {
-    logger.warn("Failed to save user preferences", { error: error instanceof Error ? error.message : String(error) });
-  }
+  const updated = {
+    ...preferences,
+    lastUpdated: new Date().toISOString(),
+  };
+  setLocal(USER_PREFERENCES_STORAGE_KEY, updated);
 }
 
 /**
@@ -144,14 +124,6 @@ export function recordPreferenceEvent(event: PreferenceEvent): UserPreferences {
  * Clear all user preferences
  */
 export function clearUserPreferences(): void {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (error) {
-    logger.warn("Failed to clear user preferences", { error: error instanceof Error ? error.message : String(error) });
-  }
+  removeLocal(USER_PREFERENCES_STORAGE_KEY);
 }
 

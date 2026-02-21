@@ -90,14 +90,8 @@ export function formatOpenStatus(status: OpenStatus): string | null {
   return "Closed today";
 }
 
-function parseTime(timeStr: string): number | null {
-  const parts = timeStr.split(":");
-  if (parts.length !== 2) return null;
-  const h = parseInt(parts[0] ?? "0", 10);
-  const m = parseInt(parts[1] ?? "0", 10);
-  if (Number.isNaN(h) || Number.isNaN(m)) return null;
-  return h * 60 + m;
-}
+// Re-export shared time parser under local alias for readability
+import { parseTimeToMinutes as parseTime } from "@/lib/utils/timeUtils";
 
 function findNextOpening(
   hours: LocationOperatingHours,

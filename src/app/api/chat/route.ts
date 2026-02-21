@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { google } from "@ai-sdk/google";
 import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/systemPrompt";
-import { serviceUnavailable } from "@/lib/api/errors";
+import { serviceUnavailable, internalError } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import {
   createRequestContext,
@@ -95,9 +95,9 @@ export async function POST(request: NextRequest) {
 
     if (isQuotaError) {
       logger.warn("Gemini API quota exceeded", { route: "/api/chat" });
-      return NextResponse.json(
-        { error: "Chat is temporarily unavailable. Try again later." },
-        { status: 503 },
+      return addRequestContextHeaders(
+        serviceUnavailable("Chat is temporarily unavailable. Try again later.", { route: "/api/chat" }),
+        context,
       );
     }
 
@@ -106,9 +106,9 @@ export async function POST(request: NextRequest) {
       error instanceof Error ? error : new Error(message),
       { route: "/api/chat", requestId: context.requestId },
     );
-    return NextResponse.json(
-      { error: "Something went wrong. Try again." },
-      { status: 500 },
+    return addRequestContextHeaders(
+      internalError("Something went wrong. Try again.", undefined, { route: "/api/chat", requestId: context.requestId }),
+      context,
     );
   }
 }

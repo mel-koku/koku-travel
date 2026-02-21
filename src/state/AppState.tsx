@@ -5,7 +5,13 @@ import type { DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
 import { loadWishlist } from "@/lib/wishlistStorage";
 import { APP_STATE_STORAGE_KEY, APP_STATE_DEBOUNCE_MS, STABLE_DEFAULT_USER_ID } from "@/lib/constants";
-import { WISHLIST_STORAGE_KEY, TRIP_BUILDER_STORAGE_KEY } from "@/lib/constants/storage";
+import {
+  WISHLIST_STORAGE_KEY,
+  TRIP_BUILDER_STORAGE_KEY,
+  USER_PREFERENCES_STORAGE_KEY,
+  FILTER_METADATA_STORAGE_KEY,
+  TRIP_STEP_STORAGE_KEY,
+} from "@/lib/constants/storage";
 import type { Session, User } from "@supabase/supabase-js";
 import React, {
   createContext,
@@ -477,7 +483,16 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (supabase) {
-        void syncFavoriteToggle(supabase, id, existed);
+        void (async () => {
+          const result = await syncFavoriteToggle(supabase, id, existed);
+          if (!result.success) {
+            setState((s) => {
+              const set = new Set(s.favorites);
+              if (existed) set.add(id); else set.delete(id);
+              return { ...s, favorites: Array.from(set) };
+            });
+          }
+        })();
       }
     },
     [supabase],
@@ -740,9 +755,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.setItem(APP_STATE_STORAGE_KEY, JSON.stringify(next));
       localStorage.removeItem(WISHLIST_STORAGE_KEY);
-      localStorage.removeItem("koku_user_preferences");
-      localStorage.removeItem("koku:filter-metadata:v3");
-      localStorage.removeItem("koku_trip_step");
+      localStorage.removeItem(USER_PREFERENCES_STORAGE_KEY);
+      localStorage.removeItem(FILTER_METADATA_STORAGE_KEY);
+      localStorage.removeItem(TRIP_STEP_STORAGE_KEY);
       localStorage.removeItem(TRIP_BUILDER_STORAGE_KEY);
       // Notify other contexts (e.g. TripBuilderContext) that local data was wiped
       window.dispatchEvent(new CustomEvent("koku:local-data-cleared"));
