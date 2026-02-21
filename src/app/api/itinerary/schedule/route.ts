@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { logger } from "@/lib/logger";
 import { badRequest, internalError } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import {
   createRequestContext,
   addRequestContextHeaders,
@@ -50,11 +51,7 @@ export async function POST(request: NextRequest) {
   // Create request context for tracing
   const context = createRequestContext(request);
 
-  // Rate limiting: 100 requests per minute per IP (increased for development)
-  const rateLimitResponse = await checkRateLimit(request, {
-    maxRequests: 100,
-    windowMs: 60 * 1000,
-  });
+  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.ITINERARY_SCHEDULE);
   if (rateLimitResponse) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }

@@ -9,6 +9,7 @@ import type { EntryPoint, KnownCityId, KnownRegionId } from "@/types/trip";
 import type { VibeId } from "@/data/vibes";
 import { REGION_DESCRIPTIONS, type RegionDescription } from "@/data/regionDescriptions";
 import { REGIONS } from "@/data/regions";
+import { calculateDistance } from "@/lib/utils/geoUtils";
 
 /**
  * Result of scoring a region for a trip.
@@ -22,28 +23,7 @@ export type RegionScore = {
   isEntryPointRegion: boolean; // True if this is the entry point's region
 };
 
-/**
- * Calculate the distance between two coordinates using Haversine formula.
- * Returns distance in kilometers.
- */
-function haversineDistance(
-  lat1: number,
-  lng1: number,
-  lat2: number,
-  lng2: number
-): number {
-  const R = 6371; // Earth's radius in kilometers
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
+// Haversine distance imported from @/lib/utils/geoUtils
 
 /**
  * Calculate how well a region matches the selected vibes.
@@ -82,11 +62,9 @@ function calculateProximityScore(
     return 50; // Neutral score when no entry point
   }
 
-  const distance = haversineDistance(
-    entryPoint.coordinates.lat,
-    entryPoint.coordinates.lng,
-    region.coordinates.lat,
-    region.coordinates.lng
+  const distance = calculateDistance(
+    entryPoint.coordinates,
+    region.coordinates,
   );
 
   // Score based on distance (max 2000km for Japan's length)

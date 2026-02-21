@@ -478,23 +478,14 @@ function CategoryIcon({ category }: { category: ChecklistItem["category"] }) {
 }
 
 // Persist checklist to localStorage
-const CHECKLIST_KEY = "koku:trip-checklist";
+import { CONFIDENCE_CHECKLIST_STORAGE_KEY } from "@/lib/constants/storage";
+import { getLocal, setLocal } from "@/lib/storageHelpers";
 
 function loadChecklist(): Set<string> {
-  if (typeof window === "undefined") return new Set();
-  try {
-    const raw = localStorage.getItem(CHECKLIST_KEY);
-    if (!raw) return new Set();
-    return new Set(JSON.parse(raw) as string[]);
-  } catch {
-    return new Set();
-  }
+  const stored = getLocal<string[]>(CONFIDENCE_CHECKLIST_STORAGE_KEY);
+  return stored ? new Set(stored) : new Set();
 }
 
 function saveChecklist(checked: Set<string>) {
-  try {
-    localStorage.setItem(CHECKLIST_KEY, JSON.stringify([...checked]));
-  } catch {
-    // Ignore
-  }
+  setLocal(CONFIDENCE_CHECKLIST_STORAGE_KEY, [...checked]);
 }

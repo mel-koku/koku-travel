@@ -372,6 +372,31 @@ export const refineRequestSchema = z.object({
 }).strict();
 
 /**
+ * Schema for availability check request
+ */
+export const availabilityRequestSchema = z.object({
+  activities: z.array(z.object({
+    locationId: z.string().min(1).max(255).optional(),
+    startTime: z.string().regex(/^\d{1,2}:\d{2}$/).optional(),
+    endTime: z.string().regex(/^\d{1,2}:\d{2}$/).optional(),
+  }).passthrough()).min(1).max(100),
+});
+
+/**
+ * Schema for smart prompt recommendation request
+ */
+export const recommendRequestSchema = z.object({
+  gap: z.object({ action: z.object({ type: z.string().min(1) }).passthrough() }).passthrough(),
+  dayActivities: z.array(z.unknown()).optional(),
+  cityId: z.string().max(255).optional(),
+  tripBuilderData: z.unknown().optional(),
+  usedLocationIds: z.array(z.string()).max(500).optional(),
+  excludeLocationIds: z.array(z.string()).max(500).optional(),
+  refinementFilters: z.unknown().optional(),
+  tripDate: z.string().max(20).optional(),
+});
+
+/**
  * Helper to validate query parameters
  */
 export function validateQueryParams<T extends z.ZodSchema>(

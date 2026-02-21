@@ -13,7 +13,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const revalidate = 3600;
+// Force dynamic rendering — page shows user-specific content
+export const dynamic = "force-dynamic";
 
 export default async function AccountPage() {
   const content = await getPagesContent();

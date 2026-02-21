@@ -61,6 +61,14 @@ export async function syncLocalToCloudOnce() {
   const favoritesToDelete = Array.from(remoteFavoriteIds).filter((id) => !localFavoriteIds.has(id));
   const bookmarksToDelete = Array.from(remoteBookmarkIds).filter((id) => !localBookmarkIds.has(id));
 
+  // Safety: never delete all remote data if local state appears empty
+  // This protects against corrupted/cleared localStorage wiping the cloud
+  const localLooksCorrupted = favorites.length === 0 && guideBookmarks.length === 0;
+  if (localLooksCorrupted && ((remoteFavorites?.length ?? 0) > 0 || (remoteBookmarks?.length ?? 0) > 0)) {
+    logger.warn("accountSync: skipping delete-all — local state appears empty while remote has data");
+    return { ok: true as const };
+  }
+
   if (favorites.length === 0 && (remoteFavorites?.length ?? 0) > 0) {
     await supabase.from("favorites").delete().eq("user_id", user.id);
   } else if (favoritesToDelete.length) {

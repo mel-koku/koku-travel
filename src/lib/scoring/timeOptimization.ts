@@ -1,4 +1,5 @@
 import type { Location } from "@/types/location";
+import { parseTimeToMinutes } from "@/lib/utils/timeUtils";
 
 /**
  * Optimal time of day for different location categories
@@ -71,12 +72,7 @@ export function scoreTimeOfDayFit(
 
 const MINUTES_IN_DAY = 24 * 60;
 
-function parseTimeToMinutes(time: string): number {
-  const parts = time.split(":");
-  const hours = parseInt(parts[0] ?? "0", 10);
-  const minutes = parseInt(parts[1] ?? "0", 10);
-  return hours * 60 + minutes;
-}
+// parseTimeToMinutes imported from @/lib/utils/timeUtils
 
 /**
  * Check if location has opening hours that allow a meaningful visit in the time slot.
@@ -130,8 +126,8 @@ export function checkOpeningHoursFit(
       continue;
     }
 
-    const openMinutes = parseTimeToMinutes(period.open);
-    let closeMinutes = parseTimeToMinutes(period.close);
+    const openMinutes = parseTimeToMinutes(period.open) ?? 0;
+    let closeMinutes = parseTimeToMinutes(period.close) ?? 0;
 
     // Handle overnight periods
     if (period.isOvernight) {

@@ -5,8 +5,6 @@ import type { Trip, TripDay, TripActivity } from "@/types/tripDomain";
 import type { TripBuilderData } from "@/types/trip";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
-// Note: insertMealActivities is disabled in favor of post-generation smart prompts
-// import { insertMealActivities } from "@/lib/mealPlanning";
 import { logger } from "@/lib/logger";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { isDiningLocation } from "@/lib/mealFiltering";

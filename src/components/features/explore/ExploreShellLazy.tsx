@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 const ExploreShell = dynamic(
@@ -32,5 +33,9 @@ const ExploreShell = dynamic(
 );
 
 export function ExploreShellLazy({ content }: { content?: PagesContent }) {
-  return <ExploreShell content={content} />;
+  return (
+    <ErrorBoundary>
+      <ExploreShell content={content} />
+    </ErrorBoundary>
+  );
 }

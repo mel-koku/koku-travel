@@ -4,7 +4,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
+import { unauthorized, badRequest, internalError } from "@/lib/api/errors";
 
 const WEBHOOK_SECRET = process.env.SANITY_REVALIDATE_SECRET;
 
@@ -34,19 +36,24 @@ type SanityWebhookBody = {
 export async function POST(request: NextRequest) {
   const context = createRequestContext(request);
 
-  // Rate limit: 30 req/min — Sanity publishes infrequently; protects against replay
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60_000 });
+  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.WEBHOOK);
   if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
+
+  // Reject if webhook secret is not configured (prevents bypass in misconfigured environments)
+  if (!WEBHOOK_SECRET) {
+    logger.error("SANITY_REVALIDATE_SECRET not configured");
+    return addRequestContextHeaders(
+      internalError("Webhook not configured"),
+      context,
+    );
+  }
 
   // Validate webhook secret using timing-safe comparison to prevent timing attacks
   const secret = request.headers.get("sanity-webhook-secret");
   const secretBuf = Buffer.from(secret ?? "", "utf8");
   const expectedBuf = Buffer.from(WEBHOOK_SECRET ?? "", "utf8");
   if (secretBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(secretBuf, expectedBuf)) {
-    return addRequestContextHeaders(
-      NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
-      context,
-    );
+    return addRequestContextHeaders(unauthorized(), context);
   }
 
   const body = (await request.json()) as SanityWebhookBody;
@@ -89,7 +96,7 @@ export async function POST(request: NextRequest) {
 async function handleGuide(body: SanityWebhookBody) {
   const slug = body.slug?.current;
   if (!slug) {
-    return NextResponse.json({ error: "Missing slug" }, { status: 400 });
+    return badRequest("Missing slug");
   }
 
   const supabase = getServiceRoleClient();
@@ -103,7 +110,7 @@ async function handleGuide(body: SanityWebhookBody) {
 
     if (error) {
       logger.error("[sanity-webhook] Archive error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return internalError(error.message);
     }
 
     revalidatePath("/guides");
@@ -149,7 +156,7 @@ async function handleGuide(body: SanityWebhookBody) {
 
   if (error) {
     logger.error("[sanity-webhook] Upsert error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return internalError(error.message);
   }
 
   revalidatePath("/guides");

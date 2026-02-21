@@ -6,6 +6,8 @@ import { ChevronDown, ChevronUp, Lightbulb, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { SmartPromptCard } from "./SmartPromptCard";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import { DISMISSED_PROMPTS_PREFIX } from "@/lib/constants/storage";
+import { getLocal, setLocal } from "@/lib/storageHelpers";
 
 export type SmartPromptsDrawerProps = {
   gaps: DetectedGap[];
@@ -175,25 +177,17 @@ export function useSmartPrompts(initialGaps: DetectedGap[], tripId?: string) {
   const [acceptedIds, setAcceptedIds] = useState<Set<string>>(new Set());
 
   // Load dismissed prompts from localStorage on mount / trip change
-  const storageKey = tripId ? `koku:dismissed-prompts:${tripId}` : null;
+  const storageKey = tripId ? `${DISMISSED_PROMPTS_PREFIX}${tripId}` : null;
   const [skippedIds, setSkippedIds] = useState<Set<string>>(() => {
-    if (!storageKey || typeof window === "undefined") return new Set();
-    try {
-      const stored = localStorage.getItem(storageKey);
-      return stored ? new Set(JSON.parse(stored) as string[]) : new Set();
-    } catch {
-      return new Set();
-    }
+    if (!storageKey) return new Set();
+    const stored = getLocal<string[]>(storageKey);
+    return stored ? new Set(stored) : new Set();
   });
 
   // Persist skipped IDs to localStorage when they change
   useEffect(() => {
-    if (!storageKey || typeof window === "undefined") return;
-    try {
-      localStorage.setItem(storageKey, JSON.stringify([...skippedIds]));
-    } catch {
-      // localStorage full or unavailable — ignore
-    }
+    if (!storageKey) return;
+    setLocal(storageKey, [...skippedIds]);
   }, [skippedIds, storageKey]);
 
   // Sync gaps when initialGaps changes (preserve accepted/skipped state)

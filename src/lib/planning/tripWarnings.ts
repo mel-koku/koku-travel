@@ -8,6 +8,7 @@
 
 import type { TripBuilderData, RegionId } from "@/types/trip";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
+import { calculateDistance } from "@/lib/utils/geoUtils";
 
 /**
  * Warning severity levels
@@ -122,27 +123,7 @@ const SEASONAL_PERIODS = {
   },
 };
 
-/**
- * Calculate distance between two coordinates using Haversine formula
- */
-function calculateDistance(
-  lat1: number,
-  lng1: number,
-  lat2: number,
-  lng2: number
-): number {
-  const R = 6371; // Earth's radius in km
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) *
-      Math.sin(dLng / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  return R * c;
-}
+// calculateDistance imported from @/lib/utils/geoUtils
 
 /**
  * Get region description by ID
@@ -436,10 +417,8 @@ function detectDistanceWarnings(data: TripBuilderData): PlanningWarning | null {
       if (!regionA || !regionB) continue;
 
       const distance = calculateDistance(
-        regionA.coords.lat,
-        regionA.coords.lng,
-        regionB.coords.lat,
-        regionB.coords.lng
+        regionA.coords,
+        regionB.coords,
       );
       if (distance > maxDistance) {
         maxDistance = distance;
