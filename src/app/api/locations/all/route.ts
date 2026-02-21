@@ -146,6 +146,7 @@ export async function GET(request: NextRequest) {
       goodForGroups: row.good_for_groups ?? undefined,
       mealOptions: row.meal_options ?? undefined,
       serviceOptions: row.service_options ?? undefined,
+      tags: row.tags ?? undefined,
     }));
 
     // Cache the result in-memory

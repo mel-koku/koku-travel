@@ -10,6 +10,24 @@ import { scoreGroupFit } from "./groupScoring";
 /**
  * Criteria for scoring a location.
  */
+/**
+ * Month-to-season mapping for seasonal tag scoring.
+ */
+const MONTH_TO_SEASON_TAGS: Record<number, string[]> = {
+  1: ["winter-illumination", "winter-festival"],
+  2: ["plum-blossom", "winter-illumination"],
+  3: ["cherry-blossom", "plum-blossom"],
+  4: ["cherry-blossom"],
+  5: ["cherry-blossom"], // Late-blooming areas (Hokkaido)
+  6: ["summer-flowers"],
+  7: ["summer-flowers", "summer-festival"],
+  8: ["summer-festival"],
+  9: ["autumn-foliage"],
+  10: ["autumn-foliage"],
+  11: ["autumn-foliage", "winter-illumination"],
+  12: ["winter-illumination", "winter-festival"],
+};
+
 export interface LocationScoringCriteria {
   interests: InterestId[];
   travelStyle: "relaxed" | "balanced" | "fast";
@@ -60,6 +78,10 @@ export interface LocationScoringCriteria {
    * whose category matches this specific interest.
    */
   currentInterest?: InterestId;
+  /**
+   * Trip month (1-12) for seasonal tag scoring.
+   */
+  tripMonth?: number;
 }
 
 /**
@@ -76,6 +98,7 @@ export interface ScoreBreakdown {
   weatherFit: number;
   timeOptimization: number;
   groupFit: number;
+  seasonalFit: number;
 }
 
 /**
@@ -107,6 +130,7 @@ const CATEGORY_TO_INTERESTS: Record<string, InterestId[]> = {
   park: ["nature", "wellness", "photography"],
   garden: ["nature", "wellness", "photography"],
   bar: ["nightlife"],
+  onsen: ["wellness", "nature"],
   entertainment: ["nightlife"],
   shopping: ["shopping"],
   museum: ["culture", "history"],
@@ -116,7 +140,6 @@ const CATEGORY_TO_INTERESTS: Record<string, InterestId[]> = {
   // Generic fallback categories (for legacy data)
   // These map to broad interests when specific category is unknown
   culture: ["culture", "history"],
-  food: ["food"],
   view: ["photography", "nature"],
 };
 
@@ -720,6 +743,43 @@ function getLocationDurationMinutes(location: Location): number {
 }
 
 /**
+ * Score seasonal match: +5 when location has a seasonal tag matching the trip month,
+ * -3 when location has a seasonal tag that doesn't match, 0 for year-round.
+ */
+function scoreSeasonalMatch(
+  location: Location,
+  tripMonth?: number,
+): { scoreAdjustment: number; reasoning: string } {
+  if (!tripMonth || !location.tags) {
+    return { scoreAdjustment: 0, reasoning: "No seasonal data" };
+  }
+
+  const seasonalTags = location.tags.filter((t) =>
+    ["cherry-blossom", "autumn-foliage", "winter-illumination", "summer-flowers",
+      "winter-festival", "summer-festival", "plum-blossom", "festival", "seasonal"].includes(t)
+  );
+
+  if (seasonalTags.length === 0 || location.tags.includes("year-round")) {
+    return { scoreAdjustment: 0, reasoning: "Year-round location" };
+  }
+
+  const matchingTags = MONTH_TO_SEASON_TAGS[tripMonth] ?? [];
+  const hasMatch = seasonalTags.some((t) => matchingTags.includes(t));
+
+  if (hasMatch) {
+    return {
+      scoreAdjustment: 5,
+      reasoning: `Seasonal match: ${seasonalTags.join(", ")} in month ${tripMonth}`,
+    };
+  }
+
+  return {
+    scoreAdjustment: -3,
+    reasoning: `Out of season: ${seasonalTags.join(", ")} not ideal in month ${tripMonth}`,
+  };
+}
+
+/**
  * Score a location based on all criteria.
  */
 export function scoreLocation(
@@ -757,6 +817,9 @@ export function scoreLocation(
   // Group-based scoring
   const groupResult = scoreGroupFit(location, criteria.group);
 
+  // Seasonal scoring
+  const seasonalResult = scoreSeasonalMatch(location, criteria.tripMonth);
+
   const breakdown: ScoreBreakdown = {
     interestMatch: interestResult.score,
     ratingQuality: ratingResult.score,
@@ -768,6 +831,7 @@ export function scoreLocation(
     weatherFit: weatherResult.scoreAdjustment,
     timeOptimization: finalTimeScore,
     groupFit: groupResult.scoreAdjustment,
+    seasonalFit: seasonalResult.scoreAdjustment,
   };
 
   const totalScore =
@@ -780,7 +844,8 @@ export function scoreLocation(
     breakdown.neighborhoodDiversity +
     breakdown.weatherFit +
     breakdown.timeOptimization +
-    breakdown.groupFit;
+    breakdown.groupFit +
+    breakdown.seasonalFit;
 
   const reasoning = [
     interestResult.reasoning,
@@ -794,6 +859,7 @@ export function scoreLocation(
     timeOptimizationResult.reasoning,
     openingHoursResult.reasoning,
     groupResult.reasoning,
+    seasonalResult.reasoning,
   ];
 
   return {

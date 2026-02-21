@@ -40,6 +40,7 @@ const FACTOR_META: Record<
   weatherFit: { label: "Weather fit", maxMagnitude: 10 },
   timeOptimization: { label: "Time-of-day fit", maxMagnitude: 10 },
   groupFit: { label: "Group fit", maxMagnitude: 8 },
+  seasonalFit: { label: "Seasonal match", maxMagnitude: 5 },
 };
 
 // ---------------------------------------------------------------------------

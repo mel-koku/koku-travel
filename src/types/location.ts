@@ -352,6 +352,17 @@ export type Location = {
    */
   isHiddenGem?: boolean;
 
+  /**
+   * Multi-dimensional tags: environment (indoor/outdoor/mixed), pace (quick-stop/half-day/full-day),
+   * seasonal (cherry-blossom/autumn-foliage/year-round), atmosphere (quiet/lively/contemplative).
+   */
+  tags?: string[];
+
+  /**
+   * Cuisine type for restaurant/bar/cafe/market locations (e.g., ramen, sushi, izakaya, kaiseki).
+   */
+  cuisineType?: string;
+
   // ============================================
   // Seasonal Availability Fields
   // ============================================
