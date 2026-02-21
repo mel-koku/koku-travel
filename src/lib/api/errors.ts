@@ -103,6 +103,16 @@ export function internalError(
 }
 
 /**
+ * Creates a 504 Gateway Timeout error response.
+ */
+export function gatewayTimeout(
+  message: string = "Request timed out",
+  context?: { route?: string; requestId?: string; [key: string]: unknown },
+): NextResponse<ApiError> {
+  return createErrorResponse(message, 504, "GATEWAY_TIMEOUT", undefined, context);
+}
+
+/**
  * Creates a 503 Service Unavailable error response.
  */
 export function serviceUnavailable(

@@ -11,8 +11,9 @@ import {
   requireJsonContentType,
 } from "@/lib/api/middleware";
 import { validateRequestBody, planRequestSchema } from "@/lib/api/schemas";
-import { badRequest, internalError } from "@/lib/api/errors";
+import { badRequest, internalError, gatewayTimeout } from "@/lib/api/errors";
 import { getCachedItinerary, cacheItinerary } from "@/lib/cache/itineraryCache";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 
 /**
  * POST /api/itinerary/plan
@@ -126,11 +127,31 @@ export async function POST(request: NextRequest) {
 
     // Generate trip (returns both domain model and raw itinerary)
     // Include favoriteIds if provided (user's favorited locations from Explore page)
-    const { trip, itinerary, dayIntros } = await generateTripFromBuilderData(
-      builderData,
-      finalTripId,
-      favoriteIds
-    );
+    // 25s timeout prevents hanging upstream from blocking indefinitely
+    const GENERATION_TIMEOUT_MS = 25_000;
+    const timeoutSentinel = Symbol("timeout");
+    const generationResult = await Promise.race([
+      generateTripFromBuilderData(builderData, finalTripId, favoriteIds),
+      new Promise<typeof timeoutSentinel>((resolve) =>
+        setTimeout(() => resolve(timeoutSentinel), GENERATION_TIMEOUT_MS),
+      ),
+    ]);
+
+    if (generationResult === timeoutSentinel) {
+      logger.error("Itinerary generation timed out", undefined, {
+        requestId: finalContext.requestId,
+        timeoutMs: GENERATION_TIMEOUT_MS,
+      });
+      return addRequestContextHeaders(
+        gatewayTimeout(
+          "Itinerary generation timed out. Try again or simplify your trip.",
+          { requestId: finalContext.requestId },
+        ),
+        finalContext,
+      );
+    }
+
+    const { trip, itinerary, dayIntros } = generationResult;
 
     // Cache the generated itinerary for future requests
     await cacheItinerary(builderData, trip, itinerary, dayIntros);
@@ -178,7 +199,7 @@ export async function POST(request: NextRequest) {
     return addRequestContextHeaders(
       internalError(
         "Failed to generate itinerary",
-        { message: error instanceof Error ? error.message : String(error) },
+        { message: getErrorMessage(error) },
         { requestId: finalContext.requestId },
       ),
       finalContext,
