@@ -13,6 +13,7 @@ import { GuideContent } from "./GuideContent";
 import { PortableTextBody } from "./PortableTextBody";
 import { LinkedLocations } from "./LinkedLocations";
 import { GuidePlanCTA } from "./GuidePlanCTA";
+import { ArticleFloatingCTA } from "./ArticleFloatingCTA";
 import { GuideFooter } from "./GuideFooter";
 import { GuideProgressBar } from "./GuideProgressBar";
 
@@ -37,6 +38,7 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
   const { user } = useAppState();
   const { isBookmarked, toggleBookmark, isToggling } = useBookmarks(user?.id);
   const contentRef = useRef<HTMLDivElement>(null);
+  const bottomCtaRef = useRef<HTMLDivElement>(null);
 
   const isSanity = source === "sanity";
   const sg = isSanity ? props.sanityGuide : undefined;
@@ -81,23 +83,47 @@ export function GuideDetailClient(props: GuideDetailClientProps) {
         onToggleBookmark={() => toggleBookmark(guideId)}
       />
 
-      <div ref={contentRef}>
-        {isSanity ? (
-          <PortableTextBody body={sg!.body} />
-        ) : (
-          <GuideContent body={g!.body} />
+      {/* Article body + sidebar grid (2fr / 1fr on xl+) */}
+      <div className="xl:mx-auto xl:grid xl:max-w-[1400px] xl:grid-cols-[2fr_1fr] xl:gap-10 xl:px-8 xl:pb-16">
+        <div className="xl:[&>*+*]:-mt-12">
+          <div ref={contentRef}>
+            {isSanity ? (
+              <PortableTextBody body={sg!.body} />
+            ) : (
+              <GuideContent body={g!.body} />
+            )}
+          </div>
+
+          {/* Hidden on xl+ where sidebar shows locations */}
+          <div className="xl:hidden">
+            <LinkedLocations locations={locations} />
+          </div>
+        </div>
+
+        {locationIds.length > 0 && (
+          <ArticleFloatingCTA
+            contentType="guide"
+            slug={slug}
+            title={title}
+            locationIds={locationIds}
+            locations={locations}
+            city={city}
+            region={region}
+            contentRef={contentRef}
+            bottomCtaRef={bottomCtaRef}
+          />
         )}
       </div>
 
-      <LinkedLocations locations={locations} />
-
-      <GuidePlanCTA
-        guideSlug={slug}
-        guideTitle={title}
-        locationIds={locationIds}
-        city={city}
-        region={region}
-      />
+      <div ref={bottomCtaRef} className="xl:hidden">
+        <GuidePlanCTA
+          guideSlug={slug}
+          guideTitle={title}
+          locationIds={locationIds}
+          city={city}
+          region={region}
+        />
+      </div>
 
       <GuideFooter
         authorName={authorName}
