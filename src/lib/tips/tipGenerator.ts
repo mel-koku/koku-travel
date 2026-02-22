@@ -512,7 +512,7 @@ function generateTravelTips(
         tips.push({
           type: "travel",
           title: `${timeLabel} by train`,
-          message: `From ${previousActivityName}. Consider getting an IC card for convenient payment.`,
+          message: `From ${previousActivityName}.`,
           priority: 8,
           icon: "🚃",
           isImportant: durationMinutes >= 45,
@@ -529,23 +529,36 @@ function generateTravelTips(
         tips.push({
           type: "travel",
           title: `${timeLabel} by bus`,
-          message: `Check bus schedules in advance. IC cards work on most city buses.`,
+          message: `Check bus schedules in advance.`,
           priority: 7,
           icon: "🚌",
         });
       }
     }
 
-    // Transfer tip for complex transit
-    if (travelSegment.instructions && travelSegment.instructions.length >= 2) {
-      const transferCount = travelSegment.instructions.length - 1;
-      tips.push({
-        type: "travel",
-        title: `${transferCount} transfer${transferCount > 1 ? "s" : ""}`,
-        message: "Allow extra time for transfers. Follow station signage carefully.",
-        priority: 7,
-        icon: "🔄",
-      });
+    // Transfer tip — only for transit modes, count actual transit legs
+    // Google Directions transit steps include "Line <name>" in the instruction;
+    // walking steps and Mapbox driving maneuvers don't match this pattern.
+    const TRANSIT_MODES = new Set(["train", "subway", "bus", "tram", "ferry", "transit"]);
+    if (
+      TRANSIT_MODES.has(mode) &&
+      travelSegment.instructions &&
+      travelSegment.instructions.length >= 2
+    ) {
+      const transitLegs = travelSegment.instructions.filter(
+        (inst) => /\bLine\b/.test(inst),
+      ).length;
+      const transferCount = transitLegs - 1;
+
+      if (transferCount > 0) {
+        tips.push({
+          type: "travel",
+          title: `${transferCount} transfer${transferCount > 1 ? "s" : ""}`,
+          message: "Allow extra time for transfers. Follow station signage carefully.",
+          priority: 7,
+          icon: "🔄",
+        });
+      }
     }
   }
 
