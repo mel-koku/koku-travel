@@ -10,7 +10,7 @@ type ImportState =
   | { status: "idle" }
   | { status: "extracting"; url: string }
   | { status: "result"; data: ImportResultData }
-  | { status: "error"; message: string };
+  | { status: "error"; message: string; failedUrl: string };
 
 type ImportResultData = {
   location: {
@@ -43,18 +43,19 @@ type ImportResultData = {
 };
 
 type VideoImportInputProps = {
-  onImportComplete?: (locationId: string) => void;
+  onImportComplete?: (locationId: string, isNewLocation: boolean) => void;
   className?: string;
 };
 
 export function VideoImportInput({ onImportComplete, className = "" }: VideoImportInputProps) {
   const [inputValue, setInputValue] = useState("");
+  const [hintValue, setHintValue] = useState("");
   const [state, setState] = useState<ImportState>({ status: "idle" });
   const abortRef = useRef<AbortController | null>(null);
 
-  const handleImport = useCallback(async (url: string) => {
+  const handleImport = useCallback(async (url: string, hint?: string) => {
     if (!isValidVideoUrl(url)) {
-      setState({ status: "error", message: "Paste a YouTube, TikTok, or Instagram video link." });
+      setState({ status: "error", message: "Paste a YouTube, TikTok, or Instagram link.", failedUrl: url });
       return;
     }
 
@@ -69,7 +70,7 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
       const response = await fetch("/api/video-import", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, ...(hint ? { hint } : {}) }),
         signal: controller.signal,
       });
 
@@ -80,20 +81,22 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
       if (!response.ok || data.status === "rejected" || data.status === "low_confidence") {
         setState({
           status: "error",
-          message: data.error || data.reason || "Could not identify a location from this video.",
+          message: data.error || data.reason || "Could not identify a location from this post.",
+          failedUrl: url,
         });
         return;
       }
 
       if (data.status === "success") {
         setState({ status: "result", data });
-        onImportComplete?.(data.location.id);
+        setHintValue("");
+        onImportComplete?.(data.location.id, data.isNewLocation);
       } else {
-        setState({ status: "error", message: data.error || "Something went wrong." });
+        setState({ status: "error", message: data.error || "Something went wrong.", failedUrl: url });
       }
     } catch (error) {
       if ((error as Error).name === "AbortError") return;
-      setState({ status: "error", message: "Network error. Check your connection and try again." });
+      setState({ status: "error", message: "Network error. Check your connection and try again.", failedUrl: url });
     }
   }, [onImportComplete]);
 
@@ -118,9 +121,16 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
     [handleImport],
   );
 
+  const handleRetryWithHint = useCallback(() => {
+    if (state.status === "error" && state.failedUrl && hintValue.trim()) {
+      handleImport(state.failedUrl, hintValue.trim());
+    }
+  }, [state, hintValue, handleImport]);
+
   const handleReset = useCallback(() => {
     abortRef.current?.abort();
     setInputValue("");
+    setHintValue("");
     setState({ status: "idle" });
   }, []);
 
@@ -138,7 +148,7 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onPaste={handlePaste}
-              placeholder="Paste a video URL..."
+              placeholder="Paste a video or post URL..."
               disabled={state.status === "extracting"}
               className="w-full rounded-xl border border-border bg-surface/50 py-2.5 pl-9 pr-12 text-base text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition disabled:opacity-60"
             />
@@ -167,16 +177,35 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
         </div>
       )}
 
-      {/* Error state */}
+      {/* Error state with hint retry */}
       {state.status === "error" && (
-        <div className="mt-2 flex items-start gap-2">
+        <div className="mt-2 space-y-2.5">
           <p className="text-sm text-error">{state.message}</p>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={hintValue}
+              onChange={(e) => setHintValue(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") handleRetryWithHint(); }}
+              placeholder="e.g. ramen shop in Shibuya"
+              maxLength={200}
+              className="flex-1 rounded-xl border border-border bg-surface/50 px-3 py-2 text-sm text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition"
+            />
+            <button
+              type="button"
+              onClick={handleRetryWithHint}
+              disabled={!hintValue.trim()}
+              className="shrink-0 rounded-xl bg-brand-primary px-3 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 transition active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Retry
+            </button>
+          </div>
           <button
             type="button"
             onClick={handleReset}
-            className="shrink-0 text-xs font-medium text-stone underline underline-offset-2 hover:text-foreground-secondary"
+            className="text-xs font-medium text-stone underline underline-offset-2 hover:text-foreground-secondary"
           >
-            Try another
+            Try another URL
           </button>
         </div>
       )}
@@ -196,7 +225,7 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
             onClick={handleReset}
             className="mt-3 w-full rounded-xl border border-border py-2.5 text-sm font-medium text-foreground-secondary hover:border-brand-primary/30 hover:text-foreground transition active:scale-[0.98]"
           >
-            Import Another Video
+            Import Another
           </button>
         </div>
       )}

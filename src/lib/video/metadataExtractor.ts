@@ -134,13 +134,26 @@ async function tryOpenGraphFallback(url: string, platform: VideoPlatform): Promi
 
     const html = await response.text();
 
-    const title = extractMetaContent(html, "og:title") || extractMetaContent(html, "title") || "";
-    const description = extractMetaContent(html, "og:description") || "";
+    let title = extractMetaContent(html, "og:title") || extractMetaContent(html, "twitter:title") || extractMetaContent(html, "title") || "";
+    let description = extractMetaContent(html, "og:description") || extractMetaContent(html, "twitter:description") || "";
     const thumbnailUrl = extractMetaContent(html, "og:image") || null;
     const authorName = extractMetaContent(html, "og:site_name") || platform;
 
-    // Need at least a title to be useful for Gemini
-    if (!title) {
+    // For Instagram, try to extract richer data from embedded scripts
+    if (platform === "instagram") {
+      const scriptData = tryExtractInstagramScriptData(html);
+      if (scriptData) {
+        if (scriptData.title && (!title || title.length < scriptData.title.length)) {
+          title = scriptData.title;
+        }
+        if (scriptData.description && (!description || description.length < scriptData.description.length)) {
+          description = scriptData.description;
+        }
+      }
+    }
+
+    // Need at least a title or thumbnail to be useful for Gemini
+    if (!title && !thumbnailUrl) {
       return null;
     }
 
@@ -163,6 +176,109 @@ async function tryOpenGraphFallback(url: string, platform: VideoPlatform): Promi
     });
     return null;
   }
+}
+
+/**
+ * Try to extract richer metadata from Instagram's embedded script tags.
+ * Instagram pages may contain JSON-LD or embedded JS data with captions/descriptions
+ * that aren't exposed in meta tags.
+ */
+function tryExtractInstagramScriptData(html: string): { title?: string; description?: string } | null {
+  try {
+    // Try JSON-LD structured data
+    const ldJsonMatch = html.match(/<script\s+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/i);
+    if (ldJsonMatch?.[1]) {
+      try {
+        const ld = JSON.parse(ldJsonMatch[1]);
+        const result: { title?: string; description?: string } = {};
+        if (typeof ld.name === "string" && ld.name.length > 5) {
+          result.title = ld.name.substring(0, 500);
+        }
+        if (typeof ld.description === "string" && ld.description.length > 5) {
+          result.description = ld.description.substring(0, 1000);
+        }
+        // Also check articleBody or caption
+        if (typeof ld.articleBody === "string" && ld.articleBody.length > (result.description?.length ?? 0)) {
+          result.description = ld.articleBody.substring(0, 1000);
+        }
+        if (typeof ld.caption === "string" && ld.caption.length > (result.description?.length ?? 0)) {
+          result.description = ld.caption.substring(0, 1000);
+        }
+        if (result.title || result.description) return result;
+      } catch {
+        // Invalid JSON, continue to next strategy
+      }
+    }
+
+    // Try embedded data patterns (window.__additionalDataLoaded, window._sharedData)
+    const dataPatterns = [
+      /window\.__additionalDataLoaded\s*\(\s*['"][^'"]*['"]\s*,\s*({[\s\S]*?})\s*\)\s*;/,
+      /window\._sharedData\s*=\s*({[\s\S]*?})\s*;/,
+    ];
+
+    for (const pattern of dataPatterns) {
+      const match = html.match(pattern);
+      if (match?.[1]) {
+        try {
+          const data = JSON.parse(match[1]);
+          // Navigate common Instagram data shapes for caption text
+          const caption = findNestedCaption(data);
+          if (caption && caption.length > 10) {
+            return { description: caption.substring(0, 1000) };
+          }
+        } catch {
+          // Invalid JSON, try next pattern
+        }
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Recursively search Instagram embedded JSON for caption text.
+ * Instagram nests captions at varying depths depending on the data structure version.
+ */
+function findNestedCaption(obj: unknown, depth = 0): string | null {
+  if (depth > 8 || !obj || typeof obj !== "object") return null;
+
+  const record = obj as Record<string, unknown>;
+
+  // Direct caption fields
+  if (typeof record.caption === "string" && record.caption.length > 10) {
+    return record.caption;
+  }
+  // Caption as object with text field
+  if (record.caption && typeof record.caption === "object") {
+    const captionObj = record.caption as Record<string, unknown>;
+    if (typeof captionObj.text === "string" && captionObj.text.length > 10) {
+      return captionObj.text;
+    }
+  }
+  // Edge/node caption patterns
+  if (typeof record.text === "string" && record.text.length > 10) {
+    return record.text;
+  }
+
+  // Recurse into common Instagram data paths
+  for (const key of ["edge_media_to_caption", "edges", "node", "media", "shortcode_media", "graphql"]) {
+    if (record[key]) {
+      if (Array.isArray(record[key])) {
+        for (const item of record[key] as unknown[]) {
+          const result = findNestedCaption(item, depth + 1);
+          if (result) return result;
+        }
+      } else {
+        const result = findNestedCaption(record[key], depth + 1);
+        if (result) return result;
+      }
+    }
+  }
+
+  return null;
 }
 
 /**
