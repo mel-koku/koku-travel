@@ -21,6 +21,7 @@ const PUBLIC_API_ROUTES = [
   "/api/airports",
   "/api/cities",
   "/api/video-import",
+  "/api/shared",
 ];
 
 /**

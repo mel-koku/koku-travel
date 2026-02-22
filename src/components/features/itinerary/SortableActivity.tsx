@@ -20,6 +20,7 @@ type SortableActivityProps = {
   dayId?: string;
   onReplace?: () => void;
   conflicts?: ItineraryConflict[];
+  isReadOnly?: boolean;
 };
 
 export const SortableActivity = memo(function SortableActivity({
@@ -36,6 +37,7 @@ export const SortableActivity = memo(function SortableActivity({
   dayId,
   onReplace,
   conflicts,
+  isReadOnly,
 }: SortableActivityProps) {
   const {
     attributes,
@@ -46,7 +48,7 @@ export const SortableActivity = memo(function SortableActivity({
     isDragging,
     isOver,
     active,
-  } = useSortable({ id: activity.id });
+  } = useSortable({ id: activity.id, disabled: isReadOnly });
 
   // Show drop indicator when something else is being dragged over this item
   const showDropIndicator = isOver && active?.id !== activity.id;
@@ -101,6 +103,7 @@ export const SortableActivity = memo(function SortableActivity({
           dayId={dayId}
           onReplace={onReplace}
           conflicts={conflicts}
+          isReadOnly={isReadOnly}
         />
       )}
     </li>
