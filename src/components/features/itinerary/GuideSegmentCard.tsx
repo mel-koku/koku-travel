@@ -60,7 +60,8 @@ const DEFAULT_ICONS: Record<GuideContentType, string> = {
 };
 
 export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const defaultCollapsed = segment.type === "cultural_moment" || segment.type === "practical_tip";
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const style = STYLE_MAP[segment.type];
   const icon = segment.icon ?? DEFAULT_ICONS[segment.type];
 
