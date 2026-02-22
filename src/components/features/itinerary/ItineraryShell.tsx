@@ -394,57 +394,52 @@ export const ItineraryShell = ({
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
           {/* Header + Day Selector */}
-          <div className="px-4 pt-4 pb-3 lg:px-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <div className="flex items-center gap-3">
-                  <h1
-                    ref={finalHeadingRef}
-                    tabIndex={-1}
-                    className="font-serif italic text-2xl text-foreground focus:outline-none sm:text-3xl"
-                  >
-                    Your Itinerary
-                  </h1>
-                  {isUsingMock && (
-                    <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
-                      Mock
+          <div className="px-4 pt-4 pb-3 lg:px-4 space-y-2">
+            {/* Row 1: Title + Date */}
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <h1
+                ref={finalHeadingRef}
+                tabIndex={-1}
+                className="font-serif italic text-2xl text-foreground tracking-[-0.02em] focus:outline-none sm:text-3xl"
+              >
+                Your Itinerary
+              </h1>
+              {isUsingMock && (
+                <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+                  Mock
+                </span>
+              )}
+              {createdLabel && (
+                <p className="font-mono text-[11px] text-stone">
+                  Saved {createdLabel}
+                  {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
+                </p>
+              )}
+            </div>
+            {/* Row 2: City tags + Controls */}
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              {selectedCityNames.length > 0 && (
+                <div className="flex flex-wrap gap-1.5">
+                  {selectedCityNames.map((cityName) => (
+                    <span
+                      key={cityName}
+                      className="inline-flex items-center rounded-full bg-foreground/10 px-2.5 py-0.5 text-[11px] font-medium text-foreground-secondary"
+                    >
+                      {cityName}
                     </span>
-                  )}
+                  ))}
                 </div>
-                {createdLabel && (
-                  <p className="mt-1 font-mono text-[11px] text-stone">
-                    Saved {createdLabel}
-                    {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
-                  </p>
-                )}
-                {selectedCityNames.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {selectedCityNames.map((cityName) => (
-                      <span
-                        key={cityName}
-                        className="inline-flex items-center rounded-full bg-foreground/10 px-2.5 py-0.5 text-[11px] font-medium text-foreground-secondary"
-                      >
-                        {cityName}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                {!isReadOnly && tripId && !isUsingMock && (
-                  <ShareButton tripId={tripId} />
-                )}
-                <div className="flex-1 sm:min-w-[280px]">
-                  <DaySelector
-                    totalDays={days.length}
-                    selected={safeSelectedDay}
-                    onChange={handleSelectDayChange}
-                    labels={days.map((day) => day.dateLabel ?? "")}
-                    tripStartDate={tripStartDate}
-                    variant="default"
-                    dayHealthLevels={dayHealthLevels}
-                  />
-                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <DaySelector
+                  totalDays={days.length}
+                  selected={safeSelectedDay}
+                  onChange={handleSelectDayChange}
+                  labels={days.map((day) => day.dateLabel ?? "")}
+                  tripStartDate={tripStartDate}
+                  variant="default"
+                  dayHealthLevels={dayHealthLevels}
+                />
                 {!isReadOnly && (
                   <button
                     type="button"
@@ -462,6 +457,9 @@ export const ItineraryShell = ({
                     </svg>
                     <span className="hidden sm:inline">Overview</span>
                   </button>
+                )}
+                {!isReadOnly && tripId && !isUsingMock && (
+                  <ShareButton tripId={tripId} />
                 )}
               </div>
             </div>
