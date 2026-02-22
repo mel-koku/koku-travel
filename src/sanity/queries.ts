@@ -392,11 +392,11 @@ export const allPublishedExperiencesQuery = groq`
 /** Pages content singleton */
 export const pagesContentQuery = groq`
   *[_type == "pagesContent"][0] {
-    exploreHeading,
-    exploreSubtitle,
-    exploreErrorMessage,
-    exploreRetryText,
-    exploreEndMessage,
+    placesHeading,
+    placesSubtitle,
+    placesErrorMessage,
+    placesRetryText,
+    placesEndMessage,
     experiencesHeading,
     experiencesDescription,
     experiencesEmptyHeading,
@@ -413,11 +413,11 @@ export const pagesContentQuery = groq`
     authorsHeading,
     authorsSubtitle,
     authorsEmptyState,
-    favoritesEyebrow,
-    favoritesTitle,
-    favoritesSubtitleWithCount,
-    favoritesSubtitleEmpty,
-    "favoritesBackgroundImage": favoritesBackgroundImage {
+    savedEyebrow,
+    savedTitle,
+    savedSubtitleWithCount,
+    savedSubtitleEmpty,
+    "savedBackgroundImage": savedBackgroundImage {
       ...,
       "url": asset->url
     },

@@ -104,7 +104,7 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
               </a>
             </Magnetic>
             <a
-              href="/explore"
+              href="/places"
               className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"
             >
               {content?.notFoundSecondaryCtaText ?? "Explore Places"}

@@ -13,7 +13,7 @@ export function LocationEmbedBlock({ value }: LocationEmbedProps) {
   return (
     <div className="mx-auto my-8 max-w-2xl px-6">
       <Link
-        href={`/explore?location=${value.locationId}`}
+        href={`/places?location=${value.locationId}`}
         className="group flex items-center gap-3 rounded-xl border border-border/50 bg-surface p-4 transition-all hover:border-brand-primary/30 hover:shadow-lg"
       >
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10">

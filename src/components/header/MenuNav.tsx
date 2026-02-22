@@ -11,7 +11,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
 
 const navItems = [
-  { number: "01", label: "Places", href: "/explore" },
+  { number: "01", label: "Places", href: "/places" },
   { number: "02", label: "Guides", href: "/guides" },
   { number: "03", label: "Experiences", href: "/experiences" },
   { number: "04", label: "Plan a Trip", href: "/trip-builder" },
@@ -89,7 +89,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
   const handleClearData = () => {
     const confirmed = window.confirm(
       "Start fresh?\n\n" +
-        "This removes all trips, favorites, and preferences from this device.\n\n" +
+        "This removes all trips, saved places, and preferences from this device.\n\n" +
         "Your account data stays safe in the cloud."
     );
     if (confirmed) {

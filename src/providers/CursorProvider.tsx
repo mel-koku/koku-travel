@@ -13,7 +13,7 @@ import {
 import { useMotionValue, useSpring } from "framer-motion";
 import { springCursor } from "@/lib/motion";
 
-export type CursorState = "default" | "link" | "view" | "explore" | "read" | "drag" | "hidden";
+export type CursorState = "default" | "link" | "view" | "places" | "read" | "drag" | "hidden";
 
 type CursorContextValue = {
   cursorState: CursorState;

@@ -166,12 +166,12 @@ export type TripBuilderConfig = {
 };
 
 export type PagesContent = {
-  // Explore
-  exploreHeading?: string;
-  exploreSubtitle?: string;
-  exploreErrorMessage?: string;
-  exploreRetryText?: string;
-  exploreEndMessage?: string;
+  // Places
+  placesHeading?: string;
+  placesSubtitle?: string;
+  placesErrorMessage?: string;
+  placesRetryText?: string;
+  placesEndMessage?: string;
 
   // Experiences Listing
   experiencesHeading?: string;
@@ -195,12 +195,12 @@ export type PagesContent = {
   authorsSubtitle?: string;
   authorsEmptyState?: string;
 
-  // Favorites
-  favoritesEyebrow?: string;
-  favoritesTitle?: string;
-  favoritesSubtitleWithCount?: string;
-  favoritesSubtitleEmpty?: string;
-  favoritesBackgroundImage?: SanityImageAsset & { url?: string };
+  // Saved
+  savedEyebrow?: string;
+  savedTitle?: string;
+  savedSubtitleWithCount?: string;
+  savedSubtitleEmpty?: string;
+  savedBackgroundImage?: SanityImageAsset & { url?: string };
 
   // Dashboard
   dashboardEyebrow?: string;

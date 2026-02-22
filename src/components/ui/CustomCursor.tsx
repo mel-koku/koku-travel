@@ -13,7 +13,7 @@ const cursorConfig: Record<
   default: { size: 8, opacity: 1, label: "", variant: "dot" },
   link: { size: 32, opacity: 0.6, label: "", variant: "ring" },
   view: { size: 40, opacity: 0.9, label: "", variant: "icon" },
-  explore: { size: 40, opacity: 0.9, label: "", variant: "crosshair" },
+  places: { size: 40, opacity: 0.9, label: "", variant: "crosshair" },
   read: { size: 60, opacity: 0.9, label: "Read", variant: "ring" },
   drag: { size: 20, opacity: 0.7, label: "", variant: "dot" },
   hidden: { size: 0, opacity: 0, label: "", variant: "dot" },

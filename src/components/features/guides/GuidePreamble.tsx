@@ -99,7 +99,7 @@ export function GuidePreamble({
                 ? "Sign in to bookmark"
                 : bookmarked
                   ? "Remove bookmark"
-                  : "Save to favorites"
+                  : "Save"
             }
             title={
               !user

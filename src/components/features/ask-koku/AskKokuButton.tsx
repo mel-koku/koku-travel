@@ -8,10 +8,10 @@ import { easeReveal } from "@/lib/motion";
 import { AskKokuPanel } from "./AskKokuPanel";
 import type { AskKokuContext } from "./AskKokuSuggestions";
 
-const HIDDEN_PATHS = ["/studio", "/explore"];
+const HIDDEN_PATHS = ["/studio", "/places"];
 
 function deriveContext(pathname: string): AskKokuContext {
-  if (pathname.startsWith("/explore")) return "explore";
+  if (pathname.startsWith("/places")) return "places";
   if (pathname.startsWith("/trip-builder")) return "trip-builder";
   if (pathname.startsWith("/dashboard")) return "dashboard";
   if (pathname.includes("/itinerary")) return "itinerary";

@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
     let systemPrompt = SYSTEM_PROMPT;
     if (context) {
       const contextParts: string[] = [];
-      if (context === "explore") {
-        contextParts.push("The user is currently browsing the Explore map. Prioritize nearby discovery, open-now suggestions, and location-specific advice.");
+      if (context === "places") {
+        contextParts.push("The user is currently browsing the Places map. Prioritize nearby discovery, open-now suggestions, and location-specific advice.");
       } else if (context === "itinerary") {
         contextParts.push("The user is viewing their itinerary. Prioritize schedule advice, logistics between stops, and meal suggestions for gaps in their day.");
       } else if (context === "trip-builder") {

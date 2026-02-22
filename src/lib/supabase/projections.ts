@@ -90,7 +90,7 @@ export type LocationDbRow = {
 
 /**
  * Columns needed for location listings/grids (21 columns)
- * Used by: ExploreShell, search results
+ * Used by: PlacesShell, search results
  * Includes Google Places enrichment fields for filtering
  */
 // Note: is_featured column requires migration 20260124_add_is_featured_column.sql
@@ -122,8 +122,8 @@ export const LOCATION_LISTING_COLUMNS = `
 `.replace(/\s+/g, "");
 
 /**
- * Slimmed projection for the explore /api/locations/all endpoint (15 columns).
- * Drops 6 fields unused by ExploreCompactCard / map: place_id, min_budget,
+ * Slimmed projection for the places /api/locations/all endpoint (15 columns).
+ * Drops 6 fields unused by PlacesCompactCard / map: place_id, min_budget,
  * google_types, business_status, service_options, short_description.
  */
 export const LOCATION_EXPLORE_COLUMNS = `
@@ -244,7 +244,7 @@ export const LOCATION_PHOTO_COLUMNS = `
 export type LocationPhotoDbRow = Pick<LocationDbRow, "id" | "name" | "place_id" | "image" | "city" | "region" | "category" | "coordinates">;
 
 /**
- * Subset of LocationDbRow for the explore /api/locations/all endpoint
+ * Subset of LocationDbRow for the places /api/locations/all endpoint
  */
 export type LocationExploreDbRow = Pick<LocationDbRow,
   | "id"

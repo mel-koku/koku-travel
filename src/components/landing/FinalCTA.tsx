@@ -58,7 +58,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
               </a>
             </Magnetic>
             <a
-              href="/explore"
+              href="/places"
               className="link-reveal mt-6 py-3 text-sm font-medium uppercase tracking-wider text-white/70 transition-colors hover:text-white/90"
             >
               {content?.finalCtaSecondaryText ?? "Browse Locations"}

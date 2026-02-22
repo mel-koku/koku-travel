@@ -3,7 +3,7 @@
  *
  * This module exports all custom hooks for:
  * - Location data (React Query based)
- * - Favorites management (React Query with optimistic updates)
+ * - Saved places management (React Query with optimistic updates)
  * - Bookmarks management (React Query with optimistic updates)
  * - Location details caching
  */
@@ -18,13 +18,13 @@ export {
   prefetchFilterMetadata,
 } from "./useLocationsQuery";
 
-// Favorites hooks
+// Saved places hooks
 export {
-  favoriteKeys,
-  useFavoritesQuery,
-  useToggleFavoriteMutation,
-  useFavorites,
-} from "./useFavoritesQuery";
+  savedKeys,
+  useSavedQuery,
+  useToggleSavedMutation,
+  useSavedPlaces,
+} from "./useSavedQuery";
 
 // Bookmarks hooks
 export {
@@ -37,11 +37,11 @@ export {
 // Location details hook
 export { useLocationDetailsQuery } from "./useLocationDetailsQuery";
 
-// Wishlist locations hook
+// Saved locations hook
 export {
-  wishlistLocationsKeys,
-  useWishlistLocations,
-} from "./useWishlistLocations";
+  savedLocationsKeys,
+  useSavedLocations,
+} from "./useSavedLocations";
 
 // Activity locations hook
 export {

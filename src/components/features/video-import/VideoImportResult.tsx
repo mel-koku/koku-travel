@@ -37,8 +37,8 @@ export function VideoImportResult({
   confidence,
   locationNameJapanese,
 }: VideoImportResultProps) {
-  const { favorites, toggleFavorite } = useAppState();
-  const isFavorited = favorites.includes(location.id);
+  const { saved, toggleSave } = useAppState();
+  const isSavedPlace = saved.includes(location.id);
   const imageSrc =
     resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 300) ||
     FALLBACK_IMAGE;
@@ -58,7 +58,7 @@ export function VideoImportResult({
 
       {/* Location card */}
       <Link
-        href={`/explore?location=${location.id}`}
+        href={`/places?location=${location.id}`}
         className="group block"
       >
         <div className="relative mb-3 aspect-[16/10] overflow-hidden rounded-xl">
@@ -102,18 +102,18 @@ export function VideoImportResult({
       <div className="mt-4 flex items-center gap-2">
         <button
           type="button"
-          onClick={() => toggleFavorite(location.id)}
+          onClick={() => toggleSave(location.id)}
           className={`flex h-11 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition active:scale-[0.98] ${
-            isFavorited
+            isSavedPlace
               ? "border border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
               : "bg-brand-primary text-white hover:bg-brand-primary/90"
           }`}
         >
-          <Heart className={`h-4 w-4 ${isFavorited ? "fill-current" : ""}`} />
-          {isFavorited ? "Saved" : "Save to Favorites"}
+          <Heart className={`h-4 w-4 ${isSavedPlace ? "fill-current" : ""}`} />
+          {isSavedPlace ? "Saved" : "Save"}
         </button>
         <Link
-          href={`/explore?location=${location.id}`}
+          href={`/places?location=${location.id}`}
           className="flex h-11 items-center justify-center gap-1.5 rounded-xl border border-border px-4 text-sm font-medium text-foreground-secondary hover:border-brand-primary/30 hover:text-foreground transition"
         >
           <ExternalLink className="h-4 w-4" />

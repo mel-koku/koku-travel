@@ -47,14 +47,14 @@ export function wasLocationSkipped(
 }
 
 /**
- * Check if a location is favorited
+ * Check if a location is saved
  */
-export function isLocationFavorited(
+export function isLocationSaved(
   locationId: string,
   preferences?: UserPreferences,
 ): boolean {
   const prefs = preferences ?? loadUserPreferences();
-  return prefs.favoriteActivities.some((a) => a.locationId === locationId);
+  return prefs.savedActivities.some((a) => a.locationId === locationId);
 }
 
 /**
@@ -68,8 +68,8 @@ export function calculateLocationPreferenceScore(
   const prefs = preferences ?? loadUserPreferences();
   let score = 0;
 
-  // Check if location was favorited (strong positive)
-  if (isLocationFavorited(location.id, prefs)) {
+  // Check if location was saved (strong positive)
+  if (isLocationSaved(location.id, prefs)) {
     score += 3;
   }
 

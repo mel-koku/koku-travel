@@ -7,7 +7,7 @@ const defaultNavColumns = [
   {
     title: "Explore",
     links: [
-      { label: "Places", href: "/explore" },
+      { label: "Places", href: "/places" },
       { label: "Guides", href: "/guides" },
       { label: "Experiences", href: "/experiences" },
     ],
@@ -16,7 +16,7 @@ const defaultNavColumns = [
     title: "Account",
     links: [
       { label: "Dashboard", href: "/dashboard" },
-      { label: "Favorites", href: "/favorites" },
+      { label: "Saved", href: "/saved" },
       { label: "Settings", href: "/account" },
     ],
   },
