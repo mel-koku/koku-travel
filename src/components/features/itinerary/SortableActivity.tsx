@@ -16,6 +16,7 @@ type SortableActivityProps = {
   onSelect?: (activityId: string) => void;
   placeNumber?: number;
   travelSegment?: ReactNode;
+  guideSegmentsBefore?: ReactNode;
   tripId?: string;
   dayId?: string;
   onReplace?: () => void;
@@ -33,6 +34,7 @@ export const SortableActivity = memo(function SortableActivity({
   onSelect,
   placeNumber,
   travelSegment,
+  guideSegmentsBefore,
   tripId,
   dayId,
   onReplace,
@@ -74,6 +76,11 @@ export const SortableActivity = memo(function SortableActivity({
       {travelSegment && !isDragging && (
         <div className="mb-3">
           {travelSegment}
+        </div>
+      )}
+      {guideSegmentsBefore && !isDragging && (
+        <div className="mb-3">
+          {guideSegmentsBefore}
         </div>
       )}
       {/* Show ghost placeholder when dragging */}
