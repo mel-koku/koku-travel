@@ -20,6 +20,7 @@ const PUBLIC_API_ROUTES = [
   "/api/sanity/webhook",
   "/api/airports",
   "/api/cities",
+  "/api/video-import",
 ];
 
 /**

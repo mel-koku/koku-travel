@@ -10,6 +10,7 @@ import { useAllLocationsSingle, useFilterMetadataQuery, useNearbyLocationsQuery 
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { useExploreFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/useExploreFilters";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { VideoImportInput } from "@/components/features/video-import/VideoImportInput";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
  * Heavy components are code-split so Turbopack compiles them in
@@ -94,6 +95,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isVideoImportOpen, setIsVideoImportOpen] = useState(false);
 
   // Discover Now mode
   const searchParams = useSearchParams();
@@ -219,12 +221,23 @@ export function ExploreShell({ content }: ExploreShellProps) {
         onQueryChange={setQuery}
         onAskKokuClick={() => setIsChatOpen(true)}
         isChatOpen={isChatOpen}
+        onVideoImportClick={() => setIsVideoImportOpen((prev) => !prev)}
+        isVideoImportOpen={isVideoImportOpen}
         isDiscoverMode={isDiscoverMode}
         onDiscoverToggle={handleDiscoverToggle}
       />
 
       {/* Breathing room between search bar and content */}
       <div className="h-4 sm:h-6" aria-hidden="true" />
+
+      {/* Video Import Panel */}
+      {isVideoImportOpen && (
+        <div className="mx-auto max-w-md px-4 pb-6">
+          <VideoImportInput
+            onImportComplete={() => setIsVideoImportOpen(false)}
+          />
+        </div>
+      )}
 
       {/* Discover Now mode */}
       {isDiscoverMode ? (

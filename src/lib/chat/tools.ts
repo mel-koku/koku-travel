@@ -11,10 +11,16 @@ import { getPublishedGuides } from "@/lib/guides/guideService";
 import { getPublishedExperiences } from "@/lib/experiences/experienceService";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
+import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { ALL_CITY_IDS, REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import { VIBES } from "@/data/vibes";
 import { VALID_VIBE_IDS } from "@/types/trip";
 import type { VibeId, TripStyle, KnownCityId } from "@/types/trip";
+import { detectPlatform } from "@/lib/video/platforms";
+import { extractVideoMetadata } from "@/lib/video/metadataExtractor";
+import { extractLocationFromVideo } from "@/lib/video/locationExtractor";
+import { matchOrCreateLocation } from "@/lib/video/locationMatcher";
+import { featureFlags } from "@/lib/env/featureFlags";
 
 export const chatTools = {
   searchLocations: tool({
@@ -455,6 +461,100 @@ export const chatTools = {
         cityNames,
         vibeNames,
       };
+    },
+  }),
+
+  importVideoLocation: tool({
+    description:
+      "Import a location from a social media video URL (YouTube, TikTok, Instagram). Extracts metadata, identifies the featured Japan location using AI, and matches or creates it in the database. Use when a user pastes a video URL.",
+    inputSchema: z.object({
+      url: z.string().url().describe("The video URL to import a location from"),
+    }),
+    execute: async ({ url }) => {
+      try {
+        // Feature flag check
+        if (featureFlags.cheapMode || process.env.ENABLE_VIDEO_IMPORT === "false") {
+          return { type: "videoImport" as const, error: "Video import is not available right now." };
+        }
+
+        // Platform detection
+        const platform = detectPlatform(url);
+        if (!platform) {
+          return { type: "videoImport" as const, error: "Unsupported URL. I can import from YouTube, TikTok, or Instagram videos." };
+        }
+
+        // Extract metadata
+        const metadata = await extractVideoMetadata(url);
+        if (!metadata) {
+          return { type: "videoImport" as const, error: "Could not fetch video metadata. Check the URL and try again." };
+        }
+
+        // AI extraction
+        const extraction = await extractLocationFromVideo(metadata);
+        if (!extraction) {
+          return { type: "videoImport" as const, error: "Could not identify a location from this video." };
+        }
+
+        if (!extraction.isInJapan) {
+          return { type: "videoImport" as const, error: "This video doesn't appear to feature a location in Japan." };
+        }
+
+        if (extraction.confidence === "low") {
+          return {
+            type: "videoImport" as const,
+            error: "Could not confidently identify a specific location.",
+            extraction: {
+              locationName: extraction.locationName,
+              city: extraction.city,
+              confidence: extraction.confidence,
+            },
+          };
+        }
+
+        // Match or create
+        const matchResult = await matchOrCreateLocation(extraction, url);
+        if (!matchResult) {
+          return { type: "videoImport" as const, error: "Could not find or create the location. It may not be in our coverage area." };
+        }
+
+        const loc = matchResult.location;
+        return {
+          type: "videoImport" as const,
+          location: {
+            id: loc.id,
+            name: loc.name,
+            city: loc.city,
+            region: loc.region,
+            category: loc.category,
+            image: loc.image,
+            primaryPhotoUrl: loc.primaryPhotoUrl,
+            rating: loc.rating,
+            reviewCount: loc.reviewCount,
+            shortDescription: loc.shortDescription,
+            source: loc.source,
+          },
+          isNewLocation: matchResult.isNewLocation,
+          extraction: {
+            locationName: extraction.locationName,
+            locationNameJapanese: extraction.locationNameJapanese,
+            city: extraction.city,
+            category: extraction.category,
+            confidence: extraction.confidence,
+          },
+          videoMetadata: {
+            platform: metadata.platform,
+            title: metadata.title,
+            authorName: metadata.authorName,
+            thumbnailUrl: metadata.thumbnailUrl,
+          },
+        };
+      } catch (error) {
+        logger.error(
+          "Chat importVideoLocation error",
+          error instanceof Error ? error : new Error(String(error)),
+        );
+        return { type: "videoImport" as const, error: getErrorMessage(error) };
+      }
     },
   }),
 };
