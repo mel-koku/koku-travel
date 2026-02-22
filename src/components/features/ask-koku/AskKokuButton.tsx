@@ -12,6 +12,7 @@ const HIDDEN_PATHS = ["/studio", "/places"];
 
 function deriveContext(pathname: string): AskKokuContext {
   if (pathname.startsWith("/places")) return "places";
+  if (pathname.startsWith("/discover")) return "places";
   if (pathname.startsWith("/trip-builder")) return "trip-builder";
   if (pathname.startsWith("/dashboard")) return "dashboard";
   if (pathname.includes("/itinerary")) return "itinerary";
