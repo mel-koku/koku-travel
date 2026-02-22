@@ -2,9 +2,10 @@
 
 import { memo, useCallback, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { Itinerary } from "@/types/itinerary";
+import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
+import { REGIONS } from "@/data/regions";
 import {
   calculateTripHealth,
   getHealthLevel,
@@ -15,6 +16,8 @@ import {
   type ChecklistItem,
 } from "@/lib/itinerary/tripHealth";
 import { easeReveal, durationFast, durationBase } from "@/lib/motion";
+import { useActivityLocations } from "@/hooks/useActivityLocations";
+import { LocationExpanded } from "@/components/features/places/LocationExpanded";
 
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
@@ -54,6 +57,28 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   );
   const [expandedDay, setExpandedDay] = useState<number | null>(null);
   const [copiedToast, setCopiedToast] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+
+  // Batch-fetch all place activity locations for click-to-expand
+  const allPlaceActivities = useMemo(
+    () =>
+      itinerary.days.flatMap((day) =>
+        day.activities.filter(
+          (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
+            a.kind === "place",
+        ),
+      ),
+    [itinerary],
+  );
+  const { getLocation } = useActivityLocations(allPlaceActivities);
+
+  const handleActivityClick = useCallback(
+    (activityId: string) => {
+      const location = getLocation(activityId);
+      if (location) setSelectedLocation(location);
+    },
+    [getLocation],
+  );
 
   const toggleChecked = useCallback((id: string) => {
     setCheckedItems((prev) => {
@@ -93,6 +118,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   const level = getHealthLevel(health.overall);
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -113,6 +139,25 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           </svg>
         </button>
       </div>
+
+      {/* Pre-trip Checklist */}
+      {health.checklist.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
+            Before You Go
+          </h3>
+          <div className="rounded-xl border border-border bg-surface/30 divide-y divide-border/50">
+            {health.checklist.map((item) => (
+              <ChecklistRow
+                key={item.id}
+                item={item}
+                checked={checkedItems.has(item.id)}
+                onToggle={() => toggleChecked(item.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Overall Health */}
       <div className="rounded-xl border border-border bg-surface/40 p-4">
@@ -168,51 +213,32 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         </div>
       </div>
 
-      {/* Issues by Day */}
-      {health.totalIssues > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
-            Issues
-          </h3>
-          {health.days
-            .filter((d) => d.issues.length > 0)
-            .map((day) => (
-              <DayIssueCard
-                key={day.dayId}
-                day={day}
-                isExpanded={expandedDay === day.dayIndex}
-                onToggle={() =>
-                  setExpandedDay(
-                    expandedDay === day.dayIndex ? null : day.dayIndex,
-                  )
-                }
-                onGoToDay={() => {
-                  onSelectDay?.(day.dayIndex);
-                  onClose();
-                }}
-              />
-            ))}
-        </div>
-      )}
-
-      {/* Pre-trip Checklist */}
-      {health.checklist.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
-            Before You Go
-          </h3>
-          <div className="rounded-xl border border-border bg-surface/30 divide-y divide-border/50">
-            {health.checklist.map((item) => (
-              <ChecklistRow
-                key={item.id}
-                item={item}
-                checked={checkedItems.has(item.id)}
-                onToggle={() => toggleChecked(item.id)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Days */}
+      <div className="space-y-2">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
+          Days
+        </h3>
+        {health.days.map((day) => (
+          <DayOverviewCard
+            key={day.dayId}
+            day={day}
+            itineraryDay={itinerary.days[day.dayIndex]}
+            tripStartDate={tripStartDate}
+            isExpanded={expandedDay === day.dayIndex}
+            onToggle={() =>
+              setExpandedDay(
+                expandedDay === day.dayIndex ? null : day.dayIndex,
+              )
+            }
+            onGoToDay={() => {
+              onSelectDay?.(day.dayIndex);
+              onClose();
+            }}
+            getLocation={getLocation}
+            onActivityClick={handleActivityClick}
+          />
+        ))}
+      </div>
 
       {/* Accessibility — only when traveler has mobility needs */}
       {accessibility && (
@@ -304,24 +330,70 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         </div>
       </div>
     </motion.div>
+
+    {/* Location detail slide-in */}
+    <AnimatePresence>
+      {selectedLocation && (
+        <LocationExpanded
+          location={selectedLocation}
+          onClose={() => setSelectedLocation(null)}
+        />
+      )}
+    </AnimatePresence>
+    </>
   );
 });
 
-function DayIssueCard({
+function formatCityName(cityId: string): string {
+  for (const region of REGIONS) {
+    const city = region.cities.find((c) => c.id === cityId);
+    if (city) return city.name;
+  }
+  return cityId.charAt(0).toUpperCase() + cityId.slice(1);
+}
+
+function formatDayDate(tripStartDate: string | undefined, dayIndex: number): string | undefined {
+  if (!tripStartDate) return undefined;
+  try {
+    const parts = tripStartDate.split("-").map(Number);
+    const y = parts[0], m = parts[1], d = parts[2];
+    if (y == null || m == null || d == null) return undefined;
+    const date = new Date(y, m - 1, d + dayIndex);
+    if (isNaN(date.getTime())) return undefined;
+    return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
+  } catch {
+    return undefined;
+  }
+}
+
+function DayOverviewCard({
   day,
+  itineraryDay,
+  tripStartDate,
   isExpanded,
   onToggle,
   onGoToDay,
+  getLocation,
+  onActivityClick,
 }: {
   day: DayHealth;
+  itineraryDay?: ItineraryDay;
+  tripStartDate?: string;
   isExpanded: boolean;
   onToggle: () => void;
   onGoToDay: () => void;
+  getLocation?: (activityId: string) => Location | null;
+  onActivityClick?: (activityId: string) => void;
 }) {
   const level = getHealthLevel(day.score);
   const errorCount = day.issues.filter((i) => i.severity === "error").length;
   const warningCount = day.issues.filter((i) => i.severity === "warning").length;
   const infoCount = day.issues.filter((i) => i.severity === "info").length;
+  const issueCount = errorCount + warningCount + infoCount;
+
+  const dateStr = formatDayDate(tripStartDate, day.dayIndex);
+  const cityName = itineraryDay?.cityId ? formatCityName(itineraryDay.cityId) : undefined;
+  const placeActivities = itineraryDay?.activities.filter((a) => a.kind === "place") ?? [];
 
   return (
     <div className="rounded-xl border border-border bg-surface/30 overflow-hidden">
@@ -330,10 +402,19 @@ function DayIssueCard({
         className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left hover:bg-surface/50 transition"
       >
         <HealthDot level={level} size="sm" />
-        <span className="flex-1 text-sm font-medium text-foreground">
-          Day {day.dayIndex + 1}
-        </span>
-        <div className="flex items-center gap-1.5 text-[10px] font-mono">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-sm font-medium text-foreground">
+              Day {day.dayIndex + 1}
+            </span>
+            {(dateStr || cityName) && (
+              <span className="text-xs text-stone truncate">
+                {[dateStr, cityName].filter(Boolean).join(" · ")}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-1.5 text-[10px] font-mono shrink-0">
           {errorCount > 0 && (
             <span className="text-error">{errorCount} error{errorCount > 1 ? "s" : ""}</span>
           )}
@@ -345,7 +426,7 @@ function DayIssueCard({
           )}
         </div>
         <svg
-          className={`h-3.5 w-3.5 text-stone transition-transform ${isExpanded ? "rotate-180" : ""}`}
+          className={`h-3.5 w-3.5 text-stone transition-transform shrink-0 ${isExpanded ? "rotate-180" : ""}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -364,31 +445,79 @@ function DayIssueCard({
             transition={{ duration: durationFast, ease: easeReveal }}
             className="overflow-hidden"
           >
-            <div className="border-t border-border/50 px-3 py-2 space-y-1.5">
-              {day.issues.map((issue, i) => (
-                <div key={i} className="flex items-start gap-2 text-xs">
-                  <span
-                    className={`mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full ${
-                      issue.severity === "error"
-                        ? "bg-error"
-                        : issue.severity === "warning"
-                          ? "bg-warning"
-                          : "bg-stone"
-                    }`}
-                  />
-                  <div>
-                    {issue.activityTitle && (
-                      <span className="font-medium text-foreground-secondary">
-                        {issue.activityTitle}:{" "}
-                      </span>
-                    )}
-                    <span className="text-stone">{issue.message}</span>
-                  </div>
+            <div className="border-t border-border/50 px-3 py-2 space-y-2">
+              {/* Activity list */}
+              {placeActivities.length > 0 && (
+                <div className="space-y-0.5">
+                  {placeActivities.map((activity, i) => {
+                    const hasLocation = !!getLocation?.(activity.id);
+                    return (
+                      <button
+                        key={activity.id}
+                        onClick={(e) => {
+                          if (!hasLocation) return;
+                          e.stopPropagation();
+                          onActivityClick?.(activity.id);
+                        }}
+                        disabled={!hasLocation}
+                        className={`flex items-center gap-2 text-xs w-full text-left rounded-lg py-0.5 -mx-1 px-1 transition ${
+                          hasLocation
+                            ? "cursor-pointer hover:bg-surface/60 active:bg-surface/80"
+                            : "cursor-default"
+                        }`}
+                      >
+                        <span className="font-mono text-[10px] text-stone w-4 text-right shrink-0">
+                          {i + 1}
+                        </span>
+                        <span className={`truncate ${hasLocation ? "text-foreground" : "text-stone"}`}>
+                          {activity.title}
+                        </span>
+                        {activity.kind === "place" && activity.mealType && (
+                          <span className="text-[10px] text-stone capitalize shrink-0">
+                            {activity.mealType}
+                          </span>
+                        )}
+                        {hasLocation && (
+                          <svg className="h-3 w-3 text-stone shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
+              )}
+
+              {/* Issues */}
+              {issueCount > 0 && (
+                <div className="space-y-1">
+                  {day.issues.map((issue, i) => (
+                    <div key={i} className="flex items-start gap-2 text-xs">
+                      <span
+                        className={`mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full ${
+                          issue.severity === "error"
+                            ? "bg-error"
+                            : issue.severity === "warning"
+                              ? "bg-warning"
+                              : "bg-stone"
+                        }`}
+                      />
+                      <div>
+                        {issue.activityTitle && (
+                          <span className="font-medium text-foreground-secondary">
+                            {issue.activityTitle}:{" "}
+                          </span>
+                        )}
+                        <span className="text-stone">{issue.message}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <button
                 onClick={onGoToDay}
-                className="mt-1 text-[11px] font-medium text-brand-primary hover:underline"
+                className="text-[11px] font-medium text-brand-primary hover:underline"
               >
                 Go to Day {day.dayIndex + 1}
               </button>
