@@ -10,7 +10,9 @@ import { useAllLocationsSingle, useFilterMetadataQuery } from "@/hooks/useLocati
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
 import type { PagesContent } from "@/types/sanitySiteContent";
 import { VideoImportInput } from "@/components/features/video-import/VideoImportInput";
+import { SeasonalBanner } from "./SeasonalBanner";
 import { useToast } from "@/context/ToastContext";
+import type { VibeId } from "@/data/vibes";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
  * Heavy components are code-split so Turbopack compiles them in
@@ -86,6 +88,13 @@ export function PlacesShell({ content }: PlacesShellProps) {
     removeFilter,
     clearAllFilters,
   } = usePlacesFilters(locations, filterMetadata);
+
+  const handleFilterSeasonal = useCallback(() => {
+    setSelectedSort("in_season");
+    setSelectedVibes((prev: VibeId[]) =>
+      prev.includes("in_season") ? prev : [...prev, "in_season" as VibeId]
+    );
+  }, [setSelectedSort, setSelectedVibes]);
 
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
@@ -190,6 +199,14 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onVideoImportClick={() => setIsVideoImportOpen((prev) => !prev)}
         isVideoImportOpen={isVideoImportOpen}
       />
+
+      {/* Seasonal banner */}
+      <div className="mt-3">
+        <SeasonalBanner
+          locations={locations}
+          onFilterSeasonal={handleFilterSeasonal}
+        />
+      </div>
 
       {/* Breathing room between search bar and content */}
       <div className="h-4 sm:h-6" aria-hidden="true" />

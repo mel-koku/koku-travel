@@ -529,3 +529,33 @@ export async function fetchAllLocations(
 
   return allLocations;
 }
+
+/**
+ * Fetches locations that have seasonal tags matching the given month.
+ * Used for the Seasonal Spotlight section on the landing page.
+ */
+export async function fetchSeasonalLocations(
+  month: number,
+  limit: number = 12
+): Promise<Location[]> {
+  const { getSeasonalTags } = await import("@/lib/utils/seasonUtils");
+  const tags = getSeasonalTags(month);
+  if (tags.length === 0) return [];
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("locations")
+    .select(LOCATION_LISTING_COLUMNS)
+    .overlaps("tags", tags)
+    .gte("rating", 4.0)
+    .order("rating", { ascending: false })
+    .limit(limit);
+
+  if (error || !data) {
+    logger.warn("Failed to fetch seasonal locations", { error });
+    return [];
+  }
+
+  return (data as unknown as LocationListingDbRow[]).map(transformDbRowToLocation);
+}

@@ -161,6 +161,7 @@ export function pickLocationForTimeSlot(
     date,
     group,
     currentInterest: interest,
+    tripMonth: date ? parseInt(date.split("-")[1]!, 10) : undefined,
     contentLocationIds,
   };
 

@@ -5,4 +5,5 @@ export { FeaturedExperiences } from "./FeaturedExperiences";
 export { FeaturedGuides } from "./FeaturedGuides";
 export { FeaturedLocations } from "./FeaturedLocations";
 export { TestimonialTheater } from "./TestimonialTheater";
+export { SeasonalSpotlight } from "./SeasonalSpotlight";
 export { FinalCTA } from "./FinalCTA";

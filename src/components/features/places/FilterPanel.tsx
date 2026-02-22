@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { easeReveal, durationFast } from "@/lib/motion";
 import { VIBES, type VibeId } from "@/data/vibes";
 
-type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
+type SortOptionId = "recommended" | "in_season" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
 type SortOption = {
   id: SortOptionId;

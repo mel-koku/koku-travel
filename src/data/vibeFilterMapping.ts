@@ -1,8 +1,9 @@
 import type { VibeId } from "./vibes";
+import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
 
 export const VIBE_FILTER_MAP: Record<
   VibeId,
-  { dbCategories: string[]; hiddenGemOnly?: boolean }
+  { dbCategories: string[]; hiddenGemOnly?: boolean; seasonalMatch?: boolean }
 > = {
   cultural_heritage: {
     dbCategories: [
@@ -45,16 +46,21 @@ export const VIBE_FILTER_MAP: Record<
       "view",
     ],
   },
+  in_season: {
+    dbCategories: [], // cross-category — uses seasonal tag matching
+    seasonalMatch: true,
+  },
 };
 
 export function locationMatchesVibes(
-  location: { category: string; isHiddenGem?: boolean },
+  location: { category: string; isHiddenGem?: boolean; tags?: string[] },
   selectedVibes: VibeId[]
 ): boolean {
   if (selectedVibes.length === 0) return true;
   return selectedVibes.some((vibeId) => {
     const mapping = VIBE_FILTER_MAP[vibeId];
     if (mapping.hiddenGemOnly) return location.isHiddenGem === true;
+    if (mapping.seasonalMatch) return locationHasSeasonalTag(location.tags, getCurrentMonth());
     return mapping.dbCategories.includes(location.category.toLowerCase());
   });
 }

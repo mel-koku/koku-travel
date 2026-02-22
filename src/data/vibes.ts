@@ -9,7 +9,8 @@ export type VibeId =
   | "foodie_paradise"
   | "hidden_gems"
   | "neon_nightlife"
-  | "nature_adventure";
+  | "nature_adventure"
+  | "in_season";
 
 /**
  * Vibe definition with display metadata and interest mapping.
@@ -61,6 +62,13 @@ export const VIBES: readonly VibeDefinition[] = [
     description: "Mountains, gardens, and outdoor wellness",
     icon: "Mountain",
     interests: ["nature", "wellness"],
+  },
+  {
+    id: "in_season",
+    name: "In Season",
+    description: "Places at their best right now",
+    icon: "Flower2",
+    interests: [],
   },
 ] as const;
 

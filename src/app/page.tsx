@@ -6,16 +6,18 @@ import {
   ImmersiveShowcase,
   FeaturedLocations,
   FeaturedExperiences,
+  SeasonalSpotlight,
   TestimonialTheater,
   FeaturedGuides,
   FinalCTA,
 } from "@/components/landing";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { fetchTopRatedLocations, getLocationCount } from "@/lib/locations/locationService";
-import { getFeaturedGuides } from "@/lib/guides/guideService";
-import { getFeaturedExperiences } from "@/lib/experiences/experienceService";
+import { fetchTopRatedLocations, fetchSeasonalLocations, getLocationCount } from "@/lib/locations/locationService";
+import { getFeaturedGuides, getGuidesBySeason } from "@/lib/guides/guideService";
+import { getFeaturedExperiences, getExperiencesBySeason } from "@/lib/experiences/experienceService";
 import { getLandingPageContent } from "@/lib/sanity/contentService";
 import { urlFor } from "@/sanity/image";
+import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/lib/utils/seasonUtils";
 
 export const metadata: Metadata = {
   title: "Koku Travel - Discover Japan with Local Experts",
@@ -30,13 +32,20 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function Home() {
-  const [featuredLocations, locationCount, featuredGuides, featuredExperiences, landingContent] =
+  const currentSeason = getCurrentSeason();
+  const currentMonth = getCurrentMonth();
+  const sanitySeason = seasonToSanityBestSeason(currentSeason);
+
+  const [featuredLocations, locationCount, featuredGuides, featuredExperiences, landingContent, seasonalGuides, seasonalExperiences, seasonalLocations] =
     await Promise.all([
       fetchTopRatedLocations({ limit: 8 }),
       getLocationCount(),
       getFeaturedGuides(3),
       getFeaturedExperiences(3),
       getLandingPageContent(),
+      getGuidesBySeason(sanitySeason, 3),
+      getExperiencesBySeason(sanitySeason, 3),
+      fetchSeasonalLocations(currentMonth, 6),
     ]);
 
   // Preload LCP hero image — browser starts fetching before parsing full DOM
@@ -63,6 +72,15 @@ export default async function Home() {
         <ErrorBoundary fallback={null}>
           <FeaturedLocations
             locations={featuredLocations}
+            content={landingContent ?? undefined}
+          />
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
+          <SeasonalSpotlight
+            season={currentSeason}
+            guides={seasonalGuides}
+            experiences={seasonalExperiences}
+            locations={seasonalLocations}
             content={landingContent ?? undefined}
           />
         </ErrorBoundary>

@@ -53,7 +53,11 @@ const VIBE_IMAGES: Record<VibeId, string> = {
   hidden_gems: "/images/regions/shikoku-hero.jpg",
   neon_nightlife: "/images/regions/kanto-hero.jpg",
   nature_adventure: "/images/regions/hokkaido-hero.jpg",
+  in_season: "", // Not used in trip builder
 };
+
+// Filter out "in_season" — it's a Places-only filter, not a trip builder vibe
+const TRIP_BUILDER_VIBES = VIBES.filter((v) => v.id !== "in_season");
 
 export type VibeStepProps = {
   onValidityChange?: (isValid: boolean) => void;
@@ -133,7 +137,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
       {/* Desktop: Expanding columns */}
       <div className="relative z-10 mt-8 hidden flex-1 px-8 pb-8 lg:flex lg:mt-10 lg:pl-12 lg:pr-20">
         <div className="flex w-full gap-[3px]">
-          {VIBES.map((vibe, i) => {
+          {TRIP_BUILDER_VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;
             const sanityVibe = sanityVibeMap?.get(vibe.id);
@@ -178,7 +182,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
       {/* Mobile: Horizontal scroll with snap */}
       <div className="relative z-10 mt-8 pb-20 lg:hidden">
         <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-contain px-6">
-          {VIBES.map((vibe, i) => {
+          {TRIP_BUILDER_VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;
             const sanityVibe = sanityVibeMap?.get(vibe.id);

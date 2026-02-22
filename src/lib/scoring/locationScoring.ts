@@ -6,27 +6,11 @@ import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
 import { scoreWeatherFit } from "@/lib/weather/weatherScoring";
 import { scoreTimeOfDayFit, checkOpeningHoursFit } from "./timeOptimization";
 import { scoreGroupFit } from "./groupScoring";
+import { MONTH_TO_SEASON_TAGS } from "@/lib/utils/seasonUtils";
 
 /**
  * Criteria for scoring a location.
  */
-/**
- * Month-to-season mapping for seasonal tag scoring.
- */
-const MONTH_TO_SEASON_TAGS: Record<number, string[]> = {
-  1: ["winter-illumination", "winter-festival"],
-  2: ["plum-blossom", "winter-illumination"],
-  3: ["cherry-blossom", "plum-blossom"],
-  4: ["cherry-blossom"],
-  5: ["cherry-blossom"], // Late-blooming areas (Hokkaido)
-  6: ["summer-flowers"],
-  7: ["summer-flowers", "summer-festival"],
-  8: ["summer-festival"],
-  9: ["autumn-foliage"],
-  10: ["autumn-foliage"],
-  11: ["autumn-foliage", "winter-illumination"],
-  12: ["winter-illumination", "winter-festival"],
-};
 
 export interface LocationScoringCriteria {
   interests: InterestId[];
