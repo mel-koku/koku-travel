@@ -13,6 +13,14 @@ type DayTipsProps = {
   className?: string;
 };
 
+/** Minimal shape used for rendering — shared by static pro tips and DB tips. */
+type DisplayTip = {
+  id: string;
+  title: string;
+  summary: string;
+  icon: string;
+};
+
 // Icon mapping for guidance types
 const GUIDANCE_TYPE_ICONS: Record<string, string> = {
   etiquette: "🙏",
@@ -29,8 +37,19 @@ const GUIDANCE_TYPE_ICONS: Record<string, string> = {
   cultural_context: "📖",
 };
 
+const TRANSIT_MODES = new Set(["train", "subway", "bus", "tram", "ferry", "transit"]);
+
+function toDisplayTip(tip: TravelGuidance): DisplayTip {
+  return {
+    id: tip.id,
+    title: tip.title,
+    summary: tip.summary,
+    icon: tip.icon ?? GUIDANCE_TYPE_ICONS[tip.guidanceType] ?? "💡",
+  };
+}
+
 export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProps) {
-  const [tips, setTips] = useState<TravelGuidance[]>([]);
+  const [dbTips, setDbTips] = useState<TravelGuidance[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -82,7 +101,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
 
         if (!cancelled) {
           // Limit to top 5 tips for the day
-          setTips(guidance.slice(0, 5));
+          setDbTips(guidance.slice(0, 5));
         }
       } catch {
         // Silently fail
@@ -100,8 +119,38 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
     };
   }, [dayCategories, day.cityId, dayDate]);
 
+  // Static pro tips shown once (Day 1 only)
+  const proTips = useMemo<DisplayTip[]>(() => {
+    if (dayIndex !== 0) return [];
+
+    const hasTransit = (day.activities ?? []).some(
+      (a) =>
+        a.kind === "place" &&
+        a.travelFromPrevious &&
+        TRANSIT_MODES.has(a.travelFromPrevious.mode),
+    );
+
+    if (!hasTransit) return [];
+
+    return [
+      {
+        id: "pro-ic-card",
+        title: "Get an IC Card",
+        summary:
+          "A Suica or PASMO card works on trains, buses, and convenience stores across Japan. Load it at any station.",
+        icon: "🚃",
+      },
+    ];
+  }, [dayIndex, day.activities]);
+
+  // Combined display list
+  const allTips = useMemo<DisplayTip[]>(
+    () => [...proTips, ...dbTips.map(toDisplayTip)],
+    [proTips, dbTips],
+  );
+
   // Don't render if no tips
-  if (!isLoading && tips.length === 0) {
+  if (!isLoading && allTips.length === 0) {
     return null;
   }
 
@@ -119,7 +168,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
           </span>
           {!isLoading && (
             <span className="rounded-full bg-brand-primary/20 px-1.5 py-0.5 text-[10px] font-medium text-brand-primary">
-              {tips.length}
+              {allTips.length}
             </span>
           )}
         </div>
@@ -142,13 +191,13 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
             </div>
           ) : (
             <div className="mt-2 space-y-2">
-              {tips.map((tip) => (
+              {allTips.map((tip) => (
                 <div
                   key={tip.id}
                   className="flex items-start gap-2 rounded-lg bg-background/70 p-2"
                 >
                   <span className="shrink-0 text-base">
-                    {tip.icon ?? GUIDANCE_TYPE_ICONS[tip.guidanceType] ?? "💡"}
+                    {tip.icon}
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="text-xs font-semibold text-foreground">
