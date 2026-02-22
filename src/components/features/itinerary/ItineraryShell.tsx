@@ -463,6 +463,11 @@ export const ItineraryShell = ({
                 )}
               </div>
             </div>
+            {!isReadOnly && !showDashboard && (
+              <p className="text-xs text-foreground-secondary">
+                * Check <button type="button" onClick={() => setShowDashboard(true)} className="underline hover:text-foreground transition-colors">Overview</button> for reservations and pre-trip to-dos.
+              </p>
+            )}
           </div>
 
           {/* Trip Confidence Dashboard */}
