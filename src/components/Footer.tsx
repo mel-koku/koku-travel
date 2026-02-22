@@ -16,7 +16,7 @@ const defaultNavColumns = [
     title: "Account",
     links: [
       { label: "Dashboard", href: "/dashboard" },
-      { label: "Saved", href: "/saved" },
+      { label: "Saved Places", href: "/saved" },
       { label: "Settings", href: "/account" },
     ],
   },
@@ -43,7 +43,7 @@ type FooterProps = {
 export default function Footer({ settings }: FooterProps) {
   const currentYear = new Date().getFullYear();
   const brandDescription = settings?.brandDescription ?? "Curated by people who know Japan from the inside.";
-  const navColumns = settings?.footerNavColumns?.length ? settings.footerNavColumns : defaultNavColumns;
+  const navColumns = defaultNavColumns;
   const socialLinks = settings?.socialLinks?.length
     ? settings.socialLinks.map((s) => ({ label: s.label, href: s.url }))
     : defaultSocialLinks;
