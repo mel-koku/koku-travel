@@ -12,18 +12,7 @@ import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
-
-/**
- * Derives season from a date string (yyyy-mm-dd).
- */
-function getSeason(dateStr?: string | null): string {
-  if (!dateStr) return "spring";
-  const month = new Date(dateStr).getMonth(); // 0-indexed
-  if (month >= 2 && month <= 4) return "spring";
-  if (month >= 5 && month <= 7) return "summer";
-  if (month >= 8 && month <= 10) return "fall";
-  return "winter";
-}
+import { getSeason } from "@/lib/utils/seasonUtils";
 
 /**
  * Builds a compact day summary for the prompt.

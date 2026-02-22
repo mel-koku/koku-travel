@@ -34,6 +34,8 @@ export type Guide = {
 
   // Categorization
   guideType: GuideType;
+  /** Which seasons this guide is relevant for (spring, summer, autumn, winter, year-round). */
+  seasons?: string[];
   tags: string[];
 
   // Location linking
@@ -73,6 +75,7 @@ export type GuideRow = {
   featured_image: string;
   thumbnail_image: string | null;
   guide_type: GuideType;
+  seasons: string[] | null;
   tags: string[];
   city: string | null;
   region: string | null;
@@ -100,6 +103,7 @@ export function rowToGuide(row: GuideRow): Guide {
     featuredImage: row.featured_image,
     thumbnailImage: row.thumbnail_image ?? undefined,
     guideType: row.guide_type,
+    seasons: row.seasons ?? undefined,
     tags: row.tags,
     city: row.city ?? undefined,
     region: row.region ?? undefined,
@@ -128,6 +132,7 @@ export function guideToRow(guide: Omit<Guide, "createdAt" | "updatedAt">): Omit<
     featured_image: guide.featuredImage,
     thumbnail_image: guide.thumbnailImage ?? null,
     guide_type: guide.guideType,
+    seasons: guide.seasons ?? null,
     tags: guide.tags,
     city: guide.city ?? null,
     region: guide.region ?? null,
@@ -158,6 +163,7 @@ export type GuideSummary = Pick<
   | "featuredImage"
   | "thumbnailImage"
   | "guideType"
+  | "seasons"
   | "city"
   | "region"
   | "readingTimeMinutes"

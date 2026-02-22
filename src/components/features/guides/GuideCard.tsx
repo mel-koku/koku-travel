@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useCursor } from "@/providers/CursorProvider";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { GuideSummary } from "@/types/guide";
+import { getCurrentSeason } from "@/lib/utils/seasonUtils";
 
 const GUIDE_TYPE_LABELS: Record<GuideSummary["guideType"], string> = {
   itinerary: "Itinerary",
@@ -12,6 +13,25 @@ const GUIDE_TYPE_LABELS: Record<GuideSummary["guideType"], string> = {
   deep_dive: "Deep Dive",
   seasonal: "Seasonal",
 };
+
+const SEASON_LABELS: Record<string, string> = {
+  spring: "Spring",
+  summer: "Summer",
+  autumn: "Autumn",
+  winter: "Winter",
+};
+
+function getGuideSeasonLabel(seasons?: string[]): string | null {
+  if (!seasons || seasons.length === 0) return null;
+  // Map internal "fall" to DB "autumn"
+  const current = getCurrentSeason();
+  const dbCurrent = current === "fall" ? "autumn" : current;
+  // Only show badge if guide matches current season
+  if (seasons.includes(dbCurrent)) {
+    return SEASON_LABELS[dbCurrent] ?? null;
+  }
+  return null;
+}
 
 type GuideCardProps = {
   guide: GuideSummary;
@@ -22,6 +42,7 @@ type GuideCardProps = {
 export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
   const { setCursorState, isEnabled } = useCursor();
   const imageSrc = guide.thumbnailImage || guide.featuredImage || "";
+  const seasonLabel = getGuideSeasonLabel(guide.seasons);
 
   const metaParts = [
     GUIDE_TYPE_LABELS[guide.guideType],
@@ -57,6 +78,13 @@ export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
             </div>
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          {seasonLabel && (
+            <div className="absolute top-2.5 left-2.5 z-10">
+              <span className="inline-flex items-center rounded-xl bg-brand-secondary/90 px-2 py-0.5 text-[10px] font-medium text-charcoal shadow-sm">
+                {seasonLabel}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Meta line */}

@@ -12,6 +12,7 @@ export const landingPage = defineType({
     { name: "featuredExperiences", title: "Featured Experiences Section", options: { collapsible: true } },
     { name: "testimonials", title: "Testimonials Section", options: { collapsible: true } },
     { name: "featuredGuides", title: "Featured Guides Section", options: { collapsible: true } },
+    { name: "seasonalSpotlight", title: "Seasonal Spotlight Section", options: { collapsible: true } },
     { name: "finalCta", title: "Final CTA Section", options: { collapsible: true } },
   ],
   fields: [
@@ -387,6 +388,58 @@ export const landingPage = defineType({
       type: "image",
       options: { hotspot: true },
       fieldset: "finalCta",
+    }),
+
+    // ── Seasonal Spotlight ─────────────────────────
+    defineField({
+      name: "seasonalSpotlightEyebrow",
+      title: "Eyebrow",
+      type: "string",
+      fieldset: "seasonalSpotlight",
+      initialValue: "What's in season",
+    }),
+    defineField({
+      name: "seasonalSpotlightSpringHeading",
+      title: "Spring Heading",
+      type: "string",
+      fieldset: "seasonalSpotlight",
+      initialValue: "Cherry blossoms and fresh starts",
+    }),
+    defineField({
+      name: "seasonalSpotlightSummerHeading",
+      title: "Summer Heading",
+      type: "string",
+      fieldset: "seasonalSpotlight",
+      initialValue: "Festivals, fireworks, and cool escapes",
+    }),
+    defineField({
+      name: "seasonalSpotlightAutumnHeading",
+      title: "Autumn Heading",
+      type: "string",
+      fieldset: "seasonalSpotlight",
+      initialValue: "Koyo colors at their peak",
+    }),
+    defineField({
+      name: "seasonalSpotlightWinterHeading",
+      title: "Winter Heading",
+      type: "string",
+      fieldset: "seasonalSpotlight",
+      initialValue: "Hot springs and illuminations",
+    }),
+    defineField({
+      name: "seasonalSpotlightDescription",
+      title: "Description",
+      type: "text",
+      rows: 2,
+      fieldset: "seasonalSpotlight",
+      initialValue: "Places, guides, and experiences at their best right now.",
+    }),
+    defineField({
+      name: "seasonalSpotlightCtaText",
+      title: "CTA Text",
+      type: "string",
+      fieldset: "seasonalSpotlight",
+      initialValue: "See all seasonal picks",
     }),
   ],
   preview: {

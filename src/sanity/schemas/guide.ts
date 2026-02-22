@@ -125,6 +125,22 @@ export const guide = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "seasons",
+      title: "Seasons",
+      type: "array",
+      of: [{ type: "string" }],
+      description: "Which seasons this guide is most relevant for",
+      options: {
+        list: [
+          { title: "Spring", value: "spring" },
+          { title: "Summer", value: "summer" },
+          { title: "Autumn", value: "autumn" },
+          { title: "Winter", value: "winter" },
+          { title: "Year-round", value: "year-round" },
+        ],
+      },
+    }),
+    defineField({
       name: "tags",
       title: "Tags",
       type: "array",

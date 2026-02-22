@@ -7,6 +7,7 @@ import type { GuideSummary, GuideType } from "@/types/guide";
 import { GuideFilterBar } from "./GuideFilterBar";
 import { GuideCard } from "./GuideCard";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { getCurrentSeason, type Season } from "@/lib/utils/seasonUtils";
 
 type GuidesPageClientProps = {
   guides: GuideSummary[];
@@ -20,13 +21,40 @@ const GUIDE_TYPE_OPTIONS: { value: GuideType; label: string }[] = [
   { value: "seasonal", label: "Seasonal" },
 ];
 
+const SEASON_OPTIONS: { value: string; label: string }[] = [
+  { value: "spring", label: "Spring" },
+  { value: "summer", label: "Summer" },
+  { value: "autumn", label: "Autumn" },
+  { value: "winter", label: "Winter" },
+];
+
+/** Map our internal "fall" to Sanity/DB "autumn" */
+function seasonToDbSeason(season: Season): string {
+  return season === "fall" ? "autumn" : season;
+}
+
 export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
   const [selectedType, setSelectedType] = useState<GuideType | null>(null);
+  const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
 
   const typeCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     guides.forEach((g) => {
       counts[g.guideType] = (counts[g.guideType] || 0) + 1;
+    });
+    return counts;
+  }, [guides]);
+
+  const seasonCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    guides.forEach((g) => {
+      if (g.seasons) {
+        for (const s of g.seasons) {
+          if (s !== "year-round") {
+            counts[s] = (counts[s] || 0) + 1;
+          }
+        }
+      }
     });
     return counts;
   }, [guides]);
@@ -43,10 +71,32 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
     [typeCounts]
   );
 
+  const filterSeasons = useMemo(
+    () =>
+      SEASON_OPTIONS.filter((o) => (seasonCounts[o.value] || 0) > 0).map(
+        (o) => ({
+          value: o.value,
+          label: o.label,
+          count: seasonCounts[o.value] || 0,
+        })
+      ),
+    [seasonCounts]
+  );
+
+  // Auto-highlight current season if it has guides
+  const currentDbSeason = seasonToDbSeason(getCurrentSeason());
+  const hasCurrentSeasonGuides = (seasonCounts[currentDbSeason] || 0) > 0;
+
   const filteredGuides = useMemo(() => {
-    if (!selectedType) return guides;
-    return guides.filter((g) => g.guideType === selectedType);
-  }, [guides, selectedType]);
+    let result = guides;
+    if (selectedType) {
+      result = result.filter((g) => g.guideType === selectedType);
+    }
+    if (selectedSeason) {
+      result = result.filter((g) => g.seasons?.includes(selectedSeason));
+    }
+    return result;
+  }, [guides, selectedType, selectedSeason]);
 
   if (guides.length === 0) {
     return (
@@ -88,6 +138,10 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
         selectedType={selectedType}
         onTypeChange={setSelectedType}
         totalCount={guides.length}
+        seasons={filterSeasons}
+        selectedSeason={selectedSeason}
+        onSeasonChange={setSelectedSeason}
+        currentSeason={hasCurrentSeasonGuides ? currentDbSeason : null}
       />
 
       {/* Breathing room between filter bar and content */}

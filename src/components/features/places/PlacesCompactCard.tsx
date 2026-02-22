@@ -8,6 +8,7 @@ import { resizePhotoUrl } from "@/lib/google/transformations";
 import type { Location } from "@/types/location";
 import { HeartIcon } from "./LocationCard";
 import { PracticalBadges } from "@/components/ui/PracticalBadges";
+import { SeasonalBadge } from "./SeasonalBadge";
 
 const FALLBACK_IMAGE =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -76,6 +77,11 @@ export const PlacesCompactCard = memo(function PlacesCompactCard({
             className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
             sizes="(min-width:1024px) 25vw, (min-width:640px) 50vw, 100vw"
           />
+
+          {/* Seasonal badge (top-left) */}
+          <div className="absolute top-2.5 left-2.5 z-10">
+            <SeasonalBadge tags={location.tags} />
+          </div>
 
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/20 to-transparent" />
