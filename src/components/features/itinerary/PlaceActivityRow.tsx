@@ -195,6 +195,7 @@ type PlaceActivityRowProps = {
   conflicts?: ItineraryConflict[];
   /** Hide the drag handle (for entry points) */
   hideDragHandle?: boolean;
+  isReadOnly?: boolean;
 };
 
 export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRowProps>(
@@ -219,6 +220,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       onReplace,
       conflicts,
       hideDragHandle,
+      isReadOnly,
     },
     ref,
   ) => {
@@ -473,21 +475,27 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           <div className="relative flex w-16 shrink-0 flex-col items-center pt-2">
             {displayArrivalTime ? (
               <>
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setShowTimePicker(!showTimePicker);
-                    setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
-                  }}
-                  className={`font-mono text-sm font-bold transition hover:text-brand-primary ${
-                    hasManualTime ? "text-sage" : "text-foreground"
-                  }`}
-                  title={hasManualTime ? "Manual time - click to edit" : "Click to set time"}
-                >
-                  {displayArrivalTime}
-                </button>
+                {isReadOnly ? (
+                  <span className={`font-mono text-sm font-bold ${hasManualTime ? "text-sage" : "text-foreground"}`}>
+                    {displayArrivalTime}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setShowTimePicker(!showTimePicker);
+                      setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
+                    }}
+                    className={`font-mono text-sm font-bold transition hover:text-brand-primary ${
+                      hasManualTime ? "text-sage" : "text-foreground"
+                    }`}
+                    title={hasManualTime ? "Manual time - click to edit" : "Click to set time"}
+                  >
+                    {displayArrivalTime}
+                  </button>
+                )}
                 {schedule?.departureTime && (
                   <>
                     <div className="my-0.5 h-4 w-px bg-border/50" />
@@ -577,7 +585,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               {/* Top overlay: Drag handle left, badges right */}
               <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
                 {/* Drag Handle — hidden by default, revealed on card hover */}
-                {!hideDragHandle && (
+                {!hideDragHandle && !isReadOnly && (
                   <div className={`transition-opacity duration-200 ${isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
                     <DragHandle
                       variant="place"
@@ -588,7 +596,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     />
                   </div>
                 )}
-                {hideDragHandle && <div />}
+                {(hideDragHandle || isReadOnly) && <div />}
 
                 {/* Right badges: Number */}
                 <div className="flex items-center gap-1.5">
@@ -661,66 +669,68 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               )}
             </div>
 
-            {/* Actions Footer */}
-            <div className="flex items-center justify-between border-t border-border/30 bg-surface/30 px-3 py-2 sm:px-4">
-              {/* Left: Notes */}
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    handleToggleNotes();
-                  }}
-                  className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
-                >
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                  <span className="hidden sm:inline">{notesOpen ? "Hide note" : "Add note"}</span>
-                </button>
-              </div>
-
-              {/* Right: Edit Actions */}
-              <div className="flex items-center gap-1">
-                {tripId && dayId && onReplace && (
+            {/* Actions Footer — hidden in read-only mode */}
+            {!isReadOnly && (
+              <div className="flex items-center justify-between border-t border-border/30 bg-surface/30 px-3 py-2 sm:px-4">
+                {/* Left: Notes */}
+                <div className="flex items-center gap-1">
                   <button
                     type="button"
-                    className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
-                      onReplace();
+                      handleToggleNotes();
                     }}
-                    title="Find alternatives"
+                    className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
                   >
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    <span className="hidden sm:inline">Replace</span>
+                    <span className="hidden sm:inline">{notesOpen ? "Hide note" : "Add note"}</span>
                   </button>
-                )}
-                <button
-                  type="button"
-                  className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    handleDelete();
-                  }}
-                  aria-label={`Delete ${activity.title}`}
-                  title="Remove this activity"
-                >
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  <span className="hidden sm:inline">Delete</span>
-                </button>
-              </div>
-            </div>
+                </div>
 
-            {/* Notes Section (collapsible) */}
-            {notesOpen && (
+                {/* Right: Edit Actions */}
+                <div className="flex items-center gap-1">
+                  {tripId && dayId && onReplace && (
+                    <button
+                      type="button"
+                      className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        onReplace();
+                      }}
+                      title="Find alternatives"
+                    >
+                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                      </svg>
+                      <span className="hidden sm:inline">Replace</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleDelete();
+                    }}
+                    aria-label={`Delete ${activity.title}`}
+                    title="Remove this activity"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    <span className="hidden sm:inline">Delete</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Notes Section (collapsible) — read-only shows as plain text */}
+            {notesOpen && !isReadOnly && (
               <div className="border-t border-border/30 bg-background/50 p-3">
                 <label htmlFor={notesId} className="sr-only">
                   {noteLabel}
@@ -734,6 +744,11 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   placeholder="Add helpful details, reminders, or context..."
                   onClick={(e) => e.stopPropagation()}
                 />
+              </div>
+            )}
+            {activity.notes && isReadOnly && (
+              <div className="border-t border-border/30 bg-background/50 p-3">
+                <p className="text-sm text-foreground-secondary">{activity.notes}</p>
               </div>
             )}
           </motion.div>

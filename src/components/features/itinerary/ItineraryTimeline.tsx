@@ -90,6 +90,7 @@ type ItineraryTimelineProps = {
   onCancelPreview?: () => void;
   onFilterChange?: (filter: Partial<RefinementFilters>) => void;
   isPreviewLoading?: boolean;
+  isReadOnly?: boolean;
 };
 
 export const ItineraryTimeline = ({
@@ -118,6 +119,7 @@ export const ItineraryTimeline = ({
   onCancelPreview,
   onFilterChange,
   isPreviewLoading,
+  isReadOnly,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMountedRef = useRef(true);
@@ -129,11 +131,12 @@ export const ItineraryTimeline = ({
     };
   }, []);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, {
-      activationConstraint: { distance: 6 },
-    }),
-  );
+  const pointerSensor = useSensor(PointerSensor, {
+    activationConstraint: { distance: 6 },
+  });
+  const activeSensors = useSensors(pointerSensor);
+  const emptySensors = useSensors();
+  const sensors = isReadOnly ? emptySensors : activeSensors;
 
   // Activities list - entry points are not displayed in the timeline
   // (they are shown on the map via ItineraryMapPanel)
@@ -638,29 +641,29 @@ export const ItineraryTimeline = ({
             day={day}
             dayIndex={dayIndex}
             tripStartDate={tripStartDate}
-            tripId={tripId}
+            tripId={isReadOnly ? undefined : tripId}
             builderData={tripBuilderData}
             itinerary={model}
-            onRefineDay={(refinedDay) => {
+            onRefineDay={isReadOnly ? undefined : (refinedDay) => {
               setModel((current) => {
                 const nextDays = [...current.days];
                 nextDays[dayIndex] = refinedDay;
                 return { ...current, days: nextDays };
               });
             }}
-            suggestions={suggestions}
-            onAcceptSuggestion={onAcceptSuggestion}
-            onSkipSuggestion={onSkipSuggestion}
-            loadingSuggestionId={loadingSuggestionId}
+            suggestions={isReadOnly ? undefined : suggestions}
+            onAcceptSuggestion={isReadOnly ? undefined : onAcceptSuggestion}
+            onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
+            loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}
             conflicts={conflicts}
-            onDayStartTimeChange={handleDayStartTimeChange}
-            onDelayRemaining={handleDelayRemaining}
-            previewState={previewState}
-            onConfirmPreview={onConfirmPreview}
-            onShowAnother={onShowAnother}
-            onCancelPreview={onCancelPreview}
-            onFilterChange={onFilterChange}
-            isPreviewLoading={isPreviewLoading}
+            onDayStartTimeChange={isReadOnly ? undefined : handleDayStartTimeChange}
+            onDelayRemaining={isReadOnly ? undefined : handleDelayRemaining}
+            previewState={isReadOnly ? undefined : previewState}
+            onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
+            onShowAnother={isReadOnly ? undefined : onShowAnother}
+            onCancelPreview={isReadOnly ? undefined : onCancelPreview}
+            onFilterChange={isReadOnly ? undefined : onFilterChange}
+            isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
           />
 
         {/* City Transition Display */}
@@ -825,16 +828,17 @@ export const ItineraryTimeline = ({
                       activity={activity}
                       allActivities={extendedActivities}
                       dayTimezone={day.timezone}
-                      onDelete={() => handleDelete(activity.id)}
-                      onUpdate={(patch) => handleUpdate(activity.id, patch)}
+                      onDelete={isReadOnly ? () => {} : () => handleDelete(activity.id)}
+                      onUpdate={isReadOnly ? () => {} : (patch) => handleUpdate(activity.id, patch)}
                       isSelected={activity.id === selectedActivityId}
                       onSelect={onSelectActivity}
                       placeNumber={placeNumber}
                       travelSegment={travelSegmentElement}
                       tripId={tripId}
                       dayId={day.id}
-                      onReplace={onReplace ? () => onReplace(activity.id) : undefined}
+                      onReplace={!isReadOnly && onReplace ? () => onReplace(activity.id) : undefined}
                       conflicts={activityConflicts}
+                      isReadOnly={isReadOnly}
                     />
                     {/* Guide segments after this activity */}
                     {!activeId && guideSegmentsAfter.map((seg) => (
@@ -854,19 +858,22 @@ export const ItineraryTimeline = ({
           </SortableContext>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-stone">
-            <p className="text-sm">This day is wide open. Add a note to get started.</p>
-            <button
-              type="button"
-              onClick={handleAddNote}
-              className="mt-3 text-sm font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-            >
-              + Add note
-            </button>
+            <p className="text-sm">{isReadOnly ? "No activities planned for this day." : "This day is wide open. Add a note to get started."}</p>
+            {!isReadOnly && (
+              <button
+                type="button"
+                onClick={handleAddNote}
+                className="mt-3 text-sm font-medium text-sage hover:text-sage/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+              >
+                + Add note
+              </button>
+            )}
           </div>
         )}
       </div>
 
       {/* Drag Preview Overlay - Compact card preview */}
+      {!isReadOnly && (
       <DragOverlay dropAnimation={{ duration: 250, easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)" }}>
         {activeActivity && activeActivity.kind === "place" && (
           <div className="pointer-events-none w-[320px] max-w-[90vw]">
@@ -905,6 +912,7 @@ export const ItineraryTimeline = ({
           </div>
         )}
       </DragOverlay>
+      )}
     </DndContext>
   );
 }
