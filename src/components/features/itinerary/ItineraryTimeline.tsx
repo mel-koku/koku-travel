@@ -628,7 +628,7 @@ export const ItineraryTimeline = ({
       const label = delayMinutes >= 60
         ? `${Math.floor(delayMinutes / 60)}h${delayMinutes % 60 ? ` ${delayMinutes % 60}m` : ""}`
         : `${delayMinutes}m`;
-      showToast(`Shifted ${placeActs.length} activities by ${label}`);
+      showToast(`Shifted ${placeActs.length} activities by ${label}`, { variant: "info" });
     },
     [dayIndex, setModel, day.activities, showToast],
   );

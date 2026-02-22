@@ -128,7 +128,7 @@ export function ShareButton({ tripId }: ShareButtonProps) {
       if (data.share.isActive) {
         showToast("Sharing enabled", { variant: "success" });
       } else {
-        showToast("Share link deactivated");
+        showToast("Share link deactivated", { variant: "info" });
       }
     } catch (error) {
       logger.error("Failed to toggle share", error instanceof Error ? error : new Error(String(error)));
