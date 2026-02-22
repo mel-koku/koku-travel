@@ -4,6 +4,7 @@ import ReactMarkdown from "react-markdown";
 import type { UIMessage } from "ai";
 import { AskKokuLocationCard } from "./AskKokuLocationCard";
 import { AskKokuTripPlanCard, type TripPlanData } from "./AskKokuTripPlanCard";
+import { AskKokuVideoImportCard, type VideoImportData } from "./AskKokuVideoImportCard";
 
 type AskKokuMessageProps = {
   message: UIMessage;
@@ -78,6 +79,25 @@ function extractTripPlan(message: UIMessage): TripPlanData | null {
   return null;
 }
 
+function extractVideoImport(message: UIMessage): VideoImportData | null {
+  for (const part of message.parts) {
+    if (
+      part.type.startsWith("tool-") ||
+      part.type === "dynamic-tool"
+    ) {
+      const toolPart = part as { state: string; output?: unknown };
+      if (toolPart.state !== "output-available") continue;
+      const result = toolPart.output as Record<string, unknown> | undefined;
+      if (!result) continue;
+
+      if (result.type === "videoImport") {
+        return result as unknown as VideoImportData;
+      }
+    }
+  }
+  return null;
+}
+
 function getTextContent(message: UIMessage): string {
   return message.parts
     .filter((p): p is { type: "text"; text: string } => p.type === "text")
@@ -89,6 +109,7 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
   const isUser = message.role === "user";
   const locations = isUser ? [] : extractLocations(message);
   const tripPlan = isUser ? null : extractTripPlan(message);
+  const videoImport = isUser ? null : extractVideoImport(message);
   const textContent = getTextContent(message);
 
   return (
@@ -144,6 +165,10 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
 
         {tripPlan && (
           <AskKokuTripPlanCard data={tripPlan} onClose={onClosePanel} />
+        )}
+
+        {videoImport && (
+          <AskKokuVideoImportCard data={videoImport} />
         )}
 
         {locations.length > 0 && (

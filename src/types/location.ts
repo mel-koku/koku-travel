@@ -364,6 +364,23 @@ export type Location = {
   cuisineType?: string;
 
   // ============================================
+  // Source Tracking
+  // ============================================
+
+  /**
+   * How this location was added to the database.
+   * - 'community': Discovered via user video import
+   * - null/undefined: Curated by the Koku team
+   */
+  source?: 'community' | null;
+
+  /**
+   * Original video URL that led to this location being added.
+   * Only set when source is 'community'.
+   */
+  sourceUrl?: string;
+
+  // ============================================
   // Seasonal Availability Fields
   // ============================================
 
