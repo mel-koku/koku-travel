@@ -19,6 +19,7 @@ type NoteActivityRowProps = {
   isDragging?: boolean;
   transform?: Transform | null;
   transition?: string | null;
+  isReadOnly?: boolean;
 };
 
 export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
@@ -32,6 +33,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
       isDragging,
       transform,
       transition,
+      isReadOnly,
     },
     ref,
   ) => {
@@ -74,100 +76,120 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <DragHandle
-              variant="note"
-              label={dragHandleLabel}
-              isDragging={isDragging}
-              attributes={attributes}
-              listeners={listeners}
-            />
+            {!isReadOnly && (
+              <DragHandle
+                variant="note"
+                label={dragHandleLabel}
+                isDragging={isDragging}
+                attributes={attributes}
+                listeners={listeners}
+              />
+            )}
             <span className="text-sm font-semibold text-sage">
               {activity.title ?? "Note"}
             </span>
           </div>
-          <button
-            type="button"
-            onClick={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              onDelete();
-            }}
-            className="text-sm font-semibold text-error hover:text-error/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
-            aria-label={`Delete note for ${TIME_OF_DAY_LABEL[activity.timeOfDay]}`}
-          >
-            Delete
-          </button>
+          {!isReadOnly && (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onDelete();
+              }}
+              className="text-sm font-semibold text-error hover:text-error/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
+              aria-label={`Delete note for ${TIME_OF_DAY_LABEL[activity.timeOfDay]}`}
+            >
+              Delete
+            </button>
+          )}
         </div>
 
         <div className="mt-4 flex flex-col gap-3">
-          <div className="flex flex-col gap-2 rounded-xl bg-background/60 p-3 shadow-sm">
-            <span className="text-sm font-medium text-foreground-secondary">Time (optional)</span>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex flex-col gap-1">
-                <label htmlFor={noteStartId} className="text-xs font-medium text-foreground-secondary">
-                  Start time
-                </label>
-                <input
-                  id={noteStartId}
-                  type="time"
-                  className="h-10 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                  value={noteStartTime}
-                  onChange={(event) => {
-                    const value = event.target.value;
-                    onUpdate({
-                      startTime: value ? value : undefined,
-                    } as Partial<ItineraryActivity>);
-                  }}
-                  aria-invalid={timeInvalid || undefined}
-                  aria-describedby={timeInvalid ? timeErrorId : undefined}
-                />
-              </div>
-              <span className="text-sm text-stone">to</span>
-              <div className="flex flex-col gap-1">
-                <label htmlFor={noteEndId} className="text-xs font-medium text-foreground-secondary">
-                  End time
-                </label>
-                <input
-                  id={noteEndId}
-                  type="time"
-                  className="h-10 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                  value={noteEndTime}
-                  onChange={(event) => {
-                    const value = event.target.value;
-                    onUpdate({
-                      endTime: value ? value : undefined,
-                    } as Partial<ItineraryActivity>);
-                  }}
-                  aria-invalid={timeInvalid || undefined}
-                  aria-describedby={timeInvalid ? timeErrorId : undefined}
-                />
-              </div>
-            </div>
-            {timeInvalid ? (
-              <p id={timeErrorId} className="text-sm text-error">
-                End time must be after start time.
-              </p>
-            ) : null}
-            {noteStartTime && noteEndTime ? (
+          {/* Time display (read-only) or time inputs (editable) */}
+          {isReadOnly ? (
+            noteStartTime && noteEndTime ? (
               <p className="font-mono text-sm font-medium text-foreground-secondary">
                 {`${noteStartTime} – ${noteEndTime}`}
               </p>
-            ) : null}
-          </div>
+            ) : null
+          ) : (
+            <div className="flex flex-col gap-2 rounded-xl bg-background/60 p-3 shadow-sm">
+              <span className="text-sm font-medium text-foreground-secondary">Time (optional)</span>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-col gap-1">
+                  <label htmlFor={noteStartId} className="text-xs font-medium text-foreground-secondary">
+                    Start time
+                  </label>
+                  <input
+                    id={noteStartId}
+                    type="time"
+                    className="h-10 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    value={noteStartTime}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      onUpdate({
+                        startTime: value ? value : undefined,
+                      } as Partial<ItineraryActivity>);
+                    }}
+                    aria-invalid={timeInvalid || undefined}
+                    aria-describedby={timeInvalid ? timeErrorId : undefined}
+                  />
+                </div>
+                <span className="text-sm text-stone">to</span>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor={noteEndId} className="text-xs font-medium text-foreground-secondary">
+                    End time
+                  </label>
+                  <input
+                    id={noteEndId}
+                    type="time"
+                    className="h-10 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    value={noteEndTime}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      onUpdate({
+                        endTime: value ? value : undefined,
+                      } as Partial<ItineraryActivity>);
+                    }}
+                    aria-invalid={timeInvalid || undefined}
+                    aria-describedby={timeInvalid ? timeErrorId : undefined}
+                  />
+                </div>
+              </div>
+              {timeInvalid ? (
+                <p id={timeErrorId} className="text-sm text-error">
+                  End time must be after start time.
+                </p>
+              ) : null}
+              {noteStartTime && noteEndTime ? (
+                <p className="font-mono text-sm font-medium text-foreground-secondary">
+                  {`${noteStartTime} – ${noteEndTime}`}
+                </p>
+              ) : null}
+            </div>
+          )}
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor={notesId} className="text-sm font-semibold text-foreground-secondary">
-              {noteLabel}
-            </label>
-            <textarea
-              id={notesId}
-              className="w-full rounded-xl border border-border px-3 py-2 text-base text-foreground-secondary shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
-              rows={3}
-              value={notesValue}
-              onChange={handleNotesChange}
-              placeholder="Add reminders, tips, or context for this part of the day."
-            />
-          </div>
+          {/* Notes content */}
+          {isReadOnly ? (
+            notesValue ? (
+              <p className="text-sm text-foreground-secondary whitespace-pre-wrap">{notesValue}</p>
+            ) : null
+          ) : (
+            <div className="flex flex-col gap-2">
+              <label htmlFor={notesId} className="text-sm font-semibold text-foreground-secondary">
+                {noteLabel}
+              </label>
+              <textarea
+                id={notesId}
+                className="w-full rounded-xl border border-border px-3 py-2 text-base text-foreground-secondary shadow-sm focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                rows={3}
+                value={notesValue}
+                onChange={handleNotesChange}
+                placeholder="Add reminders, tips, or context for this part of the day."
+              />
+            </div>
+          )}
         </div>
       </div>
     );

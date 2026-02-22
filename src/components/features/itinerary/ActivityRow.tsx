@@ -28,12 +28,13 @@ type ActivityRowProps = {
   conflicts?: ItineraryConflict[];
   /** Hide the drag handle (for entry points) */
   hideDragHandle?: boolean;
+  isReadOnly?: boolean;
 };
 
 export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
   (props, ref) => {
     if (props.activity.kind === "note") {
-      return <NoteActivityRow ref={ref} {...props} activity={props.activity} />;
+      return <NoteActivityRow ref={ref} {...props} activity={props.activity} isReadOnly={props.isReadOnly} />;
     }
     return (
       <PlaceActivityRow
@@ -48,6 +49,7 @@ export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
         onReplace={props.onReplace}
         conflicts={props.conflicts}
         hideDragHandle={props.hideDragHandle}
+        isReadOnly={props.isReadOnly}
       />
     );
   },

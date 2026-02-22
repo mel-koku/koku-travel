@@ -34,6 +34,7 @@ import { calculateTripHealth, getHealthLevel } from "@/lib/itinerary/tripHealth"
 import { useItineraryPlanning } from "./hooks/useItineraryPlanning";
 import { useItineraryScrollSync } from "./hooks/useItineraryScrollSync";
 import { useItineraryGuide } from "./hooks/useItineraryGuide";
+import { ShareButton } from "./ShareButton";
 
 type ItineraryShellProps = {
   tripId: string;
@@ -43,6 +44,7 @@ type ItineraryShellProps = {
   createdLabel: string | null;
   updatedLabel: string | null;
   isUsingMock: boolean;
+  isReadOnly?: boolean;
   tripStartDate?: string; // ISO date string (yyyy-mm-dd)
   tripBuilderData?: TripBuilderData;
   dayIntros?: Record<string, string>;
@@ -68,6 +70,7 @@ export const ItineraryShell = ({
   createdLabel,
   updatedLabel,
   isUsingMock,
+  isReadOnly,
   tripStartDate,
   tripBuilderData,
   dayIntros,
@@ -232,7 +235,7 @@ export const ItineraryShell = ({
 
   // Keyboard shortcuts for undo/redo (Cmd+Z / Cmd+Shift+Z / Cmd+Y)
   useEffect(() => {
-    if (!tripId || isUsingMock) return;
+    if (!tripId || isUsingMock || isReadOnly) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -250,7 +253,7 @@ export const ItineraryShell = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [tripId, isUsingMock, undo, redo, canUndo, canRedo]);
+  }, [tripId, isUsingMock, isReadOnly, undo, redo, canUndo, canRedo]);
 
   const days = model.days ?? [];
   const safeSelectedDay =
@@ -428,6 +431,9 @@ export const ItineraryShell = ({
                 )}
               </div>
               <div className="flex items-center gap-2 w-full sm:w-auto">
+                {!isReadOnly && tripId && !isUsingMock && (
+                  <ShareButton tripId={tripId} />
+                )}
                 <div className="flex-1 sm:min-w-[280px]">
                   <DaySelector
                     totalDays={days.length}
@@ -439,22 +445,24 @@ export const ItineraryShell = ({
                     dayHealthLevels={dayHealthLevels}
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setShowDashboard((prev) => !prev)}
-                  className={`flex h-[42px] items-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition shrink-0 ${
-                    showDashboard
-                      ? "border-sage bg-sage/10 text-sage"
-                      : "border-border text-stone hover:border-sage hover:text-foreground"
-                  }`}
-                  aria-label="Trip overview"
-                  title="Trip overview"
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                  <span className="hidden sm:inline">Overview</span>
-                </button>
+                {!isReadOnly && (
+                  <button
+                    type="button"
+                    onClick={() => setShowDashboard((prev) => !prev)}
+                    className={`flex h-[42px] items-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition shrink-0 ${
+                      showDashboard
+                        ? "border-sage bg-sage/10 text-sage"
+                        : "border-border text-stone hover:border-sage hover:text-foreground"
+                    }`}
+                    aria-label="Trip overview"
+                    title="Trip overview"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span className="hidden sm:inline">Overview</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -519,23 +527,24 @@ export const ItineraryShell = ({
                   onSelectActivity={handleSelectActivity}
                   tripStartDate={tripStartDate}
                   tripId={tripId && !isUsingMock ? tripId : undefined}
-                  onReorder={handleReorder}
-                  onReplace={tripId && !isUsingMock ? handleReplace : undefined}
+                  onReorder={isReadOnly ? undefined : handleReorder}
+                  onReplace={!isReadOnly && tripId && !isUsingMock ? handleReplace : undefined}
                   tripBuilderData={tripBuilderData}
-                  suggestions={currentDaySuggestions}
-                  onAcceptSuggestion={handleAcceptSuggestion}
-                  onSkipSuggestion={onSkipSuggestion}
-                  loadingSuggestionId={loadingSuggestionId}
+                  suggestions={isReadOnly ? undefined : currentDaySuggestions}
+                  onAcceptSuggestion={isReadOnly ? undefined : handleAcceptSuggestion}
+                  onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
+                  loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}
                   conflicts={currentDayConflicts}
                   conflictsResult={conflictsResult}
                   guide={currentDayGuide}
-                  onBeforeDragReorder={() => { skipAutoOptimizeRef.current = true; }}
-                  previewState={previewState}
-                  onConfirmPreview={onConfirmPreview}
-                  onShowAnother={onShowAnother}
-                  onCancelPreview={onCancelPreview}
-                  onFilterChange={onFilterChange}
-                  isPreviewLoading={isPreviewLoading}
+                  onBeforeDragReorder={isReadOnly ? undefined : () => { skipAutoOptimizeRef.current = true; }}
+                  previewState={isReadOnly ? undefined : previewState}
+                  onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
+                  onShowAnother={isReadOnly ? undefined : onShowAnother}
+                  onCancelPreview={isReadOnly ? undefined : onCancelPreview}
+                  onFilterChange={isReadOnly ? undefined : onFilterChange}
+                  isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
+                  isReadOnly={isReadOnly}
                 />
               </ErrorBoundary>
             ) : (
@@ -592,7 +601,7 @@ export const ItineraryShell = ({
       </div>
 
       {/* Replacement Picker Modal */}
-      {replacementActivityId && (() => {
+      {!isReadOnly && replacementActivityId && (() => {
         const originalActivity = model.days[selectedDay]?.activities.find(
           (a) => a.id === replacementActivityId && a.kind === "place",
         ) as Extract<ItineraryActivity, { kind: "place" }> | undefined;
