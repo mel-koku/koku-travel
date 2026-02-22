@@ -12,6 +12,7 @@ import { matchOrCreateLocation } from "@/lib/video/locationMatcher";
 
 const requestSchema = z.object({
   url: z.string().url().max(2048),
+  hint: z.string().max(200).optional(),
 });
 
 const MAX_DAILY_IMPORTS_PER_USER = 20;
@@ -36,12 +37,12 @@ export const POST = withApiHandler(
       return badRequest("Invalid URL.", { errors: validation.error.issues });
     }
 
-    const { url } = validation.data;
+    const { url, hint } = validation.data;
 
     // Platform detection (before any network calls)
     const platform = detectPlatform(url);
     if (!platform) {
-      return badRequest("Unsupported URL. Paste a YouTube, TikTok, or Instagram video link.");
+      return badRequest("Unsupported URL. Paste a YouTube, TikTok, or Instagram link.");
     }
 
     // Daily cap for authenticated users
@@ -58,20 +59,23 @@ export const POST = withApiHandler(
     // Step 1: Extract video metadata via oEmbed
     const metadata = await extractVideoMetadata(url);
     if (!metadata) {
-      return badRequest("Could not fetch video metadata. Check the URL and try again.");
+      return badRequest("Could not fetch metadata. Check the URL and try again.");
     }
 
-    // Step 2: AI location extraction via Gemini
-    const extraction = await extractLocationFromVideo(metadata);
+    // Step 2: AI location extraction via Gemini (with thumbnail + optional hint)
+    const extraction = await extractLocationFromVideo(metadata, {
+      thumbnailUrl: metadata.thumbnailUrl,
+      hint,
+    });
     if (!extraction) {
-      return badRequest("Could not identify a location from this video.");
+      return badRequest("Could not identify a location from this post.");
     }
 
     // Reject non-Japan content early
     if (!extraction.isInJapan) {
       return NextResponse.json({
         status: "rejected",
-        reason: "This video doesn't appear to feature a location in Japan.",
+        reason: "This doesn't appear to feature a location in Japan.",
         extraction: {
           locationName: extraction.locationName,
           confidence: extraction.confidence,
@@ -83,7 +87,7 @@ export const POST = withApiHandler(
     if (extraction.confidence === "low") {
       return NextResponse.json({
         status: "low_confidence",
-        reason: "Could not confidently identify a specific location from this video.",
+        reason: "Could not confidently identify a specific location. Try adding a hint below.",
         extraction: {
           locationName: extraction.locationName,
           city: extraction.city,
