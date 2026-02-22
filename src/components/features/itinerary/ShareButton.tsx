@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useToast } from "@/context/ToastContext";
+import { useAppState } from "@/state/AppState";
 import { logger } from "@/lib/logger";
 
 type ShareRecord = {
@@ -23,9 +24,13 @@ export function ShareButton({ tripId }: ShareButtonProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { showToast } = useToast();
+  const { user } = useAppState();
+  const isAuthenticated = !!user.email;
 
-  // Fetch existing share status on mount
+  // Fetch existing share status on mount (only if authenticated)
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     let cancelled = false;
 
     fetch(`/api/trips/${tripId}/share`)
@@ -48,7 +53,7 @@ export function ShareButton({ tripId }: ShareButtonProps) {
     return () => {
       cancelled = true;
     };
-  }, [tripId]);
+  }, [tripId, isAuthenticated]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -65,6 +70,11 @@ export function ShareButton({ tripId }: ShareButtonProps) {
   }, [menuOpen]);
 
   const handleShare = useCallback(async () => {
+    if (!isAuthenticated) {
+      showToast("Sign in to share your itinerary", { variant: "error" });
+      return;
+    }
+
     setIsLoading(true);
     try {
       if (share?.isActive) {
@@ -94,7 +104,7 @@ export function ShareButton({ tripId }: ShareButtonProps) {
     } finally {
       setIsLoading(false);
     }
-  }, [tripId, share, showToast]);
+  }, [tripId, share, showToast, isAuthenticated]);
 
   const handleToggleShare = useCallback(async () => {
     if (!share) return;
