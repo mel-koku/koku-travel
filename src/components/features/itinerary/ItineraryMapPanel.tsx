@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
@@ -49,7 +49,15 @@ function isPlaceActivity(
   return activity.kind === "place";
 }
 
-export const ItineraryMapPanel = ({
+function getPlaceActivityKey(activities?: ItineraryActivity[]): string {
+  if (!activities) return "";
+  return activities
+    .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
+    .map((a) => a.id)
+    .join(",");
+}
+
+export const ItineraryMapPanel = memo(function ItineraryMapPanel({
   day,
   activities = [],
   selectedActivityId,
@@ -59,7 +67,7 @@ export const ItineraryMapPanel = ({
   endPoint,
   tripStartDate,
   dayLabel,
-}: ItineraryMapPanelProps) => {
+}: ItineraryMapPanelProps) {
   const useMapbox = featureFlags.enableMapbox && mapboxService.isEnabled();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -600,6 +608,15 @@ export const ItineraryMapPanel = ({
       `}</style>
     </>
   );
-};
+}, (prev, next) => {
+  if (prev.day !== next.day) return false;
+  if (prev.selectedActivityId !== next.selectedActivityId) return false;
+  if (prev.isPlanning !== next.isPlanning) return false;
+  if (prev.startPoint !== next.startPoint) return false;
+  if (prev.endPoint !== next.endPoint) return false;
+  if (prev.tripStartDate !== next.tripStartDate) return false;
+  if (prev.dayLabel !== next.dayLabel) return false;
+  return getPlaceActivityKey(prev.activities) === getPlaceActivityKey(next.activities);
+});
 
 
