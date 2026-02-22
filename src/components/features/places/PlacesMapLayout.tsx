@@ -60,8 +60,10 @@ export function PlacesMapLayout({
     });
   }, [sortedLocations, mapBounds]);
 
+  const showZoomHint = mapBounds !== null && boundsFilteredLocations.length <= 10 && boundsFilteredLocations.length < totalCount;
+
   const countLabel = mapBounds
-    ? `${boundsFilteredLocations.length.toLocaleString()} of ${totalCount.toLocaleString()} places in view`
+    ? `${boundsFilteredLocations.length.toLocaleString()} of ${totalCount.toLocaleString()} places in view${showZoomHint ? " — Zoom out to see more" : ""}`
     : `${totalCount.toLocaleString()} places`;
 
   // Show reset button when the map has loaded bounds but no places are visible

@@ -18,8 +18,8 @@ type PlacesCardPanelProps = {
 
 export function PlacesCardPanel({
   locations,
-  totalCount: _totalCount,
-  hasBoundsFilter: _hasBoundsFilter,
+  totalCount,
+  hasBoundsFilter,
   onSelectLocation,
   highlightedLocationId,
   onHoverChange,
@@ -106,6 +106,15 @@ export function PlacesCardPanel({
               <div className="h-[2px] w-32 bg-brand-primary/30 rounded-full overflow-hidden">
                 <div className="h-full w-1/3 bg-brand-primary rounded-full animate-pulse" />
               </div>
+            </div>
+          )}
+
+          {/* Zoom hint */}
+          {hasBoundsFilter && locations.length <= 10 && locations.length < totalCount && (
+            <div className="py-6 text-center">
+              <p className="text-xs text-stone">
+                Zoom out to see more places
+              </p>
             </div>
           )}
 
