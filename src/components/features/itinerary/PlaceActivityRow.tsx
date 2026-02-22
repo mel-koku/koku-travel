@@ -461,6 +461,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         tabIndex={0}
         onClick={handleSelect}
         onKeyDown={(event) => {
+          const target = event.target as HTMLElement;
+          if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
             handleSelect();
