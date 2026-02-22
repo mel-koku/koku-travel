@@ -100,6 +100,9 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
       reservationInfo: fullRow.reservation_info ?? undefined,
       nameJapanese: fullRow.name_japanese ?? undefined,
       nearestStation: fullRow.nearest_station ?? undefined,
+      // Source tracking
+      source: (fullRow.source as 'community' | null) ?? undefined,
+      sourceUrl: fullRow.source_url ?? undefined,
     };
   }
 

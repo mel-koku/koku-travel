@@ -83,6 +83,9 @@ export type LocationDbRow = {
   reservation_info: "required" | "recommended" | null;
   tags: string[] | null;
   cuisine_type: string | null;
+  // Source tracking
+  source: string | null;
+  source_url: string | null;
 };
 
 /**
