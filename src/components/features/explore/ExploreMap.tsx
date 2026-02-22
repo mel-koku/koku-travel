@@ -54,6 +54,8 @@ type ExploreMapProps = {
   highlightedLocationId: string | null;
   onHoverChange: (locationId: string | null) => void;
   showResetButton?: boolean;
+  /** When set, the map flies to this location's coordinates. */
+  flyToLocation?: Location | null;
 };
 
 function buildFeatureCollection(locations: Location[]): GeoJSON.FeatureCollection {
@@ -100,6 +102,7 @@ export function ExploreMap({
   highlightedLocationId,
   onHoverChange,
   showResetButton,
+  flyToLocation,
 }: ExploreMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
@@ -375,18 +378,20 @@ export function ExploreMap({
       source.setData(featureCollection);
     }
 
-    // fitBounds only on first data load
+    // fitBounds only on first data load — skip when flyToLocation will handle initial positioning
     if (!hasFittedBounds.current && featureCollection.features.length > 0) {
       hasFittedBounds.current = true;
-      const mapboxModule = mapboxModuleRef.current;
-      if (mapboxModule) {
-        const bounds = new mapboxModule.LngLatBounds();
-        for (const feature of featureCollection.features) {
-          const geom = feature.geometry as GeoJSON.Point;
-          bounds.extend(geom.coordinates as [number, number]);
-        }
-        if (!bounds.isEmpty()) {
-          map.fitBounds(bounds, { maxZoom: 12, duration: 600, padding: 40 });
+      if (!flyToLocation?.coordinates) {
+        const mapboxModule = mapboxModuleRef.current;
+        if (mapboxModule) {
+          const bounds = new mapboxModule.LngLatBounds();
+          for (const feature of featureCollection.features) {
+            const geom = feature.geometry as GeoJSON.Point;
+            bounds.extend(geom.coordinates as [number, number]);
+          }
+          if (!bounds.isEmpty()) {
+            map.fitBounds(bounds, { maxZoom: 12, duration: 600, padding: 40 });
+          }
         }
       }
     }
@@ -425,6 +430,15 @@ export function ExploreMap({
       prevHighlightRef.current = null;
     }
   }, [highlightedLocationId, mapReady]);
+
+  // Fly to a specific location (e.g. from video import "View" button)
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapReady || !flyToLocation?.coordinates) return;
+
+    const { lat, lng } = flyToLocation.coordinates;
+    map.flyTo({ center: [lng, lat], zoom: 14, duration: 1400 });
+  }, [flyToLocation, mapReady]);
 
   // Fly back to Japan bounds
   const resetToJapan = useCallback(() => {

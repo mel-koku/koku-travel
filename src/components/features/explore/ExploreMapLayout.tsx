@@ -20,6 +20,8 @@ type ExploreMapLayoutProps = {
   isChatOpen?: boolean;
   onChatClose?: () => void;
   hasActiveChips?: boolean;
+  /** When set, the map flies to this location. */
+  flyToLocation?: Location | null;
 };
 
 export function ExploreMapLayout({
@@ -31,6 +33,7 @@ export function ExploreMapLayout({
   isChatOpen = false,
   onChatClose,
   hasActiveChips = false,
+  flyToLocation,
 }: ExploreMapLayoutProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
@@ -102,6 +105,7 @@ export function ExploreMapLayout({
               highlightedLocationId={hoveredLocationId}
               onHoverChange={handleHoverChange}
               showResetButton={showResetButton}
+              flyToLocation={flyToLocation}
             />
           </ErrorBoundary>
 
@@ -211,6 +215,7 @@ export function ExploreMapLayout({
                 highlightedLocationId={hoveredLocationId}
                 onHoverChange={handleHoverChange}
                 showResetButton={showResetButton}
+                flyToLocation={flyToLocation}
               />
             </ErrorBoundary>
             <div className="pointer-events-none absolute top-3 left-3 z-10">

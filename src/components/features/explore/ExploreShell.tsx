@@ -139,6 +139,24 @@ export function ExploreShell({ content }: ExploreShellProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDiscoverMode]);
 
+  // Auto-open location from ?location= URL param (e.g. from video import "View" button)
+  const locationParam = searchParams.get("location");
+  const didAutoExpandRef = useRef(false);
+  const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
+
+  useEffect(() => {
+    if (!locationParam || didAutoExpandRef.current || !locations || locations.length === 0) return;
+
+    const match = locations.find((loc) => loc.id === locationParam);
+    if (match) {
+      setExpandedLocation(match);
+      setFlyToLocation(match);
+      didAutoExpandRef.current = true;
+      // Clean the URL param so back-navigation doesn't re-trigger
+      window.history.replaceState(null, "", "/explore");
+    }
+  }, [locationParam, locations]);
+
   const handleSurpriseMe = useCallback(() => {
     const pool = nearbyData?.data;
     if (!pool || pool.length === 0) return;
@@ -291,6 +309,7 @@ export function ExploreShell({ content }: ExploreShellProps) {
           isChatOpen={isChatOpen}
           onChatClose={() => setIsChatOpen(false)}
           hasActiveChips={activeFilters.filter((f) => f.type !== "search").length > 0}
+          flyToLocation={flyToLocation}
         />
       ) : isLoading ? (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
