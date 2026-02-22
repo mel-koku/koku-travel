@@ -83,6 +83,8 @@ type ItineraryTimelineProps = {
   guide?: DayGuide | null;
   // Called before a drag-reorder is applied to the model
   onBeforeDragReorder?: () => void;
+  // Called after drag-reorder with the reordered itinerary, to schedule replanning
+  onAfterDragReorder?: (reorderedItinerary: Itinerary) => void;
   // Preview props
   previewState?: PreviewState | null;
   onConfirmPreview?: () => void;
@@ -113,6 +115,7 @@ export const ItineraryTimeline = ({
   conflictsResult,
   guide,
   onBeforeDragReorder,
+  onAfterDragReorder,
   previewState,
   onConfirmPreview,
   onShowAnother,
@@ -280,6 +283,7 @@ export const ItineraryTimeline = ({
       // after onDragEnd — React's batched/async updates would leave stale DOM positions,
       // causing the dropped item to snap to the wrong visual position.
       let activityIdsForReorder: string[] | null = null;
+      let reorderedItinerary: Itinerary | null = null;
 
       flushSync(() => {
         setModel((current) => {
@@ -323,22 +327,29 @@ export const ItineraryTimeline = ({
           updatedList.splice(newIndex, 0, movingActivity);
 
           hasChanged = true;
-          
+
           // Capture activityIds for reorder call outside of setState
           if (hasChanged && tripId && day.id && onReorder) {
             activityIdsForReorder = updatedList.map((a) => a.id);
           }
-          
+
           return { ...entry, activities: updatedList };
         });
 
-        return hasChanged ? { ...current, days: nextDays } : current;
+        const result = hasChanged ? { ...current, days: nextDays } : current;
+        reorderedItinerary = result !== current ? result : null;
+        return result;
         });
       }); // End flushSync - state update is now complete
 
       // Call AppState reorder after state update - flushSync ensures state is updated
       if (activityIdsForReorder && tripId && day.id && onReorder) {
         onReorder(day.id, activityIdsForReorder);
+      }
+
+      // Schedule replanning to recalculate arrival/departure times for the new order
+      if (reorderedItinerary) {
+        onAfterDragReorder?.(reorderedItinerary);
       }
 
       // After model update, recalculate affected travel segments
@@ -474,7 +485,7 @@ export const ItineraryTimeline = ({
         }
       }
     },
-    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, day, onBeforeDragReorder],
+    [dayIndex, setModel, recalculateTravelSegment, tripId, onReorder, day, onBeforeDragReorder, onAfterDragReorder],
   );
 
   const handleAddNote = useCallback(() => {
