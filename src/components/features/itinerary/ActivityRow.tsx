@@ -29,12 +29,14 @@ type ActivityRowProps = {
   /** Hide the drag handle (for entry points) */
   hideDragHandle?: boolean;
   isReadOnly?: boolean;
+  /** ID of the currently dragged activity (if any) — used to collapse non-dragged cards */
+  activeDragId?: string | null;
 };
 
 export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
   (props, ref) => {
     if (props.activity.kind === "note") {
-      return <NoteActivityRow ref={ref} {...props} activity={props.activity} isReadOnly={props.isReadOnly} />;
+      return <NoteActivityRow ref={ref} {...props} activity={props.activity} isReadOnly={props.isReadOnly} activeDragId={props.activeDragId} />;
     }
     return (
       <PlaceActivityRow
@@ -50,6 +52,7 @@ export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
         conflicts={props.conflicts}
         hideDragHandle={props.hideDragHandle}
         isReadOnly={props.isReadOnly}
+        activeDragId={props.activeDragId}
       />
     );
   },
