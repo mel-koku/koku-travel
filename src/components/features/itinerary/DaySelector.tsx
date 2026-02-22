@@ -64,6 +64,7 @@ export const DaySelector = ({
 }: DaySelectorProps) => {
   const hasAutoScrolled = useRef(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -145,13 +146,21 @@ export const DaySelector = ({
     return () => document.removeEventListener("keydown", handleKey);
   }, [isOpen]);
 
-  // Scroll selected item into view when opening
+  // Scroll selected item into view when opening + check if scrollable
   useEffect(() => {
     if (isOpen && listRef.current) {
       const selectedEl = listRef.current.querySelector("[data-selected]");
       selectedEl?.scrollIntoView({ block: "nearest" });
+      const el = listRef.current;
+      setCanScrollDown(el.scrollHeight > el.clientHeight + el.scrollTop + 4);
     }
   }, [isOpen]);
+
+  const handleListScroll = useCallback(() => {
+    if (!listRef.current) return;
+    const el = listRef.current;
+    setCanScrollDown(el.scrollHeight > el.clientHeight + el.scrollTop + 4);
+  }, []);
 
   const handleSelect = useCallback(
     (index: number) => {
@@ -200,51 +209,65 @@ export const DaySelector = ({
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            ref={listRef}
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: durationFast, ease: easeReveal }}
-            role="listbox"
-            data-lenis-prevent
-            className="absolute left-0 right-0 top-full z-50 mt-1 max-h-72 overflow-auto overscroll-contain rounded-xl border border-border bg-popover shadow-lg"
+            className="absolute left-0 top-full z-50 mt-1 min-w-full rounded-xl border border-border bg-popover shadow-lg"
           >
-            {days.map(({ index, label, isToday }) => {
-              const isSelected = index === selected;
-              const healthLevel = dayHealthLevels?.[index];
-              return (
-                <button
-                  key={index}
-                  type="button"
-                  role="option"
-                  aria-selected={isSelected}
-                  data-selected={isSelected ? "" : undefined}
-                  onClick={() => handleSelect(index)}
-                  className={cn(
-                    "flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm transition-colors",
-                    isSelected
-                      ? "bg-brand-primary/10 text-brand-primary font-medium"
-                      : "text-popover-foreground hover:bg-surface"
-                  )}
-                >
-                  {isSelected && <Check className="h-3.5 w-3.5 shrink-0" />}
-                  <span className={!isSelected ? "pl-5.5" : ""}>
-                    {label}
-                    {isToday && (
-                      <span className="ml-2 text-xs text-sage">(Today)</span>
+            <div
+              ref={listRef}
+              role="listbox"
+              data-lenis-prevent
+              onScroll={handleListScroll}
+              className="max-h-72 overflow-auto overscroll-contain scrollbar-hide"
+            >
+              {days.map(({ index, label, isToday }) => {
+                const isSelected = index === selected;
+                const healthLevel = dayHealthLevels?.[index];
+                return (
+                  <button
+                    key={index}
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    data-selected={isSelected ? "" : undefined}
+                    onClick={() => handleSelect(index)}
+                    className={cn(
+                      "flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm transition-colors",
+                      isSelected
+                        ? "bg-brand-primary/10 text-brand-primary font-medium"
+                        : "text-popover-foreground hover:bg-surface"
                     )}
-                  </span>
-                  {healthLevel && healthLevel !== "good" && (
-                    <span
-                      className={cn(
-                        "ml-auto h-2 w-2 shrink-0 rounded-full",
-                        healthLevel === "fair" ? "bg-warning" : "bg-error"
+                  >
+                    {isSelected && <Check className="h-3.5 w-3.5 shrink-0" />}
+                    <span className={cn("whitespace-nowrap", !isSelected && "pl-5.5")}>
+                      {label}
+                      {isToday && (
+                        <span className="ml-2 text-xs text-sage">(Today)</span>
                       )}
-                    />
-                  )}
-                </button>
-              );
-            })}
+                    </span>
+                    {healthLevel && healthLevel !== "good" && (
+                      <span
+                        className={cn(
+                          "ml-auto h-2 w-2 shrink-0 rounded-full",
+                          healthLevel === "fair" ? "bg-warning" : "bg-error"
+                        )}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {/* Scroll-down indicator */}
+            <div
+              className={cn(
+                "pointer-events-none flex justify-center py-1 transition-opacity",
+                canScrollDown ? "opacity-100" : "opacity-0"
+              )}
+            >
+              <ChevronDown className="h-3.5 w-3.5 text-stone" />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
