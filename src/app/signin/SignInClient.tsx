@@ -170,7 +170,7 @@ export function SignInClient({ content }: SignInClientProps) {
               {content?.signInNoAccountText ?? "No account? One is created automatically."}
             </p>
             <a
-              href="/explore"
+              href="/places"
               className="link-reveal text-sm font-medium uppercase tracking-wide text-foreground-secondary transition-colors hover:text-foreground"
             >
               {content?.signInGuestText ?? "Continue as guest"}

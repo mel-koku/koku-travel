@@ -12,8 +12,8 @@ import type { RecommendationReason } from "@/types/itinerary";
 export type ReasonContext = {
   /** Time slot the activity was placed in */
   timeSlot?: "morning" | "afternoon" | "evening";
-  /** Whether user explicitly favorited this location */
-  isFavorite?: boolean;
+  /** Whether user explicitly saved this location */
+  isSaved?: boolean;
   /** How this location was sourced (e.g. "smart_prompt", "refinement") */
   source?: string;
   /** Names of runner-up locations that were considered */
@@ -131,8 +131,8 @@ function buildPrimaryReason(
   location: Location,
   context?: ReasonContext,
 ): string {
-  if (context?.isFavorite) {
-    return "From your favorites";
+  if (context?.isSaved) {
+    return "From your saved places";
   }
 
   if (context?.source === "smart_prompt") {

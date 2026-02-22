@@ -21,7 +21,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 const navItems = [
-  { label: "Places", href: "/explore" },
+  { label: "Places", href: "/places" },
   { label: "Guides", href: "/guides" },
   { label: "Experiences", href: "/experiences" },
 ];
@@ -40,7 +40,7 @@ function UserMenu({
   const handleClearData = () => {
     const confirmed = window.confirm(
       "Start fresh?\n\n" +
-        "This removes all trips, favorites, and preferences from this device.\n\n" +
+        "This removes all trips, saved places, and preferences from this device.\n\n" +
         "Your account data stays safe in the cloud."
     );
 
@@ -142,7 +142,7 @@ export default function Header() {
     }
 
     // Pages with sticky sub-nav: always visible
-    if (pathname === "/explore" || pathname === "/guides" || pathname === "/experiences" || pathname.startsWith("/itinerary")) {
+    if (pathname === "/places" || pathname === "/guides" || pathname === "/experiences" || pathname.startsWith("/itinerary")) {
       setIsVisible(true);
       return;
     }

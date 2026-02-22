@@ -373,7 +373,7 @@ export const tripBuilderDataSchema = z.object({
 export const planRequestSchema = z.object({
   builderData: tripBuilderDataSchema,
   tripId: tripIdSchema,
-  favoriteIds: z.array(z.string().min(1).max(255)).max(200).optional(),
+  savedIds: z.array(z.string().min(1).max(255)).max(200).optional(),
 }).strict();
 
 /**

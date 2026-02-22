@@ -16,7 +16,7 @@ export function loadUserPreferences(): UserPreferences {
   return {
     replacedActivities: parsed.replacedActivities ?? [],
     skippedActivities: parsed.skippedActivities ?? [],
-    favoriteActivities: parsed.favoriteActivities ?? [],
+    savedActivities: parsed.savedActivities ?? [],
     preferredCategories: parsed.preferredCategories ?? {},
     preferredPriceRanges: parsed.preferredPriceRanges ?? {},
     preferredActivityTypes: parsed.preferredActivityTypes ?? {},
@@ -80,18 +80,18 @@ export function recordPreferenceEvent(event: PreferenceEvent): UserPreferences {
       }
       break;
 
-    case "favorite":
-      // Add to favorite activities
-      updated.favoriteActivities = updated.favoriteActivities.filter(
+    case "save":
+      // Add to saved activities
+      updated.savedActivities = updated.savedActivities.filter(
         (a) => a.activityId !== event.activityId,
       );
-      updated.favoriteActivities.push({
+      updated.savedActivities.push({
         activityId: event.activityId,
         locationId: event.locationId,
-        favoritedAt: event.timestamp,
+        savedAt: event.timestamp,
       });
-      
-      // Learn from favorite - boost the location's category and price range
+
+      // Learn from save - boost the location's category and price range
       if (event.location) {
         const category = event.location.category ?? "unknown";
         updated.preferredCategories[category] = (updated.preferredCategories[category] ?? 0) + 2;
@@ -102,9 +102,9 @@ export function recordPreferenceEvent(event: PreferenceEvent): UserPreferences {
       }
       break;
 
-    case "unfavorite":
-      // Remove from favorite activities
-      updated.favoriteActivities = updated.favoriteActivities.filter(
+    case "unsave":
+      // Remove from saved activities
+      updated.savedActivities = updated.savedActivities.filter(
         (a) => a.activityId !== event.activityId,
       );
       

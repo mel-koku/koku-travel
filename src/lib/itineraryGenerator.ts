@@ -57,10 +57,10 @@ function inferMealTypeFromTimeSlot(
 }
 
 /**
- * Pick a time slot for a favorited location based on its category.
+ * Pick a time slot for a saved location based on its category.
  * Falls back to the least-used slot when the preferred slot is >80% capacity.
  */
-function pickTimeSlotForFavorite(
+function pickTimeSlotForSaved(
   category: string,
   timeSlotUsage: Map<string, number>,
 ): "morning" | "afternoon" | "evening" {
@@ -158,10 +158,10 @@ export type GenerateItineraryOptions = {
    */
   locations?: Location[];
   /**
-   * Location IDs that the user has favorited from the Explore page.
+   * Location IDs that the user has saved from the Places page.
    * These locations will be prioritized and included in the generated itinerary.
    */
-  favoriteIds?: string[];
+  savedIds?: string[];
 };
 
 export async function generateItinerary(
@@ -246,21 +246,21 @@ export async function generateItinerary(
 
   const days: Itinerary["days"] = [];
 
-  // Build map of favorited locations by city for prioritization
-  const favoriteIdSet = new Set(options?.favoriteIds ?? []);
-  const favoritesByCity = new Map<string, Location[]>();
-  if (favoriteIdSet.size > 0) {
+  // Build map of saved locations by city for prioritization
+  const savedIdSet = new Set(options?.savedIds ?? []);
+  const savedByCity = new Map<string, Location[]>();
+  if (savedIdSet.size > 0) {
     for (const loc of allLocations) {
-      if (favoriteIdSet.has(loc.id)) {
+      if (savedIdSet.has(loc.id)) {
         const cityKey = normalizeKey(loc.city);
-        const list = favoritesByCity.get(cityKey) ?? [];
+        const list = savedByCity.get(cityKey) ?? [];
         list.push(loc);
-        favoritesByCity.set(cityKey, list);
+        savedByCity.set(cityKey, list);
       }
     }
-    logger.info("Favorite locations to include", {
-      totalFavorites: favoriteIdSet.size,
-      foundInData: Array.from(favoritesByCity.entries()).map(([city, locs]) => ({
+    logger.info("Saved locations to include", {
+      totalSaved: savedIdSet.size,
+      foundInData: Array.from(savedByCity.entries()).map(([city, locs]) => ({
         city,
         count: locs.length,
         names: locs.map((l) => l.name),
@@ -399,9 +399,9 @@ export async function generateItinerary(
     const dayNeighborhoods: string[] = [];
     let lastLocation: Location | undefined;
 
-    // Add favorited locations for this city first (user explicitly favorited these)
-    const favoritesForCity = favoritesByCity.get(cityInfo.key) ?? [];
-    for (const favLoc of favoritesForCity) {
+    // Add saved locations for this city first (user explicitly saved these)
+    const savedForCity = savedByCity.get(cityInfo.key) ?? [];
+    for (const favLoc of savedForCity) {
       // Skip if already used
       if (usedLocations.has(favLoc.id)) continue;
       const normalizedName = favLoc.name.toLowerCase().trim();
@@ -411,9 +411,9 @@ export async function generateItinerary(
       const isFood = isFoodCategory(favLoc.category);
 
       // Assign time slot based on category instead of hardcoding morning
-      const timeSlot = pickTimeSlotForFavorite(favLoc.category, timeSlotUsage);
+      const timeSlot = pickTimeSlotForSaved(favLoc.category, timeSlotUsage);
 
-      // Build activity for favorited location
+      // Build activity for saved location
       const activity: Extract<ItineraryActivity, { kind: "place" }> = {
         kind: "place",
         id: `${favLoc.id}-${dayIndex + 1}-fav`,
@@ -423,9 +423,9 @@ export async function generateItinerary(
         locationId: favLoc.id,
         coordinates: favLoc.coordinates,
         neighborhood: favLoc.neighborhood ?? favLoc.city,
-        tags: favLoc.category ? [favLoc.category, "favorite"] : ["favorite"],
-        notes: "From your favorites",
-        recommendationReason: { primaryReason: "From your favorites" },
+        tags: favLoc.category ? [favLoc.category, "saved"] : ["saved"],
+        notes: "From your saved places",
+        recommendationReason: { primaryReason: "From your saved places" },
         ...(favLoc.description && { description: favLoc.description }),
         ...(isFood && { mealType: inferMealTypeFromTimeSlot(timeSlot) }),
       };
@@ -447,7 +447,7 @@ export async function generateItinerary(
       // Update time slot usage
       timeSlotUsage.set(timeSlot, (timeSlotUsage.get(timeSlot) ?? 0) + locationDuration);
 
-      logger.info(`Day ${dayIndex + 1}: Added favorite location "${favLoc.name}"`);
+      logger.info(`Day ${dayIndex + 1}: Added saved location "${favLoc.name}"`);
     }
 
     // Track assigned meal types to prevent multiple lunches/dinners per day

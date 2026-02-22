@@ -6,7 +6,7 @@ import { ThemeProvider } from "next-themes";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { WishlistProvider } from "@/context/WishlistContext";
+import { SavedProvider } from "@/context/SavedContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { AppStateProvider } from "@/state/AppState";
 import { QueryProvider } from "@/providers/QueryProvider";
@@ -53,7 +53,7 @@ export function LayoutWrapper({
       <QueryProvider>
         <AppStateProvider>
           <ToastProvider>
-            <WishlistProvider>
+            <SavedProvider>
               <LenisProvider>
                 <CursorProvider>
                   <ScrollProgressBar />
@@ -76,7 +76,7 @@ export function LayoutWrapper({
                   <AskKokuButton />
                 </CursorProvider>
               </LenisProvider>
-            </WishlistProvider>
+            </SavedProvider>
           </ToastProvider>
         </AppStateProvider>
       </QueryProvider>

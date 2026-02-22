@@ -142,6 +142,25 @@ const nextConfig: NextConfig = {
     // Turbopack compilation blocks the event loop for 10-30s
     unoptimized: !isProduction,
   },
+  async redirects() {
+    return [
+      {
+        source: "/explore",
+        destination: "/places",
+        permanent: true,
+      },
+      {
+        source: "/explore/:path*",
+        destination: "/places/:path*",
+        permanent: true,
+      },
+      {
+        source: "/favorites",
+        destination: "/saved",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     // Sanity Studio requires 'unsafe-eval' for script execution
     const studioScriptSrc = ["'self'", "'unsafe-eval'", "'unsafe-inline'", "https://unpkg.com", "https://vercel.live", "https://va.vercel-scripts.com"];
