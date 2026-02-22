@@ -460,7 +460,7 @@ function DayOverviewCard({
                           onActivityClick?.(activity.id);
                         }}
                         disabled={!hasLocation}
-                        className={`flex items-center gap-2 text-xs w-full text-left rounded-lg py-0.5 -mx-1 px-1 transition ${
+                        className={`group/row flex items-center gap-2 text-xs w-full text-left rounded-lg py-0.5 -mx-1 px-1 transition ${
                           hasLocation
                             ? "cursor-pointer hover:bg-surface/60 active:bg-surface/80"
                             : "cursor-default"
@@ -469,7 +469,7 @@ function DayOverviewCard({
                         <span className="font-mono text-[10px] text-stone w-4 text-right shrink-0">
                           {i + 1}
                         </span>
-                        <span className={`truncate ${hasLocation ? "text-foreground" : "text-stone"}`}>
+                        <span className={`truncate transition-colors ${hasLocation ? "text-foreground group-hover/row:text-brand-primary" : "text-stone"}`}>
                           {activity.title}
                         </span>
                         {activity.kind === "place" && activity.mealType && (
@@ -478,7 +478,7 @@ function DayOverviewCard({
                           </span>
                         )}
                         {hasLocation && (
-                          <svg className="h-3 w-3 text-stone shrink-0 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <svg className="h-3 w-3 text-stone group-hover/row:text-foreground-secondary shrink-0 ml-auto transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                           </svg>
                         )}
