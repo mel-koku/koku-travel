@@ -816,14 +816,22 @@ export const ItineraryTimeline = ({
                 ) ?? [];
 
                 const fragmentKey = activity.id;
+                // Render guide segments before with card-width offset
+                const guideBeforeElement = !activeId && guideSegmentsBefore.length > 0 ? (
+                  <div className="space-y-2">
+                    {guideSegmentsBefore.map((seg) => (
+                      <div key={seg.id} className="flex gap-3">
+                        <div className="w-16 shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <GuideSegmentCard segment={seg} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : undefined;
+
                 return (
                   <Fragment key={fragmentKey}>
-                    {/* Guide segments before this activity (cultural insights, tips) */}
-                    {!activeId && guideSegmentsBefore.map((seg) => (
-                      <li key={seg.id} className="list-none">
-                        <GuideSegmentCard segment={seg} />
-                      </li>
-                    ))}
                     <SortableActivity
                       activity={activity}
                       allActivities={extendedActivities}
@@ -834,6 +842,7 @@ export const ItineraryTimeline = ({
                       onSelect={onSelectActivity}
                       placeNumber={placeNumber}
                       travelSegment={travelSegmentElement}
+                      guideSegmentsBefore={guideBeforeElement}
                       tripId={tripId}
                       dayId={day.id}
                       onReplace={!isReadOnly && onReplace ? () => onReplace(activity.id) : undefined}
@@ -843,7 +852,12 @@ export const ItineraryTimeline = ({
                     {/* Guide segments after this activity */}
                     {!activeId && guideSegmentsAfter.map((seg) => (
                       <li key={seg.id} className="list-none">
-                        <GuideSegmentCard segment={seg} />
+                        <div className="flex gap-3">
+                          <div className="w-16 shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <GuideSegmentCard segment={seg} />
+                          </div>
+                        </div>
                       </li>
                     ))}
                   </Fragment>
