@@ -56,6 +56,15 @@ export type LandingPageContent = {
   featuredGuidesDescription?: string;
   featuredGuidesCtaText?: string;
 
+  // Seasonal Spotlight
+  seasonalSpotlightEyebrow?: string;
+  seasonalSpotlightSpringHeading?: string;
+  seasonalSpotlightSummerHeading?: string;
+  seasonalSpotlightAutumnHeading?: string;
+  seasonalSpotlightWinterHeading?: string;
+  seasonalSpotlightDescription?: string;
+  seasonalSpotlightCtaText?: string;
+
   // Final CTA
   finalCtaHeading?: string;
   finalCtaDescription?: string;

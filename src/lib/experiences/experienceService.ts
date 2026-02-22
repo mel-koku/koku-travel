@@ -86,6 +86,46 @@ export async function getFeaturedExperiences(
 }
 
 /**
+ * Fetches experiences matching a season via their bestSeason field in Sanity.
+ */
+export async function getExperiencesBySeason(
+  season: string,
+  limit: number = 3
+): Promise<ExperienceSummary[]> {
+  try {
+    const result = await sanityClient.fetch<ExperienceSummary[]>(
+      `*[_type == "experience" && editorialStatus == "published" && $season in bestSeason] | order(sortOrder asc, publishedAt desc) [0...$limit] {
+        _id,
+        title,
+        "slug": slug.current,
+        summary,
+        "featuredImage": featuredImage {
+          ...,
+          "url": asset->url
+        },
+        "thumbnailImage": thumbnailImage {
+          ...,
+          "url": asset->url
+        },
+        experienceType,
+        duration,
+        difficulty,
+        estimatedCost,
+        city,
+        region,
+        readingTimeMinutes,
+        tags,
+        publishedAt
+      }`,
+      { season, limit }
+    );
+    return result || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Fetches related experiences by type, excluding current.
  */
 export async function getRelatedExperiences(

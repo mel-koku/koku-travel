@@ -13,6 +13,9 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
 import { cn } from "@/lib/cn";
 
+// Filter out "in_season" — Places-only filter, not a trip builder vibe
+const TRIP_BUILDER_VIBES = VIBES.filter((v) => v.id !== "in_season");
+
 // Custom Torii icon since Lucide doesn't have one
 function ToriiIcon({ className }: { className?: string }) {
   return (
@@ -93,7 +96,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        {VIBES.map((vibe) => {
+        {TRIP_BUILDER_VIBES.map((vibe) => {
           const isSelected = selectedVibes.includes(vibe.id);
           const isDisabled = isMaxSelected && !isSelected;
           const Icon = VIBE_ICONS[vibe.icon] ?? Mountain;

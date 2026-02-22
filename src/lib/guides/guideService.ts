@@ -25,6 +25,7 @@ const GUIDE_FULL_COLUMNS = `
   featured_image,
   thumbnail_image,
   guide_type,
+  seasons,
   tags,
   city,
   region,
@@ -50,6 +51,7 @@ const GUIDE_SUMMARY_COLUMNS = `
   featured_image,
   thumbnail_image,
   guide_type,
+  seasons,
   city,
   region,
   reading_time_minutes,
@@ -83,6 +85,7 @@ export async function getPublishedGuides(): Promise<GuideSummary[]> {
     featuredImage: row.featured_image,
     thumbnailImage: row.thumbnail_image ?? undefined,
     guideType: row.guide_type,
+    seasons: row.seasons ?? undefined,
     city: row.city ?? undefined,
     region: row.region ?? undefined,
     readingTimeMinutes: row.reading_time_minutes ?? undefined,
@@ -142,6 +145,7 @@ export async function getFeaturedGuides(limit: number = 3): Promise<GuideSummary
     featuredImage: row.featured_image,
     thumbnailImage: row.thumbnail_image ?? undefined,
     guideType: row.guide_type,
+    seasons: row.seasons ?? undefined,
     city: row.city ?? undefined,
     region: row.region ?? undefined,
     readingTimeMinutes: row.reading_time_minutes ?? undefined,
@@ -210,6 +214,7 @@ export async function getGuidesByCity(
     featuredImage: row.featured_image,
     thumbnailImage: row.thumbnail_image ?? undefined,
     guideType: row.guide_type,
+    seasons: row.seasons ?? undefined,
     city: row.city ?? undefined,
     region: row.region ?? undefined,
     readingTimeMinutes: row.reading_time_minutes ?? undefined,
@@ -258,6 +263,46 @@ export async function getGuidesByType(
     featuredImage: row.featured_image,
     thumbnailImage: row.thumbnail_image ?? undefined,
     guideType: row.guide_type,
+    seasons: row.seasons ?? undefined,
+    city: row.city ?? undefined,
+    region: row.region ?? undefined,
+    readingTimeMinutes: row.reading_time_minutes ?? undefined,
+    tags: row.tags,
+  }));
+}
+
+/**
+ * Fetches guides matching a season.
+ * Matches guides with the given season in their `seasons` array,
+ * OR guides with guide_type "seasonal" (legacy).
+ */
+export async function getGuidesBySeason(
+  season: string,
+  limit: number = 6
+): Promise<GuideSummary[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("guides")
+    .select(GUIDE_SUMMARY_COLUMNS)
+    .eq("status", "published")
+    .or(`seasons.cs.{${season}},guide_type.eq.seasonal`)
+    .order("sort_order", { ascending: true })
+    .limit(limit);
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data.map((row) => ({
+    id: row.id,
+    title: row.title,
+    subtitle: row.subtitle ?? undefined,
+    summary: row.summary,
+    featuredImage: row.featured_image,
+    thumbnailImage: row.thumbnail_image ?? undefined,
+    guideType: row.guide_type,
+    seasons: row.seasons ?? undefined,
     city: row.city ?? undefined,
     region: row.region ?? undefined,
     readingTimeMinutes: row.reading_time_minutes ?? undefined,
