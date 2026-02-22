@@ -20,6 +20,8 @@ type NoteActivityRowProps = {
   transform?: Transform | null;
   transition?: string | null;
   isReadOnly?: boolean;
+  /** ID of the currently dragged activity (if any) — used to collapse non-dragged cards */
+  activeDragId?: string | null;
 };
 
 export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
@@ -34,6 +36,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
       transform,
       transition,
       isReadOnly,
+      activeDragId,
     },
     ref,
   ) => {
@@ -63,6 +66,36 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
     };
 
     const dragHandleLabel = `Drag to reorder note for ${TIME_OF_DAY_LABEL[activity.timeOfDay]}`;
+
+    // Compact mode: another card is being dragged — collapse to single-line row
+    const isCompactDrag = Boolean(activeDragId && activeDragId !== activity.id);
+
+    if (isCompactDrag) {
+      return (
+        <div
+          ref={ref}
+          style={dragStyles}
+          className="focus-visible:outline-none"
+          data-kind="note"
+          data-activity-id={activity.id}
+        >
+          <div className="flex items-center gap-2.5 rounded-xl border border-dashed border-sage/20 bg-sage/5 px-3 py-2">
+            {/* Time */}
+            <span className="w-12 shrink-0 text-right font-mono text-xs text-stone">
+              {noteStartTime || "—"}
+            </span>
+            {/* Note icon */}
+            <svg className="h-3.5 w-3.5 shrink-0 text-sage/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            {/* Title */}
+            <span className="truncate text-sm font-medium text-sage">
+              {activity.title ?? "Note"}
+            </span>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div
