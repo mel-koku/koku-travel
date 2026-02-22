@@ -75,10 +75,10 @@ export async function POST(request: NextRequest) {
       break;
     case "pagesContent":
       response = await handleSingletonRevalidation(body._type, [
-        "/explore",
+        "/places",
         "/guides",
         "/guides/authors",
-        "/favorites",
+        "/saved",
         "/dashboard",
         "/account",
         "/itinerary",

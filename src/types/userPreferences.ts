@@ -24,21 +24,21 @@ export type UserPreferences = {
   }>;
 
   /**
-   * Activities that were favorited by the user
+   * Activities that were saved by the user
    */
-  favoriteActivities: Array<{
+  savedActivities: Array<{
     activityId: string;
     locationId: string;
-    favoritedAt: string;
+    savedAt: string;
   }>;
 
   /**
-   * Preferred location categories (learned from favorites and replacements)
+   * Preferred location categories (learned from saved places and replacements)
    */
   preferredCategories: Record<string, number>; // category -> preference score
 
   /**
-   * Preferred price ranges (learned from favorites)
+   * Preferred price ranges (learned from saved places)
    */
   preferredPriceRanges: Record<string, number>; // price range -> preference score
 
@@ -59,7 +59,7 @@ export type UserPreferences = {
 export const DEFAULT_USER_PREFERENCES: UserPreferences = {
   replacedActivities: [],
   skippedActivities: [],
-  favoriteActivities: [],
+  savedActivities: [],
   preferredCategories: {},
   preferredPriceRanges: {},
   preferredActivityTypes: {},
@@ -69,7 +69,7 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
 /**
  * Preference event types
  */
-export type PreferenceEventType = "replace" | "skip" | "favorite" | "unfavorite";
+export type PreferenceEventType = "replace" | "skip" | "save" | "unsave";
 
 /**
  * Preference event data

@@ -3,14 +3,14 @@
 import { useMemo } from "react";
 
 export type AskKokuContext =
-  | "explore"
+  | "places"
   | "itinerary"
   | "dashboard"
   | "trip-builder"
   | "default";
 
 const SUGGESTION_POOLS: Record<AskKokuContext, string[]> = {
-  explore: [
+  places: [
     "What's the best hidden gem nearby?",
     "Show me top-rated shrines",
     "Where should I eat in this area?",

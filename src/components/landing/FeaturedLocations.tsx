@@ -13,7 +13,7 @@ import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 const LocationExpanded = dynamic(
   () =>
-    import("@/components/features/explore/LocationExpanded").then(
+    import("@/components/features/places/LocationExpanded").then(
       (m) => ({
         default: m.LocationExpanded,
       })
@@ -109,7 +109,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
               <div>
                 <div className="mt-6 mb-4 h-px w-8 bg-brand-primary/60" />
                 <Link
-                  href="/explore"
+                  href="/places"
                   className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
                 >
                   {content?.featuredLocationsCtaText ?? "Explore all"}
@@ -174,7 +174,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
         <div className="mt-6 px-6">
           <div className="h-px w-8 bg-brand-primary/60 mb-4" />
           <Link
-            href="/explore"
+            href="/places"
             className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
             {content?.featuredLocationsCtaText ?? "Explore all"}

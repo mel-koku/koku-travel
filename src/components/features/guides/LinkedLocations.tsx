@@ -58,10 +58,10 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                 distance={30}
               >
                 <Link
-                  href={`/explore?location=${location.id}`}
+                  href={`/places?location=${location.id}`}
                   className="group relative block h-full overflow-hidden rounded-xl"
                   onMouseEnter={() =>
-                    isEnabled && setCursorState("explore")
+                    isEnabled && setCursorState("places")
                   }
                   onMouseLeave={() =>
                     isEnabled && setCursorState("default")

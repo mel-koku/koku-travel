@@ -9,7 +9,7 @@ import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { parallaxSection } from "@/lib/motion";
 
 type StatsSectionProps = {
-  favoritesCount: number;
+  savedCount: number;
   guideBookmarksCount: number;
   tripsCount: number;
   content?: {
@@ -19,7 +19,7 @@ type StatsSectionProps = {
 };
 
 export function StatsSection({
-  favoritesCount,
+  savedCount,
   guideBookmarksCount,
   tripsCount,
   content,
@@ -81,17 +81,17 @@ export function StatsSection({
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4 sm:gap-8 md:gap-12">
             <div className="text-center">
               <AnimatedNumber
-                value={favoritesCount}
+                value={savedCount}
                 className="font-mono text-2xl font-medium text-brand-secondary sm:text-3xl"
               />
               <p className="mt-1.5 text-[10px] uppercase tracking-ultra text-white/40">
-                Favorites
+                Saved
               </p>
               <Link
-                href={favoritesCount > 0 ? "/favorites" : "/explore"}
+                href={savedCount > 0 ? "/saved" : "/places"}
                 className="link-reveal mt-2 inline-block py-2 px-1 text-[11px] uppercase tracking-wide text-white/50 transition-colors hover:text-white/80"
               >
-                {favoritesCount > 0 ? "View favorites" : "Explore places"}
+                {savedCount > 0 ? "View saved" : "Explore places"}
               </Link>
             </div>
 

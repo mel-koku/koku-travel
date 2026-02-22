@@ -4,7 +4,7 @@
  */
 
 /**
- * LocalStorage key for app state (user, favorites, trips, etc.)
+ * LocalStorage key for app state (user, saved places, trips, etc.)
  */
 export const APP_STATE_STORAGE_KEY = "koku_app_state_v1";
 
@@ -14,9 +14,9 @@ export const APP_STATE_STORAGE_KEY = "koku_app_state_v1";
 export const TRIP_BUILDER_STORAGE_KEY = "koku_trip_builder";
 
 /**
- * LocalStorage key for wishlist/favorites (legacy, migrated to APP_STATE_STORAGE_KEY)
+ * LocalStorage key for saved places (legacy, migrated to APP_STATE_STORAGE_KEY)
  */
-export const WISHLIST_STORAGE_KEY = "koku_wishlist";
+export const SAVED_STORAGE_KEY = "koku_saved";
 
 /**
  * LocalStorage key for filter metadata (cities, categories, regions)
@@ -34,9 +34,9 @@ export const DISMISSED_PROMPTS_PREFIX = "koku:dismissed-prompts:";
 export const CONFIDENCE_CHECKLIST_STORAGE_KEY = "koku:trip-checklist";
 
 /**
- * LocalStorage key for first-favorite educational toast
+ * LocalStorage key for first-save educational toast
  */
-export const FIRST_FAVORITE_TOAST_STORAGE_KEY = "koku_first_favorite_toast_shown";
+export const FIRST_SAVE_TOAST_STORAGE_KEY = "koku_first_save_toast_shown";
 
 /**
  * LocalStorage key for user preference learning data

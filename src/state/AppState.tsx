@@ -3,10 +3,10 @@
 import type { Itinerary, ItineraryActivity, ItineraryEdit } from "@/types/itinerary";
 import type { DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
-import { loadWishlist } from "@/lib/wishlistStorage";
+import { loadSaved } from "@/lib/savedStorage";
 import { APP_STATE_STORAGE_KEY, APP_STATE_DEBOUNCE_MS, STABLE_DEFAULT_USER_ID } from "@/lib/constants";
 import {
-  WISHLIST_STORAGE_KEY,
+  SAVED_STORAGE_KEY,
   TRIP_BUILDER_STORAGE_KEY,
   USER_PREFERENCES_STORAGE_KEY,
   FILTER_METADATA_STORAGE_KEY,
@@ -38,9 +38,9 @@ import {
 } from "@/services/trip";
 import { useEditHistory, type EditHistoryInternalState } from "./useEditHistory";
 import {
-  syncFavoriteToggle,
+  syncSavedToggle,
   syncBookmarkToggle,
-  fetchFavorites,
+  fetchSaved,
   fetchGuideBookmarks,
   fetchTrips,
   syncTripSave,
@@ -59,7 +59,7 @@ export type UserProfile = {
 
 export type AppStateShape = {
   user: UserProfile;
-  favorites: string[];
+  saved: string[];
   guideBookmarks: string[];
   trips: StoredTrip[];
 
@@ -74,8 +74,8 @@ export type AppStateShape = {
 
   // Actions
   setUser: (patch: Partial<UserProfile>) => void;
-  toggleFavorite: (id: string) => void;
-  isFavorite: (id: string) => boolean;
+  toggleSave: (id: string) => void;
+  isSaved: (id: string) => boolean;
   toggleGuideBookmark: (id: string) => void;
   isGuideBookmarked: (id: string) => boolean;
   createTrip: (input: CreateTripInput) => string;
@@ -107,7 +107,7 @@ function newId(): string {
 
 const defaultState: AppStateShape = {
   user: { id: STABLE_DEFAULT_USER_ID, displayName: "Guest" },
-  favorites: [],
+  saved: [],
   guideBookmarks: [],
   trips: [],
   isLoadingRefresh: false,
@@ -117,8 +117,8 @@ const defaultState: AppStateShape = {
   currentHistoryIndex: {},
 
   setUser: () => {},
-  toggleFavorite: () => {},
-  isFavorite: () => false,
+  toggleSave: () => {},
+  isSaved: () => false,
   toggleGuideBookmark: () => {},
   isGuideBookmarked: () => false,
   createTrip: () => "",
@@ -145,7 +145,7 @@ const Ctx = createContext<AppStateShape>(defaultState);
 
 type InternalState = Pick<
   AppStateShape,
-  "user" | "favorites" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "editHistory" | "currentHistoryIndex"
+  "user" | "saved" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "editHistory" | "currentHistoryIndex"
 >;
 
 const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): UserProfile => {
@@ -174,7 +174,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
   const [state, setState] = useState<InternalState>({
     user: defaultState.user,
-    favorites: [],
+    saved: [],
     guideBookmarks: [],
     trips: [],
     isLoadingRefresh: false,
@@ -192,7 +192,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     if (typeof window === "undefined") return;
     try {
       const raw = localStorage.getItem(APP_STATE_STORAGE_KEY);
-      const legacyFavorites = loadWishlist();
+      const legacySaved = loadSaved();
 
       let nextState: InternalState;
       if (raw) {
@@ -201,7 +201,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         const userId = user.id === STABLE_DEFAULT_USER_ID ? newId() : user.id;
         nextState = {
           user: { ...user, id: userId },
-          favorites: parsed.favorites ?? [],
+          // Support both old "favorites" key and new "saved" key in persisted state
+          saved: parsed.saved ?? parsed.favorites ?? [],
           guideBookmarks: parsed.guideBookmarks ?? [],
           trips: sanitizeTrips(parsed.trips),
           isLoadingRefresh: false,
@@ -213,7 +214,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       } else {
         nextState = {
           user: { ...defaultState.user, id: newId() },
-          favorites: [],
+          saved: [],
           guideBookmarks: [],
           trips: [],
           isLoadingRefresh: false,
@@ -224,9 +225,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         };
       }
 
-      if (legacyFavorites.length > 0) {
-        const mergedFavorites = Array.from(new Set([...nextState.favorites, ...legacyFavorites]));
-        nextState = { ...nextState, favorites: mergedFavorites };
+      if (legacySaved.length > 0) {
+        const mergedSaved = Array.from(new Set([...nextState.saved, ...legacySaved]));
+        nextState = { ...nextState, saved: mergedSaved };
       }
 
       setState(nextState);
@@ -236,8 +237,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         logger.warn("Failed to persist state to localStorage", { error: e instanceof Error ? e.message : String(e) });
       }
 
-      if (legacyFavorites.length > 0) {
-        localStorage.removeItem(WISHLIST_STORAGE_KEY);
+      if (legacySaved.length > 0) {
+        localStorage.removeItem(SAVED_STORAGE_KEY);
       }
     } catch {
       // Ignore malformed data
@@ -269,8 +270,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const [favoritesResult, bookmarksResult, tripsResult] = await Promise.all([
-        fetchFavorites(supabase, user.id),
+      const [savedResult, bookmarksResult, tripsResult] = await Promise.all([
+        fetchSaved(supabase, user.id),
         fetchGuideBookmarks(supabase, user.id),
         fetchTrips(supabase, user.id),
       ]);
@@ -284,7 +285,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         return {
           ...s,
           user: buildProfileFromSupabase(user, s.user),
-          favorites: favoritesResult.success ? (favoritesResult.data ?? []) : s.favorites,
+          saved: savedResult.success ? (savedResult.data ?? []) : s.saved,
           guideBookmarks: bookmarksResult.success ? (bookmarksResult.data ?? []) : s.guideBookmarks,
           trips: mergedTrips,
           isLoadingRefresh: false,
@@ -329,7 +330,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     const timeoutId = setTimeout(() => {
       const persistedState = {
         user: state.user,
-        favorites: state.favorites,
+        saved: state.saved,
         guideBookmarks: state.guideBookmarks,
         trips: state.trips,
         dayEntryPoints: state.dayEntryPoints,
@@ -344,7 +345,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     }, APP_STATE_DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
-  }, [state.user, state.favorites, state.guideBookmarks, state.trips, state.dayEntryPoints, state.editHistory, state.currentHistoryIndex]);
+  }, [state.user, state.saved, state.guideBookmarks, state.trips, state.dayEntryPoints, state.editHistory, state.currentHistoryIndex]);
 
   // Ref tracking current trips so beforeunload/visibilitychange can flush without stale closures
   const tripsRef = useRef(state.trips);
@@ -505,29 +506,29 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     });
   }, [supabase]);
 
-  // Favorites actions
-  const toggleFavorite = useCallback(
+  // Saved places actions
+  const toggleSave = useCallback(
     (id: string) => {
       let existed = false;
       setState((s) => {
-        const set = new Set(s.favorites);
+        const set = new Set(s.saved);
         existed = set.has(id);
         if (existed) {
           set.delete(id);
         } else {
           set.add(id);
         }
-        return { ...s, favorites: Array.from(set) };
+        return { ...s, saved: Array.from(set) };
       });
 
       if (supabase) {
         void (async () => {
-          const result = await syncFavoriteToggle(supabase, id, existed);
+          const result = await syncSavedToggle(supabase, id, existed);
           if (!result.success) {
             setState((s) => {
-              const set = new Set(s.favorites);
+              const set = new Set(s.saved);
               if (existed) set.add(id); else set.delete(id);
-              return { ...s, favorites: Array.from(set) };
+              return { ...s, saved: Array.from(set) };
             });
           }
         })();
@@ -639,7 +640,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const clearAllLocalData = useCallback(() => {
     const next: InternalState = {
       user: { id: newId(), displayName: "Guest" },
-      favorites: [],
+      saved: [],
       guideBookmarks: [],
       trips: [],
       isLoadingRefresh: false,
@@ -655,7 +656,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       } catch (e) {
         logger.warn("Failed to persist cleared state to localStorage", { error: e instanceof Error ? e.message : String(e) });
       }
-      localStorage.removeItem(WISHLIST_STORAGE_KEY);
+      localStorage.removeItem(SAVED_STORAGE_KEY);
       localStorage.removeItem(USER_PREFERENCES_STORAGE_KEY);
       localStorage.removeItem(FILTER_METADATA_STORAGE_KEY);
       localStorage.removeItem(TRIP_STEP_STORAGE_KEY);
@@ -670,8 +671,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     () => ({
       ...state,
       setUser,
-      toggleFavorite,
-      isFavorite: (id: string) => state.favorites.includes(id),
+      toggleSave,
+      isSaved: (id: string) => state.saved.includes(id),
       toggleGuideBookmark,
       isGuideBookmarked: (id: string) => state.guideBookmarks.includes(id),
       createTrip,
@@ -695,7 +696,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [
       state,
       setUser,
-      toggleFavorite,
+      toggleSave,
       toggleGuideBookmark,
       createTrip,
       updateTripItinerary,

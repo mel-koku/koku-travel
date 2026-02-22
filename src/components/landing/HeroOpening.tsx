@@ -114,7 +114,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
                 </a>
               </Magnetic>
               <a
-                href="/explore"
+                href="/places"
                 className="inline-flex h-14 items-center justify-center rounded-xl border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98]"
               >
                 {secondaryCta}
@@ -221,7 +221,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
               </a>
             </Magnetic>
             <a
-              href="/explore"
+              href="/places"
               className="inline-flex h-14 w-full items-center justify-center rounded-xl border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
             >
               {secondaryCta}

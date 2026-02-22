@@ -32,7 +32,7 @@ type DashboardClientProps = {
 };
 
 export function DashboardClient({ initialAuthUser, content }: DashboardClientProps) {
-  const { user, setUser, favorites, guideBookmarks, trips, deleteTrip, restoreTrip, clearAllLocalData, refreshFromSupabase, isLoadingRefresh } = useAppState();
+  const { user, setUser, saved, guideBookmarks, trips, deleteTrip, restoreTrip, clearAllLocalData, refreshFromSupabase, isLoadingRefresh } = useAppState();
   const [sessionUserId, setSessionUserId] = useState<string | null>(initialAuthUser?.id ?? null);
   const [userSelectedTripId, setUserSelectedTripId] = useState<string | null>(null);
   const [pendingUndo, setPendingUndo] = useState<null | { trip: StoredTrip }>(null);
@@ -258,7 +258,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
 
       {/* Stats Section — standalone atmospheric band */}
       <StatsSection
-        favoritesCount={favorites.length}
+        savedCount={saved.length}
         guideBookmarksCount={guideBookmarks.length}
         tripsCount={tripsWithItinerary.length}
         content={{

@@ -14,7 +14,7 @@ import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
 import { PlanningWarningsList } from "./PlanningWarning";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
-import { FavoritesInTripPreview } from "./FavoritesInTripPreview";
+import { SavedInTripPreview } from "./SavedInTripPreview";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
 import { FormField } from "@/components/ui/FormField";
@@ -164,8 +164,8 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
       {/* Planning Warnings */}
       {warnings.length > 0 && <PlanningWarningsList warnings={warnings} />}
 
-      {/* Favorites that match selected cities */}
-      <FavoritesInTripPreview selectedCities={data.cities} />
+      {/* Saved places that match selected cities */}
+      <SavedInTripPreview selectedCities={data.cities} />
 
       {/* Preferences — Horizontal scroll row */}
       <div>

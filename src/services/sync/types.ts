@@ -8,7 +8,7 @@ export type SyncResult<T> = {
   error?: string;
 };
 
-export type FavoriteRow = {
+export type SavedRow = {
   place_id: string;
   location_id?: string;
 };

@@ -47,14 +47,14 @@ type AskKokuVideoImportCardProps = {
 };
 
 export function AskKokuVideoImportCard({ data }: AskKokuVideoImportCardProps) {
-  const { favorites, toggleFavorite } = useAppState();
+  const { saved, toggleSave } = useAppState();
 
   if (data.error || !data.location) {
     return null; // Error messages are rendered by the text content
   }
 
   const loc = data.location;
-  const isFavorited = favorites.includes(loc.id);
+  const isSavedPlace = saved.includes(loc.id);
   const imageSrc = resizePhotoUrl(loc.primaryPhotoUrl ?? loc.image, 200) || FALLBACK_IMAGE;
   const platform = data.videoMetadata?.platform;
 
@@ -68,7 +68,7 @@ export function AskKokuVideoImportCard({ data }: AskKokuVideoImportCardProps) {
       </div>
 
       <Link
-        href={`/explore?location=${loc.id}`}
+        href={`/places?location=${loc.id}`}
         className="group flex items-center gap-3 rounded-xl border border-border bg-surface p-2.5 transition-colors hover:border-brand-primary/30"
       >
         <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
@@ -116,15 +116,15 @@ export function AskKokuVideoImportCard({ data }: AskKokuVideoImportCardProps) {
       <div className="mt-3 flex items-center gap-2">
         <button
           type="button"
-          onClick={() => toggleFavorite(loc.id)}
+          onClick={() => toggleSave(loc.id)}
           className={`flex h-10 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-medium transition-transform active:scale-[0.98] ${
-            isFavorited
+            isSavedPlace
               ? "border border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
               : "bg-brand-primary text-white"
           }`}
         >
-          <Heart className={`h-4 w-4 ${isFavorited ? "fill-current" : ""}`} />
-          {isFavorited ? "Saved" : "Save to Favorites"}
+          <Heart className={`h-4 w-4 ${isSavedPlace ? "fill-current" : ""}`} />
+          {isSavedPlace ? "Saved" : "Save"}
         </button>
       </div>
 

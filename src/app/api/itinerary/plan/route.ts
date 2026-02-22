@@ -78,12 +78,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { builderData, tripId, favoriteIds } = validation.data;
+  const { builderData, tripId, savedIds } = validation.data;
 
   try {
     // Check cache first (before expensive generation)
-    // Skip cache when user has favorites or content context — these are personalized
-    const hasPersonalization = (favoriteIds && favoriteIds.length > 0) || builderData.contentContext;
+    // Skip cache when user has saved places or content context — these are personalized
+    const hasPersonalization = (savedIds && savedIds.length > 0) || builderData.contentContext;
     const cachedResult = !hasPersonalization
       ? await getCachedItinerary(builderData)
       : null;
@@ -126,12 +126,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate trip (returns both domain model and raw itinerary)
-    // Include favoriteIds if provided (user's favorited locations from Explore page)
+    // Include savedIds if provided (user's saved locations from Places page)
     // 25s timeout prevents hanging upstream from blocking indefinitely
     const GENERATION_TIMEOUT_MS = 25_000;
     const timeoutSentinel = Symbol("timeout");
     const generationResult = await Promise.race([
-      generateTripFromBuilderData(builderData, finalTripId, favoriteIds),
+      generateTripFromBuilderData(builderData, finalTripId, savedIds),
       new Promise<typeof timeoutSentinel>((resolve) =>
         setTimeout(() => resolve(timeoutSentinel), GENERATION_TIMEOUT_MS),
       ),

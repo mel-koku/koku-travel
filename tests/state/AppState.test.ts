@@ -10,9 +10,9 @@ vi.mock("@/lib/supabase/client", () => ({
   createClient: vi.fn(),
 }));
 
-vi.mock("@/lib/wishlistStorage", () => ({
-  loadWishlist: vi.fn().mockReturnValue([]),
-  WISHLIST_KEY: "koku_wishlist",
+vi.mock("@/lib/savedStorage", () => ({
+  loadSaved: vi.fn().mockReturnValue([]),
+  SAVED_KEY: "koku_saved",
 }));
 
 type SupabaseBrowserClient = ReturnType<typeof createClient>;
@@ -39,13 +39,13 @@ describe("AppState", () => {
 
   describe("localStorage persistence", () => {
     it("should load state from localStorage on mount", async () => {
-      const savedState = {
+      const persistedState = {
         user: { id: "test-id", displayName: "Test User" },
-        favorites: ["place-1", "place-2"],
+        saved: ["place-1", "place-2"],
         guideBookmarks: ["guide-1"],
         trips: [],
       };
-      localStorage.setItem("koku_app_state_v1", JSON.stringify(savedState));
+      localStorage.setItem("koku_app_state_v1", JSON.stringify(persistedState));
 
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
@@ -57,7 +57,7 @@ describe("AppState", () => {
       });
 
       expect(result.current.user.displayName).toBe("Test User");
-      expect(result.current.favorites).toEqual(["place-1", "place-2"]);
+      expect(result.current.saved).toEqual(["place-1", "place-2"]);
       expect(result.current.guideBookmarks).toEqual(["guide-1"]);
     });
 
@@ -182,7 +182,7 @@ describe("AppState", () => {
       expect(result.current.user.displayName).toBe("New Name");
     });
 
-    it("should toggle favorites", async () => {
+    it("should toggle saved", async () => {
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
       });
@@ -192,19 +192,19 @@ describe("AppState", () => {
         expect(result.current.user).toBeDefined();
       });
 
-      expect(result.current.isFavorite("place-1")).toBe(false);
+      expect(result.current.isSaved("place-1")).toBe(false);
 
       act(() => {
-        result.current.toggleFavorite("place-1");
+        result.current.toggleSave("place-1");
       });
 
-      expect(result.current.isFavorite("place-1")).toBe(true);
+      expect(result.current.isSaved("place-1")).toBe(true);
 
       act(() => {
-        result.current.toggleFavorite("place-1");
+        result.current.toggleSave("place-1");
       });
 
-      expect(result.current.isFavorite("place-1")).toBe(false);
+      expect(result.current.isSaved("place-1")).toBe(false);
     });
 
     it("should create trip", async () => {
@@ -329,10 +329,10 @@ describe("AppState", () => {
   });
 
   describe("selective state persistence", () => {
-    it("should only persist user, favorites, guideBookmarks, and trips", async () => {
+    it("should only persist user, saved, guideBookmarks, and trips", async () => {
       vi.useFakeTimers();
       localStorage.clear();
-      
+
       const { result } = renderHook(() => useAppState(), {
         wrapper: AppStateProvider,
       });
@@ -344,7 +344,7 @@ describe("AppState", () => {
 
       act(() => {
         result.current.setUser({ displayName: "Test" });
-        result.current.toggleFavorite("place-1");
+        result.current.toggleSave("place-1");
       });
 
       // Advance timers to trigger debounced write
@@ -359,7 +359,7 @@ describe("AppState", () => {
       if (stored) {
         const parsed = JSON.parse(stored);
         expect(parsed).toHaveProperty("user");
-        expect(parsed).toHaveProperty("favorites");
+        expect(parsed).toHaveProperty("saved");
         expect(parsed).toHaveProperty("guideBookmarks");
         expect(parsed).toHaveProperty("trips");
         expect(parsed).not.toHaveProperty("isLoadingRefresh");
