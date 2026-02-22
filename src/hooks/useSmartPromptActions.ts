@@ -252,7 +252,7 @@ export function useSmartPromptActions(
       );
 
       if (!data || !data.recommendation) {
-        showToast("No more options. Try different filters or skip.", { variant: "error" });
+        showToast("No more options. Try different filters or skip.", { variant: "info" });
         return;
       }
 

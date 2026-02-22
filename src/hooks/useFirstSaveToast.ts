@@ -23,7 +23,7 @@ export function useFirstSaveToast() {
     shownRef.current = true;
     setLocal(FIRST_SAVE_TOAST_STORAGE_KEY, "1");
 
-    showToast("Your saved places are automatically included when you build a trip.", {
+    showToast("Saved places are included when you build a trip.", {
       variant: "info",
       actionLabel: "Plan Trip",
       actionHref: "/trip-builder",

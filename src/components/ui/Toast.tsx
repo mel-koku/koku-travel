@@ -20,9 +20,9 @@ type ToastProps = {
 };
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
-  success: "bg-semantic-success text-white",
+  success: "bg-success text-white",
   info: "bg-charcoal text-white",
-  error: "bg-semantic-error text-white",
+  error: "bg-error text-white",
 };
 
 export function Toast({ toast, onDismiss }: ToastProps) {
@@ -54,7 +54,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
     <div
       role="alert"
       className={cn(
-        "flex items-center gap-3 rounded-lg px-4 py-3 shadow-lg transition-all duration-300",
+        "flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg transition-all duration-300",
         VARIANT_STYLES[toast.variant],
         isVisible
           ? "translate-y-0 opacity-100"
@@ -101,7 +101,7 @@ export function ToastContainer({ toasts, onDismiss }: ToastContainerProps) {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:w-auto z-[1300] flex flex-col gap-2 pb-[env(safe-area-inset-bottom)]">
+    <div className="fixed bottom-4 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-auto z-[1300] flex flex-col items-center gap-2 pb-[env(safe-area-inset-bottom)]">
       {toasts.map((toast) => (
         <Toast key={toast.id} toast={toast} onDismiss={onDismiss} />
       ))}

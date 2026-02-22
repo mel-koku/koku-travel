@@ -56,7 +56,7 @@ export function CitySearchBar({ selectedCities, onSelectCity }: CitySearchBarPro
       const wasSelected = selectedCities.has(cityId);
       onSelectCity(cityId);
       showToast(
-        wasSelected ? `Removed ${cityName}` : `Added ${cityName} to your trip`,
+        wasSelected ? `Removed ${cityName}` : `Added ${cityName}`,
         { variant: wasSelected ? "info" : "success", duration: 2000 },
       );
       setSearchInput("");
