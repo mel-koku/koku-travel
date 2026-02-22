@@ -17,6 +17,7 @@ import { sanitizeString } from "@/lib/api/sanitization";
 import { debounce } from "@/lib/utils";
 import { TOAST_DURATION_MS, MAX_DISPLAY_NAME_LENGTH } from "@/lib/constants";
 import { AccountSection } from "./components/AccountSection";
+import { VideoImportInput } from "@/components/features/video-import/VideoImportInput";
 import { StatsSection } from "./components/StatsSection";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
@@ -340,6 +341,26 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                 </div>
               </ScrollReveal>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Discover from Video */}
+      <section className="bg-background py-12 sm:py-16 lg:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <ScrollReveal>
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-secondary">Discover</p>
+            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">
+              Import from Video
+            </h2>
+            <p className="mt-2 max-w-lg text-sm text-foreground-secondary">
+              Paste a YouTube, TikTok, or Instagram link to identify and save the Japan location featured in the video.
+            </p>
+          </ScrollReveal>
+          <div className="mt-6 max-w-md">
+            <ScrollReveal delay={0.1} distance={20}>
+              <VideoImportInput />
+            </ScrollReveal>
           </div>
         </div>
       </section>

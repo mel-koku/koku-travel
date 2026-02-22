@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Video } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ActiveFilter } from "@/types/filters";
 
@@ -18,6 +18,9 @@ type CategoryBarProps = {
   /** Ask Koku chat integration */
   onAskKokuClick?: () => void;
   isChatOpen?: boolean;
+  /** Video import */
+  onVideoImportClick?: () => void;
+  isVideoImportOpen?: boolean;
   /** Discover Now mode */
   isDiscoverMode?: boolean;
   onDiscoverToggle?: () => void;
@@ -33,6 +36,8 @@ export function CategoryBar({
   onQueryChange,
   onAskKokuClick,
   isChatOpen = false,
+  onVideoImportClick,
+  isVideoImportOpen = false,
   isDiscoverMode = false,
   onDiscoverToggle,
 }: CategoryBarProps) {
@@ -149,6 +154,23 @@ export function CategoryBar({
                   <path strokeLinecap="round" d="M16.24 7.76l-2.12 6.36-6.36 2.12 2.12-6.36z" />
                 </svg>
                 <span className="hidden sm:inline">{isDiscoverMode ? "Browse" : "Discover"}</span>
+              </button>
+            )}
+
+            {/* Import from Video button */}
+            {onVideoImportClick && (
+              <button
+                onClick={onVideoImportClick}
+                aria-label="Import from video"
+                className={cn(
+                  "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0",
+                  isVideoImportOpen
+                    ? "border-brand-secondary bg-brand-secondary/10 text-brand-secondary"
+                    : "border-border text-stone hover:border-brand-secondary hover:text-foreground"
+                )}
+              >
+                <Video className="h-4 w-4" />
+                <span className="hidden sm:inline">Import</span>
               </button>
             )}
 
