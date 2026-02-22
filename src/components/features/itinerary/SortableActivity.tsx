@@ -22,6 +22,8 @@ type SortableActivityProps = {
   onReplace?: () => void;
   conflicts?: ItineraryConflict[];
   isReadOnly?: boolean;
+  /** ID of the currently dragged activity (if any) — used to collapse non-dragged cards */
+  activeDragId?: string | null;
 };
 
 export const SortableActivity = memo(function SortableActivity({
@@ -40,6 +42,7 @@ export const SortableActivity = memo(function SortableActivity({
   onReplace,
   conflicts,
   isReadOnly,
+  activeDragId,
 }: SortableActivityProps) {
   const {
     attributes,
@@ -73,12 +76,12 @@ export const SortableActivity = memo(function SortableActivity({
           <div className="h-1 w-1 rounded-full bg-brand-primary" />
         </div>
       )}
-      {travelSegment && !isDragging && (
+      {travelSegment && !isDragging && !activeDragId && (
         <div className="mb-3">
           {travelSegment}
         </div>
       )}
-      {guideSegmentsBefore && !isDragging && (
+      {guideSegmentsBefore && !isDragging && !activeDragId && (
         <div className="mb-3">
           {guideSegmentsBefore}
         </div>
@@ -111,6 +114,7 @@ export const SortableActivity = memo(function SortableActivity({
           onReplace={onReplace}
           conflicts={conflicts}
           isReadOnly={isReadOnly}
+          activeDragId={activeDragId}
         />
       )}
     </li>

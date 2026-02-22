@@ -196,6 +196,8 @@ type PlaceActivityRowProps = {
   /** Hide the drag handle (for entry points) */
   hideDragHandle?: boolean;
   isReadOnly?: boolean;
+  /** ID of the currently dragged activity (if any) — used to collapse non-dragged cards */
+  activeDragId?: string | null;
 };
 
 export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRowProps>(
@@ -221,6 +223,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       conflicts,
       hideDragHandle,
       isReadOnly,
+      activeDragId,
     },
     ref,
   ) => {
@@ -450,6 +453,50 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     const isStartEntryPoint = activity.locationId?.startsWith("__entry_point_start__");
     const isEndEntryPoint = activity.locationId?.startsWith("__entry_point_end__");
     const displayLabel = isStartEntryPoint ? "S" : isEndEntryPoint ? "E" : placeNumber;
+
+    // Compact mode: another card is being dragged — collapse to single-line row
+    const isCompactDrag = Boolean(activeDragId && activeDragId !== activity.id);
+
+    if (isCompactDrag) {
+      return (
+        <div
+          ref={ref}
+          style={dragStyles}
+          className="focus-visible:outline-none"
+          data-kind="place"
+          data-activity-id={activity.id}
+        >
+          <div className="flex items-center gap-2.5 rounded-xl bg-background px-3 py-2 shadow-sm">
+            {/* Time */}
+            <span className="w-12 shrink-0 text-right font-mono text-xs font-medium text-foreground-secondary">
+              {displayArrivalTime ?? activity.timeOfDay ?? "—"}
+            </span>
+
+            {/* Category color dot */}
+            <div className={`h-2 w-2 shrink-0 rounded-full ${colorScheme.badge}`} />
+
+            {/* Number badge */}
+            {displayLabel !== undefined && (
+              <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${colorScheme.badge} ${colorScheme.badgeText}`}>
+                {displayLabel}
+              </span>
+            )}
+
+            {/* Title */}
+            <span className="min-w-0 truncate text-sm font-medium text-foreground">
+              {activity.title}
+            </span>
+
+            {/* Neighborhood */}
+            {activity.neighborhood && (
+              <span className="ml-auto shrink-0 text-xs text-stone">
+                {activity.neighborhood}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div

@@ -848,6 +848,7 @@ export const ItineraryTimeline = ({
                       onReplace={!isReadOnly && onReplace ? () => onReplace(activity.id) : undefined}
                       conflicts={activityConflicts}
                       isReadOnly={isReadOnly}
+                      activeDragId={activeId}
                     />
                     {/* Guide segments after this activity */}
                     {!activeId && guideSegmentsAfter.map((seg) => (
