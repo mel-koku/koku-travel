@@ -125,8 +125,11 @@ const REGION_NAME_TO_ID = new Map<string, KnownRegionId>(
  * Falls back to cityInterests metadata for dynamic (non-known) cities.
  */
 export function getRegionForCity(cityId: CityId): RegionId | undefined {
-  if (isKnownCity(cityId)) {
-    return CITY_TO_REGION[cityId];
+  // Normalize to lowercase — known city IDs are lowercase, but user input
+  // or dynamic cities may arrive in mixed case (e.g. "Kyoto" vs "kyoto")
+  const normalized = cityId.toLowerCase() as CityId;
+  if (isKnownCity(normalized)) {
+    return CITY_TO_REGION[normalized];
   }
   // Dynamic city — look up region from cityInterests metadata
   const meta = getCityMetadata(cityId);

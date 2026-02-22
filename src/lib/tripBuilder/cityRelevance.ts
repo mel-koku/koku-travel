@@ -16,7 +16,27 @@ function getCityInterestsData(): CityInterestsJson {
     // Dynamic require for synchronous access after first load.
     // Next.js will code-split this into a separate chunk.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    _cityInterestsData = require("@/data/cityInterests.json") as CityInterestsJson;
+    const raw = require("@/data/cityInterests.json");
+
+    // Detect format: nested (has .cities + .metadata) vs flat (city names at top level)
+    if (raw.cities && raw.metadata) {
+      _cityInterestsData = raw as CityInterestsJson;
+    } else {
+      // Flat format: each top-level key is a city name → interest counts
+      const cities: Record<string, CityInterestCounts> = {};
+      for (const [key, value] of Object.entries(raw)) {
+        if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+          cities[key] = value as CityInterestCounts;
+        }
+      }
+      _cityInterestsData = {
+        generatedAt: "",
+        totalLocations: 0,
+        totalCities: Object.keys(cities).length,
+        cities,
+        metadata: {},
+      };
+    }
   }
   return _cityInterestsData;
 }
@@ -171,7 +191,8 @@ export function getRelevantCities(
   if (selectedInterests.length === 0) {
     // Return top cities by location count when no interests selected
     const data = getCityInterestsData();
-    return Object.keys(data.cities)
+    const cityNames = Object.keys(data.cities);
+    return cityNames
       .map((city) => ({
         city,
         relevance: 0,
@@ -179,7 +200,7 @@ export function getRelevantCities(
         locationCount: data.metadata[city]?.locationCount ?? 0,
         coordinates: data.metadata[city]?.coordinates,
         region: data.metadata[city]?.region,
-        interestCounts: data.cities[city] as Record<string, number>,
+        interestCounts: (data.cities[city] ?? {}) as Record<string, number>,
       }))
       .sort((a, b) => b.locationCount - a.locationCount);
   }
@@ -212,7 +233,11 @@ export function getAllCities(): Array<{
   region?: string;
 }> {
   const data = getCityInterestsData();
-  return Object.keys(data.metadata)
+  // Use metadata keys when available, otherwise fall back to cities keys
+  const cityNames = Object.keys(data.metadata).length > 0
+    ? Object.keys(data.metadata)
+    : Object.keys(data.cities);
+  return cityNames
     .map((city) => ({
       city,
       locationCount: data.metadata[city]?.locationCount ?? 0,
@@ -252,8 +277,8 @@ export function getCityInterestsStats(): {
 } {
   const data = getCityInterestsData();
   return {
-    totalLocations: data.totalLocations,
-    totalCities: data.totalCities,
-    generatedAt: data.generatedAt,
+    totalLocations: data.totalLocations ?? 0,
+    totalCities: data.totalCities ?? Object.keys(data.cities).length,
+    generatedAt: data.generatedAt ?? "",
   };
 }
