@@ -351,10 +351,10 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-secondary">Discover</p>
             <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">
-              Import from Video
+              Import from Link
             </h2>
             <p className="mt-2 max-w-lg text-sm text-foreground-secondary">
-              Paste a YouTube, TikTok, or Instagram link to identify and save the Japan location featured in the video.
+              Paste a YouTube, TikTok, or Instagram link to identify and save the Japan location.
             </p>
           </ScrollReveal>
           <div className="mt-6 max-w-md">

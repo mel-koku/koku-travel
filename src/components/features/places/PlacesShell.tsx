@@ -11,6 +11,7 @@ import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
 import type { PagesContent } from "@/types/sanitySiteContent";
 import { VideoImportInput } from "@/components/features/video-import/VideoImportInput";
+import { useToast } from "@/context/ToastContext";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
  * Heavy components are code-split so Turbopack compiles them in
@@ -96,6 +97,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isVideoImportOpen, setIsVideoImportOpen] = useState(false);
+  const { showToast } = useToast();
 
   // Discover Now mode
   const searchParams = useSearchParams();
@@ -252,7 +254,20 @@ export function PlacesShell({ content }: PlacesShellProps) {
       {isVideoImportOpen && (
         <div className="mx-auto max-w-md px-4 pb-6">
           <VideoImportInput
-            onImportComplete={() => setIsVideoImportOpen(false)}
+            onImportComplete={(locationId, isNew) => {
+              setIsVideoImportOpen(false);
+              showToast(
+                isNew ? "New location added to Koku" : "Found in Koku",
+                { variant: "success" },
+              );
+              const match = locations?.find((loc) => loc.id === locationId);
+              if (match) {
+                setExpandedLocation(match);
+                setFlyToLocation(match);
+              } else {
+                window.location.href = `/places?location=${locationId}`;
+              }
+            }}
           />
         </div>
       )}

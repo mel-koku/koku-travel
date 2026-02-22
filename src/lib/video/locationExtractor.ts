@@ -45,14 +45,23 @@ export type LocationExtraction = {
   alternativeLocations?: { name: string; city: string }[];
 };
 
+type ExtractionOptions = {
+  thumbnailUrl?: string | null;
+  hint?: string;
+};
+
 /**
  * Extract location information from video metadata using Gemini.
+ * Supports multimodal extraction — when a thumbnail URL is available,
+ * the image is sent alongside the text prompt for visual analysis.
  *
  * @param metadata - Video metadata from oEmbed extraction
+ * @param options - Optional thumbnail URL and user hint
  * @returns Extracted location data or null on failure
  */
 export async function extractLocationFromVideo(
   metadata: VideoMetadata,
+  options?: ExtractionOptions,
 ): Promise<LocationExtraction | null> {
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
   if (!apiKey) {
@@ -60,13 +69,27 @@ export async function extractLocationFromVideo(
     return null;
   }
 
-  const prompt = buildExtractionPrompt(metadata);
+  const hasThumbnail = !!options?.thumbnailUrl;
+  const prompt = buildExtractionPrompt(metadata, { hasThumbnail, hint: options?.hint });
+
+  // Build multimodal content when a thumbnail is available
+  const content: Array<{ type: "text"; text: string } | { type: "image"; image: URL }> = [
+    { type: "text", text: prompt },
+  ];
+
+  if (options?.thumbnailUrl) {
+    try {
+      content.push({ type: "image", image: new URL(options.thumbnailUrl) });
+    } catch {
+      // Invalid URL — proceed with text-only
+    }
+  }
 
   try {
     const result = await generateObject({
       model: google("gemini-2.5-flash"),
       schema: extractionSchema,
-      prompt,
+      messages: [{ role: "user", content }],
       temperature: 0.1,
     });
 
@@ -101,11 +124,14 @@ export async function extractLocationFromVideo(
   }
 }
 
-function buildExtractionPrompt(metadata: VideoMetadata): string {
+function buildExtractionPrompt(
+  metadata: VideoMetadata,
+  options?: { hasThumbnail?: boolean; hint?: string },
+): string {
   const parts: string[] = [
-    "You are a Japan travel expert. Identify the specific named location featured in this social media video.",
+    "You are a Japan travel expert. Identify the specific named location featured in this social media post.",
     "",
-    "## Video Information",
+    "## Post Information",
     `Platform: ${metadata.platform}`,
     `Title: ${metadata.title}`,
     `Author: ${metadata.authorName}`,
@@ -119,17 +145,33 @@ function buildExtractionPrompt(metadata: VideoMetadata): string {
     parts.push(`Description: ${metadata.description}`);
   }
 
+  if (options?.hint) {
+    parts.push(
+      "",
+      "## User Context",
+      `The person who shared this says: "${options.hint}"`,
+    );
+  }
+
+  if (options?.hasThumbnail) {
+    parts.push(
+      "",
+      "## Thumbnail",
+      "A thumbnail/image from the post is attached. Use visual cues (signs, Japanese text, landmarks, architecture, food presentation, interior design) to help identify the location.",
+    );
+  }
+
   parts.push(
     "",
     "## Instructions",
     "1. Identify the SPECIFIC named place (a real establishment, temple, park, restaurant, etc.) — not just a generic area.",
-    "2. Cross-reference the title, hashtags, and author info to narrow down the location.",
-    "3. If the video is clearly NOT about a place in Japan, set isInJapan to false.",
+    "2. Cross-reference the title, hashtags, author info, and any visual cues to narrow down the location.",
+    "3. If the post is clearly NOT about a place in Japan, set isInJapan to false.",
     "4. For restaurants/food content, try to identify the specific restaurant, not just the dish or neighborhood.",
     "5. Set confidence to 'high' only when you can identify a specific named location with certainty.",
     "6. Set confidence to 'medium' when you can narrow it to a specific place but aren't fully certain.",
     "7. Set confidence to 'low' when you can only guess at the general area or type of place.",
-    "8. The description should be a concise editorial summary (max 120 chars), not a restatement of the video title.",
+    "8. The description should be a concise editorial summary (max 120 chars), not a restatement of the post title.",
   );
 
   return parts.join("\n");
