@@ -6,8 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Location } from "@/types/location";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
-import { useAllLocationsSingle, useFilterMetadataQuery, useNearbyLocationsQuery } from "@/hooks/useLocationsQuery";
-import { useCurrentLocation } from "@/hooks/useCurrentLocation";
+import { useAllLocationsSingle, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
 import type { PagesContent } from "@/types/sanitySiteContent";
 import { VideoImportInput } from "@/components/features/video-import/VideoImportInput";
@@ -53,11 +52,6 @@ const LocationEditorialGrid = dynamic(
   { ssr: false }
 );
 
-const DiscoverNowPanel = dynamic(
-  () => import("./DiscoverNowPanel").then((m) => ({ default: m.DiscoverNowPanel })),
-  { ssr: false }
-);
-
 type PlacesShellProps = {
   content?: PagesContent;
 };
@@ -99,49 +93,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const [isVideoImportOpen, setIsVideoImportOpen] = useState(false);
   const { showToast } = useToast();
 
-  // Discover Now mode
-  const searchParams = useSearchParams();
-  const [isDiscoverMode, setIsDiscoverMode] = useState(
-    () => searchParams.get("mode") === "discover",
-  );
-  const [discoverCategory, setDiscoverCategory] = useState("");
-  const geoLocation = useCurrentLocation();
-
-  // Fallback to Tokyo Station when geolocation is denied/unavailable
-  const FALLBACK_POSITION = { lat: 35.6812, lng: 139.7671 };
-  const usingFallback = !geoLocation.isLoading && geoLocation.error !== null && !geoLocation.position;
-  const discoverLat = geoLocation.position?.lat ?? (usingFallback ? FALLBACK_POSITION.lat : null);
-  const discoverLng = geoLocation.position?.lng ?? (usingFallback ? FALLBACK_POSITION.lng : null);
-
-  const {
-    data: nearbyData,
-    isLoading: isNearbyLoading,
-    error: nearbyError,
-  } = useNearbyLocationsQuery(
-    discoverLat,
-    discoverLng,
-    { category: discoverCategory || undefined, openNow: true, radius: usingFallback ? 5 : 1.5, limit: 20 },
-  );
-
-  const handleDiscoverToggle = useCallback(() => {
-    setIsDiscoverMode((prev) => !prev);
-  }, []);
-
-  // Sync discover mode side-effects (URL + geolocation) outside setState
-  useEffect(() => {
-    if (isDiscoverMode) {
-      geoLocation.request();
-      window.history.replaceState(null, "", "/places?mode=discover");
-    } else {
-      // Only update URL if it currently has mode param
-      if (window.location.search.includes("mode=")) {
-        window.history.replaceState(null, "", "/places");
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDiscoverMode]);
-
   // Auto-open location from ?location= URL param (e.g. from video import "View" button)
+  const searchParams = useSearchParams();
   const locationParam = searchParams.get("location");
   const didAutoExpandRef = useRef(false);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
@@ -158,13 +111,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
       window.history.replaceState(null, "", "/places");
     }
   }, [locationParam, locations]);
-
-  const handleSurpriseMe = useCallback(() => {
-    const pool = nearbyData?.data;
-    if (!pool || pool.length === 0) return;
-    const pick = pool[Math.floor(Math.random() * Math.min(pool.length, 10))];
-    if (pick) setExpandedLocation(pick);
-  }, [nearbyData]);
 
   // IntersectionObserver for progressive loading
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -243,8 +189,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
         isChatOpen={isChatOpen}
         onVideoImportClick={() => setIsVideoImportOpen((prev) => !prev)}
         isVideoImportOpen={isVideoImportOpen}
-        isDiscoverMode={isDiscoverMode}
-        onDiscoverToggle={handleDiscoverToggle}
       />
 
       {/* Breathing room between search bar and content */}
@@ -272,49 +216,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
         </div>
       )}
 
-      {/* Discover Now mode */}
-      {isDiscoverMode ? (
-        <main className="mx-auto max-w-2xl pb-24">
-          {geoLocation.isLoading ? (
-            <div className="flex flex-col items-center justify-center py-16 px-6">
-              <div className="h-8 w-8 rounded-full border-2 border-sage border-t-transparent animate-spin mb-4" />
-              <p className="text-sm text-stone">Locating you...</p>
-            </div>
-          ) : (
-            <>
-              {usingFallback && (
-                <div className="mx-4 mb-6 rounded-xl border border-border bg-surface/30 px-5 py-4 flex items-start gap-3">
-                  <svg className="h-5 w-5 text-warning shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <line x1="12" y1="8" x2="12" y2="12" />
-                    <line x1="12" y1="16" x2="12.01" y2="16" />
-                  </svg>
-                  <div>
-                    <p className="text-sm text-foreground">
-                      Showing places near Tokyo Station as a default.
-                    </p>
-                    <p className="text-xs text-stone mt-1">
-                      Enable location access in your browser settings to discover places near you.
-                    </p>
-                  </div>
-                </div>
-              )}
-              <DiscoverNowPanel
-                locations={nearbyData?.data ?? []}
-                isLoading={isNearbyLoading}
-                error={nearbyError instanceof Error ? nearbyError.message : null}
-                selectedCategory={discoverCategory}
-                onCategoryChange={setDiscoverCategory}
-                onSelectLocation={handleSelectLocation}
-                onSurpriseMe={handleSurpriseMe}
-              />
-            </>
-          )}
-        </main>
-      ) :
-
-      /* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */
-      mapAvailable ? (
+      {/* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */}
+      {mapAvailable ? (
         <PlacesMapLayout
           filteredLocations={filteredLocations}
           sortedLocations={sortedLocations}
