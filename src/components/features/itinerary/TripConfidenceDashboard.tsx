@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
@@ -26,6 +26,10 @@ type TripConfidenceDashboardProps = {
   tripCities?: string[];
   onClose: () => void;
   onSelectDay?: (dayIndex: number) => void;
+  /** Currently selected day from the DaySelector */
+  selectedDay?: number;
+  /** Called when a day is expanded/collapsed in the overview (syncs DaySelector) */
+  onDayExpand?: (dayIndex: number | null) => void;
   /** Map of location ID → Location for accessibility analysis */
   locationMap?: Map<string, Location>;
   /** Whether traveler has mobility needs */
@@ -39,6 +43,8 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   tripCities,
   onClose,
   onSelectDay,
+  selectedDay,
+  onDayExpand,
   locationMap,
   mobilityNeeds,
 }: TripConfidenceDashboardProps) {
@@ -55,8 +61,23 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   const [checkedItems, setCheckedItems] = useState<Set<string>>(
     () => loadChecklist(),
   );
-  const [expandedDay, setExpandedDay] = useState<number | null>(null);
+  const [expandedDay, setExpandedDay] = useState<number | null>(selectedDay ?? null);
   const [copiedToast, setCopiedToast] = useState(false);
+
+  // Sync expandedDay when DaySelector changes
+  useEffect(() => {
+    if (selectedDay != null) {
+      setExpandedDay(selectedDay);
+    }
+  }, [selectedDay]);
+
+  const handleToggleDay = useCallback((dayIndex: number) => {
+    const next = expandedDay === dayIndex ? null : dayIndex;
+    setExpandedDay(next);
+    if (next != null) {
+      onDayExpand?.(next);
+    }
+  }, [expandedDay, onDayExpand]);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
 
   // Batch-fetch all place activity locations for click-to-expand
@@ -189,9 +210,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
             return (
               <button
                 key={day.dayId}
-                onClick={() => {
-                  setExpandedDay(expandedDay === day.dayIndex ? null : day.dayIndex);
-                }}
+                onClick={() => handleToggleDay(day.dayIndex)}
                 className="flex-1 group"
                 title={`Day ${day.dayIndex + 1}: ${day.score}/100`}
               >
@@ -225,11 +244,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
             itineraryDay={itinerary.days[day.dayIndex]}
             tripStartDate={tripStartDate}
             isExpanded={expandedDay === day.dayIndex}
-            onToggle={() =>
-              setExpandedDay(
-                expandedDay === day.dayIndex ? null : day.dayIndex,
-              )
-            }
+            onToggle={() => handleToggleDay(day.dayIndex)}
             onGoToDay={() => {
               onSelectDay?.(day.dayIndex);
               onClose();
@@ -360,7 +375,9 @@ function formatDayDate(tripStartDate: string | undefined, dayIndex: number): str
     if (y == null || m == null || d == null) return undefined;
     const date = new Date(y, m - 1, d + dayIndex);
     if (isNaN(date.getTime())) return undefined;
-    return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
+    const monthDay = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" }).format(date);
+    const weekday = new Intl.DateTimeFormat(undefined, { weekday: "short" }).format(date);
+    return `${monthDay}, ${weekday}`;
   } catch {
     return undefined;
   }
@@ -395,6 +412,25 @@ function DayOverviewCard({
   const cityName = itineraryDay?.cityId ? formatCityName(itineraryDay.cityId) : undefined;
   const placeActivities = itineraryDay?.activities.filter((a) => a.kind === "place") ?? [];
 
+  // Calculate total hours at locations
+  const totalMinutes = placeActivities.reduce((sum, a) => {
+    if (a.kind === "place" && a.schedule) {
+      const [ah, am] = a.schedule.arrivalTime.split(":").map(Number);
+      const [dh, dm] = a.schedule.departureTime.split(":").map(Number);
+      return sum + (dh * 60 + dm) - (ah * 60 + am);
+    }
+    if (a.kind === "place" && a.durationMin) {
+      return sum + a.durationMin;
+    }
+    return sum;
+  }, 0);
+  const totalHours = totalMinutes / 60;
+  const hoursDisplay = totalHours >= 1
+    ? `${totalHours % 1 === 0 ? totalHours : totalHours.toFixed(1)}h`
+    : totalMinutes > 0
+      ? `${totalMinutes}m`
+      : null;
+
   return (
     <div className="rounded-xl border border-border bg-surface/30 overflow-hidden">
       <button
@@ -402,27 +438,27 @@ function DayOverviewCard({
         className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left hover:bg-surface/50 transition"
       >
         <HealthDot level={level} size="sm" />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-sm font-medium text-foreground">
-              Day {day.dayIndex + 1}
+        <div className="flex-1 min-w-0 flex items-baseline gap-1.5 whitespace-nowrap">
+          <span className="text-sm font-medium text-foreground shrink-0">
+            {dateStr || `Day ${day.dayIndex + 1}`}
+          </span>
+          {cityName && (
+            <span className="text-xs text-stone truncate">
+              {cityName}
             </span>
-            {(dateStr || cityName) && (
-              <span className="text-xs text-stone truncate">
-                {[dateStr, cityName].filter(Boolean).join(" · ")}
-              </span>
-            )}
-          </div>
+          )}
         </div>
-        <div className="flex items-center gap-1.5 text-[10px] font-mono shrink-0">
-          {errorCount > 0 && (
-            <span className="text-error">{errorCount} error{errorCount > 1 ? "s" : ""}</span>
+        <div className="flex items-center gap-1.5 text-[10px] font-mono shrink-0 whitespace-nowrap">
+          {placeActivities.length > 0 && (
+            <span className="text-foreground-secondary">
+              {placeActivities.length} {placeActivities.length === 1 ? "place" : "places"}
+            </span>
           )}
-          {warningCount > 0 && (
-            <span className="text-warning">{warningCount} warning{warningCount > 1 ? "s" : ""}</span>
-          )}
-          {infoCount > 0 && (
-            <span className="text-stone">{infoCount} info</span>
+          {hoursDisplay && (
+            <>
+              <span className="text-stone">·</span>
+              <span className="text-stone">{hoursDisplay}</span>
+            </>
           )}
         </div>
         <svg

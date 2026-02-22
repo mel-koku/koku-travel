@@ -473,10 +473,14 @@ export const ItineraryShell = ({
                   itinerary={model}
                   conflicts={conflictsResult.conflicts}
                   tripStartDate={tripStartDate}
+                  selectedDay={safeSelectedDay}
                   onClose={() => setShowDashboard(false)}
                   onSelectDay={(dayIndex) => {
                     handleSelectDayChange(dayIndex);
                     setShowDashboard(false);
+                  }}
+                  onDayExpand={(dayIndex) => {
+                    if (dayIndex != null) handleSelectDayChange(dayIndex);
                   }}
                 />
               </div>
