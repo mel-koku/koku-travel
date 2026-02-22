@@ -240,8 +240,9 @@ export function ItineraryMap({
     activityPoints.forEach((point, index) => {
       const existingMarker = markersRef.current.get(point.id);
       if (existingMarker) {
-        // Update color for selection state
+        // Update number and color (order may have changed after drag reorder)
         const markerEl = existingMarker.getElement();
+        markerEl.textContent = String(index + 1);
         markerEl.style.backgroundColor = point.id === selectedActivityId ? MARKER_HIGHLIGHT_COLOR : MARKER_COLOR;
         return;
       }

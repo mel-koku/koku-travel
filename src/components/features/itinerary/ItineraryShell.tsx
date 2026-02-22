@@ -538,6 +538,7 @@ export const ItineraryShell = ({
                   conflictsResult={conflictsResult}
                   guide={currentDayGuide}
                   onBeforeDragReorder={isReadOnly ? undefined : () => { skipAutoOptimizeRef.current = true; }}
+                  onAfterDragReorder={isReadOnly ? undefined : (reordered) => { scheduleUserPlanningRef.current?.(reordered); }}
                   previewState={isReadOnly ? undefined : previewState}
                   onConfirmPreview={isReadOnly ? undefined : onConfirmPreview}
                   onShowAnother={isReadOnly ? undefined : onShowAnother}
