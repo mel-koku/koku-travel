@@ -3,13 +3,17 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { Location } from "@/types/location";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
+import type { InputMode } from "./CategoryBar";
 import { useAllLocationsSingle, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
 import type { PagesContent } from "@/types/sanitySiteContent";
-import { VideoImportInput } from "@/components/features/video-import/VideoImportInput";
+import { useVideoImport } from "@/hooks/useVideoImport";
+import { isValidVideoUrl, detectPlatform } from "@/lib/video/platforms";
+import { VideoImportResult } from "@/components/features/video-import/VideoImportResult";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { useToast } from "@/context/ToastContext";
 import type { VibeId } from "@/data/vibes";
@@ -99,8 +103,89 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const [isVideoImportOpen, setIsVideoImportOpen] = useState(false);
   const { showToast } = useToast();
+
+  // ── Unified input state ────────────────────────────────────────────
+  const [inputValue, setInputValue] = useState("");
+
+  const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
+
+  const videoImport = useVideoImport({
+    onImportComplete: (locationId, isNew) => {
+      showToast(
+        isNew ? "New location added to Koku" : "Found in Koku",
+        { variant: "success" },
+      );
+      const match = locations?.find((loc) => loc.id === locationId);
+      if (match) {
+        setExpandedLocation(match);
+        setFlyToLocation(match);
+      } else {
+        setPendingLocationId(locationId);
+      }
+    },
+  });
+
+  // Navigate to the location page when the location isn't in the current dataset
+  useEffect(() => {
+    if (pendingLocationId) {
+      window.location.href = `/places?location=${pendingLocationId}`;
+    }
+  }, [pendingLocationId]);
+
+  // Derive input mode from URL detection + import state
+  const detectedPlatform = useMemo(
+    () => detectPlatform(inputValue.trim()),
+    [inputValue],
+  );
+  const inputMode: InputMode = useMemo(() => {
+    if (videoImport.state.status === "extracting") return "extracting";
+    if (detectedPlatform) return "url-detected";
+    return "search";
+  }, [videoImport.state.status, detectedPlatform]);
+
+  // Sync input → search query (only when in search mode)
+  useEffect(() => {
+    if (inputMode === "search") {
+      setQuery(inputValue);
+    } else {
+      // Clear search filter while in URL mode
+      setQuery("");
+    }
+  }, [inputValue, inputMode, setQuery]);
+
+  const handleInputChange = useCallback((value: string) => {
+    // If user clears the input, also reset any import error state
+    if (!value.trim() && videoImport.state.status === "error") {
+      videoImport.reset();
+    }
+    setInputValue(value);
+  }, [videoImport]);
+
+  const handleInputPaste = useCallback(
+    (e: React.ClipboardEvent<HTMLInputElement>) => {
+      const text = e.clipboardData.getData("text").trim();
+      if (text && isValidVideoUrl(text)) {
+        e.preventDefault();
+        setInputValue(text);
+        videoImport.handleImport(text);
+      }
+    },
+    [videoImport],
+  );
+
+  const handleInputSubmit = useCallback(() => {
+    const trimmed = inputValue.trim();
+    if (trimmed && isValidVideoUrl(trimmed)) {
+      videoImport.handleImport(trimmed);
+    }
+    // For search mode, no-op — search is already live via useEffect
+  }, [inputValue, videoImport]);
+
+  const handleTryAnother = useCallback(() => {
+    videoImport.reset();
+    setInputValue("");
+  }, [videoImport]);
 
   // Auto-open location from ?location= URL param (e.g. from video import "View" button)
   const searchParams = useSearchParams();
@@ -139,7 +224,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, visibleLocations.length]);
+  }, [hasMore, visibleLocations.length, setPage]);
 
   const handleSelectLocation = useCallback((location: Location) => {
     setExpandedLocation(location);
@@ -156,6 +241,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
     () => featureFlags.enableMapbox && !featureFlags.cheapMode,
     [],
   );
+
+  const importState = videoImport.state;
 
   return (
     <div className="min-h-[100dvh] bg-background">
@@ -185,20 +272,85 @@ export function PlacesShell({ content }: PlacesShellProps) {
         </div>
       ) : (
       <>
-      {/* Sticky Category Bar — renders immediately, doesn't wait for data */}
+      {/* Sticky Category Bar */}
       <CategoryBar
         onFiltersClick={() => setIsFilterPanelOpen(true)}
         activeFilterCount={activeFilterCount}
         activeFilters={activeFilters}
         onRemoveFilter={removeFilter}
         onClearAllFilters={clearAllFilters}
-        query={query}
-        onQueryChange={setQuery}
+        inputValue={inputValue}
+        onInputChange={handleInputChange}
+        onInputPaste={handleInputPaste}
+        onInputSubmit={handleInputSubmit}
+        inputMode={inputMode}
+        detectedPlatform={detectedPlatform}
         onAskKokuClick={() => setIsChatOpen(true)}
         isChatOpen={isChatOpen}
-        onVideoImportClick={() => setIsVideoImportOpen((prev) => !prev)}
-        isVideoImportOpen={isVideoImportOpen}
       />
+
+      {/* Import feedback — shown below CategoryBar */}
+      {importState.status === "extracting" && (
+        <div className="mx-auto max-w-sm px-4 mt-3">
+          <div className="flex items-center gap-2 text-sm text-foreground-secondary">
+            <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
+            <span>Identifying location...</span>
+          </div>
+        </div>
+      )}
+
+      {importState.status === "error" && (
+        <div className="mx-auto max-w-sm px-4 mt-3 space-y-2.5">
+          <p className="text-sm text-error">{importState.message}</p>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={videoImport.hintValue}
+              onChange={(e) => videoImport.setHintValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") videoImport.handleRetryWithHint();
+              }}
+              placeholder="e.g. ramen shop in Shibuya"
+              maxLength={200}
+              className="flex-1 rounded-xl border border-border bg-surface/50 px-3 py-2 text-sm text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition"
+            />
+            <button
+              type="button"
+              onClick={videoImport.handleRetryWithHint}
+              disabled={!videoImport.hintValue.trim()}
+              className="shrink-0 rounded-xl bg-brand-primary px-3 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 transition active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Retry
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={handleTryAnother}
+            className="text-xs font-medium text-stone underline underline-offset-2 hover:text-foreground-secondary"
+          >
+            Try another URL
+          </button>
+        </div>
+      )}
+
+      {importState.status === "result" && (
+        <div className="mx-auto max-w-sm px-4 mt-3">
+          <VideoImportResult
+            location={importState.data.location}
+            isNewLocation={importState.data.isNewLocation}
+            platform={importState.data.videoMetadata.platform}
+            confidence={importState.data.extraction.confidence}
+            locationNameJapanese={importState.data.extraction.locationNameJapanese}
+          />
+          <button
+            type="button"
+            onClick={handleTryAnother}
+            className="mt-3 w-full rounded-xl border border-border py-2.5 text-sm font-medium text-foreground-secondary hover:border-brand-primary/30 hover:text-foreground transition active:scale-[0.98]"
+          >
+            Import Another
+          </button>
+        </div>
+      )}
 
       {/* Seasonal banner */}
       <div className="mt-3">
@@ -210,28 +362,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
       {/* Breathing room between search bar and content */}
       <div className="h-4 sm:h-6" aria-hidden="true" />
-
-      {/* Video Import Panel */}
-      {isVideoImportOpen && (
-        <div className="mx-auto max-w-md px-4 pb-6">
-          <VideoImportInput
-            onImportComplete={(locationId, isNew) => {
-              setIsVideoImportOpen(false);
-              showToast(
-                isNew ? "New location added to Koku" : "Found in Koku",
-                { variant: "success" },
-              );
-              const match = locations?.find((loc) => loc.id === locationId);
-              if (match) {
-                setExpandedLocation(match);
-                setFlyToLocation(match);
-              } else {
-                window.location.href = `/places?location=${locationId}`;
-              }
-            }}
-          />
-        </div>
-      )}
 
       {/* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */}
       {mapAvailable ? (

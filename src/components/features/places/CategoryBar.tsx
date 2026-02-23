@@ -1,9 +1,13 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { MessageCircle, Video } from "lucide-react";
+import { Loader2, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ActiveFilter } from "@/types/filters";
+import type { VideoPlatform } from "@/lib/video/platforms";
+import { PlatformIcon } from "@/components/features/video-import/PlatformIcon";
+
+export type InputMode = "search" | "url-detected" | "extracting";
 
 type CategoryBarProps = {
   onFiltersClick: () => void;
@@ -12,15 +16,16 @@ type CategoryBarProps = {
   activeFilters?: ActiveFilter[];
   onRemoveFilter?: (filter: ActiveFilter) => void;
   onClearAllFilters?: () => void;
-  /** Search */
-  query?: string;
-  onQueryChange?: (value: string) => void;
+  /** Unified input */
+  inputValue: string;
+  onInputChange: (value: string) => void;
+  onInputPaste: (e: React.ClipboardEvent<HTMLInputElement>) => void;
+  onInputSubmit: () => void;
+  inputMode: InputMode;
+  detectedPlatform: VideoPlatform | null;
   /** Ask Koku chat integration */
   onAskKokuClick?: () => void;
   isChatOpen?: boolean;
-  /** Video import */
-  onVideoImportClick?: () => void;
-  isVideoImportOpen?: boolean;
 };
 
 export function CategoryBar({
@@ -29,12 +34,14 @@ export function CategoryBar({
   activeFilters = [],
   onRemoveFilter,
   onClearAllFilters,
-  query = "",
-  onQueryChange,
+  inputValue,
+  onInputChange,
+  onInputPaste,
+  onInputSubmit,
+  inputMode,
+  detectedPlatform,
   onAskKokuClick,
   isChatOpen = false,
-  onVideoImportClick,
-  isVideoImportOpen = false,
 }: CategoryBarProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -61,6 +68,9 @@ export function CategoryBar({
   const chipFilters = activeFilters.filter((f) => f.type !== "search");
   const hasChips = chipFilters.length > 0;
 
+  const isExtracting = inputMode === "extracting";
+  const isUrlDetected = inputMode === "url-detected";
+
   return (
     <>
       {/* Sentinel — sits right above the sticky bar to detect stuck state */}
@@ -80,35 +90,63 @@ export function CategoryBar({
               "flex items-center justify-center gap-2 sm:gap-3 py-3",
             )}
           >
-            {/* Search input */}
-            <div className="relative w-full max-w-sm min-w-0">
-              <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone pointer-events-none"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+            {/* Unified search / link import input */}
+            <form
+              className="relative w-full max-w-sm min-w-0"
+              onSubmit={(e) => {
+                e.preventDefault();
+                onInputSubmit();
+              }}
+            >
+              {/* Left icon — search or platform */}
+              {detectedPlatform ? (
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <PlatformIcon
+                    platform={detectedPlatform}
+                    className="h-4 w-4 text-foreground-secondary"
+                  />
+                </div>
+              ) : (
+                <svg
+                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone pointer-events-none"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              )}
               <input
                 ref={searchInputRef}
                 type="text"
-                value={query}
-                onChange={(e) => onQueryChange?.(e.target.value)}
-                placeholder="Search places in Japan..."
-                className="w-full rounded-xl border border-border bg-surface/50 pl-9 pr-12 py-2.5 text-base text-foreground placeholder:text-stone focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/20 transition"
+                value={inputValue}
+                onChange={(e) => onInputChange(e.target.value)}
+                onPaste={onInputPaste}
+                placeholder="Search places or paste a link..."
+                disabled={isExtracting}
+                className="w-full rounded-xl border border-border bg-surface/50 pl-9 pr-12 py-2.5 text-base text-foreground placeholder:text-stone focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/20 transition disabled:opacity-60"
               />
+              {/* Right CTA button */}
               <button
-                onClick={() => searchInputRef.current?.focus()}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.95] transition"
-                aria-label="Search"
+                type="submit"
+                disabled={isExtracting}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.95] transition disabled:opacity-60"
+                aria-label={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
               >
-                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                {isExtracting ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : isUrlDetected ? (
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                ) : (
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                )}
               </button>
-            </div>
+            </form>
 
             {/* Refine button */}
             <button
@@ -131,23 +169,6 @@ export function CategoryBar({
                 </span>
               )}
             </button>
-
-            {/* Import from Video button */}
-            {onVideoImportClick && (
-              <button
-                onClick={onVideoImportClick}
-                aria-label="Import from video"
-                className={cn(
-                  "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0",
-                  isVideoImportOpen
-                    ? "border-brand-secondary bg-brand-secondary/10 text-brand-secondary"
-                    : "border-border text-stone hover:border-brand-secondary hover:text-foreground"
-                )}
-              >
-                <Video className="h-4 w-4" />
-                <span className="hidden sm:inline">Import</span>
-              </button>
-            )}
 
             {/* Ask Koku button */}
             {onAskKokuClick && (
