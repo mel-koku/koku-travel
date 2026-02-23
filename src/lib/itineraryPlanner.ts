@@ -357,7 +357,7 @@ async function planItineraryDay(
   itinerary: Itinerary,
   options: Required<PlannerOptions>,
   startPoint?: { coordinates: { lat: number; lng: number } },
-  _endPoint?: { coordinates: { lat: number; lng: number } },
+  endPoint?: { coordinates: { lat: number; lng: number } },
 ): Promise<ItineraryDay> {
   // Resolve timezone using fallback hierarchy (day > itinerary > Japan default)
   const dayTimezone = resolveTimezone({
@@ -643,6 +643,65 @@ async function planItineraryDay(
     if (lastActivity && lastActivity.kind === "place" && lastActivity.schedule) {
       lastActivity.schedule.status = "out-of-hours";
       lastActivity.schedule.departureTime = formatTime(endMinutes);
+    }
+  }
+
+  // Return-to-hotel: add travel segment from last activity back to endPoint (accommodation)
+  if (endPoint && lastPlaceIndex != null) {
+    const lastActivity = plannedActivities[lastPlaceIndex];
+    if (lastActivity && lastActivity.kind === "place") {
+      const lastCoords = metaByActivityId.get(lastActivity.id)?.coordinates;
+      if (lastCoords) {
+        try {
+          const returnRoute = await requestRoute({
+            origin: lastCoords,
+            destination: endPoint.coordinates,
+            mode: "walk",
+            departureTime: lastActivity.schedule?.departureTime ?? formatTime(cursorMinutes),
+            timezone: dayTimezone,
+          });
+
+          const distanceKm = (returnRoute.distanceMeters ?? 0) / 1000;
+          let finalRoute = returnRoute;
+          let finalMode: ItineraryTravelMode = "walk";
+
+          // Use transit if distance is significant
+          if (distanceKm >= TRANSIT_DISTANCE_THRESHOLD_KM) {
+            try {
+              const transitRoute = await requestRoute({
+                origin: lastCoords,
+                destination: endPoint.coordinates,
+                mode: "transit",
+                departureTime: lastActivity.schedule?.departureTime ?? formatTime(cursorMinutes),
+                timezone: dayTimezone,
+              });
+              if (transitRoute.durationSeconds > 0) {
+                finalRoute = transitRoute;
+                finalMode = "train";
+              }
+            } catch {
+              // Fall back to walk route
+            }
+          }
+
+          const returnPath = mergePathSegments([
+            finalRoute.geometry,
+            ...finalRoute.legs.map((leg) => leg.geometry),
+          ]);
+
+          const returnSegment = buildTravelSegment(
+            finalMode,
+            cursorMinutes,
+            finalRoute.durationSeconds,
+            finalRoute.distanceMeters,
+            returnPath,
+          );
+
+          (lastActivity as Extract<ItineraryActivity, { kind: "place" }>).travelToNext = returnSegment;
+        } catch (err) {
+          logger.warn("Failed to calculate return-to-hotel route", { error: err });
+        }
+      }
     }
   }
 
