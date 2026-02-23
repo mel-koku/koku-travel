@@ -33,5 +33,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticRoutes, ...guideRoutes, ...experienceRoutes];
+  // Variant B routes (lower priority, added incrementally as pages are built)
+  const variantBRoutes: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/b`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.5 },
+  ];
+
+  return [...staticRoutes, ...guideRoutes, ...experienceRoutes, ...variantBRoutes];
 }

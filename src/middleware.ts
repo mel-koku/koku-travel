@@ -111,7 +111,7 @@ export async function middleware(request: NextRequest) {
   // Redirect authenticated users away from auth pages
   if (isAuthRoute(pathname) && user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
+    url.pathname = pathname.startsWith("/b/") ? "/b/dashboard" : "/dashboard";
     return NextResponse.redirect(url);
   }
 
