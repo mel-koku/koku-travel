@@ -150,7 +150,7 @@ export function TripSummaryEditorial({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="mt-3 font-serif text-3xl italic tracking-tight text-foreground sm:text-4xl"
+          className="mt-3 font-serif text-2xl italic tracking-tight text-foreground sm:text-3xl"
         >
           {headline}
         </motion.h2>
