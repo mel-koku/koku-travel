@@ -14,7 +14,7 @@ export { RegionStep } from "./RegionStep";
 export { ReviewStep } from "./ReviewStep";
 
 // New editorial components
-export { StepProgressTrack } from "./StepProgressTrack";
+export { STEP_LABELS } from "./StepProgressTrack";
 export { ArrowLineCTA } from "./ArrowLineCTA";
 export { VibeCard } from "./VibeCard";
 export { RegionMapPanel } from "./RegionMapPanel";
