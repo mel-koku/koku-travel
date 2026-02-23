@@ -1,4 +1,3 @@
-import type { MouseEvent } from "react";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
@@ -14,8 +13,6 @@ type PlaceActivityHeaderProps = {
   reviewCount: number | null;
   durationLabel: string | null;
   summary: string | null;
-  isExpanded: boolean;
-  onToggleExpand: (event: MouseEvent<HTMLButtonElement>) => void;
   availabilityStatus: {
     status: string;
     message?: string;
@@ -38,8 +35,6 @@ export function PlaceActivityHeader({
   reviewCount,
   durationLabel,
   summary,
-  isExpanded,
-  onToggleExpand,
   availabilityStatus,
   schedule,
   isOutOfHours,
@@ -91,20 +86,6 @@ export function PlaceActivityHeader({
             {durationLabel.replace("~", "")}
           </span>
         ) : null}
-        <button
-          type="button"
-          onClick={onToggleExpand}
-          className="inline-flex items-center gap-1 rounded-full border border-sage/30 bg-background px-2 py-0.5 text-[11px] font-semibold text-sage shadow-sm transition hover:bg-sage/10"
-        >
-          <svg className={`h-3 w-3 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            {isExpanded ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            )}
-          </svg>
-          {isExpanded ? "Less info" : "More info"}
-        </button>
       </div>
 
       {/* Practical Intel Badges */}
@@ -148,8 +129,16 @@ export function PlaceActivityHeader({
 
       {/* Description */}
       {summary && (
-        <p className={`mt-3 text-xs leading-relaxed text-foreground-secondary ${isExpanded ? "" : "line-clamp-2"}`}>{summary}</p>
+        <p className="mt-3 text-xs leading-relaxed text-foreground-secondary line-clamp-2">{summary}</p>
       )}
+
+      {/* More info link */}
+      <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-sage">
+        More info
+        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </span>
     </>
   );
 }

@@ -8,10 +8,12 @@ import {
   useCallback,
   type RefObject,
 } from "react";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
 import { useAppState } from "@/state/AppState";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
+import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
@@ -35,6 +37,11 @@ import { useItineraryPlanning } from "./hooks/useItineraryPlanning";
 import { useItineraryScrollSync } from "./hooks/useItineraryScrollSync";
 import { useItineraryGuide } from "./hooks/useItineraryGuide";
 import { ShareButton } from "./ShareButton";
+
+const LocationExpanded = dynamic(
+  () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
+  { ssr: false },
+);
 
 type ItineraryShellProps = {
   tripId: string;
@@ -113,6 +120,7 @@ export const ItineraryShell = ({
   const [showDashboard, setShowDashboard] = useState(false);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
+  const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
 
@@ -398,6 +406,14 @@ export const ItineraryShell = ({
     [onAcceptSuggestion, setIsPlanning],
   );
 
+  const handleViewDetails = useCallback((location: Location) => {
+    setExpandedLocation(location);
+  }, []);
+
+  const handleCloseExpanded = useCallback(() => {
+    setExpandedLocation(null);
+  }, []);
+
   return (
     <section className="mx-auto min-h-[calc(100dvh-64px)] max-w-screen-2xl">
       {/* ── Mobile peek map strip (< lg) ── */}
@@ -631,6 +647,7 @@ export const ItineraryShell = ({
                   onStartLocationChange={isReadOnly ? undefined : handleStartLocationChange}
                   onEndLocationChange={isReadOnly ? undefined : handleEndLocationChange}
                   onCityAccommodationChange={isReadOnly ? undefined : handleCityAccommodationChange}
+                  onViewDetails={handleViewDetails}
                 />
               </ErrorBoundary>
             ) : (
@@ -685,6 +702,16 @@ export const ItineraryShell = ({
           </div>
         </div>
       </div>
+
+      {/* Location Detail Panel */}
+      <AnimatePresence>
+        {expandedLocation && (
+          <LocationExpanded
+            location={expandedLocation}
+            onClose={handleCloseExpanded}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Replacement Picker Modal */}
       {!isReadOnly && replacementActivityId && (() => {

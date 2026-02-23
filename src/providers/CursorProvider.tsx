@@ -26,6 +26,9 @@ const INTERACTIVE_SELECTOR = "a, button, [role='button'], input, select, textare
 
 function isInteractive(el: Element | null): boolean {
   if (!el) return false;
+  // Allow containers to opt out of the link cursor via data-cursor="default"
+  const override = el.closest("[data-cursor]");
+  if (override && override.getAttribute("data-cursor") === "default") return false;
   return el.closest(INTERACTIVE_SELECTOR) !== null;
 }
 
