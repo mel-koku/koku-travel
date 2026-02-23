@@ -11,6 +11,10 @@ type DayTipsProps = {
   tripStartDate?: string;
   dayIndex: number;
   className?: string;
+  /** When true, renders just the tip items without the accordion wrapper */
+  embedded?: boolean;
+  /** Callback fired when tip count changes (for parent badge) */
+  onTipCount?: (count: number) => void;
 };
 
 /** Minimal shape used for rendering — shared by static pro tips and DB tips. */
@@ -48,7 +52,7 @@ function toDisplayTip(tip: TravelGuidance): DisplayTip {
   };
 }
 
-export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProps) {
+export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount }: DayTipsProps) {
   const [dbTips, setDbTips] = useState<TravelGuidance[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -149,9 +153,47 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
     [proTips, dbTips],
   );
 
+  // Report tip count to parent
+  useEffect(() => {
+    onTipCount?.(allTips.length);
+  }, [allTips.length, onTipCount]);
+
   // Don't render if no tips
   if (!isLoading && allTips.length === 0) {
     return null;
+  }
+
+  const renderTipItems = () => {
+    if (isLoading) {
+      return (
+        <div className="py-2 text-center text-xs text-stone">
+          Loading tips...
+        </div>
+      );
+    }
+    return allTips.map((tip) => (
+      <div
+        key={tip.id}
+        className="flex items-start gap-2 rounded-lg bg-background/70 p-2"
+      >
+        <span className="shrink-0 text-base">
+          {tip.icon}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs font-semibold text-foreground">
+            {tip.title}
+          </p>
+          <p className="mt-0.5 text-xs leading-relaxed text-foreground-secondary">
+            {tip.summary}
+          </p>
+        </div>
+      </div>
+    ));
+  };
+
+  // Embedded mode: just render the items without wrapper
+  if (embedded) {
+    return <>{renderTipItems()}</>;
   }
 
   return (
@@ -162,7 +204,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
         className="flex w-full items-center justify-between p-3 text-left"
       >
         <div className="flex items-center gap-2">
-          <span className="text-lg">🇯🇵</span>
+          <span className="text-lg">{"\uD83C\uDDEF\uD83C\uDDF5"}</span>
           <span className="text-sm font-semibold text-foreground">
             Travel Tips for Today
           </span>
@@ -185,32 +227,9 @@ export function DayTips({ day, tripStartDate, dayIndex, className }: DayTipsProp
 
       {isExpanded && (
         <div className="border-t border-brand-primary/10 px-3 pb-3">
-          {isLoading ? (
-            <div className="py-2 text-center text-xs text-brand-primary">
-              Loading tips...
-            </div>
-          ) : (
-            <div className="mt-2 space-y-2">
-              {allTips.map((tip) => (
-                <div
-                  key={tip.id}
-                  className="flex items-start gap-2 rounded-lg bg-background/70 p-2"
-                >
-                  <span className="shrink-0 text-base">
-                    {tip.icon}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-semibold text-foreground">
-                      {tip.title}
-                    </p>
-                    <p className="mt-0.5 text-xs leading-relaxed text-brand-primary/80">
-                      {tip.summary}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <div className="mt-2 space-y-2">
+            {renderTipItems()}
+          </div>
         </div>
       )}
     </div>
