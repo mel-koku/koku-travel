@@ -236,6 +236,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       reservationRequired?: boolean;
     } | null>(null);
     const [tips, setTips] = useState<ActivityTip[]>([]);
+    const [tipsLoading, setTipsLoading] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const prefersReducedMotion = useReducedMotion();
 
@@ -368,11 +369,14 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
     useEffect(() => {
       if (placeLocation && activity.kind === "place") {
+        setTipsLoading(true);
         // Use async tip generation to include etiquette tips from database
         generateActivityTipsAsync(activity, placeLocation, {
           allActivities,
         }).then(setTips).catch(() => {
           // Silently fail - tips are optional
+        }).finally(() => {
+          setTipsLoading(false);
         });
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable IDs to prevent excessive re-computation
@@ -694,6 +698,15 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               />
 
               {/* Tips Section */}
+              {tipsLoading && isExpanded && tips.length === 0 && (
+                <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
+                  <div className="mb-1.5 h-3 w-8 animate-pulse rounded bg-sage/10" />
+                  <div className="space-y-1.5">
+                    <div className="h-3 w-3/4 animate-pulse rounded bg-sage/10" />
+                    <div className="h-3 w-1/2 animate-pulse rounded bg-sage/10" />
+                  </div>
+                </div>
+              )}
               {tips.length > 0 && (
                 <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
                   <p className="mb-1.5 text-xs font-semibold text-foreground">Tips</p>

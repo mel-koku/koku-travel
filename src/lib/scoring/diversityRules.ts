@@ -163,7 +163,7 @@ export function wouldViolateDiversityRules(
   if (category) {
     const categoryStreak = countCategoryStreak(recentCategories, category);
     if (categoryStreak >= 2) {
-      return true; // Violates if would create category streak of 3+
+      return true; // Adding this would create a streak of 3 (existing 2 + 1)
     }
   }
 

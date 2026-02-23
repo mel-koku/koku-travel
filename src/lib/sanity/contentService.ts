@@ -11,7 +11,7 @@ import type {
   TripBuilderConfig,
   PagesContent,
 } from "@/types/sanitySiteContent";
-import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
+import { readFileCache, readFileCacheStale, writeFileCache } from "@/lib/api/fileCache";
 
 /**
  * Timeout for Sanity CDN fetches in dev mode.
@@ -57,10 +57,24 @@ async function fetchWithCache<T>(
     if (result) {
       _g[memKey] = { data: result, at: Date.now() };
       writeFileCache(`sanity-${key}`, result);
+      return result;
     }
 
-    return result;
+    // Sanity returned null (timeout or empty) — try stale cache
+    const stale = readFileCacheStale<T>(`sanity-${key}`);
+    if (stale) {
+      _g[memKey] = { data: stale, at: Date.now() };
+      return stale;
+    }
+
+    return null;
   } catch {
+    // Network error — try stale cache before giving up
+    const stale = readFileCacheStale<T>(`sanity-${key}`);
+    if (stale) {
+      _g[memKey] = { data: stale, at: Date.now() };
+      return stale;
+    }
     return null;
   }
 }

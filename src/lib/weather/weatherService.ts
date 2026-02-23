@@ -169,16 +169,41 @@ export async function fetchWeatherForecast(
 }
 
 /**
- * Generate mock weather forecast for development/testing
+ * Approximate central Japan temperature ranges by month (°C).
+ * Based on Tokyo/Osaka averages.
+ */
+function getSeasonalTemperature(month: number): { min: number; max: number; rainyChance: number } {
+  const temps: Record<number, { min: number; max: number; rainyChance: number }> = {
+    0:  { min: 1, max: 9, rainyChance: 0.15 },   // Jan
+    1:  { min: 2, max: 10, rainyChance: 0.15 },   // Feb
+    2:  { min: 5, max: 14, rainyChance: 0.25 },   // Mar
+    3:  { min: 10, max: 19, rainyChance: 0.25 },   // Apr
+    4:  { min: 15, max: 24, rainyChance: 0.25 },   // May
+    5:  { min: 19, max: 27, rainyChance: 0.45 },   // Jun (tsuyu)
+    6:  { min: 23, max: 31, rainyChance: 0.35 },   // Jul
+    7:  { min: 24, max: 33, rainyChance: 0.30 },   // Aug
+    8:  { min: 20, max: 28, rainyChance: 0.35 },   // Sep
+    9:  { min: 14, max: 22, rainyChance: 0.25 },   // Oct
+    10: { min: 8, max: 17, rainyChance: 0.15 },    // Nov
+    11: { min: 3, max: 12, rainyChance: 0.15 },    // Dec
+  };
+  return temps[month] ?? { min: 12, max: 22, rainyChance: 0.20 };
+}
+
+/**
+ * Generate mock weather forecast for development/testing.
+ * Uses seasonal temperature ranges so scoring behaves realistically.
  */
 function getMockWeatherForecast(
   startDate: string,
   endDate: string,
 ): Map<string, WeatherForecast> {
+  logger.warn("Using mock weather data — no API key configured or API call failed");
+
   const forecasts = new Map<string, WeatherForecast>();
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   const current = new Date(start);
   while (current <= end) {
     const dateKey = current.toISOString().split("T")[0];
@@ -187,17 +212,15 @@ function getMockWeatherForecast(
       continue;
     }
 
-    // Mock weather: mostly clear with occasional rain
+    const { min, max, rainyChance } = getSeasonalTemperature(current.getMonth());
     const dayOfYear = Math.floor((current.getTime() - new Date(current.getFullYear(), 0, 0).getTime()) / 86400000);
-    const isRainy = dayOfYear % 5 === 0; // Every 5th day is rainy
+    // Deterministic rain based on day-of-year and seasonal chance
+    const isRainy = (dayOfYear % Math.round(1 / rainyChance)) === 0;
 
     forecasts.set(dateKey, {
       date: dateKey,
       condition: isRainy ? "rain" : "clear",
-      temperature: {
-        min: 15,
-        max: 25,
-      },
+      temperature: { min, max },
       precipitation: isRainy
         ? {
             probability: 60,
