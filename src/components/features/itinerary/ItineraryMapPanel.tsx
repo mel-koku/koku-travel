@@ -28,6 +28,7 @@ type MapPoint = {
   category?: string;
   mealType?: "breakfast" | "lunch" | "dinner" | "snack";
   isEntryPoint?: "start" | "end";
+  isAccommodation?: boolean;
 };
 
 type ItineraryMapPanelProps = {
@@ -36,8 +37,8 @@ type ItineraryMapPanelProps = {
   selectedActivityId?: string | null;
   onSelectActivity?: (activityId: string | null) => void;
   isPlanning?: boolean;
-  startPoint?: { name: string; coordinates: { lat: number; lng: number } };
-  endPoint?: { name: string; coordinates: { lat: number; lng: number } };
+  startPoint?: { name: string; coordinates: { lat: number; lng: number }; type?: string };
+  endPoint?: { name: string; coordinates: { lat: number; lng: number }; type?: string };
   tripStartDate?: string;
   /** Day label like "Day 1 (Kobe)" to extract city from */
   dayLabel?: string;
@@ -91,7 +92,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
     const results: MapPoint[] = [];
     let placeCounter = 1; // Start at 1 for activities (entry points use S/E labels)
 
-    // Add start point (uses "S" label, not a number)
+    // Add start point (uses "S" or hotel icon label, not a number)
     if (startPoint) {
       results.push({
         id: "start-point",
@@ -100,8 +101,9 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
         lng: startPoint.coordinates.lng,
         tags: [],
         timeOfDay: "morning",
-        placeNumber: 0, // Not displayed, uses "S" label
+        placeNumber: 0, // Not displayed, uses "S" or hotel label
         isEntryPoint: "start",
+        isAccommodation: startPoint.type === "accommodation",
       });
     }
 
@@ -147,7 +149,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
       });
     });
 
-    // Add end point (uses "E" label, not a number)
+    // Add end point (uses "E" or hotel icon label, not a number)
     if (endPoint) {
       results.push({
         id: "end-point",
@@ -156,8 +158,9 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
         lng: endPoint.coordinates.lng,
         tags: [],
         timeOfDay: "evening",
-        placeNumber: 0, // Not displayed, uses "E" label
+        placeNumber: 0, // Not displayed, uses "E" or hotel label
         isEntryPoint: "end",
+        isAccommodation: endPoint.type === "accommodation",
       });
     }
 
@@ -348,6 +351,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
           // Create custom numbered marker icon
           const isStartPoint = point.isEntryPoint === "start";
           const isEndPoint = point.isEntryPoint === "end";
+          const isAccommodation = point.isAccommodation;
 
           // Use consistent colors from earthy palette
           let backgroundColor: string;
@@ -357,8 +361,9 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
             backgroundColor = mapColors.brandPrimary; // brand-primary for all activities
           }
 
-          // Show "S" for start, "E" for end, otherwise show the number
-          const displayLabel = isStartPoint ? "S" : isEndPoint ? "E" : point.placeNumber;
+          // Show hotel icon for accommodation, "S" for start, "E" for end, otherwise the number
+          const hotelSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11M8 14v.01M12 14v.01M16 14v.01M8 18v.01M12 18v.01M16 18v.01"/></svg>`;
+          const displayLabel = isAccommodation ? hotelSvg : isStartPoint ? "S" : isEndPoint ? "E" : point.placeNumber;
 
           const iconHtml = `
             <div style="
@@ -388,10 +393,11 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
           });
 
           const marker = Leaflet.marker([point.lat, point.lng], { icon: customIcon });
+          const entryLabel = isAccommodation ? "Stay" : isStartPoint ? "Start" : "End";
           const popupLabel = isStartPoint
-            ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:${mapColors.sage};">Start</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
+            ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:${mapColors.sage};">${entryLabel}</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
             : isEndPoint
-              ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:${mapColors.sage};">End</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
+              ? `<div style="text-align:center;padding:4px 8px;"><strong style="color:${mapColors.sage};">${entryLabel}</strong><br/><span style="font-size:13px;">${point.title}</span></div>`
               : `<div style="text-align:center;padding:4px 8px;"><strong style="color:${mapColors.brandPrimary};">${point.placeNumber}. ${point.title}</strong></div>`;
           marker.bindPopup(popupLabel, { closeButton: false, offset: [0, -8] });
 
@@ -564,6 +570,8 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
             activities={activities}
             selectedActivityId={selectedActivityId}
             onActivityClick={onSelectActivity}
+            startPoint={startPoint}
+            endPoint={endPoint}
           />
         ) : (
           <>

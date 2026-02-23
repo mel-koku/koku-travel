@@ -33,7 +33,7 @@ import {
   type ItineraryDay,
   type ItineraryTravelMode,
 } from "@/types/itinerary";
-import type { TripBuilderData } from "@/types/trip";
+import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
 import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
@@ -43,7 +43,9 @@ import { GuideSegmentCard } from "./GuideSegmentCard";
 import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
+import { AccommodationBookend } from "./AccommodationBookend";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
+import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { REGIONS } from "@/data/regions";
 import { useToast } from "@/context/ToastContext";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
@@ -93,6 +95,12 @@ type ItineraryTimelineProps = {
   onFilterChange?: (filter: Partial<RefinementFilters>) => void;
   isPreviewLoading?: boolean;
   isReadOnly?: boolean;
+  // Start/end location
+  startLocation?: EntryPoint;
+  endLocation?: EntryPoint;
+  onStartLocationChange?: (location: EntryPoint | undefined) => void;
+  onEndLocationChange?: (location: EntryPoint | undefined) => void;
+  onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
 };
 
 export const ItineraryTimeline = ({
@@ -123,6 +131,11 @@ export const ItineraryTimeline = ({
   onFilterChange,
   isPreviewLoading,
   isReadOnly,
+  startLocation,
+  endLocation,
+  onStartLocationChange,
+  onEndLocationChange,
+  onCityAccommodationChange,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMountedRef = useRef(true);
@@ -633,6 +646,52 @@ export const ItineraryTimeline = ({
     [dayIndex, setModel, day.activities, showToast],
   );
 
+  // ── Accommodation bookend travel estimates ──
+  const bookendEstimates = useMemo(() => {
+    const placeActivities = extendedActivities.filter(
+      (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
+    );
+    if (placeActivities.length === 0) return { start: null, end: null };
+
+    let startEstimate: { travelMinutes: number; distanceMeters: number } | null = null;
+    let endEstimate: { travelMinutes: number; distanceMeters: number } | null = null;
+
+    const firstActivity = placeActivities[0]!;
+    const lastActivity = placeActivities[placeActivities.length - 1]!;
+
+    if (startLocation?.coordinates) {
+      const firstCoords = getActivityCoordinates(firstActivity);
+      if (firstCoords) {
+        const heuristic = estimateHeuristicRoute({
+          origin: startLocation.coordinates,
+          destination: firstCoords,
+          mode: "walk",
+        });
+        startEstimate = {
+          travelMinutes: Math.max(1, Math.round(heuristic.durationSeconds / 60)),
+          distanceMeters: heuristic.distanceMeters,
+        };
+      }
+    }
+
+    if (endLocation?.coordinates) {
+      const lastCoords = getActivityCoordinates(lastActivity);
+      if (lastCoords) {
+        const heuristic = estimateHeuristicRoute({
+          origin: lastCoords,
+          destination: endLocation.coordinates,
+          mode: "walk",
+        });
+        endEstimate = {
+          travelMinutes: Math.max(1, Math.round(heuristic.durationSeconds / 60)),
+          distanceMeters: heuristic.distanceMeters,
+        };
+      }
+    }
+
+    return { start: startEstimate, end: endEstimate };
+  }, [extendedActivities, startLocation, endLocation]);
+
   // Get the active activity for DragOverlay
   const activeActivity = activeId
     ? extendedActivities.find((a) => a.id === activeId)
@@ -675,6 +734,11 @@ export const ItineraryTimeline = ({
             onCancelPreview={isReadOnly ? undefined : onCancelPreview}
             onFilterChange={isReadOnly ? undefined : onFilterChange}
             isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
+            startLocation={startLocation}
+            endLocation={endLocation}
+            onStartLocationChange={isReadOnly ? undefined : onStartLocationChange}
+            onEndLocationChange={isReadOnly ? undefined : onEndLocationChange}
+            onCityAccommodationChange={isReadOnly ? undefined : onCityAccommodationChange}
           />
 
         {/* City Transition Display */}
@@ -731,8 +795,19 @@ export const ItineraryTimeline = ({
           </div>
         )}
 
+        {/* Accommodation: Start bookend */}
+        {startLocation && extendedActivities.length > 0 && !activeId && (
+          <AccommodationBookend
+            location={startLocation}
+            variant="start"
+            travelMinutes={bookendEstimates.start?.travelMinutes}
+            distanceMeters={bookendEstimates.start?.distanceMeters}
+          />
+        )}
+
         {/* Simple list of activities with travel segments */}
         {extendedActivities.length > 0 ? (
+          <>
           <SortableContext
             items={extendedActivities.map((activity) => activity.id)}
             strategy={verticalListSortingStrategy}
@@ -882,6 +957,17 @@ export const ItineraryTimeline = ({
               <GuideSegmentCard segment={guide.summary} className="mt-3" />
             )}
           </SortableContext>
+
+          {/* Accommodation: End bookend */}
+          {endLocation && !activeId && (
+            <AccommodationBookend
+              location={endLocation}
+              variant="end"
+              travelMinutes={bookendEstimates.end?.travelMinutes}
+              distanceMeters={bookendEstimates.end?.distanceMeters}
+            />
+          )}
+          </>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-stone">
             <p className="text-sm">{isReadOnly ? "No activities planned for this day." : "This day is wide open. Add a note to get started."}</p>

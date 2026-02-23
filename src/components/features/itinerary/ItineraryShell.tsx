@@ -12,7 +12,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
 import { useAppState } from "@/state/AppState";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
-import type { TripBuilderData } from "@/types/trip";
+import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import { DaySelector } from "./DaySelector";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { WhatsNextCard } from "./WhatsNextCard";
@@ -85,7 +85,7 @@ export const ItineraryShell = ({
   onFilterChange,
   isPreviewLoading,
 }: ItineraryShellProps) => {
-  const { reorderActivities, replaceActivity, getTripById, dayEntryPoints, undo, redo, canUndo, canRedo } = useAppState();
+  const { reorderActivities, replaceActivity, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
 
   // Planning hook — model state, travel-time replanning, route optimization
   const {
@@ -103,6 +103,7 @@ export const ItineraryShell = ({
     itinerary,
     tripBuilderData,
     dayEntryPoints,
+    cityAccommodations,
     tripId,
     onItineraryChange,
   });
@@ -262,6 +263,78 @@ export const ItineraryShell = ({
   const currentDayEntryPoints =
     tripId && currentDay?.id ? dayEntryPoints[`${tripId}-${currentDay.id}`] : undefined;
 
+  // Resolve start/end locations for the current day
+  const resolvedStartLocation = useMemo(() => {
+    if (!tripId || !currentDay) return undefined;
+    // Priority 1: Explicit per-day start
+    const dayEP = dayEntryPoints[`${tripId}-${currentDay.id}`];
+    if (dayEP?.startPoint?.type === "accommodation") return dayEP.startPoint;
+    // Priority 2: City-level accommodation
+    const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
+    if (effectiveCityId) {
+      const cityAccom = cityAccommodations[`${tripId}-${effectiveCityId}`];
+      if (cityAccom) return cityAccom.entryPoint;
+    }
+    return undefined;
+  }, [tripId, currentDay, dayEntryPoints, cityAccommodations]);
+
+  const resolvedEndLocation = useMemo(() => {
+    if (!tripId || !currentDay) return undefined;
+    // Priority 1: Explicit per-day end
+    const dayEP = dayEntryPoints[`${tripId}-${currentDay.id}`];
+    if (dayEP?.endPoint?.type === "accommodation") return dayEP.endPoint;
+    // Priority 2: City-level accommodation (same as start)
+    const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
+    if (effectiveCityId) {
+      const cityAccom = cityAccommodations[`${tripId}-${effectiveCityId}`];
+      if (cityAccom) return cityAccom.entryPoint;
+    }
+    return undefined;
+  }, [tripId, currentDay, dayEntryPoints, cityAccommodations]);
+
+  // Effective map entry points — merge explicit overrides with resolved locations
+  const effectiveMapStartPoint = currentDayEntryPoints?.startPoint ?? resolvedStartLocation;
+  // End defaults to same as start when not explicitly set
+  const effectiveMapEndPoint = currentDayEntryPoints?.endPoint ?? resolvedEndLocation ?? resolvedStartLocation;
+
+  // Handler: set start location for this day
+  const handleStartLocationChange = useCallback(
+    (location: EntryPoint | undefined) => {
+      if (!tripId || !currentDay?.id) return;
+      setDayEntryPoint(tripId, currentDay.id, "start", location);
+      // If end isn't explicitly set, it defaults to same as start (via resolution logic)
+    },
+    [tripId, currentDay, setDayEntryPoint],
+  );
+
+  // Handler: set end location for this day
+  const handleEndLocationChange = useCallback(
+    (location: EntryPoint | undefined) => {
+      if (!tripId || !currentDay?.id) return;
+      setDayEntryPoint(tripId, currentDay.id, "end", location);
+    },
+    [tripId, currentDay, setDayEntryPoint],
+  );
+
+  // Handler: set accommodation for all days in this city
+  const handleCityAccommodationChange = useCallback(
+    (location: EntryPoint | undefined) => {
+      if (!tripId || !currentDay) return;
+      const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
+      if (!effectiveCityId) return;
+
+      if (location) {
+        setCityAccommodation(tripId, effectiveCityId, {
+          cityId: effectiveCityId,
+          entryPoint: location,
+        });
+      } else {
+        setCityAccommodation(tripId, effectiveCityId, undefined);
+      }
+    },
+    [tripId, currentDay, setCityAccommodation],
+  );
+
   // Filter suggestions for the current day
   const currentDaySuggestions = useMemo(() => {
     if (!suggestions || !currentDay) return [];
@@ -344,8 +417,8 @@ export const ItineraryShell = ({
               selectedActivityId={selectedActivityId}
               onSelectActivity={handleSelectActivity}
               isPlanning={isPlanning}
-              startPoint={currentDayEntryPoints?.startPoint}
-              endPoint={currentDayEntryPoints?.endPoint}
+              startPoint={effectiveMapStartPoint}
+              endPoint={effectiveMapEndPoint}
               tripStartDate={tripStartDate}
               dayLabel={currentDay?.dateLabel}
             />
@@ -553,6 +626,11 @@ export const ItineraryShell = ({
                   onFilterChange={isReadOnly ? undefined : onFilterChange}
                   isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
                   isReadOnly={isReadOnly}
+                  startLocation={resolvedStartLocation}
+                  endLocation={resolvedEndLocation}
+                  onStartLocationChange={isReadOnly ? undefined : handleStartLocationChange}
+                  onEndLocationChange={isReadOnly ? undefined : handleEndLocationChange}
+                  onCityAccommodationChange={isReadOnly ? undefined : handleCityAccommodationChange}
                 />
               </ErrorBoundary>
             ) : (
@@ -598,8 +676,8 @@ export const ItineraryShell = ({
                 selectedActivityId={selectedActivityId}
                 onSelectActivity={handleSelectActivity}
                 isPlanning={isPlanning}
-                startPoint={currentDayEntryPoints?.startPoint}
-                endPoint={currentDayEntryPoints?.endPoint}
+                startPoint={effectiveMapStartPoint}
+                endPoint={effectiveMapEndPoint}
                 tripStartDate={tripStartDate}
                 dayLabel={currentDay?.dateLabel}
               />

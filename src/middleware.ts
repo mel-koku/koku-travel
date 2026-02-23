@@ -22,6 +22,7 @@ const PUBLIC_API_ROUTES = [
   "/api/cities",
   "/api/video-import",
   "/api/shared",
+  "/api/geocode",
 ];
 
 /**

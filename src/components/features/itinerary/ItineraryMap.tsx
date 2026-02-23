@@ -7,7 +7,7 @@ import { mapboxService } from "@/lib/mapbox/mapService";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { getCoordinatesForLocationId, getCoordinatesForName } from "@/data/locationCoordinates";
 import type { Coordinates } from "@/data/locationCoordinates";
-import type { RoutingRequest } from "@/lib/routing/types";
+import type { RoutingRequest, TravelMode } from "@/lib/routing/types";
 import { mapColors } from "@/lib/mapColors";
 
 const MAP_STYLE = "mapbox://styles/mel-koku/cml53wdnr000001sqd6ol4n35";
@@ -20,11 +20,19 @@ const MARKER_HIGHLIGHT_COLOR = mapColors.sage;
 
 type MapboxModule = typeof import("mapbox-gl");
 
+type AccommodationPoint = {
+  name: string;
+  coordinates: { lat: number; lng: number };
+  type?: string;
+};
+
 type ItineraryMapProps = {
   day: ItineraryDay;
   activities: ItineraryActivity[];
   onActivityClick?: (activityId: string) => void;
   selectedActivityId?: string | null;
+  startPoint?: AccommodationPoint;
+  endPoint?: AccommodationPoint;
 };
 
 type ActivityPoint = {
@@ -41,11 +49,15 @@ type RouteSegment = {
   path: Coordinates[];
 };
 
+const ACCOMMODATION_MARKER_COLOR = mapColors.sage;
+
 export function ItineraryMap({
   day,
   activities,
   onActivityClick,
   selectedActivityId,
+  startPoint,
+  endPoint,
 }: ItineraryMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
@@ -160,53 +172,76 @@ export function ItineraryMap({
     }
     const bounds = new mapboxModule.LngLatBounds();
     activityPoints.forEach((point) => bounds.extend([point.coordinates.lng, point.coordinates.lat]));
+    // Include accommodation points in bounds
+    if (startPoint) bounds.extend([startPoint.coordinates.lng, startPoint.coordinates.lat]);
+    if (endPoint) bounds.extend([endPoint.coordinates.lng, endPoint.coordinates.lat]);
     if (!bounds.isEmpty()) {
-      // Use fitBounds with padding option instead of bounds.pad() which doesn't exist
       map.fitBounds(bounds, { maxZoom: 16, duration: 400, padding: 50 });
     }
-  }, [activityPoints, mapReady]);
+  }, [activityPoints, startPoint, endPoint, mapReady]);
 
   useEffect(() => {
     const mapboxModule = mapboxModuleRef.current;
-    if (!mapboxModule || activityPoints.length < 2 || !mapboxEnabled) {
+    if (!mapboxModule || !mapboxEnabled) {
+      setRouteSegments([]);
+      return;
+    }
+    // Need at least 2 activity points for inter-activity routes,
+    // OR accommodation points with at least 1 activity
+    if (activityPoints.length < 2 && !(startPoint || endPoint) ) {
+      setRouteSegments([]);
+      return;
+    }
+    if (activityPoints.length === 0) {
       setRouteSegments([]);
       return;
     }
 
     const controller = new AbortController();
     const loadRoutes = async () => {
-      const routePromises = activityPoints.slice(1).map(async (current, i) => {
-        const previous = activityPoints[i];
-        if (!previous || !current) return null;
+      const allPromises: Promise<RouteSegment | null>[] = [];
+
+      // Route from start accommodation → first activity
+      if (startPoint && activityPoints.length > 0) {
+        const first = activityPoints[0]!;
+        allPromises.push(
+          fetchRoute(
+            "accom-start",
+            first.id,
+            startPoint.coordinates,
+            first.coordinates,
+            "walk",
+            controller.signal,
+          ),
+        );
+      }
+
+      // Inter-activity routes
+      for (let i = 1; i < activityPoints.length; i++) {
+        const previous = activityPoints[i - 1]!;
+        const current = activityPoints[i]!;
         const mode = current.activity.travelFromPrevious?.mode ?? "walk";
-        const request: RoutingRequest = {
-          origin: previous.coordinates,
-          destination: current.coordinates,
-          mode,
-        };
-        try {
-          const result = await mapboxService.getRoute(request);
-          if (controller.signal.aborted) return null;
-          const path = result.geometry?.length
-            ? result.geometry
-            : [previous.coordinates, current.coordinates];
-          return {
-            id: `${previous.id}-${current.id}`,
-            fromId: previous.id,
-            toId: current.id,
-            path,
-          };
-        } catch {
-          if (controller.signal.aborted) return null;
-          return {
-            id: `${previous.id}-${current.id}`,
-            fromId: previous.id,
-            toId: current.id,
-            path: [previous.coordinates, current.coordinates],
-          };
-        }
-      });
-      const results = await Promise.all(routePromises);
+        allPromises.push(
+          fetchRoute(previous.id, current.id, previous.coordinates, current.coordinates, mode, controller.signal),
+        );
+      }
+
+      // Route from last activity → end accommodation
+      if (endPoint && activityPoints.length > 0) {
+        const last = activityPoints[activityPoints.length - 1]!;
+        allPromises.push(
+          fetchRoute(
+            last.id,
+            "accom-end",
+            last.coordinates,
+            endPoint.coordinates,
+            "walk",
+            controller.signal,
+          ),
+        );
+      }
+
+      const results = await Promise.all(allPromises);
       if (!controller.signal.aborted) {
         setRouteSegments(results.filter((s): s is RouteSegment => s !== null));
       }
@@ -216,7 +251,7 @@ export function ItineraryMap({
     return () => {
       controller.abort();
     };
-  }, [activityPoints, mapboxEnabled]);
+  }, [activityPoints, startPoint, endPoint, mapboxEnabled]);
 
   useEffect(() => {
     const mapboxModule = mapboxModuleRef.current;
@@ -225,10 +260,12 @@ export function ItineraryMap({
       return;
     }
 
-    // Build set of current point IDs
+    // Build set of all current marker IDs (activities + accommodations)
     const currentPointIds = new Set(activityPoints.map((p) => p.id));
+    if (startPoint) currentPointIds.add("accom-start");
+    if (endPoint) currentPointIds.add("accom-end");
 
-    // Remove markers that are no longer in activityPoints
+    // Remove markers that are no longer needed
     markersRef.current.forEach((marker, id) => {
       if (!currentPointIds.has(id)) {
         marker.remove();
@@ -236,7 +273,44 @@ export function ItineraryMap({
       }
     });
 
-    // Add or update markers
+    // Accommodation markers (sage-colored, hotel icon)
+    const accomEntries: Array<{ id: string; point: AccommodationPoint; label: string }> = [];
+    if (startPoint) accomEntries.push({ id: "accom-start", point: startPoint, label: "Start" });
+    if (endPoint && !(startPoint && endPoint.coordinates.lat === startPoint.coordinates.lat && endPoint.coordinates.lng === startPoint.coordinates.lng)) {
+      accomEntries.push({ id: "accom-end", point: endPoint, label: "End" });
+    }
+
+    for (const { id, point, label } of accomEntries) {
+      const existing = markersRef.current.get(id);
+      if (existing) {
+        existing.setLngLat([point.coordinates.lng, point.coordinates.lat]);
+        continue;
+      }
+
+      const el = document.createElement("div");
+      el.className = "koku-mapbox-marker-accom";
+      Object.assign(el.style, {
+        width: "30px",
+        height: "30px",
+        borderRadius: "50%",
+        backgroundColor: ACCOMMODATION_MARKER_COLOR,
+        border: "2.5px solid white",
+        boxShadow: "0 2px 6px rgba(0,0,0,0.35)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      });
+      // Hotel SVG icon
+      el.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M3 7l9-4 9 4M4 10v11M20 10v11M8 14v.01M12 14v.01M16 14v.01M8 18v.01M12 18v.01M16 18v.01"/></svg>`;
+      el.title = `${label}: ${point.name}`;
+
+      const marker = new mapboxModule.Marker({ element: el })
+        .setLngLat([point.coordinates.lng, point.coordinates.lat])
+        .addTo(map);
+      markersRef.current.set(id, marker);
+    }
+
+    // Add or update activity markers
     activityPoints.forEach((point, index) => {
       const existingMarker = markersRef.current.get(point.id);
       if (existingMarker) {
@@ -276,7 +350,7 @@ export function ItineraryMap({
       });
       markersRef.current.set(point.id, marker);
     });
-  }, [activityPoints, mapReady, selectedActivityId, onActivityClick]);
+  }, [activityPoints, startPoint, endPoint, mapReady, selectedActivityId, onActivityClick]);
 
   useEffect(() => {
     const mapboxModule = mapboxModuleRef.current;
@@ -305,6 +379,7 @@ export function ItineraryMap({
       const sourceId = `itinerary-route-source-${segment.id}`;
       const layerId = `itinerary-route-layer-${segment.id}`;
       const coordinates = segment.path.map((coord) => [coord.lng, coord.lat]) as [number, number][];
+      const isAccomSegment = segment.fromId === "accom-start" || segment.toId === "accom-end";
 
       map.addSource(sourceId, {
         type: "geojson",
@@ -328,9 +403,10 @@ export function ItineraryMap({
           "line-cap": "round",
         },
         paint: {
-          "line-color": segment.toId === selectedActivityId ? ROUTE_LINE_HIGHLIGHT : ROUTE_LINE,
+          "line-color": isAccomSegment ? ACCOMMODATION_MARKER_COLOR : (segment.toId === selectedActivityId ? ROUTE_LINE_HIGHLIGHT : ROUTE_LINE),
           "line-width": segment.toId === selectedActivityId ? 5 : 3,
-          "line-opacity": 0.85,
+          "line-opacity": isAccomSegment ? 0.6 : 0.85,
+          "line-dasharray": isAccomSegment ? [2, 2] : [1, 0],
         },
       });
       layerIdsRef.current.push(layerId);
@@ -393,6 +469,28 @@ export function ItineraryMap({
       </div>
     </div>
   );
+}
+
+async function fetchRoute(
+  fromId: string,
+  toId: string,
+  origin: Coordinates,
+  destination: Coordinates,
+  mode: TravelMode,
+  signal: AbortSignal,
+): Promise<RouteSegment | null> {
+  const request: RoutingRequest = { origin, destination, mode };
+  try {
+    const result = await mapboxService.getRoute(request);
+    if (signal.aborted) return null;
+    const path = result.geometry?.length
+      ? result.geometry
+      : [origin, destination];
+    return { id: `${fromId}-${toId}`, fromId, toId, path };
+  } catch {
+    if (signal.aborted) return null;
+    return { id: `${fromId}-${toId}`, fromId, toId, path: [origin, destination] };
+  }
 }
 
 function resolveCoordinates(

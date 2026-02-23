@@ -12,9 +12,11 @@ import { DayTips } from "./DayTips";
 import { DayConflictSummary } from "./ConflictBadge";
 import { DayStartTimePicker } from "./DayStartTimePicker";
 import { RunningLatePopover } from "./RunningLatePopover";
+import { AccommodationPicker } from "./AccommodationPicker";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
+import type { EntryPoint } from "@/types/trip";
 
 type DayHeaderProps = {
   day: ItineraryDay;
@@ -24,6 +26,12 @@ type DayHeaderProps = {
   builderData?: TripBuilderData;
   itinerary?: Itinerary;
   onRefineDay?: (refinedDay: ItineraryDay) => void;
+  // Start/end location
+  startLocation?: EntryPoint;
+  endLocation?: EntryPoint;
+  onStartLocationChange?: (location: EntryPoint | undefined) => void;
+  onEndLocationChange?: (location: EntryPoint | undefined) => void;
+  onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
   // Smart suggestions for this day
   suggestions?: DetectedGap[];
   onAcceptSuggestion?: (gap: DetectedGap) => void;
@@ -65,6 +73,11 @@ export function DayHeader({
   onCancelPreview,
   onFilterChange,
   isPreviewLoading,
+  startLocation,
+  endLocation,
+  onStartLocationChange,
+  onEndLocationChange,
+  onCityAccommodationChange,
 }: DayHeaderProps) {
 // Calculate the date for this day
   const dayDate = useMemo(() => {
@@ -336,6 +349,18 @@ export function DayHeader({
             </>
           )}
         </div>
+        {/* Start/End Location Picker — own row */}
+        {(onStartLocationChange || startLocation || endLocation) && (
+          <AccommodationPicker
+            startLocation={startLocation}
+            endLocation={endLocation}
+            cityId={day.cityId}
+            onStartChange={onStartLocationChange ?? (() => {})}
+            onEndChange={onEndLocationChange ?? (() => {})}
+            onSetCityAccommodation={onCityAccommodationChange}
+            isReadOnly={!onStartLocationChange}
+          />
+        )}
         {/* Conflict Summary */}
         {conflicts && conflicts.length > 0 && (
           <DayConflictSummary dayConflicts={conflicts} className="mt-3" />

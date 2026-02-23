@@ -1,7 +1,7 @@
 "use client";
 
 import type { Itinerary, ItineraryActivity, ItineraryEdit } from "@/types/itinerary";
-import type { DayEntryPoint, EntryPoint } from "@/types/trip";
+import type { CityAccommodation, DayEntryPoint, EntryPoint } from "@/types/trip";
 import { createClient } from "@/lib/supabase/client";
 import { loadSaved } from "@/lib/savedStorage";
 import { APP_STATE_STORAGE_KEY, APP_STATE_DEBOUNCE_MS, STABLE_DEFAULT_USER_ID } from "@/lib/constants";
@@ -69,6 +69,7 @@ export type AppStateShape = {
 
   // Editing state
   dayEntryPoints: Record<string, DayEntryPoint>;
+  cityAccommodations: Record<string, CityAccommodation>;
   editHistory: Record<string, ItineraryEdit[]>;
   currentHistoryIndex: Record<string, number>;
 
@@ -87,6 +88,7 @@ export type AppStateShape = {
 
   // Editing actions
   setDayEntryPoint: (tripId: string, dayId: string, type: "start" | "end", entryPoint: EntryPoint | undefined) => void;
+  setCityAccommodation: (tripId: string, cityId: string, accommodation: CityAccommodation | undefined) => void;
   replaceActivity: (tripId: string, dayId: string, activityId: string, newActivity: ItineraryActivity) => void;
   deleteActivity: (tripId: string, dayId: string, activityId: string) => void;
   reorderActivities: (tripId: string, dayId: string, activityIds: string[]) => void;
@@ -113,6 +115,7 @@ const defaultState: AppStateShape = {
   isLoadingRefresh: false,
   loadingBookmarks: new Set(),
   dayEntryPoints: {},
+  cityAccommodations: {},
   editHistory: {},
   currentHistoryIndex: {},
 
@@ -128,6 +131,7 @@ const defaultState: AppStateShape = {
   restoreTrip: () => {},
   getTripById: () => undefined,
   setDayEntryPoint: () => {},
+  setCityAccommodation: () => {},
   replaceActivity: () => {},
   deleteActivity: () => {},
   reorderActivities: () => {},
@@ -145,7 +149,7 @@ const Ctx = createContext<AppStateShape>(defaultState);
 
 type InternalState = Pick<
   AppStateShape,
-  "user" | "saved" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "editHistory" | "currentHistoryIndex"
+  "user" | "saved" | "guideBookmarks" | "trips" | "isLoadingRefresh" | "loadingBookmarks" | "dayEntryPoints" | "cityAccommodations" | "editHistory" | "currentHistoryIndex"
 >;
 
 const buildProfileFromSupabase = (user: User | null, previous?: UserProfile): UserProfile => {
@@ -180,6 +184,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     isLoadingRefresh: false,
     loadingBookmarks: new Set(),
     dayEntryPoints: {},
+    cityAccommodations: {},
     editHistory: {},
     currentHistoryIndex: {},
   });
@@ -208,6 +213,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           isLoadingRefresh: false,
           loadingBookmarks: new Set(),
           dayEntryPoints: parsed.dayEntryPoints ?? {},
+          cityAccommodations: parsed.cityAccommodations ?? {},
           editHistory: parsed.editHistory ?? {},
           currentHistoryIndex: parsed.currentHistoryIndex ?? {},
         };
@@ -220,6 +226,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           isLoadingRefresh: false,
           loadingBookmarks: new Set(),
           dayEntryPoints: {},
+          cityAccommodations: {},
           editHistory: {},
           currentHistoryIndex: {},
         };
@@ -334,6 +341,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         guideBookmarks: state.guideBookmarks,
         trips: state.trips,
         dayEntryPoints: state.dayEntryPoints,
+        cityAccommodations: state.cityAccommodations,
         editHistory: state.editHistory,
         currentHistoryIndex: state.currentHistoryIndex,
       };
@@ -345,7 +353,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     }, APP_STATE_DEBOUNCE_MS);
 
     return () => clearTimeout(timeoutId);
-  }, [state.user, state.saved, state.guideBookmarks, state.trips, state.dayEntryPoints, state.editHistory, state.currentHistoryIndex]);
+  }, [state.user, state.saved, state.guideBookmarks, state.trips, state.dayEntryPoints, state.cityAccommodations, state.editHistory, state.currentHistoryIndex]);
 
   // Ref tracking current trips so beforeunload/visibilitychange can flush without stale closures
   const tripsRef = useRef(state.trips);
@@ -606,6 +614,24 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  // City accommodation actions
+  const setCityAccommodation = useCallback(
+    (tripId: string, cityId: string, accommodation: CityAccommodation | undefined) => {
+      const key = `${tripId}-${cityId}`;
+      setState((s) => {
+        if (!accommodation) {
+          const { [key]: _, ...rest } = s.cityAccommodations;
+          return { ...s, cityAccommodations: rest };
+        }
+        return {
+          ...s,
+          cityAccommodations: { ...s.cityAccommodations, [key]: accommodation },
+        };
+      });
+    },
+    [],
+  );
+
   // Edit history actions (extracted into useEditHistory hook)
   // setState is compatible because InternalState ⊇ EditHistoryInternalState
   // and the hook's updater spreads unchanged fields through.
@@ -646,6 +672,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       isLoadingRefresh: false,
       loadingBookmarks: new Set(),
       dayEntryPoints: {},
+      cityAccommodations: {},
       editHistory: {},
       currentHistoryIndex: {},
     };
@@ -682,6 +709,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       restoreTrip,
       getTripById: (tripId: string) => getTripByIdOp(state.trips, tripId),
       setDayEntryPoint,
+      setCityAccommodation,
       replaceActivity,
       deleteActivity,
       reorderActivities,
@@ -704,6 +732,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       deleteTrip,
       restoreTrip,
       setDayEntryPoint,
+      setCityAccommodation,
       replaceActivity,
       deleteActivity,
       reorderActivities,

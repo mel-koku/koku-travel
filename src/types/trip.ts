@@ -84,7 +84,7 @@ export type CityOption = {
   previewImages: string[];
 };
 
-export type EntryPointType = "airport";
+export type EntryPointType = "airport" | "accommodation" | "custom";
 
 export type EntryPoint = {
   type: EntryPointType;
@@ -105,6 +105,15 @@ export type EntryPoint = {
 export type DayEntryPoint = {
   startPoint?: EntryPoint;
   endPoint?: EntryPoint;
+};
+
+/**
+ * City-level accommodation setting. When set, all days in this city
+ * use this accommodation as start/end point (unless overridden per-day).
+ */
+export type CityAccommodation = {
+  cityId: string;
+  entryPoint: EntryPoint;
 };
 
 /**
