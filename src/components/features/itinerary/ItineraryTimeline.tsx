@@ -33,6 +33,7 @@ import {
   type ItineraryDay,
   type ItineraryTravelMode,
 } from "@/types/itinerary";
+import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict, ItineraryConflictsResult } from "@/lib/validation/itineraryConflicts";
@@ -101,6 +102,8 @@ type ItineraryTimelineProps = {
   onStartLocationChange?: (location: EntryPoint | undefined) => void;
   onEndLocationChange?: (location: EntryPoint | undefined) => void;
   onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
+  /** Open the LocationExpanded slide-in panel for a location */
+  onViewDetails?: (location: Location) => void;
 };
 
 export const ItineraryTimeline = ({
@@ -136,6 +139,7 @@ export const ItineraryTimeline = ({
   onStartLocationChange,
   onEndLocationChange,
   onCityAccommodationChange,
+  onViewDetails,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMountedRef = useRef(true);
@@ -935,6 +939,7 @@ export const ItineraryTimeline = ({
                       conflicts={activityConflicts}
                       isReadOnly={isReadOnly}
                       activeDragId={activeId}
+                      onViewDetails={onViewDetails}
                     />
                     {/* Guide segments after this activity */}
                     {!activeId && guideSegmentsAfter.map((seg) => (

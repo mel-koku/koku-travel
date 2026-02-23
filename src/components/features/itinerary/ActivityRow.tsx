@@ -3,6 +3,7 @@
 import { forwardRef, memo } from "react";
 import type { Transform } from "@dnd-kit/utilities";
 import type { ItineraryActivity } from "@/types/itinerary";
+import type { Location } from "@/types/location";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { PlaceActivityRow } from "./PlaceActivityRow";
 import { NoteActivityRow } from "./NoteActivityRow";
@@ -31,6 +32,8 @@ type ActivityRowProps = {
   isReadOnly?: boolean;
   /** ID of the currently dragged activity (if any) — used to collapse non-dragged cards */
   activeDragId?: string | null;
+  /** Open the LocationExpanded slide-in panel for this location */
+  onViewDetails?: (location: Location) => void;
 };
 
 export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
@@ -53,6 +56,7 @@ export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
         hideDragHandle={props.hideDragHandle}
         isReadOnly={props.isReadOnly}
         activeDragId={props.activeDragId}
+        onViewDetails={props.onViewDetails}
       />
     );
   },
