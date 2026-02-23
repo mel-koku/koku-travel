@@ -277,6 +277,43 @@ const href = useVariantHref("/trip-builder"); // → "/b/trip-builder"
 
 Or hardcode `/b/` prefix for static links in B-only components.
 
+### Save Button (Unified)
+
+Same style across card grid overlay and detail page:
+
+| State   | Background                 | Icon                            | Text            |
+| ------- | -------------------------- | ------------------------------- | --------------- |
+| Unsaved | White pill, subtle shadow  | Outline heart, `stroke-current` | "Save for trip" |
+| Saved   | `var(--primary)` navy pill | Filled white heart              | "Saved"         |
+
+```tsx
+// Card overlay (shows on hover, persists when saved)
+<button className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md ${
+  active ? "bg-[var(--primary)] text-white" : "bg-white/80 text-[var(--foreground)]"
+}`}>
+  <HeartIcon /> {active ? "Saved" : "Save for trip"}
+</button>
+
+// Detail page (always visible)
+<button className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium ${
+  isSaved ? "bg-[var(--primary)] text-white" : "bg-white text-[var(--foreground)]"
+}`}>
+```
+
+- Card overlay: `sm:opacity-0 sm:group-hover:opacity-100` when unsaved, always visible when saved
+- Entire pill is clickable — never icon-only
+
+### Icon Tooltips
+
+All icon-only buttons use native `title` attributes for hover tooltips:
+
+```tsx
+<button title="Grid view" aria-label="Grid view"> <GridIcon /> </button>
+<button title="Map view" aria-label="Map view"> <MapIcon /> </button>
+```
+
+Apply to: view toggles, search submit, filter close/clear, photo thumbnails, chip remove buttons.
+
 ### Footer
 
 Minimal: brand + 2 nav columns + copyright. White bg, top border. All links prefixed with `/b/`.
@@ -284,6 +321,54 @@ Minimal: brand + 2 nav columns + copyright. White bg, top border. All links pref
 ### Error / 404 Pages
 
 Clean white card on `#F7F9FB` background, Inter bold heading, `--primary` accent buttons. No images, no parallax.
+
+---
+
+## Places Page (`/b/places`)
+
+### Layout Modes
+
+**Grid mode** (default): Intro hero → sticky category bar → seasonal banner → card grid.
+
+**Map mode**: Full-viewport fixed Mapbox map with floating UI layers.
+
+### Category Bar (`CategoryBarB.tsx`)
+
+Single sticky row below the header with: location count + search input + grid/map toggle + refine button + active filter chips.
+
+```tsx
+<div className="sticky z-40" style={{ top: "var(--header-h)" }}>
+```
+
+- Frosted glass background: always in map mode, on scroll in grid mode
+- Category tabs row removed — count shown inline as `"X places"` text
+
+### Map Mode Layout (`PlacesMapLayoutB.tsx`)
+
+Map is `fixed` positioned, filling from header to viewport bottom:
+
+```tsx
+<div data-lenis-prevent className="fixed inset-x-0 bottom-0 z-20" style={{ top: "var(--header-h)" }}>
+```
+
+Key patterns:
+
+- `data-lenis-prevent` on outermost container — prevents Lenis scroll hijack on the map
+- `projection: "mercator"` on Mapbox init — avoids globe projection panning issues
+- Category bar (z-40) floats above the map (z-20) with backdrop blur
+- Intro section hidden in map mode to minimize bar height
+- Floating location pill strip at `absolute bottom-4` — always at viewport bottom
+- Seasonal banner only shown in grid mode
+
+### Card Grid (`PlacesCardB.tsx`)
+
+- 4:3 landscape image with category badge + save pill overlay
+- Content: name + rating, city, summary (line-clamp-2), category + duration pills
+- Save pill appears on hover (unsaved) or persists (saved)
+
+### Detail Page (`PlaceDetailB.tsx`)
+
+Full-page layout: hero image → sticky back bar → title/metadata/save → photo gallery → content sections (overview, tips, practical info, reviews, hours, links) → nearby grid.
 
 ---
 
@@ -302,12 +387,25 @@ src/components-b/
     FeaturedLocationsB.tsx
     TestimonialsB.tsx
     FinalCtaB.tsx
+  features/
+    places/
+      PlacesShellB.tsx      ← Main shell: state, filters, view mode toggle
+      PlacesShellBLazy.tsx   ← Lazy wrapper for code-split
+      PlacesIntroB.tsx       ← Hero heading (hidden in map mode)
+      CategoryBarB.tsx       ← Sticky search/filter/toggle bar
+      FilterPanelB.tsx       ← Slide-in refine panel
+      PlacesGridB.tsx        ← Infinite-scroll card grid
+      PlacesCardB.tsx        ← Location card with save pill
+      PlacesMapLayoutB.tsx   ← Fixed full-viewport map + pill strip
+      PlacesMapB.tsx         ← Mapbox GL map (clusters, bounds, hover)
+      PlaceDetailB.tsx       ← Full-page location detail
   ui/                     ← B UI kit (build as needed)
-  features/               ← Feature pages (build incrementally)
 
 src/app/b/
   layout.tsx              ← Inter font, VariantProvider, LayoutWrapperB
   page.tsx                ← B landing
+  places/page.tsx         ← Places grid/map page
+  places/[id]/page.tsx    ← Place detail page
   [...fallback]/page.tsx  ← Catch-all redirect to A
   not-found.tsx           ← B-styled 404
   error.tsx               ← B error boundary
