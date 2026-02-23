@@ -6,7 +6,6 @@ import Link from "next/link";
 import { LocationCard } from "@/components/features/places/LocationCard";
 import { AddToItineraryButton } from "@/components/features/saved/AddToItineraryButton";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { Magnetic } from "@/components/ui/Magnetic";
 import { useSaved } from "@/context/SavedContext";
 import { useSavedLocations } from "@/hooks/useSavedLocations";
 
@@ -103,15 +102,13 @@ export default function SavedShell() {
               </ScrollReveal>
 
               <ScrollReveal delay={0.5} distance={10}>
-                <Magnetic>
-                  <Link
-                    href="/places"
-                    className="relative mt-8 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
-                  >
-                    <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
-                    <span className="relative">Start exploring</span>
-                  </Link>
-                </Magnetic>
+                <Link
+                  href="/places"
+                  className="relative mt-8 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                >
+                  <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+                  <span className="relative">Start exploring</span>
+                </Link>
               </ScrollReveal>
             </div>
           </div>

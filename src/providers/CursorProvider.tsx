@@ -4,38 +4,37 @@ import {
   createContext,
   useContext,
   useState,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
   type ReactNode,
 } from "react";
-import { useMotionValue, useSpring } from "framer-motion";
-import { springCursor } from "@/lib/motion";
+import { useMotionValue } from "framer-motion";
 
-export type CursorState = "default" | "link" | "view" | "places" | "read" | "drag" | "hidden";
+export type CursorState = "default" | "link";
 
 type CursorContextValue = {
   cursorState: CursorState;
-  setCursorState: (state: CursorState) => void;
   cursorX: ReturnType<typeof useMotionValue<number>>;
   cursorY: ReturnType<typeof useMotionValue<number>>;
-  smoothX: ReturnType<typeof useSpring>;
-  smoothY: ReturnType<typeof useSpring>;
   isEnabled: boolean;
 };
 
 const CursorContext = createContext<CursorContextValue | null>(null);
 
+const INTERACTIVE_SELECTOR = "a, button, [role='button'], input, select, textarea, label, summary";
+
+function isInteractive(el: Element | null): boolean {
+  if (!el) return false;
+  return el.closest(INTERACTIVE_SELECTOR) !== null;
+}
+
 export function CursorProvider({ children }: { children: ReactNode }) {
   const [cursorState, setCursorState] = useState<CursorState>("default");
   const [isEnabled, setIsEnabled] = useState(false);
-  const rafRef = useRef<number>(0);
-
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  const smoothX = useSpring(cursorX, springCursor);
-  const smoothY = useSpring(cursorY, springCursor);
+  const currentStateRef = useRef<CursorState>("default");
 
   useEffect(() => {
     const isPointerFine = window.matchMedia("(pointer: fine)").matches;
@@ -51,40 +50,37 @@ export function CursorProvider({ children }: { children: ReactNode }) {
     document.documentElement.classList.add("custom-cursor");
 
     const onMouseMove = (e: MouseEvent) => {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = requestAnimationFrame(() => {
-        cursorX.set(e.clientX);
-        cursorY.set(e.clientY);
-      });
+      cursorX.set(e.clientX);
+      cursorY.set(e.clientY);
+
+      const target = e.target as Element | null;
+      const nextState: CursorState = isInteractive(target) ? "link" : "default";
+
+      if (nextState !== currentStateRef.current) {
+        currentStateRef.current = nextState;
+        setCursorState(nextState);
+      }
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
-      cancelAnimationFrame(rafRef.current);
       document.documentElement.classList.remove("custom-cursor");
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps -- cursorX/cursorY are stable refs from useMotionValue
   }, []);
 
-  const setCursorStateCb = useCallback((state: CursorState) => {
-    setCursorState(state);
-  }, []);
-
   const value = useMemo(
     () => ({
       cursorState,
-      setCursorState: setCursorStateCb,
       cursorX,
       cursorY,
-      smoothX,
-      smoothY,
       isEnabled,
     }),
-    // cursorX/cursorY/smoothX/smoothY are stable refs from useMotionValue/useSpring
+    // cursorX/cursorY are stable refs from useMotionValue
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cursorState, setCursorStateCb, isEnabled]
+    [cursorState, isEnabled]
   );
 
   return (
@@ -94,13 +90,11 @@ export function CursorProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export function useCursor(): CursorContextValue {
+export function useCursor() {
   const ctx = useContext(CursorContext);
   if (!ctx) {
-    // Return a stub — CustomCursor checks isEnabled and bails early
     return {
-      cursorState: "default",
-      setCursorState: () => {},
+      cursorState: "default" as CursorState,
       isEnabled: false,
     } as unknown as CursorContextValue;
   }

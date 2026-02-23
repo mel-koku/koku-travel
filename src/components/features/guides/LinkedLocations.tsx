@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { useCursor } from "@/providers/CursorProvider";
 import { staggerItem } from "@/lib/motion";
 import type { Location } from "@/types/location";
 
@@ -17,8 +16,6 @@ const FALLBACK_IMAGE =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
 export function LinkedLocations({ locations }: LinkedLocationsProps) {
-  const { setCursorState, isEnabled } = useCursor();
-
   if (locations.length === 0) {
     return null;
   }
@@ -60,12 +57,6 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                 <Link
                   href={`/places?location=${location.id}`}
                   className="group relative block h-full overflow-hidden rounded-xl"
-                  onMouseEnter={() =>
-                    isEnabled && setCursorState("places")
-                  }
-                  onMouseLeave={() =>
-                    isEnabled && setCursorState("default")
-                  }
                 >
                   <div
                     className={`relative w-full ${

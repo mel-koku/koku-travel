@@ -5,7 +5,6 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { Magnetic } from "@/components/ui/Magnetic";
 import { parallaxZoomIn, durationBase, staggerChar } from "@/lib/motion";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
@@ -94,15 +93,13 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
             transition={{ duration: durationBase, delay: 0.7 }}
             className="mt-12 flex flex-col items-center"
           >
-            <Magnetic>
-              <a
-                href="/"
-                className="relative inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
-              >
-                <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
-                <span className="relative">{content?.notFoundPrimaryCtaText ?? "Take Me Home"}</span>
-              </a>
-            </Magnetic>
+            <a
+              href="/"
+              className="relative inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl"
+            >
+              <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+              <span className="relative">{content?.notFoundPrimaryCtaText ?? "Take Me Home"}</span>
+            </a>
             <a
               href="/places"
               className="link-reveal mt-6 text-sm font-medium uppercase tracking-wide text-white/60 transition-colors hover:text-white/90"

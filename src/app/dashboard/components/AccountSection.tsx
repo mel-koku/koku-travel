@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import IdentityBadge from "@/components/ui/IdentityBadge";
-import { Magnetic } from "@/components/ui/Magnetic";
 import { env } from "@/lib/env";
 
 type AccountSectionProps = {
@@ -46,14 +45,12 @@ export function AccountSection({
       <div className="flex items-center justify-between flex-wrap gap-2">
         <h2 className="text-lg font-semibold text-foreground">Account</h2>
         {isAuthenticated && supabase && (
-          <Magnetic>
-            <button
-              onClick={() => supabase.auth.signOut()}
-              className="h-10 rounded-lg border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface"
-            >
-              Sign out
-            </button>
-          </Magnetic>
+          <button
+            onClick={() => supabase.auth.signOut()}
+            className="h-10 rounded-lg border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface"
+          >
+            Sign out
+          </button>
         )}
       </div>
 
@@ -80,15 +77,13 @@ export function AccountSection({
                 status
               )}
             </div>
-            <Magnetic>
-              <button
-                onClick={onClearLocalData}
-                disabled={isLoadingProfile || isLoadingRefresh}
-                className="h-10 rounded-lg border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Clear local data
-              </button>
-            </Magnetic>
+            <button
+              onClick={onClearLocalData}
+              disabled={isLoadingProfile || isLoadingRefresh}
+              className="h-10 rounded-lg border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Clear local data
+            </button>
           </div>
         </>
       ) : (

@@ -3,13 +3,11 @@
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { useCursor } from "@/providers/CursorProvider";
 import { Tooltip } from "@/components/ui/Tooltip";
 import { durationFast } from "@/lib/motion";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  const { setCursorState } = useCursor();
   const prefersReducedMotion = useReducedMotion();
   const [mounted, setMounted] = useState(false);
 
@@ -29,8 +27,6 @@ export function ThemeToggle() {
       <button
         type="button"
         onClick={toggle}
-        onMouseEnter={() => setCursorState("link")}
-        onMouseLeave={() => setCursorState("default")}
         className="flex h-11 w-11 items-center justify-center rounded-xl text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       >

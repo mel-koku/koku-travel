@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCursor } from "@/providers/CursorProvider";
 import type { ExperienceType } from "@/types/experience";
 import type { ExperienceSummary } from "@/types/experience";
 
@@ -26,8 +25,6 @@ export function ExperienceFooter({
   publishedAt,
   relatedExperiences,
 }: ExperienceFooterProps) {
-  const { setCursorState, isEnabled } = useCursor();
-
   return (
     <footer className="pb-12 sm:pb-20 lg:pb-28">
       {/* Sign-off */}
@@ -61,8 +58,6 @@ export function ExperienceFooter({
                 key={related._id}
                 href={`/experiences/${related.slug}`}
                 className="group relative block overflow-hidden rounded-xl"
-                onMouseEnter={() => isEnabled && setCursorState("read")}
-                onMouseLeave={() => isEnabled && setCursorState("default")}
               >
                 <div className="relative aspect-[4/3] w-full bg-charcoal">
                   {related.featuredImage?.url && (

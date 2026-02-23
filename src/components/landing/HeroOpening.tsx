@@ -8,7 +8,6 @@ import {
   useReducedMotion,
 } from "framer-motion";
 import { useRef } from "react";
-import { Magnetic } from "@/components/ui/Magnetic";
 import { SplitText } from "@/components/ui/SplitText";
 import {
   easeReveal,
@@ -105,14 +104,12 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
               {description}
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Magnetic>
-                <a
-                  href="/trip-builder"
-                  className="inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
-                >
-                  {primaryCta}
-                </a>
-              </Magnetic>
+              <a
+                href="/trip-builder"
+                className="inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
+              >
+                {primaryCta}
+              </a>
               <a
                 href="/places"
                 className="inline-flex h-14 items-center justify-center rounded-xl border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98]"
@@ -212,14 +209,12 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             transition={{ duration: 0.4, delay: 0.6, ease: easeReveal }}
             className="mt-8 flex flex-wrap gap-4"
           >
-            <Magnetic className="w-full sm:w-auto">
-              <a
-                href="/trip-builder"
-                className="inline-flex h-14 w-full items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98] sm:w-auto"
-              >
-                {primaryCta}
-              </a>
-            </Magnetic>
+            <a
+              href="/trip-builder"
+              className="inline-flex h-14 w-full items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98] sm:w-auto"
+            >
+              {primaryCta}
+            </a>
             <a
               href="/places"
               className="inline-flex h-14 w-full items-center justify-center rounded-xl border border-white/25 px-10 text-sm font-semibold uppercase tracking-wider text-white/80 transition-all hover:border-white/40 hover:text-white active:scale-[0.98] sm:w-auto"
