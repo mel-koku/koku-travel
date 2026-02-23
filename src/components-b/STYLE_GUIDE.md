@@ -1,6 +1,6 @@
 # Variant B — Style Guide
 
-> Reference for building all /b/\* pages. Aesthetic: "Logical Elegance" / Soft Minimalism (Clay/Metalab-inspired).
+> Reference for building all /b/\* pages. Aesthetic: "Logical Elegance" / Soft Minimalism.
 
 ---
 
@@ -169,7 +169,7 @@ Subtle fade-up. Keep `y` distance small (8–12px). Longer, softer timing.
 >
 ```
 
-### Stagger Pattern (Clay-style cascade)
+### Stagger Pattern (cascade)
 
 Heading enters first → cards cascade after a beat:
 
