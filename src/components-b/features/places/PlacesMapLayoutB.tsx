@@ -20,7 +20,6 @@ type PlacesMapLayoutBProps = {
 export function PlacesMapLayoutB({
   filteredLocations,
   sortedLocations,
-  totalCount,
 }: PlacesMapLayoutBProps) {
   const router = useRouter();
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
@@ -48,23 +47,18 @@ export function PlacesMapLayoutB({
     });
   }, [sortedLocations, mapBounds]);
 
-  const showZoomHint = mapBounds !== null && boundsFilteredLocations.length <= 10 && boundsFilteredLocations.length < totalCount;
-
-  const countLabel = mapBounds
-    ? `${boundsFilteredLocations.length.toLocaleString()} of ${totalCount.toLocaleString()} places in view${showZoomHint ? " — Zoom out to see more" : ""}`
-    : `${totalCount.toLocaleString()} places`;
-
   const showResetButton = mapBounds !== null && boundsFilteredLocations.length === 0;
 
   // Floating strip shows top 20 in-bounds locations
   const stripLocations = boundsFilteredLocations.slice(0, 20);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div
-        className="relative rounded-2xl overflow-hidden"
-        style={{ height: "calc(100dvh - var(--header-h) - 120px)" }}
-      >
+    <div
+      data-lenis-prevent
+      className="fixed inset-x-0 bottom-0 z-20"
+      style={{ top: "var(--header-h)" }}
+    >
+      <div className="relative h-full">
         <ErrorBoundary
           fallback={
             <div className="flex h-full items-center justify-center text-sm text-[var(--muted-foreground)]">
@@ -82,17 +76,7 @@ export function PlacesMapLayoutB({
           />
         </ErrorBoundary>
 
-        {/* Count badge */}
-        <div className="pointer-events-none absolute top-3 left-3 z-10">
-          <span
-            className="rounded-lg bg-white/85 px-3 py-1.5 text-xs text-[var(--muted-foreground)] backdrop-blur-sm"
-            style={{ boxShadow: "var(--shadow-sm)" }}
-          >
-            {countLabel}
-          </span>
-        </div>
-
-        {/* Floating card strip */}
+        {/* Floating card strip — pinned to bottom */}
         {stripLocations.length > 0 && (
           <div className="absolute bottom-4 inset-x-4 z-10">
             <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-1">

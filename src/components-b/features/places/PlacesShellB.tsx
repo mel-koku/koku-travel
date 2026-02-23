@@ -213,7 +213,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
 
   return (
     <div className="min-h-[100dvh] bg-[var(--background)]">
-      <PlacesIntroB totalCount={total} content={content} />
+      {viewMode !== "map" && <PlacesIntroB totalCount={total} content={content} />}
 
       {/* Error state */}
       {error ? (
@@ -323,23 +323,25 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             </div>
           )}
 
-          {/* Seasonal banner */}
-          <div className="mt-3">
-            <SeasonalBanner
-              locations={locations}
-              onFilterSeasonal={handleFilterSeasonal}
-            />
-          </div>
-
-          <div className="h-4 sm:h-6" aria-hidden="true" />
-
           {/* Main content — grid or map based on viewMode */}
           {viewMode === "grid" ? (
-            <PlacesGridB
-              locations={categoryFilteredLocations}
-              totalCount={total}
-              isLoading={isLoading}
-            />
+            <>
+              {/* Seasonal banner */}
+              <div className="mt-3">
+                <SeasonalBanner
+                  locations={locations}
+                  onFilterSeasonal={handleFilterSeasonal}
+                />
+              </div>
+
+              <div className="h-4 sm:h-6" aria-hidden="true" />
+
+              <PlacesGridB
+                locations={categoryFilteredLocations}
+                totalCount={total}
+                isLoading={isLoading}
+              />
+            </>
           ) : mapAvailable ? (
             <PlacesMapLayoutB
               filteredLocations={filteredLocations}

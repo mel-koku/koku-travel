@@ -187,6 +187,7 @@ export function FilterPanelB({
               </h2>
               <button
                 onClick={onClose}
+                title="Close"
                 className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--surface)] transition duration-300"
                 aria-label="Close filters"
               >
@@ -227,6 +228,7 @@ export function FilterPanelB({
                 {query && (
                   <button
                     onClick={() => onQueryChange("")}
+                    title="Clear search"
                     className="absolute right-3 top-1/2 -translate-y-[calc(50%+8px)] p-1 rounded-full hover:bg-[var(--surface)]"
                     aria-label="Clear search"
                   >
