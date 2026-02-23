@@ -75,7 +75,7 @@ export function ActivityReplacementPicker({
     if (score >= 80) return "text-success bg-success/10";
     if (score >= 60) return "text-sage bg-sage/10";
     if (score >= 40) return "text-warning bg-warning/10";
-    return "text-stone bg-surface";
+    return "text-foreground-secondary bg-surface";
   };
 
   return (
@@ -95,6 +95,8 @@ export function ActivityReplacementPicker({
               <button
                 key={option}
                 onClick={() => setSortBy(option)}
+                aria-label={`Sort by ${option}`}
+                aria-pressed={sortBy === option}
                 className={`rounded-md px-3 py-1 text-xs font-medium transition ${
                   sortBy === option
                     ? "bg-brand-primary text-white"

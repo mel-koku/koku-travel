@@ -770,7 +770,7 @@ function scoreSeasonalMatch(
 }
 
 /**
- * Score content fit: +20 when the location is referenced by a guide or experience.
+ * Score content fit: +10 when the location is referenced by a guide or experience.
  */
 function scoreContentFit(
   location: Location,
@@ -780,7 +780,7 @@ function scoreContentFit(
     return { score: 0, reasoning: "" };
   }
   if (contentLocationIds.has(location.id)) {
-    return { score: 20, reasoning: "Featured in editorial content" };
+    return { score: 10, reasoning: "Featured in editorial content" };
   }
   return { score: 0, reasoning: "" };
 }

@@ -153,7 +153,18 @@ export function usePlacesAutocomplete(
   const stableQueryOptions = useMemo(
     () => queryOptions,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(queryOptions)],
+    [
+      queryOptions.languageCode,
+      queryOptions.regionCode,
+      queryOptions.includedPrimaryTypes?.join(","),
+      queryOptions.locationBias?.circle?.center.latitude,
+      queryOptions.locationBias?.circle?.center.longitude,
+      queryOptions.locationBias?.circle?.radius,
+      queryOptions.locationRestriction?.rectangle?.low.latitude,
+      queryOptions.locationRestriction?.rectangle?.low.longitude,
+      queryOptions.locationRestriction?.rectangle?.high.latitude,
+      queryOptions.locationRestriction?.rectangle?.high.longitude,
+    ],
   );
 
   // Only enable query when input meets minimum length

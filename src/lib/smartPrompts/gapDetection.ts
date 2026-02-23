@@ -8,6 +8,7 @@
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { getCoveredMealTypes } from "./foodDetection";
+import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
 
 /**
  * Types of gaps that can be detected in an itinerary.
@@ -575,7 +576,7 @@ function detectCategoryImbalance(day: ItineraryDay, dayIndex: number): DetectedG
   // Count categories
   const categoryCounts = new Map<string, number>();
   for (const activity of placeActivities) {
-    const category = activity.tags?.[0] ?? "unknown";
+    const category = resolveActivityCategory(activity.tags)?.sub ?? "unknown";
     categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
   }
 

@@ -126,10 +126,18 @@ async function refineTooLight(day: TripDay, trip: Trip): Promise<TripDay> {
   const scored = availableLocations.map((loc) => scoreLocation(loc, criteria));
   scored.sort((a, b) => b.score - a.score);
 
+  // Deduplicate by location ID (same location can appear via multiple sources)
+  const seenIds = new Set<string>();
+  const uniqueScored = scored.filter((s) => {
+    if (seenIds.has(s.location.id)) return false;
+    seenIds.add(s.location.id);
+    return true;
+  });
+
   // Add 1-2 new activities
-  const toAdd = Math.min(2, scored.length);
+  const toAdd = Math.min(2, uniqueScored.length);
   const newActivities = activities.concat(
-    scored.slice(0, toAdd).map((scoredLoc, index) => ({
+    uniqueScored.slice(0, toAdd).map((scoredLoc, index) => ({
       id: `${day.id}-added-${Date.now()}-${index}`,
       locationId: scoredLoc.location.id,
       location: scoredLoc.location,

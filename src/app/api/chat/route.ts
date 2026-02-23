@@ -6,12 +6,15 @@ import { chatTools } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/systemPrompt";
 import { serviceUnavailable, internalError } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { checkBodySizeLimit } from "@/lib/api/bodySizeLimit";
 import {
   createRequestContext,
   addRequestContextHeaders,
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+
+const CHAT_MAX_BODY_SIZE = 256 * 1024; // 256KB
 
 export async function POST(request: NextRequest) {
   const context = createRequestContext(request);
@@ -38,34 +41,40 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Rate limit: 20 requests per minute per IP
+  // Rate limit: 10 requests per minute per IP
   const rateLimitResponse = await checkRateLimit(request, {
-    maxRequests: 20,
+    maxRequests: 10,
     windowMs: 60 * 1000,
   });
   if (rateLimitResponse) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
 
+  // Body size check
+  const bodySizeResult = await checkBodySizeLimit(request, CHAT_MAX_BODY_SIZE);
+  if (bodySizeResult) {
+    return addRequestContextHeaders(bodySizeResult, context);
+  }
+
   try {
     const body = await request.json();
     const messages = body.messages;
-    const context = body.context ?? request.headers.get("X-Koku-Context");
+    const chatContext = body.context ?? request.headers.get("X-Koku-Context");
 
     // Cap conversation to last 20 messages for cost control
     const recentMessages = messages.slice(-20);
 
     // Build context-aware system prompt
     let systemPrompt = SYSTEM_PROMPT;
-    if (context) {
+    if (chatContext) {
       const contextParts: string[] = [];
-      if (context === "places") {
+      if (chatContext === "places") {
         contextParts.push("The user is currently browsing the Places map. Prioritize nearby discovery, open-now suggestions, and location-specific advice.");
-      } else if (context === "itinerary") {
+      } else if (chatContext === "itinerary") {
         contextParts.push("The user is viewing their itinerary. Prioritize schedule advice, logistics between stops, and meal suggestions for gaps in their day.");
-      } else if (context === "trip-builder") {
+      } else if (chatContext === "trip-builder") {
         contextParts.push("The user is building a trip. Help with city selection, duration planning, and vibe matching.");
-      } else if (context === "dashboard") {
+      } else if (chatContext === "dashboard") {
         contextParts.push("The user is on their dashboard. Help with trip comparisons, general planning, and pre-trip preparation.");
       }
       if (contextParts.length > 0) {
