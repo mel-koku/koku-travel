@@ -8,7 +8,8 @@ import {
   type SetStateAction,
 } from "react";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
-import type { TripBuilderData, DayEntryPoint } from "@/types/trip";
+import type { CityAccommodation, TripBuilderData, DayEntryPoint } from "@/types/trip";
+import { resolveEffectiveDayEntryPoints } from "@/lib/itinerary/accommodationDefaults";
 import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import { logger } from "@/lib/logger";
@@ -60,6 +61,7 @@ type UseItineraryPlanningOptions = {
   itinerary: Itinerary;
   tripBuilderData?: TripBuilderData;
   dayEntryPoints: Record<string, DayEntryPoint>;
+  cityAccommodations: Record<string, CityAccommodation>;
   tripId: string;
   onItineraryChange?: (next: Itinerary) => void;
 };
@@ -72,6 +74,7 @@ export function useItineraryPlanning({
   itinerary,
   tripBuilderData,
   dayEntryPoints,
+  cityAccommodations,
   tripId,
   onItineraryChange,
 }: UseItineraryPlanningOptions) {
@@ -122,6 +125,16 @@ export function useItineraryPlanning({
   const buildDayEntryPointsMap = useCallback(
     (target: Itinerary) => {
       if (!tripId) return {};
+
+      // Use accommodation resolution to get effective entry points for each day
+      const resolved = resolveEffectiveDayEntryPoints(
+        target,
+        tripId,
+        dayEntryPoints,
+        cityAccommodations,
+        tripBuilderData?.entryPoint,
+      );
+
       const map: Record<
         string,
         {
@@ -130,21 +143,17 @@ export function useItineraryPlanning({
         }
       > = {};
 
-      for (const day of target.days ?? []) {
-        if (!day?.id) continue;
-        const entryPoints = dayEntryPoints[`${tripId}-${day.id}`];
-        if (!entryPoints) continue;
-        const { startPoint, endPoint } = entryPoints;
-        if (!startPoint && !endPoint) continue;
-        map[day.id] = {
-          startPoint: startPoint ? { coordinates: startPoint.coordinates } : undefined,
-          endPoint: endPoint ? { coordinates: endPoint.coordinates } : undefined,
+      for (const [dayId, ep] of Object.entries(resolved)) {
+        if (!ep.startPoint && !ep.endPoint) continue;
+        map[dayId] = {
+          startPoint: ep.startPoint ? { coordinates: ep.startPoint.coordinates } : undefined,
+          endPoint: ep.endPoint ? { coordinates: ep.endPoint.coordinates } : undefined,
         };
       }
 
       return map;
     },
-    [tripId, dayEntryPoints],
+    [tripId, dayEntryPoints, cityAccommodations, tripBuilderData?.entryPoint],
   );
 
   const scheduleUserPlanning = useCallback(
@@ -345,6 +354,29 @@ export function useItineraryPlanning({
       }
     };
   }, [itineraryFingerprint, itinerary, tripId, buildDayEntryPointsMap, tripBuilderData]);
+
+  // Replan when accommodation (dayEntryPoints or cityAccommodations) changes
+  const accommodationFingerprint = useMemo(() => {
+    const parts: string[] = [];
+    for (const [key, ep] of Object.entries(dayEntryPoints)) {
+      if (ep.startPoint || ep.endPoint) {
+        parts.push(`${key}:${ep.startPoint?.id ?? ""}:${ep.endPoint?.id ?? ""}`);
+      }
+    }
+    for (const [key, accom] of Object.entries(cityAccommodations)) {
+      parts.push(`c:${key}:${accom.entryPoint.id}`);
+    }
+    return parts.sort().join("|");
+  }, [dayEntryPoints, cityAccommodations]);
+
+  const prevAccommodationFpRef = useRef(accommodationFingerprint);
+  useEffect(() => {
+    if (prevAccommodationFpRef.current === accommodationFingerprint) return;
+    prevAccommodationFpRef.current = accommodationFingerprint;
+    // Skip auto-optimize since user isn't reordering, just changing start/end points
+    skipAutoOptimizeRef.current = true;
+    scheduleUserPlanning(model);
+  }, [accommodationFingerprint, model, scheduleUserPlanning, skipAutoOptimizeRef]);
 
   // Sync model changes to parent
   useEffect(() => {

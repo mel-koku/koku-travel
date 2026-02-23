@@ -415,8 +415,8 @@ function DayOverviewCard({
   // Calculate total hours at locations
   const totalMinutes = placeActivities.reduce((sum, a) => {
     if (a.kind === "place" && a.schedule) {
-      const [ah, am] = a.schedule.arrivalTime.split(":").map(Number);
-      const [dh, dm] = a.schedule.departureTime.split(":").map(Number);
+      const [ah = 0, am = 0] = a.schedule.arrivalTime.split(":").map(Number);
+      const [dh = 0, dm = 0] = a.schedule.departureTime.split(":").map(Number);
       return sum + (dh * 60 + dm) - (ah * 60 + am);
     }
     if (a.kind === "place" && a.durationMin) {
