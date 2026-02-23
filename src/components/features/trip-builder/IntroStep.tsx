@@ -4,7 +4,6 @@ import { useState, useCallback } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { Magnetic } from "@/components/ui/Magnetic";
-import { ArrowLineCTA } from "@/components/features/trip-builder/ArrowLineCTA";
 import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
 import { easeReveal, staggerChar, durationBase, magneticCTA } from "@/lib/motion";
 import { cn } from "@/lib/cn";
@@ -68,7 +67,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
   const subheading = sanityConfig?.introSubheading ?? "starts here";
   const description =
     sanityConfig?.introDescription ??
-    "Tell us what you\u2019re into. We\u2019ll build the days around it.";
+    "Share what moves you, and we\u2019ll plan the rest \u2014 day by day, from places locals actually go.";
   const ctaText = sanityConfig?.introCtaText ?? "Start Planning";
   const eyebrow = sanityConfig?.introEyebrow ?? "TRIP BUILDER";
   const accentImage =
@@ -99,25 +98,25 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
             {eyebrow}
           </motion.p>
 
-          {/* Heading — dramatic scale */}
+          {/* Heading — lead-in */}
           <SplitText
-            as="h1"
-            className="mt-4 font-serif italic text-[clamp(4rem,12vw,9rem)] leading-[0.9] text-foreground"
-            splitBy="word"
-            animation="clipY"
-            staggerDelay={0.08}
+            as="p"
+            className="mt-4 font-serif text-[clamp(1.5rem,5vw,3.5rem)] italic leading-[1.1] text-foreground-secondary"
+            splitBy="char"
+            animation="fadeUp"
+            staggerDelay={staggerChar}
             delay={0.05}
           >
             {heading}
           </SplitText>
 
-          {/* Subheading — brand-primary, char stagger */}
+          {/* Subheading — dramatic scale, brand-primary */}
           <SplitText
-            as="p"
-            className="mt-2 font-serif text-[clamp(1.5rem,5vw,3.5rem)] italic leading-[1.1] text-brand-primary"
-            splitBy="char"
-            animation="fadeUp"
-            staggerDelay={staggerChar}
+            as="h1"
+            className="mt-2 font-serif italic text-[clamp(4rem,12vw,9rem)] leading-[0.9] text-brand-primary"
+            splitBy="word"
+            animation="clipY"
+            staggerDelay={0.08}
             delay={0.25}
           >
             {subheading}
@@ -131,123 +130,126 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
             {description}
           </motion.p>
 
-          {/* CTA — ArrowLineCTA on desktop, button on mobile */}
+          {/* CTAs — Primary + Secondary */}
           <motion.div
-            className="mt-10"
+            className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4"
             initial={
-              prefersReducedMotion ? {} : { opacity: 0.005, x: -20 }
+              prefersReducedMotion ? {} : { opacity: 0.005, y: 12 }
             }
-            animate={{ opacity: 1, x: 0 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{
               duration: durationBase,
               ease: easeReveal,
               delay: 0.7,
             }}
           >
-            {/* Desktop: ArrowLineCTA */}
-            <div className="hidden lg:block">
-              <ArrowLineCTA label={ctaText} onClick={onStart} />
-            </div>
+            {/* Primary: Start Planning */}
+            <Magnetic strength={magneticCTA.strength} maxDisplacement={magneticCTA.maxDisplacement} threshold={magneticCTA.threshold}>
+              <button
+                type="button"
+                onClick={onStart}
+                className="h-14 w-full cursor-pointer rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98] sm:w-auto"
+              >
+                {ctaText}
+              </button>
+            </Magnetic>
 
-            {/* Mobile: full-width button */}
-            <div className="lg:hidden">
-              <Magnetic strength={magneticCTA.strength} maxDisplacement={magneticCTA.maxDisplacement} threshold={magneticCTA.threshold}>
-                <button
-                  type="button"
-                  onClick={onStart}
-                  className="h-14 w-full cursor-pointer rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
-                >
-                  {ctaText}
-                </button>
-              </Magnetic>
-            </div>
+            {/* Secondary: Quick Plan */}
+            {onQuickStart && (
+              <button
+                type="button"
+                onClick={() => setShowQuickPlan((v) => !v)}
+                className="h-14 w-full cursor-pointer rounded-xl border border-border bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-foreground transition-all hover:border-foreground-secondary hover:bg-surface active:scale-[0.98] sm:w-auto"
+              >
+                Quick Plan
+              </button>
+            )}
           </motion.div>
 
-          {/* Quick Plan — express mode */}
-          {onQuickStart && (
+          {/* Quick Plan — express mode (expanded) */}
+          {onQuickStart && showQuickPlan && (
             <motion.div
-              className="mt-8"
-              {...fade(0.85)}
+              className="mt-6"
+              {...fade(0.1)}
             >
-              {!showQuickPlan ? (
-                <button
-                  type="button"
-                  onClick={() => setShowQuickPlan(true)}
-                  className="text-sm text-foreground-secondary transition-colors hover:text-foreground"
+              <AnimatePresence>
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3, ease: easeReveal }}
+                  className="overflow-hidden"
                 >
-                  Short on time?{" "}
-                  <span className="font-semibold text-brand-primary">Quick Plan</span>
-                </button>
-              ) : (
-                <AnimatePresence>
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3, ease: easeReveal }}
-                    className="overflow-hidden"
-                  >
-                    <div className="rounded-xl border border-border bg-surface p-5 max-w-sm space-y-4">
+                  <div className="rounded-xl border border-border bg-surface p-5 max-w-sm space-y-4">
+                    <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-foreground">
                         Pick a duration and destination
                       </p>
-
-                      {/* Duration buttons */}
-                      <div className="space-y-1.5">
-                        <p className="text-xs text-stone uppercase tracking-wide">Duration</p>
-                        <div className="flex gap-2">
-                          {DURATION_OPTIONS.map((d) => (
-                            <button
-                              key={d}
-                              type="button"
-                              onClick={() => setQuickDuration(d)}
-                              className={cn(
-                                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-                                d === quickDuration
-                                  ? "bg-brand-primary text-white"
-                                  : "bg-background text-foreground-secondary hover:text-foreground"
-                              )}
-                            >
-                              {d}d
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Destination preset chips */}
-                      <div className="space-y-1.5">
-                        <p className="text-xs text-stone uppercase tracking-wide">Destination</p>
-                        <div className="flex flex-wrap gap-2">
-                          {QUICK_PRESETS.map((p) => (
-                            <button
-                              key={p.id}
-                              type="button"
-                              onClick={() => setQuickPreset(p.id)}
-                              className={cn(
-                                "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-                                p.id === quickPreset
-                                  ? "bg-brand-primary text-white"
-                                  : "bg-background text-foreground-secondary hover:text-foreground"
-                              )}
-                            >
-                              {p.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Go button */}
                       <button
                         type="button"
-                        onClick={handleQuickStart}
-                        className="h-10 w-full rounded-xl bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98]"
+                        onClick={() => setShowQuickPlan(false)}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg text-foreground-secondary transition-colors hover:bg-background hover:text-foreground"
+                        aria-label="Close quick plan"
                       >
-                        Go
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M1 1l12 12M13 1L1 13" /></svg>
                       </button>
                     </div>
-                  </motion.div>
-                </AnimatePresence>
-              )}
+
+                    {/* Duration buttons */}
+                    <div className="space-y-1.5">
+                      <p className="text-xs text-stone uppercase tracking-wide">Duration</p>
+                      <div className="flex gap-2">
+                        {DURATION_OPTIONS.map((d) => (
+                          <button
+                            key={d}
+                            type="button"
+                            onClick={() => setQuickDuration(d)}
+                            className={cn(
+                              "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                              d === quickDuration
+                                ? "bg-brand-primary text-white"
+                                : "bg-background text-foreground-secondary hover:text-foreground"
+                            )}
+                          >
+                            {d}d
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Destination preset chips */}
+                    <div className="space-y-1.5">
+                      <p className="text-xs text-stone uppercase tracking-wide">Destination</p>
+                      <div className="flex flex-wrap gap-2">
+                        {QUICK_PRESETS.map((p) => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => setQuickPreset(p.id)}
+                            className={cn(
+                              "rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
+                              p.id === quickPreset
+                                ? "bg-brand-primary text-white"
+                                : "bg-background text-foreground-secondary hover:text-foreground"
+                            )}
+                          >
+                            {p.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Go button */}
+                    <button
+                      type="button"
+                      onClick={handleQuickStart}
+                      className="h-10 w-full rounded-xl bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white transition-all hover:bg-brand-primary/90 active:scale-[0.98]"
+                    >
+                      Go
+                    </button>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
           )}
         </div>
