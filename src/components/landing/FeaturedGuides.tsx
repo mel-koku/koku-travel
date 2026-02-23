@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import { cn } from "@/lib/cn";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { useCursor } from "@/providers/CursorProvider";
 import type { GuideSummary } from "@/types/guide";
 import { staggerItem } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
@@ -86,14 +85,10 @@ function GuideCard({
   const imageSrc = guide.thumbnailImage || guide.featuredImage;
   const typeLabel = GUIDE_TYPE_LABELS[guide.guideType];
   const location = guide.city || guide.region || "";
-  const { setCursorState, isEnabled } = useCursor();
-
   return (
     <Link
       href={`/guides/${guide.id}`}
       className="group relative block h-full overflow-hidden rounded-xl"
-      onMouseEnter={() => isEnabled && setCursorState("view")}
-      onMouseLeave={() => isEnabled && setCursorState("default")}
     >
       <div
         className={cn(

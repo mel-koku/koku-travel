@@ -7,8 +7,6 @@ import { motion, useReducedMotion } from "framer-motion";
 
 import IdentityBadge, { useAuthState } from "@/components/ui/IdentityBadge";
 import { Dropdown } from "@/components/ui/Dropdown";
-import { Magnetic } from "@/components/ui/Magnetic";
-import { useCursor } from "@/providers/CursorProvider";
 import { useLenis } from "@/providers/LenisProvider";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
@@ -122,7 +120,6 @@ export default function Header() {
   const router = useRouter();
   const supabase = createClient();
   const { isSignedIn } = useAuthState();
-  const { setCursorState } = useCursor();
   const { scrollProgress, direction } = useLenis();
   const prefersReducedMotion = useReducedMotion();
 
@@ -210,52 +207,45 @@ export default function Header() {
       >
         <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
           {/* Logo */}
-          <Magnetic strength={0.15}>
-            <Link
-              href="/"
-              className="flex items-center gap-2"
-              onMouseEnter={() => setCursorState("link")}
-              onMouseLeave={() => setCursorState("default")}
-            >
-              <span className="flex items-baseline gap-1.5">
-                <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
-                  Koku
-                </span>
-                <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
-                  Travel
-                </span>
+          <Link
+            href="/"
+            className="flex items-center gap-2"
+          >
+            <span className="flex items-baseline gap-1.5">
+              <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
+                Koku
               </span>
-            </Link>
-          </Magnetic>
+              <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
+                Travel
+              </span>
+            </span>
+          </Link>
 
           {/* Desktop inline nav (lg+) */}
           <nav className="hidden items-center gap-8 text-sm font-medium uppercase tracking-wide lg:flex">
             {navItems.map((item) => {
               const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
               return (
-                <Magnetic key={item.label} strength={0.15}>
-                  <Link
-                    href={item.href}
-                    onMouseEnter={() => setCursorState("link")}
-                    onMouseLeave={() => setCursorState("default")}
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className={cn(
+                    "group relative py-1 transition-colors",
+                    isActive
+                      ? "text-brand-primary"
+                      : "text-foreground-secondary hover:text-foreground"
+                  )}
+                >
+                  {item.label}
+                  <span
                     className={cn(
-                      "group relative py-1 transition-colors",
-                      isActive
-                        ? "text-brand-primary"
-                        : "text-foreground-secondary hover:text-foreground"
+                      "absolute -bottom-0.5 left-0 h-[2px] w-full origin-left transition-transform duration-300 ease-out",
+                      "bg-brand-primary",
+                      isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
                     )}
-                  >
-                    {item.label}
-                    <span
-                      className={cn(
-                        "absolute -bottom-0.5 left-0 h-[2px] w-full origin-left transition-transform duration-300 ease-out",
-                        "bg-brand-primary",
-                        isActive ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                      )}
-                      aria-hidden="true"
-                    />
-                  </Link>
-                </Magnetic>
+                    aria-hidden="true"
+                  />
+                </Link>
               );
             })}
           </nav>
@@ -263,16 +253,13 @@ export default function Header() {
           {/* Right side */}
           <div className="flex items-center gap-1 sm:gap-3 lg:gap-6">
             {/* CTA button (lg+) */}
-            <Magnetic strength={0.15}>
-              <Link
-                href="/trip-builder"
-                onMouseEnter={() => setCursorState("link")}
-                onMouseLeave={() => setCursorState("default")}
-                className="hidden h-10 items-center rounded-xl bg-brand-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98] lg:flex"
-              >
-                Plan a Trip
-              </Link>
-            </Magnetic>
+            <Link
+              href="/trip-builder"
+
+              className="hidden h-10 items-center rounded-xl bg-brand-primary px-5 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:bg-brand-primary/90 active:scale-[0.98] lg:flex"
+            >
+              Plan a Trip
+            </Link>
 
             {/* Theme toggle (desktop) */}
             <div className="hidden lg:block">

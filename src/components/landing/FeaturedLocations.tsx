@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
-import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 
 import type { Location } from "@/types/location";
@@ -203,7 +202,6 @@ function HorizontalLocationCard({
   onSelect: (location: Location) => void;
 }) {
   const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 800);
-  const { setCursorState, isEnabled } = useCursor();
 
   return (
     <button
@@ -211,8 +209,6 @@ function HorizontalLocationCard({
       onClick={() => onSelect(location)}
       className="group relative flex-shrink-0 overflow-hidden rounded-xl text-left"
       style={{ width: "min(clamp(320px, 40vw, 450px), 90vw)" }}
-      onMouseEnter={() => isEnabled && setCursorState("view")}
-      onMouseLeave={() => isEnabled && setCursorState("default")}
     >
       <div className="relative aspect-[4/5]">
         <div className="absolute inset-0">

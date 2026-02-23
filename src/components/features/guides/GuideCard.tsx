@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCursor } from "@/providers/CursorProvider";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { GuideSummary } from "@/types/guide";
 import { getCurrentSeason } from "@/lib/utils/seasonUtils";
@@ -40,7 +39,6 @@ type GuideCardProps = {
 };
 
 export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
-  const { setCursorState, isEnabled } = useCursor();
   const imageSrc = guide.thumbnailImage || guide.featuredImage || "";
   const seasonLabel = getGuideSeasonLabel(guide.seasons);
 
@@ -58,8 +56,6 @@ export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
       <Link
         href={`/guides/${guide.id}`}
         className="group block"
-        onMouseEnter={() => isEnabled && setCursorState("read")}
-        onMouseLeave={() => isEnabled && setCursorState("default")}
       >
         {/* Image */}
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">

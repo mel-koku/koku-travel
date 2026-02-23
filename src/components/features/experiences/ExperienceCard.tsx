@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCursor } from "@/providers/CursorProvider";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
 
@@ -23,7 +22,6 @@ type ExperienceCardProps = {
 };
 
 export function ExperienceCard({ experience, index, eager = false }: ExperienceCardProps) {
-  const { setCursorState, isEnabled } = useCursor();
   const imageUrl = experience.thumbnailImage?.url || experience.featuredImage?.url || "";
 
   const metaParts = [
@@ -40,8 +38,6 @@ export function ExperienceCard({ experience, index, eager = false }: ExperienceC
       <Link
         href={`/experiences/${experience.slug}`}
         className="group block"
-        onMouseEnter={() => isEnabled && setCursorState("read")}
-        onMouseLeave={() => isEnabled && setCursorState("default")}
       >
         {/* Image */}
         <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl">

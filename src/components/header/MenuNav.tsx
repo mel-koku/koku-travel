@@ -3,9 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Magnetic } from "@/components/ui/Magnetic";
 import { easeRevealMut, staggerItem, durationMicro } from "@/lib/motion";
-import { useCursor } from "@/providers/CursorProvider";
 import { useAuthState } from "@/components/ui/IdentityBadge";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
@@ -25,7 +23,6 @@ type MenuNavProps = {
 export function MenuNav({ onClose }: MenuNavProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { setCursorState } = useCursor();
   const { isSignedIn } = useAuthState();
   const { clearAllLocalData } = useAppState();
   const supabase = createClient();
@@ -131,14 +128,12 @@ export function MenuNav({ onClose }: MenuNavProps) {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
           return (
             <motion.div key={item.href} variants={itemVariants}>
-              <Magnetic strength={0.15}>
-                <Link
-                  href={item.href}
-                  onClick={onClose}
-                  onMouseEnter={() => setCursorState("link")}
-                  onMouseLeave={() => setCursorState("default")}
-                  className="group flex items-baseline gap-4 py-2"
-                >
+              <Link
+                href={item.href}
+                onClick={onClose}
+
+                className="group flex items-baseline gap-4 py-2"
+              >
                   <span className="font-mono text-sm text-stone transition-colors group-hover:text-brand-primary">
                     {item.number}
                   </span>
@@ -157,7 +152,6 @@ export function MenuNav({ onClose }: MenuNavProps) {
                     />
                   </span>
                 </Link>
-              </Magnetic>
             </motion.div>
           );
         })}
@@ -171,8 +165,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
         <Link
           href="/dashboard"
           onClick={onClose}
-          onMouseEnter={() => setCursorState("link")}
-          onMouseLeave={() => setCursorState("default")}
+
           className="py-2.5 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
         >
           Dashboard
@@ -185,8 +178,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
               router.refresh();
               onClose();
             }}
-            onMouseEnter={() => setCursorState("link")}
-            onMouseLeave={() => setCursorState("default")}
+
             className="py-2.5 text-left text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign out
@@ -195,8 +187,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           <Link
             href="/account"
             onClick={onClose}
-            onMouseEnter={() => setCursorState("link")}
-            onMouseLeave={() => setCursorState("default")}
+
             className="py-2.5 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign in
@@ -205,8 +196,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
         <button
           type="button"
           onClick={handleClearData}
-          onMouseEnter={() => setCursorState("link")}
-          onMouseLeave={() => setCursorState("default")}
+
           className="flex items-center gap-2 py-2.5 text-left text-sm text-stone transition-colors hover:text-warning"
         >
           <span>Clear local data</span>

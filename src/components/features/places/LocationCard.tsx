@@ -7,7 +7,6 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useSaved } from "@/context/SavedContext";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
-import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { easeReveal, durationBase } from "@/lib/motion";
 import type { Location } from "@/types/location";
@@ -21,7 +20,6 @@ type LocationCardProps = {
 export const LocationCard = memo(function LocationCard({ location, onSelect, variant = "default" }: LocationCardProps) {
   const { isInSaved, toggleSave } = useSaved();
   const active = isInSaved(location.id);
-  const { setCursorState, isEnabled: cursorEnabled } = useCursor();
   const prefersReducedMotion = useReducedMotion();
   // Use location name directly - no need to fetch details just for display name
   const displayName = location.name;
@@ -56,8 +54,6 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, margin: "-5%" }}
       transition={{ duration: durationBase, ease: easeReveal }}
-      onMouseEnter={() => cursorEnabled && setCursorState("view")}
-      onMouseLeave={() => cursorEnabled && setCursorState("default")}
     >
       {/* Unified Card Container */}
       <div className={`overflow-hidden rounded-xl border border-border/50 bg-surface shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_32px_rgba(196,80,79,0.1)] ${variant === "tall" ? "h-full" : ""}`}>

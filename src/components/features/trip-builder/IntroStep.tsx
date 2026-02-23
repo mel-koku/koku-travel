@@ -3,9 +3,8 @@
 import { useState, useCallback } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
-import { Magnetic } from "@/components/ui/Magnetic";
 import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
-import { easeReveal, staggerChar, durationBase, magneticCTA } from "@/lib/motion";
+import { easeReveal, staggerChar, durationBase } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { deriveRegionsFromCities } from "@/data/regions";
 import { vibesToInterests } from "@/data/vibes";
@@ -144,15 +143,13 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
             }}
           >
             {/* Primary: Start Planning */}
-            <Magnetic strength={magneticCTA.strength} maxDisplacement={magneticCTA.maxDisplacement} threshold={magneticCTA.threshold}>
-              <button
-                type="button"
-                onClick={onStart}
-                className="h-14 w-full cursor-pointer rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98] sm:w-auto"
-              >
-                {ctaText}
-              </button>
-            </Magnetic>
+            <button
+              type="button"
+              onClick={onStart}
+              className="h-14 w-full cursor-pointer rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98] sm:w-auto"
+            >
+              {ctaText}
+            </button>
 
             {/* Secondary: Quick Plan */}
             {onQuickStart && (
