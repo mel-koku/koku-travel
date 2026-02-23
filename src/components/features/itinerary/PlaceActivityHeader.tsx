@@ -12,7 +12,7 @@ type PlaceActivityHeaderProps = {
   rating: number | null;
   reviewCount: number | null;
   durationLabel: string | null;
-  summary: string | null;
+  summary?: string | null;
   availabilityStatus: {
     status: string;
     message?: string;
@@ -34,7 +34,7 @@ export function PlaceActivityHeader({
   rating,
   reviewCount,
   durationLabel,
-  summary,
+  // summary removed — "More info" link replaces inline description
   availabilityStatus,
   schedule,
   isOutOfHours,
@@ -69,7 +69,7 @@ export function PlaceActivityHeader({
         </div>
       </div>
 
-      {/* Tags Row */}
+      {/* Tags + Status Row */}
       <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
         {placeLocation.category ? (
           <span className="inline-block rounded-xl bg-sand/50 px-2 py-0.5 text-[11px] font-medium text-foreground-secondary capitalize">
@@ -86,51 +86,40 @@ export function PlaceActivityHeader({
             {durationLabel.replace("~", "")}
           </span>
         ) : null}
+        {availabilityStatus && availabilityStatus.status === "closed" && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
+            Closed
+          </span>
+        )}
+        {availabilityStatus && availabilityStatus.status === "busy" && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
+            Busy
+          </span>
+        )}
+        {(availabilityStatus?.status === "requires_reservation" || availabilityStatus?.reservationRequired) && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
+            Reservation recommended
+          </span>
+        )}
+        {(schedule?.operatingWindow?.status === "outside" || isOutOfHours) && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
+            Outside hours
+          </span>
+        )}
+        {waitLabel && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
+            {waitLabel}
+          </span>
+        )}
+        {conflicts && conflicts.length > 0 && (
+          <ActivityConflictIndicator conflicts={conflicts} />
+        )}
       </div>
 
       {/* Practical Intel Badges */}
       <div className="mt-1.5">
         <PracticalBadges location={placeLocation} showOpenStatus={false} max={3} />
       </div>
-
-      {/* Status Badges */}
-      {(availabilityStatus || (schedule?.operatingWindow?.status === "outside") || isOutOfHours || waitLabel || (conflicts && conflicts.length > 0)) && (
-        <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
-          {availabilityStatus && availabilityStatus.status === "closed" && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
-              Closed
-            </span>
-          )}
-          {availabilityStatus && availabilityStatus.status === "busy" && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-              Busy
-            </span>
-          )}
-          {(availabilityStatus?.status === "requires_reservation" || availabilityStatus?.reservationRequired) && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-              Reservation recommended
-            </span>
-          )}
-          {(schedule?.operatingWindow?.status === "outside" || isOutOfHours) && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
-              Outside hours
-            </span>
-          )}
-          {waitLabel && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[11px] font-semibold text-warning">
-              {waitLabel}
-            </span>
-          )}
-          {conflicts && conflicts.length > 0 && (
-            <ActivityConflictIndicator conflicts={conflicts} />
-          )}
-        </div>
-      )}
-
-      {/* Description */}
-      {summary && (
-        <p className="mt-3 text-xs leading-relaxed text-foreground-secondary line-clamp-2">{summary}</p>
-      )}
 
       {/* More info link */}
       <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-sage">

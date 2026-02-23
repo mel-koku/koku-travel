@@ -27,7 +27,6 @@ import {
   locationToActivity,
   type ReplacementCandidate,
 } from "@/hooks/useReplacementCandidates";
-import { REGIONS } from "@/data/regions";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { detectItineraryConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { AcceptGapResult, PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
@@ -131,25 +130,6 @@ export const ItineraryShell = ({
   const currentTrip = useMemo(() => {
     return tripId && !isUsingMock ? getTripById(tripId) : null;
   }, [tripId, isUsingMock, getTripById]);
-
-  // Build a map of city IDs to display names
-  const cityIdToName = useMemo(() => {
-    const map: Record<string, string> = {};
-    for (const region of REGIONS) {
-      for (const city of region.cities) {
-        map[city.id] = city.name;
-      }
-    }
-    return map;
-  }, []);
-
-  // Get selected city names for display
-  const selectedCityNames = useMemo(() => {
-    if (!tripBuilderData?.cities?.length) return [];
-    return tripBuilderData.cities
-      .map((cityId) => cityIdToName[cityId] ?? cityId)
-      .filter(Boolean);
-  }, [tripBuilderData, cityIdToName]);
 
   const handleReorder = useCallback(
     (dayId: string, activityIds: string[]) => {
@@ -505,20 +485,8 @@ export const ItineraryShell = ({
                 </p>
               )}
             </div>
-            {/* Row 2: City tags + Controls */}
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              {selectedCityNames.length > 0 && (
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedCityNames.map((cityName) => (
-                    <span
-                      key={cityName}
-                      className="inline-flex items-center rounded-full bg-foreground/10 px-2.5 py-0.5 text-[11px] font-medium text-foreground-secondary"
-                    >
-                      {cityName}
-                    </span>
-                  ))}
-                </div>
-              )}
+            {/* Row 2: Controls */}
+            <div className="flex items-center gap-3 flex-wrap">
               <div className="flex items-center gap-2">
                 <DaySelector
                   totalDays={days.length}

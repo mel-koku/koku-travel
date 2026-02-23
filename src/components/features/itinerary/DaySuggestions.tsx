@@ -88,6 +88,8 @@ export type DaySuggestionsProps = {
   onSkip: (gap: DetectedGap) => void;
   loadingGapId?: string | null;
   className?: string;
+  /** When true, renders just the gap items without the accordion wrapper */
+  embedded?: boolean;
   // Preview props
   previewState?: PreviewState | null;
   onConfirmPreview?: () => void;
@@ -103,6 +105,7 @@ export function DaySuggestions({
   onSkip,
   loadingGapId,
   className,
+  embedded,
   previewState,
   onConfirmPreview,
   onShowAnother,
@@ -114,6 +117,96 @@ export function DaySuggestions({
 
   if (gaps.length === 0) {
     return null;
+  }
+
+  const renderGapItems = () =>
+    gaps.map((gap) => {
+      const Icon = ICON_MAP[gap.icon] ?? Plus;
+      const colors = TYPE_COLORS[gap.type];
+      const isLoading = loadingGapId === gap.id;
+      const isGuidance = gap.type === "guidance";
+      const hasPreview = previewState?.gap.id === gap.id;
+
+      // Render preview card instead of normal gap card
+      if (hasPreview && previewState && onConfirmPreview && onShowAnother && onCancelPreview && onFilterChange) {
+        return (
+          <SmartPromptPreview
+            key={gap.id}
+            recommendation={previewState.recommendation}
+            gapTitle={gap.title}
+            showCount={previewState.showCount}
+            activeFilters={previewState.activeFilters}
+            isMeal={gap.action.type === "add_meal"}
+            isLoading={isPreviewLoading ?? false}
+            onConfirm={onConfirmPreview}
+            onShowAnother={onShowAnother}
+            onCancel={onCancelPreview}
+            onFilterChange={onFilterChange}
+          />
+        );
+      }
+
+      return (
+        <div
+          key={gap.id}
+          className="flex items-center gap-3 rounded-lg bg-background p-3 shadow-sm"
+        >
+          {/* Icon */}
+          <div
+            className={cn(
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
+              colors.bg
+            )}
+          >
+            <Icon className={cn("h-4 w-4", colors.text)} />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground">{gap.title}</p>
+            <p className="text-xs text-stone truncate">{gap.description}</p>
+          </div>
+
+          {/* Actions */}
+          <div className="flex shrink-0 gap-2">
+            {isGuidance ? (
+              <Button
+                variant="brand-ghost"
+                size="chip"
+                onClick={() => onSkip(gap)}
+                disabled={isLoading}
+              >
+                Got it
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="primary"
+                  size="chip"
+                  onClick={() => onAccept(gap)}
+                  disabled={isLoading}
+                  isLoading={isLoading}
+                >
+                  {isLoading ? <span className="sr-only">Adding...</span> : "Add"}
+                </Button>
+                <Button
+                  variant="brand-ghost"
+                  size="chip"
+                  onClick={() => onSkip(gap)}
+                  disabled={isLoading}
+                >
+                  Skip
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    });
+
+  // Embedded mode: just render the items without wrapper
+  if (embedded) {
+    return <>{renderGapItems()}</>;
   }
 
   return (
@@ -141,89 +234,7 @@ export function DaySuggestions({
       {isExpanded && (
         <div className="border-t border-brand-secondary/20 px-4 py-3">
           <div className="space-y-2">
-            {gaps.map((gap) => {
-              const Icon = ICON_MAP[gap.icon] ?? Plus;
-              const colors = TYPE_COLORS[gap.type];
-              const isLoading = loadingGapId === gap.id;
-              const isGuidance = gap.type === "guidance";
-              const hasPreview = previewState?.gap.id === gap.id;
-
-              // Render preview card instead of normal gap card
-              if (hasPreview && previewState && onConfirmPreview && onShowAnother && onCancelPreview && onFilterChange) {
-                return (
-                  <SmartPromptPreview
-                    key={gap.id}
-                    recommendation={previewState.recommendation}
-                    gapTitle={gap.title}
-                    showCount={previewState.showCount}
-                    activeFilters={previewState.activeFilters}
-                    isMeal={gap.action.type === "add_meal"}
-                    isLoading={isPreviewLoading ?? false}
-                    onConfirm={onConfirmPreview}
-                    onShowAnother={onShowAnother}
-                    onCancel={onCancelPreview}
-                    onFilterChange={onFilterChange}
-                  />
-                );
-              }
-
-              return (
-                <div
-                  key={gap.id}
-                  className="flex items-center gap-3 rounded-lg bg-background p-3 shadow-sm"
-                >
-                  {/* Icon */}
-                  <div
-                    className={cn(
-                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-                      colors.bg
-                    )}
-                  >
-                    <Icon className={cn("h-4 w-4", colors.text)} />
-                  </div>
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{gap.title}</p>
-                    <p className="text-xs text-stone truncate">{gap.description}</p>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex shrink-0 gap-2">
-                    {isGuidance ? (
-                      <Button
-                        variant="brand-ghost"
-                        size="chip"
-                        onClick={() => onSkip(gap)}
-                        disabled={isLoading}
-                      >
-                        Got it
-                      </Button>
-                    ) : (
-                      <>
-                        <Button
-                          variant="primary"
-                          size="chip"
-                          onClick={() => onAccept(gap)}
-                          disabled={isLoading}
-                          isLoading={isLoading}
-                        >
-                          {isLoading ? <span className="sr-only">Adding...</span> : "Add"}
-                        </Button>
-                        <Button
-                          variant="brand-ghost"
-                          size="chip"
-                          onClick={() => onSkip(gap)}
-                          disabled={isLoading}
-                        >
-                          Skip
-                        </Button>
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            {renderGapItems()}
           </div>
         </div>
       )}
