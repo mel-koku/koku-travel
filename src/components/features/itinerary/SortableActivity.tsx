@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { ItineraryActivity } from "@/types/itinerary";
+import type { Location } from "@/types/location";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { ActivityRow } from "./ActivityRow";
 
@@ -24,6 +25,8 @@ type SortableActivityProps = {
   isReadOnly?: boolean;
   /** ID of the currently dragged activity (if any) — used to collapse non-dragged cards */
   activeDragId?: string | null;
+  /** Open the LocationExpanded slide-in panel for this location */
+  onViewDetails?: (location: Location) => void;
 };
 
 export const SortableActivity = memo(function SortableActivity({
@@ -43,6 +46,7 @@ export const SortableActivity = memo(function SortableActivity({
   conflicts,
   isReadOnly,
   activeDragId,
+  onViewDetails,
 }: SortableActivityProps) {
   const {
     attributes,
@@ -115,6 +119,7 @@ export const SortableActivity = memo(function SortableActivity({
           conflicts={conflicts}
           isReadOnly={isReadOnly}
           activeDragId={activeDragId}
+          onViewDetails={onViewDetails}
         />
       )}
     </li>

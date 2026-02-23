@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { forwardRef, memo, useMemo, useState, useEffect, type ChangeEvent, type MouseEvent } from "react";
+import { forwardRef, memo, useMemo, useState, useEffect, type ChangeEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
@@ -24,7 +24,6 @@ import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { PlaceActivityHeader } from "./PlaceActivityHeader";
-import { PlaceActivityDetails } from "./PlaceActivityDetails";
 import { PlaceActivityReasoning } from "./PlaceActivityReasoning";
 
 const FALLBACK_IMAGES: Record<string, string> = {
@@ -198,6 +197,8 @@ type PlaceActivityRowProps = {
   isReadOnly?: boolean;
   /** ID of the currently dragged activity (if any) — used to collapse non-dragged cards */
   activeDragId?: string | null;
+  /** Open the LocationExpanded slide-in panel for this location */
+  onViewDetails?: (location: Location) => void;
 };
 
 export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRowProps>(
@@ -224,6 +225,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       hideDragHandle,
       isReadOnly,
       activeDragId,
+      onViewDetails,
     },
     ref,
   ) => {
@@ -236,8 +238,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       reservationRequired?: boolean;
     } | null>(null);
     const [tips, setTips] = useState<ActivityTip[]>([]);
-    const [tipsLoading, setTipsLoading] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(false);
     const prefersReducedMotion = useReducedMotion();
 
 
@@ -369,14 +369,11 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
     useEffect(() => {
       if (placeLocation && activity.kind === "place") {
-        setTipsLoading(true);
         // Use async tip generation to include etiquette tips from database
         generateActivityTipsAsync(activity, placeLocation, {
           allActivities,
         }).then(setTips).catch(() => {
           // Silently fail - tips are optional
-        }).finally(() => {
-          setTipsLoading(false);
         });
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable IDs to prevent excessive re-computation
@@ -392,12 +389,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
     const dragHandleLabel = `Drag to reorder ${activity.title}`;
 
-    const handleMoreInfo = (event: MouseEvent<HTMLButtonElement>) => {
-      event.preventDefault();
-      event.stopPropagation();
-      setIsExpanded((prev) => !prev);
-    };
-
     const schedule = activity?.schedule;
     const travelStatus = schedule?.status ?? "scheduled";
     const isOutOfHours = travelStatus === "out-of-hours";
@@ -408,6 +399,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
     const handleSelect = () => {
       onSelect?.(activity.id);
+      onViewDetails?.(placeLocation);
     };
 
     const handleHover = () => {
@@ -509,23 +501,11 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         className="focus-visible:outline-none"
         data-kind="place"
         data-selected={isSelected || undefined}
-        tabIndex={0}
-        onClick={handleSelect}
-        onKeyDown={(event) => {
-          const target = event.target as HTMLElement;
-          if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            handleSelect();
-          }
-        }}
-        onMouseEnter={handleHover}
-        onFocus={handleHover}
         data-activity-id={activity.id}
       >
         <div className="flex gap-3">
           {/* Left: Time Column */}
-          <div className="relative flex w-16 shrink-0 flex-col items-center pt-2">
+          <div className="relative flex w-16 shrink-0 flex-col items-center pt-2" data-cursor="default">
             {displayArrivalTime ? (
               <>
                 {isReadOnly ? (
@@ -533,21 +513,30 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     {displayArrivalTime}
                   </span>
                 ) : (
-                  <button
-                    type="button"
+                  <span
+                    role="button"
+                    tabIndex={0}
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
                       setShowTimePicker(!showTimePicker);
                       setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
                     }}
-                    className={`font-mono text-sm font-bold transition hover:text-brand-primary ${
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        setShowTimePicker(!showTimePicker);
+                        setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
+                      }
+                    }}
+                    className={`cursor-pointer font-mono text-sm font-bold transition hover:text-brand-primary ${
                       hasManualTime ? "text-sage" : "text-foreground"
                     }`}
                     title={hasManualTime ? "Manual time - click to edit" : "Click to set time"}
                   >
                     {displayArrivalTime}
-                  </button>
+                  </span>
                 )}
                 {schedule?.departureTime && (
                   <>
@@ -603,7 +592,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           <motion.div
             layout={!prefersReducedMotion && !isDragging}
             transition={prefersReducedMotion ? { duration: 0 } : { layout: { duration: 0.3, ease: easeReveal } }}
-            className={`group relative flex-1 overflow-hidden rounded-2xl bg-background transition-shadow duration-200 ${
+            className={`group relative flex-1 overflow-hidden rounded-2xl bg-background transition-shadow duration-200 cursor-pointer ${
               isDragging
                 ? "ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
                 : isSelected
@@ -611,11 +600,23 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   : "shadow-sm hover:shadow-lg hover:-translate-y-0.5"
             }`}
             style={isSelected && !isDragging ? { outline: "2px solid var(--color-sage)", outlineOffset: "-2px" } : undefined}
+            tabIndex={0}
+            onClick={handleSelect}
+            onKeyDown={(event) => {
+              const target = event.target as HTMLElement;
+              if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                handleSelect();
+              }
+            }}
+            onMouseEnter={handleHover}
+            onFocus={handleHover}
           >
-            {/* Large Image Section - aspect ratio changes on expand */}
+            {/* Image Section */}
             <motion.div
               layout={!prefersReducedMotion && !isDragging}
-              className={`relative w-full overflow-hidden ${isExpanded ? "aspect-[21/9]" : "aspect-video"}`}
+              className="relative w-full overflow-hidden aspect-video"
             >
               {!imageLoaded && !imageError && (
                 <div className="absolute inset-0 animate-pulse bg-surface" />
@@ -680,8 +681,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 reviewCount={reviewCount}
                 durationLabel={durationLabel}
                 summary={summary}
-                isExpanded={isExpanded}
-                onToggleExpand={handleMoreInfo}
                 availabilityStatus={availabilityStatus}
                 schedule={schedule}
                 isOutOfHours={isOutOfHours}
@@ -689,24 +688,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 conflicts={conflicts}
               />
 
-              <PlaceActivityDetails
-                isExpanded={isExpanded}
-                placeLocation={placeLocation}
-                locationDetails={locationDetails ?? null}
-                summary={summary}
-                tips={tips}
-              />
-
               {/* Tips Section */}
-              {tipsLoading && isExpanded && tips.length === 0 && (
-                <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
-                  <div className="mb-1.5 h-3 w-8 animate-pulse rounded bg-sage/10" />
-                  <div className="space-y-1.5">
-                    <div className="h-3 w-3/4 animate-pulse rounded bg-sage/10" />
-                    <div className="h-3 w-1/2 animate-pulse rounded bg-sage/10" />
-                  </div>
-                </div>
-              )}
               {tips.length > 0 && (
                 <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
                   <p className="mb-1.5 text-xs font-semibold text-foreground">Tips</p>
