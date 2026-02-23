@@ -8,7 +8,6 @@ import { useAppState } from "@/state/AppState";
 import { DashboardItineraryPreview } from "@/components/features/itinerary/DashboardItineraryPreview";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { Magnetic } from "@/components/ui/Magnetic";
 import { createClient } from "@/lib/supabase/client";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { syncLocalToCloudOnce } from "@/lib/accountSync";
@@ -327,15 +326,13 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                     </ScrollReveal>
 
                     <ScrollReveal delay={0.5} distance={10}>
-                      <Magnetic>
-                        <Link
-                          href="/trip-builder"
-                          className="relative mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
-                        >
-                          <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
-                          <span className="relative">{content?.dashboardPlanButton ?? "Start planning"}</span>
-                        </Link>
-                      </Magnetic>
+                      <Link
+                        href="/trip-builder"
+                        className="relative mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                      >
+                        <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+                        <span className="relative">{content?.dashboardPlanButton ?? "Start planning"}</span>
+                      </Link>
                     </ScrollReveal>
                   </div>
                 </div>
@@ -401,15 +398,13 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                 {pendingUndo.trip.name} was removed. Undo within 8 seconds to restore.
               </p>
             </div>
-            <Magnetic>
-              <button
-                type="button"
-                onClick={handleUndo}
-                className="self-start rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
-              >
-                {content?.dashboardUndoButton ?? "Undo"}
-              </button>
-            </Magnetic>
+            <button
+              type="button"
+              onClick={handleUndo}
+              className="self-start rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+            >
+              {content?.dashboardUndoButton ?? "Undo"}
+            </button>
           </div>
         </div>
       ) : null}

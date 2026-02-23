@@ -5,7 +5,6 @@ import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { Magnetic } from "@/components/ui/Magnetic";
 import { parallaxSection, durationBase } from "@/lib/motion";
 import { createClient } from "@/lib/supabase/client";
 import { env } from "@/lib/env";
@@ -144,16 +143,14 @@ export function SignInClient({ content }: SignInClientProps) {
               />
             </label>
 
-            <Magnetic>
-              <button
-                type="submit"
-                disabled={!supabase}
-                className="relative w-full h-12 rounded-xl bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
-                <span className="relative">{content?.signInSubmitText ?? "Send Sign-in Link"}</span>
-              </button>
-            </Magnetic>
+            <button
+              type="submit"
+              disabled={!supabase}
+              className="relative w-full h-12 rounded-xl bg-brand-primary text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
+              <span className="relative">{content?.signInSubmitText ?? "Send Sign-in Link"}</span>
+            </button>
 
             {status && (
               <p className="text-xs text-stone">{status}</p>

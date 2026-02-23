@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCursor } from "@/providers/CursorProvider";
 import type { GuideType } from "@/types/guide";
 import type { GuideSummary } from "@/types/guide";
 
@@ -20,8 +19,6 @@ type GuideFooterProps = {
 };
 
 export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFooterProps) {
-  const { setCursorState, isEnabled } = useCursor();
-
   return (
     <footer className="pb-12 sm:pb-20 lg:pb-28">
       {/* Sign-off */}
@@ -52,8 +49,6 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
           <Link
             href={`/guides/${relatedGuide.id}`}
             className="group relative block overflow-hidden rounded-xl"
-            onMouseEnter={() => isEnabled && setCursorState("read")}
-            onMouseLeave={() => isEnabled && setCursorState("default")}
           >
             <div className="relative aspect-[16/9] w-full sm:aspect-[5/2]">
               <Image

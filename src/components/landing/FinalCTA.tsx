@@ -2,8 +2,7 @@
 
 import { motion } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
-import { Magnetic } from "@/components/ui/Magnetic";
-import { durationBase, magneticCTA } from "@/lib/motion";
+import { durationBase } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type FinalCTAProps = {
@@ -49,14 +48,12 @@ export function FinalCTA({ content }: FinalCTAProps) {
             transition={{ duration: durationBase, delay: 0.7 }}
             className="mt-12 flex flex-col items-center"
           >
-            <Magnetic strength={magneticCTA.strength} maxDisplacement={magneticCTA.maxDisplacement} threshold={magneticCTA.threshold}>
-              <a
-                href="/trip-builder"
-                className="relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl active:scale-[0.98]"
-              >
-                <span className="relative">{content?.finalCtaPrimaryText ?? "Start Planning"}</span>
-              </a>
-            </Magnetic>
+            <a
+              href="/trip-builder"
+              className="relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl active:scale-[0.98]"
+            >
+              <span className="relative">{content?.finalCtaPrimaryText ?? "Start Planning"}</span>
+            </a>
             <a
               href="/places"
               className="link-reveal mt-6 py-3 text-sm font-medium uppercase tracking-wider text-white/70 transition-colors hover:text-white/90"

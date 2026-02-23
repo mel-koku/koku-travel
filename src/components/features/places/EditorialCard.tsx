@@ -6,7 +6,6 @@ import { motion, useReducedMotion } from "framer-motion";
 
 import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
-import { useCursor } from "@/providers/CursorProvider";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { easeReveal, durationBase } from "@/lib/motion";
 import type { Location } from "@/types/location";
@@ -37,7 +36,6 @@ export const EditorialCard = memo(function EditorialCard({
 }: EditorialCardProps) {
   const { isInSaved, toggleSave } = useSaved();
   const active = isInSaved(location.id);
-  const { setCursorState, isEnabled: cursorEnabled } = useCursor();
   const prefersReducedMotion = useReducedMotion();
 
   const showFirstSaveToast = useFirstSaveToast();
@@ -64,8 +62,6 @@ export const EditorialCard = memo(function EditorialCard({
       whileInView={{ y: 0, opacity: 1 }}
       viewport={{ once: true, margin: "-5%" }}
       transition={{ duration: durationBase, ease: easeReveal }}
-      onMouseEnter={() => cursorEnabled && setCursorState("view")}
-      onMouseLeave={() => cursorEnabled && setCursorState("default")}
     >
       { }
       <div
