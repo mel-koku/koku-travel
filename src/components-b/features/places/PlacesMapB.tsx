@@ -165,6 +165,7 @@ export function PlacesMapB({
       style: MAP_STYLE,
       center: DEFAULT_CENTER,
       zoom: DEFAULT_ZOOM,
+      projection: "mercator" as never,
     });
     map.addControl(new mapboxModule.NavigationControl(), "top-right");
 

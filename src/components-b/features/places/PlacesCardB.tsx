@@ -96,7 +96,9 @@ export const PlacesCardB = memo(function PlacesCardB({
           </div>
 
           {/* Save button */}
-          <div className="absolute top-3 right-3 z-10 sm:opacity-0 sm:group-hover:opacity-100 sm:transition-opacity sm:duration-300">
+          <div className={`absolute top-3 right-3 z-10 sm:transition-opacity sm:duration-300 ${
+            active ? "sm:opacity-100" : "sm:opacity-0 sm:group-hover:opacity-100"
+          }`}>
             <button
               type="button"
               onClick={(event) => {
@@ -106,9 +108,15 @@ export const PlacesCardB = memo(function PlacesCardB({
                 toggleSave(location.id);
               }}
               aria-label={active ? "Unsave" : "Save for trip"}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/60 backdrop-blur-md transition-transform hover:scale-110 active:scale-95"
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md transition-transform hover:scale-105 active:scale-95 ${
+                active
+                  ? "bg-[var(--primary)] text-white"
+                  : "bg-white/80 text-[var(--foreground)]"
+              }`}
+              style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
             >
               <HeartIconB active={active} animating={heartAnimating} />
+              {active ? "Saved" : "Save for trip"}
             </button>
           </div>
         </div>
@@ -175,8 +183,8 @@ function HeartIconB({ active, animating }: { active: boolean; animating: boolean
   return (
     <svg
       aria-hidden="true"
-      className={`h-4.5 w-4.5 transition-colors ${
-        active ? "fill-[var(--error)] stroke-[var(--error)]" : "fill-none stroke-white"
+      className={`h-3.5 w-3.5 transition-colors ${
+        active ? "fill-white stroke-white" : "fill-none stroke-current"
       } ${animating ? "animate-heart-pulse" : ""}`}
       viewBox="0 0 24 24"
       strokeWidth={2}

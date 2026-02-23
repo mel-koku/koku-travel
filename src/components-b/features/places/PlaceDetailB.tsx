@@ -299,12 +299,12 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
           <button
             type="button"
             onClick={handleToggleSave}
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98]"
-            style={{
-              boxShadow: "var(--shadow-card)",
-              background: isSaved ? "var(--primary)" : "white",
-              color: isSaved ? "white" : "var(--foreground)",
-            }}
+            className={`inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all hover:scale-[1.02] active:scale-[0.98] ${
+              isSaved
+                ? "bg-[var(--primary)] text-white"
+                : "bg-white text-[var(--foreground)]"
+            }`}
+            style={{ boxShadow: "var(--shadow-card)" }}
           >
             <svg
               aria-hidden="true"
@@ -332,6 +332,8 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
                 key={src}
                 type="button"
                 onClick={() => setActivePhotoIndex(i)}
+                title={`Photo ${i + 1}`}
+                aria-label={`View photo ${i + 1}`}
                 className={`relative h-14 w-20 shrink-0 snap-start overflow-hidden rounded-xl transition-all duration-200 ${
                   i === activePhotoIndex ? "opacity-100" : "opacity-50 hover:opacity-80"
                 }`}
