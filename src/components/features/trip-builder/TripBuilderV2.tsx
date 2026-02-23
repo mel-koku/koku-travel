@@ -8,7 +8,7 @@ import { EntryPointStep } from "./EntryPointStep";
 import { VibeStep } from "./VibeStep";
 import { RegionStep } from "./RegionStep";
 import { ReviewStep } from "./ReviewStep";
-import { StepProgressTrack } from "./StepProgressTrack";
+import { STEP_LABELS } from "./StepProgressTrack";
 import { ArrowLineCTA } from "./ArrowLineCTA";
 import { useTripBuilderNavigation } from "@/hooks/useTripBuilderNavigation";
 import { easePageTransition, durationSlow } from "@/lib/motion";
@@ -57,7 +57,6 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
     quickStart,
     handleNext,
     handleBack,
-    handleStartOver,
     handleStepClick,
     handleGoToStep,
     isNextDisabled,
@@ -68,17 +67,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
 
   return (
     <div className="relative bg-background">
-      {/* Progress Track — hidden on Step 0 */}
-      {currentStep > 0 && (
-        <StepProgressTrack
-          currentStep={currentStep}
-          totalSteps={stepCount}
-          onStepClick={handleStepClick}
-          onStartOver={handleStartOver}
-          completedSteps={completedSteps}
-          hideDesktopTrack={currentStep === 4}
-        />
-      )}
+      {/* Progress dots are now rendered inside StepShell's bottom nav */}
 
       {/* Step Content */}
       <AnimatePresence mode="wait" custom={direction}>
@@ -101,6 +90,10 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
+              currentStep={currentStep}
+              totalSteps={stepCount}
+              completedSteps={completedSteps}
+              onStepClick={handleStepClick}
             >
               <DateStep onValidityChange={setDatesValid} sanityConfig={sanityConfig} />
             </StepShell>
@@ -114,6 +107,10 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={false}
+              currentStep={currentStep}
+              totalSteps={stepCount}
+              completedSteps={completedSteps}
+              onStepClick={handleStepClick}
             >
               <EntryPointStep sanityConfig={sanityConfig} />
             </StepShell>
@@ -128,6 +125,10 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
               fullBleed
+              currentStep={currentStep}
+              totalSteps={stepCount}
+              completedSteps={completedSteps}
+              onStepClick={handleStepClick}
             >
               <VibeStep onValidityChange={setVibesValid} sanityConfig={sanityConfig} />
             </StepShell>
@@ -142,6 +143,10 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
               fullBleed
+              currentStep={currentStep}
+              totalSteps={stepCount}
+              completedSteps={completedSteps}
+              onStepClick={handleStepClick}
             >
               <RegionStep onValidityChange={setRegionsValid} sanityConfig={sanityConfig} />
             </StepShell>
@@ -155,6 +160,10 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
+              currentStep={currentStep}
+              totalSteps={stepCount}
+              completedSteps={completedSteps}
+              onStepClick={handleStepClick}
             >
               <ReviewStep
                 onValidityChange={setReviewValid}
@@ -183,7 +192,67 @@ type StepShellProps = {
   backLabel?: string;
   nextDisabled?: boolean;
   fullBleed?: boolean;
+  currentStep: number;
+  totalSteps: number;
+  completedSteps: Set<number>;
+  onStepClick: (step: number) => void;
 };
+
+function StepDots({
+  currentStep,
+  totalSteps,
+  completedSteps,
+  onStepClick,
+}: {
+  currentStep: number;
+  totalSteps: number;
+  completedSteps: Set<number>;
+  onStepClick: (step: number) => void;
+}) {
+  return (
+    <div className="flex items-center gap-3">
+      {/* Skip step 0 (Intro) — only show steps 1-5 */}
+      {Array.from({ length: totalSteps - 1 }).map((_, idx) => {
+        const step = idx + 1;
+        const isActive = step === currentStep;
+        const isCompleted = completedSteps.has(step);
+        const canClick = isCompleted || step <= currentStep;
+
+        return (
+          <div key={step} className="group relative">
+            <button
+              type="button"
+              onClick={() => canClick && onStepClick(step)}
+              disabled={!canClick}
+              className={cn(
+                "relative rounded-full transition-all duration-300",
+                isActive &&
+                  "h-2.5 w-2.5 bg-brand-primary shadow-[0_0_12px_rgba(196,80,79,0.4)]",
+                isCompleted &&
+                  !isActive &&
+                  "h-1.5 w-1.5 bg-sage cursor-pointer hover:bg-sage/80",
+                !isActive &&
+                  !isCompleted &&
+                  "h-1 w-1 bg-border",
+                canClick && !isActive && "cursor-pointer"
+              )}
+              aria-label={`Go to ${STEP_LABELS[step]}`}
+            />
+
+            {/* Tooltip — shows on hover */}
+            {canClick && (
+              <div className="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="rounded-md bg-surface px-2 py-1 text-xs text-foreground-secondary shadow-md">
+                  {STEP_LABELS[step]}
+                </span>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function StepShell({
   children,
@@ -193,6 +262,10 @@ function StepShell({
   backLabel,
   nextDisabled = false,
   fullBleed = false,
+  currentStep,
+  totalSteps,
+  completedSteps,
+  onStepClick,
 }: StepShellProps) {
   const resolvedBackLabel = backLabel ?? "Back";
 
@@ -208,7 +281,7 @@ function StepShell({
         {children}
       </div>
 
-      {/* Navigation — fixed to viewport bottom, always on top */}
+      {/* Desktop Navigation — fixed to viewport bottom */}
       <div className="fixed inset-x-0 bottom-0 z-50 hidden border-t border-border/10 bg-background lg:block">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8 lg:pr-24">
           <button
@@ -220,6 +293,13 @@ function StepShell({
             {resolvedBackLabel}
           </button>
 
+          <StepDots
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            completedSteps={completedSteps}
+            onStepClick={onStepClick}
+          />
+
           <ArrowLineCTA
             label={nextLabel}
             onClick={onNext}
@@ -228,8 +308,16 @@ function StepShell({
         </div>
       </div>
 
-      {/* Mobile Bottom Bar — fixed to viewport bottom, always on top */}
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-background px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] lg:hidden">
+      {/* Mobile Bottom Bar — fixed to viewport bottom */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-border/20 bg-background px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden">
+        <div className="mb-2 flex justify-center">
+          <StepDots
+            currentStep={currentStep}
+            totalSteps={totalSteps}
+            completedSteps={completedSteps}
+            onStepClick={onStepClick}
+          />
+        </div>
         <div className="flex items-center gap-3">
           <button
             type="button"
