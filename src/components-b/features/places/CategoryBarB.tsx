@@ -49,7 +49,7 @@ export function CategoryBarB({
   detectedPlatform,
   tabs,
   activeTab,
-  onTabChange,
+  onTabChange: _onTabChange,
   viewMode = "grid",
   onViewModeChange,
   mapAvailable = false,
@@ -86,47 +86,24 @@ export function CategoryBarB({
       <div
         className={cn(
           "sticky z-40",
-          isStuck
+          isStuck || viewMode === "map"
             ? "bg-white/85 backdrop-blur-xl border-b border-[var(--border)]"
             : "bg-transparent border-b border-transparent",
         )}
         style={{ top: "var(--header-h)" }}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* Row 1: Category tabs */}
-          {tabs && tabs.length > 0 && (
-            <div className="overflow-x-auto scrollbar-hide snap-x -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
-              <div className="flex items-center justify-center gap-1 py-2 min-w-max">
-                {tabs.map((tab) => {
-                  const isActive = tab.id === activeTab;
-                  return (
-                    <button
-                      key={tab.id ?? "all"}
-                      type="button"
-                      onClick={() => onTabChange?.(tab.id)}
-                      className={cn(
-                        "snap-start shrink-0 px-3 py-1.5 text-sm font-medium rounded-lg transition whitespace-nowrap",
-                        isActive
-                          ? "text-[var(--primary)] bg-[var(--primary)]/8"
-                          : "text-[var(--muted-foreground)] hover:text-[var(--foreground)] hover:bg-[var(--surface)]",
-                      )}
-                    >
-                      {tab.label}
-                      <span className={cn(
-                        "ml-1 text-xs",
-                        isActive ? "text-[var(--primary)]/70" : "text-[var(--muted-foreground)]/60",
-                      )}>
-                        {tab.count.toLocaleString()}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Row 2: Search + toggle + refine */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 py-3">
+          {/* Search row */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 py-2">
+            {/* Compact location count */}
+            {tabs && tabs.length > 0 && (() => {
+              const activeTabData = tabs.find((t) => t.id === activeTab) ?? tabs[0];
+              return activeTabData ? (
+                <span className="shrink-0 text-xs font-medium text-[var(--muted-foreground)] whitespace-nowrap">
+                  {activeTabData.count.toLocaleString()} places
+                </span>
+              ) : null;
+            })()}
             {/* Search / link import input */}
             <form
               className="relative w-full max-w-sm min-w-0"
@@ -166,6 +143,7 @@ export function CategoryBarB({
               <button
                 type="submit"
                 disabled={isExtracting}
+                title={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
                 className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--brand-secondary)] active:scale-[0.95] transition disabled:opacity-60"
                 aria-label={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
               >
@@ -189,6 +167,7 @@ export function CategoryBarB({
                 <button
                   type="button"
                   onClick={() => onViewModeChange("grid")}
+                  title="Grid view"
                   className={cn(
                     "flex items-center justify-center w-10 transition",
                     viewMode === "grid"
@@ -204,6 +183,7 @@ export function CategoryBarB({
                 <button
                   type="button"
                   onClick={() => onViewModeChange("map")}
+                  title="Map view"
                   className={cn(
                     "flex items-center justify-center w-10 transition",
                     viewMode === "map"
@@ -249,6 +229,7 @@ export function CategoryBarB({
                 <button
                   key={`${filter.type}-${filter.value}-${index}`}
                   onClick={() => onRemoveFilter?.(filter)}
+                  title={`Remove ${filter.label}`}
                   className="inline-flex items-center gap-1 rounded-xl bg-[var(--surface)] px-2.5 py-1 text-xs font-medium text-[var(--foreground-secondary)] hover:bg-[var(--border)] border border-[var(--border)] transition group"
                   aria-label={`Remove ${filter.label} filter`}
                 >
