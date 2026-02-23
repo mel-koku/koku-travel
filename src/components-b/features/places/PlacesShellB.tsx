@@ -95,7 +95,28 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
   }, [setSelectedSort, setSelectedVibes]);
 
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
-  const [viewMode, setViewMode] = useState<"grid" | "map">("grid");
+  const searchParams = useSearchParams();
+  const viewParam = searchParams.get("view");
+  const [viewMode, setViewModeState] = useState<"grid" | "map">(
+    viewParam === "map" ? "map" : "grid",
+  );
+
+  // Sync viewMode to ?view= search param so back-navigation restores it
+  const setViewMode = useCallback(
+    (mode: "grid" | "map") => {
+      setViewModeState(mode);
+      const params = new URLSearchParams(searchParams.toString());
+      if (mode === "map") {
+        params.set("view", "map");
+      } else {
+        params.delete("view");
+      }
+      const qs = params.toString();
+      router.replace(`/b/places${qs ? `?${qs}` : ""}`, { scroll: false });
+    },
+    [router, searchParams],
+  );
+
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { showToast } = useToast();
 
@@ -196,7 +217,6 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
   }, [videoImport]);
 
   // ── Deep link redirect — redirect ?location= to detail page ──
-  const searchParams = useSearchParams();
   const locationParam = searchParams.get("location");
 
   useEffect(() => {
