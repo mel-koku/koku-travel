@@ -8,7 +8,7 @@ const cursorConfig: Record<
   { size: number; opacity: number; isRing: boolean }
 > = {
   default: { size: 8, opacity: 1, isRing: false },
-  link: { size: 32, opacity: 0.6, isRing: true },
+  link: { size: 32, opacity: 1, isRing: false },
 };
 
 export function CustomCursor() {
