@@ -445,7 +445,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
         // Schedule new sync after debounce delay
         const timeout = setTimeout(() => {
-          const trip = nextTrips.find((t) => t.id === tripId);
+          const trip = tripsRef.current.find((t) => t.id === tripId);
           if (trip) {
             void syncTripSave(supabase, trip);
           }

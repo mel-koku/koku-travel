@@ -7,6 +7,7 @@ import {
   createRequestContext,
   addRequestContextHeaders,
   requireAuth,
+  requireJsonContentType,
 } from "@/lib/api/middleware";
 import { badRequest, notFound, internalError } from "@/lib/api/errors";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
@@ -222,6 +223,10 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   if (!parsed.success) {
     return badRequest("Invalid trip ID format");
   }
+
+  // Content-type check
+  const contentTypeError = requireJsonContentType(request, context);
+  if (contentTypeError) return contentTypeError;
 
   // Parse body
   let body: unknown;
