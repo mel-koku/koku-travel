@@ -345,10 +345,11 @@ Single sticky row below the header with: location count + search input + grid/ma
 
 ### Map Mode Layout (`PlacesMapLayoutB.tsx`)
 
-Map is `fixed` positioned, filling from header to viewport bottom:
+Map is `fixed` positioned, filling below header + category bar to viewport bottom:
 
 ```tsx
-<div data-lenis-prevent className="fixed inset-x-0 bottom-0 z-20" style={{ top: "var(--header-h)" }}>
+<div data-lenis-prevent className="fixed inset-x-0 bottom-0 z-20"
+     style={{ top: "calc(var(--header-h) + 52px)" }}>
 ```
 
 Key patterns:
@@ -356,9 +357,42 @@ Key patterns:
 - `data-lenis-prevent` on outermost container — prevents Lenis scroll hijack on the map
 - `projection: "mercator"` on Mapbox init — avoids globe projection panning issues
 - Category bar (z-40) floats above the map (z-20) with backdrop blur
-- Intro section hidden in map mode to minimize bar height
-- Floating location pill strip at `absolute bottom-4` — always at viewport bottom
-- Seasonal banner only shown in grid mode
+- Map top offset accounts for both header and category bar height (52px)
+- Intro section and seasonal banner hidden in map mode
+- Floating vertical pill column on the left side (`absolute top-3 left-3 bottom-3 w-56`)
+- Pills are individual `bg-white/90 backdrop-blur-sm` cards — no panel background
+- Bounds-filtered locations with infinite scroll (`PAGE_SIZE = 40`)
+- Two-way hover sync: card hover highlights map pin, map pin hover auto-scrolls to pill
+- Count badge at top of pill column
+
+### Map Pill Card (`PlacesMapCardB.tsx`)
+
+Compact pill card for the map sidebar:
+
+```
+┌────────┬──────────────────────┐
+│ 32×32  │ Name           ★ 4.5 │
+│ thumb  │ City · category      │
+└────────┴──────────────────────┘
+```
+
+- `forwardRef` for auto-scroll when map pin hovered
+- `isHighlighted` prop: `ring-1 ring-[var(--primary)]/40 bg-white`
+- Shadow: `0 1px 6px rgba(0,0,0,0.1)` — light, no `--shadow-card` (too heavy for pills)
+
+### View Mode Persistence
+
+View mode synced to `?view=map` URL search param via `router.replace()`:
+
+```tsx
+// In PlacesShellB — setViewMode updates URL
+router.replace(`/b/places?view=map`, { scroll: false });
+// Init reads from param
+const viewParam = searchParams.get("view");
+const [viewMode] = useState(viewParam === "map" ? "map" : "grid");
+```
+
+Detail page "Back to all places" uses `router.back()` to preserve the view mode state.
 
 ### Card Grid (`PlacesCardB.tsx`)
 
@@ -396,7 +430,8 @@ src/components-b/
       FilterPanelB.tsx       ← Slide-in refine panel
       PlacesGridB.tsx        ← Infinite-scroll card grid
       PlacesCardB.tsx        ← Location card with save pill
-      PlacesMapLayoutB.tsx   ← Fixed full-viewport map + pill strip
+      PlacesMapLayoutB.tsx   ← Fixed full-viewport map + floating pill column
+      PlacesMapCardB.tsx     ← Compact pill card for map sidebar
       PlacesMapB.tsx         ← Mapbox GL map (clusters, bounds, hover)
       PlaceDetailB.tsx       ← Full-page location detail
   ui/                     ← B UI kit (build as needed)
