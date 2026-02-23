@@ -6,10 +6,7 @@ import { ThemeProvider } from "next-themes";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { SavedProvider } from "@/context/SavedContext";
-import { ToastProvider } from "@/context/ToastContext";
-import { AppStateProvider } from "@/state/AppState";
-import { QueryProvider } from "@/providers/QueryProvider";
+import { SharedProviders } from "@/components/SharedProviders";
 import { LenisProvider } from "@/providers/LenisProvider";
 import { CursorProvider } from "@/providers/CursorProvider";
 import { PageTransition } from "@/components/PageTransition";
@@ -50,36 +47,30 @@ export function LayoutWrapper({
 
   return (
     <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false}>
-      <QueryProvider>
-        <AppStateProvider>
-          <ToastProvider>
-            <SavedProvider>
-              <LenisProvider>
-                <CursorProvider>
-                  <ScrollProgressBar />
-                  <div className="flex min-h-[100dvh] flex-col">
-                    <ErrorBoundary fallback={<></>}>
-                      <Header />
-                    </ErrorBoundary>
-                    <ErrorBoundary>
-                      <main id="main-content" className="flex-1">
-                        <PageTransition>{children}</PageTransition>
-                      </main>
-                    </ErrorBoundary>
-                    {!isTripBuilder && (
-                      <ErrorBoundary fallback={<></>}>
-                        <Footer settings={siteSettings} />
-                      </ErrorBoundary>
-                    )}
-                  </div>
-                  <CustomCursor />
-                  <AskKokuButton />
-                </CursorProvider>
-              </LenisProvider>
-            </SavedProvider>
-          </ToastProvider>
-        </AppStateProvider>
-      </QueryProvider>
+      <SharedProviders>
+        <LenisProvider>
+          <CursorProvider>
+            <ScrollProgressBar />
+            <div className="flex min-h-[100dvh] flex-col">
+              <ErrorBoundary fallback={<></>}>
+                <Header />
+              </ErrorBoundary>
+              <ErrorBoundary>
+                <main id="main-content" className="flex-1">
+                  <PageTransition>{children}</PageTransition>
+                </main>
+              </ErrorBoundary>
+              {!isTripBuilder && (
+                <ErrorBoundary fallback={<></>}>
+                  <Footer settings={siteSettings} />
+                </ErrorBoundary>
+              )}
+            </div>
+            <CustomCursor />
+            <AskKokuButton />
+          </CursorProvider>
+        </LenisProvider>
+      </SharedProviders>
     </ThemeProvider>
   );
 }
