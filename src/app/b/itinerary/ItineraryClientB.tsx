@@ -219,7 +219,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
   }
 
   return (
-    <div className="pb-6 sm:pb-8 md:pb-10" style={{ backgroundColor: "var(--background)" }}>
+    <div className="pt-[var(--header-h)] pb-6 sm:pb-8 md:pb-10" style={{ backgroundColor: "var(--background)" }}>
       <ErrorBoundary>
         <ItineraryShellB
           key={selectedTrip?.id ?? "mock-itinerary"}

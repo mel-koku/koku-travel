@@ -816,7 +816,7 @@ export const ItineraryShellB = ({
         </div>
 
         {/* Right: Sticky Map — desktop only (50%) */}
-        <div className="hidden lg:sticky lg:top-0 lg:block lg:h-[100dvh] lg:w-1/2">
+        <div className="hidden lg:sticky lg:top-[var(--header-h)] lg:block lg:h-[calc(100dvh-var(--header-h))] lg:w-1/2">
           <div className="h-full">
             <ErrorBoundary
               fallback={
