@@ -80,7 +80,7 @@ export function AskKokuChatB({ onClose, context = "default" }: AskKokuChatProps)
               </div>
             )}
             {error && (
-              <div className="rounded-xl bg-red-50 px-4 py-2.5 text-sm text-[var(--error)]">
+              <div className="rounded-xl bg-[var(--error)]/5 px-4 py-2.5 text-sm text-[var(--error)]">
                 {error.message?.includes("quota") ||
                 error.message?.includes("503") ||
                 error.message?.includes("429")
