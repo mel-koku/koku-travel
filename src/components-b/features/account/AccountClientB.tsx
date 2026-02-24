@@ -71,17 +71,17 @@ export function AccountClientB({ content }: AccountClientBProps) {
           await supabase.from("profiles").upsert({ id: sessionUserId, display_name: displayName });
         }
 
-        setStatus("Syncing your local data to cloud\u2026");
+        setStatus("Syncing your trips and saves\u2026");
         const syncResult = await syncLocalToCloudOnce();
         if (syncResult?.ok === false) {
           setStatus("");
           return;
         }
         await refreshFromSupabase();
-        setStatus("Sync complete.");
+        setStatus("All synced.");
       } catch (error) {
         logger.error("Account sync failed", error instanceof Error ? error : new Error(String(error)));
-        setStatus("Sync failed. Please try again.");
+        setStatus("Sync didn\u2019t go through. Refresh to try again.");
       } finally {
         setIsLoadingProfile(false);
       }
@@ -112,7 +112,7 @@ export function AccountClientB({ content }: AccountClientBProps) {
       <div className="flex min-h-[100dvh] items-center justify-center">
         <div className="text-center">
           <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[var(--primary)] border-r-transparent" />
-          <p className="text-sm text-[var(--muted-foreground)]">Loading account...</p>
+          <p className="text-sm text-[var(--muted-foreground)]">Getting your account ready\u2026</p>
         </div>
       </div>
     );
@@ -195,7 +195,7 @@ export function AccountClientB({ content }: AccountClientBProps) {
                     {isLoadingProfile || isLoadingRefresh ? (
                       <span className="flex items-center gap-2">
                         <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-[var(--primary)] border-r-transparent" />
-                        {status || "Loading..."}
+                        {status || "Checking\u2026"}
                       </span>
                     ) : (
                       status
@@ -236,16 +236,16 @@ function EmailFormB({ content }: { content?: PagesContent }) {
   async function sendMagicLink(e: FormEvent) {
     e.preventDefault();
     if (!supabase) {
-      setStatus("Supabase is not configured. Unable to send sign-in links.");
+      setStatus("Sign-in is temporarily unavailable.");
       return;
     }
-    setStatus("Sending magic link\u2026");
+    setStatus("Sending your sign-in link\u2026");
     const redirectUrl = getRedirectUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectUrl },
     });
-    setStatus(error ? `Error: ${error.message}` : "Check your email for the sign-in link.");
+    setStatus(error ? `Error: ${error.message}` : "Sign-in link sent \u2014 check your inbox.");
   }
 
   return (
