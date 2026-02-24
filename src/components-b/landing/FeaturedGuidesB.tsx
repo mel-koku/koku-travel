@@ -70,7 +70,7 @@ export function FeaturedGuidesB({ guides }: FeaturedGuidesBProps) {
             >
               <Link
                 href={`/b/guides/${guide.id}`}
-                className="group block overflow-hidden rounded-2xl bg-[var(--background)]"
+                className="group block overflow-hidden rounded-2xl bg-[var(--card)]"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image

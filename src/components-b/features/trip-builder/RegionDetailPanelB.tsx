@@ -30,7 +30,7 @@ export function RegionDetailPanelB({
           className="object-cover"
           sizes={variant === "desktop" ? "40vw" : "100vw"}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 to-transparent" />
       </div>
 
       {/* Description */}

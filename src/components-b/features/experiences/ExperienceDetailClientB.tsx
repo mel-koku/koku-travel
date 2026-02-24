@@ -69,7 +69,7 @@ export function ExperienceDetailClientB({
         ) : (
           <div className="h-full w-full bg-[var(--surface)]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent" />
 
         <div className="absolute inset-0 flex items-end">
           <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 pb-8">
@@ -202,7 +202,7 @@ export function ExperienceDetailClientB({
                 href={experience.bookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
+                className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
               >
                 Book this experience
               </a>

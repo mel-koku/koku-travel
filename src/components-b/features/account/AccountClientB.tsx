@@ -171,7 +171,7 @@ export function AccountClientB({ content }: AccountClientBProps) {
               {signedIn && supabase && (
                 <button
                   onClick={() => supabase.auth.signOut()}
-                  className="h-10 rounded-xl border border-[var(--border)] px-4 text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface)] hover:text-[var(--foreground)] transition"
+                  className="h-11 rounded-xl border border-[var(--border)] px-4 text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface)] hover:text-[var(--foreground)] transition active:scale-[0.98]"
                 >
                   {content?.accountSignOutText ?? "Sign out"}
                 </button>
@@ -204,7 +204,7 @@ export function AccountClientB({ content }: AccountClientBProps) {
                   <button
                     onClick={clearAllLocalData}
                     disabled={isLoadingProfile || isLoadingRefresh}
-                    className="h-10 rounded-xl border border-[var(--error)]/30 bg-[var(--error)]/5 px-4 text-sm text-[var(--error)] hover:bg-[var(--error)]/10 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    className="h-11 rounded-xl border border-[var(--error)]/30 bg-[var(--error)]/5 px-4 text-sm text-[var(--error)] hover:bg-[var(--error)]/10 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-[0.98]"
                   >
                     {content?.accountClearDataText ?? "Clear local data"}
                   </button>

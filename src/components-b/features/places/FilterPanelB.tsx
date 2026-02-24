@@ -445,7 +445,7 @@ function ToggleB({ label, description, checked, onChange }: ToggleBProps) {
           checked ? "bg-[var(--primary)]" : "bg-[var(--surface)] group-hover:bg-[var(--border)]",
         )}>
           <div className={cn(
-            "absolute top-1 w-4 h-4 bg-white rounded-full transition-transform shadow-sm",
+            "absolute top-1 w-4 h-4 bg-white rounded-full transition-transform shadow-[var(--shadow-sm)]",
             checked ? "translate-x-5" : "translate-x-1",
           )} />
         </div>

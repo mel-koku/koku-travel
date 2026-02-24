@@ -53,7 +53,7 @@ export function SignInClientB({ content }: SignInClientBProps) {
           sizes="(min-width: 1024px) 50vw, 100vw"
           priority
         />
-        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 bg-charcoal/40" />
 
         <div className="relative z-10 flex h-full min-h-[40vh] lg:min-h-[100dvh] items-end p-8 sm:p-12 lg:p-16">
           <div>

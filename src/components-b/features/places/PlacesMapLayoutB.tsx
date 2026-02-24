@@ -130,7 +130,7 @@ export function PlacesMapLayoutB({
           {/* Count */}
           {boundsFilteredLocations.length > 0 && (
             <div className="mb-1.5 pointer-events-auto">
-              <span className="inline-block rounded-lg bg-white/80 backdrop-blur-sm px-2 py-1 text-[11px] font-medium text-[var(--muted-foreground)]" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+              <span className="inline-block rounded-lg bg-white/80 backdrop-blur-sm px-2 py-1 text-[11px] font-medium text-[var(--muted-foreground)]" style={{ boxShadow: "var(--shadow-sm)" }}>
                 {boundsFilteredLocations.length.toLocaleString()} places
               </span>
             </div>

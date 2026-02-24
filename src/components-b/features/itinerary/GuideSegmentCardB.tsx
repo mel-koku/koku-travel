@@ -62,7 +62,7 @@ export function GuideSegmentCardB({
 
         <div className="min-w-0 flex-1">
           <span
-            className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+            className="text-xs font-semibold uppercase tracking-[0.2em]"
             style={{ color: "var(--primary)" }}
           >
             {label}

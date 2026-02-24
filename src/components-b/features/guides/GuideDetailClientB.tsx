@@ -84,7 +84,7 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
         ) : (
           <div className="h-full w-full bg-[var(--surface)]" />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent" />
 
         <div className="absolute inset-0 flex items-end">
           <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 pb-8">

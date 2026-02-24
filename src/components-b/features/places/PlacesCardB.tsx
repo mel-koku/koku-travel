@@ -113,7 +113,7 @@ export const PlacesCardB = memo(function PlacesCardB({
                   ? "bg-[var(--primary)] text-white"
                   : "bg-white/80 text-[var(--foreground)]"
               }`}
-              style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}
+              style={{ boxShadow: "var(--shadow-sm)" }}
             >
               <HeartIconB active={active} animating={heartAnimating} />
               {active ? "Saved" : "Save for trip"}

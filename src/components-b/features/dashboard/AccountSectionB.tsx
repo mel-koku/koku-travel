@@ -59,7 +59,7 @@ export function AccountSectionB({
         {isAuthenticated && supabase && (
           <button
             onClick={() => supabase.auth.signOut()}
-            className="h-10 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 text-sm font-medium text-[var(--foreground-body)] transition hover:bg-[var(--surface)]"
+            className="h-11 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 text-sm font-medium text-[var(--foreground-body)] transition hover:bg-[var(--surface)] active:scale-[0.98]"
           >
             Sign out
           </button>
@@ -105,7 +105,7 @@ export function AccountSectionB({
             <button
               onClick={onClearLocalData}
               disabled={isLoadingProfile || isLoadingRefresh}
-              className="h-10 rounded-xl border border-[var(--error)]/20 bg-[var(--error)]/5 px-4 text-sm font-medium text-[var(--error)] transition hover:bg-[var(--error)]/10 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-11 rounded-xl border border-[var(--error)]/20 bg-[var(--error)]/5 px-4 text-sm font-medium text-[var(--error)] transition hover:bg-[var(--error)]/10 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               Clear local data
             </button>
@@ -170,7 +170,7 @@ function EmailFormB({ supabase, supabaseUnavailable }: EmailFormBProps) {
       <button
         type="submit"
         disabled={supabaseUnavailable}
-        className="h-10 rounded-xl bg-[var(--primary)] px-4 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="h-11 rounded-xl bg-[var(--primary)] px-4 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
       >
         Send sign-in link
       </button>
