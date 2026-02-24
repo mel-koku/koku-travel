@@ -37,7 +37,7 @@ export default function SavedShell() {
       <section className="bg-background py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="py-32 text-center text-destructive">
-            <p>Couldn&apos;t load your saved places — try refreshing.</p>
+            <p>Your saved places didn&apos;t load. Give it another shot.</p>
             <button
               onClick={() => window.location.reload()}
               className="mt-4 inline-block font-medium text-brand-primary hover:text-brand-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
@@ -97,7 +97,7 @@ export default function SavedShell() {
 
               <ScrollReveal delay={0.3} distance={15}>
                 <p className="mt-4 max-w-sm text-base text-white/70">
-                  Explore Japan&apos;s hidden gems and save the places that speak to you.
+                  Heart the places you want in your trip. We&apos;ll include them.
                 </p>
               </ScrollReveal>
 

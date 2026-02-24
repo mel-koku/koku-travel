@@ -18,7 +18,7 @@ const defaultActs = [
     eyebrow: "DISCOVER",
     title: "The places locals keep to themselves",
     description:
-      "Every place in our collection was found the same way you'd find it if you lived here — word of mouth, wandering, and years of knowing where to look.",
+      "Found the same way you'd find them if you lived here — word of mouth, wandering, and knowing where to look.",
     image:
       "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&q=80",
     alt: "Traditional Japanese alley",
@@ -26,9 +26,9 @@ const defaultActs = [
   {
     number: "02",
     eyebrow: "PLAN",
-    title: "Build your days, your way",
+    title: "Build your days, down to the hour",
     description:
-      "Planning should feel like anticipation, not homework. Rearrange your days, adjust the pace, see travel times between every stop.",
+      "Planning should feel like anticipation, not homework. Drag days around. Adjust the pace. See travel times between every stop.",
     image:
       "https://images.unsplash.com/photo-1624253321171-1be53e12f5f4?w=1920&q=80",
     alt: "Peaceful Japanese garden",
@@ -36,7 +36,7 @@ const defaultActs = [
   {
     number: "03",
     eyebrow: "GO",
-    title: "Your itinerary, everywhere",
+    title: "Your itinerary. Pocket-ready.",
     description:
       "Check it on the Shinkansen, share it with friends. Your plan goes where you go.",
     image:

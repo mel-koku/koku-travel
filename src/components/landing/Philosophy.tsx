@@ -24,7 +24,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
         <ScrollReveal delay={0.1}>
           <h2 className="mx-auto mt-6 max-w-2xl font-serif italic text-2xl leading-snug tracking-heading text-foreground sm:text-3xl lg:text-4xl">
             {content?.philosophyHeading ??
-              "Not from a desk, but from years of living here."}
+              "From years of living here. Not a desk."}
           </h2>
         </ScrollReveal>
 
@@ -70,7 +70,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
               {stats?.[2]?.suffix ?? "%"}
             </span>
             <p className="eyebrow-mono mt-3">
-              {stats?.[2]?.label ?? "Local"}
+              {stats?.[2]?.label ?? "Locally curated"}
             </p>
           </div>
         </div>

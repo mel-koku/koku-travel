@@ -99,10 +99,10 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                   {content?.featuredLocationsHeading ?? "Places that stay with you"}
                 </h2>
                 <p className="mt-2 font-mono text-sm text-foreground-secondary">
-                  3,700+ places
+                  {locations.length > 0 ? `${Math.floor(locations.length / 100) * 100}+ and counting` : "3,700+ and counting"}
                 </p>
                 <p className="mt-4 text-base text-foreground-secondary">
-                  {content?.featuredLocationsDescription ?? "Handpicked locations that represent the best of Japan \u2014 from hidden shrines to neighborhood favorites."}
+                  {content?.featuredLocationsDescription ?? "Hidden shrines. Neighborhood favorites. The places guidebooks don\u2019t know about."}
                 </p>
               </div>
               <div>
@@ -111,7 +111,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                   href="/places"
                   className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
                 >
-                  {content?.featuredLocationsCtaText ?? "Explore all"}
+                  {content?.featuredLocationsCtaText ?? "See all places"}
                   <ArrowRightIcon />
                 </Link>
               </div>
@@ -155,7 +155,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
             3,700+ places
           </p>
           <p className="mt-4 max-w-md text-base text-foreground-secondary">
-            {content?.featuredLocationsDescription ?? "Handpicked locations that represent the best of Japan \u2014 from hidden shrines to neighborhood favorites."}
+            {content?.featuredLocationsDescription ?? "Hidden shrines. Neighborhood favorites. The places guidebooks don\u2019t know about."}
           </p>
         </div>
 
@@ -176,7 +176,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
             href="/places"
             className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
-            {content?.featuredLocationsCtaText ?? "Explore all"}
+            {content?.featuredLocationsCtaText ?? "See all places"}
             <ArrowRightIcon />
           </Link>
         </div>

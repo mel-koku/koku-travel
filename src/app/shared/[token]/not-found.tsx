@@ -11,7 +11,7 @@ export default function SharedNotFound() {
           Link no longer active
         </h1>
         <p className="mt-3 max-w-sm text-sm text-foreground-secondary">
-          This itinerary link has expired or been deactivated by the owner.
+          This link has expired or been turned off.
         </p>
         <Link
           href="/trip-builder"

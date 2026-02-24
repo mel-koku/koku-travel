@@ -33,14 +33,14 @@ export function FeaturedExperiences({
             </h2>
             <p className="mt-4 max-w-md text-base text-foreground-secondary">
               {content?.featuredExperiencesDescription ??
-                "Workshops, cruises, and adventures that connect you with the culture — not just the scenery."}
+                "Workshops, cruises, and adventures where you're a participant — not a tourist."}
             </p>
           </div>
           <Link
             href="/experiences"
             className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
-            {content?.featuredExperiencesCtaText ?? "Explore experiences"}
+            {content?.featuredExperiencesCtaText ?? "Browse experiences"}
             <svg
               className="h-4 w-4 transition-transform group-hover:translate-x-1"
               fill="none"
