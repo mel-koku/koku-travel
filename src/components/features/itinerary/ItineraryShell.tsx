@@ -395,7 +395,7 @@ export const ItineraryShell = ({
   }, []);
 
   return (
-    <section className="mx-auto min-h-[calc(100dvh-64px)] max-w-screen-2xl">
+    <section className="mx-auto min-h-[calc(100dvh-80px)] max-w-screen-2xl">
       {/* ── Mobile peek map strip (< lg) ── */}
       <div className="relative lg:hidden">
         <motion.div

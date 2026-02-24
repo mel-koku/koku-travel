@@ -37,7 +37,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
   const handleQuickStart = useCallback(() => {
     if (!onQuickStart) return;
     const preset = QUICK_PRESETS.find((p) => p.id === quickPreset) ?? QUICK_PRESETS[2];
-    const cities = preset.cities as unknown as CityId[];
+    const cities = [...preset.cities] as CityId[];
     const regions = deriveRegionsFromCities(cities);
     const vibes: VibeId[] = ["cultural_heritage", "foodie_paradise"];
     const interests = vibesToInterests(vibes);
