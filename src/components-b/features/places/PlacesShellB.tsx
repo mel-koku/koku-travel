@@ -308,7 +308,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
                   }}
                   placeholder="e.g. ramen shop in Shibuya"
                   maxLength={200}
-                  className="flex-1 rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition"
+                  className="flex-1 rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-base sm:text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition"
                 />
                 <button
                   type="button"

@@ -143,7 +143,7 @@ export function DiscoverShellB() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              className="w-24 focus:w-36 rounded-lg bg-[var(--surface)] pl-7 pr-2 py-1.5 text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all"
+              className="w-24 focus:w-36 rounded-lg bg-[var(--surface)] pl-7 pr-2 py-1.5 text-base sm:text-xs text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)] transition-all"
             />
           </div>
 
@@ -185,7 +185,7 @@ export function DiscoverShellB() {
             style={{ boxShadow: "var(--shadow-elevated)" }}
           >
             <svg
-              className="h-4 w-4 text-amber-500 shrink-0 mt-0.5"
+              className="h-4 w-4 text-[var(--warning)] shrink-0 mt-0.5"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"

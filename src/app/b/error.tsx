@@ -31,9 +31,9 @@ export default function VariantBError({
           home page.
         </p>
         {process.env.NODE_ENV !== "production" && error.message && (
-          <div className="mt-4 rounded-xl bg-red-50 p-4 text-left">
-            <p className="text-sm font-semibold text-red-600">Error details:</p>
-            <p className="mt-1 text-sm text-red-500">{error.message}</p>
+          <div className="mt-4 rounded-xl bg-[var(--error)]/5 p-4 text-left">
+            <p className="text-sm font-semibold text-[var(--error)]">Error details:</p>
+            <p className="mt-1 text-sm text-[var(--error)]/80">{error.message}</p>
           </div>
         )}
         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center">

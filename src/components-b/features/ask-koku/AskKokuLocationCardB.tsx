@@ -56,7 +56,7 @@ export function AskKokuLocationCardB({
           </span>
           {rating && (
             <span className="flex items-center gap-0.5">
-              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+              <Star className="h-3 w-3 fill-[var(--warning)] text-[var(--warning)]" />
               {rating.toFixed(1)}
             </span>
           )}
