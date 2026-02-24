@@ -3,78 +3,66 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import type { Location } from "@/types/location";
-import type { LandingPageContent } from "@/types/sanitySiteContent";
+import type { ExperienceSummary } from "@/types/experience";
 
-type FeaturedLocationsBProps = {
-  locations: Location[];
-  content?: LandingPageContent;
+const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
+
+type FeaturedExperiencesBProps = {
+  experiences: ExperienceSummary[];
 };
 
-export function FeaturedLocationsB({
-  locations,
-  content,
-}: FeaturedLocationsBProps) {
-  const heading =
-    content?.featuredLocationsHeading ?? "Places worth the journey";
-  const description =
-    content?.featuredLocationsDescription ??
-    "Hand-picked spots across Japan — top-rated by visitors, vetted by locals.";
+export function FeaturedExperiencesB({
+  experiences,
+}: FeaturedExperiencesBProps) {
+  if (!experiences || experiences.length === 0) return null;
 
   return (
-    <section className="bg-[var(--background)] py-16 sm:py-24 lg:py-32">
+    <section className="bg-white py-16 sm:py-24 lg:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header — enters first */}
+        {/* Header */}
         <div className="max-w-2xl">
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
+            transition={{ duration: 0.6, ease: bEase }}
             className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]"
           >
-            {content?.featuredLocationsEyebrow ?? "Featured Places"}
+            Experiences
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{
-              duration: 0.7,
-              delay: 0.08,
-              ease: [0.25, 0.1, 0.25, 1],
-            }}
+            transition={{ duration: 0.7, delay: 0.08, ease: bEase }}
             className="mt-3 text-3xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-4xl"
           >
-            {heading}
+            Go beyond sightseeing
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
-            transition={{
-              duration: 0.6,
-              delay: 0.16,
-              ease: [0.25, 0.1, 0.25, 1],
-            }}
+            transition={{ duration: 0.6, delay: 0.16, ease: bEase }}
             className="mt-3 text-[var(--foreground-body)]"
           >
-            {description}
+            Workshops, tours, and adventures that connect you to the culture —
+            not just the scenery.
           </motion.p>
         </div>
 
-        {/* Cards — staggered cascade */}
-        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {locations.slice(0, 8).map((loc, i) => (
+        {/* Cards */}
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {experiences.slice(0, 3).map((exp, i) => (
             <motion.div
-              key={loc.id}
+              key={exp._id}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-30px" }}
               transition={{
                 duration: 0.6,
                 delay: 0.1 + i * 0.08,
-                ease: [0.25, 0.1, 0.25, 1],
+                ease: bEase,
               }}
               whileHover={{
                 y: -4,
@@ -84,29 +72,27 @@ export function FeaturedLocationsB({
               style={{ borderRadius: "1rem" }}
             >
               <Link
-                href={`/b/places?location=${loc.id}`}
-                className="group block overflow-hidden rounded-2xl bg-white"
+                href={`/b/experiences/${exp.slug}`}
+                className="group block overflow-hidden rounded-2xl bg-[var(--background)]"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={
-                      loc.primaryPhotoUrl ??
-                      loc.image ??
+                      exp.featuredImage?.url ??
                       "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=600&q=75"
                     }
-                    alt={loc.name}
+                    alt={exp.title}
                     fill
                     className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 </div>
                 <div className="p-4">
                   <h3 className="text-sm font-semibold text-[var(--foreground)] transition-colors duration-200 group-hover:text-[var(--primary)]">
-                    {loc.name}
+                    {exp.title}
                   </h3>
                   <p className="mt-1 text-xs text-[var(--muted-foreground)]">
-                    {loc.city}
-                    {loc.rating ? ` · ${loc.rating}` : ""}
+                    {[exp.city, exp.duration].filter(Boolean).join(" · ")}
                   </p>
                 </div>
               </Link>
@@ -114,7 +100,7 @@ export function FeaturedLocationsB({
           ))}
         </div>
 
-        {/* View all */}
+        {/* CTA */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -123,10 +109,10 @@ export function FeaturedLocationsB({
           className="mt-10 text-center"
         >
           <Link
-            href="/b/places"
+            href="/b/experiences"
             className="inline-flex h-11 items-center justify-center rounded-xl border border-[var(--border)] px-6 text-sm font-medium text-[var(--foreground)] transition-all duration-200 hover:border-[var(--primary)] hover:text-[var(--primary)]"
           >
-            {content?.featuredLocationsCtaText ?? "View All Places"}
+            View All Experiences
           </Link>
         </motion.div>
       </div>
