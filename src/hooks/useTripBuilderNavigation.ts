@@ -13,11 +13,14 @@ const STEP_COUNT = 6;
 type UseTripBuilderNavigationOptions = {
   onComplete?: () => void;
   sanityConfig?: TripBuilderConfig;
+  /** Base path for URL operations — defaults to "/trip-builder" (A variant). Pass "/b/trip-builder" for B. */
+  basePath?: string;
 };
 
 export function useTripBuilderNavigation({
   onComplete,
   sanityConfig,
+  basePath,
 }: UseTripBuilderNavigationOptions) {
   const { data, setData, reset } = useTripBuilder();
   const searchParams = useSearchParams();
@@ -64,7 +67,7 @@ export function useTripBuilderNavigation({
   useEffect(() => {
     if (initialStep === "5" && !didDeepLink.current) {
       didDeepLink.current = true;
-      router.replace("/trip-builder", { scroll: false });
+      router.replace(basePath ?? "/trip-builder", { scroll: false });
     }
   }, [initialStep, router]);
 
