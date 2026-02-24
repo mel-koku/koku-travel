@@ -106,7 +106,7 @@ export function SavedClientB({ content }: SavedClientBProps) {
                 </span>
               </div>
               <div className="h-6 w-px bg-[var(--border)]" />
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted-foreground)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
                 Your Collection
               </p>
             </div>
@@ -142,7 +142,7 @@ export function SavedClientB({ content }: SavedClientBProps) {
               </p>
               <Link
                 href="/b/places"
-                className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white active:scale-[0.98]"
+                className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white active:scale-[0.98]"
               >
                 Start exploring
               </Link>

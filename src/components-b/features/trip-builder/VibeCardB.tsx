@@ -59,7 +59,7 @@ export function VibeCardB({
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/30 to-transparent" />
 
         {/* Check badge */}
         {isSelected && (
@@ -67,7 +67,7 @@ export function VibeCardB({
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-white shadow-lg"
+            className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--primary)] text-white shadow-[var(--shadow-elevated)]"
           >
             <Check className="h-4 w-4" strokeWidth={3} />
           </motion.div>

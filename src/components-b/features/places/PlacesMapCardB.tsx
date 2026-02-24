@@ -33,7 +33,7 @@ export const PlacesMapCardB = memo(
               ? "ring-1 ring-[var(--primary)]/40 bg-white"
               : "hover:bg-white"
           }`}
-          style={{ boxShadow: "0 1px 6px rgba(0,0,0,0.1)" }}
+          style={{ boxShadow: "var(--shadow-sm)" }}
         >
           {thumb && (
             <div className="relative h-8 w-8 shrink-0 rounded-lg overflow-hidden">
