@@ -84,8 +84,8 @@ export function AskKokuChatB({ onClose, context = "default" }: AskKokuChatProps)
                 {error.message?.includes("quota") ||
                 error.message?.includes("503") ||
                 error.message?.includes("429")
-                  ? "Koku is taking a break. Try again in a minute."
-                  : "Something went wrong. Try again."}
+                  ? "Koku hit a limit \u2014 give it a minute and try again."
+                  : "Couldn\u2019t get a response. Try sending that again."}
               </div>
             )}
           </div>

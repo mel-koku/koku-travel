@@ -14,7 +14,7 @@ const PlacesShellB = dynamic(
           <p className="text-[clamp(2rem,4vw,3rem)] font-bold tracking-[-0.02em] text-[var(--foreground)] text-center">
             Places in Japan
           </p>
-          <p className="mt-3 text-sm text-[var(--muted-foreground)]">Loading places...</p>
+          <p className="mt-3 text-sm text-[var(--muted-foreground)]">Finding places\u2026</p>
         </div>
         <div className="px-4">
           <div className="h-10 w-full rounded-xl bg-[var(--surface)] animate-pulse mb-4" />

@@ -346,6 +346,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
                 locations={categoryFilteredLocations}
                 totalCount={total}
                 isLoading={isLoading}
+                onClearFilters={() => { clearAllFilters(); setSelectedCategory(null); }}
               />
             </>
           ) : mapAvailable ? (
