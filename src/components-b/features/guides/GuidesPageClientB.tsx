@@ -92,8 +92,14 @@ export function GuidesPageClientB({ guides, content }: GuidesPageClientBProps) {
           {content?.guidesEmptyHeading ?? "Guides are in the works"}
         </p>
         <p className="mt-2 text-sm text-[var(--muted-foreground)] text-center max-w-sm">
-          {content?.guidesEmptyDescription ?? "We're writing them now. Explore places in the meantime."}
+          {content?.guidesEmptyDescription ?? "Still writing these \u2014 browse places while we finish."}
         </p>
+        <a
+          href="/b/places"
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white active:scale-[0.98]"
+        >
+          Browse places
+        </a>
       </div>
     );
   }

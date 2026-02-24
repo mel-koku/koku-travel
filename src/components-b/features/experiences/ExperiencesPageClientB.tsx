@@ -54,8 +54,14 @@ export function ExperiencesPageClientB({ experiences, content }: ExperiencesPage
           {content?.experiencesEmptyHeading ?? "Experiences are in the works"}
         </p>
         <p className="mt-2 text-sm text-[var(--muted-foreground)] text-center max-w-sm">
-          {content?.experiencesEmptyDescription ?? "We're putting these together now. Browse places while you wait."}
+          {content?.experiencesEmptyDescription ?? "Still writing these \u2014 browse places while we finish."}
         </p>
+        <a
+          href="/b/places"
+          className="mt-6 inline-flex h-10 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white active:scale-[0.98]"
+        >
+          Browse places
+        </a>
       </div>
     );
   }

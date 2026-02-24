@@ -14,7 +14,7 @@ const PlacesShell = dynamic(
           <p className="font-serif italic text-2xl sm:text-3xl text-foreground text-center">
             Places in Japan
           </p>
-          <p className="mt-3 text-sm text-stone">Loading places...</p>
+          <p className="mt-3 text-sm text-stone">Finding places\u2026</p>
         </div>
         <div className="px-4">
           <div className="h-10 w-full rounded shimmer mb-4" />

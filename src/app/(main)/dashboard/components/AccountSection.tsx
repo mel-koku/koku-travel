@@ -71,7 +71,7 @@ export function AccountSection({
               {isLoadingProfile || isLoadingRefresh ? (
                 <span className="flex items-center gap-2">
                   <span className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-solid border-brand-primary border-r-transparent"></span>
-                  {status || "Loading..."}
+                  {status || "Checking\u2026"}
                 </span>
               ) : (
                 status
@@ -122,16 +122,16 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
   async function sendMagicLink(e: FormEvent) {
     e.preventDefault();
     if (!supabase) {
-      setStatus("Supabase is not configured. Unable to send sign-in links.");
+      setStatus("Sign-in is temporarily unavailable.");
       return;
     }
-    setStatus("Sending magic link...");
+    setStatus("Sending your sign-in link\u2026");
     const redirectUrl = getRedirectUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectUrl },
     });
-    setStatus(error ? `Error: ${error.message}` : "Check your email for the sign-in link.");
+    setStatus(error ? `Error: ${error.message}` : "Sign-in link sent \u2014 check your inbox.");
   }
 
   return (

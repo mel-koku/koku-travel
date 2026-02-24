@@ -29,16 +29,16 @@ export function SignInClientB({ content }: SignInClientBProps) {
   async function sendMagicLink(e: FormEvent) {
     e.preventDefault();
     if (!supabase) {
-      setStatus("Supabase is not configured. Unable to send sign-in links.");
+      setStatus("Sign-in is temporarily unavailable.");
       return;
     }
-    setStatus("Sending magic link...");
+    setStatus("Sending your sign-in link\u2026");
     const redirectUrl = getRedirectUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectUrl },
     });
-    setStatus(error ? `Error: ${error.message}` : "Check your email for the sign-in link.");
+    setStatus(error ? `Error: ${error.message}` : "Sign-in link sent \u2014 check your inbox.");
   }
 
   return (

@@ -12,9 +12,10 @@ type PlacesGridBProps = {
   locations: Location[];
   totalCount?: number;
   isLoading?: boolean;
+  onClearFilters?: () => void;
 };
 
-export function PlacesGridB({ locations, isLoading }: PlacesGridBProps) {
+export function PlacesGridB({ locations, isLoading, onClearFilters }: PlacesGridBProps) {
   const [page, setPage] = useState(1);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -65,8 +66,17 @@ export function PlacesGridB({ locations, isLoading }: PlacesGridBProps) {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-center py-20">
           <p className="text-base font-medium text-[var(--muted-foreground)] text-center">
-            No places match your filters
+            Nothing here for those filters.
           </p>
+          {onClearFilters && (
+            <button
+              type="button"
+              onClick={onClearFilters}
+              className="mt-4 text-sm font-medium text-[var(--primary)] hover:underline"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       </div>
     );

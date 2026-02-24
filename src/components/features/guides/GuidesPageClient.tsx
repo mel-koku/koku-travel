@@ -105,8 +105,14 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
           {content?.guidesEmptyHeading ?? "Guides are in the works"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
-          {content?.guidesEmptyDescription ?? "We're writing them now. Explore places in the meantime."}
+          {content?.guidesEmptyDescription ?? "Still writing these \u2014 browse places while we finish."}
         </p>
+        <a
+          href="/places"
+          className="mt-6 inline-flex h-12 items-center justify-center rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
+        >
+          Browse places
+        </a>
       </div>
     );
   }

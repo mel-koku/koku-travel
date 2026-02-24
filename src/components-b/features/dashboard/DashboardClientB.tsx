@@ -124,18 +124,18 @@ export function DashboardClientB({ initialAuthUser, content }: DashboardClientBP
           });
         }
 
-        setStatus("Syncing your local data to cloud...");
+        setStatus("Syncing your trips and saves\u2026");
         const syncResult = await syncLocalToCloudOnce();
         if (syncResult?.ok === false) {
           setStatus("");
           return;
         }
         await refreshFromSupabase();
-        setStatus("Sync complete.");
+        setStatus("All synced.");
         setShowAccountSection(true);
       } catch (error) {
         logger.error("Account sync failed", error);
-        setStatus("Sync failed. Please try again.");
+        setStatus("Sync didn\u2019t go through. Refresh to try again.");
       } finally {
         setIsLoadingProfile(false);
       }
@@ -240,7 +240,7 @@ export function DashboardClientB({ initialAuthUser, content }: DashboardClientBP
       <div className="flex min-h-[100dvh] items-center justify-center bg-[var(--background)]">
         <div className="text-center">
           <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[var(--primary)] border-r-transparent" />
-          <p className="text-sm text-[var(--muted-foreground)]">Loading dashboard...</p>
+          <p className="text-sm text-[var(--muted-foreground)]">Pulling up your trips\u2026</p>
         </div>
       </div>
     );
