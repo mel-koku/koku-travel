@@ -87,13 +87,13 @@ export function SharedClient({ trip }: SharedClientProps) {
             Plan your own Japan trip
           </h2>
           <p className="mx-auto mt-3 max-w-md text-sm text-foreground-secondary">
-            Build a personalized itinerary with curated locations, smart scheduling, and local insights.
+            Liked what you saw? Build your own.
           </p>
           <Link
             href="/trip-builder"
             className="mt-6 inline-flex items-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
           >
-            Start Planning
+            Build My Trip
           </Link>
         </div>
       </div>

@@ -28,7 +28,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             animation="clipY"
             staggerDelay={0.02}
           >
-            {content?.finalCtaHeading ?? "Your Japan is waiting"}
+            {content?.finalCtaHeading ?? "Your Japan starts with one place"}
           </SplitText>
 
           <motion.p
@@ -38,7 +38,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             transition={{ duration: durationBase, delay: 0.5 }}
             className="mx-auto mt-8 max-w-md text-base text-white/90"
           >
-            {content?.finalCtaDescription ?? "Every trip starts with a single place. Find yours."}
+            {content?.finalCtaDescription ?? "Pick a place. We'll build the rest."}
           </motion.p>
 
           <motion.div
@@ -52,7 +52,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
               href="/trip-builder"
               className="relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl active:scale-[0.98]"
             >
-              <span className="relative">{content?.finalCtaPrimaryText ?? "Start Planning"}</span>
+              <span className="relative">{content?.finalCtaPrimaryText ?? "Build My Trip"}</span>
             </a>
             <a
               href="/places"

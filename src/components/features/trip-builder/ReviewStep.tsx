@@ -56,7 +56,7 @@ const GROUP_TYPE_OPTIONS = [
 const PACE_OPTIONS = [
   { label: "Relaxed", value: "relaxed", description: "Slow mornings, long lunches" },
   { label: "Balanced", value: "balanced", description: "Mix of sightseeing and downtime" },
-  { label: "Fast", value: "fast", description: "Full days, lots of ground covered" },
+  { label: "Full", value: "fast", description: "Packed days, lots of ground covered" },
 ];
 
 export type ReviewStepProps = {
@@ -171,7 +171,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Optional</p>
         <h3 className="mt-1 font-serif text-lg italic text-foreground">
-          {sanityConfig?.reviewHeading ?? "Almost there"}
+          {sanityConfig?.reviewHeading ?? "One last look"}
         </h3>
         <p className="text-sm text-stone">
           {sanityConfig?.reviewDescription ?? "None of this is required, but it helps."}

@@ -56,8 +56,14 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
           {content?.experiencesEmptyHeading ?? "Experiences are in the works"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
-          {content?.experiencesEmptyDescription ?? "We're putting these together now. Browse places while you wait."}
+          {content?.experiencesEmptyDescription ?? "Still writing these \u2014 browse places while we finish."}
         </p>
+        <a
+          href="/places"
+          className="mt-6 inline-flex h-12 items-center justify-center rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white transition hover:bg-brand-primary/90"
+        >
+          Browse places
+        </a>
       </div>
     );
   }
@@ -72,7 +78,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
 
         <ScrollReveal delay={0.1} distance={20} duration={0.5}>
           <h1 className="mt-4 font-serif italic text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
-            {content?.experiencesHeading ?? "Workshops, cruises, and the kind of moments you'll talk about for years."}
+            {content?.experiencesHeading ?? "Workshops, cruises, and the moments guidebooks can\u2019t sell you."}
           </h1>
         </ScrollReveal>
 

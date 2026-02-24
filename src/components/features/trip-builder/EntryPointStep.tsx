@@ -115,7 +115,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
           </motion.h2>
 
           <p className="mt-1 text-sm text-stone">
-            {sanityConfig?.entryPointDescription ?? "Optional. If you know your airport, we\u2019ll route from there."}
+            {sanityConfig?.entryPointDescription ?? "Optional. Know your airport? We\u2019ll plan around it."}
           </p>
 
           {/* Selected airport display */}
