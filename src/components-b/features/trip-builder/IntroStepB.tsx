@@ -217,7 +217,7 @@ export function IntroStepB({
                     <button
                       type="button"
                       onClick={handleQuickStart}
-                      className="h-10 w-full rounded-xl bg-[var(--primary)] text-sm font-medium text-white transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
+                      className="h-11 w-full rounded-xl bg-[var(--primary)] text-sm font-medium text-white transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
                     >
                       Go
                     </button>
