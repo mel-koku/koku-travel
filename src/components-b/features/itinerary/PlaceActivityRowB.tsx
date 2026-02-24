@@ -65,34 +65,34 @@ function buildFallbackLocation(
 /** Map activity color scheme keys to B-friendly hex colors for the category strip */
 const CATEGORY_STRIP_COLORS: Record<string, string> = {
   // Meals
-  breakfast: "#D97706",
-  lunch: "#D97706",
-  dinner: "#D97706",
-  snack: "#D97706",
-  restaurant: "#D97706",
-  cafe: "#D97706",
+  breakfast: "var(--warning)",
+  lunch: "var(--warning)",
+  dinner: "var(--warning)",
+  snack: "var(--warning)",
+  restaurant: "var(--warning)",
+  cafe: "var(--warning)",
   // Culture
-  culture: "#2D4B8E",
-  view: "#2D4B8E",
-  point_of_interest: "#2D4B8E",
-  landmark: "#2D4B8E",
-  shrine: "#2D4B8E",
-  temple: "#2D4B8E",
-  museum: "#2D4B8E",
+  culture: "var(--primary)",
+  view: "var(--primary)",
+  point_of_interest: "var(--primary)",
+  landmark: "var(--primary)",
+  shrine: "var(--primary)",
+  temple: "var(--primary)",
+  museum: "var(--primary)",
   // Nature
-  nature: "#059669",
-  park: "#059669",
-  garden: "#059669",
-  onsen: "#059669",
-  wellness: "#059669",
+  nature: "var(--success)",
+  park: "var(--success)",
+  garden: "var(--success)",
+  onsen: "var(--success)",
+  wellness: "var(--success)",
   // Shopping
-  shopping: "#D97706",
-  market: "#D97706",
+  shopping: "var(--warning)",
+  market: "var(--warning)",
   // Entertainment
-  entertainment: "#D97706",
-  bar: "#D97706",
+  entertainment: "var(--warning)",
+  bar: "var(--warning)",
   // Default
-  default: "#2D4B8E",
+  default: "var(--primary)",
 };
 
 function getCategoryStripColor(

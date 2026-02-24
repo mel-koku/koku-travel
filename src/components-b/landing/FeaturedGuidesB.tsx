@@ -85,7 +85,7 @@ export function FeaturedGuidesB({ guides }: FeaturedGuidesBProps) {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   {/* Subtle bottom gradient for text legibility if needed */}
-                  <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/20 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[var(--charcoal)]/20 to-transparent" />
                 </div>
                 <div className="p-4">
                   <h3 className="text-sm font-semibold text-[var(--foreground)] transition-colors duration-200 group-hover:text-[var(--primary)]">

@@ -120,7 +120,7 @@ export function TripsSectionB({
                     <div className="relative">
                       <select
                         id="b-trip-selector"
-                        className="w-full appearance-none rounded-xl border border-[var(--border)] bg-[var(--background)] py-2 pl-3 pr-9 text-sm font-medium text-[var(--foreground)] transition focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 sm:min-w-[200px]"
+                        className="w-full appearance-none rounded-xl border border-[var(--border)] bg-[var(--background)] py-2 pl-3 pr-9 text-base font-medium text-[var(--foreground)] transition focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 sm:min-w-[200px] sm:text-sm"
                         value={selectedTripId ?? activeTrip.id}
                         onChange={handleTripChange}
                       >

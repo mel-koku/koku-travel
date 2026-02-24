@@ -18,7 +18,7 @@ export function FinalCtaB({ content }: FinalCtaBProps) {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
           className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl bg-[var(--primary)] px-8 py-16 text-center sm:px-16"
-          style={{ boxShadow: "0 25px 50px -12px rgba(45, 75, 142, 0.35)" }}
+          style={{ boxShadow: "var(--shadow-depth)" }}
         >
           <h2 className="text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
             {content?.finalCtaHeading ?? "Ready to see Japan differently?"}
