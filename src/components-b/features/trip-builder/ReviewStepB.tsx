@@ -288,7 +288,7 @@ export function ReviewStepB({
                   min={1}
                   max={20}
                   placeholder="Travelers"
-                  className="min-h-[40px]"
+                  className="min-h-[44px]"
                   {...register("groupSize", { valueAsNumber: true })}
                 />
               </FormField>
@@ -301,7 +301,7 @@ export function ReviewStepB({
               <Input
                 id="children-ages-b"
                 placeholder="e.g., 5, 8, 12"
-                className="min-h-[40px]"
+                className="min-h-[44px]"
                 {...register("childrenAges")}
               />
             </FormField>
@@ -376,7 +376,7 @@ export function ReviewStepB({
                 <Input
                   id="dietary-other-b"
                   placeholder="Please specify..."
-                  className="min-h-[40px]"
+                  className="min-h-[44px]"
                   {...register("dietaryOther")}
                 />
               </FormField>

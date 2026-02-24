@@ -50,7 +50,7 @@ export function TestimonialsB({ content }: TestimonialsBProps) {
         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {testimonials.slice(0, 3).map((t, i) => (
             <motion.blockquote
-              key={t.authorName}
+              key={(t as { _key?: string })._key ?? t.authorName ?? i}
               initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
