@@ -139,9 +139,11 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
                       <h3 className="font-serif text-lg italic text-foreground group-hover:text-brand-primary transition-colors">
                         {guide.title}
                       </h3>
-                      <p className="mt-2 text-sm text-foreground-secondary line-clamp-2">
-                        {guide.summary}
-                      </p>
+                      {guide.summary && (
+                        <p className="mt-2 text-sm text-foreground-secondary line-clamp-2">
+                          {guide.summary}
+                        </p>
+                      )}
                     </div>
                   </Link>
                 </ScrollReveal>

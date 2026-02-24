@@ -4,6 +4,8 @@ import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
 import { SharedClient } from "./SharedClient";
 import { REGIONS } from "@/data/regions";
+import type { Itinerary } from "@/types/itinerary";
+import type { TripBuilderData } from "@/types/trip";
 
 type PageProps = {
   params: Promise<{ token: string }>;
@@ -54,8 +56,8 @@ async function getSharedTrip(token: string) {
 
     return {
       name: trip.name as string,
-      itinerary: trip.itinerary as Record<string, unknown>,
-      builderData: trip.builder_data as Record<string, unknown>,
+      itinerary: trip.itinerary as unknown as Itinerary,
+      builderData: trip.builder_data as unknown as TripBuilderData,
       createdAt: trip.created_at as string,
       updatedAt: trip.updated_at as string,
       shareCreatedAt: share.created_at as string,

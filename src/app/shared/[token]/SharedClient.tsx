@@ -9,8 +9,8 @@ import type { TripBuilderData } from "@/types/trip";
 
 type SharedTripData = {
   name: string;
-  itinerary: Record<string, unknown>;
-  builderData: Record<string, unknown>;
+  itinerary: Itinerary;
+  builderData: TripBuilderData;
   createdAt: string;
   updatedAt: string;
   shareCreatedAt: string;
@@ -29,8 +29,8 @@ const formatDateLabel = (iso: string | undefined) => {
 };
 
 export function SharedClient({ trip }: SharedClientProps) {
-  const itinerary = trip.itinerary as unknown as Itinerary;
-  const builderData = trip.builderData as unknown as TripBuilderData;
+  const itinerary = trip.itinerary;
+  const builderData = trip.builderData;
 
   const createdLabel = formatDateLabel(trip.createdAt);
   const updatedLabel = formatDateLabel(trip.updatedAt);

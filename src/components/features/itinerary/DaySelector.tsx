@@ -234,7 +234,7 @@ export const DaySelector = ({
                     data-selected={isSelected ? "" : undefined}
                     onClick={() => handleSelect(index)}
                     className={cn(
-                      "flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm transition-colors",
+                      "flex w-full items-center gap-2 px-3 py-3 text-left text-sm min-h-[44px] transition-colors",
                       isSelected
                         ? "bg-brand-primary/10 text-brand-primary font-medium"
                         : "text-popover-foreground hover:bg-surface"

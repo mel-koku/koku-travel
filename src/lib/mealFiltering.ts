@@ -15,7 +15,7 @@ import type { Location } from "@/types/location";
  * without UTC drift. `new Date("2025-02-20")` is parsed as UTC midnight, so
  * `.getDay()` can return the wrong weekday in negative-offset timezones.
  */
-function parseTripDateDay(tripDate: string): number {
+export function parseTripDateDay(tripDate: string): number {
   const parts = tripDate.split("-");
   return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])).getDay();
 }

@@ -180,7 +180,7 @@ function LocationField({
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setFocused(true)}
           placeholder={isSameAsLinked ? `Same as start · ${linkedValue.name}` : placeholder}
-          className="h-9 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
+          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
         />
       )}
 
