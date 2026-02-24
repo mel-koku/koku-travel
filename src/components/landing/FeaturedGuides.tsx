@@ -39,17 +39,17 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
               {content?.featuredGuidesEyebrow ?? "Travel Guides"}
             </p>
             <h2 className="mt-4 font-serif italic text-3xl tracking-heading text-foreground sm:text-4xl">
-              {content?.featuredGuidesHeading ?? "Start reading"}
+              {content?.featuredGuidesHeading ?? "The guides the locals wrote"}
             </h2>
             <p className="mt-4 max-w-md text-base text-foreground-secondary">
-              {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and curated itineraries to help you plan a trip that goes beyond the surface."}
+              {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and itineraries — written by people who live there."}
             </p>
           </div>
           <Link
             href="/guides"
             className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
-            {content?.featuredGuidesCtaText ?? "Read all guides"}
+            {content?.featuredGuidesCtaText ?? "Browse guides"}
             <ArrowRightIcon />
           </Link>
         </div>

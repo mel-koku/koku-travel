@@ -23,7 +23,7 @@ export function PlacesIntro({ totalCount, content }: PlacesIntroProps) {
 
       <ScrollReveal delay={0.2} distance={20} duration={0.5}>
         <p className="text-base text-foreground-secondary max-w-2xl mx-auto mt-6 leading-relaxed">
-          {content?.placesSubtitle ?? "Search by name, paste a YouTube, TikTok, or Instagram link to identify the place, refine by category and region, or ask Koku for recommendations."}
+          {content?.placesSubtitle ?? "Search, filter, or paste a social link \u2014 we\u2019ll find the place."}
         </p>
       </ScrollReveal>
     </section>

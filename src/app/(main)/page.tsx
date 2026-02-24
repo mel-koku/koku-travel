@@ -20,11 +20,11 @@ import { urlFor } from "@/sanity/image";
 import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/lib/utils/seasonUtils";
 
 export const metadata: Metadata = {
-  title: "Koku Travel - Discover Japan with Local Experts",
-  description: "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+  title: "Koku Travel \u2014 Japan, the way locals know it",
+  description: "3,900+ places locals actually go. Build a trip to Japan \u2014 day by day, with real recommendations.",
   openGraph: {
-    title: "Koku Travel - Discover Japan with Local Experts",
-    description: "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+    title: "Koku Travel \u2014 Japan, the way locals know it",
+    description: "3,900+ places locals actually go. Build a trip to Japan \u2014 day by day, with real recommendations.",
     siteName: "Koku Travel",
   },
 };

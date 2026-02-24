@@ -46,10 +46,10 @@ export function SignInClient({ content }: SignInClientProps) {
   async function sendMagicLink(e: FormEvent) {
     e.preventDefault();
     if (!supabase) {
-      setStatus("Supabase is not configured. Unable to send sign-in links.");
+      setStatus("Sign-in is temporarily unavailable.");
       return;
     }
-    setStatus("Sending magic link...");
+    setStatus("Sending your sign-in link\u2026");
     const redirectUrl = getRedirectUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -58,7 +58,7 @@ export function SignInClient({ content }: SignInClientProps) {
     setStatus(
       error
         ? `Error: ${error.message}`
-        : "Check your email for the sign-in link.",
+        : "Sign-in link sent \u2014 check your inbox.",
     );
   }
 
@@ -90,12 +90,12 @@ export function SignInClient({ content }: SignInClientProps) {
           <div>
             <ScrollReveal>
               <h1 className="font-serif italic text-[clamp(2rem,6vw,4rem)] leading-[1.1] text-white">
-                {content?.signInHeading ?? "Welcome back"}
+                {content?.signInHeading ?? "Sign in"}
               </h1>
             </ScrollReveal>
             <ScrollReveal delay={0.3} distance={15}>
               <p className="mt-4 max-w-sm text-base text-white/70">
-                {content?.signInDescription ?? "Sign in to pick up where you left off."}
+                {content?.signInDescription ?? "Your trips, saves, and plans \u2014 all in one place."}
               </p>
             </ScrollReveal>
           </div>

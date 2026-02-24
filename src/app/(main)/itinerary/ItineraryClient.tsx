@@ -207,9 +207,9 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
   if (!activeItinerary) {
     return (
       <div className="p-16 text-center text-foreground-secondary">
-        <p>{content?.itineraryEmptyState ?? "No itineraries yet. Build a trip and it\u2019ll show up here."}</p>
+        <p>{content?.itineraryEmptyState ?? "No itineraries yet. Build your first trip."}</p>
         <Link href="/trip-builder" className="link-reveal text-sage transition-colors hover:text-sage/80">
-          {content?.itineraryBuilderLink ?? "Go to Trip Builder"}
+          {content?.itineraryBuilderLink ?? "Build a Trip"}
         </Link>
       </div>
     );

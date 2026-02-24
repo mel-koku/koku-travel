@@ -17,9 +17,7 @@ const REGION_IMAGES = [
 ];
 
 const TAGLINES = [
-  "Where ancient meets tomorrow",
   "Every path tells a story",
-  "Discover the soul of Japan",
   "Journey through living tradition",
   "Beyond the Japan guidebook",
 ];

@@ -36,7 +36,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
     content?.heroDescription ??
     "{locationCount}+ places and experiences we'd actually send our friends to."
   ).replace("{locationCount}", locationCount.toLocaleString());
-  const primaryCta = content?.heroPrimaryCtaText ?? "Plan a Trip";
+  const primaryCta = content?.heroPrimaryCtaText ?? "Build My Trip";
   const secondaryCta = content?.heroSecondaryCtaText ?? "Explore Places";
 
   // Sanity image with hotspot support
