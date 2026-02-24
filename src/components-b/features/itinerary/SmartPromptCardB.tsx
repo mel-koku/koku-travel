@@ -43,6 +43,7 @@ export type SmartPromptCardBProps = {
   onAccept: (gap: DetectedGap) => void;
   onSkip: (gap: DetectedGap) => void;
   isLoading?: boolean;
+  flat?: boolean;
   className?: string;
 };
 
@@ -51,6 +52,7 @@ export function SmartPromptCardB({
   onAccept,
   onSkip,
   isLoading = false,
+  flat = false,
   className,
 }: SmartPromptCardBProps) {
   const Icon = ICON_MAP[gap.icon] ?? Plus;
@@ -58,12 +60,16 @@ export function SmartPromptCardB({
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-2xl border-l-[3px] bg-[var(--card)] p-4",
+        "relative overflow-hidden p-4",
+        flat
+          ? "border-b last:border-b-0"
+          : "rounded-2xl border-l-[3px] bg-[var(--card)]",
         className,
       )}
       style={{
-        borderLeftColor: "var(--primary)",
-        boxShadow: "var(--shadow-card)",
+        borderLeftColor: flat ? undefined : "var(--primary)",
+        borderColor: flat ? "var(--border)" : undefined,
+        boxShadow: flat ? undefined : "var(--shadow-card)",
       }}
     >
       <div className="flex items-start gap-3">

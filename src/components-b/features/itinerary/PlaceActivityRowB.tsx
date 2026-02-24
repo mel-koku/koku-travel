@@ -614,7 +614,7 @@ export const PlaceActivityRowB = memo(
               </div>
 
               {/* Right: Thumbnail image */}
-              <div className="relative hidden w-28 shrink-0 sm:block">
+              <div className="relative hidden w-48 shrink-0 sm:block">
                 {!imageLoaded && !imageError && (
                   <div
                     className="absolute inset-0 animate-pulse"
@@ -630,7 +630,7 @@ export const PlaceActivityRowB = memo(
                   }
                   alt={activity.title}
                   fill
-                  sizes="112px"
+                  sizes="192px"
                   className={`object-cover transition-opacity duration-200 ${
                     imageLoaded ? "opacity-100" : "opacity-0"
                   }`}

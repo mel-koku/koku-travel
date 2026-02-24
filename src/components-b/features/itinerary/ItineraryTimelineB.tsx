@@ -26,7 +26,8 @@ import {
   type SetStateAction,
 } from "react";
 import { flushSync } from "react-dom";
-import { GripVertical } from "lucide-react";
+import { ChevronDown, GripVertical, Lightbulb } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   type Itinerary,
   type ItineraryActivity,
@@ -47,7 +48,7 @@ import type {
 import { getActivityConflicts } from "@/lib/validation/itineraryConflicts";
 import type { DayGuide } from "@/types/itineraryGuide";
 import { GuideSegmentCard } from "@/components/features/itinerary/GuideSegmentCard";
-import { SmartPromptCard } from "@/components/features/itinerary/SmartPromptCard";
+import { SmartPromptCardB } from "./SmartPromptCardB";
 import { TravelSegment } from "@/components/features/itinerary/TravelSegment";
 import { AccommodationBookend } from "@/components/features/itinerary/AccommodationBookend";
 import { SortableActivityB } from "./SortableActivityB";
@@ -64,6 +65,100 @@ function formatCityName(cityId: string): string {
     if (city) return city.name;
   }
   return cityId.charAt(0).toUpperCase() + cityId.slice(1);
+}
+
+/* ── Suggestions accordion ── */
+function SuggestionsAccordion({
+  suggestions,
+  onAccept,
+  onSkip,
+  loadingSuggestionId,
+}: {
+  suggestions: DetectedGap[];
+  onAccept: (gap: DetectedGap) => void;
+  onSkip: (gap: DetectedGap) => void;
+  loadingSuggestionId?: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div
+      className="mb-3 overflow-hidden rounded-2xl"
+      style={{
+        backgroundColor: "var(--card)",
+        boxShadow: "var(--shadow-card)",
+      }}
+    >
+      {/* Trigger */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-[var(--surface)]"
+      >
+        <div
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
+          style={{
+            backgroundColor:
+              "color-mix(in srgb, var(--primary) 10%, transparent)",
+          }}
+        >
+          <Lightbulb
+            className="h-3.5 w-3.5"
+            style={{ color: "var(--primary)" }}
+          />
+        </div>
+        <span
+          className="flex-1 text-sm font-semibold"
+          style={{ color: "var(--foreground)" }}
+        >
+          Suggestions
+        </span>
+        <span
+          className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
+          style={{
+            backgroundColor:
+              "color-mix(in srgb, var(--primary) 10%, transparent)",
+            color: "var(--primary)",
+          }}
+        >
+          {suggestions.length}
+        </span>
+        <ChevronDown
+          className="h-4 w-4 transition-transform duration-200"
+          style={{
+            color: "var(--muted-foreground)",
+            transform: open ? "rotate(180deg)" : undefined,
+          }}
+        />
+      </button>
+
+      {/* Collapsible content */}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+            className="overflow-hidden"
+          >
+            <div>
+              {suggestions.map((gap) => (
+                <SmartPromptCardB
+                  key={gap.id}
+                  gap={gap}
+                  onAccept={onAccept}
+                  onSkip={onSkip}
+                  isLoading={loadingSuggestionId === gap.id}
+                  flat
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 type ItineraryTimelineBProps = {
@@ -729,6 +824,20 @@ export const ItineraryTimelineB = ({
               items={extendedActivities.map((a) => a.id)}
               strategy={verticalListSortingStrategy}
             >
+              {/* Smart prompt suggestions accordion */}
+              {suggestions &&
+                suggestions.length > 0 &&
+                onAcceptSuggestion &&
+                onSkipSuggestion &&
+                !activeId && (
+                  <SuggestionsAccordion
+                    suggestions={suggestions}
+                    onAccept={onAcceptSuggestion}
+                    onSkip={onSkipSuggestion}
+                    loadingSuggestionId={loadingSuggestionId}
+                  />
+                )}
+
               {/* Guide: Day Intro */}
               {guide?.intro && !activeId && (
                 <GuideSegmentCard segment={guide.intro} className="mb-3" />
@@ -881,24 +990,6 @@ export const ItineraryTimelineB = ({
                 })}
               </ul>
 
-              {/* Smart prompt suggestions between activities */}
-              {suggestions &&
-                suggestions.length > 0 &&
-                onAcceptSuggestion &&
-                onSkipSuggestion &&
-                !activeId && (
-                  <div className="mt-3 space-y-2">
-                    {suggestions.map((gap) => (
-                      <SmartPromptCard
-                        key={gap.id}
-                        gap={gap}
-                        onAccept={onAcceptSuggestion}
-                        onSkip={onSkipSuggestion}
-                        isLoading={loadingSuggestionId === gap.id}
-                      />
-                    ))}
-                  </div>
-                )}
 
               {/* Guide: Day Summary */}
               {guide?.summary && !activeId && (
