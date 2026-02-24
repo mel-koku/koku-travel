@@ -473,8 +473,8 @@ export const PlaceActivityRowB = memo(
                       <Heart
                         className="h-4 w-4 transition-colors"
                         style={{
-                          color: isSaved ? "#EF4444" : "var(--muted-foreground)",
-                          fill: isSaved ? "#EF4444" : "none",
+                          color: isSaved ? "var(--error)" : "var(--muted-foreground)",
+                          fill: isSaved ? "var(--error)" : "none",
                         }}
                       />
                     </button>
@@ -488,7 +488,7 @@ export const PlaceActivityRowB = memo(
                     <span className="flex items-center gap-1 text-xs">
                       <Star
                         className="h-3.5 w-3.5"
-                        style={{ color: "#D97706", fill: "#D97706" }}
+                        style={{ color: "var(--warning)", fill: "var(--warning)" }}
                       />
                       <span
                         className="font-medium"
