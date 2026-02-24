@@ -151,10 +151,10 @@ export function DiscoverShellB() {
 
           {/* Open now */}
           <span className="relative flex h-2 w-2 shrink-0">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--success)] opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--success)]" />
           </span>
-          <span className="text-[10px] text-emerald-600 font-medium whitespace-nowrap mr-0.5">
+          <span className="text-[10px] text-[var(--success)] font-medium whitespace-nowrap mr-0.5">
             Open now
           </span>
 
