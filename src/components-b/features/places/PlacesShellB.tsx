@@ -12,7 +12,7 @@ import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePla
 import type { PagesContent } from "@/types/sanitySiteContent";
 import { useVideoImport } from "@/hooks/useVideoImport";
 import { isValidVideoUrl, detectPlatform } from "@/lib/video/platforms";
-import { VideoImportResult } from "@/components/features/video-import/VideoImportResult";
+
 import { SeasonalBanner } from "@/components/features/places/SeasonalBanner";
 import { useToast } from "@/context/ToastContext";
 import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
@@ -157,12 +157,22 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
   // ── Unified input state ──
   const [inputValue, setInputValue] = useState("");
 
-  const videoImport = useVideoImport({
+  const {
+    state: importState,
+    hintValue: importHintValue,
+    setHintValue: setImportHintValue,
+    handleImport,
+    handleRetryWithHint,
+    reset: resetImport,
+  } = useVideoImport({
     onImportComplete: (locationId, isNew) => {
       showToast(
         isNew ? "New location added to Koku" : "Found in Koku",
         { variant: "success" },
       );
+      // Reset input so user can search or import again
+      resetImport();
+      setInputValue("");
       router.push(`/b/places/${locationId}`);
     },
   });
@@ -172,10 +182,10 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     [inputValue],
   );
   const inputMode: InputMode = useMemo(() => {
-    if (videoImport.state.status === "extracting") return "extracting";
+    if (importState.status === "extracting") return "extracting";
     if (detectedPlatform) return "url-detected";
     return "search";
-  }, [videoImport.state.status, detectedPlatform]);
+  }, [importState.status, detectedPlatform]);
 
   useEffect(() => {
     if (inputMode === "search") {
@@ -185,36 +195,33 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     }
   }, [inputValue, inputMode, setQuery]);
 
-  const handleInputChange = useCallback((value: string) => {
-    if (!value.trim() && videoImport.state.status === "error") {
-      videoImport.reset();
+  const handleInputChange = (value: string) => {
+    if (!value.trim() && importState.status === "error") {
+      resetImport();
     }
     setInputValue(value);
-  }, [videoImport]);
+  };
 
-  const handleInputPaste = useCallback(
-    (e: React.ClipboardEvent<HTMLInputElement>) => {
-      const text = e.clipboardData.getData("text").trim();
-      if (text && isValidVideoUrl(text)) {
-        e.preventDefault();
-        setInputValue(text);
-        videoImport.handleImport(text);
-      }
-    },
-    [videoImport],
-  );
+  const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const text = e.clipboardData.getData("text").trim();
+    if (text && isValidVideoUrl(text)) {
+      e.preventDefault();
+      setInputValue(text);
+      handleImport(text);
+    }
+  };
 
-  const handleInputSubmit = useCallback(() => {
+  const handleInputSubmit = () => {
     const trimmed = inputValue.trim();
     if (trimmed && isValidVideoUrl(trimmed)) {
-      videoImport.handleImport(trimmed);
+      handleImport(trimmed);
     }
-  }, [inputValue, videoImport]);
+  };
 
-  const handleTryAnother = useCallback(() => {
-    videoImport.reset();
+  const handleTryAnother = () => {
+    resetImport();
     setInputValue("");
-  }, [videoImport]);
+  };
 
   // ── Deep link redirect — redirect ?location= to detail page ──
   const locationParam = searchParams.get("location");
@@ -228,8 +235,6 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     () => featureFlags.enableMapbox && !featureFlags.cheapMode,
     [],
   );
-
-  const importState = videoImport.state;
 
   return (
     <div className="min-h-[100dvh] bg-[var(--background)]">
@@ -296,10 +301,10 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
               <div className="flex items-center gap-2">
                 <input
                   type="text"
-                  value={videoImport.hintValue}
-                  onChange={(e) => videoImport.setHintValue(e.target.value)}
+                  value={importHintValue}
+                  onChange={(e) => setImportHintValue(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter") videoImport.handleRetryWithHint();
+                    if (e.key === "Enter") handleRetryWithHint();
                   }}
                   placeholder="e.g. ramen shop in Shibuya"
                   maxLength={200}
@@ -307,8 +312,8 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
                 />
                 <button
                   type="button"
-                  onClick={videoImport.handleRetryWithHint}
-                  disabled={!videoImport.hintValue.trim()}
+                  onClick={handleRetryWithHint}
+                  disabled={!importHintValue.trim()}
                   className="shrink-0 rounded-xl bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--brand-secondary)] transition active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Retry
@@ -320,25 +325,6 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
                 className="text-xs font-medium text-[var(--muted-foreground)] underline underline-offset-2 hover:text-[var(--foreground)]"
               >
                 Try another URL
-              </button>
-            </div>
-          )}
-
-          {importState.status === "result" && (
-            <div className="mx-auto max-w-sm px-4 mt-3">
-              <VideoImportResult
-                location={importState.data.location}
-                isNewLocation={importState.data.isNewLocation}
-                platform={importState.data.videoMetadata.platform}
-                confidence={importState.data.extraction.confidence}
-                locationNameJapanese={importState.data.extraction.locationNameJapanese}
-              />
-              <button
-                type="button"
-                onClick={handleTryAnother}
-                className="mt-3 w-full rounded-xl border border-[var(--border)] py-2.5 text-sm font-medium text-[var(--muted-foreground)] hover:border-[var(--primary)] hover:text-[var(--foreground)] transition active:scale-[0.98]"
-              >
-                Import Another
               </button>
             </div>
           )}

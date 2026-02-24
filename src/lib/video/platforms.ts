@@ -12,7 +12,7 @@ type PlatformConfig = {
 const PLATFORM_CONFIGS: Record<VideoPlatform, PlatformConfig> = {
   youtube: {
     patterns: [
-      /^https?:\/\/(?:www\.)?youtube\.com\/watch\?v=[\w-]+/,
+      /^https?:\/\/(?:www\.)?youtube\.com\/watch\?.*v=[\w-]+/,
       /^https?:\/\/(?:www\.)?youtube\.com\/shorts\/[\w-]+/,
       /^https?:\/\/youtu\.be\/[\w-]+/,
     ],
