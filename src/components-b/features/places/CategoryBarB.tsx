@@ -163,13 +163,13 @@ export function CategoryBarB({
 
             {/* Grid / Map toggle */}
             {mapAvailable && onViewModeChange && (
-              <div className="flex shrink-0 rounded-xl border border-[var(--border)] overflow-hidden h-10">
+              <div className="flex shrink-0 rounded-xl border border-[var(--border)] overflow-hidden h-11">
                 <button
                   type="button"
                   onClick={() => onViewModeChange("grid")}
                   title="Grid view"
                   className={cn(
-                    "flex items-center justify-center w-10 transition",
+                    "flex items-center justify-center w-11 transition",
                     viewMode === "grid"
                       ? "bg-[var(--primary)] text-white"
                       : "bg-white text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
@@ -185,7 +185,7 @@ export function CategoryBarB({
                   onClick={() => onViewModeChange("map")}
                   title="Map view"
                   className={cn(
-                    "flex items-center justify-center w-10 transition",
+                    "flex items-center justify-center w-11 transition",
                     viewMode === "map"
                       ? "bg-[var(--primary)] text-white"
                       : "bg-white text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
