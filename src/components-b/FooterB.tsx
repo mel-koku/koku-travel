@@ -9,6 +9,7 @@ const COLUMNS = [
       { label: "Places", href: "/b/places" },
       { label: "Guides", href: "/b/guides" },
       { label: "Experiences", href: "/b/experiences" },
+      { label: "Discover", href: "/b/discover" },
     ],
   },
   {
@@ -17,6 +18,7 @@ const COLUMNS = [
       { label: "Trip Builder", href: "/b/trip-builder" },
       { label: "Dashboard", href: "/b/dashboard" },
       { label: "Saved", href: "/b/saved" },
+      { label: "Account", href: "/b/account" },
     ],
   },
 ];
