@@ -160,30 +160,31 @@
 }
 
 /* ── Variant B: Soft Minimalism (light, monochromatic, Ai-iro accent) ── */
+/* Neutrals: warm kinari (生成り) tones — indigo accent is the sole cool anchor */
 [data-variant="b"] {
   color-scheme: light;
 
   /* Core */
-  --background: #f7f9fb;
-  --foreground: #1a1d21;
+  --background: #f8f7f4;
+  --foreground: #1c1a17;
   --card: #ffffff;
-  --card-foreground: #1a1d21;
+  --card-foreground: #1c1a17;
   --popover: #ffffff;
-  --popover-foreground: #1a1d21;
+  --popover-foreground: #1c1a17;
 
   /* shadcn compat */
   --primary: #2d4b8e;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #334155;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #edf1f8;
+  --secondary: #f1efeb;
+  --secondary-foreground: #3d3a36;
+  --muted: #f1efeb;
+  --muted-foreground: #78736c;
+  --accent: #edecf3;
   --accent-foreground: #2d4b8e;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
+  --border: #e2dfd9;
+  --input: #e2dfd9;
   --ring: #2d4b8e;
   --radius: 1rem;
 
@@ -192,47 +193,47 @@
   --chart-2: #059669;
   --chart-3: #d97706;
   --chart-4: #0ea5e9;
-  --chart-5: #94a3b8;
+  --chart-5: #9b958d;
 
   /* Sidebar */
   --sidebar: #ffffff;
-  --sidebar-foreground: #1a1d21;
+  --sidebar-foreground: #1c1a17;
   --sidebar-primary: #2d4b8e;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #334155;
-  --sidebar-border: #e2e8f0;
+  --sidebar-accent: #f1efeb;
+  --sidebar-accent-foreground: #3d3a36;
+  --sidebar-border: #e2dfd9;
   --sidebar-ring: #2d4b8e;
 
   /* Extended palette (mapped to A's token names for Tailwind compat) */
-  --foreground-secondary: #64748b;
-  --foreground-body: #475569;
-  --surface: #f1f5f9;
+  --foreground-secondary: #78736c;
+  --foreground-body: #504d48;
+  --surface: #f1efeb;
   --brand-primary: #2d4b8e;
   --brand-secondary: #3a5fa0;
   --success: #059669;
   --warning: #d97706;
   --error: #ef4444;
-  --stone: #94a3b8;
-  --cream: #f8fafc;
+  --stone: #9b958d;
+  --cream: #f9f8f5;
   --sage: #059669;
   --terracotta: #d97706;
-  --charcoal: #0f172a;
-  --sand: #e2e8f0;
-  --warm-gray: #64748b;
+  --charcoal: #181714;
+  --sand: #e2dfd9;
+  --warm-gray: #78736c;
   --canvas: #ffffff;
 
-  /* Shadows — navy-tinted organic layers */
-  --shadow-sm: 0 1px 2px rgba(45, 75, 142, 0.04);
+  /* Shadows — earth-tinted organic layers */
+  --shadow-sm: 0 1px 2px rgba(60, 50, 38, 0.04);
   --shadow-card:
-    0 1px 2px rgba(45, 75, 142, 0.04), 0 4px 8px -2px rgba(45, 75, 142, 0.06),
-    0 12px 24px -4px rgba(45, 75, 142, 0.04);
+    0 1px 2px rgba(60, 50, 38, 0.04), 0 4px 8px -2px rgba(60, 50, 38, 0.06),
+    0 12px 24px -4px rgba(60, 50, 38, 0.04);
   --shadow-elevated:
-    0 2px 4px rgba(45, 75, 142, 0.05), 0 8px 16px -4px rgba(45, 75, 142, 0.08),
-    0 20px 40px -8px rgba(45, 75, 142, 0.06);
+    0 2px 4px rgba(60, 50, 38, 0.05), 0 8px 16px -4px rgba(60, 50, 38, 0.08),
+    0 20px 40px -8px rgba(60, 50, 38, 0.06);
   --shadow-depth:
-    0 4px 8px rgba(45, 75, 142, 0.06), 0 16px 32px -8px rgba(45, 75, 142, 0.1),
-    0 32px 64px -16px rgba(45, 75, 142, 0.08);
+    0 4px 8px rgba(60, 50, 38, 0.06), 0 16px 32px -8px rgba(60, 50, 38, 0.1),
+    0 32px 64px -16px rgba(60, 50, 38, 0.08);
 
   /* Layout */
   --header-h: 72px;
