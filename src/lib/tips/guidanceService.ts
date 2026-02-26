@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import type { TravelGuidance, TravelGuidanceRow } from "@/types/travelGuidance";
+import type { TravelGuidance, TravelGuidanceRow, GuidanceType } from "@/types/travelGuidance";
 import { rowToTravelGuidance } from "@/types/travelGuidance";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
@@ -78,6 +78,19 @@ const SPECIFICITY_TAGS = new Set([
 ]);
 
 /**
+ * Safety-net category affinity for universal tips that have empty categories[].
+ * Maps guidanceType → allowed location categories.
+ * Types not listed here are truly universal (show everywhere).
+ */
+const GUIDANCE_TYPE_CATEGORIES: Partial<Record<GuidanceType, string[]>> = {
+  food_culture: ["restaurant", "cafe", "bar", "market"],
+  nightlife: ["bar", "entertainment", "restaurant"],
+  cultural_context: ["temple", "shrine", "culture", "landmark", "historic_site", "castle", "museum"],
+  etiquette: ["temple", "shrine", "restaurant", "onsen", "wellness", "culture"],
+  budget: ["restaurant", "shopping", "entertainment", "market", "cafe"],
+};
+
+/**
  * Get the current season based on the current date or a specific date.
  */
 export function getCurrentSeason(date?: Date): "spring" | "summer" | "fall" | "winter" {
@@ -154,8 +167,46 @@ function calculateMatchScore(
 ): number {
   let score = 0;
 
-  // Universal guidance always matches with base priority
+  // Universal guidance: still check category affinity before accepting
   if (guidance.isUniversal) {
+    const effectiveCategories =
+      guidance.categories.length > 0
+        ? guidance.categories
+        : GUIDANCE_TYPE_CATEGORIES[guidance.guidanceType] ?? [];
+
+    // If there are effective categories and the location has a category, require a match
+    if (effectiveCategories.length > 0 && criteria.category) {
+      const categoryLower = criteria.category.toLowerCase();
+      const categoryMatched = effectiveCategories.some(
+        (c) => c.toLowerCase() === categoryLower,
+      );
+      if (!categoryMatched) {
+        return 0;
+      }
+
+      // Matched — also run specificity check
+      const specificTags = guidance.tags.filter((t) =>
+        SPECIFICITY_TAGS.has(t.toLowerCase()),
+      );
+      if (specificTags.length > 0) {
+        const nameLower = (criteria.locationName ?? "").toLowerCase();
+        const criteriaTagsLower = (criteria.tags ?? []).map((t) => t.toLowerCase());
+        const locationRelevant = specificTags.some((ct) => {
+          const ctLower = ct.toLowerCase();
+          return (
+            nameLower.includes(ctLower) ||
+            criteriaTagsLower.some((lt) => lt.includes(ctLower))
+          );
+        });
+        if (!locationRelevant) {
+          return 0;
+        }
+      }
+
+      return guidance.priority + 10;
+    }
+
+    // Truly universal (no category constraint) — show everywhere
     return guidance.priority;
   }
 
@@ -412,9 +463,24 @@ export async function fetchDayGuidance(
       // Now check if tip is positively relevant
       let isRelevant = false;
 
-      // Universal tips are always relevant (after passing exclusion checks)
+      // Universal tips: check category affinity before marking relevant
       if (guidance.isUniversal) {
-        isRelevant = true;
+        const effectiveCategories =
+          guidance.categories.length > 0
+            ? guidance.categories
+            : GUIDANCE_TYPE_CATEGORIES[guidance.guidanceType] ?? [];
+
+        if (effectiveCategories.length > 0 && criteria.categories.length > 0) {
+          // Only relevant if the day has at least one matching activity category
+          const dayCategoriesLower = criteria.categories.map((c) => c.toLowerCase());
+          isRelevant = effectiveCategories.some((c) =>
+            dayCategoriesLower.includes(c.toLowerCase()),
+          );
+        } else if (effectiveCategories.length === 0) {
+          // Truly universal — no category constraint
+          isRelevant = true;
+        }
+        // else: has affinity but day has no categories → not relevant
       }
 
       // Category match - tip applies if any activity category matches
