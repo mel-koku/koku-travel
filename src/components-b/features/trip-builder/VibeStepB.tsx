@@ -159,7 +159,7 @@ export function VibeStepB({ onValidityChange, sanityConfig }: VibeStepBProps) {
           <p className="mt-4 text-center text-sm text-[var(--warning)]">
             {(
               sanityConfig?.vibeStepMaxWarning ??
-              "That\u2019s all {max}. Tap one to swap it out."
+              "All {max} picked. Tap one to replace it."
             ).replace("{max}", String(MAX_VIBE_SELECTION))}
           </p>
         )}
