@@ -57,6 +57,7 @@ export function CategoryBarB({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [isStuck, setIsStuck] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -139,6 +140,8 @@ export function CategoryBarB({
                 value={inputValue}
                 onChange={(e) => onInputChange(e.target.value)}
                 onPaste={onInputPaste}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 placeholder="Search places or paste a link..."
                 disabled={isExtracting}
                 className="w-full rounded-xl border border-[var(--border)] bg-white pl-9 pr-12 py-2.5 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition disabled:opacity-60"
@@ -162,6 +165,17 @@ export function CategoryBarB({
                   </svg>
                 )}
               </button>
+
+              {/* Link import hint — visible when focused with empty input */}
+              {isFocused && !inputValue.trim() && !isExtracting && (
+                <div className="absolute left-0 right-0 top-full mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-[var(--muted-foreground)]">
+                  <span>Paste a</span>
+                  <PlatformIcon platform="youtube" className="h-3 w-3" />
+                  <PlatformIcon platform="tiktok" className="h-3 w-3" />
+                  <PlatformIcon platform="instagram" className="h-3 w-3" />
+                  <span>video link to find the location</span>
+                </div>
+              )}
             </form>
 
             {/* Grid / Map toggle */}
