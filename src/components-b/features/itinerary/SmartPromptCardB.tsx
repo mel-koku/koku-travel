@@ -114,7 +114,7 @@ export function SmartPromptCardB({
               type="button"
               onClick={() => onAccept(gap)}
               disabled={isLoading}
-              className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium text-white transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--card)] transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
               style={{
                 backgroundColor: "var(--primary)",
                 boxShadow: "var(--shadow-sm)",
