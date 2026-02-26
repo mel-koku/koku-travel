@@ -412,15 +412,9 @@ export const PlaceActivityRowB = memo(
             onMouseEnter={handleHover}
             onFocus={handleHover}
           >
-            {/* Content layout: category strip + content + thumbnail */}
+            {/* Content layout: content + thumbnail */}
             <div className="flex">
-              {/* Left: Category color strip */}
-              <div
-                className="w-[3px] shrink-0 rounded-l-2xl"
-                style={{ backgroundColor: stripColor }}
-              />
-
-              {/* Middle: Main content */}
+              {/* Main content */}
               <div className="min-w-0 flex-1 p-3 sm:p-4">
                 {/* Top row: number + title + neighborhood */}
                 <div className="flex items-start gap-2.5">

@@ -4,8 +4,6 @@ import { useMemo, useEffect, useRef, useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 
-type DayHealthLevel = "good" | "fair" | "poor";
-
 type DaySelectorBProps = {
   totalDays: number;
   selected: number;
@@ -15,8 +13,6 @@ type DaySelectorBProps = {
   tripStartDate?: string;
   /** Auto-scroll to today on mount */
   autoScrollToToday?: boolean;
-  /** Per-day health levels for indicator dots (optional) */
-  dayHealthLevels?: DayHealthLevel[];
 };
 
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -61,7 +57,6 @@ export const DaySelectorB = ({
   labels = [],
   tripStartDate,
   autoScrollToToday = true,
-  dayHealthLevels,
 }: DaySelectorBProps) => {
   const hasAutoScrolled = useRef(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -175,8 +170,6 @@ export const DaySelectorB = ({
       >
         {days.map(({ index, label, isToday }) => {
           const isActive = index === selected;
-          const healthLevel = dayHealthLevels?.[index];
-
           return (
             <motion.button
               key={index}
@@ -187,8 +180,8 @@ export const DaySelectorB = ({
               aria-label={`${label}${isToday ? " (Today)" : ""}`}
               onClick={() => onChange(index)}
               className={cn(
-                "relative flex-shrink-0 snap-start rounded-xl px-4 text-sm font-medium whitespace-nowrap transition-colors",
-                "min-h-[44px] flex items-center justify-center",
+                "relative flex-shrink-0 snap-start rounded-lg px-3 text-xs font-medium whitespace-nowrap transition-colors",
+                "min-h-[34px] flex items-center justify-center",
                 "active:scale-[0.98]",
                 isActive
                   ? "bg-[var(--primary)] text-white shadow-[var(--shadow-sm)]"
@@ -222,18 +215,6 @@ export const DaySelectorB = ({
                 )}
               </span>
 
-              {/* Health indicator dot */}
-              {healthLevel && (
-                <span
-                  className={cn(
-                    "absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full ring-2",
-                    isActive ? "ring-[var(--primary)]" : "ring-white",
-                    healthLevel === "good" && "bg-[var(--success)]",
-                    healthLevel === "fair" && "bg-[var(--warning)]",
-                    healthLevel === "poor" && "bg-[var(--error)]"
-                  )}
-                />
-              )}
             </motion.button>
           );
         })}
