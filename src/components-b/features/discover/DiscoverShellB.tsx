@@ -2,21 +2,19 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { useNearbyLocationsQuery } from "@/hooks/useLocationsQuery";
 import type { Location } from "@/types/location";
 
-const DiscoverMap = dynamic(
-  () => import("@/components/features/discover/DiscoverMap").then((m) => ({ default: m.DiscoverMap })),
+const DiscoverMapB = dynamic(
+  () => import("@b/features/discover/DiscoverMapB").then((m) => ({ default: m.DiscoverMapB })),
   { ssr: false },
 );
 
-const LocationExpanded = dynamic(
-  () =>
-    import("@/components/features/places/LocationExpanded").then((m) => ({
-      default: m.LocationExpanded,
-    })),
+const DiscoverDrawerB = dynamic(
+  () => import("@b/features/discover/DiscoverDrawerB").then((m) => ({ default: m.DiscoverDrawerB })),
   { ssr: false },
 );
 
@@ -32,12 +30,13 @@ const CATEGORY_CHIPS = [
 const FALLBACK_POSITION = { lat: 35.6812, lng: 139.7671 };
 
 export function DiscoverShellB() {
+  const router = useRouter();
   const geoLocation = useCurrentLocation();
   const [discoverCategory, setDiscoverCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const [highlightedLocationId, setHighlightedLocationId] = useState<string | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     geoLocation.request();
@@ -72,46 +71,50 @@ export function DiscoverShellB() {
     );
   }, [nearbyData, searchQuery]);
 
-  const handleLocationClick = useCallback((location: Location) => {
-    setExpandedLocation(location);
-    setHighlightedLocationId(location.id);
-  }, []);
-
-  const handleCloseExpanded = useCallback(() => {
-    setExpandedLocation(null);
-    setHighlightedLocationId(null);
-  }, []);
-
-  const handleSurpriseMe = useCallback(() => {
-    if (nearbyLocations.length === 0) return;
-    const pick = nearbyLocations[Math.floor(Math.random() * nearbyLocations.length)];
-    if (pick) {
-      setExpandedLocation(pick);
-      setHighlightedLocationId(pick.id);
+  // Auto-open drawer when locations first load
+  useEffect(() => {
+    if (nearbyLocations.length > 0 && !drawerOpen) {
+      setDrawerOpen(true);
     }
-  }, [nearbyLocations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nearbyLocations.length]);
+
+  const handleMapLocationClick = useCallback((location: Location) => {
+    setHighlightedLocationId(location.id);
+    setDrawerOpen(true);
+  }, []);
+
+  const handleDrawerLocationClick = useCallback((locationId: string) => {
+    router.push(`/b/places/${locationId}`);
+  }, [router]);
+
+  const handleDrawerHover = useCallback((locationId: string | null) => {
+    setHighlightedLocationId(locationId);
+  }, []);
 
   const mapAvailable = useMemo(() => featureFlags.enableMapbox && !featureFlags.cheapMode, []);
   const isLocating = geoLocation.isLoading || (userPosition === null && !usingFallback);
 
   return (
-    <div className="relative h-[calc(100dvh-var(--header-h))] w-full bg-[var(--background)]">
-      {/* Map or fallback */}
-      {mapAvailable ? (
-        <DiscoverMap
-          locations={nearbyLocations}
-          userPosition={userPosition}
-          onLocationClick={handleLocationClick}
-          highlightedLocationId={highlightedLocationId}
-          isLoading={isNearbyLoading}
-        />
-      ) : (
-        <div className="flex h-full w-full items-center justify-center">
-          <p className="text-sm text-[var(--muted-foreground)]">
-            Map requires a Mapbox token to display nearby locations.
-          </p>
-        </div>
-      )}
+    <div className="relative h-[calc(100dvh-var(--header-h))] w-full bg-[var(--background)]" style={{ isolation: "isolate" }}>
+      {/* Map or fallback — pinned below floating UI */}
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        {mapAvailable ? (
+          <DiscoverMapB
+            locations={nearbyLocations}
+            userPosition={userPosition}
+            onLocationClick={handleMapLocationClick}
+            highlightedLocationId={highlightedLocationId}
+            isLoading={isNearbyLoading}
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center">
+            <p className="text-sm text-[var(--muted-foreground)]">
+              Map requires a Mapbox token to display nearby locations.
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Loading overlay */}
       {isLocating && (
@@ -124,7 +127,10 @@ export function DiscoverShellB() {
       )}
 
       {/* Floating search + category chips */}
-      <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 max-w-[calc(100%-4.5rem)]">
+      <div
+        className="fixed inset-x-0 flex justify-center px-6"
+        style={{ zIndex: 40, top: "calc(var(--header-h) + 12px)" }}
+      >
         <div className="inline-flex items-center gap-2 rounded-2xl bg-white px-2.5 py-2" style={{ boxShadow: "var(--shadow-elevated)" }}>
           {/* Search */}
           <div className="relative shrink-0">
@@ -179,7 +185,7 @@ export function DiscoverShellB() {
 
       {/* Fallback banner */}
       {usingFallback && !isLocating && (
-        <div className="absolute bottom-20 left-3 right-3 z-10">
+        <div className="absolute bottom-52 md:bottom-44 left-3 right-3 z-10">
           <div
             className="mx-auto max-w-sm rounded-2xl bg-white px-4 py-3 flex items-start gap-2.5"
             style={{ boxShadow: "var(--shadow-elevated)" }}
@@ -209,38 +215,13 @@ export function DiscoverShellB() {
         </div>
       )}
 
-      {/* Surprise Me FAB */}
-      {nearbyLocations.length > 0 && !isLocating && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pb-[env(safe-area-inset-bottom)]">
-          <button
-            onClick={handleSurpriseMe}
-            className="flex items-center gap-2 rounded-full bg-[var(--primary)] px-5 py-3 text-sm font-semibold text-white active:scale-[0.97] transition"
-            style={{ boxShadow: "var(--shadow-elevated)" }}
-          >
-            <svg
-              className="h-4 w-4"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <rect x="3" y="3" width="18" height="18" rx="3" />
-              <circle cx="8.5" cy="8.5" r="1" fill="currentColor" />
-              <circle cx="15.5" cy="8.5" r="1" fill="currentColor" />
-              <circle cx="12" cy="12" r="1" fill="currentColor" />
-              <circle cx="8.5" cy="15.5" r="1" fill="currentColor" />
-              <circle cx="15.5" cy="15.5" r="1" fill="currentColor" />
-            </svg>
-            Surprise Me
-          </button>
-        </div>
-      )}
-
-      {/* Location detail panel */}
-      {expandedLocation && (
-        <LocationExpanded
-          location={expandedLocation}
-          onClose={handleCloseExpanded}
+      {/* Bottom drawer */}
+      {drawerOpen && nearbyLocations.length > 0 && (
+        <DiscoverDrawerB
+          locations={nearbyLocations}
+          highlightedLocationId={highlightedLocationId}
+          onLocationHover={handleDrawerHover}
+          onLocationClick={handleDrawerLocationClick}
         />
       )}
     </div>
