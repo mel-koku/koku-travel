@@ -517,7 +517,7 @@ export const ItineraryShellB = ({
               aria-label="Expand map"
             >
               <div className="absolute inset-x-0 bottom-0 flex items-end justify-center bg-gradient-to-t from-charcoal/40 to-transparent pb-2.5 pt-8">
-                <span className="rounded-full bg-white/90 px-3 py-1 text-[11px] font-medium text-[var(--foreground)] backdrop-blur-sm shadow-[var(--shadow-sm)]">
+                <span className="rounded-full bg-white px-3 py-1 text-[11px] font-medium text-[var(--foreground)] shadow-[var(--shadow-sm)]">
                   Tap to expand map
                 </span>
               </div>
@@ -534,7 +534,7 @@ export const ItineraryShellB = ({
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: bDurationFast, ease: bEase }}
                 onClick={() => setMapExpanded(false)}
-                className="absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/90 shadow-[var(--shadow-sm)] backdrop-blur-sm transition-colors hover:bg-white"
+                className="absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-[var(--shadow-sm)] transition-colors hover:bg-white"
                 style={{ color: "var(--foreground)" }}
                 aria-label="Collapse map"
               >
@@ -656,8 +656,8 @@ export const ItineraryShellB = ({
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 1.02 }}
                   transition={{ duration: bDurationFast, ease: bEase }}
-                  className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center backdrop-blur-sm"
-                  style={{ background: "rgba(248,247,244,0.85)" }}
+                  className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
+                  style={{ background: "rgba(248,247,244,0.95)" }}
                 >
                   <h2
                     className="text-2xl font-bold tracking-[-0.04em] sm:text-3xl"

@@ -463,7 +463,7 @@ export function PlacesMapB({
         <button
           type="button"
           onClick={resetToJapan}
-          className="flex items-center gap-1.5 rounded-xl bg-white/90 px-3.5 py-2 text-xs font-medium text-[var(--foreground)] backdrop-blur-sm transition-colors hover:bg-white active:scale-[0.98]"
+          className="flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-2 text-xs font-medium text-[var(--foreground)] transition-colors hover:bg-white active:scale-[0.98]"
           style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 10, boxShadow: "var(--shadow-elevated)" }}
           aria-label="Reset map view to Japan"
         >

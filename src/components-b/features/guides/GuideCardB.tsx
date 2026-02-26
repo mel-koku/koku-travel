@@ -70,7 +70,7 @@ export function GuideCardB({ guide, index: _index, eager = false }: GuideCardBPr
           )}
           {seasonLabel && (
             <div className="absolute top-3 left-3 z-10">
-              <span className="inline-flex items-center rounded-xl bg-white/70 backdrop-blur-md px-2 py-0.5 text-[10px] font-medium text-[var(--foreground)] shadow-[var(--shadow-sm)]">
+              <span className="inline-flex items-center rounded-xl bg-white/90 px-2 py-0.5 text-[10px] font-medium text-[var(--foreground)] shadow-[var(--shadow-sm)]">
                 {seasonLabel}
               </span>
             </div>

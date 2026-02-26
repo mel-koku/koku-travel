@@ -37,7 +37,7 @@ export function GeneratingOverlayB({ sanityConfig }: GeneratingOverlayBProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-lg"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white"
     >
       <div className="flex flex-col items-center gap-8 px-6 text-center">
         <motion.h2

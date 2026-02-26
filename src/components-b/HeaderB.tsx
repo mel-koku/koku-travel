@@ -25,15 +25,7 @@ export function HeaderB() {
       className="fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow] duration-300"
       style={{
         height: "var(--header-h)",
-        backgroundColor: scrolled
-          ? "rgba(255,255,255,0.85)"
-          : "rgba(255,255,255,0.6)",
-        backdropFilter: scrolled
-          ? "blur(20px) saturate(1.5)"
-          : "blur(16px) saturate(1.3)",
-        WebkitBackdropFilter: scrolled
-          ? "blur(20px) saturate(1.5)"
-          : "blur(16px) saturate(1.3)",
+        backgroundColor: "#fff",
         boxShadow: scrolled ? "var(--shadow-sm)" : "none",
       }}
     >

@@ -1048,7 +1048,7 @@ export const ItineraryTimelineB = ({
           {activeActivity && activeActivity.kind === "place" && (
             <div className="pointer-events-none w-[320px] max-w-[90vw]">
               <div
-                className="rounded-2xl border-2 p-3 backdrop-blur-sm"
+                className="rounded-2xl border-2 p-3"
                 style={{
                   borderColor: "var(--primary)",
                   backgroundColor: "var(--card)",
