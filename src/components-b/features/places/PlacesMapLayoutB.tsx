@@ -24,6 +24,7 @@ export function PlacesMapLayoutB({
 }: PlacesMapLayoutBProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
+  const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
   const [page, setPage] = useState(1);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const cardRefsMap = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -46,6 +47,14 @@ export function PlacesMapLayoutB({
 
   const handleLocationClick = useCallback(
     (location: Location) => {
+      onSelectLocation?.(location);
+    },
+    [onSelectLocation],
+  );
+
+  const handleCardSelect = useCallback(
+    (location: Location) => {
+      setFlyToLocation(location);
       onSelectLocation?.(location);
     },
     [onSelectLocation],
@@ -120,6 +129,7 @@ export function PlacesMapLayoutB({
             highlightedLocationId={hoveredLocationId}
             onHoverChange={handleMapHoverChange}
             showResetButton={showResetButton}
+            flyToLocation={flyToLocation}
           />
         </ErrorBoundary>
 
@@ -127,11 +137,14 @@ export function PlacesMapLayoutB({
         <div
           className="absolute top-3 left-3 bottom-3 z-10 hidden w-56 flex-col pointer-events-none md:flex"
         >
-          {/* Count */}
+          {/* Count + zoom hint */}
           {boundsFilteredLocations.length > 0 && (
             <div className="mb-1.5 pointer-events-auto">
               <span className="inline-block rounded-lg bg-white px-2 py-1 text-[11px] font-medium text-[var(--muted-foreground)]" style={{ boxShadow: "var(--shadow-sm)" }}>
                 {boundsFilteredLocations.length.toLocaleString()} places
+                {mapBounds && boundsFilteredLocations.length <= 10 && boundsFilteredLocations.length < sortedLocations.length && (
+                  <span className="font-normal"> · Zoom out for more</span>
+                )}
               </span>
             </div>
           )}
@@ -145,7 +158,7 @@ export function PlacesMapLayoutB({
                 location={location}
                 isHighlighted={hoveredLocationId === location.id}
                 onHover={handleCardHoverChange}
-                onSelect={onSelectLocation}
+                onSelect={handleCardSelect}
               />
             ))}
 
