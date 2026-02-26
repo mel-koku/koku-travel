@@ -125,7 +125,7 @@ export function PlacesMapLayoutB({
 
         {/* Floating pill column — left side, vertical scroll */}
         <div
-          className="absolute top-3 left-3 bottom-3 z-10 flex w-56 flex-col pointer-events-none"
+          className="absolute top-3 left-3 bottom-3 z-10 hidden w-56 flex-col pointer-events-none md:flex"
         >
           {/* Count */}
           {boundsFilteredLocations.length > 0 && (

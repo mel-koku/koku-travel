@@ -176,7 +176,7 @@ export function ReviewStepB({
   const handleEditRegions = useCallback(() => onGoToStep?.(4), [onGoToStep]);
 
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-8 pb-32 lg:pb-8">
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-8 pb-24 lg:pb-8">
       {/* Trip Summary */}
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">

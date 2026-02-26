@@ -188,7 +188,7 @@ export function FilterPanelB({
               <button
                 onClick={onClose}
                 title="Close"
-                className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-[var(--surface)] transition duration-300"
+                className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-[var(--surface)] transition duration-300"
                 aria-label="Close filters"
               >
                 <svg className="h-4 w-4 text-[var(--muted-foreground)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -299,7 +299,7 @@ export function FilterPanelB({
             </motion.div>
 
             {/* Footer */}
-            <div className="border-t border-[var(--border)] px-6 py-4 flex items-center justify-between shrink-0">
+            <div className="border-t border-[var(--border)] px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex items-center justify-between shrink-0">
               <button
                 onClick={onClearAll}
                 className={cn(

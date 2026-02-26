@@ -190,7 +190,7 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
   return (
     <div className="min-h-[100dvh] bg-[var(--background)]">
       {/* Hero image */}
-      <div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden">
+      <div className="relative aspect-[4/3] w-full overflow-hidden sm:aspect-[16/9] lg:aspect-[21/9]">
         <motion.div
           className="absolute inset-0"
           animate={{ scale: [1, 1.02, 1] }}
@@ -399,44 +399,44 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
             </h2>
             <dl className="space-y-2 text-sm">
               {location.nameJapanese && (
-                <div className="flex gap-2">
-                  <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Japanese name</dt>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                  <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Japanese name</dt>
                   <dd className="text-[var(--foreground-body)]">{location.nameJapanese}</dd>
                 </div>
               )}
               {location.nearestStation && (
-                <div className="flex gap-2">
-                  <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Nearest station</dt>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                  <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Nearest station</dt>
                   <dd className="text-[var(--foreground-body)]">{location.nearestStation}</dd>
                 </div>
               )}
               {location.cashOnly !== undefined && location.cashOnly !== null && (
-                <div className="flex gap-2">
-                  <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Payment</dt>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                  <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Payment</dt>
                   <dd className="text-[var(--foreground-body)]">{location.cashOnly ? "Cash only" : "Cards accepted"}</dd>
                 </div>
               )}
               {location.reservationInfo && (
-                <div className="flex gap-2">
-                  <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Reservations</dt>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                  <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Reservations</dt>
                   <dd className="text-[var(--foreground-body)]">{location.reservationInfo}</dd>
                 </div>
               )}
               {location.dietaryOptions?.servesVegetarianFood && (
-                <div className="flex gap-2">
-                  <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Dietary</dt>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                  <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Dietary</dt>
                   <dd className="text-[var(--foreground-body)]">Vegetarian options</dd>
                 </div>
               )}
               {mealLabels && (
-                <div className="flex gap-2">
-                  <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Meals</dt>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                  <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Meals</dt>
                   <dd className="text-[var(--foreground-body)]">{mealLabels}</dd>
                 </div>
               )}
               {serviceLabels && (
-                <div className="flex gap-2">
-                  <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Service</dt>
+                <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                  <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Service</dt>
                   <dd className="text-[var(--foreground-body)]">{serviceLabels}</dd>
                 </div>
               )}

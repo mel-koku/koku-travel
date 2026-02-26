@@ -83,7 +83,7 @@ export function DiscoverDrawerB({
       <div
         className="fixed inset-x-0 bottom-0 z-30 flex flex-col bg-white md:hidden"
         style={{
-          height: expanded ? `${EXPANDED_VH}dvh` : PEEK_HEIGHT,
+          height: expanded ? `${EXPANDED_VH}dvh` : `calc(${PEEK_HEIGHT}px + env(safe-area-inset-bottom, 0px))`,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           boxShadow: "var(--shadow-elevated)",

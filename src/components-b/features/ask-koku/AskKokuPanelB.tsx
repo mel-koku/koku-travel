@@ -19,7 +19,7 @@ export function AskKokuPanelB({ onClose, context }: AskKokuPanelProps) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 12, scale: 0.97 }}
       transition={{ duration: 0.3, ease: [...bEase] }}
-      className="fixed inset-0 z-[60] flex flex-col bg-white lg:inset-auto lg:bottom-24 lg:right-6 lg:h-[600px] lg:w-[400px] lg:rounded-2xl lg:shadow-[var(--shadow-depth)]"
+      className="fixed inset-0 z-[60] flex flex-col bg-white pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] lg:inset-auto lg:bottom-24 lg:right-6 lg:h-[600px] lg:w-[400px] lg:rounded-2xl lg:shadow-[var(--shadow-depth)] lg:pt-0 lg:pb-0"
       data-lenis-prevent
     >
       {/* Header */}
