@@ -12,23 +12,32 @@ type PlacesIntroBProps = {
 
 export function PlacesIntroB({ totalCount, content }: PlacesIntroBProps) {
   return (
-    <section className="pt-14 pb-2 sm:pt-20 sm:pb-4 lg:pt-24 text-center">
-      <motion.h1
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-32 lg:pt-36 pb-4 sm:pb-6 text-center">
+      <motion.p
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: bEase }}
-        className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold tracking-[-0.025em] leading-[1.1] text-[var(--foreground)]"
+        className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]"
       >
-        {content?.placesHeading ?? "Explore Japan"}
+        {totalCount.toLocaleString()} places across Japan
+      </motion.p>
+
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
+        className="mt-4 text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] text-[var(--foreground)] max-w-3xl mx-auto"
+      >
+        {content?.placesHeading ?? "Every place worth knowing about, in one collection."}
       </motion.h1>
 
       <motion.p
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.08, ease: bEase }}
-        className="mt-3 text-base text-[var(--muted-foreground)]"
+        transition={{ duration: 0.5, delay: 0.2, ease: bEase }}
+        className="text-base text-[var(--foreground-body)] max-w-2xl mx-auto mt-6 leading-relaxed"
       >
-        {totalCount.toLocaleString()} temples, restaurants, hidden gems, and more
+        Temples, restaurants, hidden gems — searched, filtered, and saved for your trip.
       </motion.p>
     </section>
   );

@@ -98,7 +98,7 @@ export function ExperiencesPageClientB({ experiences, content }: ExperiencesPage
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
-          className="mt-4 text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.1] text-[var(--foreground)] max-w-3xl mx-auto"
+          className="mt-4 text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] text-[var(--foreground)] max-w-3xl mx-auto"
         >
           {content?.experiencesHeading ?? "Workshops, cruises, and the kind of moments you'll talk about for years."}
         </motion.h1>

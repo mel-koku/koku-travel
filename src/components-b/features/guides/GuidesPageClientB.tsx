@@ -136,7 +136,7 @@ export function GuidesPageClientB({ guides, content }: GuidesPageClientBProps) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
-          className="mt-4 text-[clamp(2rem,4vw,3rem)] font-bold leading-[1.1] text-[var(--foreground)] max-w-3xl mx-auto"
+          className="mt-4 text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] text-[var(--foreground)] max-w-3xl mx-auto"
         >
           {content?.guidesHeading ?? "What the locals know, written down for the first time."}
         </motion.h1>
