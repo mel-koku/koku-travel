@@ -222,7 +222,7 @@ function getShortOverview(location: Location, cachedSummary: string | null): str
 
   const detailsSentence = details.length > 0 ? ` ${details.join(" • ")}` : "";
 
-  return `${descriptor}${cityPiece}.${detailsSentence || " Easily fits into most itineraries."}`;
+  return `${descriptor}${cityPiece}.${detailsSentence || " Fits into most itineraries."}`;
 }
 
 function getLocationRating(location: Location): number | null {

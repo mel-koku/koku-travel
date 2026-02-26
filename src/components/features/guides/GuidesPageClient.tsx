@@ -167,7 +167,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="font-serif italic text-lg text-foreground">
-              {content?.guidesFilteredEmptyHeading ?? "No guides in this category yet"}
+              {content?.guidesFilteredEmptyHeading ?? "No guides in this category"}
             </p>
             <p className="mt-2 text-sm text-stone">
               {content?.guidesFilteredEmptyDescription ?? "Try another filter, or browse them all."}

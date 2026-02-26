@@ -274,7 +274,7 @@ export function WhatsNextCard({
       {minutesUntilNext !== null && minutesUntilNext <= 15 && minutesUntilNext > -15 && (
         <div className="mt-3 pt-3 border-t border-brand-primary/20">
           <p className="text-xs text-foreground-secondary">
-            Running late? You can adjust the schedule or skip this activity.
+            Running late? Adjust the schedule or skip this one.
           </p>
         </div>
       )}

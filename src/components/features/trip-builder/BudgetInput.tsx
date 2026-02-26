@@ -214,7 +214,7 @@ export function BudgetInput({ duration, value, onChange, onModeChange, id = "bud
         {/* Low budget warning */}
         {showLowBudgetWarning && (
           <p className="text-sm text-warning">
-            That&apos;s a tight budget for Japan &mdash; totally doable, just something to know.
+            That&apos;s a tight budget for Japan &mdash; totally doable, worth knowing.
           </p>
         )}
       </div>

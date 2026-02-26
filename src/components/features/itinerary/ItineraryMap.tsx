@@ -445,7 +445,7 @@ export function ItineraryMap({
   if (activityPoints.length === 0) {
     return (
       <div className="flex h-full w-full items-center justify-center rounded-xl border border-border bg-surface p-4">
-        <p className="text-sm text-foreground-secondary text-center">No mappable activities yet.</p>
+        <p className="text-sm text-foreground-secondary text-center">No mappable activities.</p>
       </div>
     );
   }

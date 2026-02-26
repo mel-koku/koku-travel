@@ -175,7 +175,7 @@ export const DaySelector = ({
   if (days.length === 0) {
     return (
       <p className="text-sm text-stone">
-        No days available yet for this itinerary.
+        No days in this itinerary.
       </p>
     );
   }

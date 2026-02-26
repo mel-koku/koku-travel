@@ -183,7 +183,7 @@ export function useItineraryPlanning({
           if (!isMountedRef.current || planningRequestRef.current !== runId) return;
           logger.warn("Travel planning watchdog fired, falling back to previous schedule");
           pendingPlanRef.current = null;
-          setPlanningError((prev) => prev ?? "We couldn't refresh travel times right now. Showing previous estimates.");
+          setPlanningError((prev) => prev ?? "Travel times didn't refresh. Showing previous estimates.");
           setIsPlanning(false);
         }, 15000);
 
@@ -302,7 +302,7 @@ export function useItineraryPlanning({
     planWatchdogRef.current = window.setTimeout(() => {
       if (!isMountedRef.current || planningRequestRef.current !== runId) return;
       logger.warn("Initial travel planning watchdog fired, using existing itinerary data");
-      setPlanningError((prev) => prev ?? "We couldn't refresh travel times right now. Showing previous estimates.");
+      setPlanningError((prev) => prev ?? "Travel times didn't refresh. Showing previous estimates.");
       setIsPlanning(false);
     }, 15000);
 

@@ -91,12 +91,12 @@ export function RegionSelector({ onSelectionChange }: RegionSelectorProps) {
               <span className="font-semibold text-brand-primary">{selectedRegions.length}</span>{" "}
               {selectedRegions.length === 1 ? "region" : "regions"} selected.{" "}
               <span className="text-foreground-secondary">
-                Click to add more or remove. Cities will be auto-selected based on your trip duration.
+                Add more or remove anytime. Cities will be auto-selected based on your trip duration.
               </span>
             </>
           ) : (
             <>
-              <span className="font-medium">Click on the regions</span> you&apos;d like to explore.
+              <span className="font-medium">Pick the regions</span> you&apos;d like to explore.
               We&apos;ve highlighted our top picks based on your preferences.
             </>
           )}

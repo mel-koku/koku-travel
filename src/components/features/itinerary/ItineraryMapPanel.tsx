@@ -596,7 +596,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
             ) : null}
             {mapReady && points.length === 0 ? (
               <div className="absolute inset-0 flex flex-col items-center justify-center px-6 text-center text-sm text-stone">
-                <p>No places on the map yet.</p>
+                <p>No places on the map.</p>
                 <p className="mt-1">Add activities to see them here.</p>
               </div>
             ) : null}
