@@ -56,6 +56,15 @@ const inter = Inter({
 
 Applied via inline `style={{ fontFamily: "var(--font-inter), system-ui, sans-serif" }}` on the `data-variant="b"` div (overrides body's DM Sans).
 
+### Eyebrow Variants
+
+| Context                                                                       | Pattern                                                                                | Tracking |
+| ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | -------- |
+| Page-level eyebrows (landing, section headers)                                | `text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]`               | `0.2em`  |
+| Dense/inline contexts (detail page sections, card metadata, dashboard labels) | `text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]` | `0.15em` |
+
+Page-level eyebrows use `--primary` color; inline section labels use `--muted-foreground`.
+
 ### Key Differences from A
 
 |          | Variant A                              | Variant B                                                                        |
@@ -102,6 +111,8 @@ All defined in `globals.css` under `[data-variant="b"]`. Use `var(--token)` synt
 - Reference via `text-[var(--foreground)]`, `bg-[var(--primary)]`, etc.
 - Accent `#2D4B8E` only on: CTA buttons, eyebrow labels, focus rings, link hover, stat suffixes, active nav.
 - Body text = `--foreground-body` (#504D48), NOT `--foreground` (that's for headings).
+- **Mapbox exception**: Mapbox GL JS paint properties are JS strings and cannot reference CSS vars — hardcoded hex matching token values is acceptable (e.g., `"#2D4B8E"` for primary, `"#1C1A17"` for foreground).
+- **Tints**: Use `color-mix(in srgb, var(--token) N%, transparent)` for semi-transparent tints — never hardcode rgba equivalents of token values.
 
 ---
 
@@ -152,7 +163,15 @@ CTA         → bg-white
 
 ### Radius
 
-`--radius: 1rem` (16px). Use `rounded-2xl` for cards/containers, `rounded-xl` for buttons/inputs, `rounded-3xl` for hero images and CTA blocks.
+`--radius: 1rem` (16px).
+
+| Element                                                                       | Class          | Size |
+| ----------------------------------------------------------------------------- | -------------- | ---- |
+| Hero images, CTA blocks                                                       | `rounded-3xl`  | 24px |
+| Cards, containers                                                             | `rounded-2xl`  | 16px |
+| Buttons, inputs                                                               | `rounded-xl`   | 12px |
+| Small inline elements (badges, pills, icon containers, skeleton placeholders) | `rounded-lg`   | 8px  |
+| Pills, avatars                                                                | `rounded-full` | —    |
 
 ### Cards
 
@@ -425,40 +444,122 @@ Full-page layout: hero image → sticky back bar → title/metadata/save → pho
 
 ```
 src/components-b/
-  LayoutWrapperB.tsx      ← SharedProviders + Lenis + B chrome
-  HeaderB.tsx             ← Frosted glass header
-  FooterB.tsx             ← Minimal footer
-  STYLE_GUIDE.md          ← This file
-  landing/                ← Landing page sections
+  LayoutWrapperB.tsx        ← SharedProviders + Lenis + B chrome
+  HeaderB.tsx               ← Solid white header (not frosted glass)
+  FooterB.tsx               ← Minimal footer
+  STYLE_GUIDE.md            ← This file
+  landing/                  ← Landing page sections
     index.ts
     HeroB.tsx
     StatsB.tsx
+    ShowcaseB.tsx
     FeaturedLocationsB.tsx
+    FeaturedExperiencesB.tsx
+    FeaturedGuidesB.tsx
     TestimonialsB.tsx
     FinalCtaB.tsx
   features/
     places/
-      PlacesShellB.tsx      ← Main shell: state, filters, view mode toggle
-      PlacesShellBLazy.tsx   ← Lazy wrapper for code-split
-      PlacesIntroB.tsx       ← Hero heading (hidden in map mode)
-      CategoryBarB.tsx       ← Sticky search/filter/toggle bar
-      FilterPanelB.tsx       ← Slide-in refine panel
-      PlacesGridB.tsx        ← Infinite-scroll card grid
-      PlacesCardB.tsx        ← Location card with save pill
-      PlacesMapLayoutB.tsx   ← Fixed full-viewport map + floating pill column
-      PlacesMapCardB.tsx     ← Compact pill card for map sidebar
-      PlacesMapB.tsx         ← Mapbox GL map (clusters, bounds, hover)
-      PlaceDetailB.tsx       ← Full-page location detail
-  ui/                     ← B UI kit (build as needed)
+      PlacesShellB.tsx        ← Main shell: state, filters, view mode toggle
+      PlacesShellBLazy.tsx     ← Lazy wrapper for code-split
+      PlacesIntroB.tsx         ← Hero heading (hidden in map mode)
+      CategoryBarB.tsx         ← Sticky search/filter/toggle bar
+      FilterPanelB.tsx         ← Slide-in refine panel
+      PlacesGridB.tsx          ← Infinite-scroll card grid
+      PlacesCardB.tsx          ← Location card with save pill
+      PlacesCardPanelB.tsx     ← Card detail panel
+      PlacesMapLayoutB.tsx     ← Fixed full-viewport map + floating pill column
+      PlacesMapCardB.tsx       ← Compact pill card for map sidebar
+      PlacesMapB.tsx           ← Mapbox GL map (clusters, bounds, hover)
+      PlaceDetailB.tsx         ← Full-page location detail
+    trip-builder/
+      TripBuilderB.tsx         ← Main trip builder shell
+      StepShellB.tsx           ← Step container with nav buttons
+      IntroStepB.tsx           ← Step 0: intro/welcome
+      DateStepB.tsx            ← Step 1: date picker
+      EntryPointStepB.tsx      ← Step 2: arrival city
+      VibeStepB.tsx            ← Step 3: vibe selection
+      VibeCardB.tsx            ← Individual vibe card
+      RegionStepB.tsx          ← Step 4: region selection
+      RegionRowB.tsx           ← Region row with city toggles
+      RegionDetailPanelB.tsx   ← Region hover detail panel
+      ReviewStepB.tsx          ← Step 5: review summary
+      TripSummaryB.tsx         ← Summary card component
+      GeneratingOverlayB.tsx   ← Full-screen generating state
+    itinerary/
+      ItineraryShellB.tsx      ← Main itinerary layout (timeline + map split)
+      ItineraryTimelineB.tsx   ← Day timeline with activities
+      DayHeaderB.tsx           ← Day header with date/city
+      DaySelectorB.tsx         ← Day pill selector bar
+      PlaceActivityRowB.tsx    ← Place activity with actions
+      NoteActivityRowB.tsx     ← Note/text activity row
+      ActivityRowB.tsx         ← Base activity row
+      SortableActivityB.tsx    ← Drag-sortable activity wrapper
+      TravelSegmentB.tsx       ← Travel time between activities
+      AccommodationBookendB.tsx← Check-in/check-out bookend
+      SmartPromptCardB.tsx     ← Smart prompt suggestion card
+      GuideSegmentCardB.tsx    ← Guide content segment
+      ItinerarySkeletonB.tsx   ← Loading skeleton
+      TripConfidenceDashboardB.tsx ← Trip quality metrics
+    guides/
+      GuidesPageClientB.tsx    ← Guides listing page
+      GuideDetailClientB.tsx   ← Guide detail page
+      GuideCardB.tsx           ← Guide card component
+      AuthorProfileB.tsx       ← Author bio page
+    experiences/
+      ExperiencesPageClientB.tsx ← Experiences listing page
+      ExperienceDetailClientB.tsx← Experience detail page
+      ExperienceCardB.tsx      ← Experience card component
+    discover/
+      DiscoverShellB.tsx       ← Discover page shell
+      DiscoverMapB.tsx         ← Discover Mapbox map
+      DiscoverDrawerB.tsx      ← Bottom drawer / desktop strip
+    dashboard/
+      DashboardClientB.tsx     ← Dashboard page client
+      DashboardHeaderB.tsx     ← Dashboard header with greeting
+      StatsSectionB.tsx        ← User stats section
+      TripsSectionB.tsx        ← Trips list section
+      AccountSectionB.tsx      ← Account settings section
+    ask-koku/
+      AskKokuButtonB.tsx       ← Floating action button
+      AskKokuPanelB.tsx        ← Slide-in chat panel
+      AskKokuChatB.tsx         ← Chat message container
+      AskKokuInputB.tsx        ← Chat input field
+      AskKokuMessageB.tsx      ← Individual message bubble
+      AskKokuSuggestionsB.tsx  ← Suggestion chips
+      AskKokuLocationCardB.tsx ← Location card in chat
+      AskKokuVideoImportCardB.tsx ← Video import card in chat
+      AskKokuTripPlanCardB.tsx ← Trip plan card in chat
+    account/
+      AccountClientB.tsx       ← Account settings page
+    signin/
+      SignInClientB.tsx        ← Sign-in page
+    saved/
+      SavedClientB.tsx         ← Saved/favorites page
+  ui/                        ← B UI kit (build as needed)
 
 src/app/b/
-  layout.tsx              ← Inter font, VariantProvider, LayoutWrapperB
-  page.tsx                ← B landing
-  places/page.tsx         ← Places grid/map page
-  places/[id]/page.tsx    ← Place detail page
-  [...fallback]/page.tsx  ← Catch-all redirect to A
-  not-found.tsx           ← B-styled 404
-  error.tsx               ← B error boundary
+  layout.tsx                 ← Inter font, VariantProvider, LayoutWrapperB
+  page.tsx                   ← B landing
+  places/page.tsx            ← Places grid/map page
+  places/[id]/page.tsx       ← Place detail page
+  trip-builder/page.tsx      ← Trip builder
+  itinerary/page.tsx         ← Itinerary viewer
+  guides/page.tsx            ← Guides listing
+  guides/[slug]/page.tsx     ← Guide detail
+  guides/authors/page.tsx    ← Authors listing
+  guides/authors/[slug]/page.tsx ← Author profile
+  experiences/page.tsx       ← Experiences listing
+  experiences/[slug]/page.tsx← Experience detail
+  discover/page.tsx          ← Discover map
+  dashboard/page.tsx         ← User dashboard
+  account/page.tsx           ← Account settings
+  saved/page.tsx             ← Saved places
+  signin/page.tsx            ← Sign-in
+  shared/[token]/page.tsx    ← Shared itinerary (read-only)
+  [...fallback]/page.tsx     ← Catch-all redirect to A
+  not-found.tsx              ← B-styled 404
+  error.tsx                  ← B error boundary
 ```
 
 ### Import Alias

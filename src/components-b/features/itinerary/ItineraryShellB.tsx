@@ -604,8 +604,8 @@ export const ItineraryShellB = ({
                     <span
                       className="rounded-full px-2 py-0.5 text-[10px] font-medium"
                       style={{
-                        background: "var(--warning-bg, rgba(217,119,6,0.1))",
-                        color: "var(--warning, #D97706)",
+                        background: "color-mix(in srgb, var(--warning) 10%, transparent)",
+                        color: "var(--warning)",
                       }}
                     >
                       Mock
@@ -657,7 +657,7 @@ export const ItineraryShellB = ({
                   exit={{ opacity: 0, scale: 1.02 }}
                   transition={{ duration: bDurationFast, ease: bEase }}
                   className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center"
-                  style={{ background: "rgba(248,247,244,0.95)" }}
+                  style={{ background: "color-mix(in srgb, var(--background) 95%, transparent)" }}
                 >
                   <h2
                     className="text-2xl font-bold tracking-[-0.04em] sm:text-3xl"
@@ -754,7 +754,7 @@ export const ItineraryShellB = ({
                   className="mt-4 rounded-2xl border p-3 text-xs"
                   style={{
                     borderColor: "var(--primary)",
-                    background: "rgba(45,75,142,0.06)",
+                    background: "color-mix(in srgb, var(--primary) 6%, transparent)",
                     color: "var(--primary)",
                   }}
                 >
@@ -791,9 +791,9 @@ export const ItineraryShellB = ({
                   transition={{ duration: bDurationFast, ease: bEase }}
                   className="mt-4 rounded-2xl border p-3 text-xs"
                   style={{
-                    borderColor: "var(--error, #DC2626)",
-                    background: "rgba(220,38,38,0.06)",
-                    color: "var(--error, #DC2626)",
+                    borderColor: "var(--error)",
+                    background: "color-mix(in srgb, var(--error) 6%, transparent)",
+                    color: "var(--error)",
                   }}
                 >
                   <p className="font-medium">Something went wrong</p>
