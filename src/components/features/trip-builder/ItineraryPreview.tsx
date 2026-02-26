@@ -190,7 +190,7 @@ function DayCard({
       <div className="mt-2 ml-8">
         {!day.city ? (
           <div className="rounded-xl border border-dashed border-border bg-surface px-3 py-2">
-            <p className="text-xs text-stone">No city assigned yet</p>
+            <p className="text-xs text-stone">No city assigned</p>
           </div>
         ) : (
           <div className="space-y-2">

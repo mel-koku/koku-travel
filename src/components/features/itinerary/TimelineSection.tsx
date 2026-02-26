@@ -254,7 +254,7 @@ export function TimelineSection({
             <li className="rounded-xl border-2 border-dashed border-border p-6 text-stone">
               <div className="flex flex-col items-start gap-3">
                 <p className="text-sm">
-                  No activities yet for this part of the day.
+                  No activities for this time of day.
                 </p>
                 <div className="flex flex-wrap items-center gap-3">
                   <button
