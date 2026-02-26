@@ -51,41 +51,29 @@ export function DayHeaderB({ day, dayIndex, tripStartDate }: DayHeaderBProps) {
 
   const dateLabel = useMemo(() => {
     if (dayDate) {
-      return new Intl.DateTimeFormat(undefined, {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-      }).format(dayDate);
+      const month = dayDate.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+      const weekday = dayDate.toLocaleDateString("en-US", { weekday: "short" });
+      return `${month}, ${weekday}`;
     }
     return null;
   }, [dayDate]);
 
   const cityLabel = day.cityId ? formatCityName(day.cityId) : null;
 
+  // Use the date as primary heading when available, fall back to "Day N"
+  const primaryLabel = dateLabel ?? `Day ${dayIndex + 1}`;
+
   return (
-    <div className="flex flex-col gap-1 pb-2">
+    <div className="pb-2">
       <h2
-        className="text-lg font-bold tracking-tight sm:text-xl"
-        style={{ color: "var(--foreground)" }}
+        className="text-xs font-medium uppercase tracking-[0.15em]"
+        style={{ color: "var(--muted-foreground)" }}
       >
-        Day {dayIndex + 1}
+        {primaryLabel}
         {cityLabel && (
-          <span
-            className="ml-1.5 font-normal"
-            style={{ color: "var(--muted-foreground)" }}
-          >
-            &mdash; {cityLabel}
-          </span>
+          <span className="ml-1"> · {cityLabel}</span>
         )}
       </h2>
-      {dateLabel && (
-        <p
-          className="text-sm"
-          style={{ color: "var(--muted-foreground)" }}
-        >
-          {dateLabel}
-        </p>
-      )}
     </div>
   );
 }
