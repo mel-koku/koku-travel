@@ -67,7 +67,7 @@ export function PlacesGridB({ locations, isLoading, onClearFilters, onSelectLoca
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-center py-20">
           <p className="text-base font-medium text-[var(--muted-foreground)] text-center">
-            Nothing here for those filters.
+            No results for those filters.
           </p>
           {onClearFilters && (
             <button
