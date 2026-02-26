@@ -101,7 +101,7 @@ export function JapanMapPicker({
     <div className="flex flex-col gap-4">
       {/* Selected Airport Display */}
       {value && (
-        <div className="rounded-lg border border-sage/30 bg-sage/10 px-4 py-3">
+        <div className="rounded-xl border border-sage/30 bg-sage/10 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sage/20 text-sage">
@@ -117,7 +117,7 @@ export function JapanMapPicker({
             <button
               type="button"
               onClick={handleClear}
-              className="rounded-lg px-3 py-1 text-sm text-stone hover:bg-surface hover:text-foreground-secondary"
+              className="rounded-xl px-3 py-1 text-sm text-stone hover:bg-surface hover:text-foreground-secondary"
             >
               Change
             </button>
@@ -143,7 +143,7 @@ export function JapanMapPicker({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search airports by name, city, or code..."
-              className="h-11 w-full rounded-lg border border-border bg-background pl-10 pr-10 text-sm placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
             />
             {searchQuery && (
               <button
@@ -157,7 +157,7 @@ export function JapanMapPicker({
 
             {/* Search Results Dropdown */}
             {filteredAirports.length > 0 && (
-              <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-lg border border-border bg-background shadow-lg">
+              <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-60 overflow-auto rounded-xl border border-border bg-background shadow-lg">
                 {filteredAirports.map((airport) => (
                   <button
                     key={airport.id}
@@ -185,7 +185,7 @@ export function JapanMapPicker({
             )}
 
             {searchQuery && filteredAirports.length === 0 && (
-              <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-4 text-center text-sm text-stone shadow-lg">
+              <div className="absolute left-0 right-0 top-full z-50 mt-1 rounded-xl border border-border bg-background p-4 text-center text-sm text-stone shadow-lg">
                 No airports found
               </div>
             )}

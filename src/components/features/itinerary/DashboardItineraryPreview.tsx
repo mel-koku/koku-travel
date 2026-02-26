@@ -149,7 +149,7 @@ export const DashboardItineraryPreview = ({
 
   return (
     <section className="mt-8">
-      <header className="flex flex-col gap-4 rounded-2xl border border-border bg-background p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+      <header className="flex flex-col gap-4 rounded-xl border border-border bg-background p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-1">
           <p className="font-mono text-xs font-semibold uppercase tracking-wide text-brand-primary">
             Active Itinerary
@@ -216,7 +216,7 @@ export const DashboardItineraryPreview = ({
         </div>
       </header>
 
-      <div className="mt-4 rounded-2xl border border-border bg-background p-6 shadow-sm">
+      <div className="mt-4 rounded-xl border border-border bg-background p-6 shadow-sm">
         <div className="flex flex-col gap-6">
           <DaySelector
             totalDays={days.length}
@@ -252,7 +252,7 @@ export const DashboardItineraryPreview = ({
                         ))}
                       </ul>
                     ) : (
-                      <p className="rounded-lg border border-dashed border-stone/30 bg-background p-4 text-sm text-stone">
+                      <p className="rounded-xl border border-dashed border-stone/30 bg-background p-4 text-sm text-stone">
                         Nothing planned yet.
                       </p>
                     )}
@@ -267,7 +267,7 @@ export const DashboardItineraryPreview = ({
               })}
             </div>
           ) : (
-            <p className="rounded-lg bg-surface p-6 text-sm text-foreground-secondary">
+            <p className="rounded-xl bg-surface p-6 text-sm text-foreground-secondary">
               Nothing planned for this day yet.
             </p>
           )}

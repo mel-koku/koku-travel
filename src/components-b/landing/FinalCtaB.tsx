@@ -32,7 +32,7 @@ export function FinalCtaB({ content }: FinalCtaBProps) {
               href="/b/trip-builder"
               className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-8 text-sm font-semibold text-[var(--primary)] shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
             >
-              {content?.finalCtaPrimaryText ?? "Start Planning"}
+              {content?.finalCtaPrimaryText ?? "Build My Trip"}
             </Link>
             <Link
               href="/b/places"

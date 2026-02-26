@@ -65,7 +65,7 @@ export function SeasonalSpotlight({
   const heading = getSeasonHeading(season, content);
 
   return (
-    <section className="bg-canvas py-12 sm:py-20 lg:py-28">
+    <section className="bg-background py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <ScrollReveal direction="up" distance={20} duration={0.6}>
@@ -173,7 +173,7 @@ function SpotlightCard({ card, idx }: { card: CardData; idx: number }) {
           <p className="text-[10px] uppercase tracking-[0.25em] text-white/60 mb-0.5 font-mono">
             {card.subtitle}
           </p>
-          <p className="font-serif italic text-white text-base line-clamp-1 group-hover:text-brand-secondary transition-colors">
+          <p className="font-serif italic text-white text-base line-clamp-1 group-hover:text-brand-primary transition-colors">
             {card.title}
           </p>
         </div>

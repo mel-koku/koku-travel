@@ -216,7 +216,7 @@ export function TravelModeSelector({
       </button>
 
       {isOpen && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-[min(14rem,90vw)] rounded-lg border border-border bg-background shadow-lg ring-1 ring-black/5">
+        <div className="absolute left-0 top-full z-50 mt-1 w-[min(14rem,90vw)] rounded-xl border border-border bg-background shadow-lg ring-1 ring-black/5">
           <div className="p-1">
             {TRAVEL_MODES.map((option) => {
               const estimate = getEstimate(option.mode);
@@ -235,7 +235,7 @@ export function TravelModeSelector({
                     setIsOpen(false);
                   }}
                   className={cn(
-                    "w-full flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-left text-xs transition",
+                    "w-full flex items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left text-xs transition",
                     isCurrentMode
                       ? `${option.bgColor} ${option.color} font-semibold`
                       : "text-foreground-secondary hover:bg-surface",

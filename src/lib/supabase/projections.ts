@@ -122,9 +122,9 @@ export const LOCATION_LISTING_COLUMNS = `
 `.replace(/\s+/g, "");
 
 /**
- * Slimmed projection for the places /api/locations/all endpoint (15 columns).
- * Drops 6 fields unused by PlacesCompactCard / map: place_id, min_budget,
- * google_types, business_status, service_options, short_description.
+ * Slimmed projection for the places /api/locations/all endpoint.
+ * Drops fields unused by PlacesCompactCard / map: place_id, min_budget,
+ * google_types, business_status.
  */
 export const LOCATION_EXPLORE_COLUMNS = `
   id,
@@ -134,6 +134,7 @@ export const LOCATION_EXPLORE_COLUMNS = `
   prefecture,
   category,
   image,
+  short_description,
   rating,
   review_count,
   estimated_duration,
@@ -254,6 +255,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "prefecture"
   | "category"
   | "image"
+  | "short_description"
   | "rating"
   | "review_count"
   | "estimated_duration"

@@ -181,7 +181,7 @@ export function ShareButton({ tripId }: ShareButtonProps) {
             <button
               type="button"
               onClick={handleCopyLink}
-              className="flex items-center gap-2 rounded-lg bg-sage/10 px-3 py-2 text-xs font-medium text-sage transition hover:bg-sage/20"
+              className="flex items-center gap-2 rounded-xl bg-sage/10 px-3 py-2 text-xs font-medium text-sage transition hover:bg-sage/20"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
@@ -193,7 +193,7 @@ export function ShareButton({ tripId }: ShareButtonProps) {
               type="button"
               onClick={handleToggleShare}
               disabled={isLoading}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-stone transition hover:bg-error/10 hover:text-error"
+              className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium text-stone transition hover:bg-error/10 hover:text-error"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />

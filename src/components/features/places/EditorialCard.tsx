@@ -101,7 +101,7 @@ export const EditorialCard = memo(function EditorialCard({
                 toggleSave(location.id);
               }}
               aria-label={active ? "Unsave" : "Save for trip"}
-              className="pointer-events-auto flex h-9 items-center gap-1.5 rounded-full bg-surface/90 px-3 backdrop-blur-md shadow-lg transition-all hover:bg-surface hover:scale-105 active:scale-95"
+              className="pointer-events-auto flex h-9 items-center gap-1.5 rounded-full bg-surface/90 px-3 backdrop-blur-md shadow-lg transition-all hover:bg-surface hover:scale-105 active:scale-[0.98]"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
               <span className="text-xs font-medium text-foreground">

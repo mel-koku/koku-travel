@@ -60,7 +60,7 @@ export function RouteOverview({
         return (
           <li
             key={activity.id}
-            className="rounded-lg border border-sage/20 bg-sage/10 p-3 text-sm text-foreground"
+            className="rounded-xl border border-sage/20 bg-sage/10 p-3 text-sm text-foreground"
           >
             <div className="flex items-start gap-3">
               <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-primary text-xs font-semibold text-white">
@@ -119,7 +119,7 @@ export function RouteOverview({
               </div>
             </div>
             {index > 0 ? (
-              <div className="mt-3 rounded-lg border border-sage/20 bg-background/70 p-3 text-xs text-foreground-secondary">
+              <div className="mt-3 rounded-xl border border-sage/20 bg-background/70 p-3 text-xs text-foreground-secondary">
                 <p className="font-semibold">
                   Travel from Stop {previousNumber} ·{" "}
                   {previousActivity?.title ?? "Previous stop"}

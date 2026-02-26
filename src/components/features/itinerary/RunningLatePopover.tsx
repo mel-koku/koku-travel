@@ -66,7 +66,7 @@ export function RunningLatePopover({ onApplyDelay }: RunningLatePopoverProps) {
                 key={preset.value}
                 type="button"
                 onClick={() => applyPreset(preset.value)}
-                className="rounded-lg bg-background px-4 py-2.5 text-sm font-medium min-h-[44px] text-foreground transition-colors hover:bg-brand-primary/10 hover:text-brand-primary"
+                className="rounded-xl bg-background px-4 py-2.5 text-sm font-medium min-h-[44px] text-foreground transition-colors hover:bg-brand-primary/10 hover:text-brand-primary"
               >
                 {preset.label}
               </button>
@@ -81,13 +81,13 @@ export function RunningLatePopover({ onApplyDelay }: RunningLatePopoverProps) {
               value={customMinutes}
               onChange={(e) => setCustomMinutes(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && applyCustom()}
-              className="h-11 w-20 rounded-lg border border-border bg-background px-2 text-center text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="h-11 w-20 rounded-xl border border-border bg-background px-2 text-center text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
             />
             <button
               type="button"
               onClick={applyCustom}
               disabled={!customMinutes || parseInt(customMinutes, 10) < 1}
-              className="rounded-lg bg-brand-primary/10 px-4 py-2.5 text-sm font-medium min-h-[44px] text-brand-primary transition-colors hover:bg-brand-primary/20 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="rounded-xl bg-brand-primary/10 px-4 py-2.5 text-sm font-medium min-h-[44px] text-brand-primary transition-colors hover:bg-brand-primary/20 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Apply
             </button>

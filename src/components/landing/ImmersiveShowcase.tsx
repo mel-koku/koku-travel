@@ -350,9 +350,9 @@ function Act({
 
 function ImmersiveShowcaseMobile({ acts }: { acts: ActData[] }) {
   return (
-    <section className="bg-background">
+    <section className="bg-background py-12 sm:py-20 lg:py-28">
       {acts.map((act, i) => (
-        <div key={act.number} className={`px-6 sm:py-20 ${i === 0 ? "pt-10 pb-6" : "py-6"}`}>
+        <div key={act.number} className={`px-6 ${i > 0 ? "mt-12 sm:mt-16" : ""}`}>
           <div className="mx-auto max-w-3xl">
             <ScrollReveal delay={0.1}>
               <div className="relative aspect-[16/9] overflow-hidden rounded-xl">

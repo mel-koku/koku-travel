@@ -65,7 +65,7 @@ export function ExperienceFooter({
                       src={related.featuredImage.url}
                       alt={related.title}
                       fill
-                      className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02]"
+                      className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
                       sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     />
                   )}
@@ -79,7 +79,7 @@ export function ExperienceFooter({
                     {related.city && ` \u00b7 ${related.city}`}
                     {related.duration && ` \u00b7 ${related.duration}`}
                   </p>
-                  <h3 className="font-serif text-lg italic text-white sm:text-xl">
+                  <h3 className="font-serif text-lg italic text-white sm:text-xl transition-colors group-hover:text-brand-primary">
                     {related.title}
                   </h3>
                 </div>

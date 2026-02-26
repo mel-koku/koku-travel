@@ -20,7 +20,7 @@ export default function DashboardError({ error, reset }: ErrorProps) {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-surface p-4">
-      <div className="w-full max-w-md rounded-2xl border border-border bg-background p-8 text-center shadow-lg">
+      <div className="w-full max-w-md rounded-xl border border-border bg-background p-8 text-center shadow-lg">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-error/10">
           <svg
             className="h-8 w-8 text-error"
@@ -58,7 +58,7 @@ export default function DashboardError({ error, reset }: ErrorProps) {
             <summary className="cursor-pointer text-xs text-stone hover:text-foreground">
               Error details (dev only)
             </summary>
-            <pre className="mt-2 max-h-40 overflow-auto rounded-lg bg-surface p-3 text-xs text-error">
+            <pre className="mt-2 max-h-40 overflow-auto rounded-xl bg-surface p-3 text-xs text-error">
               {error.message}
               {error.stack && (
                 <>

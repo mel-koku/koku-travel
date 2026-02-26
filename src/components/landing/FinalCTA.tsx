@@ -1,8 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SplitText } from "@/components/ui/SplitText";
-import { durationBase } from "@/lib/motion";
+import { durationBase, easeReveal } from "@/lib/motion";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
 
 type FinalCTAProps = {
@@ -21,21 +20,21 @@ export function FinalCTA({ content }: FinalCTAProps) {
       {/* Content */}
       <div className="relative z-10 flex items-center justify-center px-6 py-24 sm:py-32 lg:py-40 text-center">
         <div className="max-w-2xl">
-          <SplitText
-            as="h2"
-            className="justify-center font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
-            splitBy="char"
-            animation="clipY"
-            staggerDelay={0.02}
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
+            className="font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
           >
             {content?.finalCtaHeading ?? "Your Japan starts with one place"}
-          </SplitText>
+          </motion.h2>
 
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: durationBase, delay: 0.5 }}
+            transition={{ duration: durationBase, delay: 0.5, ease: [...easeReveal] as [number, number, number, number] }}
             className="mx-auto mt-8 max-w-md text-base text-white/90"
           >
             {content?.finalCtaDescription ?? "Pick a place. We'll build the rest."}
@@ -45,7 +44,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: durationBase, delay: 0.7 }}
+            transition={{ duration: durationBase, delay: 0.7, ease: [...easeReveal] as [number, number, number, number] }}
             className="mt-12 flex flex-col items-center"
           >
             <a
@@ -66,7 +65,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: durationBase, delay: 1 }}
+            transition={{ duration: durationBase, delay: 1, ease: [...easeReveal] as [number, number, number, number] }}
             className="mt-10 text-sm uppercase tracking-wide text-white/70"
           >
             {content?.finalCtaSubtext ?? "Free to use. No account required."}

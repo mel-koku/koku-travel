@@ -30,7 +30,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
   const rest = guides.slice(1, 3);
 
   return (
-    <section className="bg-background py-12 sm:py-20 lg:py-28">
+    <section className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">

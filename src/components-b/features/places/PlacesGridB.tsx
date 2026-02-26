@@ -45,8 +45,8 @@ export function PlacesGridB({ locations, isLoading, onClearFilters }: PlacesGrid
   if (isLoading) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 9 }).map((_, i) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="rounded-2xl bg-[var(--surface)] animate-pulse">
               <div className="aspect-[4/3]" />
               <div className="p-3.5 space-y-2">
@@ -84,18 +84,18 @@ export function PlacesGridB({ locations, isLoading, onClearFilters }: PlacesGrid
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {visibleLocations.map((location, i) => (
           <motion.div
             key={location.id}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.5, delay: (i % 3) * 0.04, ease: bEase }}
+            transition={{ duration: 0.5, delay: (i % 4) * 0.04, ease: bEase }}
           >
             <PlacesCardB
               location={location}
-              eager={i < 6}
+              eager={i < 8}
             />
           </motion.div>
         ))}
