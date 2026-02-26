@@ -3,48 +3,49 @@ import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils
 
 export const VIBE_FILTER_MAP: Record<
   VibeId,
-  { dbCategories: string[]; hiddenGemOnly?: boolean; seasonalMatch?: boolean }
+  {
+    dbCategories: string[];
+    tags?: string[];
+    hiddenGemOnly?: boolean;
+    seasonalMatch?: boolean;
+  }
 > = {
-  cultural_heritage: {
-    dbCategories: [
-      "shrine",
-      "temple",
-      "museum",
-      "landmark",
-      "culture",
-      "performing_arts",
-    ],
+  temples_tradition: {
+    dbCategories: ["shrine", "temple", "castle", "historic_site"],
+    tags: ["traditional-japan", "spiritual"],
   },
   foodie_paradise: {
-    dbCategories: ["restaurant", "cafe", "bar", "market"],
-  },
-  hidden_gems: {
-    dbCategories: [], // cross-category — uses is_hidden_gem flag
-    hiddenGemOnly: true,
-  },
-  neon_nightlife: {
-    dbCategories: [
-      "entertainment",
-      "shopping",
-      "mall",
-      "street",
-      "specialty",
-      "bar",
-    ],
+    dbCategories: ["restaurant", "cafe", "market"],
+    tags: ["tasting"],
   },
   nature_adventure: {
-    dbCategories: [
-      "park",
-      "garden",
-      "beach",
-      "mountain",
-      "onsen",
-      "nature",
-      "wellness",
-      "viewpoint",
-      "tower",
-      "view",
-    ],
+    dbCategories: ["park", "nature", "beach", "viewpoint"],
+    tags: ["outdoor", "adrenaline", "scenic"],
+  },
+  zen_wellness: {
+    dbCategories: ["onsen", "garden", "wellness"],
+    tags: ["zen-japan", "relaxation", "quiet"],
+  },
+  neon_nightlife: {
+    dbCategories: ["bar", "entertainment"],
+    tags: ["evening", "late-night", "lively", "modern-japan"],
+  },
+  pop_culture: {
+    dbCategories: ["entertainment", "shopping"],
+    tags: ["pop-culture", "quirky-japan"],
+  },
+  local_secrets: {
+    dbCategories: [], // cross-category — uses is_hidden_gem flag + tags
+    tags: ["hidden", "local-favorite"],
+    hiddenGemOnly: true,
+  },
+  family_fun: {
+    dbCategories: ["aquarium", "zoo", "park", "beach"],
+    tags: ["families"],
+  },
+  history_buff: {
+    dbCategories: ["museum", "castle", "historic_site", "landmark"],
+    tags: ["learning"],
   },
   in_season: {
     dbCategories: [], // cross-category — uses seasonal tag matching
@@ -61,6 +62,9 @@ export function locationMatchesVibes(
     const mapping = VIBE_FILTER_MAP[vibeId];
     if (mapping.hiddenGemOnly) return location.isHiddenGem === true;
     if (mapping.seasonalMatch) return locationHasSeasonalTag(location.tags, getCurrentMonth());
-    return mapping.dbCategories.includes(location.category.toLowerCase());
+    // Match on category OR tags
+    if (mapping.dbCategories.includes(location.category.toLowerCase())) return true;
+    if (mapping.tags?.some((tag) => location.tags?.includes(tag))) return true;
+    return false;
   });
 }

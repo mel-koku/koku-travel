@@ -116,6 +116,7 @@ const CATEGORY_TO_INTERESTS: Record<string, InterestId[]> = {
   landmark: ["culture", "photography"],
   historic: ["culture", "history"],
   restaurant: ["food"],
+  cafe: ["food"],
   market: ["food", "shopping"],
   park: ["nature", "wellness", "photography"],
   garden: ["nature", "wellness", "photography"],
@@ -126,6 +127,12 @@ const CATEGORY_TO_INTERESTS: Record<string, InterestId[]> = {
   museum: ["culture", "history"],
   viewpoint: ["photography", "nature"],
   nature: ["nature", "photography", "wellness"],
+  castle: ["culture", "history"],
+  theater: ["culture", "nightlife"],
+  aquarium: ["nature"],
+  zoo: ["nature"],
+  beach: ["nature", "photography"],
+  historic_site: ["history", "culture"],
 
   // Generic fallback categories (for legacy data)
   // These map to broad interests when specific category is unknown

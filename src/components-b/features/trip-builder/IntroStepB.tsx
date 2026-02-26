@@ -46,7 +46,7 @@ export function IntroStepB({
       QUICK_PRESETS.find((p) => p.id === quickPreset) ?? QUICK_PRESETS[2];
     const cities = preset.cities as unknown as CityId[];
     const regions = deriveRegionsFromCities(cities);
-    const vibes: VibeId[] = ["cultural_heritage", "foodie_paradise"];
+    const vibes: VibeId[] = ["temples_tradition", "foodie_paradise"];
     const interests = vibesToInterests(vibes);
 
     const start = new Date();

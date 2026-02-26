@@ -33,7 +33,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Kyoto is the quiet one. Moss gardens, stone paths, the soft swish of a kimono around a corner. Nara lets deer walk right up to you like it's no big deal. And then there's Osaka — loud, greasy, wonderful — where you'll find yourself eating takoyaki at midnight wondering how one region holds all of this. It does. Effortlessly.",
     highlights: ["Fushimi Inari Shrine", "Osaka Castle", "Nara Deer Park", "Dotonbori"],
-    bestFor: ["cultural_heritage", "foodie_paradise"],
+    bestFor: ["temples_tradition", "foodie_paradise"],
     coordinates: { lat: 34.6937, lng: 135.5023 },
   },
   {
@@ -44,7 +44,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Tokyo is a lot. In the best way. One minute you're in a six-seat ramen shop where the chef hasn't changed the recipe in forty years. The next, you're standing in a digital art universe that didn't exist last month. Kamakura is an hour away and feels like another century. That's the thing about Kanto — it doesn't pick a lane. You shouldn't either.",
     highlights: ["Shibuya Crossing", "Senso-ji Temple", "teamLab Borderless", "Kamakura"],
-    bestFor: ["neon_nightlife", "cultural_heritage", "hidden_gems"],
+    bestFor: ["neon_nightlife", "pop_culture", "temples_tradition"],
     coordinates: { lat: 35.6762, lng: 139.6503 },
   },
   {
@@ -55,7 +55,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "This is where Japan slows down and looks up. Thatched-roof villages in Shirakawa-go that haven't changed in centuries. Alpine trails where the only sound is your own breathing. Kanazawa, with its samurai districts and a garden so perfect it almost feels staged (it's not). Chubu is what happens when you skip the bullet train and take the scenic route instead.",
     highlights: ["Japanese Alps", "Shirakawa-go", "Kenroku-en Garden", "Mt. Fuji views"],
-    bestFor: ["nature_adventure", "cultural_heritage"],
+    bestFor: ["nature_adventure", "zen_wellness", "history_buff"],
     coordinates: { lat: 36.2048, lng: 137.2529 },
   },
   {
@@ -66,7 +66,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Kyushu runs on hot springs and good food. Sink into a steaming onsen in Beppu while volcanic steam drifts across the hillside. Eat your way through Fukuoka's yatai stalls at 11pm like a local. Visit Nagasaki and feel something shift inside you. The south of Japan has a warmth to it — the weather, the people, the bowls of tonkotsu ramen. All of it.",
     highlights: ["Beppu Onsen", "Fukuoka Yatai", "Kumamoto Castle", "Nagasaki Peace Park"],
-    bestFor: ["nature_adventure", "foodie_paradise"],
+    bestFor: ["zen_wellness", "foodie_paradise", "history_buff"],
     coordinates: { lat: 33.5902, lng: 130.4017 },
   },
   {
@@ -77,7 +77,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Hokkaido doesn't do subtle. Lavender fields that stretch to the horizon. Powder snow that other ski resorts only dream about. Seafood so fresh it's almost unfair. Sapporo feels like a different country — wide streets, craft beer, miso ramen that ruins every bowl you'll eat after it. Come for a weekend, stay in your head forever.",
     highlights: ["Niseko Ski Resort", "Sapporo Snow Festival", "Furano Lavender Fields", "Fresh Seafood"],
-    bestFor: ["nature_adventure", "foodie_paradise"],
+    bestFor: ["nature_adventure", "foodie_paradise", "family_fun"],
     coordinates: { lat: 43.0618, lng: 141.3545 },
   },
   {
@@ -88,7 +88,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Most visitors skip Tohoku. That's exactly why you shouldn't. Picture this: a lantern-lit onsen village buried in snow. Summer festivals so electric they give you chills. Matsushima Bay at golden hour, where pine-covered islands scatter across the water like someone placed them there on purpose. This is Japan before the guidebooks got to it.",
     highlights: ["Matsushima Bay", "Nebuta Festival", "Ginzan Onsen", "Zao Snow Monsters"],
-    bestFor: ["hidden_gems", "nature_adventure"],
+    bestFor: ["local_secrets", "nature_adventure", "zen_wellness"],
     coordinates: { lat: 38.2682, lng: 140.8694 },
   },
   {
@@ -99,7 +99,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Hiroshima will change you. Quietly, permanently. Then Miyajima's floating torii appears at high tide and something lifts again. Hop a ferry to Naoshima, where contemporary art lives inside century-old homes on a tiny island. Cycle through Onomichi's hillside temples. Chugoku moves between heavy and light, past and present — and somehow finds the balance every time.",
     highlights: ["Hiroshima Peace Memorial", "Miyajima Torii Gate", "Naoshima Art Island", "Onomichi"],
-    bestFor: ["cultural_heritage", "hidden_gems"],
+    bestFor: ["history_buff", "temples_tradition", "local_secrets"],
     coordinates: { lat: 34.3963, lng: 132.4594 },
   },
   {
@@ -110,7 +110,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Shikoku is small. That's the whole point. Walk the 88-temple pilgrimage — or even just a piece of it — and feel the noise of modern life fade out. Cross vine bridges over river valleys so green they don't look real. Soak in Dogo Onsen, one of the oldest hot springs in Japan. No crowds, no rush. Just you and an island that's been quietly perfect this entire time.",
     highlights: ["88 Temple Pilgrimage", "Iya Valley", "Dogo Onsen", "Ritsurin Garden"],
-    bestFor: ["hidden_gems", "nature_adventure", "cultural_heritage"],
+    bestFor: ["local_secrets", "zen_wellness", "temples_tradition"],
     coordinates: { lat: 33.8416, lng: 133.5457 },
   },
   {
@@ -121,7 +121,7 @@ export const REGION_DESCRIPTIONS: readonly RegionDescription[] = [
     description:
       "Forget everything you think you know about Japan. Okinawa rewrites the rules. Turquoise water, coral reefs, a culture that's Ryukyuan before it's Japanese. The pace here is slower on purpose. Shuri Castle tells a story the mainland doesn't. The Kerama Islands have beaches that belong on a screensaver but somehow feel untouched. It's Japan — just the version that learned how to exhale.",
     highlights: ["Shuri Castle", "Kerama Islands", "Okinawa Churaumi Aquarium", "Kokusai Street"],
-    bestFor: ["nature_adventure", "hidden_gems"],
+    bestFor: ["nature_adventure", "family_fun", "local_secrets"],
     coordinates: { lat: 26.2124, lng: 127.6809 },
   },
 ] as const;

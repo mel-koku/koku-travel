@@ -24,6 +24,15 @@ const CATEGORY_DEFAULT_DURATIONS: Record<string, number> = {
   entertainment: 120, // Shows, events
   onsen: 90, // Hot springs - soaking + relaxation
 
+  // New specific categories
+  castle: 120, // Japanese castles - extensive grounds
+  cafe: 45, // Cafes - shorter than restaurants
+  theater: 120, // Theater performances
+  aquarium: 120, // Aquariums - walkthrough exhibits
+  zoo: 180, // Zoos - large grounds
+  beach: 180, // Beach visits - leisurely
+  historic_site: 90, // Historic sites - variable
+
   // Generic fallback categories (for legacy data)
   culture: 90, // Generic cultural sites
   nature: 120, // Generic nature (hiking, etc.)

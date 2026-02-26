@@ -36,7 +36,7 @@ describe("regionScoring", () => {
     });
 
     it("scores higher for regions matching selected vibes", () => {
-      const vibes: VibeId[] = ["cultural_heritage"];
+      const vibes: VibeId[] = ["temples_tradition"];
       const result = scoreRegionsForTrip(vibes);
       // Kansai has cultural_heritage in bestFor
       const kansai = result.find((r) => r.region.id === "kansai")!;
@@ -46,7 +46,7 @@ describe("regionScoring", () => {
     });
 
     it("applies 70% vibe + 30% proximity weighting", () => {
-      const vibes: VibeId[] = ["cultural_heritage"];
+      const vibes: VibeId[] = ["temples_tradition"];
       const result = scoreRegionsForTrip(vibes, kansaiEntryPoint);
       const kansai = result.find((r) => r.region.id === "kansai")!;
       const expectedTotal = Math.round(kansai.matchScore * 0.7 + kansai.proximityScore * 0.3);
@@ -68,7 +68,7 @@ describe("regionScoring", () => {
     });
 
     it("marks top 3 as recommended", () => {
-      const result = scoreRegionsForTrip(["cultural_heritage"]);
+      const result = scoreRegionsForTrip(["temples_tradition"]);
       const recommended = result.filter((r) => r.isRecommended);
       expect(recommended).toHaveLength(3);
       // First 3 in array should be recommended
@@ -86,9 +86,9 @@ describe("regionScoring", () => {
     });
 
     it("gives specialization bonus for multiple matching vibes", () => {
-      // Kansai bestFor: cultural_heritage, foodie_paradise
-      const singleVibe = scoreRegionsForTrip(["cultural_heritage"]);
-      const multiVibe = scoreRegionsForTrip(["cultural_heritage", "foodie_paradise"]);
+      // Kansai bestFor: temples_tradition, foodie_paradise
+      const singleVibe = scoreRegionsForTrip(["temples_tradition"]);
+      const multiVibe = scoreRegionsForTrip(["temples_tradition", "foodie_paradise"]);
       const kansaiSingle = singleVibe.find((r) => r.region.id === "kansai")!;
       const kansaiMulti = multiVibe.find((r) => r.region.id === "kansai")!;
       // Multi-vibe match should have higher or equal match score
@@ -98,22 +98,22 @@ describe("regionScoring", () => {
 
   describe("autoSelectRegions", () => {
     it("selects 1 region for ≤5 day trips", () => {
-      const result = autoSelectRegions(["cultural_heritage"], kansaiEntryPoint, 5);
+      const result = autoSelectRegions(["temples_tradition"], kansaiEntryPoint, 5);
       expect(result).toHaveLength(1);
     });
 
     it("selects 2 regions for 6-9 day trips", () => {
-      const result = autoSelectRegions(["cultural_heritage"], kansaiEntryPoint, 7);
+      const result = autoSelectRegions(["temples_tradition"], kansaiEntryPoint, 7);
       expect(result).toHaveLength(2);
     });
 
     it("selects 3 regions for 10+ day trips", () => {
-      const result = autoSelectRegions(["cultural_heritage"], kansaiEntryPoint, 14);
+      const result = autoSelectRegions(["temples_tradition"], kansaiEntryPoint, 14);
       expect(result).toHaveLength(3);
     });
 
     it("defaults to 1 region when no duration", () => {
-      const result = autoSelectRegions(["cultural_heritage"]);
+      const result = autoSelectRegions(["temples_tradition"]);
       expect(result).toHaveLength(1);
     });
 
@@ -125,7 +125,7 @@ describe("regionScoring", () => {
 
   describe("autoSelectCities", () => {
     it("returns cities from 2 regions", () => {
-      const cities = autoSelectCities(["cultural_heritage"], kansaiEntryPoint);
+      const cities = autoSelectCities(["temples_tradition"], kansaiEntryPoint);
       expect(cities.length).toBeGreaterThanOrEqual(2);
       // Should include cities from kansai (entry point region)
       const kansaiCities = ["kyoto", "osaka", "nara", "kobe"];
@@ -141,7 +141,7 @@ describe("regionScoring", () => {
     });
 
     it("picks 2 different regions", () => {
-      const cities = autoSelectCities(["cultural_heritage"], kansaiEntryPoint);
+      const cities = autoSelectCities(["temples_tradition"], kansaiEntryPoint);
       // Should have cities from kansai + at least one other region
       const kansaiCities = new Set(["kyoto", "osaka", "nara", "kobe"]);
       const nonKansaiCities = cities.filter((c) => !kansaiCities.has(c));
@@ -149,7 +149,7 @@ describe("regionScoring", () => {
     });
 
     it("works without entry point", () => {
-      const cities = autoSelectCities(["cultural_heritage"]);
+      const cities = autoSelectCities(["temples_tradition"]);
       expect(cities.length).toBeGreaterThanOrEqual(2);
     });
   });

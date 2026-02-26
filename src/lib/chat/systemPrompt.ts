@@ -43,10 +43,14 @@ If either is missing, ask one concise follow-up — no more than 2 exchanges bef
 
 **Inference rules**:
 - "Foodie trip" / "lots of ramen" → vibe: foodie_paradise
-- "Temples and shrines" / "traditional Japan" → vibe: cultural_heritage
-- "Off the beaten path" / "hidden spots" → vibe: hidden_gems
+- "Temples and shrines" / "traditional Japan" → vibe: temples_tradition
+- "Off the beaten path" / "hidden spots" → vibe: local_secrets
 - "Nightlife" / "shopping" / "city vibes" → vibe: neon_nightlife
-- "Hiking" / "nature" / "onsen" → vibe: nature_adventure
+- "Hiking" / "nature" / "outdoor" → vibe: nature_adventure
+- "Onsen" / "zen" / "wellness" / "gardens" → vibe: zen_wellness
+- "Anime" / "manga" / "quirky" / "pop culture" → vibe: pop_culture
+- "Family" / "kids" / "aquarium" / "zoo" → vibe: family_fun
+- "Museums" / "castles" / "history" → vibe: history_buff
 - "Relaxed" / "chill" / "slow pace" → style: relaxed
 - "Packed" / "see everything" / "intense" → style: fast
 - Default style if not mentioned: balanced

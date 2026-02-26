@@ -127,7 +127,7 @@ export function FilterPanelB({
   const toggleVibe = (vibeId: VibeId) => {
     if (selectedVibes.includes(vibeId)) {
       onVibesChange(selectedVibes.filter((v) => v !== vibeId));
-      if (vibeId === "foodie_paradise") onVegetarianFriendlyChange(false);
+      if (vibeId === "foodie_paradise" || vibeId === "zen_wellness") onVegetarianFriendlyChange(false);
     } else {
       onVibesChange([...selectedVibes, vibeId]);
     }

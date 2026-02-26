@@ -2,8 +2,12 @@
 
 import { useCallback, useMemo } from "react";
 import {
+  BookOpen,
   Camera,
+  Gamepad2,
+  Leaf,
   Mountain,
+  Smile,
   Sparkles,
   Utensils,
   type LucideIcon,
@@ -44,6 +48,10 @@ const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
   Camera: Camera,
   Sparkles: Sparkles,
   Mountain: Mountain,
+  Leaf: Leaf,
+  Gamepad2: Gamepad2,
+  Smile: Smile,
+  BookOpen: BookOpen,
 };
 
 export type VibeSelectorProps = {

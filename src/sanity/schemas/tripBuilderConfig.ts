@@ -35,7 +35,7 @@ export const tripBuilderConfig = defineType({
               title: "Vibe ID",
               type: "string",
               readOnly: true,
-              description: "Must match code enum (e.g., cultural_heritage)",
+              description: "Must match code enum (e.g., temples_tradition)",
               validation: (rule) => rule.required(),
             }),
             defineField({

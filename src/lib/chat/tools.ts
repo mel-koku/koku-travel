@@ -370,7 +370,7 @@ export const chatTools = {
         .array(z.string())
         .optional()
         .describe(
-          "Travel vibe IDs (max 3). Valid IDs: cultural_heritage (temples, shrines, traditional arts), foodie_paradise (ramen, sushi, izakayas, street food), hidden_gems (off-the-beaten-path, photo spots), neon_nightlife (city lights, shopping, entertainment), nature_adventure (mountains, gardens, outdoor wellness)",
+          "Travel vibe IDs (max 3). Valid IDs: temples_tradition (shrines, temples, traditional arts), foodie_paradise (ramen, sushi, izakayas, street food), nature_adventure (mountains, trails, outdoor thrills), zen_wellness (onsen, gardens, quiet retreats), neon_nightlife (city lights, bars, entertainment), pop_culture (anime, manga, quirky cafes), local_secrets (hidden gems, neighborhood favorites), family_fun (aquariums, zoos, parks, beaches), history_buff (museums, castles, historic sites)",
         ),
       style: z
         .enum(["relaxed", "balanced", "fast"])
