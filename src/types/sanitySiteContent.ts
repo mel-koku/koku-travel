@@ -13,8 +13,11 @@ export type LandingPageContent = {
   philosophyEyebrow?: string;
   philosophyHeading?: string;
   philosophyImage?: SanityImageAsset & { url?: string };
+  /** Stats array. `value` may contain literal `{locationCount}` — replace at render time with actual count. */
   philosophyStats?: Array<{
+    /** Numeric string like "47" or "3,950". Use `{locationCount}` for dynamic location count. */
     value: string;
+    /** Appended after the number, e.g. "+" or "%". */
     suffix?: string;
     label: string;
   }>;
