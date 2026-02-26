@@ -154,7 +154,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
             <p className="font-serif italic text-lg text-foreground">
-              {content?.experiencesFilteredEmptyHeading ?? "No experiences of this type yet"}
+              {content?.experiencesFilteredEmptyHeading ?? "No experiences of this type"}
             </p>
             <p className="mt-2 text-sm text-stone">
               {content?.experiencesFilteredEmptyDescription ?? "Try another filter, or see everything."}

@@ -92,7 +92,7 @@ export default function SavedShell() {
               </div>
 
               <h2 className="mt-8 font-serif italic text-2xl text-white sm:text-3xl">
-                No saved places yet
+                No saved places
               </h2>
 
               <ScrollReveal delay={0.3} distance={15}>
