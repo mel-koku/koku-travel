@@ -657,7 +657,7 @@ export const ItineraryShellB = ({
                   exit={{ opacity: 0, scale: 1.02 }}
                   transition={{ duration: bDurationFast, ease: bEase }}
                   className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center backdrop-blur-sm"
-                  style={{ background: "rgba(247,249,251,0.85)" }}
+                  style={{ background: "rgba(248,247,244,0.85)" }}
                 >
                   <h2
                     className="text-2xl font-bold tracking-[-0.04em] sm:text-3xl"

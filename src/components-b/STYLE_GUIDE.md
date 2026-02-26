@@ -19,11 +19,11 @@
 
 | Role                   | Weight         | Color                        | Tracking          | Example                    |
 | ---------------------- | -------------- | ---------------------------- | ----------------- | -------------------------- |
-| Display / Page headers | 700 (bold)     | `--foreground` #1A1D21       | `-0.04em`         | Hero headline              |
-| Section titles         | 700 (bold)     | `--foreground` #1A1D21       | `-0.02em`         | "Places worth the journey" |
+| Display / Page headers | 700 (bold)     | `--foreground` #1C1A17       | `-0.04em`         | Hero headline              |
+| Section titles         | 700 (bold)     | `--foreground` #1C1A17       | `-0.02em`         | "Places worth the journey" |
 | Eyebrow labels         | 600 (semibold) | `--primary` #2D4B8E          | `0.2em` uppercase | "FEATURED PLACES"          |
-| Body text              | 400 (regular)  | `--foreground-body` #475569  | `0`               | Descriptions, paragraphs   |
-| Secondary / Captions   | 400 (regular)  | `--muted-foreground` #64748B | `0`               | Metadata, timestamps       |
+| Body text              | 400 (regular)  | `--foreground-body` #504D48  | `0`               | Descriptions, paragraphs   |
+| Secondary / Captions   | 400 (regular)  | `--muted-foreground` #78736C | `0`               | Metadata, timestamps       |
 | Labels / Buttons       | 500 (medium)   | varies                       | `0`               | Button text, nav items     |
 | Small labels           | 600 (semibold) | `--muted-foreground`         | `0.2em` uppercase | Footer column headers      |
 
@@ -56,18 +56,18 @@ Applied via inline `style={{ fontFamily: "var(--font-inter), system-ui, sans-ser
 
 All defined in `globals.css` under `[data-variant="b"]`. Use `var(--token)` syntax in B components.
 
-### Core Palette
+### Core Palette (Kinari warm neutrals)
 
 | Token                | Hex       | Usage                  |
 | -------------------- | --------- | ---------------------- |
-| `--background`       | `#F7F9FB` | Page background        |
-| `--foreground`       | `#1A1D21` | Headers, primary text  |
-| `--foreground-body`  | `#475569` | Body paragraphs        |
-| `--muted-foreground` | `#64748B` | Captions, metadata     |
+| `--background`       | `#F8F7F4` | Page background        |
+| `--foreground`       | `#1C1A17` | Headers, primary text  |
+| `--foreground-body`  | `#504D48` | Body paragraphs        |
+| `--muted-foreground` | `#78736C` | Captions, metadata     |
 | `--card`             | `#FFFFFF` | Card surfaces          |
 | `--canvas`           | `#FFFFFF` | Alternating section bg |
-| `--surface`          | `#F1F5F9` | Tonal lift / muted bg  |
-| `--border`           | `#E2E8F0` | Borders, inputs        |
+| `--surface`          | `#F1EFEB` | Tonal lift / muted bg  |
+| `--border`           | `#E2DFD9` | Borders, inputs        |
 
 ### Accent & Status
 
@@ -75,18 +75,18 @@ All defined in `globals.css` under `[data-variant="b"]`. Use `var(--token)` synt
 | ------------------------------- | --------- | ------------------------------------------- |
 | `--primary` / `--brand-primary` | `#2D4B8E` | CTAs, links, focus rings, eyebrows          |
 | `--brand-secondary`             | `#3A5FA0` | Hover state for primary                     |
-| `--accent`                      | `#EDF1F8` | Light tint background (avatar badges, tags) |
+| `--accent`                      | `#EDECF3` | Light tint background (avatar badges, tags) |
 | `--success` / `--sage`          | `#059669` | Success states                              |
 | `--warning` / `--terracotta`    | `#D97706` | Warning states                              |
 | `--error` / `--destructive`     | `#EF4444` | Error states                                |
-| `--charcoal`                    | `#0F172A` | Overlays (rare)                             |
+| `--charcoal`                    | `#181714` | Overlays (rare)                             |
 
 ### Usage Rules
 
 - **Never** use raw Tailwind colors (`blue-600`, `gray-500`). Always use `var(--token)`.
 - Reference via `text-[var(--foreground)]`, `bg-[var(--primary)]`, etc.
 - Accent `#2D4B8E` only on: CTA buttons, eyebrow labels, focus rings, link hover, stat suffixes, active nav.
-- Body text = `--foreground-body` (#475569), NOT `--foreground` (that's for headings).
+- Body text = `--foreground-body` (#504D48), NOT `--foreground` (that's for headings).
 
 ---
 
@@ -125,11 +125,11 @@ style={{ boxShadow: "var(--shadow-card)" }}
 
 ### Section Alternation
 
-Alternate between `#F7F9FB` (background) and `#FFFFFF` (white) — no dividers, breathing room via generous vertical padding.
+Alternate between `#F8F7F4` (background) and `#FFFFFF` (white) — no dividers, breathing room via generous vertical padding.
 
 ```
 Hero        → bg-white
-Stats       → bg-[var(--background)]    (#F7F9FB)
+Stats       → bg-[var(--background)]    (#F8F7F4)
 Locations   → bg-white
 Testimonials→ bg-[var(--background)]
 CTA         → bg-white
@@ -141,7 +141,7 @@ CTA         → bg-white
 
 ### Cards
 
-- White (`#FFF`) on `#F7F9FB` background
+- White (`#FFF`) on `#F8F7F4` background
 - `shadow-card` default, no borders
 - `rounded-2xl` (16px)
 - Generous padding: `p-8` for content cards, `p-4` for compact cards
@@ -320,7 +320,7 @@ Minimal: brand + 2 nav columns + copyright. White bg, top border. All links pref
 
 ### Error / 404 Pages
 
-Clean white card on `#F7F9FB` background, Inter bold heading, `--primary` accent buttons. No images, no parallax.
+Clean white card on `#F8F7F4` background, Inter bold heading, `--primary` accent buttons. No images, no parallax.
 
 ---
 

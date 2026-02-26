@@ -261,7 +261,7 @@ export function PlacesMapB({
           "text-allow-overlap": false,
         },
         paint: {
-          "text-color": "#1a1d21",
+          "text-color": "#1c1a17",
           "text-halo-color": "#ffffff",
           "text-halo-width": 1.5,
         },
