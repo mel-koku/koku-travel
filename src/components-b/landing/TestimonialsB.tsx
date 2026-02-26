@@ -47,7 +47,7 @@ export function TestimonialsB({ content }: TestimonialsBProps) {
           What travelers say
         </motion.p>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
           {testimonials.slice(0, 3).map((t, i) => (
             <motion.blockquote
               key={(t as { _key?: string })._key ?? t.authorName ?? i}
@@ -63,7 +63,7 @@ export function TestimonialsB({ content }: TestimonialsBProps) {
                 y: -3,
                 transition: { type: "spring", stiffness: 300, damping: 25 },
               }}
-              className="rounded-2xl bg-white p-8 transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]"
+              className="rounded-2xl bg-white p-5 transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)] sm:p-8"
               style={{ boxShadow: "var(--shadow-card)" }}
             >
               <p className="leading-relaxed text-[var(--foreground-body)]">

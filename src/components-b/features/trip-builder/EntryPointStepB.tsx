@@ -94,7 +94,7 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
       {/* Left — Japan map */}
-      <div className="relative flex items-center justify-center overflow-hidden bg-[var(--surface)] px-8 py-8 lg:w-[60%]">
+      <div className="relative flex min-h-[280px] items-center justify-center overflow-hidden bg-[var(--surface)] px-4 py-6 sm:px-8 sm:py-8 lg:min-h-0 lg:w-[60%]">
         <div className="relative w-full max-w-lg">
           <JapanMapB
             airports={airports}

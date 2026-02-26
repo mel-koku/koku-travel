@@ -245,7 +245,7 @@ export function RegionStepB({
   return (
     <div className="flex flex-1 flex-col bg-[var(--background)]">
       {/* Header — centered like VibeStepB */}
-      <div className="px-4 pt-24 text-center sm:px-6 lg:pt-28">
+      <div className="px-4 pt-16 text-center sm:px-6 sm:pt-24 lg:pt-28">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
           Step 04
         </p>
@@ -386,12 +386,12 @@ export function RegionStepB({
                       <div className="relative pt-4">
                         {/* Caret pointing up toward the expanded card */}
                         <div
-                          className={`absolute top-0 hidden lg:block ${
+                          className={`absolute top-0 hidden sm:block ${
                             expandedLocalIdx === 0
-                              ? "left-[16.67%] -translate-x-1/2"
+                              ? "sm:left-[25%] lg:left-[16.67%] -translate-x-1/2"
                               : expandedLocalIdx === 1
-                                ? "left-[50%] -translate-x-1/2"
-                                : "left-[83.33%] -translate-x-1/2"
+                                ? "left-[50%] lg:left-[50%] -translate-x-1/2"
+                                : "sm:left-[75%] lg:left-[83.33%] -translate-x-1/2"
                           }`}
                         >
                           <div className="h-0 w-0 border-x-8 border-b-8 border-x-transparent border-b-white" />

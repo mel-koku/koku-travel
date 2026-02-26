@@ -64,7 +64,7 @@ export function FeaturedLocationsB({
         </div>
 
         {/* Cards — staggered cascade */}
-        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
           {locations.slice(0, 8).map((loc, i) => (
             <motion.div
               key={loc.id}
