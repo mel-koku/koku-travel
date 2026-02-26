@@ -50,7 +50,7 @@ function SegmentedProgress({
   onStepClick: (step: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="mx-auto flex max-w-md items-center gap-1.5">
       {Array.from({ length: totalSteps - 1 }).map((_, idx) => {
         const step = idx + 1;
         const isActive = step === currentStep;
