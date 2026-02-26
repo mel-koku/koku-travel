@@ -17,7 +17,7 @@ export function RegionDetailPanelB({
   onToggleCity,
 }: RegionDetailPanelBProps) {
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-[var(--shadow-card)] sm:p-5">
+    <div className="mx-auto max-w-3xl rounded-2xl bg-white p-4 shadow-[var(--shadow-card)] sm:p-5">
       {/* Description */}
       <p className="text-sm leading-relaxed text-[var(--foreground-body)]">
         {region.description}
