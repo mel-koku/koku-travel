@@ -42,7 +42,7 @@ export function SavedClientB({ content }: SavedClientBProps) {
     return (
       <div className="min-h-[100dvh] pt-32 lg:pt-36">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center py-32">
-          <p className="text-[var(--error)]">Your saved places didn&apos;t load. Give it another shot.</p>
+          <p className="text-[var(--error)]">Your saved places didn&apos;t load. Try again.</p>
           <button
             onClick={() => window.location.reload()}
             className="mt-4 text-sm font-medium text-[var(--primary)] hover:underline"
