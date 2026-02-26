@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useLenis } from "lenis/react";
@@ -91,6 +90,24 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
     return parts.length > 0 ? parts.join(", ") : null;
   }, [loc.serviceOptions]);
 
+  const accessibilityBadges = useMemo(() => {
+    const a = loc.accessibilityOptions;
+    if (!a) return [];
+    const badges: { key: string; label: string }[] = [];
+    if (a.wheelchairAccessibleEntrance) badges.push({ key: "entrance", label: "Wheelchair entrance" });
+    if (a.wheelchairAccessibleParking) badges.push({ key: "parking", label: "Wheelchair parking" });
+    if (a.wheelchairAccessibleRestroom) badges.push({ key: "restroom", label: "Wheelchair restroom" });
+    if (a.wheelchairAccessibleSeating) badges.push({ key: "seating", label: "Wheelchair seating" });
+    return badges;
+  }, [loc.accessibilityOptions]);
+
+  const goodForPills = useMemo(() => {
+    const pills: { key: string; label: string }[] = [];
+    if (loc.goodForChildren) pills.push({ key: "children", label: "Families" });
+    if (loc.goodForGroups) pills.push({ key: "groups", label: "Groups" });
+    return pills;
+  }, [loc.goodForChildren, loc.goodForGroups]);
+
   // Guidance tips
   const [tips, setTips] = useState<TravelGuidance[]>([]);
   useEffect(() => {
@@ -139,6 +156,7 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
   const hasOpeningHours =
     (details?.currentOpeningHours?.length ?? 0) >= 3 ||
     (details?.regularOpeningHours?.length ?? 0) >= 3;
+  const hasLinks = details?.websiteUri || details?.internationalPhoneNumber || details?.googleMapsUri;
 
   return (
     <>
@@ -397,6 +415,127 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
             </section>
           )}
 
+          {/* Accessibility */}
+          {accessibilityBadges.length > 0 && (
+            <section className="space-y-2">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
+                Accessibility
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {accessibilityBadges.map((badge) => (
+                  <span
+                    key={badge.key}
+                    className="inline-flex items-center gap-1 rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--foreground-body)]"
+                  >
+                    <svg className="h-3 w-3 text-[var(--muted-foreground)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {badge.label}
+                  </span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Good for */}
+          {goodForPills.length > 0 && (
+            <section className="space-y-2">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
+                Good for
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {goodForPills.map((pill) => (
+                  <span
+                    key={pill.key}
+                    className="rounded-xl bg-white px-3 py-1 text-sm text-[var(--foreground-body)]"
+                    style={{ boxShadow: "var(--shadow-card)" }}
+                  >
+                    {pill.label}
+                  </span>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Reviews */}
+          {details?.reviews && details.reviews.length > 0 && (
+            <section className="space-y-2.5">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
+                Reviews
+              </h3>
+              <div className="space-y-2">
+                {details.reviews
+                  .filter((r) => r.text && r.text.length > 20)
+                  .slice(0, 3)
+                  .map((review, i) => (
+                    <div
+                      key={i}
+                      className="rounded-2xl bg-[var(--surface)] p-4"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        {review.rating && (
+                          <span className="flex items-center gap-0.5">
+                            {Array.from({ length: review.rating }, (_, j) => (
+                              <svg key={j} className="h-3 w-3 text-[var(--warning)]" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="m12 17.27 5.18 3.11-1.64-5.81L20.9 9.9l-6-0.52L12 4 9.1 9.38l-6 .52 5.36 4.67L6.82 20.38 12 17.27z" />
+                              </svg>
+                            ))}
+                          </span>
+                        )}
+                        <span className="text-[11px] text-[var(--muted-foreground)]">{review.authorName}</span>
+                        {review.relativePublishTimeDescription && (
+                          <span className="text-[11px] text-[var(--muted-foreground)]">&middot; {review.relativePublishTimeDescription}</span>
+                        )}
+                      </div>
+                      <p className="text-xs leading-relaxed text-[var(--foreground-body)] line-clamp-3">
+                        {review.text}
+                      </p>
+                    </div>
+                  ))}
+              </div>
+            </section>
+          )}
+
+          {/* Address */}
+          {details?.formattedAddress && (
+            <section className="space-y-1">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
+                Address
+              </h3>
+              <p className="text-sm text-[var(--foreground-body)]">{details.formattedAddress}</p>
+            </section>
+          )}
+
+          {/* Links */}
+          {hasLinks && (
+            <section className="space-y-2">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
+                Links
+              </h3>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                {details!.websiteUri && (
+                  <a href={details!.websiteUri} target="_blank" rel="noreferrer" className="text-[var(--primary)] transition hover:underline">
+                    Website
+                  </a>
+                )}
+                {details!.websiteUri && details!.internationalPhoneNumber && (
+                  <span className="text-[var(--muted-foreground)]">&middot;</span>
+                )}
+                {details!.internationalPhoneNumber && (
+                  <span className="text-[var(--foreground-body)]">{details!.internationalPhoneNumber}</span>
+                )}
+                {(details!.websiteUri || details!.internationalPhoneNumber) && details!.googleMapsUri && (
+                  <span className="text-[var(--muted-foreground)]">&middot;</span>
+                )}
+                {details!.googleMapsUri && (
+                  <a href={details!.googleMapsUri} target="_blank" rel="noreferrer" className="text-[var(--primary)] transition hover:underline">
+                    Google Maps
+                  </a>
+                )}
+              </div>
+            </section>
+          )}
+
           {/* Loading indicator */}
           {status === "loading" && (
             <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
@@ -404,19 +543,6 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
               Loading details...
             </div>
           )}
-
-          {/* View full details link */}
-          <div className="pt-2">
-            <Link
-              href={`/b/places/${loc.id}`}
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)] hover:underline transition"
-            >
-              View full details
-              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
         </div>
       </motion.div>
     </>
