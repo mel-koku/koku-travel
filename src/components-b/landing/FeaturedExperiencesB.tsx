@@ -35,7 +35,7 @@ export function FeaturedExperiencesB({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.7, delay: 0.08, ease: bEase }}
-            className="mt-3 text-3xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-4xl"
+            className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl"
           >
             Go beyond sightseeing
           </motion.h2>

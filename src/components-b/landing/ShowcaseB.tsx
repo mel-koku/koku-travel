@@ -87,7 +87,7 @@ export function ShowcaseB({ content }: ShowcaseBProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.7, delay: 0.08, ease: bEase }}
-            className="mt-3 text-3xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-4xl"
+            className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl"
           >
             Three steps to a better trip
           </motion.h2>
@@ -140,7 +140,7 @@ export function ShowcaseB({ content }: ShowcaseBProps) {
                       <span className="mr-2">{act.number}</span>
                       {act.eyebrow}
                     </p>
-                    <h3 className="mt-3 text-2xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl">
+                    <h3 className="mt-3 text-lg font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-xl">
                       {act.title}
                     </h3>
                     <p className="mt-3 leading-relaxed text-[var(--foreground-body)]">
