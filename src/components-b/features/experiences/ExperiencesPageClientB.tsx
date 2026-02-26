@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { ExperienceCardB } from "./ExperienceCardB";
@@ -25,6 +25,19 @@ const EXPERIENCE_TYPE_OPTIONS: { value: ExperienceType; label: string }[] = [
 
 export function ExperiencesPageClientB({ experiences, content }: ExperiencesPageClientBProps) {
   const [selectedType, setSelectedType] = useState<ExperienceType | null>(null);
+  const [isStuck, setIsStuck] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry) setIsStuck(!entry.isIntersecting); },
+      { threshold: 0, rootMargin: "-72px 0px 0px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const typeCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -101,9 +114,24 @@ export function ExperiencesPageClientB({ experiences, content }: ExperiencesPage
         </motion.p>
       </section>
 
+      {/* Sentinel — triggers sticky detection */}
+      <div ref={sentinelRef} className="h-px -mt-px" aria-hidden="true" />
+
       {/* Filter Bar */}
       {filterTypes.length > 1 && (
-        <div className="sticky top-[var(--header-h)] z-40 bg-white/95 backdrop-blur-xl border-b border-[var(--border)]">
+        <div
+          className={cn(
+            "sticky transition-[background-color,box-shadow] duration-300",
+            isStuck ? "z-50" : "z-40"
+          )}
+          style={{
+            top: isStuck ? "calc(var(--header-h) - 3px)" : "var(--header-h)",
+            backgroundColor: isStuck ? "rgba(255,255,255,0.85)" : "transparent",
+            backdropFilter: isStuck ? "blur(20px) saturate(1.5)" : "none",
+            WebkitBackdropFilter: isStuck ? "blur(20px) saturate(1.5)" : "none",
+            boxShadow: isStuck ? "var(--shadow-sm)" : "none",
+          }}
+        >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div
               className="overflow-x-auto scrollbar-hide overscroll-contain py-3"

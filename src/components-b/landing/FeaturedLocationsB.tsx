@@ -44,7 +44,7 @@ export function FeaturedLocationsB({
               delay: 0.08,
               ease: [0.25, 0.1, 0.25, 1],
             }}
-            className="mt-3 text-3xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-4xl"
+            className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl"
           >
             {heading}
           </motion.h2>

@@ -207,7 +207,7 @@ export function ReviewStepB({
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
           Optional
         </p>
-        <h3 className="mt-2 text-lg font-bold text-[var(--foreground)]">
+        <h3 className="mt-2 text-lg font-semibold text-[var(--foreground)]">
           {sanityConfig?.reviewHeading ?? "Fine-tune your trip"}
         </h3>
         <p className="mt-1 text-sm text-[var(--muted-foreground)]">

@@ -17,7 +17,7 @@ export function PlacesIntroB({ totalCount, content }: PlacesIntroBProps) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: bEase }}
-        className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-bold tracking-[-0.025em] leading-[1.1] text-[var(--foreground)]"
+        className="text-[clamp(1.75rem,3.5vw,2.75rem)] font-semibold tracking-[-0.025em] leading-[1.1] text-[var(--foreground)]"
       >
         {content?.placesHeading ?? "Explore Japan"}
       </motion.h1>
@@ -26,7 +26,7 @@ export function PlacesIntroB({ totalCount, content }: PlacesIntroBProps) {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.08, ease: bEase }}
-        className="mt-3 text-[15px] text-[var(--muted-foreground)]"
+        className="mt-3 text-base text-[var(--muted-foreground)]"
       >
         {totalCount.toLocaleString()} temples, restaurants, hidden gems, and more
       </motion.p>

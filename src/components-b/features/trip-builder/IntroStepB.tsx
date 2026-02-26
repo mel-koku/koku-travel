@@ -96,7 +96,7 @@ export function IntroStepB({
           </motion.p>
 
           <motion.h1
-            className="mt-4 text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.1] tracking-[-0.04em] text-[var(--foreground)]"
+            className="mt-4 text-[clamp(2.25rem,5vw,4.5rem)] font-bold leading-[1.1] tracking-[-0.04em] text-[var(--foreground)]"
             {...fadeUp(0.2)}
           >
             {heading}
