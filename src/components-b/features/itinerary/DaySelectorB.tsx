@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useEffect, useRef, useCallback } from "react";
+import { useMemo, useEffect, useRef, useCallback, useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 
@@ -123,6 +123,37 @@ export const DaySelectorB = ({
     []
   );
 
+  // Scroll indicator state
+  const [scrollInfo, setScrollInfo] = useState({ ratio: 0, thumbRatio: 1 });
+
+  const updateScrollInfo = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const overflowWidth = scrollWidth - clientWidth;
+    if (overflowWidth <= 0) {
+      setScrollInfo({ ratio: 0, thumbRatio: 1 });
+    } else {
+      setScrollInfo({
+        ratio: scrollLeft / overflowWidth,
+        thumbRatio: clientWidth / scrollWidth,
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    updateScrollInfo();
+    el.addEventListener("scroll", updateScrollInfo, { passive: true });
+    const ro = new ResizeObserver(updateScrollInfo);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateScrollInfo);
+      ro.disconnect();
+    };
+  }, [updateScrollInfo, days.length]);
+
   if (days.length === 0) {
     return (
       <p className="text-sm text-[var(--muted-foreground)]">
@@ -131,78 +162,97 @@ export const DaySelectorB = ({
     );
   }
 
-  return (
-    <div
-      ref={scrollContainerRef}
-      data-lenis-prevent
-      className="flex gap-2 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide py-1 px-1"
-      role="tablist"
-      aria-label="Day selector"
-    >
-      {days.map(({ index, label, isToday }) => {
-        const isActive = index === selected;
-        const healthLevel = dayHealthLevels?.[index];
+  const showScrollBar = scrollInfo.thumbRatio < 1;
 
-        return (
-          <motion.button
-            key={index}
-            ref={(el) => setPillRef(index, el)}
-            type="button"
-            role="tab"
-            aria-selected={isActive}
-            aria-label={`${label}${isToday ? " (Today)" : ""}`}
-            onClick={() => onChange(index)}
-            className={cn(
-              "relative flex-shrink-0 snap-start rounded-xl px-4 text-sm font-medium whitespace-nowrap transition-colors",
-              "min-h-[44px] flex items-center justify-center",
-              "active:scale-[0.98]",
-              isActive
-                ? "bg-[var(--primary)] text-white shadow-[var(--shadow-sm)]"
-                : "bg-white text-[var(--foreground)] hover:bg-[var(--surface)]"
-            )}
-            animate={
-              isActive
-                ? { scale: 1 }
-                : { scale: 1 }
-            }
-            whileTap={{ scale: 0.98 }}
-            transition={
-              isActive
-                ? { type: "spring", stiffness: 400, damping: 30 }
-                : { duration: 0.2, ease: bEase }
-            }
-          >
-            <span className="flex items-center gap-1.5">
-              {label}
-              {isToday && (
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div
+        ref={scrollContainerRef}
+        data-lenis-prevent
+        className="flex gap-2 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide py-1 px-1"
+        role="tablist"
+        aria-label="Day selector"
+      >
+        {days.map(({ index, label, isToday }) => {
+          const isActive = index === selected;
+          const healthLevel = dayHealthLevels?.[index];
+
+          return (
+            <motion.button
+              key={index}
+              ref={(el) => setPillRef(index, el)}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              aria-label={`${label}${isToday ? " (Today)" : ""}`}
+              onClick={() => onChange(index)}
+              className={cn(
+                "relative flex-shrink-0 snap-start rounded-xl px-4 text-sm font-medium whitespace-nowrap transition-colors",
+                "min-h-[44px] flex items-center justify-center",
+                "active:scale-[0.98]",
+                isActive
+                  ? "bg-[var(--primary)] text-white shadow-[var(--shadow-sm)]"
+                  : "bg-white text-[var(--foreground)] hover:bg-[var(--surface)]"
+              )}
+              animate={
+                isActive
+                  ? { scale: 1 }
+                  : { scale: 1 }
+              }
+              whileTap={{ scale: 0.98 }}
+              transition={
+                isActive
+                  ? { type: "spring", stiffness: 400, damping: 30 }
+                  : { duration: 0.2, ease: bEase }
+              }
+            >
+              <span className="flex items-center gap-1.5">
+                {label}
+                {isToday && (
+                  <span
+                    className={cn(
+                      "text-[10px] font-semibold",
+                      isActive
+                        ? "text-white/80"
+                        : "text-[var(--primary)]"
+                    )}
+                  >
+                    (Today)
+                  </span>
+                )}
+              </span>
+
+              {/* Health indicator dot */}
+              {healthLevel && (
                 <span
                   className={cn(
-                    "text-[10px] font-semibold",
-                    isActive
-                      ? "text-white/80"
-                      : "text-[var(--primary)]"
+                    "absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full ring-2",
+                    isActive ? "ring-[var(--primary)]" : "ring-white",
+                    healthLevel === "good" && "bg-[var(--success)]",
+                    healthLevel === "fair" && "bg-[var(--warning)]",
+                    healthLevel === "poor" && "bg-[var(--error)]"
                   )}
-                >
-                  (Today)
-                </span>
+                />
               )}
-            </span>
+            </motion.button>
+          );
+        })}
+      </div>
 
-            {/* Health indicator dot */}
-            {healthLevel && (
-              <span
-                className={cn(
-                  "absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full ring-2",
-                  isActive ? "ring-[var(--primary)]" : "ring-white",
-                  healthLevel === "good" && "bg-[var(--success)]",
-                  healthLevel === "fair" && "bg-[var(--warning)]",
-                  healthLevel === "poor" && "bg-[var(--error)]"
-                )}
-              />
-            )}
-          </motion.button>
-        );
-      })}
+      {/* Horizontal scroll indicator bar */}
+      {showScrollBar && (
+        <div className="mx-1 h-1 rounded-full bg-[var(--border)]" aria-hidden>
+          <motion.div
+            className="h-full rounded-full"
+            style={{
+              width: `${scrollInfo.thumbRatio * 100}%`,
+              marginLeft: `${scrollInfo.ratio * (1 - scrollInfo.thumbRatio) * 100}%`,
+              backgroundColor: "color-mix(in srgb, var(--primary) 40%, transparent)",
+            }}
+            transition={{ duration: 0.1, ease: "linear" }}
+          />
+        </div>
+      )}
     </div>
   );
 };
