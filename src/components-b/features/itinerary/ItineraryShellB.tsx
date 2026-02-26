@@ -462,7 +462,7 @@ export const ItineraryShellB = ({
 
   return (
     <section
-      className="mx-auto min-h-[100dvh] max-w-screen-2xl"
+      className="mx-auto min-h-[100dvh] max-w-screen-2xl lg:fixed lg:inset-x-0 lg:top-[var(--header-h)] lg:bottom-0 lg:min-h-0 lg:overflow-hidden"
       style={{ background: "var(--background)" }}
     >
       {/* ── Mobile peek map strip (< lg) ── */}
@@ -551,8 +551,8 @@ export const ItineraryShellB = ({
       </div>
 
       {/* ── Desktop layout: 50-50 split ── */}
-      <div className="flex flex-col lg:flex-row lg:gap-0">
-        {/* Left: Cards Panel (50%) */}
+      <div className="flex flex-col lg:h-full lg:flex-row lg:gap-0">
+        {/* Left: Cards Panel (50%) — header bar stays, activities scroll */}
         <div className="flex flex-col lg:w-1/2">
           {/* ── Header bar ── */}
           <div
@@ -635,6 +635,7 @@ export const ItineraryShellB = ({
           {/* ── Activities List ── */}
           <div
             data-itinerary-activities
+            data-lenis-prevent
             className="relative flex-1 overflow-y-auto overscroll-contain p-4 pb-[env(safe-area-inset-bottom)] lg:p-5"
             style={{ background: "var(--background)" }}
           >
@@ -805,8 +806,8 @@ export const ItineraryShellB = ({
           </div>
         </div>
 
-        {/* Right: Sticky Map — desktop only (50%) */}
-        <div className="hidden lg:sticky lg:top-[var(--header-h)] lg:block lg:h-[calc(100dvh-var(--header-h))] lg:w-1/2">
+        {/* Right: Map — desktop only (50%) */}
+        <div className="hidden lg:block lg:w-1/2">
           <div className="h-full">
             <ErrorBoundary
               fallback={
