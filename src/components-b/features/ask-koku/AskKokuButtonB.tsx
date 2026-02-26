@@ -9,7 +9,7 @@ import type { AskKokuContext } from "./AskKokuSuggestionsB";
 
 const bEase = [0.25, 0.1, 0.25, 1] as const;
 
-const HIDDEN_PATHS = ["/b/places", "/studio"];
+const HIDDEN_PATHS = ["/b/places", "/b/trip-builder", "/studio"];
 
 function deriveContext(pathname: string): AskKokuContext {
   if (pathname.startsWith("/b/places")) return "places";

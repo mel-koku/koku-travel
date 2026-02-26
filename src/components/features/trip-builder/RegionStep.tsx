@@ -365,7 +365,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
           </motion.h2>
 
           <p className="mt-3 text-sm text-stone lg:text-base">
-            {sanityConfig?.regionStepDescription ?? "Pick your cities. Highlighted ones match your travel style."}
+            {sanityConfig?.regionStepDescription ?? "Pick your cities. Highlighted ones match your vibes."}
           </p>
 
           <CitySearchBar
