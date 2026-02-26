@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAppState } from "@/state/AppState";
 import { useBookmarks } from "@/hooks/useBookmarksQuery";
-import { PortableTextBody } from "@/components/features/guides/PortableTextBody";
+import { PortableTextBodyB } from "@b/features/guides/PortableTextBodyB";
 import type { SanityExperience } from "@/types/sanityExperience";
 import type { ExperienceSummary } from "@/types/experience";
 import type { Location } from "@/types/location";
@@ -162,7 +162,7 @@ export function ExperienceDetailClientB({
       {/* Body */}
       <section className="bg-white">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
-          <PortableTextBody body={experience.body} />
+          <PortableTextBodyB body={experience.body} />
         </div>
       </section>
 
