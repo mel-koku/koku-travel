@@ -63,7 +63,7 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
 
   return (
     <div className={cn(
-      "rounded-lg border border-border backdrop-blur-sm",
+      "rounded-xl border border-border backdrop-blur-sm",
       isDark ? "bg-surface/50" : "bg-background/80",
       className,
     )}>

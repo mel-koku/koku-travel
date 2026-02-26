@@ -158,7 +158,7 @@ export function AccountClient({ content }: AccountClientProps) {
       <section className="bg-background py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal distance={20}>
-            <div className="rounded-2xl border border-border bg-surface p-6 shadow-sm space-y-6">
+            <div className="rounded-xl border border-border bg-surface p-6 shadow-sm space-y-6">
               {supabaseUnavailable && (
                 <div className="rounded-xl border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-foreground">
                   Cloud sync is disabled because Supabase credentials are not configured. Set
@@ -188,7 +188,7 @@ export function AccountClient({ content }: AccountClientProps) {
                   <label className="text-sm text-foreground-secondary block">
                     {content?.accountDisplayNameLabel ?? "Display name"}
                     <input
-                      className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                      className="mt-1 w-full h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                       value={user.displayName}
                       onChange={(e) => onNameChange(e.target.value)}
                     />
@@ -265,7 +265,7 @@ function EmailForm({ content }: { content?: PagesContent }) {
         type="email"
         required
         disabled={supabaseUnavailable}
-        className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+        className="mt-1 w-full h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
         placeholder={content?.accountEmailPlaceholder ?? "name@example.com"}
         value={email}
         onChange={(e) => setEmail(e.target.value)}

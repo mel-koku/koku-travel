@@ -85,8 +85,8 @@ export function DragHandle({
       data-dragging={isDragging}
       className={
         isPlace
-          ? "font-mono text-[10px] uppercase tracking-[0.08em] whitespace-nowrap rounded-full bg-white/85 px-3 py-1.5 text-charcoal/80 shadow-sm backdrop-blur-md transition-all cursor-grab hover:bg-white/95 hover:text-charcoal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-95 active:scale-95"
-          : "font-mono text-[10px] uppercase tracking-[0.08em] whitespace-nowrap rounded-md px-2 py-1 text-sage transition-all cursor-grab hover:bg-sage/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-95 active:scale-95"
+          ? "font-mono text-[10px] uppercase tracking-[0.08em] whitespace-nowrap rounded-full bg-white/85 px-3 py-1.5 text-charcoal/80 shadow-sm backdrop-blur-md transition-all cursor-grab hover:bg-white/95 hover:text-charcoal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.98] active:scale-[0.98]"
+          : "font-mono text-[10px] uppercase tracking-[0.08em] whitespace-nowrap rounded-xl px-2 py-1 text-sage transition-all cursor-grab hover:bg-sage/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary data-[dragging=true]:cursor-grabbing data-[dragging=true]:scale-[0.98] active:scale-[0.98]"
       }
       {...dragAttributeProps}
       {...dragHandleListeners}

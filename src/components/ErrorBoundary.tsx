@@ -79,7 +79,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-destructive/20 bg-destructive/10 p-8">
           <div className="text-center">
-            <h2 className="mb-2 text-xl font-semibold text-destructive">
+            <h2 className="mb-2 font-serif text-xl italic text-destructive">
               Something went wrong
             </h2>
             <p className="mb-4 text-sm text-destructive/80">

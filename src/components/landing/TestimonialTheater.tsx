@@ -152,7 +152,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
   if (!featured) return null;
 
   return (
-    <section className="bg-background">
+    <section className="bg-background py-12 sm:py-20 lg:py-28">
       {/* Featured testimonial — full-bleed hero moment */}
       <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
         <Image
@@ -230,7 +230,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
               aria-label="Scroll left"
               onClick={() => scroll("left")}
               className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground",
+                "flex h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground",
                 canScrollLeft ? "opacity-100" : "pointer-events-none opacity-30"
               )}
             >
@@ -240,7 +240,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
               aria-label="Scroll right"
               onClick={() => scroll("right")}
               className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground",
+                "flex h-11 w-11 items-center justify-center rounded-full border border-border/50 bg-surface text-foreground-secondary transition-all hover:text-foreground",
                 canScrollRight ? "opacity-100" : "pointer-events-none opacity-30"
               )}
             >

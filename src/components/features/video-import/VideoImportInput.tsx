@@ -189,7 +189,7 @@ export function VideoImportInput({ onImportComplete, className = "" }: VideoImpo
               onKeyDown={(e) => { if (e.key === "Enter") handleRetryWithHint(); }}
               placeholder="e.g. ramen shop in Shibuya"
               maxLength={200}
-              className="flex-1 rounded-xl border border-border bg-surface/50 px-3 py-2 text-sm text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition"
+              className="flex-1 rounded-xl border border-border bg-surface/50 px-3 py-2 text-base text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition"
             />
             <button
               type="button"

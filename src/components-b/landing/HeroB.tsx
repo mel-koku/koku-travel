@@ -79,7 +79,7 @@ export function HeroB({ locationCount, content }: HeroBProps) {
                 href="/b/trip-builder"
                 className="inline-flex h-12 items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
               >
-                {content?.heroPrimaryCtaText ?? "Start Planning"}
+                {content?.heroPrimaryCtaText ?? "Build My Trip"}
               </Link>
               <Link
                 href="/b/places"

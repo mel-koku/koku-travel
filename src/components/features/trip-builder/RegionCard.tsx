@@ -44,7 +44,7 @@ export function RegionCard({
       whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
       layout
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border-2 bg-background transition-all duration-200",
+        "group relative flex flex-col overflow-hidden rounded-xl border-2 bg-background transition-all duration-200",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
         isSelected
           ? "border-brand-primary shadow-lg ring-1 ring-brand-primary/20"

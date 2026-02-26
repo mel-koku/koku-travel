@@ -551,7 +551,7 @@ function MobileRegionDetail({
               return (
                 <span
                   key={vibeId}
-                  className="rounded-lg bg-brand-primary/10 px-2.5 py-1 text-xs font-medium text-brand-primary"
+                  className="rounded-xl bg-brand-primary/10 px-2.5 py-1 text-xs font-medium text-brand-primary"
                 >
                   {vibe.name}
                 </span>

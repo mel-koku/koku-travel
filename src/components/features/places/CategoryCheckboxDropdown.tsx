@@ -107,7 +107,7 @@ export function CategoryCheckboxDropdown({
             id={menuId}
             role="listbox"
             aria-labelledby={triggerId}
-            className="absolute z-50 mt-2 w-full rounded-2xl border border-border bg-background p-2 shadow-lg ring-1 ring-charcoal/10 focus:outline-none max-h-[min(20rem,60vh)] overflow-y-auto"
+            className="absolute z-50 mt-2 w-full rounded-xl border border-border bg-background p-2 shadow-lg ring-1 ring-charcoal/10 focus:outline-none max-h-[min(20rem,60vh)] overflow-y-auto"
             tabIndex={-1}
           >
             <div className="py-1 space-y-1">

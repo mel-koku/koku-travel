@@ -101,7 +101,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
       <div
         ref={ref}
         style={dragStyles}
-        className={`rounded-2xl border border-dashed border-sage/30 bg-sage/10 p-4 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
+        className={`rounded-xl border border-dashed border-sage/30 bg-sage/10 p-4 shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${
           isDragging ? "ring-2 ring-sage/30 shadow-md" : ""
         }`}
         data-kind="note"
@@ -157,7 +157,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
                   <input
                     id={noteStartId}
                     type="time"
-                    className="h-10 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    className="h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     value={noteStartTime}
                     onChange={(event) => {
                       const value = event.target.value;
@@ -177,7 +177,7 @@ export const NoteActivityRow = forwardRef<HTMLDivElement, NoteActivityRowProps>(
                   <input
                     id={noteEndId}
                     type="time"
-                    className="h-10 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                    className="h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
                     value={noteEndTime}
                     onChange={(event) => {
                       const value = event.target.value;

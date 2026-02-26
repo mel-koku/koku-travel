@@ -76,7 +76,7 @@ export function DayStartTimePicker({ currentTime, onChange }: DayStartTimePicker
       label={triggerLabel()}
       items={dropdownItems}
       align="start"
-      triggerClassName="!bg-transparent !px-2 !py-1 hover:!bg-sage/10 !rounded-lg"
+      triggerClassName="!bg-transparent !px-2 !py-1 hover:!bg-sage/10 !rounded-xl"
       menuClassName="w-40"
     />
   );

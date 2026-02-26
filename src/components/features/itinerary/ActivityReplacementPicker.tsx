@@ -90,14 +90,14 @@ export function ActivityReplacementPicker({
         {/* Sort controls */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-foreground-secondary">Sort by:</span>
-          <div className="flex gap-1 rounded-lg border border-border p-1">
+          <div className="flex gap-1 rounded-xl border border-border p-1">
             {(["score", "rating", "distance"] as const).map((option) => (
               <button
                 key={option}
                 onClick={() => setSortBy(option)}
                 aria-label={`Sort by ${option}`}
                 aria-pressed={sortBy === option}
-                className={`rounded-md px-3 py-1 text-xs font-medium transition ${
+                className={`rounded-xl px-3 py-1 text-xs font-medium transition ${
                   sortBy === option
                     ? "bg-brand-primary text-white"
                     : "text-foreground-secondary hover:bg-surface"
@@ -129,7 +129,7 @@ export function ActivityReplacementPicker({
               return (
                 <div
                   key={location.id}
-                  className={`rounded-2xl border-2 p-4 transition ${
+                  className={`rounded-xl border-2 p-4 transition ${
                     isSelected
                       ? "border-brand-primary bg-brand-primary/5"
                       : "border-border bg-background hover:border-brand-primary/30"
@@ -144,7 +144,7 @@ export function ActivityReplacementPicker({
                             alt={location.name}
                             width={80}
                             height={80}
-                            className="h-20 w-20 shrink-0 rounded-lg object-cover"
+                            className="h-20 w-20 shrink-0 rounded-xl object-cover"
                           />
                         )}
                         <div className="flex-1 min-w-0">

@@ -463,7 +463,7 @@ export function ItineraryMap({
         className="absolute inset-0 h-full w-full"
         aria-label="Map showing planned activities"
       />
-      <div className="pointer-events-none absolute bottom-4 left-4 rounded-lg bg-background/80 px-3 py-2 text-xs text-foreground shadow-lg backdrop-blur-sm">
+      <div className="pointer-events-none absolute bottom-4 left-4 rounded-xl bg-background/80 px-3 py-2 text-xs text-foreground shadow-lg backdrop-blur-sm">
         <p className="font-semibold">{day.dateLabel ?? "Planned day"}</p>
         <p className="text-foreground-secondary">{activityPoints.length} stop{activityPoints.length === 1 ? "" : "s"}</p>
       </div>

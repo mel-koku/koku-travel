@@ -87,7 +87,7 @@ export function SharedClientB({ trip }: SharedClientBProps) {
             className="mt-6 inline-flex items-center rounded-xl px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-[0.98]"
             style={{ backgroundColor: "var(--primary)" }}
           >
-            Start Planning
+            Build My Trip
           </Link>
         </div>
       </div>

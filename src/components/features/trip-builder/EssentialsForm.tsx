@@ -106,7 +106,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="text-lg font-semibold text-foreground">Trip Essentials</h3>
+        <h3 className="font-serif text-lg italic text-foreground">Trip Essentials</h3>
         <p className="mt-1 text-sm text-foreground-secondary">
           Set the basics for your Japan adventure.
         </p>
@@ -164,7 +164,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
       </div>
 
       {calculatedDuration !== null && calculatedDuration >= MIN_DURATION && calculatedDuration <= MAX_DURATION && (
-        <div className="rounded-lg border border-border bg-surface px-4 py-3">
+        <div className="rounded-xl border border-border bg-surface px-4 py-3">
           <p className="text-sm text-foreground-secondary">
             <Calendar className="mr-2 inline h-5 w-5" />
             <span className="font-medium text-foreground">

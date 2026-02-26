@@ -53,7 +53,7 @@ export function PlaceActivityDetails({
 
           {/* Operating hours — only show if >= 3 days (filters out bad 1-day data) */}
           {locationDetails?.regularOpeningHours && locationDetails.regularOpeningHours.length >= 3 && (
-            <div className="mt-3 rounded-lg bg-surface/70 p-2.5">
+            <div className="mt-3 rounded-xl bg-surface/70 p-2.5">
               <p className="mb-1.5 text-xs font-semibold text-foreground">Hours</p>
               <div className="space-y-0.5">
                 {locationDetails.regularOpeningHours.slice(0, 7).map((hours, idx) => (
@@ -65,7 +65,7 @@ export function PlaceActivityDetails({
 
           {/* All tips when expanded (show more than 2) */}
           {tips.length > 2 && (
-            <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
+            <div className="mt-3 rounded-xl bg-sage/5 p-2.5">
               <p className="mb-1.5 text-xs font-semibold text-foreground">All Tips</p>
               <div className="space-y-1">
                 {tips.slice(2).map((tip, index) => (

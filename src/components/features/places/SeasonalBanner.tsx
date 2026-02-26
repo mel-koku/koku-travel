@@ -93,7 +93,7 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
               type="button"
               onClick={handleDismiss}
               aria-label="Dismiss seasonal banner"
-              className="shrink-0 flex h-7 w-7 items-center justify-center rounded-full text-foreground-secondary hover:text-foreground hover:bg-surface/50 transition-colors"
+              className="shrink-0 flex h-11 w-11 items-center justify-center rounded-full text-foreground-secondary hover:text-foreground hover:bg-surface/50 transition-colors"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

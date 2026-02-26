@@ -555,7 +555,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
     <>
       <aside className="flex h-full flex-col p-4">
       <header className="mb-4">
-        <h2 className="font-mono text-lg font-semibold text-foreground">{dayDateLabel}</h2>
+        <h2 className="font-serif text-lg italic text-foreground">{dayDateLabel}</h2>
         <p className="text-sm text-stone">
           Your stops for the day, mapped out.
         </p>
@@ -601,7 +601,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
         )}
         {isPlanning ? (
           <div className="pointer-events-none absolute inset-0 flex items-end justify-end p-3">
-            <div className="rounded-lg bg-brand-primary/90 px-3 py-1 text-xs font-semibold text-white shadow-lg">
+            <div className="rounded-xl bg-brand-primary/90 px-3 py-1 text-xs font-semibold text-white shadow-lg">
               Updating schedule…
             </div>
           </div>
