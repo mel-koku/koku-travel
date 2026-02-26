@@ -73,7 +73,7 @@ export function FeaturedExperiencesB({
             >
               <Link
                 href={`/b/experiences/${exp.slug}`}
-                className="group block overflow-hidden rounded-2xl bg-[var(--card)]"
+                className="group block overflow-hidden rounded-2xl bg-[var(--surface)] shadow-[var(--shadow-card)]"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image

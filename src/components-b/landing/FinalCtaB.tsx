@@ -10,7 +10,7 @@ type FinalCtaBProps = {
 
 export function FinalCtaB({ content }: FinalCtaBProps) {
   return (
-    <section className="bg-white py-16 sm:py-24 lg:py-32">
+    <section className="bg-white pb-16 pt-4 sm:pb-24 sm:pt-6 lg:pb-32 lg:pt-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 12, scale: 0.98 }}
