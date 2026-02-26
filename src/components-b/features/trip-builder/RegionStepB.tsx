@@ -11,7 +11,6 @@ import {
   autoSelectCities,
 } from "@/lib/tripBuilder/regionScoring";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
-import { RegionMapCanvas } from "@/components/features/trip-builder/RegionMapCanvas";
 import { CitySearchBar } from "@/components/features/trip-builder/CitySearchBar";
 import { RegionRowB, type RegionSelectionState } from "./RegionRowB";
 import { RegionDetailPanelB } from "./RegionDetailPanelB";
@@ -95,11 +94,6 @@ export function RegionStepB({
   }, []);
 
   const allCitiesData = useMemo(() => getAllCities(), []);
-
-  const derivedRegions = useMemo(
-    () => deriveRegionsFromCities(Array.from(selectedCities)),
-    [selectedCities],
-  );
 
   const selectedCityNames = useMemo(() => {
     const knownCityMap = new Map<string, string>();
@@ -225,124 +219,158 @@ export function RegionStepB({
   );
 
   return (
-    <div className="relative min-h-[calc(100dvh-5rem)] bg-[var(--background)]">
-      {/* Map canvas — fixed */}
-      <div className="fixed inset-0 z-0">
-        <RegionMapCanvas
-          hoveredRegion={expandedRegion}
-          selectedRegions={derivedRegions}
-        />
-      </div>
+    <div className="flex flex-1 flex-col bg-[var(--background)]">
+      {/* Header — centered like VibeStepB */}
+      <div className="px-4 pt-24 text-center sm:px-6 lg:pt-28">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
+          Step 04
+        </p>
 
-      {/* Scrollable content */}
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="px-4 pt-24 sm:px-6 lg:max-w-[45%] lg:px-10 lg:pt-28">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
-            Step 04
-          </p>
+        <motion.h2
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
+          className="mt-3 text-2xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl"
+        >
+          {sanityConfig?.regionStepHeading ?? "Where are you headed?"}
+        </motion.h2>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
-            className="mt-3 text-3xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-4xl"
-          >
-            {sanityConfig?.regionStepHeading ?? "Where are you headed?"}
-          </motion.h2>
+        <p className="mt-3 text-sm text-[var(--muted-foreground)]">
+          {sanityConfig?.regionStepDescription ??
+            "Pick your cities. Highlighted ones match your vibes."}
+        </p>
 
-          <p className="mt-3 text-sm text-[var(--muted-foreground)] lg:text-base">
-            {sanityConfig?.regionStepDescription ??
-              "Pick your cities. Highlighted ones match your travel style."}
-          </p>
-
+        <div className="mx-auto mt-4 max-w-md">
           <CitySearchBar
             selectedCities={selectedCities}
             onSelectCity={toggleCity}
           />
-
-          {/* Selected city chips */}
-          {selectedCities.size > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-2">
-              {selectedCityNames.map((name, i) => {
-                const cityId = Array.from(selectedCities)[i];
-                return (
-                  <motion.span
-                    key={cityId}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex items-center gap-1.5 rounded-full bg-[var(--primary)]/10 px-3 py-1.5 text-sm text-[var(--foreground)]"
-                  >
-                    {name}
-                    <button
-                      type="button"
-                      onClick={() => toggleCity(cityId!)}
-                      className="flex items-center justify-center rounded-full p-0.5 transition-colors hover:bg-[var(--primary)]/20"
-                      aria-label={`Remove ${name}`}
-                    >
-                      <X className="h-3 w-3 text-[var(--muted-foreground)] hover:text-[var(--foreground)]" />
-                    </button>
-                  </motion.span>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-[var(--warning)]">
-              Select at least one city
-            </p>
-          )}
         </div>
 
-        {/* Region rows — accordion style */}
-        <div className="mt-8 space-y-3 px-4 pb-32 sm:px-6 lg:max-w-[45%] lg:px-8">
-          {scoredRegions.map((scored, i) => {
-            const { selected, total } = getCityCounts(scored.region.id);
-            const regionDef = REGIONS.find(
-              (r) => r.id === scored.region.id,
+        {/* Selected city chips */}
+        {selectedCities.size > 0 ? (
+          <div className="mx-auto mt-3 flex max-w-3xl flex-wrap justify-center gap-2">
+            {selectedCityNames.map((name, i) => {
+              const cityId = Array.from(selectedCities)[i];
+              return (
+                <motion.span
+                  key={cityId}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center gap-1.5 rounded-full bg-[var(--primary)]/10 px-3 py-1.5 text-sm text-[var(--foreground)]"
+                >
+                  {name}
+                  <button
+                    type="button"
+                    onClick={() => toggleCity(cityId!)}
+                    className="flex items-center justify-center rounded-full p-0.5 transition-colors hover:bg-[var(--primary)]/20"
+                    aria-label={`Remove ${name}`}
+                  >
+                    <X className="h-3 w-3 text-[var(--muted-foreground)] hover:text-[var(--foreground)]" />
+                  </button>
+                </motion.span>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-[var(--warning)]">
+            Select at least one city
+          </p>
+        )}
+      </div>
+
+      {/* Region card grid — grouped into rows of 3 so the detail panel sits below the row */}
+      <div className="mx-auto mt-8 w-full max-w-6xl space-y-4 px-4 pb-32 sm:px-6">
+        {Array.from(
+          { length: Math.ceil(scoredRegions.length / 3) },
+          (_, rowIdx) => {
+            const row = scoredRegions.slice(rowIdx * 3, rowIdx * 3 + 3);
+            const expandedInRow = row.find(
+              (s) => expandedRegion === s.region.id,
             );
-            const cityNames =
-              regionDef?.cities.map((c) => c.name) ?? [];
-            const regionName = scored.region.name;
-            const additionalCityCount = getAdditionalCityCount(
-              regionName,
-              cityNames.length,
-            );
-            const isExpanded = expandedRegion === scored.region.id;
+            const expandedLocalIdx = expandedInRow
+              ? row.indexOf(expandedInRow)
+              : -1;
 
             return (
-              <div key={scored.region.id}>
-                <RegionRowB
-                  index={i}
-                  regionName={regionName}
-                  cityNames={cityNames}
-                  additionalCityCount={additionalCityCount}
-                  matchScore={scored.totalScore}
-                  selectedCityCount={selected}
-                  totalCityCount={total}
-                  isExpanded={isExpanded}
-                  isRecommended={scored.isRecommended}
-                  isEntryPointRegion={scored.isEntryPointRegion}
-                  regionSelectionState={getRegionSelectionState(
-                    scored.region.id,
-                  )}
-                  onClick={() => handleToggleExpand(scored.region.id)}
-                />
+              <div key={rowIdx}>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {row.map((scored, localIdx) => {
+                    const globalIdx = rowIdx * 3 + localIdx;
+                    const { selected, total } = getCityCounts(
+                      scored.region.id,
+                    );
+                    const regionDef = REGIONS.find(
+                      (r) => r.id === scored.region.id,
+                    );
+                    const cityNames =
+                      regionDef?.cities.map((c) => c.name) ?? [];
+                    const regionName = scored.region.name;
+                    const additionalCityCount = getAdditionalCityCount(
+                      regionName,
+                      cityNames.length,
+                    );
+                    const isExpanded =
+                      expandedRegion === scored.region.id;
 
-                {/* Accordion detail panel */}
+                    return (
+                      <RegionRowB
+                        key={scored.region.id}
+                        index={globalIdx}
+                        regionName={regionName}
+                        heroImage={scored.region.heroImage}
+                        tagline={scored.region.tagline}
+                        cityNames={cityNames}
+                        additionalCityCount={additionalCityCount}
+                        selectedCityCount={selected}
+                        totalCityCount={total}
+                        isExpanded={isExpanded}
+                        isFaded={
+                          expandedRegion !== null && !isExpanded
+                        }
+                        isRecommended={scored.isRecommended}
+                        isEntryPointRegion={
+                          scored.isEntryPointRegion
+                        }
+                        regionSelectionState={getRegionSelectionState(
+                          scored.region.id,
+                        )}
+                        onClick={() =>
+                          handleToggleExpand(scored.region.id)
+                        }
+                      />
+                    );
+                  })}
+                </div>
+
+                {/* Detail panel below the row */}
                 <AnimatePresence>
-                  {isExpanded && (
+                  {expandedInRow && (
                     <motion.div
+                      key={expandedInRow.region.id}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.4, ease: bEase }}
                       className="overflow-hidden"
                     >
-                      <div className="pt-2">
+                      <div className="relative pt-4">
+                        {/* Caret pointing up toward the expanded card */}
+                        <div
+                          className={`absolute top-0 hidden lg:block ${
+                            expandedLocalIdx === 0
+                              ? "left-[16.67%] -translate-x-1/2"
+                              : expandedLocalIdx === 1
+                                ? "left-[50%] -translate-x-1/2"
+                                : "left-[83.33%] -translate-x-1/2"
+                          }`}
+                        >
+                          <div className="h-0 w-0 border-x-8 border-b-8 border-x-transparent border-b-white" />
+                        </div>
                         <RegionDetailPanelB
-                          region={scored.region}
+                          region={expandedInRow.region}
                           selectedCities={selectedCities}
                           onToggleCity={toggleCity}
                         />
@@ -352,8 +380,8 @@ export function RegionStepB({
                 </AnimatePresence>
               </div>
             );
-          })}
-        </div>
+          },
+        )}
       </div>
     </div>
   );
