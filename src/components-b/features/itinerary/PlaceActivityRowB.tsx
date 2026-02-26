@@ -5,13 +5,12 @@ import { forwardRef, memo, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
-import { Heart, Star, Clock, MapPin, Trash2, ArrowLeftRight } from "lucide-react";
+import { Star, Clock, MapPin, Trash2, ArrowLeftRight } from "lucide-react";
 
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { useActivityLocation } from "@/hooks/useActivityLocations";
-import { useSaved } from "@/context/SavedContext";
 import {
   getShortOverview,
   getLocationRating,
@@ -62,51 +61,7 @@ function buildFallbackLocation(
   };
 }
 
-/** Map activity color scheme keys to B-friendly hex colors for the category strip */
-const CATEGORY_STRIP_COLORS: Record<string, string> = {
-  // Meals
-  breakfast: "var(--warning)",
-  lunch: "var(--warning)",
-  dinner: "var(--warning)",
-  snack: "var(--warning)",
-  restaurant: "var(--warning)",
-  cafe: "var(--warning)",
-  // Culture
-  culture: "var(--primary)",
-  view: "var(--primary)",
-  point_of_interest: "var(--primary)",
-  landmark: "var(--primary)",
-  shrine: "var(--primary)",
-  temple: "var(--primary)",
-  museum: "var(--primary)",
-  // Nature
-  nature: "var(--success)",
-  park: "var(--success)",
-  garden: "var(--success)",
-  onsen: "var(--success)",
-  wellness: "var(--success)",
-  // Shopping
-  shopping: "var(--warning)",
-  market: "var(--warning)",
-  // Entertainment
-  entertainment: "var(--warning)",
-  bar: "var(--warning)",
-  // Default
-  default: "var(--primary)",
-};
-
-function getCategoryStripColor(
-  activity: Extract<ItineraryActivity, { kind: "place" }>,
-): string {
-  if (activity.mealType) {
-    return CATEGORY_STRIP_COLORS[activity.mealType] ?? CATEGORY_STRIP_COLORS.default!;
-  }
-  const tag = activity.tags?.[0]?.toLowerCase();
-  if (tag) {
-    return CATEGORY_STRIP_COLORS[tag] ?? CATEGORY_STRIP_COLORS.default!;
-  }
-  return CATEGORY_STRIP_COLORS.default!;
-}
+const STRIP_COLOR = "var(--primary)";
 
 type PlaceActivityRowBProps = {
   activity: Extract<ItineraryActivity, { kind: "place" }>;
@@ -163,7 +118,6 @@ export const PlaceActivityRowB = memo(
       ref,
     ) => {
       const prefersReducedMotion = useReducedMotion();
-      const { isInSaved, toggleSave } = useSaved();
 
       const dragStyles =
         transform || transition
@@ -231,7 +185,7 @@ export const PlaceActivityRowB = memo(
       const [imageError, setImageError] = useState(false);
 
       // Category strip color
-      const stripColor = getCategoryStripColor(activity);
+      const stripColor = STRIP_COLOR;
 
       // Tags
       const displayTags = useMemo(() => {
@@ -255,10 +209,6 @@ export const PlaceActivityRowB = memo(
       const displayArrivalTime =
         activity.manualStartTime ?? schedule?.arrivalTime;
 
-      // Save state
-      const locationId = placeLocation?.id;
-      const isSaved = locationId ? isInSaved(locationId) : false;
-
       const handleSelect = () => {
         onSelect?.(activity.id);
         if (placeLocation) onViewDetails?.(placeLocation);
@@ -266,12 +216,6 @@ export const PlaceActivityRowB = memo(
 
       const handleHover = () => {
         onHover?.(activity.id);
-      };
-
-      const handleSaveToggle = (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (locationId) toggleSave(locationId);
       };
 
       const handleDelete = (e: React.MouseEvent) => {
@@ -314,7 +258,7 @@ export const PlaceActivityRowB = memo(
             >
               {/* Time */}
               <span
-                className="w-12 shrink-0 text-right text-xs font-medium"
+                className="shrink-0 text-xs font-medium"
                 style={{ color: "var(--muted-foreground)" }}
               >
                 {displayArrivalTime ?? activity.timeOfDay ?? "\u2014"}
@@ -326,16 +270,6 @@ export const PlaceActivityRowB = memo(
                 style={{ backgroundColor: stripColor }}
               />
 
-              {/* Number */}
-              {placeNumber !== undefined && (
-                <span
-                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
-                  style={{ backgroundColor: stripColor }}
-                >
-                  {placeNumber}
-                </span>
-              )}
-
               {/* Title */}
               <span
                 className="min-w-0 truncate text-sm font-medium"
@@ -344,13 +278,13 @@ export const PlaceActivityRowB = memo(
                 {activity.title}
               </span>
 
-              {/* Neighborhood */}
-              {activity.neighborhood && (
+              {/* Number (right side) */}
+              {placeNumber !== undefined && (
                 <span
-                  className="ml-auto shrink-0 text-xs"
-                  style={{ color: "var(--muted-foreground)" }}
+                  className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                  style={{ backgroundColor: stripColor }}
                 >
-                  {activity.neighborhood}
+                  {placeNumber}
                 </span>
               )}
             </div>
@@ -368,26 +302,7 @@ export const PlaceActivityRowB = memo(
           data-activity-id={activity.id}
         >
           <div className="flex gap-3">
-            {/* Left: Time column */}
-            <div className="flex w-14 shrink-0 flex-col items-center pt-3">
-              {displayArrivalTime ? (
-                <span
-                  className="text-sm font-semibold"
-                  style={{ color: "var(--foreground)" }}
-                >
-                  {displayArrivalTime}
-                </span>
-              ) : (
-                <span
-                  className="text-xs capitalize"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {activity.timeOfDay || "\u2014"}
-                </span>
-              )}
-            </div>
-
-            {/* Right: Card */}
+            {/* Card */}
             <motion.div
             layout={!prefersReducedMotion && !isDragging}
             transition={
@@ -437,17 +352,26 @@ export const PlaceActivityRowB = memo(
             <div className="flex">
               {/* Main content */}
               <div className="min-w-0 flex-1 p-3 sm:p-4">
-                {/* Top row: number + title + neighborhood */}
+                {/* Top row: time + title (+ number/heart on mobile only) */}
                 <div className="flex items-start gap-2.5">
-                  {/* Row number circle */}
-                  {placeNumber !== undefined && (
-                    <div
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
-                      style={{ backgroundColor: stripColor }}
-                    >
-                      {placeNumber}
-                    </div>
-                  )}
+                  {/* Time */}
+                  <div className="shrink-0 pt-0.5">
+                    {displayArrivalTime ? (
+                      <span
+                        className="text-sm font-semibold"
+                        style={{ color: "var(--foreground)" }}
+                      >
+                        {displayArrivalTime}
+                      </span>
+                    ) : (
+                      <span
+                        className="text-xs capitalize"
+                        style={{ color: "var(--muted-foreground)" }}
+                      >
+                        {activity.timeOfDay || "\u2014"}
+                      </span>
+                    )}
+                  </div>
 
                   <div className="min-w-0 flex-1">
                     {/* Title */}
@@ -475,25 +399,16 @@ export const PlaceActivityRowB = memo(
                     )}
                   </div>
 
-                  {/* Heart save icon */}
-                  {locationId && !isEntryPoint && (
-                    <button
-                      type="button"
-                      onClick={handleSaveToggle}
-                      className="shrink-0 rounded-full p-1 transition-colors hover:bg-[var(--surface)]"
-                      aria-label={
-                        isSaved ? "Remove from saved" : "Save for trip"
-                      }
+                  {/* Number — mobile only (image overlay handles desktop) */}
+                  {placeNumber !== undefined && (
+                    <div
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white sm:hidden"
+                      style={{ backgroundColor: stripColor }}
                     >
-                      <Heart
-                        className="h-4 w-4 transition-colors"
-                        style={{
-                          color: isSaved ? "var(--error)" : "var(--muted-foreground)",
-                          fill: isSaved ? "var(--error)" : "none",
-                        }}
-                      />
-                    </button>
+                      {placeNumber}
+                    </div>
                   )}
+
                 </div>
 
                 {/* Meta row: rating + duration + tags */}
@@ -642,6 +557,18 @@ export const PlaceActivityRowB = memo(
                     setImageLoaded(true);
                   }}
                 />
+
+                {/* Number overlay on image */}
+                {placeNumber !== undefined && (
+                  <div className="absolute right-2 top-2 z-10">
+                    <div
+                      className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm"
+                      style={{ backgroundColor: stripColor }}
+                    >
+                      {placeNumber}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
