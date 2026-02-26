@@ -33,10 +33,6 @@ import type {
   PreviewState,
   RefinementFilters,
 } from "@/hooks/useSmartPromptActions";
-import {
-  calculateTripHealth,
-  getHealthLevel,
-} from "@/lib/itinerary/tripHealth";
 import { useItineraryPlanning } from "@/components/features/itinerary/hooks/useItineraryPlanning";
 import { useItineraryScrollSync } from "@/components/features/itinerary/hooks/useItineraryScrollSync";
 import { useItineraryGuide } from "@/components/features/itinerary/hooks/useItineraryGuide";
@@ -394,11 +390,6 @@ export const ItineraryShellB = ({
     return detectItineraryConflicts(model);
   }, [model]);
 
-  // Per-day health levels for DaySelector dots
-  const dayHealthLevels = useMemo(() => {
-    const health = calculateTripHealth(model, conflictsResult.conflicts);
-    return health.days.map((d) => getHealthLevel(d.score));
-  }, [model, conflictsResult]);
 
   // ── Guide ──
   const { currentDayGuide } = useItineraryGuide(
@@ -637,7 +628,6 @@ export const ItineraryShellB = ({
                 onChange={handleSelectDayChange}
                 labels={days.map((day) => day.dateLabel ?? "")}
                 tripStartDate={tripStartDate}
-                dayHealthLevels={dayHealthLevels}
               />
             </div>
           </div>
