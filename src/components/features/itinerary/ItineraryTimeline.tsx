@@ -49,6 +49,7 @@ import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { REGIONS } from "@/data/regions";
 import { useToast } from "@/context/ToastContext";
+import { easeCinematicCSS } from "@/lib/motion";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
 
 function formatCityName(cityId: string): string {
@@ -991,10 +992,10 @@ export const ItineraryTimeline = ({
 
       {/* Drag Preview Overlay - Compact card preview */}
       {!isReadOnly && (
-      <DragOverlay dropAnimation={{ duration: 250, easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)" }}>
+      <DragOverlay dropAnimation={{ duration: 250, easing: easeCinematicCSS }}>
         {activeActivity && activeActivity.kind === "place" && (
           <div className="pointer-events-none w-[320px] max-w-[90vw]">
-            <div className="rounded-2xl border-2 border-brand-primary/50 bg-background p-3 shadow-2xl ring-4 ring-brand-primary/20 backdrop-blur-sm">
+            <div className="rounded-xl border-2 border-brand-primary/50 bg-background p-3 shadow-2xl ring-4 ring-brand-primary/20 backdrop-blur-sm">
               <div className="flex items-center gap-3">
                 {/* Drag indicator */}
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-primary/10">

@@ -236,14 +236,14 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
 
         {/* Photo thumbnail strip */}
         {allPhotos.length > 1 && (
-          <div className="flex gap-1.5 overflow-x-auto snap-x snap-mandatory scrollbar-hide px-4 py-2">
+          <div className="flex gap-1.5 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide px-4 py-2">
             {allPhotos.map((src, i) => (
               <button
                 key={src}
                 type="button"
                 onClick={() => setActivePhotoIndex(i)}
                 className={cn(
-                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-lg transition",
+                  "relative h-16 w-16 shrink-0 snap-start overflow-hidden rounded-xl transition",
                   i === activePhotoIndex
                     ? "ring-2 ring-brand-primary ring-offset-1 ring-offset-background"
                     : "opacity-60 hover:opacity-100"
@@ -315,7 +315,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Description */}
           {description && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Overview
               </h3>
               <p className="text-base leading-relaxed text-foreground-secondary">{description}</p>
@@ -325,7 +325,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Local tips */}
           {tips.length > 0 && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Local tips
               </h3>
               <div className="space-y-2">
@@ -348,7 +348,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Practical info */}
           {(location.nameJapanese || location.nearestStation || location.cashOnly !== undefined || location.reservationInfo || locationWithDetails.dietaryOptions?.servesVegetarianFood || mealLabels || serviceLabels) && (
             <section className="space-y-3">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Practical info
               </h3>
               <dl className="space-y-2 text-sm">
@@ -401,7 +401,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Accessibility */}
           {accessibilityBadges.length > 0 && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Accessibility
               </h3>
               <div className="flex flex-wrap gap-1.5">
@@ -423,7 +423,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Good for */}
           {goodForPills.length > 0 && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Good for
               </h3>
               <div className="flex flex-wrap gap-1.5">
@@ -442,7 +442,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Review snippets */}
           {details?.reviews && details.reviews.length > 0 && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Reviews
               </h3>
               <div className="space-y-3">
@@ -486,7 +486,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Address */}
           {details?.formattedAddress && (
             <section className="space-y-1">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Address
               </h3>
               <p className="text-sm text-foreground-secondary">{details.formattedAddress}</p>
@@ -496,7 +496,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Opening hours */}
           {status === "success" && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Opening hours
               </h3>
               {hasOpeningHours ? (
@@ -516,7 +516,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           {/* Links */}
           {hasLinks && (
             <section className="space-y-2">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-stone">
+              <h3 className="eyebrow-editorial">
                 Links
               </h3>
               <ul className="space-y-1 text-sm text-sage">

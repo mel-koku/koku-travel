@@ -127,6 +127,7 @@ export async function GET(request: NextRequest) {
       category: row.category,
       // Only include image when primaryPhotoUrl is absent (saves ~500KB)
       image: row.primary_photo_url ? "" : row.image,
+      shortDescription: row.short_description ?? undefined,
       estimatedDuration: row.estimated_duration ?? undefined,
       rating: row.rating ?? undefined,
       reviewCount: row.review_count ?? undefined,

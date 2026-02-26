@@ -152,7 +152,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         <h2 className="font-serif italic text-xl text-foreground">Trip Overview</h2>
         <button
           onClick={onClose}
-          className="rounded-lg p-1.5 text-stone hover:text-foreground hover:bg-surface transition"
+          className="rounded-xl p-1.5 text-stone hover:text-foreground hover:bg-surface transition"
           aria-label="Close overview"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -164,7 +164,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
       {/* Pre-trip Checklist */}
       {health.checklist.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
+          <h3 className="eyebrow-editorial">
             Before You Go
           </h3>
           <div className="rounded-xl border border-border bg-surface/30 divide-y divide-border/50">
@@ -234,7 +234,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
 
       {/* Days */}
       <div className="space-y-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
+        <h3 className="eyebrow-editorial">
           Days
         </h3>
         {health.days.map((day) => (
@@ -258,7 +258,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
       {/* Accessibility — only when traveler has mobility needs */}
       {accessibility && (
         <div className="space-y-2">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
+          <h3 className="eyebrow-editorial">
             Accessibility
           </h3>
           <div className="rounded-xl border border-border bg-surface/30 p-3 space-y-2">
@@ -299,7 +299,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
 
       {/* Export Actions */}
       <div className="space-y-2">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-stone">
+        <h3 className="eyebrow-editorial">
           Export
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -496,7 +496,7 @@ function DayOverviewCard({
                           onActivityClick?.(activity.id);
                         }}
                         disabled={!hasLocation}
-                        className={`group/row flex items-center gap-2 text-xs w-full text-left rounded-lg py-0.5 -mx-1 px-1 transition ${
+                        className={`group/row flex items-center gap-2 text-xs w-full text-left rounded-xl py-0.5 -mx-1 px-1 transition ${
                           hasLocation
                             ? "cursor-pointer hover:bg-surface/60 active:bg-surface/80"
                             : "cursor-default"

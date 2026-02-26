@@ -87,7 +87,7 @@ export function SmartPromptPreview({
   ].filter((chip) => !chip.hidden);
 
   return (
-    <div className="rounded-lg border border-brand-primary/20 bg-surface p-3">
+    <div className="rounded-xl border border-brand-primary/20 bg-surface p-3">
       {/* Header */}
       <div className="mb-2 flex items-center justify-between">
         <p className="text-xs font-medium text-stone">
@@ -96,7 +96,7 @@ export function SmartPromptPreview({
         <button
           type="button"
           onClick={onCancel}
-          className="flex h-6 w-6 items-center justify-center rounded-full text-stone transition hover:bg-background hover:text-foreground"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-stone transition hover:bg-background hover:text-foreground"
           aria-label="Close preview"
         >
           <X className="h-3.5 w-3.5" />
@@ -104,7 +104,7 @@ export function SmartPromptPreview({
       </div>
 
       {/* Recommendation Card */}
-      <div className="mb-3 rounded-lg bg-background p-3">
+      <div className="mb-3 rounded-xl bg-background p-3">
         <p className="text-sm font-medium text-foreground">
           {recommendation.name}
         </p>

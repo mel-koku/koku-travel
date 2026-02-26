@@ -63,7 +63,7 @@ export function StatsSection({
       <div className="texture-grain pointer-events-none absolute inset-0" />
 
       {/* Content */}
-      <div className="relative z-10 flex min-h-[40vh] flex-col items-center justify-center px-6 py-12 sm:py-20 text-center">
+      <div className="relative z-10 flex min-h-[40vh] flex-col items-center justify-center px-6 py-12 sm:py-16 lg:py-20 text-center">
         <ScrollReveal>
           <p className="text-xs font-medium uppercase tracking-ultra text-white/50">
             {content?.dashboardActivityEyebrow ?? "Activity"}

@@ -46,7 +46,7 @@ function FullBleedRow({ location }: { location: Location }) {
         src={imageSrc || FALLBACK_IMAGE}
         alt={location.name}
         fill
-        className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+        className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
         sizes="(min-width: 1280px) 1200px, 100vw"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-charcoal/70 via-charcoal/20 to-transparent" />

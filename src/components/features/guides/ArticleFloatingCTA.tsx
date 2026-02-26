@@ -176,7 +176,7 @@ export function ArticleFloatingCTA({
                           className="overflow-hidden"
                         >
                           <div className="pb-3">
-                            <div className="overflow-hidden rounded-2xl bg-background shadow-sm">
+                            <div className="overflow-hidden rounded-xl bg-background shadow-sm">
                               {/* Image */}
                               <div className="relative aspect-video">
                                 <Image
@@ -249,7 +249,7 @@ export function ArticleFloatingCTA({
             onClick={handleClick}
             className="mt-5 w-full rounded-xl bg-brand-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
           >
-            Start Planning
+            Build My Trip
           </button>
         </div>
       </aside>

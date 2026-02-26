@@ -55,7 +55,7 @@ export function FilterBar({
     >
       <div
         className={cn(
-          "w-full rounded-2xl border border-border bg-background/90 backdrop-blur shadow-md transition-all duration-300 ease-out hover:shadow-lg",
+          "w-full rounded-xl border border-border bg-background/90 backdrop-blur shadow-md transition-all duration-300 ease-out hover:shadow-lg",
           isVertical
             ? "space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-8 lg:max-h-[calc(100vh-var(--sticky-offset)-1rem)] lg:max-w-xs lg:overflow-y-auto lg:pr-4"
             : "mx-auto max-w-5xl space-y-3 px-4 py-3 sm:space-y-4 sm:px-6 sm:py-4"

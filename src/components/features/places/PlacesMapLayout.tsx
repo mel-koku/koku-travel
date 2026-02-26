@@ -113,7 +113,7 @@ export function PlacesMapLayout({
 
           {/* Count badge */}
           <div className="pointer-events-none absolute top-3 left-3 z-10">
-            <span className="rounded-lg bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-sm">
+            <span className="rounded-xl bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-sm">
               {countLabel}
             </span>
           </div>
@@ -202,7 +202,7 @@ export function PlacesMapLayout({
             ? "lg:top-[196px] lg:h-[calc(100dvh-212px)]"
             : "lg:top-[160px] lg:h-[calc(100dvh-176px)]"
         )}>
-          <div data-lenis-prevent className="relative h-full rounded-2xl overflow-hidden border border-border">
+          <div data-lenis-prevent className="relative h-full rounded-xl overflow-hidden border border-border">
             <ErrorBoundary
               fallback={
                 <div className="flex h-full items-center justify-center text-sm text-stone">
@@ -221,7 +221,7 @@ export function PlacesMapLayout({
               />
             </ErrorBoundary>
             <div className="pointer-events-none absolute top-3 left-3 z-10">
-              <span className="rounded-lg bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-sm">
+              <span className="rounded-xl bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-sm">
                 {countLabel}
               </span>
             </div>

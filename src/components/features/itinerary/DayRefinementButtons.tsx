@@ -127,7 +127,7 @@ export function DayRefinementButtons({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-2.5 text-xs font-medium text-foreground-secondary transition-colors hover:border-sage/30 hover:bg-sage/10 hover:text-sage"
+        className="flex items-center gap-1.5 rounded-xl border border-border px-3 py-2.5 text-xs font-medium text-foreground-secondary transition-colors hover:border-sage/30 hover:bg-sage/10 hover:text-sage"
       >
         <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />

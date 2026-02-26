@@ -69,7 +69,7 @@ export function AvailabilityAlert({
   return (
     <div
       className={cn(
-        "rounded-lg border",
+        "rounded-xl border",
         styles.container,
         className
       )}
@@ -139,7 +139,7 @@ function AvailabilityIssueItem({ issue, onFindAlternative }: AvailabilityIssueIt
   return (
     <div
       className={cn(
-        "rounded-lg border p-2",
+        "rounded-xl border p-2",
         statusStyles[issue.status]
       )}
     >

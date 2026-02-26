@@ -27,11 +27,7 @@ function getSummary(location: Location): string {
   if (location.description?.trim()) return location.description.trim();
 
   const city = location.city ? ` in ${location.city}` : "";
-  const parts: string[] = [];
-  if (location.minBudget) parts.push(`Budget ${location.minBudget}`);
-  if (location.estimatedDuration) parts.push(`Plan for ${location.estimatedDuration}`);
-  const detail = parts.length > 0 ? ` ${parts.join(" · ")}` : "";
-  return `Notable ${location.category}${city}.${detail}`;
+  return `Notable ${location.category}${city}.`;
 }
 
 export const PlacesCardB = memo(function PlacesCardB({

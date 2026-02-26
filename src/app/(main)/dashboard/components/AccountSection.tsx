@@ -43,11 +43,11 @@ export function AccountSection({
         </div>
       )}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="text-lg font-semibold text-foreground">Account</h2>
+        <h2 className="font-serif text-lg italic text-foreground">Account</h2>
         {isAuthenticated && supabase && (
           <button
             onClick={() => supabase.auth.signOut()}
-            className="h-10 rounded-lg border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface"
+            className="h-10 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface"
           >
             Sign out
           </button>
@@ -60,7 +60,7 @@ export function AccountSection({
           <label className="text-sm text-foreground-secondary block">
             Display name
             <input
-              className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+              className="mt-1 w-full h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
               value={displayName}
               onChange={(e) => onNameChange(e.target.value)}
             />
@@ -80,7 +80,7 @@ export function AccountSection({
             <button
               onClick={onClearLocalData}
               disabled={isLoadingProfile || isLoadingRefresh}
-              className="h-10 rounded-lg border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-10 rounded-xl border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Clear local data
             </button>
@@ -142,7 +142,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
           type="email"
           required
           disabled={supabaseUnavailable}
-          className="mt-1 w-full h-12 rounded-lg border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
+          className="mt-1 w-full h-12 rounded-xl border border-border bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary"
           placeholder="name@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -151,7 +151,7 @@ function EmailForm({ supabase, supabaseUnavailable }: EmailFormProps) {
       <button
         type="submit"
         disabled={supabaseUnavailable}
-        className="h-10 rounded-lg bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
+        className="h-10 rounded-xl bg-brand-primary px-4 text-sm font-medium text-white hover:bg-brand-primary/90"
       >
         Send sign-in link
       </button>

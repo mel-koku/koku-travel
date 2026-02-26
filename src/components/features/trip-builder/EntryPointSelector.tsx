@@ -195,7 +195,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
             onKeyDown={handleKeyDown}
             placeholder={isLoading ? "Loading airports..." : "Search airports by name, city, or code..."}
             disabled={isLoading}
-            className="h-10 w-full rounded-lg border border-border bg-background px-3 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:bg-surface disabled:cursor-not-allowed"
+            className="h-12 w-full rounded-xl border border-border bg-background px-3 pr-10 text-base focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:bg-surface disabled:cursor-not-allowed"
             role="combobox"
             aria-autocomplete="list"
             aria-expanded={showDropdown && filteredAirports.length > 0}
@@ -241,7 +241,7 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
       {showDropdown && filteredAirports.length > 0 && (
         <div
           ref={dropdownRef}
-          className="relative z-50 rounded-lg border border-border bg-background shadow-lg max-h-60 overflow-auto"
+          className="relative z-50 rounded-xl border border-border bg-background shadow-lg max-h-60 overflow-auto"
           role="listbox"
           id={listboxId}
         >
@@ -275,14 +275,14 @@ export function EntryPointSelector({ value, onChange }: EntryPointSelectorProps)
 
       {/* No Results Message */}
       {showDropdown && searchInput.length >= MIN_SEARCH_LENGTH && filteredAirports.length === 0 && !isLoading && (
-        <div className="rounded-lg border border-border bg-surface px-4 py-3 text-sm text-stone">
+        <div className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-stone">
           No airports found matching &ldquo;{searchInput}&rdquo;
         </div>
       )}
 
       {/* Selected Airport Display */}
       {selectedAirport && (
-        <div className="rounded-lg border border-success/20 bg-success/10 px-4 py-3">
+        <div className="rounded-xl border border-success/20 bg-success/10 px-4 py-3">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2">

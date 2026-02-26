@@ -333,7 +333,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
           {viewMode === "grid" ? (
             <>
               {/* Seasonal banner */}
-              <div className="mt-3">
+              <div className="mx-auto mt-3 max-w-5xl">
                 <SeasonalBanner
                   locations={locations}
                   onFilterSeasonal={handleFilterSeasonal}

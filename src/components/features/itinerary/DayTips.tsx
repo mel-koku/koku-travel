@@ -174,7 +174,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     return allTips.map((tip) => (
       <div
         key={tip.id}
-        className="flex items-start gap-2 rounded-lg bg-background/70 p-2"
+        className="flex items-start gap-2 rounded-xl bg-background/70 p-2"
       >
         <span className="shrink-0 text-base">
           {tip.icon}

@@ -40,7 +40,7 @@ export function PlaceActivityReasoning({
         </svg>
       </button>
       {reasoningOpen && (
-        <div className="mt-2 rounded-lg bg-surface/70 p-2 text-xs text-foreground-secondary">
+        <div className="mt-2 rounded-xl bg-surface/70 p-2 text-xs text-foreground-secondary">
           <p className="font-medium">{recommendationReason.primaryReason}</p>
           {recommendationReason.factors && recommendationReason.factors.length > 0 && (
             <ul className="mt-1.5 space-y-1 pl-1">
@@ -88,7 +88,7 @@ export function PlaceActivityReasoning({
                         event.stopPropagation();
                         onReplace?.();
                       }}
-                      className="rounded-lg border border-border/50 bg-surface/50 px-2 py-0.5 text-[10px] text-foreground-secondary transition hover:border-brand-primary/30 hover:text-brand-primary"
+                      className="rounded-xl border border-border/50 bg-surface/50 px-2 py-0.5 text-[10px] text-foreground-secondary transition hover:border-brand-primary/30 hover:text-brand-primary"
                     >
                       {alt}
                     </button>

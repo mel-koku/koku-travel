@@ -3,7 +3,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { Check, Minus, Plane, Star } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { easeCinematicMut } from "@/lib/motion";
+import { easeCinematicMut, durationBase } from "@/lib/motion";
 import type { RegionDescription } from "@/data/regionDescriptions";
 
 export type RegionSelectionState = "none" | "partial" | "full";
@@ -62,7 +62,7 @@ export function RegionRow({
       animate={{ opacity: 1, x: 0 }}
       transition={{
         delay: index * 0.08,
-        duration: 0.6,
+        duration: durationBase,
         ease: easeCinematicMut,
       }}
       className={cn(

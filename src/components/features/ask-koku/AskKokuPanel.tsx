@@ -26,7 +26,7 @@ export function AskKokuPanel({ onClose, context }: AskKokuPanelProps) {
         <h2 className="font-serif text-lg italic text-foreground">Ask Koku</h2>
         <button
           onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-lg text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"
+          className="flex h-11 w-11 items-center justify-center rounded-xl text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"
         >
           <X className="h-5 w-5" />
         </button>

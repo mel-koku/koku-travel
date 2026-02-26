@@ -556,7 +556,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             {/* Time picker popover */}
             {showTimePicker && (
               <div
-                className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-3 shadow-lg"
+                className="absolute left-0 top-full z-50 mt-1 rounded-xl border border-border bg-background p-3 shadow-lg"
                 onClick={(e) => e.stopPropagation()}
               >
                 <p className="mb-2 text-xs font-medium text-foreground-secondary">Set time</p>
@@ -565,7 +565,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                     type="time"
                     value={tempManualTime}
                     onChange={(e) => setTempManualTime(e.target.value)}
-                    className="rounded border border-border px-2 py-1 text-base focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                    className="h-12 rounded border border-border px-2 py-1 text-base focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                   <button
                     type="button"
@@ -592,7 +592,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
           <motion.div
             layout={!prefersReducedMotion && !isDragging}
             transition={prefersReducedMotion ? { duration: 0 } : { layout: { duration: 0.3, ease: easeReveal } }}
-            className={`group relative flex-1 overflow-hidden rounded-2xl bg-background transition-shadow duration-200 cursor-pointer ${
+            className={`group relative flex-1 overflow-hidden rounded-xl bg-background transition-shadow duration-200 cursor-pointer ${
               isDragging
                 ? "ring-2 ring-sage/30 shadow-lg rotate-1 scale-[1.02]"
                 : isSelected
@@ -690,7 +690,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
               {/* Tips Section */}
               {tips.length > 0 && (
-                <div className="mt-3 rounded-lg bg-sage/5 p-2.5">
+                <div className="mt-3 rounded-xl bg-sage/5 p-2.5">
                   <p className="mb-1.5 text-xs font-semibold text-foreground">Tips</p>
                   <div className="space-y-1">
                     {tips.slice(0, 2).map((tip, index) => (
@@ -725,7 +725,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                       event.stopPropagation();
                       handleToggleNotes();
                     }}
-                    className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
+                    className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
                   >
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -739,7 +739,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   {tripId && dayId && onReplace && (
                     <button
                       type="button"
-                      className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
+                      className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
                       onClick={(event) => {
                         event.preventDefault();
                         event.stopPropagation();
@@ -755,7 +755,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   )}
                   <button
                     type="button"
-                    className="flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
+                    className="flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
                     onClick={(event) => {
                       event.preventDefault();
                       event.stopPropagation();
@@ -781,7 +781,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </label>
                 <textarea
                   id={notesId}
-                  className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-base text-foreground-secondary shadow-sm placeholder:text-stone focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
+                  className="w-full rounded-xl border border-border bg-background px-2.5 py-1.5 text-base text-foreground-secondary shadow-sm placeholder:text-stone focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
                   rows={2}
                   value={notesValue}
                   onChange={handleNotesChange}

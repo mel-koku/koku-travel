@@ -35,7 +35,7 @@ export function PlanningWarningCard({ warning, className }: PlanningWarningCardP
   return (
     <div
       className={cn(
-        "rounded-lg border p-4",
+        "rounded-xl border p-4",
         styles.container,
         className
       )}

@@ -35,7 +35,7 @@ export function SavedInTripPreview({
 
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-border bg-surface p-4">
+      <div className="rounded-xl border border-border bg-surface p-4">
         <div className="flex items-center gap-2 text-sm text-stone">
           <div className="h-4 w-4 animate-spin rounded-full border-2 border-stone border-t-transparent" />
           <span>Checking your saved places...</span>
@@ -53,10 +53,10 @@ export function SavedInTripPreview({
       {matchingLocations.map((location) => (
         <div
           key={location.id}
-          className="flex items-center gap-3 rounded-lg border border-border bg-background p-3"
+          className="flex items-center gap-3 rounded-xl border border-border bg-background p-3"
         >
           {location.image ? (
-            <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+            <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-xl">
               <Image
                 src={resizePhotoUrl(location.image, 400) ?? location.image}
                 alt={location.name}
@@ -66,7 +66,7 @@ export function SavedInTripPreview({
               />
             </div>
           ) : (
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-surface">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-surface">
               <MapPin className="h-5 w-5 text-stone" />
             </div>
           )}

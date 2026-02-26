@@ -56,7 +56,7 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
       {expanded && (
         <div
           className={cn(
-            "absolute left-0 top-full z-50 mt-1 w-56 rounded-lg border border-border bg-background p-2 shadow-lg",
+            "absolute left-0 top-full z-50 mt-1 w-56 rounded-xl border border-border bg-background p-2 shadow-lg",
             styles.bg
           )}
           onClick={(e) => e.stopPropagation()}

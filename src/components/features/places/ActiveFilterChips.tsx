@@ -18,13 +18,13 @@ export function ActiveFilterChips({
   }
 
   return (
-    <div className="bg-surface border border-border/30 rounded-2xl px-4 py-3">
+    <div className="bg-surface border border-border/30 rounded-xl px-4 py-3">
       <div className="flex flex-wrap items-center justify-center gap-2">
         {filters.map((filter, index) => (
           <button
             key={`${filter.type}-${filter.value}-${index}`}
             onClick={() => onRemove(filter)}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-surface border border-border/50 transition-all duration-300 group active:scale-[0.97]"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-background px-3 py-1.5 text-sm font-medium text-foreground-secondary hover:bg-surface border border-border/50 transition-all duration-300 group active:scale-[0.98]"
             aria-label={`Remove ${filter.label} filter`}
           >
             <span>{filter.label}</span>

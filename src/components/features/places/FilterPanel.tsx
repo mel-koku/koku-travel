@@ -195,12 +195,12 @@ export function FilterPanel({
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border px-6 py-4 shrink-0">
-              <h2 id="filter-panel-title" className="text-base font-semibold text-foreground">
+              <h2 id="filter-panel-title" className="font-serif text-base italic text-foreground">
                 Refine
               </h2>
               <button
                 onClick={onClose}
-                className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-surface transition duration-300"
+                className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-surface transition duration-300"
                 aria-label="Close filters"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

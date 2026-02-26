@@ -24,7 +24,7 @@ const PlacesShell = dynamic(
                 <div key={i} className="aspect-[4/3] rounded-xl shimmer" />
               ))}
             </div>
-            <div className="hidden lg:block lg:w-1/2 h-[calc(100dvh-176px)] rounded-2xl shimmer" />
+            <div className="hidden lg:block lg:w-1/2 h-[calc(100dvh-176px)] rounded-xl shimmer" />
           </div>
         </div>
       </div>

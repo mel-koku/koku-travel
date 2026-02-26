@@ -123,7 +123,7 @@ export function AskKokuTripPlanCardB({ data, onClose }: AskKokuTripPlanCardProps
         onClick={handleStartPlanning}
         className="mt-4 flex h-11 w-full items-center justify-center rounded-xl bg-[var(--primary)] text-sm font-medium text-white transition-transform active:scale-[0.98]"
       >
-        Start Planning
+        Build My Trip
       </button>
     </div>
   );

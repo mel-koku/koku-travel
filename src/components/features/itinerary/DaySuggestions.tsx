@@ -149,12 +149,12 @@ export function DaySuggestions({
       return (
         <div
           key={gap.id}
-          className="flex items-center gap-3 rounded-lg bg-background p-3 shadow-sm"
+          className="flex items-center gap-3 rounded-xl bg-background p-3 shadow-sm"
         >
           {/* Icon */}
           <div
             className={cn(
-              "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
+              "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
               colors.bg
             )}
           >
@@ -210,7 +210,7 @@ export function DaySuggestions({
   }
 
   return (
-    <div className={cn("rounded-lg border border-brand-secondary/20 bg-brand-secondary/5", className)}>
+    <div className={cn("rounded-xl border border-brand-secondary/20 bg-brand-secondary/5", className)}>
       {/* Header */}
       <button
         type="button"

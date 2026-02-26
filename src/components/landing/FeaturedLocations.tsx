@@ -77,7 +77,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
   return (
     <>
       {/* Desktop: Scroll-pinned horizontal gallery */}
-      <section ref={containerRef} className="relative hidden h-[180vh] bg-background xl:block">
+      <section ref={containerRef} className="relative hidden h-[180vh] bg-canvas xl:block">
         {/* Sticky viewport — stays visible while user scrolls the 250vh */}
         <div className="sticky top-0 flex h-[100dvh] flex-col justify-center overflow-hidden py-12">
           {/* Gallery row */}
@@ -143,7 +143,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
       </section>
 
       {/* Mobile: Simple horizontal scroll gallery */}
-      <section className="bg-background py-12 sm:py-20 xl:hidden">
+      <section className="bg-canvas py-12 sm:py-20 lg:py-28 xl:hidden">
         <div className="px-6">
           <p className="eyebrow-editorial text-brand-primary">
             {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}

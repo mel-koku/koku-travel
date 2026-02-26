@@ -219,7 +219,7 @@ export function PreviewToggleButton({ onClick, isOpen }: PreviewToggleButtonProp
     <button
       type="button"
       onClick={onClick}
-      className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 flex items-center gap-2 rounded-full bg-brand-primary px-4 py-2.5 text-sm font-medium text-white shadow-lg transition hover:bg-brand-primary/90 active:scale-95 lg:hidden"
+      className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 z-30 flex items-center gap-2 rounded-full bg-brand-primary px-4 py-2.5 text-sm font-medium text-white shadow-lg transition hover:bg-brand-primary/90 active:scale-[0.98] lg:hidden"
     >
       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path

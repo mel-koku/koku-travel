@@ -78,8 +78,8 @@ export function TodayIndicator({
       {/* Time pill */}
       <div className="flex items-center gap-1.5 rounded-full bg-brand-primary px-2.5 py-1 shadow-sm">
         <span className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75"></span>
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/75 opacity-75"></span>
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground"></span>
         </span>
         <span className="text-xs font-semibold text-white">
           {formatTime(currentTime)}

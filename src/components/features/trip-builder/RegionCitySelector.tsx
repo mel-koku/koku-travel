@@ -64,7 +64,7 @@ export function RegionCitySelector({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search cities..."
-            className="h-9 w-full rounded-lg border border-border bg-background pl-8 pr-3 text-sm text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
+            className="h-12 w-full rounded-xl border border-border bg-background pl-8 pr-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
             autoComplete="off"
           />
         </div>
@@ -90,7 +90,7 @@ export function RegionCitySelector({
                 type="button"
                 onClick={() => onToggleCity(cityId)}
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-sm transition-colors",
+                  "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm transition-colors",
                   isSelected
                     ? "bg-brand-primary/5"
                     : "hover:bg-foreground/[0.02]"

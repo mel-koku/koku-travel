@@ -143,7 +143,7 @@ export function DiscoverShell() {
 
       {/* Floating search + category chips */}
       <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 max-w-[calc(100%-4.5rem)]">
-        <div className="inline-flex items-center gap-2 rounded-xl bg-[#1f1a14]/90 backdrop-blur-md px-2.5 py-2 shadow-lg">
+        <div className="inline-flex items-center gap-2 rounded-xl bg-charcoal/90 backdrop-blur-md px-2.5 py-2 shadow-lg">
           {/* Search input */}
           <div className="relative shrink-0">
             <svg
@@ -161,7 +161,7 @@ export function DiscoverShell() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search..."
-              className="w-24 focus:w-36 rounded-lg bg-white/10 pl-7 pr-2 py-1.5 text-xs text-white placeholder:text-white/40 focus:outline-none focus:bg-white/15 focus:ring-1 focus:ring-white/20 transition-all"
+              className="w-24 focus:w-36 rounded-lg bg-white/10 pl-7 pr-2 py-1.5 text-base text-white placeholder:text-white/40 focus:outline-none focus:bg-white/15 focus:ring-1 focus:ring-white/20 transition-all"
             />
           </div>
 
@@ -170,10 +170,10 @@ export function DiscoverShell() {
 
           {/* Open now indicator */}
           <span className="relative flex h-2 w-2 shrink-0">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3da193] opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[#3da193]" />
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-sage opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-sage" />
           </span>
-          <span className="text-[10px] text-[#3da193] font-medium whitespace-nowrap mr-0.5">
+          <span className="text-[10px] text-sage font-medium whitespace-nowrap mr-0.5">
             Open now
           </span>
 
@@ -187,7 +187,7 @@ export function DiscoverShell() {
               onClick={() => setDiscoverCategory(chip.id)}
               className={`shrink-0 rounded-xl px-3 py-1.5 text-xs font-medium transition whitespace-nowrap ${
                 discoverCategory === chip.id
-                  ? "bg-[#c4504f] text-white"
+                  ? "bg-brand-primary text-white"
                   : "bg-white/10 text-white/80 border border-white/10 hover:bg-white/20"
               }`}
             >
@@ -200,9 +200,9 @@ export function DiscoverShell() {
       {/* Fallback banner */}
       {usingFallback && !isLocating && (
         <div className="absolute bottom-20 left-3 right-3 z-10">
-          <div className="mx-auto max-w-sm rounded-xl border border-white/10 bg-[#1f1a14]/90 backdrop-blur-md px-4 py-3 flex items-start gap-2.5 shadow-lg">
+          <div className="mx-auto max-w-sm rounded-xl border border-white/10 bg-charcoal/90 backdrop-blur-md px-4 py-3 flex items-start gap-2.5 shadow-lg">
             <svg
-              className="h-4 w-4 text-[#d4b83d] shrink-0 mt-0.5"
+              className="h-4 w-4 text-warning shrink-0 mt-0.5"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -231,7 +231,7 @@ export function DiscoverShell() {
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 pb-[env(safe-area-inset-bottom)]">
           <button
             onClick={handleSurpriseMe}
-            className="flex items-center gap-2 rounded-full bg-[#1f1a14]/90 backdrop-blur-md px-5 py-3 text-sm font-semibold text-white shadow-xl hover:bg-[#1f1a14] active:scale-[0.97] transition"
+            className="flex items-center gap-2 rounded-full bg-charcoal/90 backdrop-blur-md px-5 py-3 text-sm font-semibold text-white shadow-xl hover:bg-charcoal active:scale-[0.98] transition"
           >
             <svg
               className="h-4 w-4"

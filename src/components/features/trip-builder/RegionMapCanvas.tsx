@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import { JAPAN_MAP_VIEWBOX, REGION_PREFECTURES, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
 import { mapColors } from "@/lib/mapColors";
 import type { KnownRegionId } from "@/types/trip";
+import { easeCinematicCSS } from "@/lib/motion";
 
 type RegionMapCanvasProps = {
   hoveredRegion: KnownRegionId | null;
@@ -77,7 +78,7 @@ export function RegionMapCanvas({
               strokeWidth={isSelected ? 1.2 : 0.6}
               opacity={isSelected || isHovered ? 1 : 0.55}
               style={{
-                transition: "fill 0.5s cubic-bezier(0.215, 0.61, 0.355, 1), stroke 0.5s cubic-bezier(0.215, 0.61, 0.355, 1), opacity 0.5s cubic-bezier(0.215, 0.61, 0.355, 1)",
+                transition: `fill 0.5s ${easeCinematicCSS}, stroke 0.5s ${easeCinematicCSS}, opacity 0.5s ${easeCinematicCSS}`,
               }}
             />
           );

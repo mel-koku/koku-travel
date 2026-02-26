@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { easeCinematic, staggerSection, springInteraction } from "@/lib/motion";
+import { easeCinematic, staggerSection, springInteraction, durationBase } from "@/lib/motion";
 import type { LucideIcon } from "lucide-react";
 
 type VibeCardProps = {
@@ -54,7 +54,7 @@ export function VibeCard({
       initial={prefersReducedMotion ? false : { opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{
-        duration: 0.6,
+        duration: durationBase,
         ease: [...easeCinematic],
         delay: index * staggerSection,
       }}

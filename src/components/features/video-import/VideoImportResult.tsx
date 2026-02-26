@@ -66,7 +66,7 @@ export function VideoImportResult({
             src={imageSrc}
             alt={location.name}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+            className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
             sizes="(max-width: 480px) 100vw, 400px"
             unoptimized
           />

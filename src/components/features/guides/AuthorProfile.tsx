@@ -124,7 +124,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
                           src={guide.featuredImage}
                           alt={guide.title}
                           fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
                           sizes="(min-width: 640px) 50vw, 100vw"
                         />
                       </div>

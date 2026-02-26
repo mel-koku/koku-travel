@@ -550,7 +550,7 @@ export const ItineraryShell = ({
           </AnimatePresence>
 
           {/* Activities List */}
-          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-2xl lg:border ${showDashboard ? "hidden" : ""}`}>
+          <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-xl lg:border ${showDashboard ? "hidden" : ""}`}>
             {/* Day transition interstitial */}
             <AnimatePresence>
               {dayTransitionLabel && (
@@ -626,14 +626,14 @@ export const ItineraryShell = ({
 
             {/* Planning status */}
             {isPlanning && (
-              <div className="mt-3 rounded-lg border border-dashed border-sage/30 bg-sage/10 p-2.5 text-xs text-sage">
+              <div className="mt-3 rounded-xl border border-dashed border-sage/30 bg-sage/10 p-2.5 text-xs text-sage">
                 Updating travel times...
               </div>
             )}
 
             {/* Planning error */}
             {planningError && (
-              <div className="mt-3 rounded-lg border border-error/30 bg-error/10 p-2.5 text-xs text-error">
+              <div className="mt-3 rounded-xl border border-error/30 bg-error/10 p-2.5 text-xs text-error">
                 <p className="font-medium">Something went wrong</p>
                 <p className="mt-0.5 text-error/80">{planningError}</p>
                 <button
@@ -642,7 +642,7 @@ export const ItineraryShell = ({
                     setPlanningError(null);
                     scheduleUserPlanning(model);
                   }}
-                  className="mt-2 w-full rounded-md bg-error px-3 py-1.5 text-xs font-medium text-white transition hover:bg-error/90"
+                  className="mt-2 w-full rounded-xl bg-error px-3 py-1.5 text-xs font-medium text-white transition hover:bg-error/90"
                 >
                   Retry
                 </button>
@@ -653,7 +653,7 @@ export const ItineraryShell = ({
 
         {/* Right: Sticky Map — desktop only (50%) */}
         <div className="hidden lg:sticky lg:top-[80px] lg:block lg:h-[calc(100dvh-96px)] lg:w-1/2">
-          <div className="h-full lg:rounded-2xl lg:overflow-hidden lg:border lg:border-border">
+          <div className="h-full lg:rounded-xl lg:overflow-hidden lg:border lg:border-border">
             <ErrorBoundary fallback={<div className="flex h-full items-center justify-center text-sm text-stone">Map unavailable</div>}>
               <ItineraryMapPanel
                 day={safeSelectedDay}
