@@ -111,6 +111,14 @@ export function PlacesMapB({
   const locationLookupRef = useRef<Map<number, Location>>(new Map());
   const featureCollectionRef = useRef<GeoJSON.FeatureCollection>({ type: "FeatureCollection", features: [] });
 
+  // Stable refs for callbacks — prevents map reinitialization when parent re-renders
+  const onBoundsChangeRef = useRef(onBoundsChange);
+  onBoundsChangeRef.current = onBoundsChange;
+  const onLocationClickRef = useRef(onLocationClick);
+  onLocationClickRef.current = onLocationClick;
+  const onHoverChangeRef = useRef(onHoverChange);
+  onHoverChangeRef.current = onHoverChange;
+
   const mapboxEnabled = useMemo(
     () => featureFlags.enableMapbox && mapboxService.isEnabled(),
     [],
@@ -132,8 +140,9 @@ export function PlacesMapB({
   }, [locations.length]);
 
   const debouncedBoundsChange = useMemo(
-    () => debounce(onBoundsChange, 300),
-    [onBoundsChange],
+    () => debounce((bounds: MapBounds) => onBoundsChangeRef.current(bounds), 300),
+     
+    [],
   );
 
   // Load mapbox module
@@ -308,18 +317,18 @@ export function PlacesMapB({
       if (!feature) return;
       const numId = feature.id as number;
       const loc = locationLookupRef.current.get(numId);
-      if (loc) onLocationClick(loc);
+      if (loc) onLocationClickRef.current(loc);
     });
 
     // Hover
     map.on("mouseenter", UNCLUSTERED_LAYER, (e) => {
       map.getCanvas().style.cursor = "pointer";
       const feature = e.features?.[0];
-      if (feature?.properties?.locationId) onHoverChange(feature.properties.locationId);
+      if (feature?.properties?.locationId) onHoverChangeRef.current(feature.properties.locationId);
     });
     map.on("mouseleave", UNCLUSTERED_LAYER, () => {
       map.getCanvas().style.cursor = "";
-      onHoverChange(null);
+      onHoverChangeRef.current(null);
     });
     map.on("mouseenter", CLUSTER_LAYER, () => { map.getCanvas().style.cursor = "pointer"; });
     map.on("mouseleave", CLUSTER_LAYER, () => { map.getCanvas().style.cursor = ""; });
@@ -332,7 +341,8 @@ export function PlacesMapB({
       setMapReady(false);
       hasFittedBounds.current = false;
     };
-  }, [mapboxModuleLoaded, mapboxEnabled, debouncedBoundsChange, onLocationClick, onHoverChange]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapboxModuleLoaded, mapboxEnabled]);
 
   // Update source data
   useEffect(() => {
