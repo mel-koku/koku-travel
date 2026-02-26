@@ -2,8 +2,12 @@
 
 import { useCallback, useEffect, useMemo } from "react";
 import {
+  BookOpen,
   Camera,
+  Gamepad2,
+  Leaf,
   Mountain,
+  Smile,
   Sparkles,
   Utensils,
   type LucideIcon,
@@ -44,14 +48,22 @@ const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
   Camera: Camera,
   Sparkles: Sparkles,
   Mountain: Mountain,
+  Leaf: Leaf,
+  Gamepad2: Gamepad2,
+  Smile: Smile,
+  BookOpen: BookOpen,
 };
 
 const VIBE_IMAGES: Record<VibeId, string> = {
-  cultural_heritage: "/images/regions/kansai-hero.jpg",
+  temples_tradition: "/images/regions/kansai-hero.jpg",
   foodie_paradise: "/images/regions/kyushu-hero.jpg",
-  hidden_gems: "/images/regions/shikoku-hero.jpg",
-  neon_nightlife: "/images/regions/kanto-hero.jpg",
   nature_adventure: "/images/regions/hokkaido-hero.jpg",
+  zen_wellness: "/images/regions/chubu-hero.jpg",
+  neon_nightlife: "/images/regions/kanto-hero.jpg",
+  pop_culture: "/images/regions/kanto-hero.jpg",
+  local_secrets: "/images/regions/shikoku-hero.jpg",
+  family_fun: "/images/regions/okinawa-hero.jpg",
+  history_buff: "/images/regions/chugoku-hero.jpg",
   in_season: "",
 };
 

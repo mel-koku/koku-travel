@@ -32,7 +32,7 @@ describe("TripBuilderContext", () => {
         dates: { start: "2024-01-01", end: "2024-01-07" },
         regions: ["kansai"],
         cities: ["kyoto"],
-        vibes: ["cultural_heritage"], // vibes derive interests
+        vibes: ["temples_tradition"], // vibes derive interests
         style: "balanced" as const,
         accessibility: { mobility: true },
       };
@@ -45,7 +45,7 @@ describe("TripBuilderContext", () => {
 
       expect(result.current.data.regions).toEqual(["kansai"]);
       expect(result.current.data.cities).toEqual(["kyoto"]);
-      expect(result.current.data.interests).toEqual(["culture", "history"]); // derived from cultural_heritage vibe
+      expect(result.current.data.interests).toEqual(["culture", "history"]); // derived from temples_tradition vibe
       expect(result.current.data.style).toBe("balanced");
     });
   });
@@ -331,12 +331,12 @@ describe("TripBuilderContext", () => {
         result.current.setData((prev) => ({
           ...prev,
           // @ts-expect-error Testing invalid vibes
-          vibes: ["cultural_heritage", "invalid-vibe", "foodie_paradise"],
+          vibes: ["temples_tradition", "invalid-vibe", "foodie_paradise"],
         }));
       });
 
       // Invalid vibes are filtered out, interests derived from valid vibes
-      expect(result.current.data.vibes).toEqual(["cultural_heritage", "foodie_paradise"]);
+      expect(result.current.data.vibes).toEqual(["temples_tradition", "foodie_paradise"]);
       expect(result.current.data.interests).toEqual(["culture", "history", "food"]);
     });
   });

@@ -2,14 +2,18 @@ import type { InterestId } from "@/types/trip";
 
 /**
  * Vibe IDs for the trip builder wizard.
- * Vibes are aspirational categories that map to underlying interests.
+ * Vibes are aspirational categories that map to underlying interests and tags.
  */
 export type VibeId =
-  | "cultural_heritage"
+  | "temples_tradition"
   | "foodie_paradise"
-  | "hidden_gems"
-  | "neon_nightlife"
   | "nature_adventure"
+  | "zen_wellness"
+  | "neon_nightlife"
+  | "pop_culture"
+  | "local_secrets"
+  | "family_fun"
+  | "history_buff"
   | "in_season";
 
 /**
@@ -29,9 +33,9 @@ export type VibeDefinition = {
  */
 export const VIBES: readonly VibeDefinition[] = [
   {
-    id: "cultural_heritage",
-    name: "Cultural Heritage",
-    description: "Temples, shrines, and traditional arts",
+    id: "temples_tradition",
+    name: "Temples & Tradition",
+    description: "Shrines, temples, and traditional arts",
     icon: "Torii",
     interests: ["culture", "history"],
   },
@@ -43,25 +47,53 @@ export const VIBES: readonly VibeDefinition[] = [
     interests: ["food"],
   },
   {
-    id: "hidden_gems",
-    name: "Hidden Gems",
-    description: "Off-the-beaten-path spots and photo ops",
-    icon: "Camera",
-    interests: ["photography"],
+    id: "nature_adventure",
+    name: "Nature & Adventure",
+    description: "Mountains, trails, and outdoor thrills",
+    icon: "Mountain",
+    interests: ["nature"],
+  },
+  {
+    id: "zen_wellness",
+    name: "Zen & Wellness",
+    description: "Onsen, gardens, and quiet retreats",
+    icon: "Leaf",
+    interests: ["wellness", "nature"],
   },
   {
     id: "neon_nightlife",
     name: "Neon & Nightlife",
-    description: "City lights, shopping, and entertainment",
+    description: "City lights, bars, and entertainment",
     icon: "Sparkles",
     interests: ["nightlife", "shopping"],
   },
   {
-    id: "nature_adventure",
-    name: "Nature & Adventure",
-    description: "Mountains, gardens, and outdoor wellness",
-    icon: "Mountain",
-    interests: ["nature", "wellness"],
+    id: "pop_culture",
+    name: "Pop Culture",
+    description: "Anime, manga, quirky cafes, and themed spots",
+    icon: "Gamepad2",
+    interests: ["shopping", "nightlife"],
+  },
+  {
+    id: "local_secrets",
+    name: "Local Secrets",
+    description: "Hidden gems and neighborhood favorites",
+    icon: "Camera",
+    interests: ["photography"],
+  },
+  {
+    id: "family_fun",
+    name: "Family Fun",
+    description: "Aquariums, zoos, parks, and beaches",
+    icon: "Smile",
+    interests: ["nature"],
+  },
+  {
+    id: "history_buff",
+    name: "History & Heritage",
+    description: "Museums, castles, and historic sites",
+    icon: "BookOpen",
+    interests: ["history", "culture"],
   },
   {
     id: "in_season",
