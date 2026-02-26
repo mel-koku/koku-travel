@@ -77,6 +77,7 @@ export function RegionCitySelector({
           variant === "desktop" ? "max-h-[280px]" : "max-h-[200px]"
         )}
         style={{ overscrollBehavior: "contain" }}
+        data-lenis-prevent
       >
         {filteredCities.length === 0 ? (
           <p className="py-3 text-center text-xs text-stone">No cities found</p>
@@ -109,18 +110,18 @@ export function RegionCitySelector({
                 </span>
 
                 {/* City name + count */}
-                <span className="flex-1 min-w-0">
+                <span className="flex-1 min-w-0 flex items-baseline gap-1.5">
                   <span
                     className={cn(
-                      "block text-sm",
+                      "text-sm",
                       isSelected ? "text-foreground" : "text-foreground-secondary"
                     )}
                   >
                     {city.city}
                   </span>
-                </span>
-                <span className="shrink-0 text-xs tabular-nums text-stone">
-                  {city.locationCount}
+                  <span className="text-[11px] tabular-nums text-stone">
+                    {city.locationCount} {city.locationCount === 1 ? "place" : "places"}
+                  </span>
                 </span>
               </button>
             );
