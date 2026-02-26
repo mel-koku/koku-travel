@@ -71,14 +71,12 @@ function TripBuilderBContent({
       const result: PlanApiResponse = await response.json();
 
       const cityNames = data.cities?.slice(0, 2).map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(" & ") || "Japan";
-      const startDate = data.dates?.start
-        ? new Date(data.dates.start).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          })
-        : "";
-      const tripName = startDate
-        ? `${cityNames} Trip - ${startDate}`
+      const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const dateRange = data.dates?.start && data.dates?.end
+        ? `${fmt(data.dates.start)} - ${fmt(data.dates.end)}`
+        : data.dates?.start ? fmt(data.dates.start) : "";
+      const tripName = dateRange
+        ? `${cityNames} Trip - ${dateRange}`
         : `${cityNames} Trip`;
 
       const tripId = createTrip({

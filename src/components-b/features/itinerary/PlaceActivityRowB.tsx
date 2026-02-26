@@ -281,7 +281,7 @@ export const PlaceActivityRowB = memo(
               {/* Number (right side) */}
               {placeNumber !== undefined && (
                 <span
-                  className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                  className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-[var(--card)]"
                   style={{ backgroundColor: stripColor }}
                 >
                   {placeNumber}
@@ -402,7 +402,7 @@ export const PlaceActivityRowB = memo(
                   {/* Number — mobile only (image overlay handles desktop) */}
                   {placeNumber !== undefined && (
                     <div
-                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white sm:hidden"
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-[var(--card)] sm:hidden"
                       style={{ backgroundColor: stripColor }}
                     >
                       {placeNumber}
@@ -562,7 +562,7 @@ export const PlaceActivityRowB = memo(
                 {placeNumber !== undefined && (
                   <div className="absolute right-2 top-2 z-10">
                     <div
-                      className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm"
+                      className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold text-[var(--card)] shadow-[var(--shadow-sm)]"
                       style={{ backgroundColor: stripColor }}
                     >
                       {placeNumber}

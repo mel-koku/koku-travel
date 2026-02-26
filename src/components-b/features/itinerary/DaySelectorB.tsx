@@ -69,10 +69,26 @@ export const DaySelectorB = ({
 
   const days = useMemo(() => {
     return Array.from({ length: totalDays }).map((_, index) => {
-      const baseLabel = labels[index] ?? `Day ${index + 1}`;
+      // Build a short date label (e.g. "Feb 27") when tripStartDate is available
+      let dateStr: string | null = null;
+      if (tripStartDate) {
+        try {
+          const [y, m, d] = tripStartDate.split("-").map(Number);
+          if (y && m && d && !isNaN(y) && !isNaN(m) && !isNaN(d)) {
+            const dt = new Date(y, m - 1, d);
+            dt.setDate(dt.getDate() + index);
+            dateStr = dt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+          }
+        } catch { /* ignore */ }
+      }
 
-      // If no label was provided, construct "Day N" ourselves
-      const displayLabel = labels[index] ? baseLabel : `Day ${index + 1}`;
+      // Extract city from label format "Day N (City)"
+      const cityMatch = labels[index]?.match(/\(([^)]+)\)/);
+      const city = cityMatch ? cityMatch[1] : null;
+
+      const displayLabel = dateStr
+        ? city ? `${dateStr} (${city})` : dateStr
+        : labels[index] ?? `Day ${index + 1}`;
 
       return {
         index,
@@ -80,7 +96,7 @@ export const DaySelectorB = ({
         isToday: index === todayIndex,
       };
     });
-  }, [labels, totalDays, todayIndex]);
+  }, [labels, totalDays, todayIndex, tripStartDate]);
 
   // Auto-select today on mount
   useEffect(() => {
@@ -184,7 +200,7 @@ export const DaySelectorB = ({
                 "min-h-[34px] flex items-center justify-center",
                 "active:scale-[0.98]",
                 isActive
-                  ? "bg-[var(--primary)] text-white shadow-[var(--shadow-sm)]"
+                  ? "bg-[var(--primary)] text-[var(--card)] shadow-[var(--shadow-sm)]"
                   : "bg-white text-[var(--foreground)] hover:bg-[var(--surface)]"
               )}
               animate={
@@ -206,7 +222,7 @@ export const DaySelectorB = ({
                     className={cn(
                       "text-[10px] font-semibold",
                       isActive
-                        ? "text-white/80"
+                        ? "text-[color-mix(in_srgb,var(--card)_80%,transparent)]"
                         : "text-[var(--primary)]"
                     )}
                   >

@@ -74,7 +74,7 @@ export const NoteActivityRowB = forwardRef<HTMLDivElement, NoteActivityRowBProps
               </p>
             ) : (
               <p
-                className="text-sm italic"
+                className="text-sm"
                 style={{ color: "var(--muted-foreground)" }}
               >
                 No notes added.
