@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAppState } from "@/state/AppState";
 import { useBookmarks } from "@/hooks/useBookmarksQuery";
-import { PortableTextBody } from "@/components/features/guides/PortableTextBody";
+import { PortableTextBodyB } from "./PortableTextBodyB";
+import { GuideContentB } from "./GuideContentB";
 import type { Guide, GuideSummary } from "@/types/guide";
 import type { SanityGuide, SanityAuthor } from "@/types/sanityGuide";
 import type { Location } from "@/types/location";
@@ -159,12 +160,9 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
       <section className="bg-white">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
           {isSanity ? (
-            <PortableTextBody body={sg!.body} />
+            <PortableTextBodyB body={sg!.body} />
           ) : (
-            <div
-              className="prose prose-lg max-w-none"
-              dangerouslySetInnerHTML={{ __html: g!.body || "" }}
-            />
+            <GuideContentB body={g!.body || ""} />
           )}
         </div>
       </section>
