@@ -64,7 +64,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
 
       const result: PlanApiResponse = await response.json();
 
-      const cityNames = data.cities?.slice(0, 2).join(" & ") || "Japan";
+      const cityNames = data.cities?.slice(0, 2).map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(" & ") || "Japan";
       const startDate = data.dates?.start
         ? new Date(data.dates.start).toLocaleDateString("en-US", { month: "short", day: "numeric" })
         : "";
