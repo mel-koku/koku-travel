@@ -80,6 +80,7 @@ type DiscoverMapBProps = {
   locations: NearbyLocation[];
   userPosition: { lat: number; lng: number } | null;
   onLocationClick: (location: Location) => void;
+  onHoverChange?: (locationId: string | null) => void;
   highlightedLocationId: string | null;
   isLoading: boolean;
 };
@@ -88,6 +89,7 @@ export function DiscoverMapB({
   locations,
   userPosition,
   onLocationClick,
+  onHoverChange,
   highlightedLocationId,
   isLoading,
 }: DiscoverMapBProps) {
@@ -262,12 +264,15 @@ export function DiscoverMapB({
       if (loc) onLocationClick(loc);
     });
 
-    // Hover cursor
-    map.on("mouseenter", UNCLUSTERED_LAYER, () => {
+    // Hover cursor + sync
+    map.on("mouseenter", UNCLUSTERED_LAYER, (e) => {
       map.getCanvas().style.cursor = "pointer";
+      const feature = e.features?.[0];
+      if (feature?.properties?.locationId) onHoverChange?.(feature.properties.locationId);
     });
     map.on("mouseleave", UNCLUSTERED_LAYER, () => {
       map.getCanvas().style.cursor = "";
+      onHoverChange?.(null);
     });
 
     mapInstanceRef.current = map;

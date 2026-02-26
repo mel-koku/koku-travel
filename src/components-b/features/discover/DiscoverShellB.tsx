@@ -2,19 +2,21 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { useNearbyLocationsQuery } from "@/hooks/useLocationsQuery";
+import type { NearbyLocation } from "@/hooks/useLocationsQuery";
 import type { Location } from "@/types/location";
+import { DiscoverMapCardB } from "./DiscoverMapCardB";
 
 const DiscoverMapB = dynamic(
   () => import("@b/features/discover/DiscoverMapB").then((m) => ({ default: m.DiscoverMapB })),
   { ssr: false },
 );
 
-const DiscoverDrawerB = dynamic(
-  () => import("@b/features/discover/DiscoverDrawerB").then((m) => ({ default: m.DiscoverDrawerB })),
+const PlaceDetailPanelB = dynamic(
+  () => import("@b/features/places/PlaceDetailPanelB").then((m) => ({ default: m.PlaceDetailPanelB })),
   { ssr: false },
 );
 
@@ -30,13 +32,14 @@ const CATEGORY_CHIPS = [
 const FALLBACK_POSITION = { lat: 35.6812, lng: 139.7671 };
 
 export function DiscoverShellB() {
-  const router = useRouter();
   const geoLocation = useCurrentLocation();
   const [discoverCategory, setDiscoverCategory] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [highlightedLocationId, setHighlightedLocationId] = useState<string | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const hoverSourceRef = useRef<"card" | "map" | null>(null);
+  const cardRefsMap = useRef<Map<string, HTMLDivElement>>(new Map());
 
   useEffect(() => {
     geoLocation.request();
@@ -71,39 +74,56 @@ export function DiscoverShellB() {
     );
   }, [nearbyData, searchQuery]);
 
-  // Auto-open drawer when locations first load
-  useEffect(() => {
-    if (nearbyLocations.length > 0 && !drawerOpen) {
-      setDrawerOpen(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nearbyLocations.length]);
-
   const handleMapLocationClick = useCallback((location: Location) => {
-    setHighlightedLocationId(location.id);
-    setDrawerOpen(true);
+    setSelectedLocation(location);
   }, []);
 
-  const handleDrawerLocationClick = useCallback((locationId: string) => {
-    router.push(`/b/places/${locationId}`);
-  }, [router]);
+  const handleCardSelect = useCallback((location: NearbyLocation) => {
+    setSelectedLocation(location);
+  }, []);
 
-  const handleDrawerHover = useCallback((locationId: string | null) => {
+  const handleCloseDetail = useCallback(() => {
+    setSelectedLocation(null);
+  }, []);
+
+  const handleCardHover = useCallback((locationId: string | null) => {
+    hoverSourceRef.current = locationId ? "card" : null;
     setHighlightedLocationId(locationId);
   }, []);
+
+  const handleMapHover = useCallback((locationId: string | null) => {
+    hoverSourceRef.current = locationId ? "map" : null;
+    setHighlightedLocationId(locationId);
+  }, []);
+
+  // Auto-scroll pill card when map pin hovered
+  useEffect(() => {
+    if (!highlightedLocationId || hoverSourceRef.current !== "map") return;
+    const el = cardRefsMap.current.get(highlightedLocationId);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [highlightedLocationId]);
+
+  const setCardRef = useCallback(
+    (locationId: string) => (el: HTMLDivElement | null) => {
+      if (el) cardRefsMap.current.set(locationId, el);
+      else cardRefsMap.current.delete(locationId);
+    },
+    [],
+  );
 
   const mapAvailable = useMemo(() => featureFlags.enableMapbox && !featureFlags.cheapMode, []);
   const isLocating = geoLocation.isLoading || (userPosition === null && !usingFallback);
 
   return (
-    <div className="relative h-[calc(100dvh-var(--header-h))] w-full bg-[var(--background)]" style={{ isolation: "isolate" }}>
-      {/* Map or fallback — pinned below floating UI */}
+    <div className="relative h-[100dvh] w-full overflow-hidden bg-[var(--background)]" style={{ isolation: "isolate" }}>
+      {/* Map or fallback */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         {mapAvailable ? (
           <DiscoverMapB
             locations={nearbyLocations}
             userPosition={userPosition}
             onLocationClick={handleMapLocationClick}
+            onHoverChange={handleMapHover}
             highlightedLocationId={highlightedLocationId}
             isLoading={isNearbyLoading}
           />
@@ -183,9 +203,40 @@ export function DiscoverShellB() {
         </div>
       </div>
 
+      {/* Floating pill column — left side, vertical scroll (Places-style) */}
+      {nearbyLocations.length > 0 && (
+        <div
+          className="absolute top-14 left-3 bottom-3 z-10 flex w-56 flex-col pointer-events-none"
+        >
+          {/* Count */}
+          <div className="mb-1.5 pointer-events-auto">
+            <span
+              className="inline-block rounded-lg bg-white px-2 py-1 text-[11px] font-medium text-[var(--muted-foreground)]"
+              style={{ boxShadow: "var(--shadow-sm)" }}
+            >
+              {nearbyLocations.length} {nearbyLocations.length === 1 ? "place" : "places"} nearby
+            </span>
+          </div>
+
+          {/* Scrollable pills */}
+          <div className="flex-1 overflow-y-auto overscroll-contain scrollbar-hide space-y-1.5 pointer-events-auto" data-lenis-prevent>
+            {nearbyLocations.map((location) => (
+              <DiscoverMapCardB
+                key={location.id}
+                ref={setCardRef(location.id)}
+                location={location}
+                isHighlighted={highlightedLocationId === location.id}
+                onHover={handleCardHover}
+                onSelect={handleCardSelect}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Fallback banner */}
       {usingFallback && !isLocating && (
-        <div className="absolute bottom-52 md:bottom-44 left-3 right-3 z-10">
+        <div className="absolute bottom-4 left-3 right-3 z-10">
           <div
             className="mx-auto max-w-sm rounded-2xl bg-white px-4 py-3 flex items-start gap-2.5"
             style={{ boxShadow: "var(--shadow-elevated)" }}
@@ -215,15 +266,16 @@ export function DiscoverShellB() {
         </div>
       )}
 
-      {/* Bottom drawer */}
-      {drawerOpen && nearbyLocations.length > 0 && (
-        <DiscoverDrawerB
-          locations={nearbyLocations}
-          highlightedLocationId={highlightedLocationId}
-          onLocationHover={handleDrawerHover}
-          onLocationClick={handleDrawerLocationClick}
-        />
-      )}
+      {/* Detail panel slide-in */}
+      <AnimatePresence>
+        {selectedLocation && (
+          <PlaceDetailPanelB
+            key={selectedLocation.id}
+            location={selectedLocation}
+            onClose={handleCloseDetail}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
