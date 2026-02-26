@@ -126,9 +126,7 @@ export function ExperiencesPageClientB({ experiences, content }: ExperiencesPage
           )}
           style={{
             top: isStuck ? "calc(var(--header-h) - 3px)" : "var(--header-h)",
-            backgroundColor: isStuck ? "rgba(255,255,255,0.85)" : "transparent",
-            backdropFilter: isStuck ? "blur(20px) saturate(1.5)" : "none",
-            WebkitBackdropFilter: isStuck ? "blur(20px) saturate(1.5)" : "none",
+            backgroundColor: isStuck ? "rgba(255,255,255,1)" : "transparent",
             boxShadow: isStuck ? "var(--shadow-sm)" : "none",
           }}
         >

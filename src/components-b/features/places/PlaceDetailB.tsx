@@ -211,7 +211,7 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
 
       {/* Sticky back bar */}
       <div
-        className="sticky z-30 border-b border-[var(--border)] bg-white/85 backdrop-blur-xl"
+        className="sticky z-30 border-b border-[var(--border)] bg-white"
         style={{ top: "var(--header-h)" }}
       >
         <div className="mx-auto max-w-4xl px-4 sm:px-6 flex items-center gap-3 h-12">

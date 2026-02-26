@@ -252,6 +252,7 @@ className = "active:scale-[0.98]";
 - No custom cursor
 - No scroll progress bar
 - No texture grain
+- No `backdrop-blur` / frosted glass — use solid backgrounds (too techie/SaaS for a Japan aesthetic)
 
 ---
 
@@ -259,12 +260,11 @@ className = "active:scale-[0.98]";
 
 ### Header
 
-Frosted glass on scroll:
+Solid white on scroll (no frosted glass):
 
 ```tsx
 style={{
-  backgroundColor: scrolled ? "rgba(255,255,255,0.85)" : "transparent",
-  backdropFilter: scrolled ? "blur(20px) saturate(1.5)" : "none",
+  backgroundColor: scrolled ? "#fff" : "rgba(255,255,255,0.6)",
   boxShadow: scrolled ? "var(--shadow-sm)" : "none",
 }}
 ```
@@ -303,7 +303,7 @@ Same style across card grid overlay and detail page:
 
 ```tsx
 // Card overlay (shows on hover, persists when saved)
-<button className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium backdrop-blur-md ${
+<button className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${
   active ? "bg-[var(--primary)] text-white" : "bg-white/80 text-[var(--foreground)]"
 }`}>
   <HeartIcon /> {active ? "Saved" : "Save for trip"}
@@ -375,7 +375,7 @@ Key patterns:
 - Map top offset accounts for both header and category bar height (52px)
 - Intro section and seasonal banner hidden in map mode
 - Floating vertical pill column on the left side (`absolute top-3 left-3 bottom-3 w-56`)
-- Pills are individual `bg-white/90 backdrop-blur-sm` cards — no panel background
+- Pills are individual `bg-white` cards — no panel background
 - Bounds-filtered locations with infinite scroll (`PAGE_SIZE = 40`)
 - Two-way hover sync: card hover highlights map pin, map pin hover auto-scrolls to pill
 - Count badge at top of pill column

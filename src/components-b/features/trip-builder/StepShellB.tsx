@@ -109,7 +109,7 @@ export function StepNavBarB({
   return (
     <>
       {/* Desktop Navigation */}
-      <div className="fixed inset-x-0 bottom-0 z-50 hidden border-t border-[var(--border)] bg-white/90 backdrop-blur-sm lg:block">
+      <div className="fixed inset-x-0 bottom-0 z-50 hidden border-t border-[var(--border)] bg-white lg:block">
         <div className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
           <div className="mb-3">
             <SegmentedProgress
@@ -146,7 +146,7 @@ export function StepNavBarB({
       </div>
 
       {/* Mobile Bottom Bar */}
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border)] bg-white/90 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[var(--border)] bg-white px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:hidden">
         <div className="mb-2">
           <SegmentedProgress
             currentStep={currentStep}

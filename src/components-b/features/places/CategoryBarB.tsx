@@ -85,12 +85,15 @@ export function CategoryBarB({
 
       <div
         className={cn(
-          "sticky z-40",
-          isStuck || viewMode === "map"
-            ? "bg-white/85 backdrop-blur-xl border-b border-[var(--border)]"
-            : "bg-transparent border-b border-transparent",
+          "sticky transition-[background-color,box-shadow] duration-300",
+          isStuck || viewMode === "map" ? "z-50" : "z-40",
+          !(isStuck || viewMode === "map") && "bg-transparent",
         )}
-        style={{ top: "var(--header-h)" }}
+        style={{
+          top: isStuck || viewMode === "map" ? "calc(var(--header-h) - 3px)" : "var(--header-h)",
+          backgroundColor: isStuck || viewMode === "map" ? "#fff" : undefined,
+          boxShadow: isStuck || viewMode === "map" ? "var(--shadow-sm)" : "none",
+        }}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Search row */}
