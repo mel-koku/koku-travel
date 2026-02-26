@@ -86,7 +86,7 @@ export function DiscoverDrawerB({
           height: expanded ? `${EXPANDED_VH}dvh` : PEEK_HEIGHT,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          boxShadow: "0 -4px 24px rgba(0,0,0,0.08)",
+          boxShadow: "var(--shadow-elevated)",
           transition: dragging ? "none" : "height 0.3s ease",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
@@ -138,12 +138,12 @@ export function DiscoverDrawerB({
 
       {/* ── Desktop bottom strip ── */}
       <div
-        className="hidden md:block fixed inset-x-0 bottom-0 z-30 bg-white/95 backdrop-blur-sm"
+        className="hidden md:block fixed inset-x-0 bottom-0 z-30 bg-white"
         style={{
           height: 140,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          boxShadow: "0 -4px 24px rgba(0,0,0,0.06)",
+          boxShadow: "var(--shadow-elevated)",
         }}
       >
         <div className="flex items-center h-full px-4 gap-3">
