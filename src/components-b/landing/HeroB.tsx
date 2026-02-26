@@ -55,7 +55,7 @@ export function HeroB({ locationCount, content }: HeroBProps) {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              className="mt-4 text-[clamp(2.25rem,5vw,3.75rem)] font-bold leading-[1.1] tracking-[-0.04em] text-[var(--foreground)]"
+              className="mt-4 text-[clamp(2.25rem,5vw,4.5rem)] font-bold leading-[1.1] tracking-[-0.04em] text-[var(--foreground)]"
             >
               {headline}
             </motion.h1>

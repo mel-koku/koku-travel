@@ -20,7 +20,7 @@ export function FinalCtaB({ content }: FinalCtaBProps) {
           className="relative mx-auto max-w-3xl overflow-hidden rounded-3xl bg-[var(--primary)] px-8 py-16 text-center sm:px-16"
           style={{ boxShadow: "var(--shadow-depth)" }}
         >
-          <h2 className="text-3xl font-bold tracking-[-0.02em] text-white sm:text-4xl">
+          <h2 className="text-2xl font-semibold tracking-[-0.02em] text-white sm:text-3xl">
             {content?.finalCtaHeading ?? "Ready to see Japan differently?"}
           </h2>
           <p className="mt-4 text-white/80">

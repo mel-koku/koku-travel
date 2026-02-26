@@ -246,8 +246,8 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
 
         <motion.h1
           variants={fadeUp}
-          className="mt-3 font-bold leading-tight text-[var(--foreground)]"
-          style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)" }}
+          className="mt-3 font-semibold leading-tight text-[var(--foreground)]"
+          style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)" }}
         >
           {displayName}
         </motion.h1>

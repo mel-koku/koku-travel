@@ -17,10 +17,25 @@
 
 **Single font**: Inter (variable weight via `next/font/google`)
 
+### Type Scale
+
+| Level          | Role                             | Desktop | Mobile | Weight         | Class                            |
+| -------------- | -------------------------------- | ------- | ------ | -------------- | -------------------------------- |
+| **Display**    | Landing hero, trip builder intro | 72px    | 36px   | bold (700)     | `clamp(2.25rem, 5vw, 4.5rem)`    |
+| **Page title** | Inner page h1 (places, detail)   | 44px    | 28px   | semibold (600) | `clamp(1.75rem, 3.5vw, 2.75rem)` |
+| **Section**    | Landing h2s, step headings       | 30px    | 24px   | semibold (600) | `text-2xl sm:text-3xl`           |
+| **Subsection** | Showcase act h3, sub-headings    | 20px    | 18px   | semibold (600) | `text-lg sm:text-xl`             |
+| Body lg        | Hero subtitle, lead text         | 18px    | 18px   | regular (400)  | `text-lg`                        |
+| Body           | Paragraphs                       | 16px    | 16px   | regular (400)  | default                          |
+| Small          | Labels, buttons, card titles     | 14px    | 14px   | medium (500)   | `text-sm`                        |
+| Caption        | Eyebrows, metadata               | 12px    | 12px   | semibold (600) | `text-xs`                        |
+
+### Weight & Role Reference
+
 | Role                   | Weight         | Color                        | Tracking          | Example                    |
 | ---------------------- | -------------- | ---------------------------- | ----------------- | -------------------------- |
 | Display / Page headers | 700 (bold)     | `--foreground` #1C1A17       | `-0.04em`         | Hero headline              |
-| Section titles         | 700 (bold)     | `--foreground` #1C1A17       | `-0.02em`         | "Places worth the journey" |
+| Section titles         | 600 (semibold) | `--foreground` #1C1A17       | `-0.02em`         | "Places worth the journey" |
 | Eyebrow labels         | 600 (semibold) | `--primary` #2D4B8E          | `0.2em` uppercase | "FEATURED PLACES"          |
 | Body text              | 400 (regular)  | `--foreground-body` #504D48  | `0`               | Descriptions, paragraphs   |
 | Secondary / Captions   | 400 (regular)  | `--muted-foreground` #78736C | `0`               | Metadata, timestamps       |
