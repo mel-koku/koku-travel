@@ -93,7 +93,7 @@ export function useTripBuilderNavigation({
     const set = new Set<number>();
     if (currentStep > 0) set.add(0);
     if (datesValid) set.add(1);
-    if (currentStep > 2 || data.entryPoint) set.add(2);
+    if (currentStep > 2 || (currentStep === 2 && !!data.entryPoint)) set.add(2);
     if (vibesValid) set.add(3);
     if (regionsValid) set.add(4);
     if (reviewValid && currentStep === 5) set.add(5);
