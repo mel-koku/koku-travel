@@ -101,7 +101,7 @@ export function VibeStepB({ onValidityChange, sanityConfig }: VibeStepBProps) {
   return (
     <div className="flex flex-1 flex-col bg-[var(--background)]">
       {/* Header */}
-      <div className="px-4 pt-28 text-center sm:px-6 lg:pt-32">
+      <div className="px-4 pt-20 text-center sm:px-6 sm:pt-28 lg:pt-32">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
           Step 03
         </p>
@@ -129,7 +129,7 @@ export function VibeStepB({ onValidityChange, sanityConfig }: VibeStepBProps) {
 
       {/* Compact tile grid — 5 cols desktop, 3 tablet, 2 mobile */}
       <div className="mx-auto mt-8 w-full max-w-4xl px-4 pb-24 sm:px-6 lg:mt-10">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
           {TRIP_BUILDER_VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;

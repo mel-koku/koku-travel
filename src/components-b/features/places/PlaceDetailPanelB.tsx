@@ -187,7 +187,7 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
         <button
           onClick={onClose}
           title="Close"
-          className="absolute top-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/80 hover:bg-white transition"
+          className="absolute top-3 right-3 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/80 hover:bg-white transition"
           style={{ boxShadow: "var(--shadow-sm)" }}
           aria-label="Close panel"
         >
@@ -356,38 +356,38 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
               </h3>
               <dl className="space-y-1.5 text-sm">
                 {loc.nearestStation && (
-                  <div className="flex gap-2">
-                    <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Nearest station</dt>
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                    <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Nearest station</dt>
                     <dd className="text-[var(--foreground-body)]">{loc.nearestStation}</dd>
                   </div>
                 )}
                 {loc.cashOnly !== undefined && loc.cashOnly !== null && (
-                  <div className="flex gap-2">
-                    <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Payment</dt>
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                    <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Payment</dt>
                     <dd className="text-[var(--foreground-body)]">{loc.cashOnly ? "Cash only" : "Cards accepted"}</dd>
                   </div>
                 )}
                 {loc.reservationInfo && (
-                  <div className="flex gap-2">
-                    <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Reservations</dt>
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                    <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Reservations</dt>
                     <dd className="text-[var(--foreground-body)]">{loc.reservationInfo}</dd>
                   </div>
                 )}
                 {loc.dietaryOptions?.servesVegetarianFood && (
-                  <div className="flex gap-2">
-                    <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Dietary</dt>
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                    <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Dietary</dt>
                     <dd className="text-[var(--foreground-body)]">Vegetarian options</dd>
                   </div>
                 )}
                 {mealLabels && (
-                  <div className="flex gap-2">
-                    <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Meals</dt>
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                    <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Meals</dt>
                     <dd className="text-[var(--foreground-body)]">{mealLabels}</dd>
                   </div>
                 )}
                 {serviceLabels && (
-                  <div className="flex gap-2">
-                    <dt className="text-[var(--muted-foreground)] shrink-0 w-28">Service</dt>
+                  <div className="flex flex-col gap-0.5 sm:flex-row sm:gap-2">
+                    <dt className="text-[var(--muted-foreground)] shrink-0 sm:w-28">Service</dt>
                     <dd className="text-[var(--foreground-body)]">{serviceLabels}</dd>
                   </div>
                 )}

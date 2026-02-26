@@ -27,7 +27,7 @@ export function StepShellB({
         className={
           fullBleed
             ? "flex flex-1 flex-col"
-            : "mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pt-24 sm:px-6 lg:px-8"
+            : "mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pt-16 sm:px-6 sm:pt-24 lg:px-8"
         }
       >
         {children}

@@ -197,7 +197,7 @@ export const DaySelectorB = ({
               onClick={() => onChange(index)}
               className={cn(
                 "relative flex-shrink-0 snap-start rounded-lg px-3 text-xs font-medium whitespace-nowrap transition-colors",
-                "min-h-[34px] flex items-center justify-center",
+                "min-h-[44px] flex items-center justify-center",
                 "active:scale-[0.98]",
                 isActive
                   ? "bg-[var(--primary)] text-[var(--card)] shadow-[var(--shadow-sm)]"

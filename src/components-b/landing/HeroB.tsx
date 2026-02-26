@@ -38,7 +38,7 @@ export function HeroB({ locationCount, content }: HeroBProps) {
   return (
     <section className="relative overflow-hidden bg-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-12 pb-16 pt-32 lg:grid-cols-2 lg:gap-16 lg:pb-20 lg:pt-36">
+        <div className="grid items-center gap-8 pb-12 pt-28 sm:gap-12 sm:pb-16 sm:pt-32 lg:grid-cols-2 lg:gap-16 lg:pb-20 lg:pt-36">
           {/* Text */}
           <div className="max-w-xl">
             <motion.p
@@ -64,7 +64,7 @@ export function HeroB({ locationCount, content }: HeroBProps) {
               variants={fadeUp}
               initial="hidden"
               animate="visible"
-              className="mt-5 text-lg leading-relaxed text-[var(--foreground-body)]"
+              className="mt-5 text-base leading-relaxed text-[var(--foreground-body)] sm:text-lg"
             >
               {description}
             </motion.p>

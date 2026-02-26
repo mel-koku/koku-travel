@@ -206,7 +206,7 @@ export function DiscoverShellB() {
       {/* Floating pill column — left side, vertical scroll (Places-style) */}
       {nearbyLocations.length > 0 && (
         <div
-          className="absolute top-14 left-3 bottom-3 z-10 flex w-56 flex-col pointer-events-none"
+          className="absolute top-14 left-3 bottom-3 z-10 hidden w-56 flex-col pointer-events-none md:flex"
         >
           {/* Count */}
           <div className="mb-1.5 pointer-events-auto">

@@ -213,7 +213,7 @@ export function GuidesPageClientB({ guides, content }: GuidesPageClientBProps) {
                     disabled={isEmpty}
                     onClick={() => setSelectedSeason(selectedSeason === season.value ? null : season.value)}
                     className={cn(
-                      "px-3 py-1.5 min-h-[36px] text-xs font-medium whitespace-nowrap rounded-full transition-all",
+                      "px-3 py-2 min-h-[44px] text-xs font-medium whitespace-nowrap rounded-full transition-all",
                       isEmpty
                         ? "bg-[var(--surface)] text-[var(--muted-foreground)]/40 cursor-default opacity-40"
                         : selectedSeason === season.value
@@ -242,7 +242,7 @@ export function GuidesPageClientB({ guides, content }: GuidesPageClientBProps) {
         className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24 lg:pb-32"
       >
         {filteredGuides.length > 0 ? (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 sm:gap-8">
+          <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
             {filteredGuides.map((guide, i) => (
               <motion.div
                 key={guide.id}

@@ -61,7 +61,7 @@ export function HeaderB() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav className="hidden items-center gap-4 md:flex lg:gap-8">
             {NAV_ITEMS.map((item) => {
               const isActive = pathname.startsWith(item.href);
               return (
@@ -142,7 +142,7 @@ export function HeaderB() {
           boxShadow: menuOpen ? "var(--shadow-elevated)" : "none",
         }}
       >
-        <div className="flex flex-col px-6 py-4">
+        <div className="flex flex-col px-6 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (

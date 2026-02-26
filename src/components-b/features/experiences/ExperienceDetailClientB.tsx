@@ -87,7 +87,7 @@ export function ExperienceDetailClientB({
       {quickFacts.length > 0 && (
         <section className="bg-white border-b border-[var(--border)]">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex flex-wrap gap-6">
+            <div className="flex flex-wrap gap-3 sm:gap-6">
               {quickFacts.map((fact) => (
                 <div key={fact.label}>
                   <p className="text-[11px] font-medium uppercase tracking-[0.15em] text-[var(--muted-foreground)]">

@@ -103,7 +103,7 @@ export function CategoryBarB({
             {tabs && tabs.length > 0 && (() => {
               const activeTabData = tabs.find((t) => t.id === activeTab) ?? tabs[0];
               return activeTabData ? (
-                <span className="shrink-0 text-xs font-medium text-[var(--muted-foreground)] whitespace-nowrap">
+                <span className="hidden shrink-0 text-xs font-medium text-[var(--muted-foreground)] whitespace-nowrap sm:inline">
                   {activeTabData.count.toLocaleString()} places
                 </span>
               ) : null;
@@ -150,7 +150,7 @@ export function CategoryBarB({
                 type="submit"
                 disabled={isExtracting}
                 title={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--brand-secondary)] active:scale-[0.98] transition disabled:opacity-60"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--brand-secondary)] active:scale-[0.98] transition disabled:opacity-60"
                 aria-label={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
               >
                 {isExtracting ? (
