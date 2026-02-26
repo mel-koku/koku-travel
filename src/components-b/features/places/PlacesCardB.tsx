@@ -17,6 +17,7 @@ type PlacesCardBProps = {
   location: Location;
   isHighlighted?: boolean;
   onHover?: (locationId: string | null) => void;
+  onSelect?: (location: Location) => void;
   eager?: boolean;
 };
 
@@ -34,6 +35,7 @@ export const PlacesCardB = memo(function PlacesCardB({
   location,
   isHighlighted,
   onHover,
+  onSelect,
   eager = false,
 }: PlacesCardBProps) {
   const { isInSaved, toggleSave } = useSaved();
@@ -64,6 +66,7 @@ export const PlacesCardB = memo(function PlacesCardB({
     >
       <Link
         href={`/b/places/${location.id}`}
+        onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
         className={`block w-full overflow-hidden rounded-2xl bg-white transition-all duration-300 ${
           isHighlighted
             ? "scale-[1.01]"

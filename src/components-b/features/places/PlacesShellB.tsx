@@ -1,8 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBarB } from "./CategoryBarB";
@@ -10,6 +11,7 @@ import type { InputMode } from "./CategoryBarB";
 import { useAllLocationsSingle, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import type { Location } from "@/types/location";
 import { useVideoImport } from "@/hooks/useVideoImport";
 import { isValidVideoUrl, detectPlatform } from "@/lib/video/platforms";
 
@@ -49,9 +51,25 @@ const PlacesMapLayoutB = dynamic(
   { ssr: false },
 );
 
+const PlaceDetailPanelB = dynamic(
+  () => import("./PlaceDetailPanelB").then((m) => ({ default: m.PlaceDetailPanelB })),
+  { ssr: false },
+);
+
 type PlacesShellBProps = {
   content?: PagesContent;
 };
+
+/* ── Helpers ──────────────────────────────────────────────────── */
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
 
 /* ── Category tab definitions ─────────────────────────────────── */
 
@@ -223,13 +241,77 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     setInputValue("");
   };
 
-  // ── Deep link redirect — redirect ?location= to detail page ──
+  // ── Slug maps for clean ?location= URLs ──
+  const { idToSlug, slugToLocation } = useMemo(() => {
+    if (!locations || locations.length === 0) return { idToSlug: new Map<string, string>(), slugToLocation: new Map<string, Location>() };
+
+    // Group by name slug to detect duplicates
+    const groups = new Map<string, Location[]>();
+    for (const loc of locations) {
+      const s = slugify(loc.name);
+      const group = groups.get(s) ?? [];
+      group.push(loc);
+      groups.set(s, group);
+    }
+
+    const id2s = new Map<string, string>();
+    const s2loc = new Map<string, Location>();
+
+    for (const [nameSlug, locs] of groups) {
+      if (locs.length === 1) {
+        const only = locs[0]!;
+        id2s.set(only.id, nameSlug);
+        s2loc.set(nameSlug, only);
+      } else {
+        for (const loc of locs) {
+          const withCity = loc.city ? `${nameSlug}-${slugify(loc.city)}` : nameSlug;
+          id2s.set(loc.id, withCity);
+          s2loc.set(withCity, loc);
+        }
+      }
+    }
+
+    return { idToSlug: id2s, slugToLocation: s2loc };
+  }, [locations]);
+
+  // ── Detail panel state ──
+  const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
+  const deepLinkHandled = useRef(false);
+
+  const handleSelectLocation = useCallback((location: Location) => {
+    setExpandedLocation(location);
+    const slug = idToSlug.get(location.id) ?? location.id;
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("location", slug);
+    const qs = params.toString();
+    window.history.pushState(null, "", `/b/places${qs ? `?${qs}` : ""}`);
+  }, [searchParams, idToSlug]);
+
+  const handleCloseExpanded = useCallback(() => {
+    setExpandedLocation(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("location");
+    const qs = params.toString();
+    window.history.replaceState(null, "", `/b/places${qs ? `?${qs}` : ""}`);
+  }, [searchParams]);
+
+  // Deep link: ?location={slug} → auto-open panel
   const locationParam = searchParams.get("location");
 
   useEffect(() => {
-    if (!locationParam) return;
-    router.replace(`/b/places/${locationParam}`);
-  }, [locationParam, router]);
+    if (!locationParam || deepLinkHandled.current) return;
+    if (!locations || locations.length === 0) return;
+
+    deepLinkHandled.current = true;
+    const match = slugToLocation.get(locationParam);
+    if (match) {
+      setExpandedLocation(match);
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("location");
+      const qs = params.toString();
+      window.history.replaceState(null, "", `/b/places${qs ? `?${qs}` : ""}`);
+    }
+  }, [locationParam, locations, searchParams, slugToLocation]);
 
   const mapAvailable = useMemo(
     () => featureFlags.enableMapbox && !featureFlags.cheapMode,
@@ -347,6 +429,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
                 totalCount={total}
                 isLoading={isLoading}
                 onClearFilters={() => { clearAllFilters(); setSelectedCategory(null); }}
+                onSelectLocation={handleSelectLocation}
               />
             </>
           ) : mapAvailable ? (
@@ -356,12 +439,24 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
               totalCount={total}
               isLoading={isLoading}
               hasActiveChips={activeFilters.filter((f) => f.type !== "search").length > 0}
+              onSelectLocation={handleSelectLocation}
             />
           ) : (
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 text-center">
               <p className="text-[var(--muted-foreground)]">Map requires Mapbox to be enabled.</p>
             </div>
           )}
+
+          {/* Detail panel */}
+          <AnimatePresence>
+            {expandedLocation && (
+              <PlaceDetailPanelB
+                key={expandedLocation.id}
+                location={expandedLocation}
+                onClose={handleCloseExpanded}
+              />
+            )}
+          </AnimatePresence>
 
           {/* Filter panel */}
           <FilterPanelB
