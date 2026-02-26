@@ -558,7 +558,7 @@ export const ItineraryShellB = ({
           <div
             className="border-b px-5 pt-5 pb-4 lg:px-6"
             style={{
-              background: "var(--card)",
+              background: "var(--background)",
               borderColor: "var(--border)",
             }}
           >
@@ -568,7 +568,7 @@ export const ItineraryShellB = ({
                 <h1
                   ref={finalHeadingRef}
                   tabIndex={-1}
-                  className="truncate text-xl font-bold tracking-[-0.04em] focus:outline-none sm:text-2xl"
+                  className="text-lg font-bold leading-snug tracking-[-0.04em] focus:outline-none sm:text-xl"
                   style={{ color: "var(--foreground)" }}
                 >
                   {tripName}
