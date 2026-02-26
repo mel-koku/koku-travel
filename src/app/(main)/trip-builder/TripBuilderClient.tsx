@@ -67,9 +67,9 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
       const cityNames = data.cities?.slice(0, 2).map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(" & ") || "Japan";
       const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
       const dateRange = data.dates?.start && data.dates?.end
-        ? `${fmt(data.dates.start)} - ${fmt(data.dates.end)}`
+        ? `${fmt(data.dates.start)} – ${fmt(data.dates.end)}`
         : data.dates?.start ? fmt(data.dates.start) : "";
-      const tripName = dateRange ? `${cityNames} Trip - ${dateRange}` : `${cityNames} Trip`;
+      const tripName = dateRange ? `${cityNames} Trip · ${dateRange}` : `${cityNames} Trip`;
 
       const tripId = createTrip({
         name: tripName,

@@ -28,6 +28,84 @@ const DEFAULT_ICONS: Record<GuideContentType, string> = {
   day_summary: "\u{1f319}",
 };
 
+/* ── Combined day guide card (collapsed by default) ── */
+
+type DayGuideCardProps = {
+  segments: GuideSegment[];
+  className?: string;
+};
+
+export function DayGuideCard({ segments, className = "" }: DayGuideCardProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (segments.length === 0) return null;
+
+  // Use the day_intro content as the preview, fall back to first segment
+  const intro = segments.find((s) => s.type === "day_intro") ?? segments[0]!;
+  const rest = segments.filter((s) => s !== intro);
+
+  return (
+    <div
+      className={cn(
+        "overflow-hidden rounded-2xl bg-[var(--card)]",
+        className,
+      )}
+      style={{ boxShadow: "var(--shadow-card)" }}
+    >
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors duration-200 hover:bg-[var(--surface)]"
+      >
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center text-sm">
+          {intro.icon ?? DEFAULT_ICONS[intro.type]}
+        </span>
+        <p
+          className={cn("min-w-0 flex-1 text-sm", !isOpen && "truncate")}
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          {intro.content}
+        </p>
+        <ChevronDown
+          className={cn(
+            "h-4 w-4 shrink-0 transition-transform duration-200",
+            isOpen && "rotate-180",
+          )}
+          style={{ color: "var(--muted-foreground)" }}
+        />
+      </button>
+
+      {isOpen && rest.length > 0 && (
+        <div className="space-y-3 px-4 pb-4">
+          {rest.map((seg) => (
+            <div key={seg.id} className="flex gap-2.5">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center text-xs">
+                {seg.icon ?? DEFAULT_ICONS[seg.type]}
+              </span>
+              <div className="min-w-0 flex-1">
+                <span
+                  className="text-[10px] font-semibold uppercase tracking-[0.15em]"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  {LABEL_MAP[seg.type]}
+                </span>
+                <p
+                  className="mt-0.5 text-sm leading-relaxed"
+                  style={{ color: "var(--foreground-body)" }}
+                >
+                  {seg.content}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Individual guide segment card ── */
+
 export function GuideSegmentCardB({
   segment,
   className = "",
