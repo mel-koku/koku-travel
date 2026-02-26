@@ -211,6 +211,30 @@ export function RegionStepB({
     [allCitiesByRegion],
   );
 
+  const toggleRegionKnownCities = useCallback(
+    (regionId: KnownRegionId) => {
+      const regionDef = REGIONS.find((r) => r.id === regionId);
+      if (!regionDef) return;
+
+      const knownCityIds = regionDef.cities.map((c) => c.id as CityId);
+      const allSelected = knownCityIds.every((id) => selectedCities.has(id));
+
+      setData((prev) => {
+        const current = new Set<CityId>(prev.cities ?? []);
+        if (allSelected) {
+          // Deselect all known cities in this region
+          for (const id of knownCityIds) current.delete(id);
+        } else {
+          // Select all known cities in this region
+          for (const id of knownCityIds) current.add(id);
+        }
+        const cities = Array.from(current);
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
+      });
+    },
+    [selectedCities, setData],
+  );
+
   const handleToggleExpand = useCallback(
     (regionId: KnownRegionId) => {
       setExpandedRegion((prev) => (prev === regionId ? null : regionId));
@@ -237,7 +261,7 @@ export function RegionStepB({
 
         <p className="mt-3 text-sm text-[var(--muted-foreground)]">
           {sanityConfig?.regionStepDescription ??
-            "Pick your cities. Highlighted ones match your vibes."}
+            "Tap a region to explore its cities. Highlighted ones match your vibes."}
         </p>
 
         <div className="mx-auto mt-4 max-w-md">
@@ -339,6 +363,9 @@ export function RegionStepB({
                         )}
                         onClick={() =>
                           handleToggleExpand(scored.region.id)
+                        }
+                        onToggleSelect={() =>
+                          toggleRegionKnownCities(scored.region.id)
                         }
                       />
                     );

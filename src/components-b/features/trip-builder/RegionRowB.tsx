@@ -23,6 +23,7 @@ type RegionRowBProps = {
   isEntryPointRegion: boolean;
   regionSelectionState: RegionSelectionState;
   onClick: () => void;
+  onToggleSelect: () => void;
 };
 
 export function RegionRowB({
@@ -30,6 +31,7 @@ export function RegionRowB({
   regionName,
   heroImage,
   tagline,
+  additionalCityCount,
   selectedCityCount,
   totalCityCount,
   isExpanded,
@@ -38,6 +40,7 @@ export function RegionRowB({
   isEntryPointRegion,
   regionSelectionState,
   onClick,
+  onToggleSelect,
 }: RegionRowBProps) {
   const hasSelection = regionSelectionState !== "none";
 
@@ -81,21 +84,31 @@ export function RegionRowB({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
 
-        {/* Check badge — top-right */}
-        {hasSelection && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 400, damping: 20 }}
-            className={`absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-white ${
-              regionSelectionState === "full"
-                ? "bg-[var(--primary)]"
-                : "bg-[var(--primary)]/70"
+        {/* Select pill — top-right, always visible */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 + index * 0.04 }}
+          className="absolute right-3 top-3 z-10"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelect();
+          }}
+          role="checkbox"
+          aria-checked={hasSelection}
+          aria-label={`Select ${regionName}`}
+        >
+          <div
+            className={`flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-colors ${
+              hasSelection
+                ? "bg-[var(--primary)] text-white"
+                : "bg-white/80 text-[var(--muted-foreground)] backdrop-blur-sm hover:bg-white hover:text-[var(--primary)]"
             }`}
           >
-            <Check className="h-4 w-4" strokeWidth={3} />
-          </motion.div>
-        )}
+            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+            {hasSelection ? "Remove" : "Add"}
+          </div>
+        </motion.div>
 
         {/* Match / Entry badges — bottom-left */}
         <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
@@ -136,6 +149,11 @@ export function RegionRowB({
         <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-[var(--muted-foreground)]">
           {tagline}
         </p>
+        {additionalCityCount > 0 && (
+          <p className="mt-1 text-[11px] text-[var(--muted-foreground)]/70">
+            +{additionalCityCount} more {additionalCityCount === 1 ? "city" : "cities"} inside
+          </p>
+        )}
       </div>
     </motion.button>
   );

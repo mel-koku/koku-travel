@@ -68,7 +68,7 @@ export function RegionDetailPanelB({
       </div>
 
       {/* City selector — capped height */}
-      <div className="mt-4 max-h-[280px] overflow-y-auto overscroll-contain">
+      <div className="mt-4 max-h-[280px] overflow-y-auto overscroll-contain" data-lenis-prevent>
         <RegionCitySelector
           regionName={region.name}
           selectedCities={selectedCities}
