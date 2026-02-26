@@ -37,7 +37,7 @@ export function PlacesIntroB({ totalCount, content }: PlacesIntroBProps) {
         transition={{ duration: 0.5, delay: 0.2, ease: bEase }}
         className="text-base text-[var(--foreground-body)] max-w-2xl mx-auto mt-6 leading-relaxed"
       >
-        Temples, restaurants, hidden gems — searched, filtered, and saved for your trip.
+        {content?.placesSubtitle ?? "Temples, restaurants, hidden gems — searched, filtered, and saved for your trip."}
       </motion.p>
     </section>
   );
