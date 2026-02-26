@@ -102,7 +102,7 @@ export function RegionRowB({
             className={`flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-medium transition-colors ${
               hasSelection
                 ? "bg-[var(--primary)] text-white"
-                : "bg-white/80 text-[var(--muted-foreground)] backdrop-blur-sm hover:bg-white hover:text-[var(--primary)]"
+                : "bg-white/90 text-[var(--muted-foreground)] hover:bg-white hover:text-[var(--primary)]"
             }`}
           >
             <Check className="h-3.5 w-3.5" strokeWidth={3} />
@@ -113,13 +113,13 @@ export function RegionRowB({
         {/* Match / Entry badges — bottom-left */}
         <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
           {isRecommended && (
-            <span className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-[var(--primary)] backdrop-blur-sm">
+            <span className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-[var(--primary)]">
               <Star className="h-3 w-3" />
               Match
             </span>
           )}
           {isEntryPointRegion && (
-            <span className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-[var(--success)] backdrop-blur-sm">
+            <span className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-[var(--success)]">
               <MapPin className="h-3 w-3" />
               Entry
             </span>

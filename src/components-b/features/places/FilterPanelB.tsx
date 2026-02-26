@@ -158,7 +158,7 @@ export function FilterPanelB({
         <>
           {/* Backdrop — lighter for B */}
           <motion.div
-            className="fixed inset-0 z-50 bg-[var(--charcoal)]/30 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-[var(--charcoal)]/40"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

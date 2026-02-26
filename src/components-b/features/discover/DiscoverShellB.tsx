@@ -115,7 +115,7 @@ export function DiscoverShellB() {
 
       {/* Loading overlay */}
       {isLocating && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/60 backdrop-blur-sm">
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/80">
           <div className="flex flex-col items-center gap-3">
             <div className="h-8 w-8 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin" />
             <p className="text-sm text-[var(--muted-foreground)]">Locating you...</p>
@@ -125,7 +125,7 @@ export function DiscoverShellB() {
 
       {/* Floating search + category chips */}
       <div className="absolute left-1/2 -translate-x-1/2 top-3 z-10 max-w-[calc(100%-4.5rem)]">
-        <div className="inline-flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-md px-2.5 py-2" style={{ boxShadow: "var(--shadow-elevated)" }}>
+        <div className="inline-flex items-center gap-2 rounded-2xl bg-white px-2.5 py-2" style={{ boxShadow: "var(--shadow-elevated)" }}>
           {/* Search */}
           <div className="relative shrink-0">
             <svg
@@ -181,7 +181,7 @@ export function DiscoverShellB() {
       {usingFallback && !isLocating && (
         <div className="absolute bottom-20 left-3 right-3 z-10">
           <div
-            className="mx-auto max-w-sm rounded-2xl bg-white/90 backdrop-blur-md px-4 py-3 flex items-start gap-2.5"
+            className="mx-auto max-w-sm rounded-2xl bg-white px-4 py-3 flex items-start gap-2.5"
             style={{ boxShadow: "var(--shadow-elevated)" }}
           >
             <svg
