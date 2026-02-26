@@ -367,14 +367,35 @@ export const PlaceActivityRowB = memo(
           data-selected={isSelected || undefined}
           data-activity-id={activity.id}
         >
-          <motion.div
+          <div className="flex gap-3">
+            {/* Left: Time column */}
+            <div className="flex w-14 shrink-0 flex-col items-center pt-3">
+              {displayArrivalTime ? (
+                <span
+                  className="text-sm font-semibold"
+                  style={{ color: "var(--foreground)" }}
+                >
+                  {displayArrivalTime}
+                </span>
+              ) : (
+                <span
+                  className="text-xs capitalize"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  {activity.timeOfDay || "\u2014"}
+                </span>
+              )}
+            </div>
+
+            {/* Right: Card */}
+            <motion.div
             layout={!prefersReducedMotion && !isDragging}
             transition={
               prefersReducedMotion
                 ? { duration: 0 }
                 : { layout: { duration: 0.3, ease: bEase } }
             }
-            className={`group relative overflow-hidden rounded-2xl transition-shadow duration-200 ${
+            className={`group relative min-w-0 flex-1 overflow-hidden rounded-2xl transition-shadow duration-200 ${
               isDragging
                 ? "rotate-1 scale-[1.02]"
                 : isSelected
@@ -512,19 +533,6 @@ export const PlaceActivityRowB = memo(
                     </span>
                   )}
 
-                  {/* Time pill */}
-                  {displayArrivalTime && (
-                    <span
-                      className="rounded-full px-2 py-0.5 text-xs font-medium"
-                      style={{
-                        backgroundColor: "var(--surface)",
-                        color: "var(--foreground)",
-                      }}
-                    >
-                      {displayArrivalTime}
-                    </span>
-                  )}
-
                   {/* Category tag chips */}
                   {displayTags.map((tag) => (
                     <span
@@ -637,6 +645,7 @@ export const PlaceActivityRowB = memo(
               </div>
             </div>
           </motion.div>
+          </div>
         </div>
       );
     },

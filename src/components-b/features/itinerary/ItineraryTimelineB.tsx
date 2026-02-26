@@ -382,6 +382,8 @@ export const ItineraryTimelineB = ({
 
   // ── DnD handlers ──
 
+  const timelineRef = useRef<HTMLDivElement>(null);
+
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(String(event.active.id));
   }, []);
@@ -719,7 +721,7 @@ export const ItineraryTimelineB = ({
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="space-y-5">
+      <div ref={timelineRef} className="space-y-5">
         {/* Day Header */}
         <DayHeaderB
           day={day}

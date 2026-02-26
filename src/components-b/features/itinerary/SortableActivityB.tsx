@@ -124,10 +124,10 @@ export const SortableActivityB = memo(function SortableActivityB({
         </div>
       ) : (
         <div className="relative">
-          {/* Drag handle — visible on hover */}
+          {/* Drag handle — always visible */}
           {!isReadOnly && (
             <div
-              className="absolute -left-8 top-1/2 z-10 -translate-y-1/2 opacity-0 transition-opacity group-hover/sortable:opacity-100"
+              className="absolute -left-7 top-1/2 z-10 -translate-y-1/2"
               {...(listeners as Record<string, unknown>)}
             >
               <button
