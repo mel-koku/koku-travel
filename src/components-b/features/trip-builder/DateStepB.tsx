@@ -108,7 +108,7 @@ export function DateStepB({ onValidityChange, sanityConfig }: DateStepBProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
-          className="mt-3 text-2xl font-bold tracking-[-0.02em] text-[var(--foreground)] lg:text-3xl"
+          className="mt-3 text-2xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl"
         >
           {sanityConfig?.dateStepHeading ?? "When are you going?"}
         </motion.h2>

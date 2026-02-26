@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
-import { ChevronDown, MapPin, Star } from "lucide-react";
+import { Check, ChevronDown, MapPin, Star } from "lucide-react";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
@@ -10,12 +11,14 @@ export type RegionSelectionState = "none" | "partial" | "full";
 type RegionRowBProps = {
   index: number;
   regionName: string;
+  heroImage: string;
+  tagline: string;
   cityNames: string[];
   additionalCityCount: number;
-  matchScore: number;
   selectedCityCount: number;
   totalCityCount: number;
   isExpanded: boolean;
+  isFaded: boolean;
   isRecommended: boolean;
   isEntryPointRegion: boolean;
   regionSelectionState: RegionSelectionState;
@@ -25,11 +28,12 @@ type RegionRowBProps = {
 export function RegionRowB({
   index,
   regionName,
-  cityNames,
-  additionalCityCount,
+  heroImage,
+  tagline,
   selectedCityCount,
   totalCityCount,
   isExpanded,
+  isFaded,
   isRecommended,
   isEntryPointRegion,
   regionSelectionState,
@@ -42,72 +46,96 @@ export function RegionRowB({
       type="button"
       onClick={onClick}
       initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: 0.05 + index * 0.05, ease: bEase }}
-      className={`group flex w-full cursor-pointer items-center gap-4 rounded-2xl bg-white px-4 py-4 text-left transition-all ${
-        hasSelection
+      animate={{
+        opacity: isFaded ? 0.45 : 1,
+        y: 0,
+        scale: isFaded ? 0.97 : 1,
+      }}
+      transition={{ duration: 0.5, delay: 0.05 + index * 0.04, ease: bEase }}
+      whileHover={
+        !isFaded
+          ? {
+              y: -3,
+              transition: { type: "spring", stiffness: 300, damping: 25 },
+            }
+          : undefined
+      }
+      className={`group relative flex w-full cursor-pointer flex-col overflow-hidden rounded-2xl bg-white text-left transition-shadow ${
+        isExpanded
           ? "ring-2 ring-[var(--primary)] shadow-[var(--shadow-elevated)]"
-          : "shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)]"
+          : hasSelection
+            ? "ring-2 ring-[var(--primary)] shadow-[var(--shadow-elevated)]"
+            : "shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)]"
       }`}
     >
-      {/* Selection indicator */}
-      <div
-        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors ${
-          regionSelectionState === "full"
-            ? "border-[var(--primary)] bg-[var(--primary)]"
-            : regionSelectionState === "partial"
-              ? "border-[var(--primary)] bg-[var(--primary)]/30"
-              : "border-[var(--border)]"
-        }`}
-      >
-        {regionSelectionState !== "none" && (
-          <svg
-            className="h-3 w-3 text-white"
-            viewBox="0 0 16 16"
-            fill="currentColor"
-          >
-            <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z" />
-          </svg>
-        )}
-      </div>
+      {/* Hero image */}
+      <div className="relative aspect-[3/2] w-full overflow-hidden">
+        <Image
+          src={heroImage}
+          alt={regionName}
+          fill
+          className={`object-cover transition-all duration-500 group-hover:scale-[1.04] ${
+            isFaded ? "grayscale" : "grayscale-0"
+          }`}
+          sizes="(max-width: 640px) 100vw, 50vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
 
-      {/* Content */}
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-[var(--foreground)]">
-            {regionName}
-          </h3>
+        {/* Check badge — top-right */}
+        {hasSelection && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
+            className={`absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full text-white ${
+              regionSelectionState === "full"
+                ? "bg-[var(--primary)]"
+                : "bg-[var(--primary)]/70"
+            }`}
+          >
+            <Check className="h-4 w-4" strokeWidth={3} />
+          </motion.div>
+        )}
+
+        {/* Match / Entry badges — bottom-left */}
+        <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
           {isRecommended && (
-            <span className="flex items-center gap-0.5 rounded-full bg-[var(--primary)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--primary)]">
-              <Star className="h-2.5 w-2.5" />
+            <span className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-[var(--primary)] backdrop-blur-sm">
+              <Star className="h-3 w-3" />
               Match
             </span>
           )}
           {isEntryPointRegion && (
-            <span className="flex items-center gap-0.5 rounded-full bg-[var(--success)]/10 px-2 py-0.5 text-[10px] font-medium text-[var(--success)]">
-              <MapPin className="h-2.5 w-2.5" />
+            <span className="flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-[var(--success)] backdrop-blur-sm">
+              <MapPin className="h-3 w-3" />
               Entry
             </span>
           )}
         </div>
-        <p className="mt-0.5 text-xs text-[var(--muted-foreground)]">
-          {cityNames.join(", ")}
-          {additionalCityCount > 0 && ` +${additionalCityCount} more`}
-        </p>
       </div>
 
-      {/* Count + expand */}
-      <div className="flex items-center gap-2">
-        {hasSelection && (
-          <span className="text-xs font-medium text-[var(--primary)]">
-            {selectedCityCount}/{totalCityCount}
-          </span>
-        )}
-        <ChevronDown
-          className={`h-4 w-4 text-[var(--muted-foreground)] transition-transform ${
-            isExpanded ? "rotate-180" : ""
-          }`}
-        />
+      {/* Content */}
+      <div className="flex flex-1 flex-col px-4 py-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
+            {regionName}
+          </h3>
+          <div className="flex items-center gap-1.5">
+            {hasSelection && (
+              <span className="text-xs font-medium text-[var(--primary)]">
+                {selectedCityCount}/{totalCityCount}
+              </span>
+            )}
+            <ChevronDown
+              className={`h-4 w-4 text-[var(--muted-foreground)] transition-transform ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </div>
+        <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-[var(--muted-foreground)]">
+          {tagline}
+        </p>
       </div>
     </motion.button>
   );

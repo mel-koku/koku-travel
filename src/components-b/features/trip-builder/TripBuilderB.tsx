@@ -8,7 +8,7 @@ import { EntryPointStepB } from "./EntryPointStepB";
 import { VibeStepB } from "./VibeStepB";
 import { RegionStepB } from "./RegionStepB";
 import { ReviewStepB } from "./ReviewStepB";
-import { StepShellB } from "./StepShellB";
+import { StepShellB, StepNavBarB } from "./StepShellB";
 import { useTripBuilderNavigation } from "@/hooks/useTripBuilderNavigation";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -91,17 +91,7 @@ export function TripBuilderB({ onComplete, sanityConfig }: TripBuilderBProps) {
           )}
 
           {currentStep === 1 && (
-            <StepShellB
-              stepNumber={1}
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={getNextLabel()}
-              nextDisabled={isNextDisabled}
-              currentStep={currentStep}
-              totalSteps={stepCount}
-              completedSteps={completedSteps}
-              onStepClick={handleStepClick}
-            >
+            <StepShellB>
               <DateStepB
                 onValidityChange={setDatesValid}
                 sanityConfig={sanityConfig}
@@ -110,34 +100,13 @@ export function TripBuilderB({ onComplete, sanityConfig }: TripBuilderBProps) {
           )}
 
           {currentStep === 2 && (
-            <StepShellB
-              stepNumber={2}
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={getNextLabel()}
-              nextDisabled={false}
-              currentStep={currentStep}
-              totalSteps={stepCount}
-              completedSteps={completedSteps}
-              onStepClick={handleStepClick}
-            >
+            <StepShellB>
               <EntryPointStepB sanityConfig={sanityConfig} />
             </StepShellB>
           )}
 
           {currentStep === 3 && (
-            <StepShellB
-              stepNumber={3}
-              fullBleed
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={getNextLabel()}
-              nextDisabled={isNextDisabled}
-              currentStep={currentStep}
-              totalSteps={stepCount}
-              completedSteps={completedSteps}
-              onStepClick={handleStepClick}
-            >
+            <StepShellB fullBleed>
               <VibeStepB
                 onValidityChange={setVibesValid}
                 sanityConfig={sanityConfig}
@@ -146,18 +115,7 @@ export function TripBuilderB({ onComplete, sanityConfig }: TripBuilderBProps) {
           )}
 
           {currentStep === 4 && (
-            <StepShellB
-              stepNumber={4}
-              fullBleed
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={getNextLabel()}
-              nextDisabled={isNextDisabled}
-              currentStep={currentStep}
-              totalSteps={stepCount}
-              completedSteps={completedSteps}
-              onStepClick={handleStepClick}
-            >
+            <StepShellB fullBleed>
               <RegionStepB
                 onValidityChange={setRegionsValid}
                 sanityConfig={sanityConfig}
@@ -166,17 +124,7 @@ export function TripBuilderB({ onComplete, sanityConfig }: TripBuilderBProps) {
           )}
 
           {currentStep === 5 && (
-            <StepShellB
-              stepNumber={5}
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={getNextLabel()}
-              nextDisabled={isNextDisabled}
-              currentStep={currentStep}
-              totalSteps={stepCount}
-              completedSteps={completedSteps}
-              onStepClick={handleStepClick}
-            >
+            <StepShellB>
               <ReviewStepB
                 onValidityChange={setReviewValid}
                 onGoToStep={handleGoToStep}
@@ -186,6 +134,20 @@ export function TripBuilderB({ onComplete, sanityConfig }: TripBuilderBProps) {
           )}
         </motion.div>
       </AnimatePresence>
+
+      {/* Persistent nav bar — always visible on steps 1-5 */}
+      {currentStep > 0 && (
+        <StepNavBarB
+          onBack={handleBack}
+          onNext={handleNext}
+          nextLabel={getNextLabel()}
+          nextDisabled={isNextDisabled}
+          currentStep={currentStep}
+          totalSteps={stepCount}
+          completedSteps={completedSteps}
+          onStepClick={handleStepClick}
+        />
+      )}
     </div>
   );
 }

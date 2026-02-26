@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState as useStateReact } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Wallet, Gauge, Users, Accessibility, StickyNote } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Wallet, Gauge, Users, Accessibility, StickyNote, ChevronDown, Check } from "lucide-react";
 
 import { TripSummaryB } from "./TripSummaryB";
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -175,8 +176,19 @@ export function ReviewStepB({
   const handleEditRegions = useCallback(() => onGoToStep?.(4), [onGoToStep]);
 
   return (
-    <div className="flex flex-col gap-8 pb-32 lg:pb-8">
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-8 pb-32 lg:pb-8">
       {/* Trip Summary */}
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
+          Step 05
+        </p>
+        <h2 className="mt-3 text-2xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl">
+          Review your trip
+        </h2>
+        <p className="mt-2 text-sm text-[var(--muted-foreground)]">
+          Make sure everything looks right before we build your itinerary.
+        </p>
+      </div>
       <TripSummaryB
         onEditDates={handleEditDates}
         onEditEntryPoint={handleEditEntryPoint}
@@ -195,18 +207,19 @@ export function ReviewStepB({
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
           Optional
         </p>
-        <h3 className="mt-1 text-lg font-bold text-[var(--foreground)]">
-          {sanityConfig?.reviewHeading ?? "Almost there"}
+        <h3 className="mt-2 text-lg font-bold text-[var(--foreground)]">
+          {sanityConfig?.reviewHeading ?? "Fine-tune your trip"}
         </h3>
-        <p className="text-sm text-[var(--muted-foreground)]">
+        <p className="mt-1 text-sm text-[var(--muted-foreground)]">
           {sanityConfig?.reviewDescription ?? "None of this is required, but it helps."}
         </p>
 
-        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 flex flex-col gap-3">
           {/* Budget */}
           <PreferenceCardB
             icon={<Wallet className="h-5 w-5" />}
             title={sanityConfig?.reviewBudgetTitle ?? "Budget"}
+            hasValue={budgetValue?.amount !== undefined && budgetValue.amount > 0}
           >
             <BudgetInput
               id="budget-input-b"
@@ -221,6 +234,8 @@ export function ReviewStepB({
           <PreferenceCardB
             icon={<Gauge className="h-5 w-5" />}
             title={sanityConfig?.reviewPaceTitle ?? "Pace"}
+            hasValue={!!formValues.travelStyle}
+            summary={PACE_OPTIONS.find((o) => o.value === formValues.travelStyle)?.label}
           >
             <Controller
               control={control}
@@ -264,6 +279,11 @@ export function ReviewStepB({
           <PreferenceCardB
             icon={<Users className="h-5 w-5" />}
             title={sanityConfig?.reviewGroupTitle ?? "Group"}
+            hasValue={!!formValues.groupType || (formValues.groupSize !== undefined && formValues.groupSize > 0)}
+            summary={[
+              GROUP_TYPE_OPTIONS.find((o) => o.value === formValues.groupType)?.label,
+              formValues.groupSize ? `${formValues.groupSize} travelers` : undefined,
+            ].filter(Boolean).join(", ") || undefined}
           >
             <div className="grid grid-cols-2 gap-3">
               <FormField id="group-type-b" label="Type">
@@ -311,6 +331,7 @@ export function ReviewStepB({
           <PreferenceCardB
             icon={<Accessibility className="h-5 w-5" />}
             title={sanityConfig?.reviewAccessTitle ?? "Access"}
+            hasValue={!!formValues.mobilityAssistance || (formValues.dietary?.length ?? 0) > 0}
           >
             <button
               type="button"
@@ -387,6 +408,7 @@ export function ReviewStepB({
           <PreferenceCardB
             icon={<StickyNote className="h-5 w-5" />}
             title={sanityConfig?.reviewNotesTitle ?? "Notes"}
+            hasValue={!!formValues.additionalNotes?.trim()}
           >
             <textarea
               id="additional-notes-b"
@@ -405,33 +427,73 @@ export function ReviewStepB({
   );
 }
 
+const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
+
 /**
- * B-styled preference card wrapper.
+ * B-styled collapsible preference card — collapsed by default.
  */
 function PreferenceCardB({
   icon,
   title,
+  hasValue = false,
+  summary,
   children,
 }: {
   icon: React.ReactNode;
   title: string;
+  hasValue?: boolean;
+  summary?: string;
   children: React.ReactNode;
 }) {
+  const [isOpen, setIsOpen] = useStateReact(false);
+
   return (
     <div
-      className="flex flex-col gap-4 rounded-2xl bg-white p-5"
+      className="overflow-hidden rounded-2xl bg-white"
       style={{ boxShadow: "var(--shadow-card)" }}
     >
-      <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--surface)] text-[var(--primary)]">
+      <button
+        type="button"
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-[var(--surface)]/50"
+      >
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--surface)] text-[var(--primary)]">
           {icon}
         </div>
-        <h4 className="text-sm font-semibold text-[var(--foreground)]">
+        <h4 className="flex-1 text-sm font-semibold text-[var(--foreground)]">
           {title}
         </h4>
-        <span className="text-xs text-[var(--muted-foreground)]">Optional</span>
-      </div>
-      {children}
+        {hasValue && !isOpen && (
+          <span className="flex items-center gap-1.5 text-xs text-[var(--primary)]">
+            <Check className="h-3.5 w-3.5" strokeWidth={2.5} />
+            {summary || "Set"}
+          </span>
+        )}
+        {!hasValue && !isOpen && (
+          <span className="text-xs text-[var(--muted-foreground)]">Optional</span>
+        )}
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-[var(--muted-foreground)] transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: bEase }}
+            className="overflow-hidden"
+          >
+            <div className="flex flex-col gap-4 px-5 pb-5">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

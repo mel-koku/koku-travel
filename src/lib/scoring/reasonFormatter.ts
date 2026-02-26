@@ -56,10 +56,10 @@ function humanizeFactor(
   switch (key) {
     case "interestMatch":
       if (score >= 25)
-        return `${location.category ?? "This place"} matches your interests well`;
+        return `${location.category ?? "This place"} matches your vibes well`;
       if (score >= 15)
-        return `Partially matches your interests`;
-      return `Outside your main interests — adds variety`;
+        return `Partially matches your vibes`;
+      return `Outside your main vibes — adds variety`;
 
     case "ratingQuality": {
       const r = location.rating;
@@ -158,7 +158,7 @@ function buildPrimaryReason(
   }
 
   if (fragments.length === 0) {
-    return "Selected based on your interests and preferences";
+    return "Selected based on your vibes and preferences";
   }
 
   // Join with " — " for readability

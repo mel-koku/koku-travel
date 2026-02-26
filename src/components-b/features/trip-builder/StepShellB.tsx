@@ -12,18 +12,31 @@ const STEP_LABELS = [
 ];
 
 type StepShellBProps = {
-  stepNumber: number;
   children: React.ReactNode;
-  onBack: () => void;
-  onNext: () => void;
-  nextLabel: string;
-  nextDisabled?: boolean;
   fullBleed?: boolean;
-  currentStep: number;
-  totalSteps: number;
-  completedSteps: Set<number>;
-  onStepClick: (step: number) => void;
 };
+
+export function StepShellB({
+  children,
+  fullBleed = false,
+}: StepShellBProps) {
+  return (
+    <div className="flex min-h-[calc(100dvh-5rem)] flex-col pb-20">
+      {/* Content area */}
+      <div
+        className={
+          fullBleed
+            ? "flex flex-1 flex-col"
+            : "mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pt-24 sm:px-6 lg:px-8"
+        }
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ── Persistent nav bar — rendered outside AnimatePresence in TripBuilderB ── */
 
 function SegmentedProgress({
   currentStep,
@@ -72,31 +85,29 @@ function SegmentedProgress({
   );
 }
 
-export function StepShellB({
-  children,
+export type StepNavBarBProps = {
+  onBack: () => void;
+  onNext: () => void;
+  nextLabel: string;
+  nextDisabled?: boolean;
+  currentStep: number;
+  totalSteps: number;
+  completedSteps: Set<number>;
+  onStepClick: (step: number) => void;
+};
+
+export function StepNavBarB({
   onBack,
   onNext,
   nextLabel,
   nextDisabled = false,
-  fullBleed = false,
   currentStep,
   totalSteps,
   completedSteps,
   onStepClick,
-}: StepShellBProps) {
+}: StepNavBarBProps) {
   return (
-    <div className="flex min-h-[calc(100dvh-5rem)] flex-col pb-20">
-      {/* Content area */}
-      <div
-        className={
-          fullBleed
-            ? "flex flex-1 flex-col"
-            : "mx-auto flex w-full max-w-7xl flex-1 flex-col px-4 pt-24 sm:px-6 lg:px-8"
-        }
-      >
-        {children}
-      </div>
-
+    <>
       {/* Desktop Navigation */}
       <div className="fixed inset-x-0 bottom-0 z-50 hidden border-t border-[var(--border)] bg-white/90 backdrop-blur-sm lg:block">
         <div className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
@@ -168,6 +179,6 @@ export function StepShellB({
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

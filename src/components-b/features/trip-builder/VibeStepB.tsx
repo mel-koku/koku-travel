@@ -54,19 +54,6 @@ const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
   BookOpen: BookOpen,
 };
 
-const VIBE_IMAGES: Record<VibeId, string> = {
-  temples_tradition: "/images/regions/kansai-hero.jpg",
-  foodie_paradise: "/images/regions/kyushu-hero.jpg",
-  nature_adventure: "/images/regions/hokkaido-hero.jpg",
-  zen_wellness: "/images/regions/chubu-hero.jpg",
-  neon_nightlife: "/images/regions/kanto-hero.jpg",
-  pop_culture: "/images/regions/kanto-hero.jpg",
-  local_secrets: "/images/regions/shikoku-hero.jpg",
-  family_fun: "/images/regions/okinawa-hero.jpg",
-  history_buff: "/images/regions/chugoku-hero.jpg",
-  in_season: "",
-};
-
 const TRIP_BUILDER_VIBES = VIBES.filter((v) => v.id !== "in_season");
 
 export type VibeStepBProps = {
@@ -123,7 +110,7 @@ export function VibeStepB({ onValidityChange, sanityConfig }: VibeStepBProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
-          className="mt-3 text-3xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-4xl"
+          className="mt-3 text-2xl font-bold tracking-[-0.02em] text-[var(--foreground)] sm:text-3xl"
         >
           {sanityConfig?.vibeStepHeading ?? "What moves you?"}
         </motion.h2>
@@ -140,9 +127,9 @@ export function VibeStepB({ onValidityChange, sanityConfig }: VibeStepBProps) {
         </div>
       </div>
 
-      {/* Card grid — 2 cols on desktop, 1 col on mobile */}
-      <div className="mx-auto mt-8 w-full max-w-3xl px-4 pb-24 sm:px-6 lg:mt-10">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Compact tile grid — 5 cols desktop, 3 tablet, 2 mobile */}
+      <div className="mx-auto mt-8 w-full max-w-4xl px-4 pb-24 sm:px-6 lg:mt-10">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {TRIP_BUILDER_VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;
@@ -157,9 +144,6 @@ export function VibeStepB({ onValidityChange, sanityConfig }: VibeStepBProps) {
                 description={
                   sanityVibe?.description ?? vibe.description
                 }
-                image={
-                  sanityVibe?.image?.url ?? VIBE_IMAGES[vibe.id]
-                }
                 icon={Icon}
                 index={i}
                 isSelected={isSelected}
@@ -169,17 +153,17 @@ export function VibeStepB({ onValidityChange, sanityConfig }: VibeStepBProps) {
             );
           })}
         </div>
-      </div>
 
-      {/* Warning when max reached */}
-      {isMaxSelected && (
-        <p className="pb-8 text-center text-sm text-[var(--warning)] lg:pb-4">
-          {(
-            sanityConfig?.vibeStepMaxWarning ??
-            "That\u2019s all {max}. Tap one to swap it out."
-          ).replace("{max}", String(MAX_VIBE_SELECTION))}
-        </p>
-      )}
+        {/* Warning when max reached */}
+        {isMaxSelected && (
+          <p className="mt-4 text-center text-sm text-[var(--warning)]">
+            {(
+              sanityConfig?.vibeStepMaxWarning ??
+              "That\u2019s all {max}. Tap one to swap it out."
+            ).replace("{max}", String(MAX_VIBE_SELECTION))}
+          </p>
+        )}
+      </div>
     </div>
   );
 }

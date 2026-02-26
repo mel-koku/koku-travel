@@ -323,7 +323,7 @@ export const tripBuilderConfig = defineType({
       title: "Description",
       type: "string",
       fieldset: "regionStep",
-      initialValue: "Pick your cities. Highlighted ones match your travel style.",
+      initialValue: "Pick your cities. Highlighted ones match your vibes.",
     }),
 
     // ── Review Step ─────────────────────────────

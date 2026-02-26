@@ -29,7 +29,7 @@ const defaultActs: ActData[] = [
     eyebrow: "PLAN",
     title: "A trip shaped around how you travel",
     description:
-      "Tell us your pace, your interests, who's coming. We build an itinerary that fits — not a template with your name on it.",
+      "Tell us your pace, your vibes, who's coming. We build an itinerary that fits — not a template with your name on it.",
     image:
       "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1200&q=80",
     alt: "Planning a Japan trip",
