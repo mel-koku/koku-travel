@@ -47,7 +47,7 @@ import type {
 } from "@/hooks/useSmartPromptActions";
 import { getActivityConflicts } from "@/lib/validation/itineraryConflicts";
 import type { DayGuide } from "@/types/itineraryGuide";
-import { GuideSegmentCard } from "@/components/features/itinerary/GuideSegmentCard";
+import { GuideSegmentCardB, DayGuideCard } from "./GuideSegmentCardB";
 import { SmartPromptCardB } from "./SmartPromptCardB";
 import { TravelSegment } from "@/components/features/itinerary/TravelSegment";
 import { AccommodationBookend } from "@/components/features/itinerary/AccommodationBookend";
@@ -840,13 +840,25 @@ export const ItineraryTimelineB = ({
                   />
                 )}
 
-              {/* Guide: Day Intro */}
-              {guide?.intro && !activeId && (
-                <GuideSegmentCard segment={guide.intro} className="mb-3" />
-              )}
+              {/* Guide: Combined day intro + pre-first-activity segments */}
+              {guide && !activeId && (() => {
+                const firstActivityId = extendedActivities[0]?.id;
+                const preSegments = firstActivityId
+                  ? guide.segments.filter((seg) => seg.beforeActivityId === firstActivityId)
+                  : [];
+                const allPreSegments = [
+                  ...(guide.intro ? [guide.intro] : []),
+                  ...preSegments,
+                ];
+                if (allPreSegments.length === 0) return null;
+                return (
+                  <DayGuideCard segments={allPreSegments} className="mb-3" />
+                );
+              })()}
 
               <ul className="space-y-3 pl-8">
                 {extendedActivities.map((activity, index) => {
+                  const isFirstActivity = index === 0;
                   // Calculate place number
                   let placeNumber: number | undefined = undefined;
                   if (activity.kind === "place") {
@@ -937,11 +949,12 @@ export const ItineraryTimelineB = ({
                       (seg) => seg.beforeActivityId === activity.id,
                     ) ?? [];
 
+                  // Skip before-segments for the first activity (already in combined DayGuideCard)
                   const guideBeforeElement =
-                    !activeId && guideSegmentsBefore.length > 0 ? (
+                    !activeId && !isFirstActivity && guideSegmentsBefore.length > 0 ? (
                       <div className="space-y-2">
                         {guideSegmentsBefore.map((seg) => (
-                          <GuideSegmentCard key={seg.id} segment={seg} />
+                          <GuideSegmentCardB key={seg.id} segment={seg} />
                         ))}
                       </div>
                     ) : undefined;
@@ -984,7 +997,7 @@ export const ItineraryTimelineB = ({
                       {!activeId &&
                         guideSegmentsAfter.map((seg) => (
                           <li key={seg.id} className="list-none">
-                            <GuideSegmentCard segment={seg} />
+                            <GuideSegmentCardB segment={seg} />
                           </li>
                         ))}
                     </Fragment>
@@ -995,7 +1008,7 @@ export const ItineraryTimelineB = ({
 
               {/* Guide: Day Summary */}
               {guide?.summary && !activeId && (
-                <GuideSegmentCard
+                <GuideSegmentCardB
                   segment={guide.summary}
                   className="mt-3"
                 />

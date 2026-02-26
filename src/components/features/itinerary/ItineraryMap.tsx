@@ -181,8 +181,7 @@ export function ItineraryMap({
   }, [activityPoints, startPoint, endPoint, mapReady]);
 
   useEffect(() => {
-    const mapboxModule = mapboxModuleRef.current;
-    if (!mapboxModule || !mapboxEnabled) {
+    if (!mapboxEnabled) {
       setRouteSegments([]);
       return;
     }
