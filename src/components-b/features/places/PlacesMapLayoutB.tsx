@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { PlacesMapB, type MapBounds } from "./PlacesMapB";
 import { PlacesMapCardB } from "./PlacesMapCardB";
@@ -15,13 +14,14 @@ type PlacesMapLayoutBProps = {
   totalCount: number;
   isLoading?: boolean;
   hasActiveChips?: boolean;
+  onSelectLocation?: (location: Location) => void;
 };
 
 export function PlacesMapLayoutB({
   filteredLocations,
   sortedLocations,
+  onSelectLocation,
 }: PlacesMapLayoutBProps) {
-  const router = useRouter();
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -46,9 +46,9 @@ export function PlacesMapLayoutB({
 
   const handleLocationClick = useCallback(
     (location: Location) => {
-      router.push(`/b/places/${location.id}`);
+      onSelectLocation?.(location);
     },
-    [router],
+    [onSelectLocation],
   );
 
   const boundsFilteredLocations = useMemo(() => {
@@ -145,6 +145,7 @@ export function PlacesMapLayoutB({
                 location={location}
                 isHighlighted={hoveredLocationId === location.id}
                 onHover={handleCardHoverChange}
+                onSelect={onSelectLocation}
               />
             ))}
 

@@ -10,11 +10,12 @@ type PlacesMapCardBProps = {
   location: Location;
   isHighlighted?: boolean;
   onHover?: (locationId: string | null) => void;
+  onSelect?: (location: Location) => void;
 };
 
 export const PlacesMapCardB = memo(
   forwardRef<HTMLDivElement, PlacesMapCardBProps>(function PlacesMapCardB(
-    { location, isHighlighted, onHover },
+    { location, isHighlighted, onHover, onSelect },
     ref,
   ) {
     const thumb = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 96);
@@ -28,6 +29,7 @@ export const PlacesMapCardB = memo(
       >
         <Link
           href={`/b/places/${location.id}`}
+          onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
           className={`flex items-center gap-2 rounded-xl bg-white pl-2 pr-3 py-1.5 transition ${
             isHighlighted
               ? "ring-1 ring-[var(--primary)]/40 bg-white"

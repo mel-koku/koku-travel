@@ -13,9 +13,10 @@ type PlacesGridBProps = {
   totalCount?: number;
   isLoading?: boolean;
   onClearFilters?: () => void;
+  onSelectLocation?: (location: Location) => void;
 };
 
-export function PlacesGridB({ locations, isLoading, onClearFilters }: PlacesGridBProps) {
+export function PlacesGridB({ locations, isLoading, onClearFilters, onSelectLocation }: PlacesGridBProps) {
   const [page, setPage] = useState(1);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -95,6 +96,7 @@ export function PlacesGridB({ locations, isLoading, onClearFilters }: PlacesGrid
           >
             <PlacesCardB
               location={location}
+              onSelect={onSelectLocation}
               eager={i < 8}
             />
           </motion.div>
