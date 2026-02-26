@@ -19,7 +19,6 @@ const GUIDE_TYPE_OPTIONS: { value: GuideType; label: string }[] = [
   { value: "itinerary", label: "Itinerary" },
   { value: "listicle", label: "Top Picks" },
   { value: "deep_dive", label: "Deep Dive" },
-  { value: "seasonal", label: "Seasonal" },
 ];
 
 const SEASON_OPTIONS: { value: string; label: string }[] = [
@@ -82,7 +81,7 @@ export function GuidesPageClientB({ guides, content }: GuidesPageClientBProps) {
 
   const filterSeasons = useMemo(
     () =>
-      SEASON_OPTIONS.filter((o) => (seasonCounts[o.value] || 0) > 0).map(
+      SEASON_OPTIONS.map(
         (o) => ({ value: o.value, label: o.label, count: seasonCounts[o.value] || 0 })
       ),
     [seasonCounts]
@@ -204,30 +203,32 @@ export function GuidesPageClientB({ guides, content }: GuidesPageClientBProps) {
               ))}
 
               {/* Season pills */}
-              {filterSeasons.length > 0 && (
-                <>
-                  <div className="h-5 w-px bg-[var(--border)] mx-2" />
-                  {filterSeasons.map((season) => (
-                    <button
-                      key={season.value}
-                      type="button"
-                      onClick={() => setSelectedSeason(selectedSeason === season.value ? null : season.value)}
-                      className={cn(
-                        "px-3 py-1.5 min-h-[36px] text-xs font-medium whitespace-nowrap rounded-full transition-all",
-                        selectedSeason === season.value
+              <div className="h-5 w-px bg-[var(--border)] mx-2" />
+              {filterSeasons.map((season) => {
+                const isEmpty = season.count === 0;
+                return (
+                  <button
+                    key={season.value}
+                    type="button"
+                    disabled={isEmpty}
+                    onClick={() => setSelectedSeason(selectedSeason === season.value ? null : season.value)}
+                    className={cn(
+                      "px-3 py-1.5 min-h-[36px] text-xs font-medium whitespace-nowrap rounded-full transition-all",
+                      isEmpty
+                        ? "bg-[var(--surface)] text-[var(--muted-foreground)]/40 cursor-default opacity-40"
+                        : selectedSeason === season.value
                           ? "bg-[var(--primary)] text-white"
                           : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
-                        season.value === currentDbSeason && hasCurrentSeasonGuides && !selectedSeason
-                          ? "ring-1 ring-[var(--primary)]/30"
-                          : ""
-                      )}
-                    >
-                      {season.label}
-                      <span className="ml-1 opacity-60">{season.count}</span>
-                    </button>
-                  ))}
-                </>
-              )}
+                      !isEmpty && season.value === currentDbSeason && hasCurrentSeasonGuides && !selectedSeason
+                        ? "ring-1 ring-[var(--primary)]/30"
+                        : ""
+                    )}
+                  >
+                    {season.label}
+                    {!isEmpty && <span className="ml-1 opacity-60">{season.count}</span>}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
