@@ -126,6 +126,49 @@ const COLOR_SCHEMES = {
     badge: "bg-stone",
     badgeText: "text-white",
   },
+  // New categories
+  castle: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
+  cafe: {
+    border: "border-l-brand-secondary",
+    background: "bg-brand-secondary/10",
+    badge: "bg-brand-secondary",
+    badgeText: "text-white",
+  },
+  theater: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
+  aquarium: {
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
+    badgeText: "text-white",
+  },
+  zoo: {
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
+    badgeText: "text-white",
+  },
+  beach: {
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
+    badgeText: "text-white",
+  },
+  historic_site: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
 } as const satisfies Record<string, ActivityColorScheme>;
 
 type ColorSchemeKey = keyof typeof COLOR_SCHEMES;
@@ -268,6 +311,14 @@ const HEX_COLORS: Record<string, string> = {
   onsen: "#2d7a6f",
   viewpoint: "#8c2f2f",
   bar: "#c6923a",
+  // New categories
+  castle: "#8c2f2f",
+  cafe: "#c6923a",
+  theater: "#8c2f2f",
+  aquarium: "#2d7a6f",
+  zoo: "#2d7a6f",
+  beach: "#2d7a6f",
+  historic_site: "#8c2f2f",
   // Default — crimson
   default: "#8c2f2f",
 };
