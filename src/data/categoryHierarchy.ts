@@ -297,6 +297,12 @@ const DATABASE_CATEGORY_TO_PARENT: Record<string, string> = {
   view: "view",
   // Entertainment
   entertainment: "entertainment",
+  aquarium: "entertainment",
+  zoo: "entertainment",
+  // Culture (additional)
+  castle: "culture",
+  historic_site: "culture",
+  theater: "culture",
   // Accommodation
   accommodation: "accommodation",
 };

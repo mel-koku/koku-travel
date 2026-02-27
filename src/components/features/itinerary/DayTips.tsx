@@ -5,6 +5,7 @@ import type { ItineraryDay } from "@/types/itinerary";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { getRegionForCity } from "@/data/regions";
+import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
 
 type DayTipsProps = {
   day: ItineraryDay;
@@ -57,13 +58,14 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Extract unique categories from the day's activities
+  // Extract unique location categories from the day's activities
   const dayCategories = useMemo(() => {
     const categories = new Set<string>();
     for (const activity of day.activities ?? []) {
-      if (activity.kind === "place" && activity.tags) {
-        for (const tag of activity.tags) {
-          categories.add(tag.toLowerCase());
+      if (activity.kind === "place") {
+        const resolved = resolveActivityCategory(activity.tags);
+        if (resolved) {
+          categories.add(resolved.sub.toLowerCase());
         }
       }
     }
@@ -104,8 +106,21 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
         });
 
         if (!cancelled) {
+          // On Day 2+, filter out truly-universal tips (no city/region/category
+          // scope) to prevent the same generic tips from repeating every day.
+          // Safety-critical tips still show on Day 1.
+          let filtered = guidance;
+          if (dayIndex > 0) {
+            filtered = guidance.filter(
+              (tip) =>
+                tip.categories.length > 0 ||
+                tip.cities.length > 0 ||
+                tip.regions.length > 0 ||
+                tip.locationIds.length > 0
+            );
+          }
           // Limit to top 5 tips for the day
-          setDbTips(guidance.slice(0, 5));
+          setDbTips(filtered.slice(0, 5));
         }
       } catch {
         // Silently fail
