@@ -111,7 +111,6 @@ export const ItineraryShellB = ({
     dayEntryPoints,
     cityAccommodations,
     setDayEntryPoint,
-    setCityAccommodation,
     undo,
     redo,
     canUndo,
@@ -369,25 +368,15 @@ export const ItineraryShellB = ({
     if (!tripId || !currentDay) return undefined;
     const dayEP = dayEntryPoints[`${tripId}-${currentDay.id}`];
     if (dayEP?.startPoint?.type === "accommodation") return dayEP.startPoint;
-    const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
-    if (effectiveCityId) {
-      const cityAccom = cityAccommodations[`${tripId}-${effectiveCityId}`];
-      if (cityAccom) return cityAccom.entryPoint;
-    }
     return undefined;
-  }, [tripId, currentDay, dayEntryPoints, cityAccommodations]);
+  }, [tripId, currentDay, dayEntryPoints]);
 
   const resolvedEndLocation = useMemo(() => {
     if (!tripId || !currentDay) return undefined;
     const dayEP = dayEntryPoints[`${tripId}-${currentDay.id}`];
     if (dayEP?.endPoint?.type === "accommodation") return dayEP.endPoint;
-    const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
-    if (effectiveCityId) {
-      const cityAccom = cityAccommodations[`${tripId}-${effectiveCityId}`];
-      if (cityAccom) return cityAccom.entryPoint;
-    }
     return undefined;
-  }, [tripId, currentDay, dayEntryPoints, cityAccommodations]);
+  }, [tripId, currentDay, dayEntryPoints]);
 
   const effectiveMapStartPoint =
     currentDayEntryPoints?.startPoint ?? resolvedStartLocation;
@@ -410,24 +399,6 @@ export const ItineraryShellB = ({
       setDayEntryPoint(tripId, currentDay.id, "end", location);
     },
     [tripId, currentDay, setDayEntryPoint],
-  );
-
-  const handleCityAccommodationChange = useCallback(
-    (location: EntryPoint | undefined) => {
-      if (!tripId || !currentDay) return;
-      const effectiveCityId = currentDay.baseCityId ?? currentDay.cityId;
-      if (!effectiveCityId) return;
-
-      if (location) {
-        setCityAccommodation(tripId, effectiveCityId, {
-          cityId: effectiveCityId,
-          entryPoint: location,
-        });
-      } else {
-        setCityAccommodation(tripId, effectiveCityId, undefined);
-      }
-    },
-    [tripId, currentDay, setCityAccommodation],
   );
 
   // ── Suggestions for current day ──
@@ -830,9 +801,6 @@ export const ItineraryShellB = ({
                   }
                   onEndLocationChange={
                     isReadOnly ? undefined : handleEndLocationChange
-                  }
-                  onCityAccommodationChange={
-                    isReadOnly ? undefined : handleCityAccommodationChange
                   }
                   onViewDetails={handleViewDetails}
                 />

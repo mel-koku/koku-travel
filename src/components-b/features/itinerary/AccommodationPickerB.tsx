@@ -8,22 +8,19 @@ import type { EntryPoint } from "@/types/trip";
 type AccommodationPickerBProps = {
   startLocation?: EntryPoint;
   endLocation?: EntryPoint;
-  cityId?: string;
   onStartChange: (location: EntryPoint | undefined) => void;
   onEndChange: (location: EntryPoint | undefined) => void;
-  onSetCityAccommodation?: (location: EntryPoint | undefined) => void;
   isReadOnly?: boolean;
 };
 
 export function AccommodationPickerB({
   startLocation,
   endLocation,
-  cityId,
   onStartChange,
   onEndChange,
-  onSetCityAccommodation,
   isReadOnly,
 }: AccommodationPickerBProps) {
+
   if (isReadOnly) {
     if (!startLocation && !endLocation) return null;
     return (
@@ -68,16 +65,6 @@ export function AccommodationPickerB({
           linkedValue={startLocation}
         />
       </div>
-      {onSetCityAccommodation && cityId && startLocation && (
-        <button
-          type="button"
-          onClick={() => onSetCityAccommodation(startLocation)}
-          className="text-xs font-medium transition-colors"
-          style={{ color: "var(--primary)" }}
-        >
-          Use for all {cityId.charAt(0).toUpperCase() + cityId.slice(1)} days
-        </button>
-      )}
     </div>
   );
 }

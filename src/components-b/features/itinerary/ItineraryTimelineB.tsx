@@ -201,7 +201,6 @@ type ItineraryTimelineBProps = {
   endLocation?: EntryPoint;
   onStartLocationChange?: (location: EntryPoint | undefined) => void;
   onEndLocationChange?: (location: EntryPoint | undefined) => void;
-  onCityAccommodationChange?: (location: EntryPoint | undefined) => void;
   onViewDetails?: (location: Location) => void;
 };
 
@@ -237,7 +236,6 @@ export const ItineraryTimelineB = ({
   endLocation,
   onStartLocationChange,
   onEndLocationChange,
-  onCityAccommodationChange,
   onViewDetails,
 }: ItineraryTimelineBProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -882,10 +880,8 @@ export const ItineraryTimelineB = ({
               <AccommodationPickerB
                 startLocation={startLocation}
                 endLocation={endLocation}
-                cityId={day.cityId}
                 onStartChange={onStartLocationChange ?? (() => {})}
                 onEndChange={onEndLocationChange ?? (() => {})}
-                onSetCityAccommodation={onCityAccommodationChange}
                 isReadOnly={!onStartLocationChange}
               />
             ) : undefined
