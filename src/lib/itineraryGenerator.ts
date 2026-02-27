@@ -14,6 +14,12 @@ import { normalizeKey } from "@/lib/utils/stringUtils";
 // Import from extracted modules
 import { isLocationValidForCity } from "@/lib/geo/validation";
 import {
+  clusterCityLocations,
+  selectZoneForDay,
+  getExpandedZoneLocationIds,
+  type CityZoneMap,
+} from "@/lib/geo/zoneClustering";
+import {
   TIME_OF_DAY_SEQUENCE,
   getAvailableTimeForSlot,
   getTravelTime,
@@ -244,6 +250,16 @@ export async function generateItinerary(
     }
   }
 
+  // Pre-compute geographic zones for each city
+  const cityZoneMaps = new Map<string, CityZoneMap>();
+  for (const [cityKey, cityLocs] of locationsByCityKey) {
+    const zoneMap = clusterCityLocations(cityLocs, cityKey);
+    if (zoneMap) {
+      cityZoneMaps.set(cityKey, zoneMap);
+    }
+  }
+  const usedZonesByCity = new Map<string, Set<string>>();
+
   const days: Itinerary["days"] = [];
 
   // Build map of saved locations by city for prioritization
@@ -266,6 +282,12 @@ export async function generateItinerary(
         names: locs.map((l) => l.name),
       })),
     });
+  }
+
+  // Pre-count total days per city for zone rotation
+  const totalDaysPerCity = new Map<string, number>();
+  for (const ci of expandedCitySequence) {
+    totalDaysPerCity.set(ci.key, (totalDaysPerCity.get(ci.key) ?? 0) + 1);
   }
 
   // Track consecutive days in each city for day trip suggestions
@@ -384,6 +406,43 @@ export async function generateItinerary(
       return true;
     });
 
+    // Zone clustering: select a walkable zone for this day and filter candidates
+    const cityZoneMap = cityZoneMaps.get(cityInfo.key);
+    let zoneFilteredLocations: Location[] | null = null;
+    let selectedZoneId: string | null = null;
+    let isZoneClustered = false;
+
+    if (cityZoneMap) {
+      if (!usedZonesByCity.has(cityInfo.key)) {
+        usedZonesByCity.set(cityInfo.key, new Set());
+      }
+      const usedZones = usedZonesByCity.get(cityInfo.key)!;
+
+      selectedZoneId = selectZoneForDay(
+        cityZoneMap,
+        daysInCurrentCity - 1,
+        totalDaysPerCity.get(cityInfo.key) ?? 1,
+        usedZones,
+        interestSequence,
+        savedIdSet.size > 0 ? savedIdSet : undefined,
+      );
+
+      if (selectedZoneId) {
+        usedZones.add(selectedZoneId);
+        const zoneLocIds = cityZoneMap.zones.get(selectedZoneId)?.locationIds;
+        if (zoneLocIds && zoneLocIds.size >= 3) {
+          zoneFilteredLocations = availableLocations.filter((loc) => zoneLocIds.has(loc.id));
+          // Only apply zone filter if it yields enough candidates
+          if (zoneFilteredLocations.length >= 3) {
+            isZoneClustered = true;
+            logger.info(`Day ${dayIndex + 1} (${cityInfo.key}): Zone ${selectedZoneId} selected — ${zoneFilteredLocations.length} candidates`);
+          } else {
+            zoneFilteredLocations = null;
+          }
+        }
+      }
+    }
+
     const dayActivities: Itinerary["days"][number]["activities"] = [];
     const dayCityUsage = new Map<string, number>();
 
@@ -498,32 +557,49 @@ export async function generateItinerary(
           ? weatherContext.cityForecasts.get(dayCityId)?.get(dayDate ?? "")
           : undefined;
 
-        // Pick a location that fits the available time
-        const locationResult = pickLocationForTimeSlot(
-          availableLocations,
+        // Pick a location — try zone-filtered first, then expand, then full city
+        const pickArgs = [
           interest,
           usedLocations,
           remainingTime,
-          activityIndex === 0 ? 0 : travelTime, // No travel time for first activity in slot
-          lastLocation?.coordinates, // Pass current location for distance calculation
-          dayCategories, // Pass recent categories for diversity
-          pace, // Pass travel style
-          interestSequence, // Pass all interests for better matching
-          data.budget, // Pass budget information
+          activityIndex === 0 ? 0 : travelTime,
+          lastLocation?.coordinates,
+          dayCategories,
+          pace,
+          interestSequence,
+          data.budget,
           data.accessibility?.mobility ? {
             wheelchairAccessible: true,
-            elevatorRequired: false, // Can be enhanced based on specific needs
-          } : undefined, // Pass accessibility requirements
-          dayWeatherForecast, // Pass weather forecast
-          data.weatherPreferences, // Pass weather preferences
-          timeSlot, // Pass time slot for time optimization
-          dayDate, // Pass date for weekday calculation
-          data.group, // Pass group information
-          dayNeighborhoods, // Pass recent neighborhoods for geographic diversity
-          usedLocationNames, // Pass used names to prevent same-name duplicates
-          contentLocationIds, // Pass content location IDs for editorial boost
-        );
-        
+            elevatorRequired: false,
+          } : undefined,
+          dayWeatherForecast,
+          data.weatherPreferences,
+          timeSlot,
+          dayDate,
+          data.group,
+          dayNeighborhoods,
+          usedLocationNames,
+          contentLocationIds,
+        ] as const;
+
+        let locationResult = isZoneClustered && zoneFilteredLocations
+          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true)
+          : null;
+
+        // Tier 2: Expand to neighboring zones
+        if (!locationResult && isZoneClustered && selectedZoneId && cityZoneMap) {
+          const expandedIds = getExpandedZoneLocationIds(cityZoneMap, selectedZoneId);
+          const expandedLocs = availableLocations.filter((loc) => expandedIds.has(loc.id));
+          if (expandedLocs.length >= 3) {
+            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true);
+          }
+        }
+
+        // Tier 3: Fall back to full city pool (original behavior)
+        if (!locationResult) {
+          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false);
+        }
+
         const location = locationResult && "_scoringReasoning" in locationResult
           ? (locationResult as Location & { _scoringReasoning?: string[]; _scoreBreakdown?: import("./scoring/locationScoring").ScoreBreakdown; _runnerUps?: { name: string; id: string }[] })
           : locationResult;
