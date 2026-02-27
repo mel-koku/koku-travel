@@ -56,6 +56,7 @@ export function SmartPromptCardB({
   className,
 }: SmartPromptCardBProps) {
   const Icon = ICON_MAP[gap.icon] ?? Plus;
+  const isGuidance = gap.action.type === "acknowledge_guidance";
 
   return (
     <div
@@ -63,11 +64,10 @@ export function SmartPromptCardB({
         "relative overflow-hidden p-4",
         flat
           ? "border-b last:border-b-0"
-          : "rounded-2xl border-l-[3px] bg-[var(--card)]",
+          : "rounded-2xl bg-[var(--card)]",
         className,
       )}
       style={{
-        borderLeftColor: flat ? undefined : "var(--primary)",
         borderColor: flat ? "var(--border)" : undefined,
         boxShadow: flat ? undefined : "var(--shadow-card)",
       }}
@@ -110,34 +110,47 @@ export function SmartPromptCardB({
 
           {/* Actions */}
           <div className="mt-3 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => onAccept(gap)}
-              disabled={isLoading}
-              className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--card)] transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
-              style={{
-                backgroundColor: "var(--primary)",
-                boxShadow: "var(--shadow-sm)",
-              }}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-3 w-3 animate-spin" />
-                  Adding...
-                </>
-              ) : (
-                "Add"
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => onSkip(gap)}
-              disabled={isLoading}
-              className="rounded-xl px-3.5 py-1.5 text-xs font-medium transition-colors duration-200 disabled:opacity-60"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              Skip
-            </button>
+            {isGuidance ? (
+              <button
+                type="button"
+                onClick={() => onAccept(gap)}
+                className="rounded-xl px-3.5 py-1.5 text-xs font-medium transition-colors duration-200"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                Got it
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onAccept(gap)}
+                  disabled={isLoading}
+                  className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--card)] transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
+                  style={{
+                    backgroundColor: "var(--primary)",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Adding...
+                    </>
+                  ) : (
+                    "Add"
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onSkip(gap)}
+                  disabled={isLoading}
+                  className="rounded-xl px-3.5 py-1.5 text-xs font-medium transition-colors duration-200 disabled:opacity-60"
+                  style={{ color: "var(--muted-foreground)" }}
+                >
+                  Skip
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

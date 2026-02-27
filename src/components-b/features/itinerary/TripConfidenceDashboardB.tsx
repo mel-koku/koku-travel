@@ -26,6 +26,8 @@ import {
 } from "@/lib/itinerary/tripHealth";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { cn } from "@/lib/cn";
+import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
+import { RouteOverviewB } from "./RouteOverviewB";
 
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
@@ -471,8 +473,53 @@ function DayOverviewCardB({
   const cityName = itineraryDay?.cityId
     ? formatCityName(itineraryDay.cityId)
     : undefined;
-  const placeActivities =
-    itineraryDay?.activities.filter((a) => a.kind === "place") ?? [];
+  const placeActivities = useMemo(
+    () =>
+      (itineraryDay?.activities ?? []).filter(
+        (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
+          a.kind === "place",
+      ),
+    [itineraryDay?.activities],
+  );
+
+  // Build lookup maps for RouteOverviewB
+  const { pointLookup, travelSegmentLookup, placeIndexLookup } = useMemo(() => {
+    const points = new Map<string, { id: string; lat: number; lng: number }>();
+    const travel = new Map<string, {
+      id: string;
+      from: Extract<ItineraryActivity, { kind: "place" }>;
+      to: Extract<ItineraryActivity, { kind: "place" }>;
+      mode: string;
+      durationMinutes?: number;
+      distanceMeters?: number;
+      isFallback?: boolean;
+    }>();
+    const indices = new Map<string, number>();
+
+    placeActivities.forEach((activity, i) => {
+      indices.set(activity.id, i + 1);
+      const coords = getActivityCoordinates(activity);
+      if (coords) {
+        points.set(activity.id, { id: activity.id, ...coords });
+      }
+      if (i > 0 && activity.travelFromPrevious) {
+        const prev = placeActivities[i - 1];
+        if (prev) {
+          travel.set(activity.id, {
+            id: `${prev.id}-${activity.id}`,
+            from: prev,
+            to: activity,
+            mode: activity.travelFromPrevious.mode,
+            durationMinutes: activity.travelFromPrevious.durationMinutes,
+            distanceMeters: activity.travelFromPrevious.distanceMeters,
+            isFallback: activity.travelFromPrevious.isEstimated,
+          });
+        }
+      }
+    });
+
+    return { pointLookup: points, travelSegmentLookup: travel, placeIndexLookup: indices };
+  }, [placeActivities]);
 
   return (
     <div
@@ -580,6 +627,16 @@ function DayOverviewCardB({
                     );
                   })}
                 </div>
+              )}
+
+              {/* Route Overview */}
+              {placeActivities.length > 1 && (
+                <RouteOverviewB
+                  placeActivities={placeActivities}
+                  pointLookup={pointLookup}
+                  travelSegmentLookup={travelSegmentLookup}
+                  placeIndexLookup={placeIndexLookup}
+                />
               )}
 
               {/* Issues */}
