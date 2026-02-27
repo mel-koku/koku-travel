@@ -11,8 +11,10 @@ import { shouldUseFts, buildIlikeFilter, sanitizeTsQuery } from "./search";
  * @param columns - Columns to search across with ILIKE fallback
  * @returns The query with the search filter applied
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function applySearchFilter<T extends { textSearch: (...args: any[]) => T; or: (...args: any[]) => T }>(
+// Generic constraint uses Record to stay compatible with Supabase's
+// complex PostgrestFilterBuilder overloads while preserving the return type.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Supabase builder generics are too complex to constrain structurally
+export function applySearchFilter<T extends Record<string, any>>(
   query: T,
   search: string,
   columns: string[] = ["name", "city", "region", "category"],

@@ -30,13 +30,13 @@ export function FinalCtaB({ content }: FinalCtaBProps) {
           <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/b/trip-builder"
-              className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-8 text-sm font-semibold text-[var(--primary)] shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
+              className="inline-flex h-12 items-center justify-center rounded-xl bg-white px-8 text-sm font-semibold text-[var(--primary)] shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             >
               {content?.finalCtaPrimaryText ?? "Build My Trip"}
             </Link>
             <Link
               href="/b/places"
-              className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-8 text-sm font-medium text-white transition-colors hover:bg-white/10"
+              className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-8 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             >
               {content?.finalCtaSecondaryText ?? "Explore Places"}
             </Link>

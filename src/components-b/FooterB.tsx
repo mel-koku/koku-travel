@@ -32,7 +32,7 @@ export function FooterB() {
           <div>
             <Link
               href="/b/"
-              className="text-lg font-bold tracking-[-0.02em] text-[var(--foreground)]"
+              className="rounded-lg text-lg font-bold tracking-[-0.02em] text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
             >
               KOKU
             </Link>
@@ -54,7 +54,7 @@ export function FooterB() {
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-sm text-[var(--foreground-body)] transition-colors hover:text-[var(--foreground)]"
+                        className="rounded-lg text-sm text-[var(--foreground-body)] transition-colors hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                       >
                         {link.label}
                       </Link>

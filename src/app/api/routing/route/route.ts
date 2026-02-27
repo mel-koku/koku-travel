@@ -156,9 +156,10 @@ function parseTime(timeStr: string, timezone?: string): Date | null {
   try {
     // Try ISO string first
     if (timeStr.includes("T") || timeStr.includes("Z")) {
-      return new Date(timeStr);
+      const date = new Date(timeStr);
+      return isNaN(date.getTime()) ? null : date;
     }
-    
+
     // Try HH:MM format - assume today in the timezone
     const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
     if (match && match[1] && match[2]) {
@@ -168,10 +169,11 @@ function parseTime(timeStr: string, timezone?: string): Date | null {
         ? new Date(new Date().toLocaleString("en-US", { timeZone: timezone }))
         : new Date();
       const date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-      return date;
+      return isNaN(date.getTime()) ? null : date;
     }
-    
-    return new Date(timeStr);
+
+    const date = new Date(timeStr);
+    return isNaN(date.getTime()) ? null : date;
   } catch {
     return null;
   }

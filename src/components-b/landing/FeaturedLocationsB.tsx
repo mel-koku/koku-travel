@@ -85,7 +85,7 @@ export function FeaturedLocationsB({
             >
               <Link
                 href={`/b/places?location=${loc.id}`}
-                className="group block overflow-hidden rounded-2xl bg-white"
+                className="group block overflow-hidden rounded-2xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
@@ -124,7 +124,7 @@ export function FeaturedLocationsB({
         >
           <Link
             href="/b/places"
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-[var(--border)] px-6 text-sm font-medium text-[var(--foreground)] transition-all duration-200 hover:border-[var(--primary)] hover:text-[var(--primary)]"
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-[var(--border)] px-6 text-sm font-medium text-[var(--foreground)] transition-all duration-200 hover:border-[var(--primary)] hover:text-[var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
           >
             {content?.featuredLocationsCtaText ?? "View All Places"}
           </Link>

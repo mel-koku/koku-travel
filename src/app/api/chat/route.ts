@@ -1,10 +1,11 @@
 import { NextRequest } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { google } from "@ai-sdk/google";
+import { z } from "zod";
 import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/systemPrompt";
-import { serviceUnavailable, internalError } from "@/lib/api/errors";
+import { badRequest, serviceUnavailable, internalError } from "@/lib/api/errors";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { checkBodySizeLimit } from "@/lib/api/bodySizeLimit";
 import {
@@ -15,6 +16,19 @@ import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 
 const CHAT_MAX_BODY_SIZE = 256 * 1024; // 256KB
+
+const chatRequestSchema = z.object({
+  messages: z
+    .array(
+      z
+        .object({
+          role: z.enum(["user", "assistant", "system"]),
+        })
+        .passthrough(),
+    )
+    .min(1, "At least one message is required"),
+  context: z.string().optional(),
+});
 
 export async function POST(request: NextRequest) {
   const context = createRequestContext(request);
@@ -56,10 +70,27 @@ export async function POST(request: NextRequest) {
     return addRequestContextHeaders(bodySizeResult, context);
   }
 
+  let rawBody: unknown;
   try {
-    const body = await request.json();
-    const messages = body.messages;
-    const chatContext = body.context ?? request.headers.get("X-Koku-Context");
+    rawBody = await request.json();
+  } catch {
+    return addRequestContextHeaders(
+      badRequest("Invalid JSON in request body"),
+      context,
+    );
+  }
+
+  const parsed = chatRequestSchema.safeParse(rawBody);
+  if (!parsed.success) {
+    return addRequestContextHeaders(
+      badRequest(parsed.error.issues[0]?.message ?? "Invalid request body"),
+      context,
+    );
+  }
+
+  try {
+    const { messages, context: bodyContext } = parsed.data;
+    const chatContext = bodyContext ?? request.headers.get("X-Koku-Context");
 
     // Cap conversation to last 20 messages for cost control
     const recentMessages = messages.slice(-20);
@@ -82,7 +113,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const modelMessages = await convertToModelMessages(recentMessages);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Zod passthrough preserves full UIMessage shape; cast needed for SDK compatibility
+    const modelMessages = await convertToModelMessages(recentMessages as any);
 
     const result = streamText({
       model: google("gemini-2.5-flash"),

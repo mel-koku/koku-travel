@@ -107,7 +107,7 @@ export const PlacesCardB = memo(function PlacesCardB({
                 toggleSave(location.id);
               }}
               aria-label={active ? "Unsave" : "Save for trip"}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-transform hover:scale-105 active:scale-95 ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[36px] text-xs font-medium transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 ${
                 active
                   ? "bg-[var(--primary)] text-white"
                   : "bg-white/80 text-[var(--foreground)]"

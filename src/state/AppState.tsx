@@ -194,6 +194,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   // Guard against concurrent refreshFromSupabase calls
   const isRefreshingRef = useRef(false);
+  const pendingRefreshRef = useRef(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -258,7 +259,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   // Refresh from Supabase
   const refreshFromSupabase = useCallback(async () => {
     if (!supabase) return;
-    if (isRefreshingRef.current) return;
+    if (isRefreshingRef.current) {
+      pendingRefreshRef.current = true;
+      return;
+    }
     isRefreshingRef.current = true;
 
     setState((s) => ({ ...s, isLoadingRefresh: true }));
@@ -308,6 +312,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setState((s) => ({ ...s, isLoadingRefresh: false }));
     } finally {
       isRefreshingRef.current = false;
+      if (pendingRefreshRef.current) {
+        pendingRefreshRef.current = false;
+        refreshFromSupabase();
+      }
     }
   }, [supabase]);
 

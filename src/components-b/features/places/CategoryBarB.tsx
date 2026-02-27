@@ -150,7 +150,7 @@ export function CategoryBarB({
                 type="submit"
                 disabled={isExtracting}
                 title={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--brand-secondary)] active:scale-[0.98] transition disabled:opacity-60"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--brand-secondary)] active:scale-[0.98] transition disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                 aria-label={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
               >
                 {isExtracting ? (
@@ -185,7 +185,7 @@ export function CategoryBarB({
                   type="button"
                   onClick={() => onViewModeChange("grid")}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium transition",
+                    "flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30",
                     viewMode === "grid"
                       ? "bg-[var(--primary)] text-white"
                       : "bg-white text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
@@ -201,7 +201,7 @@ export function CategoryBarB({
                   type="button"
                   onClick={() => onViewModeChange("map")}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium transition",
+                    "flex items-center gap-1.5 px-3 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30",
                     viewMode === "map"
                       ? "bg-[var(--primary)] text-white"
                       : "bg-white text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
@@ -221,7 +221,7 @@ export function CategoryBarB({
               onClick={onFiltersClick}
               aria-label="Refine filters"
               className={cn(
-                "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0",
+                "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30",
                 activeFilterCount > 0
                   ? "border-[var(--primary)] text-[var(--primary)]"
                   : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--primary)] hover:text-[var(--foreground)]",

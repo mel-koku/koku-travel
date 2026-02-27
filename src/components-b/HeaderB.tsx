@@ -95,7 +95,7 @@ export function HeaderB() {
           {/* Logo */}
           <Link
             href="/b/"
-            className="text-xl font-bold tracking-[-0.02em] text-[var(--foreground)]"
+            className="rounded-lg text-xl font-bold tracking-[-0.02em] text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
           >
             KOKU
           </Link>
@@ -108,7 +108,7 @@ export function HeaderB() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`relative py-1 text-sm font-medium transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[2px] after:origin-center after:scale-x-0 after:bg-[var(--primary)] after:transition-transform after:duration-200 hover:text-[var(--foreground)] hover:after:scale-x-100 ${
+                  className={`relative rounded-lg py-1 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[2px] after:origin-center after:scale-x-0 after:bg-[var(--primary)] after:transition-transform after:duration-200 hover:text-[var(--foreground)] hover:after:scale-x-100 ${
                     isActive
                       ? "text-[var(--foreground)] after:scale-x-100"
                       : "text-[var(--muted-foreground)]"
@@ -124,7 +124,7 @@ export function HeaderB() {
             {/* CTA */}
             <Link
               href="/b/trip-builder"
-              className="inline-flex h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-5 text-sm font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
+              className="inline-flex h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-5 text-sm font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
             >
               Plan a Trip
             </Link>
@@ -135,7 +135,7 @@ export function HeaderB() {
                 <button
                   type="button"
                   onClick={() => setUserMenuOpen((v) => !v)}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-sm font-semibold text-[var(--primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_18%,transparent)]"
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-sm font-semibold text-[var(--primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_18%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                   aria-label="User menu"
                 >
                   {userInitial ?? (
@@ -154,14 +154,14 @@ export function HeaderB() {
                   <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-[var(--border)] bg-white p-1 shadow-[var(--shadow-elevated)]">
                     <Link
                       href="/b/dashboard"
-                      className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+                      className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       Dashboard
                     </Link>
                     <Link
                       href="/b/saved"
-                      className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+                      className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                       onClick={() => setUserMenuOpen(false)}
                     >
                       Saved Places
@@ -169,7 +169,7 @@ export function HeaderB() {
                     {isSignedIn && (
                       <Link
                         href="/b/account"
-                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                         onClick={() => setUserMenuOpen(false)}
                       >
                         Account
@@ -180,14 +180,14 @@ export function HeaderB() {
                       <button
                         type="button"
                         onClick={handleSignOut}
-                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                       >
                         Sign Out
                       </button>
                     ) : (
                       <Link
                         href="/b/signin"
-                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--primary)] font-medium transition-colors hover:bg-[var(--muted)]"
+                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--primary)] font-medium transition-colors hover:bg-[var(--muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                         onClick={() => setUserMenuOpen(false)}
                       >
                         Sign In
@@ -202,7 +202,7 @@ export function HeaderB() {
             <button
               type="button"
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex h-11 w-11 items-center justify-center rounded-xl text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] md:hidden"
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-[var(--foreground)] transition-colors hover:bg-[var(--muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 md:hidden"
               aria-label={menuOpen ? "Close menu" : "Open menu"}
             >
               <svg

@@ -116,7 +116,7 @@ export function IntroStepB({
             <button
               type="button"
               onClick={onStart}
-              className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] sm:w-auto"
+              className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 sm:w-auto"
             >
               {ctaText}
             </button>
@@ -125,7 +125,7 @@ export function IntroStepB({
               <button
                 type="button"
                 onClick={() => setShowQuickPlan((v) => !v)}
-                className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border border-[var(--border)] px-8 text-sm font-medium text-[var(--foreground)] transition-all hover:border-[var(--primary)] hover:text-[var(--primary)] sm:w-auto"
+                className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-xl border border-[var(--border)] px-8 text-sm font-medium text-[var(--foreground)] transition-all hover:border-[var(--primary)] hover:text-[var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 sm:w-auto"
               >
                 Quick Plan
               </button>
@@ -153,7 +153,7 @@ export function IntroStepB({
                       <button
                         type="button"
                         onClick={() => setShowQuickPlan(false)}
-                        className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                         aria-label="Close quick plan"
                       >
                         <svg
@@ -217,7 +217,7 @@ export function IntroStepB({
                     <button
                       type="button"
                       onClick={handleQuickStart}
-                      className="h-11 w-full rounded-xl bg-[var(--primary)] text-sm font-medium text-white transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
+                      className="h-11 w-full rounded-xl bg-[var(--primary)] text-sm font-medium text-white transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                     >
                       Go
                     </button>
