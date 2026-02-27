@@ -132,7 +132,7 @@ export function ShareButtonB({ tripId }: ShareButtonBProps) {
         type="button"
         onClick={share?.isActive ? () => setMenuOpen((prev) => !prev) : handleShare}
         disabled={isLoading}
-        className="flex h-11 items-center gap-1.5 rounded-xl border px-3 text-sm font-medium shrink-0 transition-colors active:scale-[0.98]"
+        className="flex h-11 items-center gap-1.5 rounded-xl border px-3 text-sm font-medium shrink-0 transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
         style={{
           borderColor: share?.isActive
             ? "var(--success)"
@@ -181,7 +181,7 @@ export function ShareButtonB({ tripId }: ShareButtonBProps) {
             <button
               type="button"
               onClick={handleCopyLink}
-              className="flex h-11 items-center gap-2 rounded-xl px-3 text-xs font-medium transition-colors"
+              className="flex h-11 items-center gap-2 rounded-xl px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
               style={{
                 backgroundColor: "color-mix(in srgb, var(--success) 10%, transparent)",
                 color: "var(--success)",
@@ -195,7 +195,7 @@ export function ShareButtonB({ tripId }: ShareButtonBProps) {
               type="button"
               onClick={handleToggleShare}
               disabled={isLoading}
-              className="flex h-11 items-center gap-2 rounded-xl px-3 text-xs font-medium transition-colors"
+              className="flex h-11 items-center gap-2 rounded-xl px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
               style={{ color: "var(--muted-foreground)" }}
             >
               <Ban className="h-3.5 w-3.5" />

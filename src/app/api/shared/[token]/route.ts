@@ -76,24 +76,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     }
 
     // Increment view count (fire-and-forget)
-    Promise.resolve(
+    void Promise.resolve(
       supabase
         .from("trip_shares")
         .update({ view_count: share.view_count + 1 })
-        .eq("id", share.id)
-    ).then(({ error }) => {
-      if (error) {
-        logger.warn("Failed to increment view count", {
+        .eq("id", share.id),
+    )
+      .then(({ error }) => {
+        if (error) {
+          logger.warn("Failed to increment view count", {
+            shareId: share.id,
+            error: error.message,
+          });
+        }
+      })
+      .catch((err: unknown) => {
+        logger.warn("Unexpected error incrementing view count", {
           shareId: share.id,
-          error: error.message,
+          error: getErrorMessage(err),
         });
-      }
-    }).catch((err: unknown) => {
-      logger.warn("Unexpected error incrementing view count", {
-        shareId: share.id,
-        error: getErrorMessage(err),
       });
-    });
 
     const response = NextResponse.json({
       trip: {

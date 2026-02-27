@@ -29,8 +29,7 @@ async function fetchLocation(id: string): Promise<Location | null> {
 
   if (error || !data) return null;
 
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  const row = data as any;
+  const row = data as unknown as Record<string, unknown>;
   return {
     id: row.id,
     name: row.name,

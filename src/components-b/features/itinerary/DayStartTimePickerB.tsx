@@ -55,7 +55,7 @@ export function DayStartTimePickerB({ currentTime, onChange }: DayStartTimePicke
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm transition-colors"
+        className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
         style={{ color: "var(--muted-foreground)" }}
       >
         <Clock className="h-4 w-4" style={{ color: "var(--primary)" }} />
@@ -80,7 +80,7 @@ export function DayStartTimePickerB({ currentTime, onChange }: DayStartTimePicke
               key={option.value}
               type="button"
               onClick={() => handleSelect(option.value)}
-              className="w-full rounded-xl px-3 py-2 text-left text-sm transition-colors"
+              className="w-full rounded-xl px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
               style={{
                 backgroundColor:
                   currentTime === option.value

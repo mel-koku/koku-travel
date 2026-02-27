@@ -161,7 +161,7 @@ export function TravelModeSelectorB({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="inline-flex items-center gap-1.5 text-sm transition-colors"
+        className="inline-flex items-center gap-1.5 rounded-lg text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
         style={{ color: "var(--muted-foreground)" }}
       >
         <CurrentIcon className="h-3.5 w-3.5" />
@@ -199,7 +199,7 @@ export function TravelModeSelectorB({
                   onModeChange(option.mode);
                   setIsOpen(false);
                 }}
-                className="flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left text-xs transition-colors"
+                className="flex w-full items-center justify-between gap-2 rounded-xl px-2 py-1.5 text-left text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                 style={{
                   backgroundColor: isCurrentMode
                     ? "color-mix(in srgb, var(--primary) 10%, transparent)"

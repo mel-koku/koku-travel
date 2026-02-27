@@ -77,13 +77,13 @@ export function HeroB({ locationCount, content }: HeroBProps) {
             >
               <Link
                 href="/b/trip-builder"
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
+                className="inline-flex h-12 items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
               >
                 {content?.heroPrimaryCtaText ?? "Build My Trip"}
               </Link>
               <Link
                 href="/b/places"
-                className="inline-flex h-12 items-center justify-center rounded-xl border border-[var(--border)] px-8 text-sm font-medium text-[var(--foreground)] transition-all hover:border-[var(--primary)] hover:text-[var(--primary)]"
+                className="inline-flex h-12 items-center justify-center rounded-xl border border-[var(--border)] px-8 text-sm font-medium text-[var(--foreground)] transition-all hover:border-[var(--primary)] hover:text-[var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
               >
                 {content?.heroSecondaryCtaText ?? "Explore Places"}
               </Link>
