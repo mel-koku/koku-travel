@@ -26,8 +26,7 @@ import {
   type SetStateAction,
 } from "react";
 import { flushSync } from "react-dom";
-import { ChevronDown, GripVertical, Lightbulb } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { GripVertical } from "lucide-react";
 import {
   type Itinerary,
   type ItineraryActivity,
@@ -47,13 +46,13 @@ import type {
 } from "@/hooks/useSmartPromptActions";
 import { getActivityConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { DayGuide } from "@/types/itineraryGuide";
-import { GuideSegmentCardB, DayGuideCard } from "./GuideSegmentCardB";
-import { SmartPromptCardB } from "./SmartPromptCardB";
+import { GuideSegmentCardB } from "./GuideSegmentCardB";
 import { TravelSegmentB } from "./TravelSegmentB";
 import { AccommodationBookendB } from "./AccommodationBookendB";
 import { SortableActivityB } from "./SortableActivityB";
 import { DayHeaderB } from "./DayHeaderB";
-import { DayTipsB } from "./DayTipsB";
+import { DayTipsPopoverB } from "./DayTipsPopoverB";
+import { SuggestionsPopoverB } from "./SuggestionsPopoverB";
 import { DayConflictSummaryB } from "./ConflictBadgeB";
 import { WhatsNextCardB } from "./WhatsNextCardB";
 import { TodayIndicatorB } from "./TodayIndicatorB";
@@ -74,100 +73,6 @@ function formatCityName(cityId: string): string {
     if (city) return city.name;
   }
   return cityId.charAt(0).toUpperCase() + cityId.slice(1);
-}
-
-/* ── Suggestions accordion ── */
-function SuggestionsAccordion({
-  suggestions,
-  onAccept,
-  onSkip,
-  loadingSuggestionId,
-}: {
-  suggestions: DetectedGap[];
-  onAccept: (gap: DetectedGap) => void;
-  onSkip: (gap: DetectedGap) => void;
-  loadingSuggestionId?: string | null;
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <div
-      className="mb-3 overflow-hidden rounded-2xl"
-      style={{
-        backgroundColor: "var(--card)",
-        boxShadow: "var(--shadow-card)",
-      }}
-    >
-      {/* Trigger */}
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-[var(--surface)]"
-      >
-        <div
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
-          style={{
-            backgroundColor:
-              "color-mix(in srgb, var(--primary) 10%, transparent)",
-          }}
-        >
-          <Lightbulb
-            className="h-3.5 w-3.5"
-            style={{ color: "var(--primary)" }}
-          />
-        </div>
-        <span
-          className="flex-1 text-sm font-semibold"
-          style={{ color: "var(--foreground)" }}
-        >
-          Suggestions
-        </span>
-        <span
-          className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
-          style={{
-            backgroundColor:
-              "color-mix(in srgb, var(--primary) 10%, transparent)",
-            color: "var(--primary)",
-          }}
-        >
-          {suggestions.length}
-        </span>
-        <ChevronDown
-          className="h-4 w-4 transition-transform duration-200"
-          style={{
-            color: "var(--muted-foreground)",
-            transform: open ? "rotate(180deg)" : undefined,
-          }}
-        />
-      </button>
-
-      {/* Collapsible content */}
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0 }}
-            animate={{ height: "auto" }}
-            exit={{ height: 0 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
-            className="overflow-hidden"
-          >
-            <div>
-              {suggestions.map((gap) => (
-                <SmartPromptCardB
-                  key={gap.id}
-                  gap={gap}
-                  onAccept={onAccept}
-                  onSkip={onSkip}
-                  isLoading={loadingSuggestionId === gap.id}
-                  flat
-                />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
 }
 
 type ItineraryTimelineBProps = {
@@ -850,26 +755,27 @@ export const ItineraryTimelineB = ({
               />
             ) : undefined
           }
-          preAccommodationSlot={
+          tipsSlot={
             !activeId && extendedActivities.length > 0 ? (
-              <>
-                <DayTipsB
-                  day={day}
-                  tripStartDate={tripStartDate}
-                  dayIndex={dayIndex}
-                />
-                {suggestions &&
-                  suggestions.length > 0 &&
-                  onAcceptSuggestion &&
-                  onSkipSuggestion && (
-                    <SuggestionsAccordion
-                      suggestions={suggestions}
-                      onAccept={onAcceptSuggestion}
-                      onSkip={onSkipSuggestion}
-                      loadingSuggestionId={loadingSuggestionId}
-                    />
-                  )}
-              </>
+              <DayTipsPopoverB
+                day={day}
+                tripStartDate={tripStartDate}
+                dayIndex={dayIndex}
+              />
+            ) : undefined
+          }
+          suggestionsSlot={
+            !activeId &&
+            suggestions &&
+            suggestions.length > 0 &&
+            onAcceptSuggestion &&
+            onSkipSuggestion ? (
+              <SuggestionsPopoverB
+                suggestions={suggestions}
+                onAccept={onAcceptSuggestion}
+                onSkip={onSkipSuggestion}
+                loadingSuggestionId={loadingSuggestionId}
+              />
             ) : undefined
           }
           accommodationSlot={
@@ -881,6 +787,16 @@ export const ItineraryTimelineB = ({
                 onEndChange={onEndLocationChange ?? (() => {})}
                 isReadOnly={!onStartLocationChange}
               />
+            ) : undefined
+          }
+          dayIntroSlot={
+            !activeId && guide?.intro?.content ? (
+              <p
+                className="text-sm italic leading-relaxed line-clamp-2"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                {guide.intro.content}
+              </p>
             ) : undefined
           }
         />
@@ -993,23 +909,7 @@ export const ItineraryTimelineB = ({
               items={extendedActivities.map((a) => a.id)}
               strategy={verticalListSortingStrategy}
             >
-              {/* Guide: Combined day intro + pre-first-activity segments */}
-              {guide && !activeId && (() => {
-                const firstActivityId = extendedActivities[0]?.id;
-                const preSegments = firstActivityId
-                  ? guide.segments.filter((seg) => seg.beforeActivityId === firstActivityId)
-                  : [];
-                const allPreSegments = [
-                  ...(guide.intro ? [guide.intro] : []),
-                  ...preSegments,
-                ];
-                if (allPreSegments.length === 0) return null;
-                return (
-                  <DayGuideCard segments={allPreSegments} className="mb-3" />
-                );
-              })()}
-
-              {/* Accommodation: Start bookend + travel to first activity */}
+              {/* Accommodation: Travel estimate from start to first activity */}
               {startLocation && !activeId && (() => {
                 const firstPlaceActivity = extendedActivities.find(
                   (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
@@ -1019,33 +919,26 @@ export const ItineraryTimelineB = ({
                   ? getActivityCoordinates(firstPlaceActivity)
                   : null;
 
-                return (
-                  <div className="mb-3 space-y-1 pl-8">
-                    <AccommodationBookendB
-                      location={startLocation}
-                      variant="start"
+                return startLocation.coordinates &&
+                  firstCoords &&
+                  bookendEstimates.start ? (
+                  <div className="mb-2 pl-8">
+                    <AccommodationTravelSegment
+                      origin={startLocation.coordinates}
+                      destination={firstCoords}
+                      originName={startLocation.name}
+                      destinationName={
+                        firstPlaceActivity?.title ?? "first stop"
+                      }
+                      estimate={bookendEstimates.start}
+                      timezone={day.timezone}
                     />
-                    {startLocation.coordinates &&
-                      firstCoords &&
-                      bookendEstimates.start && (
-                        <AccommodationTravelSegment
-                          origin={startLocation.coordinates}
-                          destination={firstCoords}
-                          originName={startLocation.name}
-                          destinationName={
-                            firstPlaceActivity?.title ?? "first stop"
-                          }
-                          estimate={bookendEstimates.start}
-                          timezone={day.timezone}
-                        />
-                      )}
                   </div>
-                );
+                ) : null;
               })()}
 
               <ul className="space-y-3 pl-8">
                 {extendedActivities.map((activity, index) => {
-                  const isFirstActivity = index === 0;
                   // Calculate place number
                   let placeNumber: number | undefined = undefined;
                   if (activity.kind === "place") {
@@ -1136,9 +1029,9 @@ export const ItineraryTimelineB = ({
                       (seg) => seg.beforeActivityId === activity.id,
                     ) ?? [];
 
-                  // Skip before-segments for the first activity (already in combined DayGuideCard)
+                  // Guide segments before this activity
                   const guideBeforeElement =
-                    !activeId && !isFirstActivity && guideSegmentsBefore.length > 0 ? (
+                    !activeId && guideSegmentsBefore.length > 0 ? (
                       <div className="space-y-2">
                         {guideSegmentsBefore.map((seg) => (
                           <GuideSegmentCardB key={seg.id} segment={seg} />

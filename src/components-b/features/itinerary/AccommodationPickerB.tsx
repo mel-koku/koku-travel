@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { MapPin, Flag, X } from "lucide-react";
+import { MapPin, Flag, X, Pencil } from "lucide-react";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import type { EntryPoint } from "@/types/trip";
 
@@ -20,6 +20,20 @@ export function AccommodationPickerB({
   onEndChange,
   isReadOnly,
 }: AccommodationPickerBProps) {
+  const [expanded, setExpanded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Click-outside to collapse
+  useEffect(() => {
+    if (!expanded) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setExpanded(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [expanded]);
 
   if (isReadOnly) {
     if (!startLocation && !endLocation) return null;
@@ -46,8 +60,48 @@ export function AccommodationPickerB({
     );
   }
 
+  if (!expanded) {
+    const hasLocations = startLocation || endLocation;
+
+    if (!hasLocations) {
+      return (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="text-xs font-medium transition-colors hover:opacity-80"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          + Set accommodation
+        </button>
+      );
+    }
+
+    const isSame = endLocation && startLocation && endLocation.id === startLocation.id;
+    const displayEnd = isSame ? null : endLocation;
+
+    return (
+      <button
+        type="button"
+        onClick={() => setExpanded(true)}
+        className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-sm transition-colors hover:bg-[var(--surface)]"
+        style={{ color: "var(--muted-foreground)" }}
+      >
+        <MapPin className="h-3 w-3 shrink-0" />
+        <span className="max-w-[140px] truncate">{startLocation?.name ?? endLocation?.name}</span>
+        {displayEnd && (
+          <>
+            <span style={{ color: "var(--border)" }}>&rarr;</span>
+            <Flag className="h-3 w-3 shrink-0" />
+            <span className="max-w-[140px] truncate">{displayEnd.name}</span>
+          </>
+        )}
+        <Pencil className="ml-1 h-3 w-3 shrink-0 opacity-50" />
+      </button>
+    );
+  }
+
   return (
-    <div className="space-y-2">
+    <div ref={containerRef} className="space-y-2">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
         <LocationFieldB
           label="Starting location"
