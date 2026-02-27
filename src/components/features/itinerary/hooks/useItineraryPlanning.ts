@@ -8,7 +8,7 @@ import {
   type SetStateAction,
 } from "react";
 import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
-import type { CityAccommodation, TripBuilderData, DayEntryPoint } from "@/types/trip";
+import type { CityAccommodation, TripBuilderData, DayEntryPoint, EntryPoint } from "@/types/trip";
 import { resolveEffectiveDayEntryPoints } from "@/lib/itinerary/accommodationDefaults";
 import { planItineraryClient } from "@/hooks/usePlanItinerary";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
@@ -194,11 +194,19 @@ export function useItineraryPlanning({
         if (skipAutoOptimizeRef.current) {
           skipAutoOptimizeRef.current = false;
         } else {
-          const startPoint = tripBuilderData?.entryPoint;
-          if (startPoint) {
+          const epMap = buildDayEntryPointsMap(target);
+          const fallbackStart = tripBuilderData?.entryPoint;
+          if (fallbackStart || Object.keys(epMap).length > 0) {
             let optimized = false;
             const nextDays = target.days.map((day) => {
-              const result = optimizeRouteOrder(day.activities, startPoint);
+              const dayEp = epMap[day.id];
+              const dayStart = dayEp?.startPoint
+                ? ({ coordinates: dayEp.startPoint.coordinates } as EntryPoint)
+                : fallbackStart;
+              const dayEnd = dayEp?.endPoint
+                ? ({ coordinates: dayEp.endPoint.coordinates } as EntryPoint)
+                : dayStart;
+              const result = optimizeRouteOrder(day.activities, dayStart, dayEnd);
               if (!result.orderChanged) return day;
               optimized = true;
               const activityMap = new Map(day.activities.map((a) => [a.id, a]));
