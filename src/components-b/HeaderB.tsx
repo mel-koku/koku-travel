@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { useAuthState } from "@/components/ui/IdentityBadge";
+import { createClient } from "@/lib/supabase/client";
+import { useAppState } from "@/state/AppState";
 
 const NAV_ITEMS = [
   { label: "Places", href: "/b/places" },
@@ -13,8 +17,13 @@ const NAV_ITEMS = [
 
 export function HeaderB() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, clearAllLocalData } = useAppState();
+  const { isSignedIn, isLoading: authLoading } = useAuthState();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function onScroll() {
@@ -24,10 +33,41 @@ export function HeaderB() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close menu on route change
+  // Close menus on route change
   useEffect(() => {
     setMenuOpen(false);
+    setUserMenuOpen(false);
   }, [pathname]);
+
+  // Click-outside to close user menu
+  useEffect(() => {
+    if (!userMenuOpen) return;
+    function onMouseDown(e: MouseEvent) {
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(e.target as Node)
+      ) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onMouseDown);
+    return () => document.removeEventListener("mousedown", onMouseDown);
+  }, [userMenuOpen]);
+
+  const handleSignOut = useCallback(async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    clearAllLocalData();
+    setUserMenuOpen(false);
+    router.push("/b/");
+  }, [clearAllLocalData, router]);
+
+  const userInitial =
+    user?.displayName && user.displayName !== "Guest"
+      ? user.displayName.charAt(0).toUpperCase()
+      : isSignedIn
+        ? "U"
+        : null;
 
   // Lock body scroll when menu is open
   useEffect(() => {
@@ -88,6 +128,75 @@ export function HeaderB() {
             >
               Plan a Trip
             </Link>
+
+            {/* Desktop user menu */}
+            {!authLoading && (
+              <div ref={userMenuRef} className="relative hidden md:block">
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen((v) => !v)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] text-sm font-semibold text-[var(--primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_18%,transparent)]"
+                  aria-label="User menu"
+                >
+                  {userInitial ?? (
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                    >
+                      <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+                    </svg>
+                  )}
+                </button>
+
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-full z-50 mt-2 w-48 rounded-xl border border-[var(--border)] bg-white p-1 shadow-[var(--shadow-elevated)]">
+                    <Link
+                      href="/b/dashboard"
+                      className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <Link
+                      href="/b/saved"
+                      className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Saved Places
+                    </Link>
+                    {isSignedIn && (
+                      <Link
+                        href="/b/account"
+                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Account
+                      </Link>
+                    )}
+                    <div className="my-1 border-t border-[var(--border)]" />
+                    {isSignedIn ? (
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--muted-foreground)] transition-colors hover:bg-[var(--muted)] hover:text-[var(--foreground)]"
+                      >
+                        Sign Out
+                      </button>
+                    ) : (
+                      <Link
+                        href="/b/signin"
+                        className="flex w-full items-center rounded-lg px-3 py-2 text-sm text-[var(--primary)] font-medium transition-colors hover:bg-[var(--muted)]"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Sign In
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Mobile hamburger */}
             <button
@@ -165,6 +274,68 @@ export function HeaderB() {
               </Link>
             );
           })}
+
+          {/* User items */}
+          {!authLoading && (
+            <>
+              <div className="my-2 border-t border-[var(--border)]" />
+              <Link
+                href="/b/dashboard"
+                onClick={() => setMenuOpen(false)}
+                className={`relative border-b border-[var(--border)] py-4 text-base font-medium transition-colors ${
+                  pathname.startsWith("/b/dashboard")
+                    ? "text-[var(--primary)]"
+                    : "text-[var(--muted-foreground)] active:text-[var(--foreground)]"
+                }`}
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/b/saved"
+                onClick={() => setMenuOpen(false)}
+                className={`relative border-b border-[var(--border)] py-4 text-base font-medium transition-colors ${
+                  pathname.startsWith("/b/saved")
+                    ? "text-[var(--primary)]"
+                    : "text-[var(--muted-foreground)] active:text-[var(--foreground)]"
+                }`}
+              >
+                Saved Places
+              </Link>
+              {isSignedIn ? (
+                <>
+                  <Link
+                    href="/b/account"
+                    onClick={() => setMenuOpen(false)}
+                    className={`relative border-b border-[var(--border)] py-4 text-base font-medium transition-colors ${
+                      pathname.startsWith("/b/account")
+                        ? "text-[var(--primary)]"
+                        : "text-[var(--muted-foreground)] active:text-[var(--foreground)]"
+                    }`}
+                  >
+                    Account
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      handleSignOut();
+                    }}
+                    className="py-4 text-left text-base font-medium text-[var(--muted-foreground)] transition-colors active:text-[var(--foreground)]"
+                  >
+                    Sign Out
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/b/signin"
+                  onClick={() => setMenuOpen(false)}
+                  className="py-4 text-base font-medium text-[var(--primary)] transition-colors"
+                >
+                  Sign In
+                </Link>
+              )}
+            </>
+          )}
         </div>
       </nav>
     </>
