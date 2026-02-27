@@ -2,6 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useCallback } from "react";
+import { motion } from "framer-motion";
 import { useAppState } from "@/state/AppState";
 import { useBookmarks } from "@/hooks/useBookmarksQuery";
 import { PortableTextBodyB } from "./PortableTextBodyB";
@@ -9,6 +12,15 @@ import { GuideContentB } from "./GuideContentB";
 import type { Guide, GuideSummary } from "@/types/guide";
 import type { SanityGuide, SanityAuthor } from "@/types/sanityGuide";
 import type { Location } from "@/types/location";
+
+const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
+
+const sectionReveal = {
+  initial: { opacity: 0, y: 10 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, margin: "-40px" as const },
+  transition: { duration: 0.5, ease: bEase },
+};
 
 const GUIDE_TYPE_LABELS: Record<string, string> = {
   itinerary: "Itinerary",
@@ -35,6 +47,7 @@ type GuideDetailClientBProps =
 
 export function GuideDetailClientB(props: GuideDetailClientBProps) {
   const { locations, relatedGuide = null, source } = props;
+  const router = useRouter();
   const { user } = useAppState();
   const { isBookmarked, toggleBookmark, isToggling } = useBookmarks(user?.id);
 
@@ -69,19 +82,33 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
     readingTimeMinutes ? `${readingTimeMinutes} min read` : null,
   ].filter(Boolean);
 
+  const handleBack = useCallback(() => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/b/guides");
+    }
+  }, [router]);
+
   return (
     <article className="min-h-[100dvh]">
       {/* Hero */}
       <div className="relative w-full h-[50vh] min-h-[320px] max-h-[480px] overflow-hidden">
         {featuredImage ? (
-          <Image
-            src={featuredImage}
-            alt={title}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
+          <motion.div
+            className="absolute inset-0"
+            animate={{ scale: [1, 1.03, 1] }}
+            transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Image
+              src={featuredImage}
+              alt={title}
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
+            />
+          </motion.div>
         ) : (
           <div className="h-full w-full bg-[var(--surface)]" />
         )}
@@ -90,7 +117,7 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
         <div className="absolute inset-0 flex items-end">
           <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 pb-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/80">
-              {metaParts.join(" · ")}
+              {metaParts.join(" \u00b7 ")}
             </p>
             <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl lg:text-5xl leading-tight">
               {title}
@@ -99,8 +126,29 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
         </div>
       </div>
 
+      {/* Sticky back bar */}
+      <div
+        className="sticky z-30 border-b border-[var(--border)] bg-white"
+        style={{ top: "var(--header-h)" }}
+      >
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 flex items-center gap-3 h-12">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="flex items-center gap-1.5 text-sm font-medium text-[var(--primary)] hover:text-[var(--foreground)] transition shrink-0 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Guides
+          </button>
+          <span className="text-[var(--border)]">|</span>
+          <p className="text-sm text-[var(--muted-foreground)] truncate">{title}</p>
+        </div>
+      </div>
+
       {/* Preamble */}
-      <section className="bg-white border-b border-[var(--border)]">
+      <motion.section className="bg-white border-b border-[var(--border)]" {...sectionReveal}>
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div className="space-y-3 max-w-2xl">
@@ -111,7 +159,7 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
                 {authorName && <span>By {authorName}</span>}
                 {dateLabel && (
                   <>
-                    <span className="text-[var(--border)]">·</span>
+                    <span className="text-[var(--border)]">&middot;</span>
                     <span>{dateLabel}</span>
                   </>
                 )}
@@ -135,7 +183,7 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
               type="button"
               onClick={() => toggleBookmark(guideId)}
               disabled={isToggling}
-              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all active:scale-[0.98] ${
+              className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 ${
                 bookmarked
                   ? "bg-[var(--primary)] text-white"
                   : "bg-[var(--surface)] text-[var(--foreground)] hover:bg-[var(--border)]"
@@ -154,7 +202,7 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
             </button>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Body content */}
       <section className="bg-white">
@@ -171,37 +219,47 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
       {locations.length > 0 && (
         <section className="border-t border-[var(--border)] bg-[var(--background)]">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
-            <h2 className="text-xl font-bold text-[var(--foreground)]">
+            <motion.h2
+              className="text-xl font-bold text-[var(--foreground)]"
+              {...sectionReveal}
+            >
               Places in this guide
-            </h2>
+            </motion.h2>
             <div className="mt-6 grid gap-4 sm:grid-cols-2">
-              {locations.map((loc) => (
-                <Link
+              {locations.map((loc, i) => (
+                <motion.div
                   key={loc.id}
-                  href={`/b/places/${loc.id}`}
-                  className="flex items-center gap-4 rounded-2xl bg-white p-4 transition-shadow hover:shadow-[var(--shadow-elevated)]"
-                  style={{ boxShadow: "var(--shadow-card)" }}
+                  initial={{ opacity: 0, y: 10 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{ duration: 0.4, delay: 0.1 + i * 0.08, ease: bEase }}
                 >
-                  {(loc.primaryPhotoUrl || loc.image) && (
-                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
-                      <Image
-                        src={loc.primaryPhotoUrl || loc.image || ""}
-                        alt={loc.name}
-                        fill
-                        className="object-cover"
-                        sizes="56px"
-                      />
+                  <Link
+                    href={`/b/places/${loc.id}`}
+                    className="flex items-center gap-4 rounded-2xl bg-white p-4 transition-shadow hover:shadow-[var(--shadow-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+                    style={{ boxShadow: "var(--shadow-card)" }}
+                  >
+                    {(loc.primaryPhotoUrl || loc.image) && (
+                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl">
+                        <Image
+                          src={loc.primaryPhotoUrl || loc.image || ""}
+                          alt={loc.name}
+                          fill
+                          className="object-cover"
+                          sizes="56px"
+                        />
+                      </div>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[var(--foreground)] truncate">
+                        {loc.name}
+                      </p>
+                      <p className="text-xs text-[var(--muted-foreground)]">
+                        {loc.city}{loc.region ? `, ${loc.region}` : ""}
+                      </p>
                     </div>
-                  )}
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-[var(--foreground)] truncate">
-                      {loc.name}
-                    </p>
-                    <p className="text-xs text-[var(--muted-foreground)]">
-                      {loc.city}{loc.region ? `, ${loc.region}` : ""}
-                    </p>
-                  </div>
-                </Link>
+                  </Link>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -210,7 +268,7 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
 
       {/* Plan CTA */}
       {locationIds.length > 0 && (
-        <section className="bg-white border-t border-[var(--border)]">
+        <motion.section className="bg-white border-t border-[var(--border)]" {...sectionReveal}>
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 text-center">
             <h2 className="text-2xl font-bold text-[var(--foreground)]">
               Build a trip from this guide
@@ -220,46 +278,57 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
             </p>
             <Link
               href={`/b/trip-builder?from=guide&slug=${slug}`}
-              className="mt-6 inline-flex h-12 items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
+              className="mt-6 inline-flex h-12 items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
             >
               Build My Itinerary
             </Link>
           </div>
-        </section>
+        </motion.section>
       )}
 
       {/* Related guide */}
       {relatedGuide && (
         <section className="border-t border-[var(--border)] bg-[var(--background)]">
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
-              Read next
-            </p>
-            <Link
-              href={`/b/guides/${relatedGuide.id}`}
-              className="group mt-4 flex items-center gap-6 rounded-2xl bg-white p-6 transition-shadow hover:shadow-[var(--shadow-elevated)]"
-              style={{ boxShadow: "var(--shadow-card)" }}
+            <motion.p
+              className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]"
+              {...sectionReveal}
             >
-              {(relatedGuide.thumbnailImage || relatedGuide.featuredImage) && (
-                <div className="relative hidden h-24 w-36 shrink-0 overflow-hidden rounded-xl sm:block">
-                  <Image
-                    src={relatedGuide.thumbnailImage || relatedGuide.featuredImage || ""}
-                    alt={relatedGuide.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
-                    sizes="144px"
-                  />
+              Read next
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.5, delay: 0.1, ease: bEase }}
+              whileHover={{ y: -3, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+            >
+              <Link
+                href={`/b/guides/${relatedGuide.id}`}
+                className="group mt-4 flex items-center gap-6 rounded-2xl bg-white p-6 transition-shadow hover:shadow-[var(--shadow-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+                style={{ boxShadow: "var(--shadow-card)" }}
+              >
+                {(relatedGuide.thumbnailImage || relatedGuide.featuredImage) && (
+                  <div className="relative hidden h-24 w-36 shrink-0 overflow-hidden rounded-xl sm:block">
+                    <Image
+                      src={relatedGuide.thumbnailImage || relatedGuide.featuredImage || ""}
+                      alt={relatedGuide.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                      sizes="144px"
+                    />
+                  </div>
+                )}
+                <div>
+                  <p className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
+                    {relatedGuide.title}
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--muted-foreground)] line-clamp-2">
+                    {relatedGuide.summary}
+                  </p>
                 </div>
-              )}
-              <div>
-                <p className="text-sm font-semibold text-[var(--foreground)] group-hover:text-[var(--primary)] transition-colors">
-                  {relatedGuide.title}
-                </p>
-                <p className="mt-1 text-xs text-[var(--muted-foreground)] line-clamp-2">
-                  {relatedGuide.summary}
-                </p>
-              </div>
-            </Link>
+              </Link>
+            </motion.div>
           </div>
         </section>
       )}
@@ -269,13 +338,13 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 text-center">
           <p className="text-sm text-[var(--muted-foreground)]">
             Written by {authorName}
-            {dateLabel ? ` · Published ${dateLabel}` : ""}
+            {dateLabel ? ` \u00b7 Published ${dateLabel}` : ""}
           </p>
           <Link
             href="/b/guides"
-            className="mt-4 inline-flex text-sm font-medium text-[var(--primary)] hover:underline"
+            className="mt-4 inline-flex text-sm font-medium text-[var(--primary)] hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
           >
-            ← All guides
+            &larr; All guides
           </Link>
         </div>
       </section>
