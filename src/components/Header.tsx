@@ -57,10 +57,21 @@ function UserMenu({
           onSelect: () => router.push("/dashboard"),
         },
         {
+          id: "saved",
+          label: "Saved Places",
+          onSelect: () => router.push("/saved"),
+        },
+        {
+          id: "account",
+          label: "Account",
+          onSelect: () => router.push("/account"),
+        },
+        {
           id: "signout",
           label: "Sign out",
           onSelect: async () => {
             await supabase.auth.signOut();
+            clearAllLocalData();
             router.refresh();
           },
         },
@@ -72,9 +83,14 @@ function UserMenu({
           onSelect: () => router.push("/dashboard"),
         },
         {
+          id: "saved",
+          label: "Saved Places",
+          onSelect: () => router.push("/saved"),
+        },
+        {
           id: "signin",
           label: "Sign in",
-          onSelect: () => router.push("/account"),
+          onSelect: () => router.push("/signin"),
         },
         {
           id: "cleardata",
