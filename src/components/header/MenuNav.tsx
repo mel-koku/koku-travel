@@ -165,29 +165,43 @@ export function MenuNav({ onClose }: MenuNavProps) {
         <Link
           href="/dashboard"
           onClick={onClose}
-
           className="py-2.5 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
         >
           Dashboard
         </Link>
+        <Link
+          href="/saved"
+          onClick={onClose}
+          className="py-2.5 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+        >
+          Saved Places
+        </Link>
         {isSignedIn ? (
-          <button
-            type="button"
-            onClick={async () => {
-              await supabase.auth.signOut();
-              router.refresh();
-              onClose();
-            }}
-
-            className="py-2.5 text-left text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
-          >
-            Sign out
-          </button>
+          <>
+            <Link
+              href="/account"
+              onClick={onClose}
+              className="py-2.5 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+            >
+              Account
+            </Link>
+            <button
+              type="button"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                clearAllLocalData();
+                router.refresh();
+                onClose();
+              }}
+              className="py-2.5 text-left text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
+            >
+              Sign out
+            </button>
+          </>
         ) : (
           <Link
-            href="/account"
+            href="/signin"
             onClick={onClose}
-
             className="py-2.5 text-base font-medium text-foreground-secondary transition-colors hover:text-foreground"
           >
             Sign in
@@ -196,7 +210,6 @@ export function MenuNav({ onClose }: MenuNavProps) {
         <button
           type="button"
           onClick={handleClearData}
-
           className="flex items-center gap-2 py-2.5 text-left text-sm text-stone transition-colors hover:text-warning"
         >
           <span>Clear local data</span>
