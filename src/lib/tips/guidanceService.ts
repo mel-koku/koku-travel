@@ -99,6 +99,7 @@ const GUIDANCE_TYPE_CATEGORIES: Partial<Record<GuidanceType, string[]>> = {
   accessibility: ["museum", "temple", "shrine", "park", "restaurant", "entertainment", "landmark"],
   family: ["park", "entertainment", "museum", "aquarium", "zoo", "beach", "nature"],
   solo: ["restaurant", "cafe", "bar", "onsen", "wellness", "entertainment"],
+  transit: [],
 };
 
 /**

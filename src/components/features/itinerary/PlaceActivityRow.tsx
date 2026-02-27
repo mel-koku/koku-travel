@@ -688,6 +688,24 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 conflicts={conflicts}
               />
 
+              {/* Getting there — nearest station + Japanese name */}
+              {(placeLocation?.nearestStation || placeLocation?.nameJapanese) && (
+                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-foreground-secondary">
+                  {placeLocation.nearestStation && (
+                    <span className="flex items-center gap-1">
+                      <span>{"📍"}</span>
+                      {placeLocation.nearestStation}
+                    </span>
+                  )}
+                  {placeLocation.nameJapanese && (
+                    <span className="flex items-center gap-1">
+                      <span>{"🇯🇵"}</span>
+                      <span lang="ja">{placeLocation.nameJapanese}</span>
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Tips Section */}
               {tips.length > 0 && (
                 <div className="mt-3 rounded-xl bg-sage/5 p-2.5">
