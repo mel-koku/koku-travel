@@ -71,6 +71,11 @@ export interface LocationScoringCriteria {
    * Locations in this set get a +20 scoring boost.
    */
   contentLocationIds?: Set<string>;
+  /**
+   * When true, the candidate pool is already zone-clustered.
+   * Inverts neighborhood diversity scoring to reward proximity instead of penalizing it.
+   */
+  isZoneClustered?: boolean;
 }
 
 /**
@@ -668,10 +673,15 @@ function scoreDiversity(
 /**
  * Score neighborhood diversity (penalize clustering in same area).
  * Range: -5 to +5 points
+ *
+ * When `isZoneClustered` is true the candidate pool is already constrained
+ * to a walkable zone, so staying in the same neighborhood is *desirable*.
+ * The scoring is inverted: same neighborhood → bonus, different → neutral.
  */
 function scoreNeighborhoodDiversity(
   location: Location,
   recentNeighborhoods: string[],
+  isZoneClustered?: boolean,
 ): { score: number; reasoning: string } {
   const locationNeighborhood = location.neighborhood ?? location.city;
   if (!locationNeighborhood) {
@@ -688,6 +698,21 @@ function scoreNeighborhoodDiversity(
     }
   }
 
+  // Zone-clustered mode: reward proximity, don't penalize same neighborhood
+  if (isZoneClustered) {
+    if (streakCount >= 1) {
+      return {
+        score: 3,
+        reasoning: `Same area "${locationNeighborhood}" — walkability bonus (zone-clustered)`,
+      };
+    }
+    return {
+      score: 1,
+      reasoning: `Different area "${locationNeighborhood}" within zone — still close`,
+    };
+  }
+
+  // Default mode: penalize clustering
   if (streakCount === 0) {
     return {
       score: 5,
@@ -809,7 +834,7 @@ export function scoreLocation(
   });
   const accessibilityResult = scoreAccessibilityFit(location, criteria.accessibility);
   const diversityResult = scoreDiversity(location, criteria.recentCategories);
-  const neighborhoodResult = scoreNeighborhoodDiversity(location, criteria.recentNeighborhoods ?? []);
+  const neighborhoodResult = scoreNeighborhoodDiversity(location, criteria.recentNeighborhoods ?? [], criteria.isZoneClustered);
   const weatherResult = scoreWeatherFit(location, criteria.weatherForecast, criteria.weatherPreferences);
   
   // Time-of-day optimization scoring
