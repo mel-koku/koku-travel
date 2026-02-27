@@ -824,7 +824,7 @@ export const ItineraryShellB = ({
                   isPreviewLoading={isReadOnly ? undefined : isPreviewLoading}
                   isReadOnly={isReadOnly}
                   startLocation={resolvedStartLocation}
-                  endLocation={resolvedEndLocation}
+                  endLocation={resolvedEndLocation ?? resolvedStartLocation}
                   onStartLocationChange={
                     isReadOnly ? undefined : handleStartLocationChange
                   }
