@@ -142,7 +142,7 @@ function optimizeItineraryRoutes(
       // Only coordinates are used by optimizeRouteOrder, so we can safely cast
       dayStartPoint = { coordinates: cityCoords } as typeof startPoint;
     }
-    const result = optimizeRouteOrder(day.activities, dayStartPoint);
+    const result = optimizeRouteOrder(day.activities, dayStartPoint, dayStartPoint);
 
     if (!result.orderChanged) {
       return day;
@@ -192,14 +192,26 @@ export async function generateTripFromBuilderData(
 
   // Build dayEntryPoints so the planner knows where each day starts
   // Day 1: entry point (airport/station). Days 2+: city center (hotel proxy).
-  const dayEntryPoints: Record<string, { startPoint?: { coordinates: { lat: number; lng: number } } }> = {};
+  const dayEntryPoints: Record<string, { startPoint?: { coordinates: { lat: number; lng: number } }; endPoint?: { coordinates: { lat: number; lng: number } } }> = {};
   for (let i = 0; i < optimizedItinerary.days.length; i++) {
     const day = optimizedItinerary.days[i];
     if (!day) continue;
     if (i === 0 && builderData.entryPoint?.coordinates) {
-      dayEntryPoints[day.id] = { startPoint: { coordinates: builderData.entryPoint.coordinates } };
+      // Day 1: start from airport/station, end at city center (hotel proxy)
+      const endCoords = day.cityId
+        ? getCityCenterCoordinates(day.cityId)
+        : builderData.entryPoint.coordinates;
+      dayEntryPoints[day.id] = {
+        startPoint: { coordinates: builderData.entryPoint.coordinates },
+        endPoint: { coordinates: endCoords },
+      };
     } else if (day.cityId) {
-      dayEntryPoints[day.id] = { startPoint: { coordinates: getCityCenterCoordinates(day.cityId) } };
+      // Days 2+: start and end at city center (hotel proxy)
+      const cityCoords = getCityCenterCoordinates(day.cityId);
+      dayEntryPoints[day.id] = {
+        startPoint: { coordinates: cityCoords },
+        endPoint: { coordinates: cityCoords },
+      };
     }
   }
 

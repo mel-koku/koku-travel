@@ -142,5 +142,77 @@ describe("routeOptimizer", () => {
       expect(result.optimizedCount).toBe(1);
       expect(result.skippedCount).toBe(2);
     });
+
+    it("optimizes circular route (start=end hotel) without backtracking", () => {
+      // Hotel at center, 4 activities arranged in a rough circle
+      const hotel: EntryPoint = {
+        type: "accommodation",
+        id: "hotel",
+        name: "Hotel",
+        coordinates: { lat: 35.0, lng: 135.0 },
+      };
+      const activities: ItineraryActivity[] = [
+        makePlaceActivity("north", { lat: 35.1, lng: 135.0 }),
+        makePlaceActivity("south", { lat: 34.9, lng: 135.0 }),
+        makePlaceActivity("east", { lat: 35.0, lng: 135.1 }),
+        makePlaceActivity("west", { lat: 35.0, lng: 134.9 }),
+      ];
+
+      // Naive order (N→S→E→W) backtracks. Optimal loop visits neighbors sequentially.
+      const result = optimizeRouteOrder(activities, hotel, hotel);
+      expect(result.optimizedCount).toBe(4);
+
+      // Calculate total distance of optimized vs naive order
+      const calcDist = (order: string[]) => {
+        let total = 0;
+        let prev = hotel.coordinates;
+        for (const id of order) {
+          const a = activities.find((act) => act.id === id);
+          if (a?.kind === "place" && a.coordinates) {
+            const dx = a.coordinates.lat - prev.lat;
+            const dy = a.coordinates.lng - prev.lng;
+            total += Math.sqrt(dx * dx + dy * dy);
+            prev = a.coordinates;
+          }
+        }
+        // Return leg to hotel
+        const dx = hotel.coordinates.lat - prev.lat;
+        const dy = hotel.coordinates.lng - prev.lng;
+        total += Math.sqrt(dx * dx + dy * dy);
+        return total;
+      };
+
+      const naiveDist = calcDist(["north", "south", "east", "west"]);
+      const optimizedDist = calcDist(result.order);
+      expect(optimizedDist).toBeLessThan(naiveDist);
+    });
+
+    it("2-opt uncrosses diagonal paths in a square layout", () => {
+      // Start at center, 4 activities at corners of a square
+      const center: EntryPoint = {
+        type: "accommodation",
+        id: "center",
+        name: "Center",
+        coordinates: { lat: 35.0, lng: 135.0 },
+      };
+      // Corners arranged so nearest-neighbor might cross diagonals
+      const activities: ItineraryActivity[] = [
+        makePlaceActivity("ne", { lat: 35.1, lng: 135.1 }),   // NE corner
+        makePlaceActivity("sw", { lat: 34.9, lng: 134.9 }),   // SW corner
+        makePlaceActivity("nw", { lat: 35.1, lng: 134.9 }),   // NW corner
+        makePlaceActivity("se", { lat: 34.9, lng: 135.1 }),   // SE corner
+      ];
+      const result = optimizeRouteOrder(activities, center, center);
+      expect(result.optimizedCount).toBe(4);
+
+      // A good route visits adjacent corners, not diagonal jumps.
+      // Check that no two consecutive activities are diagonal opposites.
+      const diagonalPairs = new Set(["ne-sw", "sw-ne", "nw-se", "se-nw"]);
+      const order = result.order;
+      for (let i = 0; i < order.length - 1; i++) {
+        const pair = `${order[i]}-${order[i + 1]}`;
+        expect(diagonalPairs.has(pair)).toBe(false);
+      }
+    });
   });
 });
