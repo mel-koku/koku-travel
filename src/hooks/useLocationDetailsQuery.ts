@@ -2,7 +2,7 @@
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { LocationDetails } from "@/types/location";
-import { logger } from "@/lib/logger";
+import { extractFetchErrorMessage } from "@/lib/api/fetchError";
 import { LOCATION_STALE_TIME, LOCATION_GC_TIME } from "@/lib/constants/time";
 
 /**
@@ -64,16 +64,7 @@ async function fetchLocationDetailsFromDb(locationId: string): Promise<LocationD
   const response = await fetch(`/api/locations/${locationId}`);
 
   if (!response.ok) {
-    let message = `Request failed with status ${response.status}.`;
-    try {
-      const payload = await response.json();
-      if (payload?.error) {
-        message = payload.error as string;
-      }
-    } catch (jsonError) {
-      logger.debug("Unable to parse error response", { error: jsonError });
-    }
-    throw new Error(message);
+    throw new Error(await extractFetchErrorMessage(response));
   }
 
   const payload = (await response.json()) as LocationDetailsResponse;
@@ -87,16 +78,7 @@ async function fetchLocationDetailsFromGooglePlaces(placeId: string): Promise<Lo
   const response = await fetch(`/api/places/details?placeId=${encodeURIComponent(placeId)}`);
 
   if (!response.ok) {
-    let message = `Request failed with status ${response.status}.`;
-    try {
-      const payload = await response.json();
-      if (payload?.error) {
-        message = payload.error as string;
-      }
-    } catch (jsonError) {
-      logger.debug("Unable to parse error response", { error: jsonError });
-    }
-    throw new Error(message);
+    throw new Error(await extractFetchErrorMessage(response));
   }
 
   const payload = (await response.json()) as PlaceDetailsResponse;

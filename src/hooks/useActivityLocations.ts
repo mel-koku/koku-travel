@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import type { Location } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
-import { logger } from "@/lib/logger";
+import { extractFetchErrorMessage } from "@/lib/api/fetchError";
 import { LOCATION_STALE_TIME, LOCATION_GC_TIME } from "@/lib/constants/time";
 
 /**
@@ -33,16 +33,7 @@ async function fetchLocationsByIds(ids: string[]): Promise<Location[]> {
   const response = await fetch(`/api/locations/batch?ids=${ids.join(",")}`);
 
   if (!response.ok) {
-    let message = `Request failed with status ${response.status}.`;
-    try {
-      const payload = await response.json();
-      if (payload?.error) {
-        message = payload.error as string;
-      }
-    } catch (jsonError) {
-      logger.debug("Unable to parse error response", { error: jsonError });
-    }
-    throw new Error(message);
+    throw new Error(await extractFetchErrorMessage(response));
   }
 
   const data = (await response.json()) as BatchLocationsResponse;

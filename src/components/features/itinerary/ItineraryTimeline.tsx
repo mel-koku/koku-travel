@@ -50,6 +50,7 @@ import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { REGIONS } from "@/data/regions";
 import { useToast } from "@/context/ToastContext";
 import { easeCinematicCSS } from "@/lib/motion";
+import { logger } from "@/lib/logger";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
 
 function formatCityName(cityId: string): string {
@@ -161,9 +162,7 @@ export const ItineraryTimeline = ({
 
   // Activities list - entry points are not displayed in the timeline
   // (they are shown on the map via ItineraryMapPanel)
-  const extendedActivities = useMemo(() => {
-    return day.activities ?? [];
-  }, [day.activities]);
+  const extendedActivities = day.activities ?? [];
 
   const handleDelete = useCallback(
     (activityId: string) => {
@@ -497,8 +496,7 @@ export const ItineraryTimeline = ({
               return { ...prev, days: updatedDays };
             });
           }).catch((error) => {
-            // eslint-disable-next-line no-console
-            console.warn("[ItineraryTimeline] Failed to recalculate travel segments after reorder:", error);
+            logger.warn("[ItineraryTimeline] Failed to recalculate travel segments after reorder", { error });
           });
         }
       }
@@ -1132,8 +1130,7 @@ const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
       setHasAutoFetched(true);
       handleModeChange(travelFromPrevious.mode).catch((error) => {
         // Log warning for debugging - planning system will recalculate on refresh
-        // eslint-disable-next-line no-console
-        console.warn("[TravelSegmentWrapper] Failed to auto-fetch route:", error);
+        logger.warn("[TravelSegmentWrapper] Failed to auto-fetch route", { error });
       });
     }
   }, [hasAutoFetched, isRecalculatingRoute, travelFromPrevious.durationMinutes, travelFromPrevious.mode, originCoordinates, destinationCoordinates, handleModeChange]);

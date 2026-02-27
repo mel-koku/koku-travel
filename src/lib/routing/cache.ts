@@ -1,6 +1,7 @@
 import type { RoutingRequest, RoutingResult, TravelMode } from "./types";
 import { LRUCache } from "@/lib/utils/lruCache";
 import { ROUTING_DRIVING_TTL, ROUTING_WALKING_TRANSIT_TTL } from "@/lib/constants/time";
+import { logger } from "@/lib/logger";
 
 type CacheKey = string;
 
@@ -38,10 +39,8 @@ function getTtlForMode(mode: TravelMode): number {
 const cache = new LRUCache<CacheKey, CacheEntry>({
   maxSize: MAX_CACHE_SIZE,
   onEvict: (key, _value) => {
-    // Optional: log evictions in development for debugging
     if (process.env.NODE_ENV === "development") {
-      // eslint-disable-next-line no-console
-      console.debug(`[Routing Cache] Evicted entry: ${key}`);
+      logger.debug(`[Routing Cache] Evicted entry: ${key}`);
     }
   },
 });

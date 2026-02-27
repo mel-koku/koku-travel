@@ -63,6 +63,7 @@ export function ItineraryMap({
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
   const mapboxModuleRef = useRef<MapboxModule | null>(null);
   const markersRef = useRef<Map<string, InstanceType<MapboxModule["Marker"]>>>(new Map());
+  const markerClickHandlersRef = useRef<Map<string, () => void>>(new Map());
   const [mapboxModuleLoaded, setMapboxModuleLoaded] = useState(false);
   const [mapError, setMapError] = useState<string | null>(null);
   const [mapReady, setMapReady] = useState(false);
@@ -158,6 +159,15 @@ export function ItineraryMap({
     mapInstanceRef.current = map;
 
     return () => {
+      // Clean up click handlers before destroying map
+      markerClickHandlersRef.current.forEach((handler, id) => {
+        const marker = markersRef.current.get(id);
+        if (marker) {
+          marker.getElement().removeEventListener("click", handler);
+        }
+      });
+      markerClickHandlersRef.current.clear();
+      markersRef.current.clear();
       map.remove();
       mapInstanceRef.current = null;
       setMapReady(false);
@@ -267,6 +277,11 @@ export function ItineraryMap({
     // Remove markers that are no longer needed
     markersRef.current.forEach((marker, id) => {
       if (!currentPointIds.has(id)) {
+        const handler = markerClickHandlersRef.current.get(id);
+        if (handler) {
+          marker.getElement().removeEventListener("click", handler);
+          markerClickHandlersRef.current.delete(id);
+        }
         marker.remove();
         markersRef.current.delete(id);
       }
@@ -344,9 +359,11 @@ export function ItineraryMap({
       const marker = new mapboxModule.Marker({ element: markerEl })
         .setLngLat([point.coordinates.lng, point.coordinates.lat])
         .addTo(map);
-      marker.getElement().addEventListener("click", () => {
+      const clickHandler = () => {
         onActivityClick?.(point.id);
-      });
+      };
+      marker.getElement().addEventListener("click", clickHandler);
+      markerClickHandlersRef.current.set(point.id, clickHandler);
       markersRef.current.set(point.id, marker);
     });
   }, [activityPoints, startPoint, endPoint, mapReady, selectedActivityId, onActivityClick]);
