@@ -75,6 +75,18 @@ export type RoutingLegStep = {
   distanceMeters?: number;
   durationSeconds?: number;
   geometry?: Coordinate[];
+  /** Structured transit details from Google Directions API */
+  transitDetails?: {
+    lineName?: string;
+    lineShortName?: string;
+    vehicleType?: string;
+    departureStop?: string;
+    arrivalStop?: string;
+    headsign?: string;
+    numStops?: number;
+  };
+  /** Step travel mode (walk, transit, etc.) */
+  stepMode?: "walk" | "transit" | "drive" | "cycle";
 };
 
 export type RoutingLeg = {

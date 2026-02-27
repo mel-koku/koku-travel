@@ -66,6 +66,30 @@ export type ItineraryScheduledVisit = {
 
 export type ItineraryTravelMode = LocationTransitMode | "transit" | "rideshare";
 
+export type TransitStep = {
+  type: "walk" | "transit";
+  /** Walk duration in minutes */
+  walkMinutes?: number;
+  /** Walk instruction, e.g. "Walk to Shibuya Station" */
+  walkInstruction?: string;
+  /** Transit line name, e.g. "JR Yamanote Line" */
+  lineName?: string;
+  /** Short line name, e.g. "Yamanote" */
+  lineShortName?: string;
+  /** Vehicle type from Google, e.g. "HEAVY_RAIL", "SUBWAY" */
+  vehicleType?: string;
+  /** Departure stop name, e.g. "Shibuya" */
+  departureStop?: string;
+  /** Arrival stop name, e.g. "Harajuku" */
+  arrivalStop?: string;
+  /** Headsign, e.g. "toward Shinjuku" */
+  headsign?: string;
+  /** Number of stops */
+  numStops?: number;
+  /** Duration in minutes for this step */
+  durationMinutes?: number;
+};
+
 export type ItineraryTravelSegment = {
   mode: ItineraryTravelMode;
   durationMinutes: number;
@@ -77,6 +101,8 @@ export type ItineraryTravelSegment = {
   path?: Array<{ lat: number; lng: number }>;
   /** True if this is a heuristic estimate (not from real routing API) */
   isEstimated?: boolean;
+  /** Structured transit steps (walk + transit legs) from Google Directions */
+  transitSteps?: TransitStep[];
 };
 
 export type ItineraryCityTransition = {

@@ -8,6 +8,7 @@ import type {
   ItineraryDay,
   ItineraryTravelMode,
   ItineraryTravelSegment,
+  TransitStep,
 } from "@/types/itinerary";
 import type { Location, LocationOperatingHours, LocationOperatingPeriod, Weekday } from "@/types/location";
 import type { CityId } from "@/types/trip";
@@ -17,6 +18,7 @@ import { logger } from "./logger";
 
 import { requestRoute } from "./routing";
 import { toItineraryMode } from "./routing/types";
+import type { RoutingResult } from "./routing/types";
 import { parseTimeToMinutes as parseTime } from "@/lib/utils/timeUtils";
 import {
   TRANSIT_DISTANCE_THRESHOLD_KM,
@@ -284,6 +286,46 @@ function mergePathSegments(paths: Array<ItineraryTravelSegment["path"] | undefin
   return merged.length > 0 ? merged : undefined;
 }
 
+/**
+ * Extracts structured transit steps from a routing result.
+ * Returns undefined if no structured step data is available.
+ */
+function buildTransitSteps(route: RoutingResult): TransitStep[] | undefined {
+  const steps: TransitStep[] = [];
+
+  for (const leg of route.legs) {
+    if (!leg.steps) continue;
+    for (const step of leg.steps) {
+      const durationMin = step.durationSeconds
+        ? Math.max(1, Math.round(step.durationSeconds / 60))
+        : undefined;
+
+      if (step.stepMode === "walk") {
+        steps.push({
+          type: "walk",
+          walkMinutes: durationMin,
+          walkInstruction: step.instruction,
+        });
+      } else if (step.stepMode === "transit" && step.transitDetails) {
+        const td = step.transitDetails;
+        steps.push({
+          type: "transit",
+          lineName: td.lineName,
+          lineShortName: td.lineShortName,
+          vehicleType: td.vehicleType,
+          departureStop: td.departureStop,
+          arrivalStop: td.arrivalStop,
+          headsign: td.headsign,
+          numStops: td.numStops,
+          durationMinutes: durationMin,
+        });
+      }
+    }
+  }
+
+  return steps.length > 0 ? steps : undefined;
+}
+
 function buildTravelSegment(
   mode: ItineraryTravelMode,
   departureMinutes: number,
@@ -291,6 +333,7 @@ function buildTravelSegment(
   distanceMeters: number,
   path?: ItineraryTravelSegment["path"],
   instructions?: string[],
+  transitSteps?: ItineraryTravelSegment["transitSteps"],
 ) {
   const durationMinutes = Math.max(1, Math.round(durationSeconds / 60));
   const arrivalMinutes = departureMinutes + durationMinutes;
@@ -302,6 +345,7 @@ function buildTravelSegment(
     arrivalTime: formatTime(arrivalMinutes),
     instructions,
     path,
+    transitSteps,
   };
 }
 
@@ -580,6 +624,9 @@ async function planItineraryDay(
         ...route.legs.map((leg) => leg.geometry),
       ]);
 
+      // Build structured transit steps from routing leg steps
+      const transitSteps = buildTransitSteps(route);
+
       const travelSegment = buildTravelSegment(
         travelMode,
         cursorMinutes,
@@ -587,6 +634,7 @@ async function planItineraryDay(
         route.distanceMeters,
         travelPath,
         travelInstructions.length ? travelInstructions : undefined,
+        transitSteps,
       );
 
       if (lastPlaceIndex != null) {
@@ -689,12 +737,16 @@ async function planItineraryDay(
             ...finalRoute.legs.map((leg) => leg.geometry),
           ]);
 
+          const returnTransitSteps = buildTransitSteps(finalRoute);
+
           const returnSegment = buildTravelSegment(
             finalMode,
             cursorMinutes,
             finalRoute.durationSeconds,
             finalRoute.distanceMeters,
             returnPath,
+            undefined,
+            returnTransitSteps,
           );
 
           (lastActivity as Extract<ItineraryActivity, { kind: "place" }>).travelToNext = returnSegment;

@@ -118,7 +118,9 @@ export const LOCATION_LISTING_COLUMNS = `
   accessibility_options,
   dietary_options,
   service_options,
-  tags
+  tags,
+  name_japanese,
+  nearest_station
 `.replace(/\s+/g, "");
 
 /**
@@ -356,4 +358,6 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "dietary_options"
   | "service_options"
   | "tags"
+  | "name_japanese"
+  | "nearest_station"
 >;

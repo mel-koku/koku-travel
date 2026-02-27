@@ -12,6 +12,7 @@
  * - solo: Solo traveler advice and safety
  * - food_culture: Food customs, specialties, and dining etiquette
  * - cultural_context: Deeper cultural background and context
+ * - transit: Train, subway, bus, and station-specific tips
  */
 export type GuidanceType =
   | "etiquette"
@@ -25,7 +26,8 @@ export type GuidanceType =
   | "family"
   | "solo"
   | "food_culture"
-  | "cultural_context";
+  | "cultural_context"
+  | "transit";
 
 /**
  * Status of travel guidance content.

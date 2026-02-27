@@ -3,6 +3,7 @@ import { fetchGoogleRoute } from "./google";
 import { fetchMapboxRoute } from "./mapbox";
 import { getCachedRoute, setCachedRoute } from "./cache";
 import type { RoutingRequest, RoutingResult, RoutingProviderName, RoutingFetchFn } from "./types";
+import { toRoutingMode } from "./types";
 import { env } from "@/lib/env";
 
 type ProviderConfig = {
@@ -21,17 +22,27 @@ const PROVIDERS: ProviderConfig[] = [
     name: "google",
     handler: fetchGoogleRoute,
     isEnabled: () =>
-      Boolean(process.env.ROUTING_GOOGLE_MAPS_API_KEY ?? process.env.GOOGLE_DIRECTIONS_API_KEY),
+      Boolean(
+        process.env.ROUTING_GOOGLE_MAPS_API_KEY ??
+          process.env.GOOGLE_DIRECTIONS_API_KEY ??
+          process.env.GOOGLE_PLACES_API_KEY
+      ),
   },
 ];
 
-function resolveProvider(): ProviderConfig | null {
+function resolveProvider(mode?: string): ProviderConfig | null {
   const envPreference = (process.env.ROUTING_PROVIDER ?? "").toLowerCase();
   if (envPreference) {
     const preferred = PROVIDERS.find((provider) => provider.name === envPreference);
     if (preferred && preferred.isEnabled()) {
       return preferred;
     }
+  }
+
+  // Prefer Google for transit since Mapbox lacks full transit support
+  if (mode === "transit") {
+    const google = PROVIDERS.find((p) => p.name === "google");
+    if (google?.isEnabled()) return google;
   }
 
   return PROVIDERS.find((provider) => provider.isEnabled()) ?? null;
@@ -67,7 +78,8 @@ export async function requestRoute(request: RoutingRequest): Promise<RoutingResu
     return heuristic;
   }
 
-  const provider = resolveProvider();
+  const routingMode = toRoutingMode(request.mode as import("@/types/itinerary").ItineraryTravelMode);
+  const provider = resolveProvider(routingMode);
 
   if (!provider) {
     const heuristic = estimateHeuristicRoute(request);

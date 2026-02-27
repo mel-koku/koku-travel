@@ -487,6 +487,27 @@ export const PlaceActivityRowB = memo(
                   </div>
                 )}
 
+                {/* Getting there — nearest station + Japanese name */}
+                {(placeLocation?.nearestStation || placeLocation?.nameJapanese) && (
+                  <div
+                    className="mt-2 flex flex-wrap gap-x-4 gap-y-0.5 text-xs"
+                    style={{ color: "var(--muted-foreground)" }}
+                  >
+                    {placeLocation.nearestStation && (
+                      <span className="flex items-center gap-1">
+                        <span>{"\uD83D\uDCCD"}</span>
+                        {placeLocation.nearestStation}
+                      </span>
+                    )}
+                    {placeLocation.nameJapanese && (
+                      <span className="flex items-center gap-1">
+                        <span>{"\uD83C\uDDEF\uD83C\uDDF5"}</span>
+                        <span lang="ja">{placeLocation.nameJapanese}</span>
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 {/* Short description */}
                 {summary && (
                   <p
