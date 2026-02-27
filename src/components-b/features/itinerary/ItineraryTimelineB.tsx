@@ -972,16 +972,6 @@ export const ItineraryTimelineB = ({
           </div>
         )}
 
-        {/* Accommodation: Start bookend */}
-        {startLocation && extendedActivities.length > 0 && !activeId && (
-          <AccommodationBookendB
-            location={startLocation}
-            variant="start"
-            travelMinutes={bookendEstimates.start?.travelMinutes}
-            distanceMeters={bookendEstimates.start?.distanceMeters}
-          />
-        )}
-
         {/* Activity list */}
         {extendedActivities.length > 0 ? (
           <>
@@ -1023,6 +1013,40 @@ export const ItineraryTimelineB = ({
                 if (allPreSegments.length === 0) return null;
                 return (
                   <DayGuideCard segments={allPreSegments} className="mb-3" />
+                );
+              })()}
+
+              {/* Accommodation: Start bookend + travel to first activity */}
+              {startLocation && !activeId && (() => {
+                const firstPlaceActivity = extendedActivities.find(
+                  (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
+                    a.kind === "place",
+                );
+                const firstCoords = firstPlaceActivity
+                  ? getActivityCoordinates(firstPlaceActivity)
+                  : null;
+
+                return (
+                  <div className="mb-3 space-y-1 pl-8">
+                    <AccommodationBookendB
+                      location={startLocation}
+                      variant="start"
+                    />
+                    {startLocation.coordinates &&
+                      firstCoords &&
+                      bookendEstimates.start && (
+                        <AccommodationTravelSegment
+                          origin={startLocation.coordinates}
+                          destination={firstCoords}
+                          originName={startLocation.name}
+                          destinationName={
+                            firstPlaceActivity?.title ?? "first stop"
+                          }
+                          estimate={bookendEstimates.start}
+                          timezone={day.timezone}
+                        />
+                      )}
+                  </div>
                 );
               })()}
 
@@ -1206,15 +1230,41 @@ export const ItineraryTimelineB = ({
               />
             )}
 
-            {/* Accommodation: End bookend */}
-            {endLocation && !activeId && (
-              <AccommodationBookendB
-                location={endLocation}
-                variant="end"
-                travelMinutes={bookendEstimates.end?.travelMinutes}
-                distanceMeters={bookendEstimates.end?.distanceMeters}
-              />
-            )}
+            {/* Accommodation: End bookend with travel from last activity */}
+            {endLocation && !activeId && (() => {
+              const lastPlaceActivity = [...extendedActivities]
+                .reverse()
+                .find(
+                  (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
+                    a.kind === "place",
+                );
+              const lastCoords = lastPlaceActivity
+                ? getActivityCoordinates(lastPlaceActivity)
+                : null;
+
+              return (
+                <div className="mt-3 space-y-1 pl-8">
+                  {endLocation.coordinates &&
+                    lastCoords &&
+                    bookendEstimates.end && (
+                      <AccommodationTravelSegment
+                        origin={lastCoords}
+                        destination={endLocation.coordinates}
+                        originName={
+                          lastPlaceActivity?.title ?? "last stop"
+                        }
+                        destinationName={endLocation.name}
+                        estimate={bookendEstimates.end}
+                        timezone={day.timezone}
+                      />
+                    )}
+                  <AccommodationBookendB
+                    location={endLocation}
+                    variant="end"
+                  />
+                </div>
+              );
+            })()}
           </>
         ) : (
           <div
@@ -1462,3 +1512,102 @@ const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
     />
   );
 });
+
+// ── AccommodationTravelSegment ──
+
+type AccommodationTravelSegmentProps = {
+  origin: Coordinate;
+  destination: Coordinate;
+  originName: string;
+  destinationName: string;
+  estimate: { travelMinutes: number; distanceMeters: number };
+  timezone?: string;
+};
+
+const AccommodationTravelSegment = memo(
+  function AccommodationTravelSegment({
+    origin,
+    destination,
+    originName,
+    destinationName,
+    estimate,
+    timezone,
+  }: AccommodationTravelSegmentProps) {
+    const initialMode =
+      (estimate.travelMinutes <= 10 ? "walk" : "transit") as ItineraryTravelMode;
+
+    const [segment, setSegment] = useState<{
+      mode: ItineraryTravelMode;
+      durationMinutes: number;
+      distanceMeters: number | undefined;
+      departureTime: string | undefined;
+      arrivalTime: string | undefined;
+      instructions: string[] | undefined;
+      path: Array<{ lat: number; lng: number }> | undefined;
+      isEstimated: boolean;
+    }>({
+      mode: initialMode,
+      durationMinutes: estimate.travelMinutes,
+      distanceMeters: estimate.distanceMeters,
+      departureTime: undefined as string | undefined,
+      arrivalTime: undefined as string | undefined,
+      instructions: undefined as string[] | undefined,
+      path: undefined as Array<{ lat: number; lng: number }> | undefined,
+      isEstimated: true,
+    });
+    const [isRecalculating, setIsRecalculating] = useState(false);
+
+    const handleModeChange = useCallback(
+      async (newMode: ItineraryTravelMode) => {
+        setIsRecalculating(true);
+        try {
+          const request: RoutingRequest = {
+            origin,
+            destination,
+            mode: newMode,
+            timezone,
+          };
+          const response = await fetch("/api/routing/route", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(request),
+          });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const routeData = await response.json();
+          setSegment((prev) => ({
+            ...prev,
+            mode: newMode,
+            durationMinutes:
+              routeData.durationMinutes ?? prev.durationMinutes,
+            distanceMeters:
+              routeData.distanceMeters ?? prev.distanceMeters,
+            path: routeData.path ?? prev.path,
+            instructions:
+              routeData.instructions ?? prev.instructions,
+            arrivalTime:
+              routeData.arrivalTime ?? prev.arrivalTime,
+            isEstimated: routeData.isEstimated ?? false,
+          }));
+        } catch {
+          setSegment((prev) => ({ ...prev, mode: newMode }));
+        } finally {
+          setIsRecalculating(false);
+        }
+      },
+      [origin, destination, timezone],
+    );
+
+    return (
+      <TravelSegmentB
+        segment={segment}
+        origin={origin}
+        destination={destination}
+        originName={originName}
+        destinationName={destinationName}
+        timezone={timezone}
+        onModeChange={handleModeChange}
+        isRecalculating={isRecalculating}
+      />
+    );
+  },
+);

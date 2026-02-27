@@ -145,6 +145,7 @@ export const ItineraryShellB = ({
   const [dismissedSuggestions, setDismissedSuggestions] = useState(false);
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
   const lastScrollTopRef = useRef(0);
+  const headerCooldownRef = useRef(false);
   const [replacementActivityId, setReplacementActivityId] = useState<
     string | null
   >(null);
@@ -312,18 +313,38 @@ export const ItineraryShellB = ({
     if (!el) return;
 
     const THRESHOLD = 30; // px hysteresis
+    const COOLDOWN_MS = 300; // prevent collapse/expand feedback loop at scroll bottom
     const handleScroll = () => {
+      if (headerCooldownRef.current) return;
+
       const top = el.scrollTop;
       const delta = top - lastScrollTopRef.current;
+
+      // At the very top, always expand
+      if (top < 10) {
+        setHeaderCollapsed(false);
+        lastScrollTopRef.current = top;
+        return;
+      }
+
+      // Near the bottom — don't toggle to avoid resize-scroll loop
+      const nearBottom = el.scrollHeight - top - el.clientHeight < 50;
+      if (nearBottom) {
+        lastScrollTopRef.current = top;
+        return;
+      }
+
       if (delta > THRESHOLD) {
         setHeaderCollapsed(true);
         lastScrollTopRef.current = top;
+        headerCooldownRef.current = true;
+        setTimeout(() => { headerCooldownRef.current = false; }, COOLDOWN_MS);
       } else if (delta < -THRESHOLD) {
         setHeaderCollapsed(false);
         lastScrollTopRef.current = top;
+        headerCooldownRef.current = true;
+        setTimeout(() => { headerCooldownRef.current = false; }, COOLDOWN_MS);
       }
-      // At the very top, always expand
-      if (top < 10) setHeaderCollapsed(false);
     };
 
     el.addEventListener("scroll", handleScroll, { passive: true });
