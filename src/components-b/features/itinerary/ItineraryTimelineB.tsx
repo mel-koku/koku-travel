@@ -45,14 +45,22 @@ import type {
   PreviewState,
   RefinementFilters,
 } from "@/hooks/useSmartPromptActions";
-import { getActivityConflicts } from "@/lib/validation/itineraryConflicts";
+import { getActivityConflicts, getDayConflicts } from "@/lib/validation/itineraryConflicts";
 import type { DayGuide } from "@/types/itineraryGuide";
 import { GuideSegmentCardB, DayGuideCard } from "./GuideSegmentCardB";
 import { SmartPromptCardB } from "./SmartPromptCardB";
-import { TravelSegment } from "@/components/features/itinerary/TravelSegment";
-import { AccommodationBookend } from "@/components/features/itinerary/AccommodationBookend";
+import { TravelSegmentB } from "./TravelSegmentB";
+import { AccommodationBookendB } from "./AccommodationBookendB";
 import { SortableActivityB } from "./SortableActivityB";
 import { DayHeaderB } from "./DayHeaderB";
+import { DayTipsB } from "./DayTipsB";
+import { DayConflictSummaryB } from "./ConflictBadgeB";
+import { WhatsNextCardB } from "./WhatsNextCardB";
+import { TodayIndicatorB } from "./TodayIndicatorB";
+import { DayRefinementButtonsB } from "./DayRefinementButtonsB";
+import { AccommodationPickerB } from "./AccommodationPickerB";
+import { AvailabilityAlertB } from "./AvailabilityAlertB";
+import { useDayAvailability } from "@/hooks/useDayAvailability";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { REGIONS } from "@/data/regions";
@@ -200,7 +208,7 @@ type ItineraryTimelineBProps = {
 export const ItineraryTimelineB = ({
   day,
   dayIndex,
-  model: _model,
+  model,
   setModel,
   selectedActivityId,
   onSelectActivity,
@@ -208,7 +216,7 @@ export const ItineraryTimelineB = ({
   tripId,
   onReorder,
   onReplace,
-  tripBuilderData: _tripBuilderData,
+  tripBuilderData,
   suggestions,
   onAcceptSuggestion,
   onSkipSuggestion,
@@ -227,14 +235,15 @@ export const ItineraryTimelineB = ({
   isReadOnly,
   startLocation,
   endLocation,
-  onStartLocationChange: _onStartLocationChange,
-  onEndLocationChange: _onEndLocationChange,
-  onCityAccommodationChange: _onCityAccommodationChange,
+  onStartLocationChange,
+  onEndLocationChange,
+  onCityAccommodationChange,
   onViewDetails,
 }: ItineraryTimelineBProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
   const isMountedRef = useRef(true);
   const { showToast: _showToast } = useToast();
+  const availabilityIssues = useDayAvailability(day, dayIndex, tripStartDate);
 
   useEffect(() => {
     return () => {
@@ -327,6 +336,113 @@ export const ItineraryTimelineB = ({
       return { ...current, days: nextDays };
     });
   }, [dayIndex, setModel]);
+
+  const handleRefineDay = useCallback(
+    (refinedDay: ItineraryDay) => {
+      setModel((current) => ({
+        ...current,
+        days: current.days.map((d, i) => (i === dayIndex ? refinedDay : d)),
+      }));
+    },
+    [dayIndex, setModel],
+  );
+
+  const handleDayStartTimeChange = useCallback(
+    (startTime: string) => {
+      setModel((current) => {
+        const nextDays = current.days.map((entry, index) => {
+          if (index !== dayIndex) return entry;
+          return {
+            ...entry,
+            bounds: { ...entry.bounds, startTime },
+          };
+        });
+        return { ...current, days: nextDays };
+      });
+    },
+    [dayIndex, setModel],
+  );
+
+  const handleDelayRemaining = useCallback(
+    (delayMinutes: number) => {
+      const now = new Date();
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+      const parseTime = (t: string): number | null => {
+        const m = t.match(/^(\d{1,2}):(\d{2})$/);
+        if (!m) return null;
+        return parseInt(m[1]!, 10) * 60 + parseInt(m[2]!, 10);
+      };
+
+      const formatTime = (mins: number): string => {
+        const clamped = Math.min(mins, 23 * 60 + 59);
+        const h = Math.floor(clamped / 60);
+        const m = clamped % 60;
+        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+      };
+
+      setModel((current) => {
+        const currentDay = current.days[dayIndex];
+        if (!currentDay) return current;
+
+        const activities = currentDay.activities ?? [];
+        const placeActs = activities
+          .map((a, i) => ({ a, i }))
+          .filter(
+            (x): x is { a: Extract<ItineraryActivity, { kind: "place" }>; i: number } =>
+              x.a.kind === "place",
+          );
+
+        let startIdx = 0;
+        for (let j = 0; j < placeActs.length; j++) {
+          const act = placeActs[j]!.a;
+          const timeStr = act.manualStartTime ?? act.schedule?.arrivalTime;
+          if (timeStr) {
+            const t = parseTime(timeStr);
+            if (t !== null && t >= currentMinutes) {
+              startIdx = j;
+              break;
+            }
+          }
+          if (j === placeActs.length - 1) startIdx = 0;
+        }
+
+        let shifted = 0;
+        const nextActivities = [...activities];
+
+        for (let j = startIdx; j < placeActs.length; j++) {
+          const { a: act, i: actIndex } = placeActs[j]!;
+          const baseTime = act.manualStartTime ?? act.schedule?.arrivalTime;
+          if (!baseTime) continue;
+          const parsed = parseTime(baseTime);
+          if (parsed === null) continue;
+
+          const newStart = formatTime(parsed + delayMinutes);
+          let newDep = act.schedule?.departureTime;
+          if (newDep) {
+            const depParsed = parseTime(newDep);
+            if (depParsed !== null) newDep = formatTime(depParsed + delayMinutes);
+          }
+
+          nextActivities[actIndex] = {
+            ...act,
+            manualStartTime: newStart,
+            schedule: act.schedule
+              ? { ...act.schedule, arrivalTime: newStart, departureTime: newDep ?? act.schedule.departureTime }
+              : undefined,
+          };
+          shifted++;
+        }
+
+        if (shifted === 0) return current;
+
+        const nextDays = [...current.days];
+        nextDays[dayIndex] = { ...currentDay, activities: nextActivities };
+        return { ...current, days: nextDays };
+      });
+    },
+    [dayIndex, setModel],
+  );
 
   // ── Travel recalculation ──
 
@@ -727,6 +843,31 @@ export const ItineraryTimelineB = ({
           day={day}
           dayIndex={dayIndex}
           tripStartDate={tripStartDate}
+          onDayStartTimeChange={isReadOnly ? undefined : handleDayStartTimeChange}
+          refinementSlot={
+            !isReadOnly && !activeId && tripId ? (
+              <DayRefinementButtonsB
+                dayIndex={dayIndex}
+                tripId={tripId}
+                builderData={tripBuilderData}
+                itinerary={model}
+                onRefine={handleRefineDay}
+              />
+            ) : undefined
+          }
+          accommodationSlot={
+            !activeId && (onStartLocationChange || startLocation || endLocation) ? (
+              <AccommodationPickerB
+                startLocation={startLocation}
+                endLocation={endLocation}
+                cityId={day.cityId}
+                onStartChange={onStartLocationChange ?? (() => {})}
+                onEndChange={onEndLocationChange ?? (() => {})}
+                onSetCityAccommodation={onCityAccommodationChange}
+                isReadOnly={!onStartLocationChange}
+              />
+            ) : undefined
+          }
         />
 
         {/* City Transition */}
@@ -811,7 +952,7 @@ export const ItineraryTimelineB = ({
 
         {/* Accommodation: Start bookend */}
         {startLocation && extendedActivities.length > 0 && !activeId && (
-          <AccommodationBookend
+          <AccommodationBookendB
             location={startLocation}
             variant="start"
             travelMinutes={bookendEstimates.start?.travelMinutes}
@@ -822,6 +963,37 @@ export const ItineraryTimelineB = ({
         {/* Activity list */}
         {extendedActivities.length > 0 ? (
           <>
+            {/* What's Next card (only shows for today) */}
+            {tripStartDate && !activeId && (
+              <WhatsNextCardB
+                day={day}
+                tripStartDate={tripStartDate}
+                dayIndex={dayIndex}
+                onActivityClick={onSelectActivity}
+                onDelayRemaining={isReadOnly ? undefined : handleDelayRemaining}
+                className="mb-3"
+              />
+            )}
+
+            {/* Today indicator (only shows for today) */}
+            {tripStartDate && !activeId && (
+              <TodayIndicatorB
+                tripStartDate={tripStartDate}
+                dayIndex={dayIndex}
+                className="mb-2"
+              />
+            )}
+
+            {/* Day Tips */}
+            {!activeId && (
+              <DayTipsB
+                day={day}
+                tripStartDate={tripStartDate}
+                dayIndex={dayIndex}
+                className="mb-3"
+              />
+            )}
+
             <SortableContext
               items={extendedActivities.map((a) => a.id)}
               strategy={verticalListSortingStrategy}
@@ -1015,9 +1187,30 @@ export const ItineraryTimelineB = ({
               )}
             </SortableContext>
 
+            {/* Day Conflict Summary */}
+            {!activeId && conflictsResult && (
+              <DayConflictSummaryB
+                dayConflicts={getDayConflicts(conflictsResult, day.id)}
+                className="mt-3"
+              />
+            )}
+
+            {/* Availability Alert */}
+            {!activeId && availabilityIssues && availabilityIssues.summary.total > 0 && (
+              <AvailabilityAlertB
+                issues={availabilityIssues}
+                onFindAlternative={
+                  !isReadOnly && onReplace
+                    ? (activityId) => onReplace(activityId)
+                    : undefined
+                }
+                className="mt-3"
+              />
+            )}
+
             {/* Accommodation: End bookend */}
             {endLocation && !activeId && (
-              <AccommodationBookend
+              <AccommodationBookendB
                 location={endLocation}
                 variant="end"
                 travelMinutes={bookendEstimates.end?.travelMinutes}
@@ -1259,7 +1452,7 @@ const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
   ]);
 
   return (
-    <TravelSegment
+    <TravelSegmentB
       segment={travelFromPrevious}
       origin={originCoordinates}
       destination={destinationCoordinates}

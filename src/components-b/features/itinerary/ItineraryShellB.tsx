@@ -17,7 +17,7 @@ import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import { ItineraryMapPanel } from "@/components/features/itinerary/ItineraryMapPanel";
 import { logger } from "@/lib/logger";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ActivityReplacementPicker } from "@/components/features/itinerary/ActivityReplacementPicker";
+import { ActivityReplacementPickerB } from "./ActivityReplacementPickerB";
 import {
   useReplacementCandidates,
   locationToActivity,
@@ -36,9 +36,11 @@ import type {
 import { useItineraryPlanning } from "@/components/features/itinerary/hooks/useItineraryPlanning";
 import { useItineraryScrollSync } from "@/components/features/itinerary/hooks/useItineraryScrollSync";
 import { useItineraryGuide } from "@/components/features/itinerary/hooks/useItineraryGuide";
-import { ShareButton } from "@/components/features/itinerary/ShareButton";
+import { ShareButtonB } from "./ShareButtonB";
 import { DaySelectorB } from "./DaySelectorB";
 import { ItineraryTimelineB } from "./ItineraryTimelineB";
+import { TripConfidenceDashboardB } from "./TripConfidenceDashboardB";
+import { SmartPromptsDrawerB } from "./SmartPromptsDrawerB";
 
 const LocationExpanded = dynamic(
   () =>
@@ -139,6 +141,8 @@ export const ItineraryShellB = ({
 
   const [selectedDay, setSelectedDay] = useState(0);
   const [mapExpanded, setMapExpanded] = useState(false);
+  const [showDashboard, setShowDashboard] = useState(false);
+  const [dismissedSuggestions, setDismissedSuggestions] = useState(false);
   const [replacementActivityId, setReplacementActivityId] = useState<
     string | null
   >(null);
@@ -602,22 +606,42 @@ export const ItineraryShellB = ({
                       Mock
                     </span>
                   )}
+                  {createdLabel && (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span>
+                        {updatedLabel ? `Upd ${updatedLabel}` : `Saved ${createdLabel}`}
+                      </span>
+                    </>
+                  )}
                 </div>
-                {createdLabel && (
-                  <p
-                    className="mt-1 text-xs"
-                    style={{ color: "var(--muted-foreground)" }}
-                  >
-                    Saved {createdLabel}
-                    {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
-                  </p>
-                )}
               </div>
 
-              {/* Share button */}
-              {!isReadOnly && tripId && !isUsingMock && (
-                <ShareButton tripId={tripId} />
-              )}
+              {/* Action buttons */}
+              <div className="flex shrink-0 items-center gap-2">
+                {!isReadOnly && tripId && !isUsingMock && (
+                  <button
+                    type="button"
+                    onClick={() => setShowDashboard((prev) => !prev)}
+                    className="flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-colors active:scale-[0.98]"
+                    style={{
+                      borderColor: showDashboard ? "var(--primary)" : "var(--border)",
+                      backgroundColor: showDashboard
+                        ? "color-mix(in srgb, var(--primary) 10%, transparent)"
+                        : "transparent",
+                      color: showDashboard ? "var(--primary)" : "var(--muted-foreground)",
+                    }}
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span className="hidden sm:inline">{showDashboard ? "Day View" : "Overview"}</span>
+                  </button>
+                )}
+                {!isReadOnly && tripId && !isUsingMock && (
+                  <ShareButtonB tripId={tripId} />
+                )}
+              </div>
             </div>
 
             {/* Day selector */}
@@ -632,11 +656,40 @@ export const ItineraryShellB = ({
             </div>
           </div>
 
+          {/* ── Trip Confidence Dashboard ── */}
+          <AnimatePresence>
+            {showDashboard && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                transition={{ duration: bDurationFast, ease: bEase }}
+                className="flex-1 overflow-y-auto overscroll-contain p-4 lg:p-5"
+                data-lenis-prevent
+              >
+                <TripConfidenceDashboardB
+                  itinerary={model}
+                  conflicts={conflictsResult.conflicts}
+                  tripStartDate={tripStartDate}
+                  selectedDay={safeSelectedDay}
+                  onClose={() => setShowDashboard(false)}
+                  onSelectDay={(dayIndex) => {
+                    handleSelectDayChange(dayIndex);
+                    setShowDashboard(false);
+                  }}
+                  onDayExpand={(dayIndex) => {
+                    if (dayIndex != null) handleSelectDayChange(dayIndex);
+                  }}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* ── Activities List ── */}
           <div
             data-itinerary-activities
             data-lenis-prevent
-            className="relative flex-1 overflow-y-auto overscroll-contain p-4 pb-[env(safe-area-inset-bottom)] lg:p-5"
+            className={`relative flex-1 overflow-y-auto overscroll-contain p-4 pb-[env(safe-area-inset-bottom)] lg:p-5 ${showDashboard ? "hidden" : ""}`}
             style={{ background: "var(--background)" }}
           >
             {/* Day transition interstitial */}
@@ -858,7 +911,7 @@ export const ItineraryShellB = ({
           if (!originalActivity) return null;
 
           return (
-            <ActivityReplacementPicker
+            <ActivityReplacementPickerB
               isOpen={true}
               onClose={() => {
                 setReplacementActivityId(null);
@@ -871,6 +924,17 @@ export const ItineraryShellB = ({
             />
           );
         })()}
+
+      {/* Smart Prompts Drawer */}
+      {!isReadOnly && suggestions && suggestions.length > 0 && !dismissedSuggestions && (
+        <SmartPromptsDrawerB
+          gaps={suggestions}
+          onAccept={handleAcceptSuggestion}
+          onSkip={onSkipSuggestion ?? (() => {})}
+          onDismissAll={() => setDismissedSuggestions(true)}
+          loadingGapId={loadingSuggestionId}
+        />
+      )}
     </section>
   );
 };

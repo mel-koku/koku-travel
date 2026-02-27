@@ -120,11 +120,10 @@ export function GuideSegmentCardB({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border-l-[3px] bg-[var(--card)] transition-shadow duration-300",
+        "overflow-hidden rounded-2xl bg-[var(--card)] transition-shadow duration-300",
         className,
       )}
       style={{
-        borderLeftColor: "color-mix(in srgb, var(--primary) 20%, transparent)",
         boxShadow: "var(--shadow-card)",
       }}
     >
