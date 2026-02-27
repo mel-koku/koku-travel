@@ -3,6 +3,75 @@ import type { EntryPoint } from "@/types/trip";
 import { getActivityCoordinates } from "./itineraryCoordinates";
 import { calculateDistanceMeters } from "@/lib/utils/geoUtils";
 
+/**
+ * Calculate total route distance including start→first and last→end legs.
+ */
+function totalRouteDistance(
+  order: string[],
+  activityCoords: Map<string, { lat: number; lng: number } | null>,
+  startCoords: { lat: number; lng: number },
+  endCoords?: { lat: number; lng: number },
+): number {
+  if (order.length === 0) return 0;
+
+  let total = 0;
+  let prev = startCoords;
+
+  for (const id of order) {
+    const coords = activityCoords.get(id);
+    if (!coords) continue;
+    total += calculateDistanceMeters(prev, coords);
+    prev = coords;
+  }
+
+  if (endCoords) {
+    total += calculateDistanceMeters(prev, endCoords);
+  }
+
+  return total;
+}
+
+/**
+ * 2-opt local search: iteratively reverse sub-segments to uncross the path.
+ * Handles both circular routes (start=end, same hotel) and open routes (start≠end).
+ * Max 5 iterations, O(n²) per pass — negligible for typical 3-8 activities.
+ */
+function twoOptImprove(
+  order: string[],
+  activityCoords: Map<string, { lat: number; lng: number } | null>,
+  startCoords: { lat: number; lng: number },
+  endCoords?: { lat: number; lng: number },
+): string[] {
+  if (order.length <= 2) return order;
+
+  let best = [...order];
+  let bestDist = totalRouteDistance(best, activityCoords, startCoords, endCoords);
+
+  for (let iteration = 0; iteration < 5; iteration++) {
+    let improved = false;
+
+    for (let i = 0; i < best.length - 1; i++) {
+      for (let j = i + 1; j < best.length; j++) {
+        const candidate = [...best];
+        // Reverse the segment between i and j
+        const reversed = best.slice(i, j + 1).reverse();
+        candidate.splice(i, j - i + 1, ...reversed);
+
+        const candidateDist = totalRouteDistance(candidate, activityCoords, startCoords, endCoords);
+        if (candidateDist < bestDist) {
+          best = candidate;
+          bestDist = candidateDist;
+          improved = true;
+        }
+      }
+    }
+
+    if (!improved) break;
+  }
+
+  return best;
+}
+
 export type OptimizeRouteResult = {
   /** Activity IDs in optimized order */
   order: string[];
@@ -110,34 +179,11 @@ export function optimizeRouteOrder(
     }
   }
 
-  // If end point is specified and different from start, ensure the last activity
-  // is the one nearest to the end point (if it's not already)
-  if (endCoords && endCoords.lat !== startCoords.lat && endCoords.lng !== startCoords.lng) {
-    if (optimized.length > 1) {
-      // Find the activity nearest to the end point
-      let nearestToEndId: string | null = null;
-      let nearestToEndDistance = Infinity;
-
-      for (const activityId of optimized) {
-        const coords = activityCoords.get(activityId);
-        if (!coords) continue;
-
-        const distance = calculateDistanceMeters(endCoords, coords);
-        if (distance < nearestToEndDistance) {
-          nearestToEndDistance = distance;
-          nearestToEndId = activityId;
-        }
-      }
-
-      // If the nearest to end is not already last, move it to the end
-      if (nearestToEndId && optimized[optimized.length - 1] !== nearestToEndId) {
-        const index = optimized.indexOf(nearestToEndId);
-        if (index !== -1) {
-          optimized.splice(index, 1);
-          optimized.push(nearestToEndId);
-        }
-      }
-    }
+  // Apply 2-opt local search to uncross paths and handle circular routes (start=end)
+  if (optimized.length > 2) {
+    const improved = twoOptImprove(optimized, activityCoords, startCoords, endCoords);
+    optimized.length = 0;
+    optimized.push(...improved);
   }
 
   // Build a map of original positions for preserving relative order
