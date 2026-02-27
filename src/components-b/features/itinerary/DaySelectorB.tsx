@@ -187,7 +187,7 @@ export const DaySelectorB = ({
         {days.map(({ index, label, isToday }) => {
           const isActive = index === selected;
           return (
-            <motion.button
+            <button
               key={index}
               ref={(el) => setPillRef(index, el)}
               type="button"
@@ -196,24 +196,13 @@ export const DaySelectorB = ({
               aria-label={`${label}${isToday ? " (Today)" : ""}`}
               onClick={() => onChange(index)}
               className={cn(
-                "relative flex-shrink-0 snap-start rounded-lg px-3 text-xs font-medium whitespace-nowrap transition-colors",
+                "relative flex-shrink-0 snap-start rounded-lg px-3 text-xs font-medium whitespace-nowrap transition-colors duration-200",
                 "min-h-[44px] flex items-center justify-center",
                 "active:scale-[0.98]",
                 isActive
-                  ? "bg-[var(--primary)] text-[var(--card)] shadow-[var(--shadow-sm)]"
+                  ? "bg-[var(--primary)] text-[var(--card)]"
                   : "bg-white text-[var(--foreground)] hover:bg-[var(--surface)]"
               )}
-              animate={
-                isActive
-                  ? { scale: 1 }
-                  : { scale: 1 }
-              }
-              whileTap={{ scale: 0.98 }}
-              transition={
-                isActive
-                  ? { type: "spring", stiffness: 400, damping: 30 }
-                  : { duration: 0.2, ease: bEase }
-              }
             >
               <span className="flex items-center gap-1.5">
                 {label}
@@ -231,7 +220,7 @@ export const DaySelectorB = ({
                 )}
               </span>
 
-            </motion.button>
+            </button>
           );
         })}
       </div>
