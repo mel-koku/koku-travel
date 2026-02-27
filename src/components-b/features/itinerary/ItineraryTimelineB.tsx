@@ -65,6 +65,7 @@ import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { REGIONS } from "@/data/regions";
 import { useToast } from "@/context/ToastContext";
+import { logger } from "@/lib/logger";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
 
 function formatCityName(cityId: string): string {
@@ -742,11 +743,7 @@ export const ItineraryTimelineB = ({
               });
             })
             .catch((error) => {
-              // eslint-disable-next-line no-console
-              console.warn(
-                "[ItineraryTimelineB] Failed to recalculate travel segments:",
-                error,
-              );
+              logger.warn("[ItineraryTimelineB] Failed to recalculate travel segments", { error });
             });
         }
       }
@@ -1478,11 +1475,7 @@ const TravelSegmentWrapper = memo(function TravelSegmentWrapper({
     ) {
       setHasAutoFetched(true);
       handleModeChange(travelFromPrevious.mode).catch((error) => {
-        // eslint-disable-next-line no-console
-        console.warn(
-          "[TravelSegmentWrapper] Failed to auto-fetch route:",
-          error,
-        );
+        logger.warn("[TravelSegmentWrapper] Failed to auto-fetch route", { error });
       });
     }
   }, [
