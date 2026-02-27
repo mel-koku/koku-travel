@@ -1,97 +1,60 @@
 "use client";
 
-import { Hotel, Pencil } from "lucide-react";
+import { Hotel, MapPin } from "lucide-react";
 import type { EntryPoint } from "@/types/trip";
 
 type AccommodationBookendBProps = {
   location: EntryPoint;
   variant: "start" | "end";
-  /** Travel estimate in minutes to/from nearest activity */
-  travelMinutes?: number;
-  /** Walking distance in meters */
-  distanceMeters?: number;
-  /** Called when user clicks to edit accommodation */
-  onEdit?: () => void;
 };
 
 export function AccommodationBookendB({
   location,
   variant,
-  travelMinutes,
-  distanceMeters,
-  onEdit,
 }: AccommodationBookendBProps) {
-  const label =
-    variant === "start"
-      ? `Start from ${location.name}`
-      : `Return to ${location.name}`;
-
-  const travelLabel = formatTravelLabel(travelMinutes, distanceMeters);
-  const isClickable = Boolean(onEdit);
+  const label = variant === "start" ? "Starting point" : "Returning to";
 
   return (
-    <button
-      type="button"
-      onClick={onEdit}
-      disabled={!isClickable}
-      className={`inline-flex items-center gap-2.5 rounded-full border px-4 py-2 text-left transition-colors ${
-        isClickable ? "cursor-pointer hover:border-[var(--primary)]" : "cursor-default"
-      }`}
+    <div
+      className="flex items-center gap-3 rounded-2xl px-4 py-3"
       style={{
         backgroundColor: "var(--card)",
-        borderColor: "var(--border)",
+        boxShadow: "var(--shadow-card)",
       }}
     >
       <div
-        className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full"
-        style={{ backgroundColor: "var(--surface)" }}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
+        style={{
+          backgroundColor:
+            "color-mix(in srgb, var(--primary) 10%, transparent)",
+        }}
       >
-        <Hotel
-          className="h-3.5 w-3.5"
-          style={{ color: "var(--primary)" }}
-        />
+        {variant === "start" ? (
+          <Hotel
+            className="h-4 w-4"
+            style={{ color: "var(--primary)" }}
+          />
+        ) : (
+          <MapPin
+            className="h-4 w-4"
+            style={{ color: "var(--primary)" }}
+          />
+        )}
       </div>
       <div className="min-w-0">
         <p
           className="truncate text-sm font-medium"
           style={{ color: "var(--foreground)" }}
         >
+          {location.name}
+        </p>
+        <p
+          className="text-xs"
+          style={{ color: "var(--muted-foreground)" }}
+        >
           {label}
         </p>
-        {travelLabel && (
-          <p
-            className="text-xs"
-            style={{ color: "var(--muted-foreground)" }}
-          >
-            {travelLabel}
-          </p>
-        )}
       </div>
-      {isClickable && (
-        <Pencil
-          className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-          style={{ color: "var(--muted-foreground)" }}
-        />
-      )}
-    </button>
+    </div>
   );
-}
-
-function formatTravelLabel(
-  minutes?: number,
-  meters?: number,
-): string | null {
-  if (!minutes || minutes < 1) return null;
-
-  const time =
-    minutes >= 60
-      ? `${Math.floor(minutes / 60)}h ${minutes % 60}min`
-      : `${minutes} min`;
-
-  const mode =
-    meters != null && meters <= 2000
-      ? "walk"
-      : "transit";
-
-  return `~${time} ${mode}`;
 }
