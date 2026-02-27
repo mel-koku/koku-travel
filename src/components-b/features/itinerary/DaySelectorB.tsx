@@ -15,7 +15,6 @@ type DaySelectorBProps = {
   autoScrollToToday?: boolean;
 };
 
-const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 /**
  * Get today's index relative to trip start date.

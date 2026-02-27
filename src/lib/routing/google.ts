@@ -17,6 +17,8 @@ type DirectionsPolyline = {
 type DirectionsTransitDetails = {
   headsign?: string;
   num_stops?: number;
+  departure_stop?: { name?: string };
+  arrival_stop?: { name?: string };
   line?: {
     name?: string;
     short_name?: string;
@@ -220,11 +222,26 @@ function mapSteps(steps: DirectionsStep[] | undefined, fallbackMode: ItineraryTr
       instruction = parts.join(" · ");
     }
 
+    const isWalking = step.travel_mode?.toUpperCase() === "WALKING";
+    const isTransit = step.travel_mode?.toUpperCase() === "TRANSIT";
+
     mapped.push({
       instruction,
       distanceMeters: step.distance?.value,
       durationSeconds: step.duration?.value,
       geometry: decodePolyline(step.polyline?.points),
+      stepMode: isWalking ? "walk" : isTransit ? "transit" : undefined,
+      transitDetails: transitDetails
+        ? {
+            lineName: transitDetails.line?.name,
+            lineShortName: transitDetails.line?.short_name,
+            vehicleType: transitDetails.line?.vehicle?.type,
+            departureStop: transitDetails.departure_stop?.name,
+            arrivalStop: transitDetails.arrival_stop?.name,
+            headsign: transitDetails.headsign,
+            numStops: transitDetails.num_stops,
+          }
+        : undefined,
     });
   });
 
@@ -318,10 +335,15 @@ function buildLeg(
 export async function fetchGoogleRoute(request: RoutingRequest): Promise<RoutingResult> {
   // Dynamic import to avoid circular dependencies
   const { env } = await import("@/lib/env");
-  const apiKey = env.routingGoogleMapsApiKey ?? env.googleDirectionsApiKey;
+  const apiKey =
+    env.routingGoogleMapsApiKey ??
+    env.googleDirectionsApiKey ??
+    env.googlePlacesApiKey;
 
   if (!apiKey) {
-    throw new Error("ROUTING_GOOGLE_MAPS_API_KEY is not configured.");
+    throw new Error(
+      "No Google API key configured. Set ROUTING_GOOGLE_MAPS_API_KEY or GOOGLE_PLACES_API_KEY."
+    );
   }
 
   const modeParam = resolveModeParam(request.mode);

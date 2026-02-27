@@ -40,6 +40,7 @@ const GUIDANCE_TYPE_ICONS: Record<string, string> = {
   solo: "🎒",
   food_culture: "🍜",
   cultural_context: "📖",
+  transit: "🚉",
 };
 
 const TRANSIT_MODES = new Set(["train", "subway", "bus", "tram", "ferry", "transit"]);
@@ -138,29 +139,93 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     };
   }, [dayCategories, day.cityId, dayDate]);
 
-  // Static pro tips shown once (Day 1 only)
+  // Computed pro tips based on day data
   const proTips = useMemo<DisplayTip[]>(() => {
-    if (dayIndex !== 0) return [];
+    const tips: DisplayTip[] = [];
+    const activities = day.activities ?? [];
 
-    const hasTransit = (day.activities ?? []).some(
+    const transitSegments = activities.filter(
       (a) =>
         a.kind === "place" &&
         a.travelFromPrevious &&
         TRANSIT_MODES.has(a.travelFromPrevious.mode),
     );
+    const hasTransit = transitSegments.length > 0;
 
-    if (!hasTransit) return [];
-
-    return [
-      {
+    // Day 1 only: IC Card tip
+    if (dayIndex === 0 && hasTransit) {
+      tips.push({
         id: "pro-ic-card",
         title: "Get an IC Card",
         summary:
           "A Suica or PASMO card works on trains, buses, and convenience stores across Japan. Load it at any station.",
         icon: "🚃",
-      },
-    ];
-  }, [dayIndex, day.activities]);
+      });
+    }
+
+    // City transition day
+    if (day.cityTransition) {
+      tips.push({
+        id: "pro-city-transition",
+        title: "Send luggage ahead",
+        summary:
+          "Traveling to a new city today. Consider sending bags via takkyubin (luggage forwarding) from any convenience store or hotel.",
+        icon: "🧳",
+      });
+    }
+
+    // Heavy transit day (3+ segments)
+    if (transitSegments.length >= 3) {
+      tips.push({
+        id: "pro-heavy-transit",
+        title: "Heavy transit day",
+        summary:
+          "You'll be using trains between most stops today. Keep your IC card handy and check platform signs for express vs local trains.",
+        icon: "🚉",
+      });
+    }
+
+    // Rush hour warning
+    const firstPlace = activities.find(
+      (a) => a.kind === "place" && a.travelFromPrevious,
+    );
+    if (firstPlace?.kind === "place" && firstPlace.travelFromPrevious?.departureTime) {
+      const depTime = firstPlace.travelFromPrevious.departureTime;
+      const [h, m] = depTime.split(":").map(Number);
+      if (h !== undefined && m !== undefined) {
+        const depMinutes = h * 60 + m;
+        if (depMinutes >= 450 && depMinutes <= 570) {
+          tips.push({
+            id: "pro-rush-hour",
+            title: "Morning rush hour",
+            summary:
+              "Early start today — expect crowded trains between 7:30 and 9:30. Stand to the side at platform doors and let passengers off first.",
+            icon: "⏰",
+          });
+        }
+      }
+    }
+
+    // Long train ride
+    const hasLongTrain = activities.some(
+      (a) =>
+        a.kind === "place" &&
+        a.travelFromPrevious &&
+        (a.travelFromPrevious.mode === "train" || a.travelFromPrevious.mode === "transit") &&
+        a.travelFromPrevious.durationMinutes >= 60,
+    );
+    if (hasLongTrain) {
+      tips.push({
+        id: "pro-shinkansen",
+        title: "Long train ride today",
+        summary:
+          "Book reserved seats on the Shinkansen if you haven't already. Oversized luggage needs a reservation for the last-row space.",
+        icon: "🚅",
+      });
+    }
+
+    return tips;
+  }, [dayIndex, day.activities, day.cityTransition]);
 
   // Combined display list
   const allTips = useMemo<DisplayTip[]>(
