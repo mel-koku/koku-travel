@@ -88,6 +88,17 @@ const GUIDANCE_TYPE_CATEGORIES: Partial<Record<GuidanceType, string[]>> = {
   cultural_context: ["temple", "shrine", "culture", "landmark", "historic_site", "castle", "museum"],
   etiquette: ["temple", "shrine", "restaurant", "onsen", "wellness", "culture"],
   budget: ["restaurant", "shopping", "entertainment", "market", "cafe"],
+  practical: [
+    "restaurant", "cafe", "bar", "market", "shopping", "temple", "shrine",
+    "museum", "entertainment", "onsen", "wellness", "landmark", "park",
+    "culture", "historic_site", "castle",
+  ],
+  seasonal: ["nature", "park", "garden", "beach", "shrine", "temple", "viewpoint"],
+  environmental: ["nature", "park", "garden", "beach"],
+  photography: ["shrine", "temple", "viewpoint", "landmark", "garden", "nature", "castle", "park"],
+  accessibility: ["museum", "temple", "shrine", "park", "restaurant", "entertainment", "landmark"],
+  family: ["park", "entertainment", "museum", "aquarium", "zoo", "beach", "nature"],
+  solo: ["restaurant", "cafe", "bar", "onsen", "wellness", "entertainment"],
 };
 
 /**
