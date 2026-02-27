@@ -22,9 +22,11 @@ type DayHeaderBProps = {
   refinementSlot?: React.ReactNode;
   /** Slot for the accommodation picker */
   accommodationSlot?: React.ReactNode;
+  /** Slot rendered before accommodation (tips, suggestions) */
+  preAccommodationSlot?: React.ReactNode;
 };
 
-export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange, refinementSlot, accommodationSlot }: DayHeaderBProps) {
+export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange, refinementSlot, accommodationSlot, preAccommodationSlot }: DayHeaderBProps) {
   const dayDate = useMemo(() => {
     if (tripStartDate) {
       try {
@@ -93,6 +95,7 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
           )}
         </div>
       </div>
+      {preAccommodationSlot}
       {accommodationSlot}
     </div>
   );

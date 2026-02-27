@@ -143,6 +143,8 @@ export const ItineraryShellB = ({
   const [mapExpanded, setMapExpanded] = useState(false);
   const [showDashboard, setShowDashboard] = useState(false);
   const [dismissedSuggestions, setDismissedSuggestions] = useState(false);
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
+  const lastScrollTopRef = useRef(0);
   const [replacementActivityId, setReplacementActivityId] = useState<
     string | null
   >(null);
@@ -303,6 +305,30 @@ export const ItineraryShellB = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [tripId, isUsingMock, isReadOnly, undo, redo, canUndo, canRedo]);
+
+  // ── Header collapse on scroll (scroll down → collapse, scroll up → expand) ──
+  useEffect(() => {
+    const el = document.querySelector("[data-itinerary-activities]");
+    if (!el) return;
+
+    const THRESHOLD = 30; // px hysteresis
+    const handleScroll = () => {
+      const top = el.scrollTop;
+      const delta = top - lastScrollTopRef.current;
+      if (delta > THRESHOLD) {
+        setHeaderCollapsed(true);
+        lastScrollTopRef.current = top;
+      } else if (delta < -THRESHOLD) {
+        setHeaderCollapsed(false);
+        lastScrollTopRef.current = top;
+      }
+      // At the very top, always expand
+      if (top < 10) setHeaderCollapsed(false);
+    };
+
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // ── Derived state ──
 
@@ -560,92 +586,104 @@ export const ItineraryShellB = ({
         <div className="flex flex-col lg:w-1/2">
           {/* ── Header bar ── */}
           <div
-            className="border-b px-5 pt-5 pb-4 lg:px-6"
+            className="border-b px-5 pb-4 lg:px-6"
             style={{
               background: "var(--background)",
               borderColor: "var(--border)",
+              paddingTop: headerCollapsed ? "0.5rem" : "1.25rem",
+              transition: "padding-top 0.25s ease",
             }}
           >
-            {/* Title row */}
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0 flex-1">
-                <h1
-                  ref={finalHeadingRef}
-                  tabIndex={-1}
-                  className="text-lg font-bold leading-snug tracking-[-0.04em] focus:outline-none sm:text-xl"
-                  style={{ color: "var(--foreground)" }}
-                >
-                  {tripName}
-                </h1>
-                <div
-                  className="mt-1 flex items-center gap-2 text-sm"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {totalDays > 0 && (
-                    <span>
-                      {totalDays} {totalDays === 1 ? "day" : "days"}
-                    </span>
-                  )}
-                  {totalDays > 0 && totalActivities > 0 && (
-                    <span aria-hidden="true">·</span>
-                  )}
-                  {totalActivities > 0 && (
-                    <span>
-                      {totalActivities}{" "}
-                      {totalActivities === 1 ? "stop" : "stops"}
-                    </span>
-                  )}
-                  {isUsingMock && (
-                    <span
-                      className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+            {/* Collapsible title section */}
+            <div
+              style={{
+                maxHeight: headerCollapsed ? 0 : 200,
+                opacity: headerCollapsed ? 0 : 1,
+                overflow: "hidden",
+                transition: "max-height 0.25s ease, opacity 0.2s ease",
+              }}
+            >
+              {/* Title row */}
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <h1
+                    ref={finalHeadingRef}
+                    tabIndex={-1}
+                    className="text-lg font-bold leading-snug tracking-[-0.04em] focus:outline-none sm:text-xl"
+                    style={{ color: "var(--foreground)" }}
+                  >
+                    {tripName}
+                  </h1>
+                  <div
+                    className="mt-1 flex items-center gap-2 text-sm"
+                    style={{ color: "var(--muted-foreground)" }}
+                  >
+                    {totalDays > 0 && (
+                      <span>
+                        {totalDays} {totalDays === 1 ? "day" : "days"}
+                      </span>
+                    )}
+                    {totalDays > 0 && totalActivities > 0 && (
+                      <span aria-hidden="true">·</span>
+                    )}
+                    {totalActivities > 0 && (
+                      <span>
+                        {totalActivities}{" "}
+                        {totalActivities === 1 ? "stop" : "stops"}
+                      </span>
+                    )}
+                    {isUsingMock && (
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                        style={{
+                          background: "color-mix(in srgb, var(--warning) 10%, transparent)",
+                          color: "var(--warning)",
+                        }}
+                      >
+                        Mock
+                      </span>
+                    )}
+                    {createdLabel && (
+                      <>
+                        <span aria-hidden="true">·</span>
+                        <span>
+                          {updatedLabel ? `Upd ${updatedLabel}` : `Saved ${createdLabel}`}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex shrink-0 items-center gap-2">
+                  {!isReadOnly && tripId && !isUsingMock && (
+                    <button
+                      type="button"
+                      onClick={() => setShowDashboard((prev) => !prev)}
+                      className="flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-colors active:scale-[0.98]"
                       style={{
-                        background: "color-mix(in srgb, var(--warning) 10%, transparent)",
-                        color: "var(--warning)",
+                        borderColor: showDashboard ? "var(--primary)" : "var(--border)",
+                        backgroundColor: showDashboard
+                          ? "color-mix(in srgb, var(--primary) 10%, transparent)"
+                          : "transparent",
+                        color: showDashboard ? "var(--primary)" : "var(--muted-foreground)",
                       }}
                     >
-                      Mock
-                    </span>
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      <span className="hidden sm:inline">{showDashboard ? "Day View" : "Overview"}</span>
+                    </button>
                   )}
-                  {createdLabel && (
-                    <>
-                      <span aria-hidden="true">·</span>
-                      <span>
-                        {updatedLabel ? `Upd ${updatedLabel}` : `Saved ${createdLabel}`}
-                      </span>
-                    </>
+                  {!isReadOnly && tripId && !isUsingMock && (
+                    <ShareButtonB tripId={tripId} />
                   )}
                 </div>
               </div>
-
-              {/* Action buttons */}
-              <div className="flex shrink-0 items-center gap-2">
-                {!isReadOnly && tripId && !isUsingMock && (
-                  <button
-                    type="button"
-                    onClick={() => setShowDashboard((prev) => !prev)}
-                    className="flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-colors active:scale-[0.98]"
-                    style={{
-                      borderColor: showDashboard ? "var(--primary)" : "var(--border)",
-                      backgroundColor: showDashboard
-                        ? "color-mix(in srgb, var(--primary) 10%, transparent)"
-                        : "transparent",
-                      color: showDashboard ? "var(--primary)" : "var(--muted-foreground)",
-                    }}
-                  >
-                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    <span className="hidden sm:inline">{showDashboard ? "Day View" : "Overview"}</span>
-                  </button>
-                )}
-                {!isReadOnly && tripId && !isUsingMock && (
-                  <ShareButtonB tripId={tripId} />
-                )}
-              </div>
             </div>
 
-            {/* Day selector */}
-            <div className="mt-4">
+            {/* Day selector — always visible */}
+            <div style={{ marginTop: headerCollapsed ? 0 : "1rem", transition: "margin-top 0.25s ease" }}>
               <DaySelectorB
                 totalDays={days.length}
                 selected={safeSelectedDay}
@@ -925,8 +963,8 @@ export const ItineraryShellB = ({
           );
         })()}
 
-      {/* Smart Prompts Drawer */}
-      {!isReadOnly && suggestions && suggestions.length > 0 && !dismissedSuggestions && (
+      {/* Smart Prompts Drawer — only in Overview tab (day tabs have inline suggestions) */}
+      {!isReadOnly && showDashboard && suggestions && suggestions.length > 0 && !dismissedSuggestions && (
         <SmartPromptsDrawerB
           gaps={suggestions}
           onAccept={handleAcceptSuggestion}

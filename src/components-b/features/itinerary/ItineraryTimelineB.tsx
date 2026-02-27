@@ -855,6 +855,28 @@ export const ItineraryTimelineB = ({
               />
             ) : undefined
           }
+          preAccommodationSlot={
+            !activeId && extendedActivities.length > 0 ? (
+              <>
+                <DayTipsB
+                  day={day}
+                  tripStartDate={tripStartDate}
+                  dayIndex={dayIndex}
+                />
+                {suggestions &&
+                  suggestions.length > 0 &&
+                  onAcceptSuggestion &&
+                  onSkipSuggestion && (
+                    <SuggestionsAccordion
+                      suggestions={suggestions}
+                      onAccept={onAcceptSuggestion}
+                      onSkip={onSkipSuggestion}
+                      loadingSuggestionId={loadingSuggestionId}
+                    />
+                  )}
+              </>
+            ) : undefined
+          }
           accommodationSlot={
             !activeId && (onStartLocationChange || startLocation || endLocation) ? (
               <AccommodationPickerB
@@ -984,34 +1006,10 @@ export const ItineraryTimelineB = ({
               />
             )}
 
-            {/* Day Tips */}
-            {!activeId && (
-              <DayTipsB
-                day={day}
-                tripStartDate={tripStartDate}
-                dayIndex={dayIndex}
-                className="mb-3"
-              />
-            )}
-
             <SortableContext
               items={extendedActivities.map((a) => a.id)}
               strategy={verticalListSortingStrategy}
             >
-              {/* Smart prompt suggestions accordion */}
-              {suggestions &&
-                suggestions.length > 0 &&
-                onAcceptSuggestion &&
-                onSkipSuggestion &&
-                !activeId && (
-                  <SuggestionsAccordion
-                    suggestions={suggestions}
-                    onAccept={onAcceptSuggestion}
-                    onSkip={onSkipSuggestion}
-                    loadingSuggestionId={loadingSuggestionId}
-                  />
-                )}
-
               {/* Guide: Combined day intro + pre-first-activity segments */}
               {guide && !activeId && (() => {
                 const firstActivityId = extendedActivities[0]?.id;
