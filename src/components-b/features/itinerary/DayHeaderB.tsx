@@ -22,11 +22,15 @@ type DayHeaderBProps = {
   refinementSlot?: React.ReactNode;
   /** Slot for the accommodation picker */
   accommodationSlot?: React.ReactNode;
-  /** Slot rendered before accommodation (tips, suggestions) */
-  preAccommodationSlot?: React.ReactNode;
+  /** Slot for the tips popover pill */
+  tipsSlot?: React.ReactNode;
+  /** Slot for the suggestions popover pill */
+  suggestionsSlot?: React.ReactNode;
+  /** Slot for day intro text */
+  dayIntroSlot?: React.ReactNode;
 };
 
-export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange, refinementSlot, accommodationSlot, preAccommodationSlot }: DayHeaderBProps) {
+export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange, refinementSlot, accommodationSlot, tipsSlot, suggestionsSlot, dayIntroSlot }: DayHeaderBProps) {
   const dayDate = useMemo(() => {
     if (tripStartDate) {
       try {
@@ -74,7 +78,7 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
   const currentStartTime = day.bounds?.startTime ?? "09:00";
 
   return (
-    <div className="pb-2 space-y-2">
+    <div className="pb-2 space-y-1.5">
       <div className="flex items-center justify-between">
         <h2
           className="text-xs font-medium uppercase tracking-[0.15em]"
@@ -86,6 +90,8 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
           )}
         </h2>
         <div className="flex items-center gap-1.5">
+          {tipsSlot}
+          {suggestionsSlot}
           {refinementSlot}
           {onDayStartTimeChange && (
             <DayStartTimePickerB
@@ -95,8 +101,8 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
           )}
         </div>
       </div>
-      {preAccommodationSlot}
       {accommodationSlot}
+      {dayIntroSlot}
     </div>
   );
 }
