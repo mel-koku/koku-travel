@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  Footprints,
-  TrainFront,
-  Bus,
-  Car,
-  Bike,
-  Navigation,
-  type LucideIcon,
-} from "lucide-react";
 import type { ItineraryTravelSegment } from "@/types/itinerary";
 import type { Coordinate } from "@/lib/routing/types";
+import { TravelModeSelectorB } from "./TravelModeSelectorB";
 
 type TravelSegmentBProps = {
   segment: ItineraryTravelSegment;
@@ -25,24 +17,14 @@ type TravelSegmentBProps = {
   gapMinutes?: number;
 };
 
-const MODE_ICONS: Record<string, LucideIcon> = {
-  walk: Footprints,
-  train: TrainFront,
-  subway: TrainFront,
-  transit: TrainFront,
-  bus: Bus,
-  car: Car,
-  taxi: Car,
-  rideshare: Car,
-  bicycle: Bike,
-};
-
 export function TravelSegmentB({
   segment,
   origin,
   destination,
   originName,
   destinationName,
+  timezone,
+  onModeChange,
   isRecalculating = false,
   gapMinutes,
 }: TravelSegmentBProps) {
@@ -75,7 +57,6 @@ export function TravelSegmentB({
   const isTight =
     !isLoading && gapMinutes !== undefined && gapMinutes < segment.durationMinutes + 5;
 
-  const ModeIcon = MODE_ICONS[segment.mode] ?? Navigation;
   const distance = formatDistance(segment.distanceMeters);
 
   return (
@@ -119,16 +100,16 @@ export function TravelSegmentB({
           </span>
         ) : (
           <>
-            <ModeIcon
-              className="h-3.5 w-3.5"
-              style={{ color: "var(--muted-foreground)" }}
+            {/* Mode selector (inline) */}
+            <TravelModeSelectorB
+              currentMode={segment.mode}
+              durationMinutes={segment.durationMinutes}
+              departureTime={segment.departureTime}
+              origin={origin}
+              destination={destination}
+              timezone={timezone}
+              onModeChange={onModeChange}
             />
-            <span
-              className="text-xs font-medium"
-              style={{ color: "var(--foreground)" }}
-            >
-              {segment.durationMinutes} min
-            </span>
             {segment.isEstimated && (
               <span
                 className="text-[10px]"
@@ -148,14 +129,12 @@ export function TravelSegmentB({
               </span>
             )}
             {distance && (
-              <>
-                <span
-                  className="text-[10px]"
-                  style={{ color: "var(--muted-foreground)" }}
-                >
-                  {distance}
-                </span>
-              </>
+              <span
+                className="text-[10px]"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                {distance}
+              </span>
             )}
             <button
               type="button"

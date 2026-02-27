@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { forwardRef, memo, useMemo, useState } from "react";
+import { forwardRef, memo, useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
@@ -16,9 +16,11 @@ import {
   getLocationRating,
   getLocationReviewCount,
 } from "@/components/features/itinerary/activityUtils";
-// getActivityColorScheme available from "@/lib/itinerary/activityColors" if needed
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
+import { ConflictBadgeB } from "./ConflictBadgeB";
+import { ActivityTipBadgeB } from "./ActivityTipB";
+import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGenerator";
 
 // B motion tokens
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -166,6 +168,19 @@ export const PlaceActivityRowB = memo(
         }
         return `${activity.durationMin}m`;
       }, [activity.durationMin]);
+
+      // Activity tips
+      const [tips, setTips] = useState<ActivityTip[]>([]);
+      const activityId = activity.id;
+      const placeLocationId = placeLocation?.id;
+
+      useEffect(() => {
+        if (placeLocation && activity.kind === "place") {
+          generateActivityTipsAsync(activity, placeLocation).then(setTips).catch(() => {
+            // Silently fail — tips are optional
+          });
+        }
+      }, [activityId, placeLocationId]); // eslint-disable-line react-hooks/exhaustive-deps
 
       // Activity image
       const activityImage = useMemo(() => {
@@ -463,6 +478,15 @@ export const PlaceActivityRowB = memo(
                   ))}
                 </div>
 
+                {/* Activity tips */}
+                {tips.length > 0 && (
+                  <div className="mt-1.5 flex flex-wrap gap-1">
+                    {tips.slice(0, 2).map((tip, index) => (
+                      <ActivityTipBadgeB key={index} tip={tip} />
+                    ))}
+                  </div>
+                )}
+
                 {/* Short description */}
                 {summary && (
                   <p
@@ -475,28 +499,8 @@ export const PlaceActivityRowB = memo(
 
                 {/* Conflict warning */}
                 {hasConflicts && (
-                  <div
-                    className="mt-2 flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium"
-                    style={{
-                      backgroundColor:
-                        "color-mix(in srgb, var(--warning) 10%, transparent)",
-                      color: "var(--warning)",
-                    }}
-                  >
-                    <svg
-                      className="h-3.5 w-3.5 shrink-0"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
-                    {conflicts![0]!.message}
+                  <div className="mt-2">
+                    <ConflictBadgeB conflicts={conflicts!} variant="inline" />
                   </div>
                 )}
 

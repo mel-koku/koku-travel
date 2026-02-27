@@ -6,7 +6,7 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { PlaceActivityRowB } from "./PlaceActivityRowB";
-import { NoteActivityRow } from "@/components/features/itinerary/NoteActivityRow";
+import { NoteActivityRowB } from "./NoteActivityRowB";
 
 type ActivityRowBProps = {
   activity: ItineraryActivity;
@@ -37,12 +37,12 @@ export const ActivityRowB = memo(
   forwardRef<HTMLDivElement, ActivityRowBProps>((props, ref) => {
     if (props.activity.kind === "note") {
       return (
-        <NoteActivityRow
+        <NoteActivityRowB
           ref={ref}
-          {...props}
           activity={props.activity}
+          onUpdate={props.onUpdate}
+          onDelete={props.onDelete}
           isReadOnly={props.isReadOnly}
-          activeDragId={props.activeDragId}
         />
       );
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Hotel } from "lucide-react";
+import { Hotel, Pencil } from "lucide-react";
 import type { EntryPoint } from "@/types/trip";
 
 type AccommodationBookendBProps = {
@@ -10,6 +10,8 @@ type AccommodationBookendBProps = {
   travelMinutes?: number;
   /** Walking distance in meters */
   distanceMeters?: number;
+  /** Called when user clicks to edit accommodation */
+  onEdit?: () => void;
 };
 
 export function AccommodationBookendB({
@@ -17,6 +19,7 @@ export function AccommodationBookendB({
   variant,
   travelMinutes,
   distanceMeters,
+  onEdit,
 }: AccommodationBookendBProps) {
   const label =
     variant === "start"
@@ -24,10 +27,16 @@ export function AccommodationBookendB({
       : `Return to ${location.name}`;
 
   const travelLabel = formatTravelLabel(travelMinutes, distanceMeters);
+  const isClickable = Boolean(onEdit);
 
   return (
-    <div
-      className="inline-flex items-center gap-2.5 rounded-full border px-4 py-2"
+    <button
+      type="button"
+      onClick={onEdit}
+      disabled={!isClickable}
+      className={`inline-flex items-center gap-2.5 rounded-full border px-4 py-2 text-left transition-colors ${
+        isClickable ? "cursor-pointer hover:border-[var(--primary)]" : "cursor-default"
+      }`}
       style={{
         backgroundColor: "var(--card)",
         borderColor: "var(--border)",
@@ -58,7 +67,13 @@ export function AccommodationBookendB({
           </p>
         )}
       </div>
-    </div>
+      {isClickable && (
+        <Pencil
+          className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+          style={{ color: "var(--muted-foreground)" }}
+        />
+      )}
+    </button>
   );
 }
 

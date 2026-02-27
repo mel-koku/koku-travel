@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import type { ItineraryDay } from "@/types/itinerary";
 import { REGIONS } from "@/data/regions";
+import { DayStartTimePickerB } from "./DayStartTimePickerB";
 
 function formatCityName(cityId: string): string {
   for (const region of REGIONS) {
@@ -16,9 +17,14 @@ type DayHeaderBProps = {
   day: ItineraryDay;
   dayIndex: number;
   tripStartDate?: string;
+  onDayStartTimeChange?: (startTime: string) => void;
+  /** Slot for the refinement button */
+  refinementSlot?: React.ReactNode;
+  /** Slot for the accommodation picker */
+  accommodationSlot?: React.ReactNode;
 };
 
-export function DayHeaderB({ day, dayIndex, tripStartDate }: DayHeaderBProps) {
+export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange, refinementSlot, accommodationSlot }: DayHeaderBProps) {
   const dayDate = useMemo(() => {
     if (tripStartDate) {
       try {
@@ -63,17 +69,31 @@ export function DayHeaderB({ day, dayIndex, tripStartDate }: DayHeaderBProps) {
   // Use the date as primary heading when available, fall back to "Day N"
   const primaryLabel = dateLabel ?? `Day ${dayIndex + 1}`;
 
+  const currentStartTime = day.bounds?.startTime ?? "09:00";
+
   return (
-    <div className="pb-2">
-      <h2
-        className="text-xs font-medium uppercase tracking-[0.15em]"
-        style={{ color: "var(--muted-foreground)" }}
-      >
-        {primaryLabel}
-        {cityLabel && (
-          <span className="ml-1"> · {cityLabel}</span>
-        )}
-      </h2>
+    <div className="pb-2 space-y-2">
+      <div className="flex items-center justify-between">
+        <h2
+          className="text-xs font-medium uppercase tracking-[0.15em]"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          {primaryLabel}
+          {cityLabel && (
+            <span className="ml-1"> · {cityLabel}</span>
+          )}
+        </h2>
+        <div className="flex items-center gap-1.5">
+          {refinementSlot}
+          {onDayStartTimeChange && (
+            <DayStartTimePickerB
+              currentTime={currentStartTime}
+              onChange={onDayStartTimeChange}
+            />
+          )}
+        </div>
+      </div>
+      {accommodationSlot}
     </div>
   );
 }
