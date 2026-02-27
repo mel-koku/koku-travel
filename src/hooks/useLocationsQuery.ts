@@ -5,7 +5,7 @@ import { useMemo } from "react";
 import type { Location } from "@/types/location";
 import type { PaginatedResponse } from "@/lib/api/pagination";
 import type { FilterMetadata } from "@/types/filters";
-import { logger } from "@/lib/logger";
+import { extractFetchErrorMessage } from "@/lib/api/fetchError";
 import {
   LOCATION_STALE_TIME,
   LOCATION_GC_TIME,
@@ -73,16 +73,7 @@ async function fetchLocationsPage(
   const response = await fetch(`/api/locations?page=${page}&limit=${limit}`);
 
   if (!response.ok) {
-    let message = `Request failed with status ${response.status}.`;
-    try {
-      const payload = await response.json();
-      if (payload?.error) {
-        message = payload.error as string;
-      }
-    } catch (jsonError) {
-      logger.debug("Unable to parse error response", { error: jsonError });
-    }
-    throw new Error(message);
+    throw new Error(await extractFetchErrorMessage(response));
   }
 
   return (await response.json()) as LocationsResponse;
@@ -103,16 +94,7 @@ async function fetchFilterMetadata(): Promise<FilterMetadata> {
   const response = await fetch("/api/locations/filter-options?v=3");
 
   if (!response.ok) {
-    let message = `Request failed with status ${response.status}.`;
-    try {
-      const payload = await response.json();
-      if (payload?.error) {
-        message = payload.error as string;
-      }
-    } catch (jsonError) {
-      logger.debug("Unable to parse error response", { error: jsonError });
-    }
-    throw new Error(message);
+    throw new Error(await extractFetchErrorMessage(response));
   }
 
   const data = (await response.json()) as FilterMetadata;

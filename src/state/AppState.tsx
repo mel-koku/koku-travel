@@ -192,6 +192,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   // Ref to track pending trip sync timeouts by trip ID
   const tripSyncTimeouts = useRef<Map<string, NodeJS.Timeout>>(new Map());
 
+  // Guard against concurrent refreshFromSupabase calls
+  const isRefreshingRef = useRef(false);
+
   // Load from localStorage on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -255,6 +258,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   // Refresh from Supabase
   const refreshFromSupabase = useCallback(async () => {
     if (!supabase) return;
+    if (isRefreshingRef.current) return;
+    isRefreshingRef.current = true;
 
     setState((s) => ({ ...s, isLoadingRefresh: true }));
 
@@ -301,6 +306,8 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       logger.error("refreshFromSupabase failed", error);
       setState((s) => ({ ...s, isLoadingRefresh: false }));
+    } finally {
+      isRefreshingRef.current = false;
     }
   }, [supabase]);
 
@@ -447,7 +454,11 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         const timeout = setTimeout(() => {
           const trip = tripsRef.current.find((t) => t.id === tripId);
           if (trip) {
-            void syncTripSave(supabase, trip);
+            syncTripSave(supabase, trip).then((result) => {
+              if (!result.success) {
+                logger.warn("Trip sync failed after debounce", { tripId, error: result.error });
+              }
+            });
           }
           tripSyncTimeouts.current.delete(tripId);
         }, TRIP_SYNC_DEBOUNCE_MS);
@@ -546,8 +557,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   );
 
   // Guide bookmark actions
+  const loadingBookmarksRef = useRef(state.loadingBookmarks);
+  useEffect(() => { loadingBookmarksRef.current = state.loadingBookmarks; }, [state.loadingBookmarks]);
+
   const toggleGuideBookmark = useCallback(
     (id: string) => {
+      // Prevent double-toggle race: skip if sync is already in progress for this bookmark
+      if (loadingBookmarksRef.current.has(id)) return;
+
       let existed = false;
       setState((s) => {
         const set = new Set(s.guideBookmarks);
