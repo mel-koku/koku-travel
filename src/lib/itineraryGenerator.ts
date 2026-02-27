@@ -755,20 +755,30 @@ function buildTags(interest: InterestId, category: LocationCategory): string[] {
     history: "historical",
   };
 
-  const categoryMap: Record<LocationCategory, string> = {
+  const categoryMap: Record<string, string> = {
     shrine: "shrine",
     temple: "temple",
     landmark: "landmark",
-    historic: "historic site",
     restaurant: "restaurant",
     market: "market",
     park: "park",
     garden: "garden",
     shopping: "shopping",
-    bar: "nightlife",
+    bar: "bar",
     entertainment: "entertainment",
     museum: "museum",
     viewpoint: "viewpoint",
+    nature: "nature",
+    culture: "culture",
+    onsen: "onsen",
+    wellness: "wellness",
+    cafe: "cafe",
+    aquarium: "aquarium",
+    beach: "beach",
+    castle: "castle",
+    historic_site: "historic site",
+    theater: "theater",
+    zoo: "zoo",
   };
 
   const interestTag = interestMap[interest];

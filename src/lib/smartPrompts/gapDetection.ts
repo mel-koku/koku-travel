@@ -779,7 +779,11 @@ export async function detectGuidanceGaps(
   );
 
   const categories = [
-    ...new Set(placeActivities.map((a) => a.tags?.[0]).filter(Boolean) as string[]),
+    ...new Set(
+      placeActivities
+        .map((a) => resolveActivityCategory(a.tags)?.sub)
+        .filter(Boolean) as string[]
+    ),
   ];
 
   const guidance = await fetchDayGuidance({
