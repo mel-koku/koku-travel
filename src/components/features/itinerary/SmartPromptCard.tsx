@@ -4,6 +4,7 @@ import {
   BookOpen,
   CalendarCheck,
   Clock,
+  CloudRain,
   Coffee,
   Info,
   Leaf,
@@ -27,6 +28,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
   CalendarCheck,
   Clock,
+  CloudRain,
   Coffee,
   Info,
   Leaf,
@@ -86,6 +88,16 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     bg: "bg-warning/10",
     text: "text-warning",
     badge: "bg-warning/15 text-warning",
+  },
+  lunch_rush: {
+    bg: "bg-warning/5",
+    text: "text-warning",
+    badge: "bg-warning/10 text-warning",
+  },
+  rain_contingency: {
+    bg: "bg-sage/5",
+    text: "text-sage",
+    badge: "bg-sage/10 text-sage",
   },
 };
 
@@ -155,7 +167,7 @@ export function SmartPromptCard({
 
         {/* Actions */}
         <div className="mt-2 flex gap-2">
-          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" ? (
+          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" ? (
             <Button
               variant="primary"
               size="chip"
@@ -164,6 +176,26 @@ export function SmartPromptCard({
             >
               Got it
             </Button>
+          ) : gap.action.type === "swap_for_weather" ? (
+            <>
+              <Button
+                variant="primary"
+                size="chip"
+                onClick={() => onAccept(gap)}
+                disabled={isLoading}
+                isLoading={isLoading}
+              >
+                {isLoading ? "Swapping..." : "Swap"}
+              </Button>
+              <Button
+                variant="brand-ghost"
+                size="chip"
+                onClick={() => onSkip(gap)}
+                disabled={isLoading}
+              >
+                Keep
+              </Button>
+            </>
           ) : (
             <>
               <Button

@@ -84,6 +84,14 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     bg: "bg-warning/10",
     text: "text-warning",
   },
+  lunch_rush: {
+    bg: "bg-warning/5",
+    text: "text-warning",
+  },
+  rain_contingency: {
+    bg: "bg-sage/5",
+    text: "text-sage",
+  },
 };
 
 export type DaySuggestionsProps = {

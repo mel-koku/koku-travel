@@ -4,6 +4,7 @@ import {
   BookOpen,
   CalendarCheck,
   Clock,
+  CloudRain,
   Coffee,
   Info,
   Leaf,
@@ -26,6 +27,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
   CalendarCheck,
   Clock,
+  CloudRain,
   Coffee,
   Info,
   Leaf,
@@ -60,7 +62,9 @@ export function SmartPromptCardB({
   const Icon = ICON_MAP[gap.icon] ?? Plus;
   const isGuidance = gap.action.type === "acknowledge_guidance";
   const isReservation = gap.action.type === "acknowledge_reservation";
-  const isAcknowledge = isGuidance || isReservation;
+  const isLunchRush = gap.action.type === "acknowledge_lunch_rush";
+  const isWeatherSwap = gap.action.type === "swap_for_weather";
+  const isAcknowledge = isGuidance || isReservation || isLunchRush;
 
   return (
     <div
@@ -136,6 +140,36 @@ export function SmartPromptCardB({
               >
                 Got it
               </button>
+            ) : isWeatherSwap ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onAccept(gap)}
+                  disabled={isLoading}
+                  className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--card)] transition-all duration-200 active:scale-[0.98] disabled:opacity-60"
+                  style={{
+                    backgroundColor: "var(--primary)",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Swapping...
+                    </>
+                  ) : (
+                    "Swap"
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onSkip(gap)}
+                  disabled={isLoading}
+                  className="rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors duration-200 hover:bg-[var(--surface)] hover:text-[var(--foreground)] disabled:opacity-60"
+                >
+                  Keep
+                </button>
+              </>
             ) : (
               <>
                 <button

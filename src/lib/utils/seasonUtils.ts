@@ -222,6 +222,16 @@ export function getActiveSeasonalHighlight(): SeasonalHighlight | null {
   return null;
 }
 
+/** Get a seasonal highlight for a specific date, or null. */
+export function getSeasonalHighlightForDate(month: number, day: number): SeasonalHighlight | null {
+  for (const highlight of SEASONAL_HIGHLIGHTS) {
+    if (isDateInRange(month, day, highlight)) {
+      return highlight;
+    }
+  }
+  return null;
+}
+
 function isDateInRange(month: number, day: number, h: SeasonalHighlight): boolean {
   const current = month * 100 + day;
   const start = h.startMonth * 100 + h.startDay;

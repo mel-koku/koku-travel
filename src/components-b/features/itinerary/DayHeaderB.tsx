@@ -88,6 +88,26 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
           {cityLabel && (
             <span className="ml-1"> · {cityLabel}</span>
           )}
+          {day.paceLabel && (
+            <span
+              className="ml-1"
+              style={{
+                color:
+                  day.paceLabel === "light"
+                    ? "var(--success)"
+                    : day.paceLabel === "packed"
+                      ? "var(--error)"
+                      : "var(--warning)",
+              }}
+            >
+              {" · "}
+              {day.paceLabel === "light"
+                ? "Light day"
+                : day.paceLabel === "packed"
+                  ? "Packed day"
+                  : "Moderate"}
+            </span>
+          )}
         </h2>
         <div className="flex items-center gap-1.5">
           {tipsSlot}
