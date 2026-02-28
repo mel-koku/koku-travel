@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useAuthState } from "@/components/ui/IdentityBadge";
+import { VariantToggle } from "@/components/ui/VariantToggle";
 import { createClient } from "@/lib/supabase/client";
 import { useAppState } from "@/state/AppState";
 
@@ -121,6 +122,9 @@ export function HeaderB() {
           </nav>
 
           <div className="flex items-center gap-3">
+            {/* A/B variant toggle (temporary — remove before launch) */}
+            <VariantToggle />
+
             {/* CTA */}
             <Link
               href="/b/trip-builder"

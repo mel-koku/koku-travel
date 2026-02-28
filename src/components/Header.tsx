@@ -15,6 +15,7 @@ import { springNavigation } from "@/lib/motion";
 import { MenuTrigger } from "@/components/header/MenuTrigger";
 import { MenuOverlay } from "@/components/header/MenuOverlay";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { VariantToggle } from "@/components/ui/VariantToggle";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
@@ -276,6 +277,9 @@ export default function Header() {
             >
               Build My Trip
             </Link>
+
+            {/* A/B variant toggle (temporary — remove before launch) */}
+            <VariantToggle />
 
             {/* Theme toggle (desktop) */}
             <div className="hidden lg:block">
