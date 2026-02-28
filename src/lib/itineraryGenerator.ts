@@ -10,6 +10,7 @@ import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { normalizeKey } from "@/lib/utils/stringUtils";
+import type { IntentExtractionResult } from "@/types/llmConstraints";
 
 // Import from extracted modules
 import { isLocationValidForCity } from "@/lib/geo/validation";
@@ -172,6 +173,11 @@ export type GenerateItineraryOptions = {
    * Community ratings map (locationId → avg rating 1-5) for scoring blend.
    */
   communityRatings?: Map<string, number>;
+  /**
+   * LLM-extracted intent constraints from Pass 1.
+   * Provides pinned locations, excluded categories, category weights, pacing hints.
+   */
+  intentConstraints?: IntentExtractionResult;
 };
 
 export async function generateItinerary(
@@ -213,6 +219,42 @@ export async function generateItinerary(
   const contentLocationIds = data.contentContext?.locationIds?.length
     ? new Set(data.contentContext.locationIds)
     : undefined;
+
+  // ── Intent constraints (Pass 1 output) ──────────────────────────
+  const intent = options?.intentConstraints;
+  const excludedCategories = intent?.excludedCategories?.length
+    ? new Set(intent.excludedCategories.map(c => c.toLowerCase()))
+    : undefined;
+  const categoryWeights = intent?.categoryWeights ?? undefined;
+
+  // Resolve pinned locations by fuzzy-matching names against allLocations
+  const pinnedLocationMap = new Map<string, { location: Location; preferredDay?: number; preferredTimeSlot?: "morning" | "afternoon" | "evening" }>();
+  if (intent?.pinnedLocations?.length) {
+    for (const pinned of intent.pinnedLocations) {
+      const searchName = pinned.locationName.toLowerCase().trim();
+      // Try exact match first, then prefix/contains
+      const match = allLocations.find(loc => loc.name.toLowerCase().trim() === searchName)
+        ?? allLocations.find(loc => loc.name.toLowerCase().trim().includes(searchName))
+        ?? allLocations.find(loc => searchName.includes(loc.name.toLowerCase().trim()));
+      if (match) {
+        pinnedLocationMap.set(match.id, {
+          location: match,
+          preferredDay: pinned.preferredDay,
+          preferredTimeSlot: pinned.preferredTimeSlot,
+        });
+        logger.info(`Pinned location resolved: "${pinned.locationName}" → "${match.name}" (${match.id})`);
+      } else {
+        logger.warn(`Pinned location not found: "${pinned.locationName}"`);
+      }
+    }
+  }
+
+  // Pacing modifier from intent
+  const pacingModifier = intent?.pacingHint === "very_relaxed" ? 0.8
+    : intent?.pacingHint === "intense" ? 1.15
+    : intent?.pacingHint === "active" ? 1.1
+    : intent?.pacingHint === "relaxed" ? 0.9
+    : 1.0;
 
   const citySequence = resolveCitySequence(data, locationsByCityKey, allLocations);
   const expandedCitySequence = expandCitySequenceForDays(citySequence, totalDays);
@@ -412,6 +454,9 @@ export async function generateItinerary(
       // This allows users to opt into meal recommendations rather than auto-filling them
       if (isFoodCategory(loc.category)) return false;
 
+      // 7. Exclude categories from LLM intent extraction (e.g., "bar" for family trips)
+      if (excludedCategories?.has(loc.category?.toLowerCase())) return false;
+
       return true;
     });
 
@@ -518,6 +563,57 @@ export async function generateItinerary(
       logger.info(`Day ${dayIndex + 1}: Added saved location "${favLoc.name}"`);
     }
 
+    // Add pinned locations from LLM intent extraction (must-visit places from notes)
+    for (const [pinnedId, pinned] of pinnedLocationMap) {
+      // Skip if already used or not for this day
+      if (usedLocations.has(pinnedId)) continue;
+      const normalizedName = pinned.location.name.toLowerCase().trim();
+      if (usedLocationNames.has(normalizedName)) continue;
+
+      // If pinned has a preferred day, only add on that day
+      if (pinned.preferredDay !== undefined && pinned.preferredDay !== dayIndex) continue;
+
+      // If no preferred day, add on the first day in the pinned location's city
+      if (pinned.preferredDay === undefined) {
+        const pinnedCityKey = normalizeKey(pinned.location.city);
+        if (pinnedCityKey !== cityInfo.key) continue;
+      }
+
+      const locationDuration = getLocationDurationMinutes(pinned.location);
+      const timeSlot = pinned.preferredTimeSlot ?? pickTimeSlotForSaved(pinned.location.category, timeSlotUsage);
+
+      const activity: Extract<ItineraryActivity, { kind: "place" }> = {
+        kind: "place",
+        id: `${pinnedId}-${dayIndex + 1}-pinned`,
+        title: pinned.location.name,
+        timeOfDay: timeSlot,
+        durationMin: locationDuration,
+        locationId: pinnedId,
+        coordinates: pinned.location.coordinates,
+        neighborhood: pinned.location.neighborhood ?? pinned.location.city,
+        tags: pinned.location.category ? [pinned.location.category, "pinned"] : ["pinned"],
+        notes: "From your trip notes",
+        recommendationReason: { primaryReason: "Mentioned in your trip notes" },
+        ...(pinned.location.description && { description: pinned.location.description }),
+      };
+
+      dayActivities.push(activity);
+      usedLocations.add(pinnedId);
+      usedLocationNames.add(normalizedName);
+
+      if (pinned.location.category) {
+        dayCategories.push(pinned.location.category);
+      }
+      const locNeighborhood = pinned.location.neighborhood ?? pinned.location.city;
+      if (locNeighborhood) {
+        dayNeighborhoods.push(locNeighborhood);
+      }
+      lastLocation = pinned.location;
+      timeSlotUsage.set(timeSlot, (timeSlotUsage.get(timeSlot) ?? 0) + locationDuration);
+
+      logger.info(`Day ${dayIndex + 1}: Added pinned location "${pinned.location.name}"`);
+    }
+
     // Track assigned meal types to prevent multiple lunches/dinners per day
     // Only one "full meal" per slot (breakfast, lunch, dinner). Additional food places become "snacks"
     const usedMealTypesForDay = new Set<"breakfast" | "lunch" | "dinner">();
@@ -529,7 +625,7 @@ export async function generateItinerary(
 
     // Fill each time slot intelligently
     for (const timeSlot of TIME_OF_DAY_SEQUENCE) {
-      let availableMinutes = getAvailableTimeForSlot(timeSlot, pace);
+      let availableMinutes = Math.round(getAvailableTimeForSlot(timeSlot, pace) * pacingModifier);
 
       // Adjust for day trip travel time
       if (activeDayTrip) {
@@ -545,12 +641,34 @@ export async function generateItinerary(
       let remainingTime = availableMinutes;
       let activityIndex = 0;
 
+      // Check for day-specific constraints from LLM intent
+      const dayConstraint = intent?.dayConstraints?.find(
+        c => c.dayIndex === dayIndex && (!c.timeSlot || c.timeSlot === timeSlot),
+      );
+
       // Ensure at least one activity per time slot
       while (remainingTime > 0 && activityIndex < 10) {
-        // Cycle through interests
-        const interest = interestSequence[interestIndex % interestSequence.length];
+        // Cycle through interests, with day constraint override
+        let interest = interestSequence[interestIndex % interestSequence.length];
         if (!interest) {
           break;
+        }
+        // Day constraint category emphasis overrides the rotation interest
+        if (dayConstraint?.categoryEmphasis && activityIndex === 0) {
+          // Map category emphasis to an interest (e.g., "restaurant" → "food")
+          const emphasisToInterest: Record<string, InterestId> = {
+            restaurant: "food", cafe: "food", market: "food",
+            shrine: "culture", temple: "culture", museum: "culture", castle: "culture",
+            park: "nature", garden: "nature", nature: "nature",
+            bar: "nightlife", entertainment: "nightlife",
+            shopping: "shopping",
+            onsen: "wellness", wellness: "wellness",
+            viewpoint: "photography",
+          };
+          const mapped = emphasisToInterest[dayConstraint.categoryEmphasis];
+          if (mapped) {
+            interest = mapped;
+          }
         }
 
         // Get weather forecast for this day and city
@@ -593,7 +711,7 @@ export async function generateItinerary(
         const communityRatings = options?.communityRatings;
 
         let locationResult = isZoneClustered && zoneFilteredLocations
-          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings)
+          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights)
           : null;
 
         // Tier 2: Expand to neighboring zones
@@ -601,13 +719,13 @@ export async function generateItinerary(
           const expandedIds = getExpandedZoneLocationIds(cityZoneMap, selectedZoneId);
           const expandedLocs = availableLocations.filter((loc) => expandedIds.has(loc.id));
           if (expandedLocs.length >= 3) {
-            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings);
+            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights);
           }
         }
 
         // Tier 3: Fall back to full city pool (original behavior)
         if (!locationResult) {
-          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings);
+          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights);
         }
 
         const location = locationResult && "_scoringReasoning" in locationResult

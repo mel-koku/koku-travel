@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
       elapsedMs,
     });
 
-    const { trip, itinerary, dayIntros } = generationResult;
+    const { trip, itinerary, dayIntros, guideProse } = generationResult;
 
     // Cache the generated itinerary for future requests
     await cacheItinerary(builderData, trip, itinerary, dayIntros);
@@ -191,6 +191,7 @@ export async function POST(request: NextRequest) {
         trip,
         itinerary,
         dayIntros,
+        guideProse,
         validation: tripValidation,
         itineraryValidation: {
           valid: itineraryValidation.valid,
