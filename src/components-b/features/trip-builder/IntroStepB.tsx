@@ -116,7 +116,7 @@ export function IntroStepB({
             <button
               type="button"
               onClick={onStart}
-              className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 sm:w-auto"
+              className="inline-flex h-12 w-full cursor-pointer items-center justify-center rounded-xl bg-[var(--primary)] px-8 text-sm font-medium text-white shadow-[var(--shadow-card)] transition-all hover:shadow-[var(--shadow-elevated)] hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 sm:w-auto"
             >
               {ctaText}
             </button>
@@ -217,7 +217,7 @@ export function IntroStepB({
                     <button
                       type="button"
                       onClick={handleQuickStart}
-                      className="h-11 w-full rounded-xl bg-[var(--primary)] text-sm font-medium text-white transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
+                      className="h-11 w-full rounded-xl bg-[var(--primary)] text-sm font-medium text-white transition-all hover:shadow-[var(--shadow-elevated)] hover:brightness-110 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                     >
                       Go
                     </button>

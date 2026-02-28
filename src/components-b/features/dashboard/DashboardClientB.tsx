@@ -324,7 +324,7 @@ export function DashboardClientB({ initialAuthUser, content }: DashboardClientBP
             <button
               type="button"
               onClick={handleUndo}
-              className="self-start rounded-xl bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
+              className="self-start rounded-xl bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-[var(--shadow-sm)] transition-all hover:shadow-[var(--shadow-elevated)] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
             >
               {content?.dashboardUndoButton ?? "Undo"}
             </button>

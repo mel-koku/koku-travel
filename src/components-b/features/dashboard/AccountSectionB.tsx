@@ -170,7 +170,7 @@ function EmailFormB({ supabase, supabaseUnavailable }: EmailFormBProps) {
       <button
         type="submit"
         disabled={supabaseUnavailable}
-        className="h-11 rounded-xl bg-[var(--primary)] px-4 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+        className="h-11 rounded-xl bg-[var(--primary)] px-4 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-all hover:shadow-[var(--shadow-elevated)] hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
       >
         Send sign-in link
       </button>
