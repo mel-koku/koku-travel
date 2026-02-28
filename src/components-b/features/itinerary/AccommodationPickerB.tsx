@@ -68,10 +68,14 @@ export function AccommodationPickerB({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="text-xs font-medium transition-colors hover:text-[var(--foreground)]"
-          style={{ color: "var(--muted-foreground)" }}
+          className="flex items-center gap-1.5 rounded-xl border border-dashed px-3 py-1.5 text-xs font-medium transition-all hover:border-[var(--primary)] hover:text-[var(--primary)]"
+          style={{
+            borderColor: "var(--border)",
+            color: "var(--muted-foreground)",
+          }}
         >
-          + Set accommodation
+          <MapPin className="h-3.5 w-3.5" />
+          Add hotel or starting point
         </button>
       );
     }
