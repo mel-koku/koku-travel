@@ -104,6 +104,8 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
       // Source tracking
       source: (fullRow.source as 'community' | null) ?? undefined,
       sourceUrl: fullRow.source_url ?? undefined,
+      // Tattoo policy
+      tattooPolicy: fullRow.tattoo_policy ?? undefined,
     };
   }
 

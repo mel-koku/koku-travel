@@ -217,6 +217,14 @@ export type TripBuilderData = {
    * Gates Day 1 orientation tips, adjusts hidden gem ratio, adds pacing warnings.
    */
   isFirstTimeVisitor?: boolean;
+  /**
+   * Accommodation style preference. Affects day scheduling and scoring:
+   * - "hotel": Standard schedule (default behavior)
+   * - "ryokan": Traditional inn — day ends at 17:00, dinner/breakfast included
+   * - "hostel": Budget-friendly — standard schedule
+   * - "mix": Per-city default — standard schedule
+   */
+  accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
 };
 
 /**

@@ -76,6 +76,15 @@ export interface LocationScoringCriteria {
    * Inverts neighborhood diversity scoring to reward proximity instead of penalizing it.
    */
   isZoneClustered?: boolean;
+  /**
+   * Accommodation style. When "ryokan", onsen/garden/nature/wellness get +5 bonus.
+   */
+  accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
+  /**
+   * Community ratings map (locationId → avg rating 1-5).
+   * Blended with Google rating at 70/30 when present.
+   */
+  communityRatings?: Map<string, number>;
 }
 
 /**
@@ -198,9 +207,18 @@ function scoreInterestMatch(
  * Score location based on rating quality and review count.
  * Range: 0-25 points
  */
-function scoreRatingQuality(location: Location): { score: number; reasoning: string } {
-  const rating = location.rating ?? 0;
+function scoreRatingQuality(
+  location: Location,
+  communityRatings?: Map<string, number>,
+): { score: number; reasoning: string } {
+  const googleRating = location.rating ?? 0;
   const reviewCount = location.reviewCount ?? 0;
+
+  // Blend Google and community ratings (70/30 when community data exists)
+  const communityRating = communityRatings?.get(location.id);
+  const rating = communityRating
+    ? googleRating * 0.7 + communityRating * 0.3
+    : googleRating;
 
   // If no rating data, give neutral score
   if (rating === 0 && reviewCount === 0) {
@@ -233,9 +251,12 @@ function scoreRatingQuality(location: Location): { score: number; reasoning: str
 
   const totalScore = Math.round(ratingScore + reviewScore);
 
+  const communityNote = communityRating
+    ? ` (blended with community ${communityRating.toFixed(1)})`
+    : "";
   return {
     score: totalScore,
-    reasoning: `Rating: ${rating.toFixed(1)}/5 (${reviewCount} reviews) - ${totalScore >= 20 ? "high quality" : totalScore >= 15 ? "good quality" : "moderate quality"}`,
+    reasoning: `Rating: ${rating.toFixed(1)}/5 (${reviewCount} reviews)${communityNote} - ${totalScore >= 20 ? "high quality" : totalScore >= 15 ? "good quality" : "moderate quality"}`,
   };
 }
 
@@ -825,7 +846,7 @@ export function scoreLocation(
   criteria: LocationScoringCriteria,
 ): LocationScore {
   const interestResult = scoreInterestMatch(location, criteria.interests, criteria.currentInterest);
-  const ratingResult = scoreRatingQuality(location);
+  const ratingResult = scoreRatingQuality(location, criteria.communityRatings);
   const logisticalResult = scoreLogisticalFit(location, criteria);
   const budgetResult = scoreBudgetFit(location, {
     budgetLevel: criteria.budgetLevel,
@@ -861,6 +882,14 @@ export function scoreLocation(
   // Content fit scoring (guide/experience editorial boost)
   const contentResult = scoreContentFit(location, criteria.contentLocationIds);
 
+  // Accommodation style bonus: ryokan guests prefer onsen/garden/nature/wellness
+  const RYOKAN_BONUS_CATEGORIES = new Set(["onsen", "garden", "nature", "wellness"]);
+  const accommodationBonus = (
+    criteria.accommodationStyle === "ryokan" &&
+    location.category &&
+    RYOKAN_BONUS_CATEGORIES.has(location.category)
+  ) ? 5 : 0;
+
   const breakdown: ScoreBreakdown = {
     interestMatch: interestResult.score,
     ratingQuality: ratingResult.score,
@@ -888,7 +917,8 @@ export function scoreLocation(
     breakdown.timeOptimization +
     breakdown.groupFit +
     breakdown.seasonalFit +
-    breakdown.contentFit;
+    breakdown.contentFit +
+    accommodationBonus;
 
   const reasoning = [
     interestResult.reasoning,
@@ -904,6 +934,7 @@ export function scoreLocation(
     groupResult.reasoning,
     seasonalResult.reasoning,
     ...(contentResult.reasoning ? [contentResult.reasoning] : []),
+    ...(accommodationBonus > 0 ? [`Ryokan stay bonus: +${accommodationBonus} for ${location.category}`] : []),
   ];
 
   return {

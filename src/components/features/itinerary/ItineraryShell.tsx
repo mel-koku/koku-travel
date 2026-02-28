@@ -37,6 +37,8 @@ import { useItineraryScrollSync } from "./hooks/useItineraryScrollSync";
 import { useItineraryGuide } from "./hooks/useItineraryGuide";
 import { ShareButton } from "./ShareButton";
 import { SeasonalBanner } from "./SeasonalBanner";
+import { useActivityRatings } from "@/hooks/useActivityRatings";
+import { ActivityRatingsProvider } from "./ActivityRatingsContext";
 
 const LocationExpanded = dynamic(
   () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
@@ -395,7 +397,22 @@ export const ItineraryShell = ({
     setExpandedLocation(null);
   }, []);
 
+  // Activity ratings
+  const activityRatingsHook = useActivityRatings(tripId && !isUsingMock && !isReadOnly ? tripId : undefined);
+  useEffect(() => {
+    if (tripId && !isUsingMock && !isReadOnly) {
+      activityRatingsHook.fetchRatings();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tripId, isUsingMock, isReadOnly]);
+
+  const ratingsContextValue = useMemo(() => ({
+    ratings: activityRatingsHook.ratings,
+    submitRating: activityRatingsHook.submitRating,
+  }), [activityRatingsHook.ratings, activityRatingsHook.submitRating]);
+
   return (
+    <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
     <section className="mx-auto min-h-[calc(100dvh-80px)] max-w-screen-2xl">
       {/* ── Mobile peek map strip (< lg) ── */}
       <div className="relative lg:hidden">
@@ -710,6 +727,7 @@ export const ItineraryShell = ({
         );
       })()}
     </section>
+    </ActivityRatingsProvider>
   );
 };
 

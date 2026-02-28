@@ -7,6 +7,7 @@
  */
 
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
+import { detectNeighborhoodClusters } from "@/lib/itinerary/neighborhoodDetector";
 import type { TripBuilderData } from "@/types/trip";
 import type {
   TripGuide,
@@ -439,6 +440,29 @@ function buildDayGuide(
         break; // Max 1 narrative per day
       }
     }
+  }
+
+  // ── Neighborhood Walk (3+ consecutive activities in same area) ──
+  const clusters = detectNeighborhoodClusters(day);
+  if (clusters.length > 0) {
+    const cluster = clusters[0]!; // Max 1 walk header per day
+    const firstActivityIndex = cluster.activityIndices[0];
+    const firstActivityId = firstActivityIndex !== undefined
+      ? day.activities[firstActivityIndex]?.id
+      : undefined;
+
+    const walkContent = cluster.name === "Walkable Area"
+      ? `The next ${cluster.activityNames.length} stops are all within walking distance. Take your time exploring on foot.`
+      : `You're about to explore ${cluster.name} on foot — ${cluster.activityNames.length} stops, all walkable from each other.`;
+
+    segments.push({
+      id: `guide-${dayId}-nw`,
+      type: "neighborhood_walk",
+      content: walkContent,
+      icon: "🚶",
+      dayId,
+      beforeActivityId: firstActivityId,
+    });
   }
 
   // ── Day Summary (composed from activity names, vibe-aware) ──

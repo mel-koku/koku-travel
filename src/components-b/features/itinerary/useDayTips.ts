@@ -49,10 +49,13 @@ export function useDayTips(
   options?: {
     nextDayActivities?: ItineraryDay["activities"];
     isFirstTimeVisitor?: boolean;
+    /** When true, luggage smart prompt is active — suppress the "Send luggage ahead" pro tip */
+    hasLuggagePrompt?: boolean;
   },
 ): { tips: DisplayTip[]; isLoading: boolean } {
   const nextDayActivities = options?.nextDayActivities;
   const isFirstTimeVisitor = options?.isFirstTimeVisitor;
+  const hasLuggagePrompt = options?.hasLuggagePrompt;
   const [dbTips, setDbTips] = useState<TravelGuidance[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -142,7 +145,7 @@ export function useDayTips(
       });
     }
 
-    if (day.cityTransition) {
+    if (day.cityTransition && !hasLuggagePrompt) {
       tips.push({
         id: "pro-city-transition",
         title: "Send luggage ahead",
@@ -265,7 +268,7 @@ export function useDayTips(
     }
 
     return tips;
-  }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor]);
+  }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt]);
 
   const allTips = useMemo<DisplayTip[]>(
     () => [...proTips, ...dbTips.map(toDisplayTip)],

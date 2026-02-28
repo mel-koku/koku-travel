@@ -8,10 +8,12 @@ import {
   Users,
   Accessibility,
   StickyNote,
+  Hotel,
 } from "lucide-react";
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
+import { JRPassCard } from "./JRPassCard";
 import { PlanningWarningsList } from "./PlanningWarning";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { SavedInTripPreview } from "./SavedInTripPreview";
@@ -58,6 +60,13 @@ const PACE_OPTIONS = [
   { label: "Relaxed", value: "relaxed", description: "Slow mornings, long lunches" },
   { label: "Balanced", value: "balanced", description: "Mix of sightseeing and downtime" },
   { label: "Full", value: "fast", description: "Packed days, lots of ground covered" },
+];
+
+const ACCOMMODATION_OPTIONS = [
+  { label: "Hotel", value: "hotel" as const, description: "Standard schedule" },
+  { label: "Ryokan", value: "ryokan" as const, description: "Early evenings, dinner & breakfast included" },
+  { label: "Hostel", value: "hostel" as const, description: "Budget-friendly" },
+  { label: "Mix", value: "mix" as const, description: "Per-city default" },
 ];
 
 export type ReviewStepProps = {
@@ -215,6 +224,9 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         </button>
       </div>
 
+      {/* JR Pass Calculator */}
+      <JRPassCard duration={data.duration} cities={data.cities} />
+
       {/* Saved places that match selected cities */}
       <SavedInTripPreview selectedCities={data.cities} />
 
@@ -239,6 +251,47 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
               onChange={handleBudgetChange}
               onModeChange={setBudgetMode}
             />
+          </PreferenceCard>
+
+          {/* Accommodation Style */}
+          <PreferenceCard icon={<Hotel className="h-5 w-5" />} title="Stay" optional info="Ryokan days end at 5 pm with dinner and breakfast included.">
+            <div className="flex flex-col gap-2">
+              {ACCOMMODATION_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() =>
+                    setData((prev) => ({
+                      ...prev,
+                      accommodationStyle: option.value,
+                    }))
+                  }
+                  className={cn(
+                    "flex items-start gap-3 rounded-xl border p-3 text-left transition",
+                    data.accommodationStyle === option.value
+                      ? "border-sage/20 bg-sage/10 ring-1 ring-brand-primary"
+                      : "border-border hover:bg-background"
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 transition",
+                      data.accommodationStyle === option.value
+                        ? "border-brand-primary bg-brand-primary"
+                        : "border-border"
+                    )}
+                  />
+                  <div className="min-w-0">
+                    <span className="text-sm font-medium text-foreground">
+                      {option.label}
+                    </span>
+                    <span className="ml-2 text-xs text-stone">
+                      {option.description}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
           </PreferenceCard>
 
           {/* Travel Pace */}

@@ -22,6 +22,8 @@ import { ConflictBadgeB } from "./ConflictBadgeB";
 import { ActivityTipBadgeB } from "./ActivityTipB";
 import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGenerator";
 import { PocketPhrasesB } from "./PocketPhrasesB";
+import { ActivityRatingB } from "./ActivityRatingB";
+import { useActivityRatingsContext } from "@/components/features/itinerary/ActivityRatingsContext";
 
 // B motion tokens
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -121,6 +123,7 @@ export const PlaceActivityRowB = memo(
       ref,
     ) => {
       const prefersReducedMotion = useReducedMotion();
+      const ratingsCtx = useActivityRatingsContext();
 
       const dragStyles =
         transform || transition
@@ -509,6 +512,26 @@ export const PlaceActivityRowB = memo(
                   </div>
                 )}
 
+                {/* Tattoo Policy Warning */}
+                {placeLocation?.tattooPolicy && placeLocation.tattooPolicy !== "accepted" &&
+                  (placeLocation.category === "onsen" || placeLocation.category === "wellness") && (
+                  <div
+                    className="mt-3 flex items-start gap-2 rounded-xl p-2.5"
+                    style={{
+                      backgroundColor: "color-mix(in srgb, var(--warning) 8%, transparent)",
+                    }}
+                  >
+                    <span className="mt-0.5 shrink-0 text-sm" style={{ color: "var(--warning)" }}>
+                      ⚠
+                    </span>
+                    <p className="text-xs leading-relaxed" style={{ color: "var(--warning)" }}>
+                      {placeLocation.tattooPolicy === "prohibited"
+                        ? "Tattoos are not permitted at this facility."
+                        : "Tattoos must be covered (stickers or bandages) at this facility."}
+                    </p>
+                  </div>
+                )}
+
                 {/* Insider Tip */}
                 {placeLocation?.insiderTip && (
                   <div
@@ -538,6 +561,18 @@ export const PlaceActivityRowB = memo(
                   tags={activity.tags}
                   seed={activity.id}
                 />
+
+                {/* Activity Rating */}
+                {ratingsCtx && _dayId && (
+                  <ActivityRatingB
+                    activityId={activity.id}
+                    dayId={_dayId}
+                    locationId={activity.locationId}
+                    currentRating={ratingsCtx.ratings.get(activity.id)?.rating}
+                    isReadOnly={isReadOnly}
+                    onRate={ratingsCtx.submitRating}
+                  />
+                )}
 
                 {/* Short description */}
                 {summary && (

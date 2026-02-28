@@ -13,6 +13,7 @@ import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { generateDayIntros } from "./dayIntroGenerator";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
+import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -205,9 +206,17 @@ export async function generateTripFromBuilderData(
   }
   const t1 = Date.now();
 
+  // Fetch community ratings for scoring blend (non-blocking — falls back to empty)
+  const communityRatingsMap = await fetchCommunityRatings(
+    allLocations.map((l) => l.id),
+  );
+  const communityRatings = communityRatingsMap.size > 0
+    ? new Map([...communityRatingsMap.entries()].map(([k, v]) => [k, v.avgRating]))
+    : undefined;
+
   // Generate itinerary using existing generator, including saved locations
   // Pass pre-fetched locations to avoid duplicate Supabase call inside generator
-  const rawItinerary = await generateItinerary(builderData, { savedIds, locations: allLocations });
+  const rawItinerary = await generateItinerary(builderData, { savedIds, locations: allLocations, communityRatings });
   const t2 = Date.now();
 
   // Optimize route order before planning times
@@ -244,6 +253,7 @@ export async function generateTripFromBuilderData(
   const [itinerary, dayIntros] = await Promise.all([
     planItinerary(optimizedItinerary, {
       defaultDayStart: builderData.dayStartTime ?? "09:00",
+      defaultDayEnd: builderData.accommodationStyle === "ryokan" ? "17:00" : undefined,
     }, dayEntryPoints),
     generateDayIntros(optimizedItinerary, builderData).catch(() => null),
   ]);

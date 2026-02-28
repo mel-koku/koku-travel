@@ -92,6 +92,10 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     bg: "bg-sage/5",
     text: "text-sage",
   },
+  luggage_needs: {
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
+  },
 };
 
 export type DaySuggestionsProps = {

@@ -26,6 +26,8 @@ import { resizePhotoUrl } from "@/lib/google/transformations";
 import { PlaceActivityHeader } from "./PlaceActivityHeader";
 import { PlaceActivityReasoning } from "./PlaceActivityReasoning";
 import { PocketPhrases } from "./PocketPhrases";
+import { ActivityRating } from "./ActivityRating";
+import { useActivityRatingsContext } from "./ActivityRatingsContext";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -240,6 +242,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     } | null>(null);
     const [tips, setTips] = useState<ActivityTip[]>([]);
     const prefersReducedMotion = useReducedMotion();
+    const ratingsCtx = useActivityRatingsContext();
 
 
     const durationLabel = useMemo(() => {
@@ -724,6 +727,19 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 </div>
               )}
 
+              {/* Tattoo Policy Warning */}
+              {placeLocation?.tattooPolicy && placeLocation.tattooPolicy !== "accepted" &&
+                (placeLocation.category === "onsen" || placeLocation.category === "wellness") && (
+                <div className="mt-3 flex items-start gap-2 rounded-xl bg-warning/5 p-2.5">
+                  <span className="mt-0.5 shrink-0 text-sm text-warning">⚠</span>
+                  <p className="text-xs leading-relaxed text-warning">
+                    {placeLocation.tattooPolicy === "prohibited"
+                      ? "Tattoos are not permitted at this facility."
+                      : "Tattoos must be covered (stickers or bandages) at this facility."}
+                  </p>
+                </div>
+              )}
+
               {/* Insider Tip */}
               {placeLocation?.insiderTip && (
                 <div className="mt-3 rounded-xl bg-brand-secondary/5 p-2.5">
@@ -742,6 +758,18 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 tags={activity.tags}
                 seed={activity.id}
               />
+
+              {/* Activity Rating */}
+              {ratingsCtx && dayId && (
+                <ActivityRating
+                  activityId={activity.id}
+                  dayId={dayId}
+                  locationId={activity.locationId}
+                  currentRating={ratingsCtx.ratings.get(activity.id)?.rating}
+                  isReadOnly={isReadOnly}
+                  onRate={ratingsCtx.submitRating}
+                />
+              )}
 
               {activity.recommendationReason && (
                 <PlaceActivityReasoning
