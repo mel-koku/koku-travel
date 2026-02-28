@@ -76,35 +76,15 @@ export const dayRefinementSchema = z.object({
  * This ensures Gemini returns prose keyed to real day IDs.
  */
 export function buildGuideProseSchema(
-  dayIds: string[],
+  _dayIds: string[],
 ) {
-  const dayShape: Record<string, z.ZodObject<{
-    dayId: z.ZodString;
-    intro: z.ZodString;
-    transitions: z.ZodArray<z.ZodString>;
-    culturalMoment: z.ZodOptional<z.ZodString>;
-    practicalTip: z.ZodOptional<z.ZodString>;
-    summary: z.ZodString;
-  }>> = {};
-
-  for (let i = 0; i < dayIds.length; i++) {
-    dayShape[`day_${i}`] = z.object({
-      dayId: z.string(),
-      intro: z.string(),
-      transitions: z.array(z.string()),
-      culturalMoment: z.string().optional(),
-      practicalTip: z.string().optional(),
-      summary: z.string(),
-    });
-  }
-
   return z.object({
     tripOverview: z.string(),
     days: z.array(
       z.object({
         dayId: z.string(),
         intro: z.string(),
-        transitions: z.array(z.string()),
+        transitions: z.array(z.string()).max(5),
         culturalMoment: z.string().optional(),
         practicalTip: z.string().optional(),
         summary: z.string(),

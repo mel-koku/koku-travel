@@ -235,7 +235,7 @@ export function addRequestContextHeaders(
   request?: NextRequest,
 ): NextResponse {
   response.headers.set("X-Request-ID", context.requestId);
-  if (context.user) {
+  if (context.user && process.env.NODE_ENV !== "production") {
     response.headers.set("X-User-ID", context.user.id);
   }
 

@@ -7,7 +7,6 @@ import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 import { fetchAllLocations } from "@/lib/locations/locationService";
-import { isDiningLocation } from "@/lib/mealFiltering";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { generateDayIntros } from "./dayIntroGenerator";
@@ -37,22 +36,25 @@ export function convertItineraryToTrip(
     throw new Error("Start date is required");
   }
 
-  const startDateObj = new Date(startDate);
+  // Use local-date constructor to avoid UTC midnight timezone bugs
+  const [sy, sm, sd] = startDate.split("-").map(Number);
+  if (!sy || !sm || !sd) {
+    throw new Error(`Invalid start date: ${startDate}`);
+  }
+  const startDateObj = new Date(sy, sm - 1, sd);
   if (Number.isNaN(startDateObj.getTime())) {
     throw new Error(`Invalid start date: ${startDate}`);
   }
 
-  const endDateObj = new Date(startDateObj);
-  endDateObj.setDate(startDateObj.getDate() + duration - 1);
-  const endDate = endDateObj.toISOString().split("T")[0] ?? "";
+  const endDateObj = new Date(sy, sm - 1, sd + duration - 1);
+  const endDate = `${endDateObj.getFullYear()}-${String(endDateObj.getMonth() + 1).padStart(2, "0")}-${String(endDateObj.getDate()).padStart(2, "0")}`;
 
   // Build a Map for O(1) location lookups by name (instead of O(n×m) using .find())
   const locationByName = new Map(allLocations.map((loc) => [loc.name, loc]));
 
   const days: TripDay[] = itinerary.days.map((day, index) => {
-    const dayDate = new Date(startDateObj);
-    dayDate.setDate(startDateObj.getDate() + index);
-    const dateStr = dayDate.toISOString().split("T")[0] ?? "";
+    const dayDate = new Date(sy, sm - 1, sd + index);
+    const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, "0")}-${String(dayDate.getDate()).padStart(2, "0")}`;
 
     if (!dateStr) {
       throw new Error(`Failed to generate date string for day ${index}`);
@@ -298,8 +300,6 @@ export async function generateTripFromBuilderData(
     hasIntentConstraints: !!intentResult,
     hasGuideProse: !!guideProse,
   });
-
-  void isDiningLocation; // Silence unused import warning (used in commented code above)
 
   // Attach seasonal highlight if trip dates overlap a known event
   const startDate = builderData.dates.start;

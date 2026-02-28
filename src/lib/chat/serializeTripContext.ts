@@ -65,7 +65,12 @@ export function serializeTripContext(trip: StoredTrip): string {
         time: a.time,
       }));
     }
-    return JSON.stringify(ctx);
+    const trimmed = JSON.stringify(ctx);
+    // If still over 8KB after trimming metadata, hard-truncate
+    if (trimmed.length > 8192) {
+      return trimmed.slice(0, 8192);
+    }
+    return trimmed;
   }
 
   return json;

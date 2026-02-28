@@ -255,17 +255,20 @@ function applyPatches(
       }
 
       case "flag": {
-        const flagTarget = day.activities.find((a) => a.id === patch.activityId);
-        if (!flagTarget) {
+        const flagIdx = day.activities.findIndex((a) => a.id === patch.activityId);
+        if (flagIdx === -1) {
           logger.warn("Flag target activity not found", { activityId: patch.activityId });
           break;
         }
-        // Attach flag message to activity notes
-        if (flagTarget.kind === "place") {
+        const flagOriginal = day.activities[flagIdx]!;
+        // Clone the activity before mutating to avoid modifying the original itinerary
+        if (flagOriginal.kind === "place") {
+          const flagTarget = { ...flagOriginal };
           const existing = flagTarget.notes ?? "";
           flagTarget.notes = existing
             ? `${existing} | ${patch.severity}: ${patch.message}`
             : `${patch.severity}: ${patch.message}`;
+          day.activities[flagIdx] = flagTarget;
         }
         logger.info(`Applied flag patch: ${patch.message}`);
         break;

@@ -133,12 +133,18 @@ Reflective close. What the day felt like, not what happened.
 
 Return JSON with tripOverview and days array (one entry per day with exact dayId).`;
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 18000);
+
   try {
     const result = await generateObject({
       model: google("gemini-2.5-flash"),
       schema,
       prompt,
+      abortSignal: controller.signal,
     });
+
+    clearTimeout(timeout);
 
     const guide = result.object as GeneratedGuide;
 
@@ -161,6 +167,7 @@ Return JSON with tripOverview and days array (one entry per day with exact dayId
 
     return guide;
   } catch (error) {
+    clearTimeout(timeout);
     logger.warn("Guide prose generation failed, will fall back to day intros/templates", {
       error: getErrorMessage(error),
     });

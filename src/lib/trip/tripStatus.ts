@@ -12,6 +12,7 @@ export function getTripStatus(trip: StoredTrip): TripLifecycleStatus {
 
   const [sy = 0, sm = 1, sd = 1] = dates.start.split("-").map(Number);
   const [ey = 0, em = 1, ed = 1] = dates.end.split("-").map(Number);
+  if (!sy || !sm || !sd || !ey || !em || !ed) return "planning";
   const start = new Date(sy, sm - 1, sd);
   const end = new Date(ey, em - 1, ed);
 

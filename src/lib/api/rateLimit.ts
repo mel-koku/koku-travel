@@ -54,7 +54,7 @@ let cleanupInterval: NodeJS.Timeout | null = null;
 
 // Upstash Redis client (initialized lazily)
 let redisClient: Redis | null = null;
-let upstashRatelimit: Ratelimit | null = null;
+const upstashRatelimitInstances = new Map<string, Ratelimit>();
 let redisInitialized = false;
 let redisAvailable = false;
 
@@ -157,23 +157,27 @@ function getEnvironmentLevel(): "development" | "preview" | "production" {
 }
 
 /**
- * Creates or gets Upstash Ratelimit instance
+ * Creates or gets Upstash Ratelimit instance for a specific config.
+ * Each unique maxRequests+windowMs combination gets its own instance.
  */
 function getUpstashRatelimit(config: RateLimitConfig): Ratelimit | null {
   if (!redisAvailable || !redisClient) {
     return null;
   }
 
-  if (!upstashRatelimit) {
-    upstashRatelimit = new Ratelimit({
+  const key = `${config.maxRequests}:${config.windowMs}`;
+  let instance = upstashRatelimitInstances.get(key);
+  if (!instance) {
+    instance = new Ratelimit({
       redis: redisClient,
       limiter: Ratelimit.slidingWindow(config.maxRequests, `${config.windowMs} ms`),
       analytics: true,
       prefix: RATE_LIMIT_CONSTANTS.REDIS_KEY_PREFIX,
     });
+    upstashRatelimitInstances.set(key, instance);
   }
 
-  return upstashRatelimit;
+  return instance;
 }
 
 // Cleanup function to ensure interval is cleared

@@ -14,7 +14,9 @@ const PUBLIC_API_ROUTES = [
   "/api/places",
   "/api/health",
   "/api/chat",
-  "/api/itinerary",
+  "/api/itinerary/plan",
+  "/api/itinerary/refine",
+  "/api/itinerary/availability",
   "/api/routing",
   "/api/smart-prompts",
   "/api/sanity/webhook",
@@ -23,6 +25,14 @@ const PUBLIC_API_ROUTES = [
   "/api/video-import",
   "/api/shared",
   "/api/geocode",
+];
+
+/**
+ * Auth-required sub-routes that fall under a public prefix.
+ * Checked BEFORE PUBLIC_API_ROUTES to prevent bypass.
+ */
+const AUTH_REQUIRED_SUB_ROUTES = [
+  "/copy",  // POST /api/shared/[token]/copy
 ];
 
 /**
@@ -73,7 +83,8 @@ export async function middleware(request: NextRequest) {
 
   // Skip auth for public API routes — no session needed, saves a network round-trip
   const pathname = request.nextUrl.pathname;
-  if (PUBLIC_API_ROUTES.some((route) => pathname.startsWith(route))) {
+  const isAuthRequiredSubRoute = AUTH_REQUIRED_SUB_ROUTES.some((suffix) => pathname.endsWith(suffix));
+  if (!isAuthRequiredSubRoute && PUBLIC_API_ROUTES.some((route) => pathname.startsWith(route))) {
     return response;
   }
 

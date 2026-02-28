@@ -30,20 +30,21 @@ export function TodayIndicator({
 }: TodayIndicatorProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
-  // Update time every minute
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000); // 1 minute
-
-    return () => clearInterval(interval);
-  }, []);
-
-  // Only show for today
+  // Only show for today — recalculates when currentTime changes (midnight detection)
   const showIndicator = useMemo(
     () => isToday(tripStartDate, dayIndex),
-    [tripStartDate, dayIndex]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tripStartDate, dayIndex, currentTime.toDateString()],
   );
+
+  // Only run timer when today — prevents wasted intervals on non-today days
+  useEffect(() => {
+    if (!showIndicator) return;
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [showIndicator]);
 
   if (!showIndicator) {
     return null;
@@ -57,7 +58,7 @@ export function TodayIndicator({
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-foreground/75 opacity-75"></span>
           <span className="relative inline-flex h-2 w-2 rounded-full bg-foreground"></span>
         </span>
-        <span className="text-xs font-semibold text-white">
+        <span className="text-xs font-semibold text-foreground">
           {formatTime(currentTime)}
         </span>
       </div>
