@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useMemo, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 import { AskKokuPanelB } from "./AskKokuPanelB";
+import { useAppState } from "@/state/AppState";
+import { serializeTripContext } from "@/lib/chat/serializeTripContext";
 import type { AskKokuContext } from "./AskKokuSuggestionsB";
 
 const bEase = [0.25, 0.1, 0.25, 1] as const;
@@ -23,13 +25,25 @@ function deriveContext(pathname: string): AskKokuContext {
 export function AskKokuButtonB() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { trips } = useAppState();
+
+  const context = deriveContext(pathname);
+
+  const tripData = useMemo(() => {
+    if (context !== "itinerary") return undefined;
+    const tripId = searchParams.get("trip");
+    if (!tripId) return undefined;
+    const trip = trips.find((t) => t.id === tripId);
+    if (!trip) return undefined;
+    return serializeTripContext(trip);
+  }, [context, searchParams, trips]);
 
   if (HIDDEN_PATHS.some((p) => pathname.startsWith(p))) {
     return null;
   }
 
   const isTripBuilder = pathname.startsWith("/b/trip-builder");
-  const context = deriveContext(pathname);
 
   return (
     <>
@@ -68,7 +82,7 @@ export function AskKokuButtonB() {
       {/* Panel */}
       <AnimatePresence>
         {open && (
-          <AskKokuPanelB onClose={() => setOpen(false)} context={context} />
+          <AskKokuPanelB onClose={() => setOpen(false)} context={context} tripData={tripData} />
         )}
       </AnimatePresence>
     </>

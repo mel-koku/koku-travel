@@ -39,6 +39,10 @@ import { ShareButton } from "./ShareButton";
 import { SeasonalBanner } from "./SeasonalBanner";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "./ActivityRatingsContext";
+import { PrintHeader } from "./PrintHeader";
+import { PrintFooter } from "./PrintFooter";
+import { REGIONS } from "@/data/regions";
+import { useActivityCheckins } from "@/hooks/useActivityCheckins";
 
 const LocationExpanded = dynamic(
   () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
@@ -411,8 +415,38 @@ export const ItineraryShell = ({
     submitRating: activityRatingsHook.submitRating,
   }), [activityRatingsHook.ratings, activityRatingsHook.submitRating]);
 
+  // Print export data
+  const printCities = useMemo(() => {
+    const cityMap: Record<string, string> = {};
+    for (const region of REGIONS) {
+      for (const city of region.cities) {
+        cityMap[city.id] = city.name;
+      }
+    }
+    const ids = [...new Set(itinerary.days.map((d) => d.cityId).filter((c): c is string => Boolean(c)))];
+    return ids.map((id) => cityMap[id] ?? id);
+  }, [itinerary.days]);
+
+  const printDateRange = useMemo(() => {
+    const start = tripBuilderData?.dates?.start;
+    const end = tripBuilderData?.dates?.end;
+    if (!start || !end) return undefined;
+    const fmt = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    return `${fmt(start)} – ${fmt(end)}`;
+  }, [tripBuilderData?.dates]);
+
+  const tripName = useMemo(() => {
+    const stored = getTripById?.(tripId);
+    return stored?.name ?? "My Japan Trip";
+  }, [getTripById, tripId]);
+
+  // Activity check-ins (day-of ephemeral state)
+  const currentDayId = currentDay?.id;
+  const { checkedIn, checkIn } = useActivityCheckins(tripId, currentDayId);
+
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
+    <PrintHeader tripName={tripName} dateRange={printDateRange} cities={printCities} />
     <section className="mx-auto min-h-[calc(100dvh-80px)] max-w-screen-2xl">
       {/* ── Mobile peek map strip (< lg) ── */}
       <div className="relative lg:hidden">
@@ -567,6 +601,7 @@ export const ItineraryShell = ({
                   onDayExpand={(dayIndex) => {
                     if (dayIndex != null) handleSelectDayChange(dayIndex);
                   }}
+                  budgetTotal={tripBuilderData?.budget?.total}
                 />
               </div>
             )}
@@ -598,6 +633,8 @@ export const ItineraryShell = ({
                 tripStartDate={tripStartDate}
                 dayIndex={safeSelectedDay}
                 onActivityClick={handleSelectActivity}
+                onCheckIn={!isReadOnly ? checkIn : undefined}
+                checkedInIds={checkedIn}
                 className="mb-3"
               />
             )}
@@ -727,6 +764,7 @@ export const ItineraryShell = ({
         );
       })()}
     </section>
+    <PrintFooter />
     </ActivityRatingsProvider>
   );
 };

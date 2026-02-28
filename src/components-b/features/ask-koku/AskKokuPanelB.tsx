@@ -10,9 +10,10 @@ const bEase = [0.25, 0.1, 0.25, 1] as const;
 type AskKokuPanelProps = {
   onClose: () => void;
   context?: AskKokuContext;
+  tripData?: string;
 };
 
-export function AskKokuPanelB({ onClose, context }: AskKokuPanelProps) {
+export function AskKokuPanelB({ onClose, context, tripData }: AskKokuPanelProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 12, scale: 0.97 }}
@@ -35,7 +36,7 @@ export function AskKokuPanelB({ onClose, context }: AskKokuPanelProps) {
       </div>
 
       {/* Chat area */}
-      <AskKokuChatB onClose={onClose} context={context} />
+      <AskKokuChatB onClose={onClose} context={context} tripData={tripData} />
     </motion.div>
   );
 }

@@ -17,6 +17,7 @@ import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
 import type { EntryPoint } from "@/types/trip";
+import { estimateDayCost, formatCostRange } from "@/lib/itinerary/costEstimator";
 
 type DayHeaderProps = {
   day: ItineraryDay;
@@ -221,7 +222,7 @@ export function DayHeader({
 
     // Return only visit durations (travel time excluded - varies by transport mode)
     return visitDurations;
-  }, [placeActivities, locationsMap]);
+  }, [placeActivities, locationsMap, day.cityTransition?.durationMinutes]);
 
   // Format duration
   const durationLabel = useMemo(() => {
@@ -241,38 +242,11 @@ export function DayHeader({
     }
   }, [totalDuration]);
 
-  // Budget breakdown — rough daily cost estimate from priceLevel
-  const PRICE_RANGES: Record<number, { min: number; max: number }> = {
-    0: { min: 0, max: 0 },
-    1: { min: 500, max: 1500 },
-    2: { min: 1500, max: 3000 },
-    3: { min: 3000, max: 8000 },
-    4: { min: 8000, max: 15000 },
-  };
-
   const costEstimate = useMemo(() => {
-    let totalMin = 0;
-    let totalMax = 0;
-    let priceDataCount = 0;
-
-    for (const activity of placeActivities) {
-      const location = locationsMap.get(activity.id);
-      const level = location?.priceLevel;
-      if (level !== undefined && level !== null) {
-        const range = PRICE_RANGES[level];
-        if (range) {
-          totalMin += range.min;
-          totalMax += range.max;
-          priceDataCount++;
-        }
-      }
-    }
-
-    if (priceDataCount < 2) return null;
-
-    const fmtYen = (v: number) => (v >= 10000 ? `¥${Math.round(v / 1000)}k` : `¥${v.toLocaleString()}`);
-    return `~${fmtYen(totalMin)}–${fmtYen(totalMax)}`;
-  }, [placeActivities, locationsMap]);
+    const range = estimateDayCost(day.activities, locationsMap);
+    if (!range) return null;
+    return formatCostRange(range);
+  }, [day.activities, locationsMap]);
 
   const hasScheduledActivities = useMemo(
     () => placeActivities.some((a) => a.schedule?.arrivalTime || a.manualStartTime),

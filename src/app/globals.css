@@ -544,7 +544,17 @@ html.lenis-stopped {
 }
 
 /* Print stylesheet for itinerary export */
+@page {
+  size: A4 portrait;
+  margin: 15mm;
+}
+
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
   body {
     background: white !important;
     color: black !important;

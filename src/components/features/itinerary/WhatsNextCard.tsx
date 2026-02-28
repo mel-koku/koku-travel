@@ -1,8 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/cn";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
+import {
+  isToday,
+  parseTimeToMinutes,
+  formatRelativeTime,
+  getCurrentMinutes,
+} from "@/lib/itinerary/timeUtils";
 
 export type WhatsNextCardProps = {
   day: ItineraryDay;
@@ -10,59 +16,30 @@ export type WhatsNextCardProps = {
   dayIndex: number;
   className?: string;
   onActivityClick?: (activityId: string) => void;
+  onCheckIn?: (activityId: string) => void;
+  checkedInIds?: Set<string>;
 };
 
 /**
- * Parse time string (HH:MM) to minutes since midnight
+ * Get current activity and next activity based on current time.
+ * Skips activities that have been checked in.
  */
-function parseTimeToMinutes(timeStr: string | undefined): number | null {
-  if (!timeStr) return null;
-  const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
-  if (!match) return null;
-  const hours = parseInt(match[1] ?? "0", 10);
-  const minutes = parseInt(match[2] ?? "0", 10);
-  if (isNaN(hours) || isNaN(minutes)) return null;
-  return hours * 60 + minutes;
-}
-
-/**
- * Format minutes to relative time (e.g., "in 30 min", "now", "passed")
- */
-function formatRelativeTime(minutesUntil: number): string {
-  if (minutesUntil < -30) {
-    return "passed";
-  }
-  if (minutesUntil < 0) {
-    return "just now";
-  }
-  if (minutesUntil < 1) {
-    return "now";
-  }
-  if (minutesUntil < 60) {
-    return `in ${Math.round(minutesUntil)} min`;
-  }
-  const hours = Math.floor(minutesUntil / 60);
-  const mins = Math.round(minutesUntil % 60);
-  if (mins === 0) {
-    return `in ${hours}h`;
-  }
-  return `in ${hours}h ${mins}m`;
-}
-
-/**
- * Get current activity and next activity based on current time
- */
-function getActivityStatus(activities: ItineraryActivity[], currentTimeMinutes: number): {
+function getActivityStatus(
+  activities: ItineraryActivity[],
+  currentTimeMinutes: number,
+  checkedInIds?: Set<string>,
+): {
   current: Extract<ItineraryActivity, { kind: "place" }> | null;
   next: Extract<ItineraryActivity, { kind: "place" }> | null;
   minutesUntilNext: number | null;
 } {
   const placeActivities = activities.filter(
-    (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place"
+    (a): a is Extract<typeof a, { kind: "place" }> =>
+      a.kind === "place" && !checkedInIds?.has(a.id),
   );
 
-  let current: typeof placeActivities[number] | null = null;
-  let next: typeof placeActivities[number] | null = null;
+  let current: (typeof placeActivities)[number] | null = null;
+  let next: (typeof placeActivities)[number] | null = null;
 
   for (let i = 0; i < placeActivities.length; i++) {
     const activity = placeActivities[i];
@@ -73,25 +50,21 @@ function getActivityStatus(activities: ItineraryActivity[], currentTimeMinutes: 
 
     if (arrival === null) continue;
 
-    // Check if we're currently at this activity
     if (
       departure !== null &&
       currentTimeMinutes >= arrival &&
       currentTimeMinutes <= departure
     ) {
       current = activity;
-      // Next is the activity after current
       next = placeActivities[i + 1] ?? null;
       break;
     }
 
-    // Check if this activity is upcoming
     if (arrival > currentTimeMinutes) {
       next = activity;
       break;
     }
 
-    // If we passed this activity, check next one
     if (departure !== null && currentTimeMinutes > departure) {
       continue;
     }
@@ -106,33 +79,21 @@ function getActivityStatus(activities: ItineraryActivity[], currentTimeMinutes: 
 }
 
 /**
- * Check if the given date is today
+ * Build a Maps deeplink. Apple Maps on iOS, Google Maps otherwise.
  */
-function isToday(tripStartDate: string, dayIndex: number): boolean {
-  try {
-    const [year, month, day] = tripStartDate.split("-").map(Number);
-    if (!year || !month || !day || isNaN(year) || isNaN(month) || isNaN(day)) {
-      return false;
-    }
-
-    const startDate = new Date(year, month - 1, day);
-    const dayDate = new Date(startDate);
-    dayDate.setDate(startDate.getDate() + dayIndex);
-
-    const today = new Date();
-    return (
-      dayDate.getFullYear() === today.getFullYear() &&
-      dayDate.getMonth() === today.getMonth() &&
-      dayDate.getDate() === today.getDate()
-    );
-  } catch {
-    return false;
+function buildMapsLink(title: string, coords?: { lat: number; lng: number }): string | null {
+  if (!coords) return null;
+  const isIOS = typeof navigator !== "undefined" && /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isIOS) {
+    return `https://maps.apple.com/?q=${encodeURIComponent(title)}&ll=${coords.lat},${coords.lng}`;
   }
+  return `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`;
 }
 
 /**
  * Shows "What's Next" card at the top of itinerary when viewing today.
  * Displays the next upcoming activity with time until it starts.
+ * Updates live every 60 seconds.
  */
 export function WhatsNextCard({
   day,
@@ -140,23 +101,34 @@ export function WhatsNextCard({
   dayIndex,
   className,
   onActivityClick,
+  onCheckIn,
+  checkedInIds,
 }: WhatsNextCardProps) {
   // Only show for today
   const showCard = useMemo(
     () => isToday(tripStartDate, dayIndex),
-    [tripStartDate, dayIndex]
+    [tripStartDate, dayIndex],
   );
 
-  // Get current time in minutes
-  const currentTimeMinutes = useMemo(() => {
-    const now = new Date();
-    return now.getHours() * 60 + now.getMinutes();
-  }, []);
+  // Live-updating current time (60s interval)
+  const [currentTimeMinutes, setCurrentTimeMinutes] = useState(getCurrentMinutes);
+  useEffect(() => {
+    if (!showCard) return;
+    const interval = setInterval(() => setCurrentTimeMinutes(getCurrentMinutes()), 60_000);
+    return () => clearInterval(interval);
+  }, [showCard]);
 
   // Get activity status
   const { current, next, minutesUntilNext } = useMemo(
-    () => getActivityStatus(day.activities, currentTimeMinutes),
-    [day.activities, currentTimeMinutes]
+    () => getActivityStatus(day.activities, currentTimeMinutes, checkedInIds),
+    [day.activities, currentTimeMinutes, checkedInIds],
+  );
+
+  const handleCheckIn = useCallback(
+    (activityId: string) => {
+      onCheckIn?.(activityId);
+    },
+    [onCheckIn],
   );
 
   if (!showCard) {
@@ -187,6 +159,7 @@ export function WhatsNextCard({
 
   // Currently at an activity
   if (current && !next) {
+    const mapsLink = buildMapsLink(current.title, current.coordinates);
     return (
       <div
         className={cn(
@@ -213,6 +186,18 @@ export function WhatsNextCard({
                 {current.schedule.departureTime}
               </p>
             </div>
+          )}
+        </div>
+        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-sage/20">
+          {mapsLink && (
+            <a href={mapsLink} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-sage hover:underline">
+              Open in Maps
+            </a>
+          )}
+          {onCheckIn && (
+            <button type="button" onClick={() => handleCheckIn(current.id)} className="ml-auto text-xs font-medium text-sage hover:underline">
+              Mark as visited
+            </button>
           )}
         </div>
       </div>
@@ -270,12 +255,27 @@ export function WhatsNextCard({
         </div>
       </div>
 
-      {/* Running late option */}
-      {minutesUntilNext !== null && minutesUntilNext <= 15 && minutesUntilNext > -15 && (
-        <div className="mt-3 pt-3 border-t border-brand-primary/20">
-          <p className="text-xs text-foreground-secondary">
-            Running late? Adjust the schedule or skip this one.
-          </p>
+      {/* Actions: Maps deeplink + check-in */}
+      {next && (
+        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-brand-primary/20">
+          {(() => {
+            const link = buildMapsLink(next.title, next.coordinates);
+            return link ? (
+              <a href={link} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-brand-primary hover:underline">
+                Open in Maps
+              </a>
+            ) : null;
+          })()}
+          {current && onCheckIn && (
+            <button type="button" onClick={() => handleCheckIn(current.id)} className="ml-auto text-xs font-medium text-sage hover:underline">
+              Mark as visited
+            </button>
+          )}
+          {minutesUntilNext !== null && minutesUntilNext <= 15 && minutesUntilNext > -15 && (
+            <span className="text-xs text-foreground-secondary ml-auto">
+              Running late? Adjust or skip.
+            </span>
+          )}
         </div>
       )}
     </div>

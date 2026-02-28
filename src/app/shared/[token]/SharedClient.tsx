@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { createClient } from "@/lib/supabase/client";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 
@@ -19,6 +21,7 @@ type SharedTripData = {
 
 type SharedClientProps = {
   trip: SharedTripData;
+  token: string;
 };
 
 const formatDateLabel = (iso: string | undefined) => {
@@ -28,7 +31,52 @@ const formatDateLabel = (iso: string | undefined) => {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 };
 
-export function SharedClient({ trip }: SharedClientProps) {
+function SaveCopyButton({ token }: { token: string }) {
+  const router = useRouter();
+  const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
+
+  const handleCopy = useCallback(async () => {
+    const supabase = createClient();
+    if (!supabase) {
+      router.push(`/signin?redirect=/shared/${token}`);
+      return;
+    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      router.push(`/signin?redirect=/shared/${token}`);
+      return;
+    }
+
+    setState("loading");
+    try {
+      const res = await fetch(`/api/shared/${token}/copy`, { method: "POST" });
+      if (!res.ok) {
+        setState("error");
+        return;
+      }
+      setState("done");
+      setTimeout(() => router.push("/dashboard"), 1000);
+    } catch {
+      setState("error");
+    }
+  }, [token, router]);
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      disabled={state === "loading" || state === "done"}
+      className="inline-flex items-center rounded-xl border border-border bg-surface px-6 py-3 text-sm font-semibold text-foreground transition hover:bg-surface/80 active:scale-[0.98] disabled:opacity-60"
+    >
+      {state === "idle" && "Save a Copy"}
+      {state === "loading" && "Saving\u2026"}
+      {state === "done" && "Saved — redirecting"}
+      {state === "error" && "Failed — try again"}
+    </button>
+  );
+}
+
+export function SharedClient({ trip, token }: SharedClientProps) {
   const itinerary = trip.itinerary;
   const builderData = trip.builderData;
 
@@ -89,12 +137,15 @@ export function SharedClient({ trip }: SharedClientProps) {
           <p className="mx-auto mt-3 max-w-md text-sm text-foreground-secondary">
             Liked what you saw? Build your own.
           </p>
-          <Link
-            href="/trip-builder"
-            className="mt-6 inline-flex items-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
-          >
-            Build My Trip
-          </Link>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/trip-builder"
+              className="inline-flex items-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
+            >
+              Build My Trip
+            </Link>
+            <SaveCopyButton token={token} />
+          </div>
         </div>
       </div>
     </div>
