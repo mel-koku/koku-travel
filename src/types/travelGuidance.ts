@@ -73,6 +73,8 @@ export type TravelGuidance = {
   locationIds: string[];
   /** Seasons when this tip applies */
   seasons: Season[];
+  /** Specific months (1-12) when this tip applies. Empty = use season filtering only. */
+  validMonths: number[];
 
   // Targeting
   /** If true, applies to all activities regardless of matching criteria */
@@ -108,6 +110,7 @@ export type TravelGuidanceRow = {
   cities: string[];
   location_ids: string[];
   seasons: string[];
+  valid_months: number[] | null;
   is_universal: boolean;
   priority: number;
   source_name: string | null;
@@ -134,6 +137,7 @@ export function rowToTravelGuidance(row: TravelGuidanceRow): TravelGuidance {
     cities: row.cities,
     locationIds: row.location_ids,
     seasons: row.seasons as Season[],
+    validMonths: row.valid_months ?? [],
     isUniversal: row.is_universal,
     priority: row.priority,
     sourceName: row.source_name ?? undefined,

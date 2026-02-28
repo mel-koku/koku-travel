@@ -22,6 +22,13 @@ type ItineraryClientProps = {
   content?: PagesContent;
 };
 
+/** Parse YYYY-MM-DD safely to avoid UTC midnight timezone bug */
+function parseTripDate(dateStr: string): Date {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  if (y && m && d) return new Date(y, m - 1, d);
+  return new Date();
+}
+
 const formatDateLabel = (iso: string | undefined) => {
   if (!iso) {
     return "";
@@ -108,16 +115,20 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     }
 
     let cancelled = false;
-    const season = getCurrentSeason();
+    const tripStart = selectedTrip?.builderData?.dates?.start;
+    const startDate = tripStart ? parseTripDate(tripStart) : new Date();
 
     Promise.all(
-      activeItinerary.days.map((day, dayIndex) =>
-        detectGuidanceGaps(day, dayIndex, {
+      activeItinerary.days.map((day, dayIndex) => {
+        const dayDate = new Date(startDate);
+        dayDate.setDate(startDate.getDate() + dayIndex);
+        return detectGuidanceGaps(day, dayIndex, {
           fetchDayGuidance,
-          season,
+          season: getCurrentSeason(dayDate),
+          month: dayDate.getMonth() + 1,
           maxPerDay: 2,
-        })
-      )
+        });
+      })
     ).then((results) => {
       if (!cancelled) {
         setGuidanceGaps(results.flat());

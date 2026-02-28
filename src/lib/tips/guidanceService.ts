@@ -23,6 +23,8 @@ export type GuidanceMatchCriteria = {
   locationId?: string;
   /** Current season */
   season?: "spring" | "summer" | "fall" | "winter";
+  /** Month number (1-12) for month-level filtering */
+  month?: number;
   /** Additional tags/keywords from the location or activity */
   tags?: string[];
   /** Location name (for cuisine-specificity matching) */
@@ -296,6 +298,14 @@ function calculateMatchScore(
     score += 3;
   }
 
+  // EXCLUSION: Month-level precision check (stronger than season)
+  if (guidance.validMonths.length > 0) {
+    if (!criteria.month || !guidance.validMonths.includes(criteria.month)) {
+      return 0;
+    }
+    score += 6;
+  }
+
   // EXCLUSION: If tip is season-specific, only show in matching season
   if (guidance.seasons.length > 0) {
     if (!criteria.season || !guidance.seasons.includes(criteria.season)) {
@@ -335,9 +345,18 @@ export function buildCriteriaFromLocation(
     region: location.region,
     locationId: location.id,
     season: getCurrentSeason(activityDate),
+    month: getMonth(activityDate),
     tags: location.googleTypes ?? [],
     locationName: location.name,
   };
+}
+
+/**
+ * Get the month number (1-12) from a date. Returns current month if no date provided.
+ */
+function getMonth(date?: Date): number {
+  const d = date ?? new Date();
+  return d.getMonth() + 1;
 }
 
 /**
@@ -387,6 +406,8 @@ export type DayGuidanceCriteria = {
   region?: string;
   /** Current season */
   season?: "spring" | "summer" | "fall" | "winter";
+  /** Month number (1-12) for month-level filtering */
+  month?: number;
   /** Location IDs to exclude (for deduplication with card-level tips) */
   excludeLocationIds?: string[];
 };
@@ -462,6 +483,13 @@ export async function fetchDayGuidance(
         const regionMatches = guidance.regions.some((r) => r.toLowerCase() === regionLower);
         if (!regionMatches) {
           continue; // Region doesn't match, skip this tip
+        }
+      }
+
+      // EXCLUSION CHECK: Month-level precision (stronger than season)
+      if (guidance.validMonths.length > 0) {
+        if (!criteria.month || !guidance.validMonths.includes(criteria.month)) {
+          continue; // Month doesn't match, skip this tip
         }
       }
 

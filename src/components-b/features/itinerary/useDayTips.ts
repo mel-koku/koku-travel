@@ -88,6 +88,7 @@ export function useDayTips(
           city: day.cityId,
           region: regionId,
           season: getCurrentSeason(dayDate),
+          month: dayDate.getMonth() + 1,
         });
         if (!cancelled) {
           let filtered = guidance;
