@@ -35,7 +35,7 @@ export function ActivityTipBadgeB({ tip, className }: ActivityTipBadgeBProps) {
           e.stopPropagation();
           setExpanded(!expanded);
         }}
-        className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors"
+        className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium transition-all hover:brightness-[0.85]"
         style={{
           backgroundColor: `color-mix(in srgb, ${color} 10%, transparent)`,
           color,
@@ -109,11 +109,7 @@ export function ActivityTipsListB({
             e.stopPropagation();
             setShowAll(true);
           }}
-          className="rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors"
-          style={{
-            backgroundColor: "var(--surface)",
-            color: "var(--muted-foreground)",
-          }}
+          className="rounded-full bg-[var(--surface)] px-2 py-0.5 text-[11px] font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[color-mix(in_srgb,var(--surface)_60%,var(--border))] hover:text-[var(--foreground)]"
         >
           +{hiddenCount} more
         </button>

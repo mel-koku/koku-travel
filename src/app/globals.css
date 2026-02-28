@@ -518,6 +518,19 @@ html.lenis-stopped {
   border-radius: var(--radius-sm);
 }
 
+/* Pointer cursor on all interactive elements */
+:is(
+  a,
+  button,
+  [role="button"],
+  [tabindex="0"],
+  label.cursor-pointer,
+  summary,
+  select
+) {
+  cursor: pointer;
+}
+
 /* Respect reduced motion globally */
 @media (prefers-reduced-motion: reduce) {
   *,

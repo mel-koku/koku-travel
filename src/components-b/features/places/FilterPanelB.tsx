@@ -229,7 +229,7 @@ export function FilterPanelB({
                   <button
                     onClick={() => onQueryChange("")}
                     title="Clear search"
-                    className="absolute right-3 top-1/2 -translate-y-[calc(50%+8px)] p-1 rounded-full hover:bg-[var(--surface)]"
+                    className="absolute right-3 top-1/2 -translate-y-[calc(50%+8px)] p-1 rounded-full hover:bg-[var(--surface)] transition-colors"
                     aria-label="Clear search"
                   >
                     <svg className="h-3.5 w-3.5 text-[var(--muted-foreground)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -343,7 +343,7 @@ function FilterSectionB({ label, activeCount, isExpanded, onToggle, onClear, chi
     <motion.div className="border-b border-[var(--border)]/50 last:border-b-0" variants={sectionVariants}>
       <button
         onClick={onToggle}
-        className="flex items-center justify-between w-full py-3.5 group"
+        className="flex items-center justify-between w-full py-3.5 group hover:bg-[var(--surface)] rounded-lg px-1 -mx-1 transition-colors"
         aria-expanded={isExpanded}
       >
         <div className="flex items-center gap-2">
@@ -363,7 +363,7 @@ function FilterSectionB({ label, activeCount, isExpanded, onToggle, onClear, chi
               tabIndex={0}
               onClick={(e) => { e.stopPropagation(); onClear(); }}
               onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.stopPropagation(); onClear(); } }}
-              className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline underline-offset-2"
+              className="cursor-pointer text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline underline-offset-2"
             >
               Clear
             </span>

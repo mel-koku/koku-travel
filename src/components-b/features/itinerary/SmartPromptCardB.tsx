@@ -114,8 +114,7 @@ export function SmartPromptCardB({
               <button
                 type="button"
                 onClick={() => onAccept(gap)}
-                className="rounded-xl px-3.5 py-1.5 text-xs font-medium transition-colors duration-200"
-                style={{ color: "var(--muted-foreground)" }}
+                className="rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors duration-200 hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
               >
                 Got it
               </button>
@@ -144,8 +143,7 @@ export function SmartPromptCardB({
                   type="button"
                   onClick={() => onSkip(gap)}
                   disabled={isLoading}
-                  className="rounded-xl px-3.5 py-1.5 text-xs font-medium transition-colors duration-200 disabled:opacity-60"
-                  style={{ color: "var(--muted-foreground)" }}
+                  className="rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors duration-200 hover:bg-[var(--surface)] hover:text-[var(--foreground)] disabled:opacity-60"
                 >
                   Skip
                 </button>

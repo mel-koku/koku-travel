@@ -49,8 +49,7 @@ export function GuideCardB({ guide, index: _index, eager = false }: GuideCardBPr
     <article className="group animate-card-in">
       <Link
         href={`/b/guides/${guide.id}`}
-        className="block w-full overflow-hidden rounded-2xl bg-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
-        style={{ boxShadow: "var(--shadow-card)" }}
+        className="block w-full overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
       >
         {/* Image */}
         <div className="relative aspect-[4/3] w-full overflow-hidden">

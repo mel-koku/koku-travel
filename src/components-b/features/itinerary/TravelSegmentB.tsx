@@ -235,8 +235,7 @@ export function TravelSegmentB({
               {hasTransitSteps && (
                 <button
                   type="button"
-                  className="flex items-center gap-0.5 text-xs font-medium transition-colors duration-200 hover:underline"
-                  style={{ color: "var(--primary)" }}
+                  className="flex items-center gap-0.5 text-xs font-medium text-[var(--primary)] transition-colors duration-200 hover:underline hover:text-[var(--foreground)]"
                   onClick={() => setIsExpanded(!isExpanded)}
                   title="Show step-by-step transit directions"
                 >
@@ -251,8 +250,7 @@ export function TravelSegmentB({
               )}
               <button
                 type="button"
-                className="text-xs font-medium transition-colors duration-200 hover:underline"
-                style={{ color: "var(--primary)" }}
+                className="text-xs font-medium text-[var(--primary)] transition-colors duration-200 hover:underline hover:text-[var(--foreground)]"
                 onClick={openGoogleMapsDirections}
                 title={`Directions from ${originName || "origin"} to ${destinationName || "destination"}`}
               >

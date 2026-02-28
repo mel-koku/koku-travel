@@ -35,11 +35,8 @@ export function DayTipsPopoverB({ day, tripStartDate, dayIndex }: DayTipsPopover
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-semibold transition-colors active:scale-[0.98]"
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--primary) 8%, transparent)",
-          color: "var(--primary)",
-        }}
+        className="flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-semibold transition-colors active:scale-[0.98] bg-[color-mix(in_srgb,var(--primary)_8%,transparent)] hover:bg-[color-mix(in_srgb,var(--primary)_16%,transparent)]"
+        style={{ color: "var(--primary)" }}
         aria-label={`${tips.length} travel tips`}
       >
         <span className="text-xs">{"\uD83C\uDDEF\uD83C\uDDF5"}</span>
