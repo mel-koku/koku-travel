@@ -48,6 +48,9 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
  */
+// Allow up to 60s for itinerary generation on Vercel
+export const maxDuration = 60;
+
 export async function POST(request: NextRequest) {
   // Create request context for tracing
   const context = createRequestContext(request);
@@ -127,20 +130,25 @@ export async function POST(request: NextRequest) {
 
     // Generate trip (returns both domain model and raw itinerary)
     // Include savedIds if provided (user's saved locations from Places page)
-    // 25s timeout prevents hanging upstream from blocking indefinitely
-    const GENERATION_TIMEOUT_MS = 25_000;
+    // 55s timeout — under Vercel's 60s limit. Pipeline is:
+    //   locations (~1-2s) + weather (parallel, ~4s) + scoring (~2s) +
+    //   routing+gemini (parallel, ~8-12s) = ~15-20s typical, 40s worst case
+    const GENERATION_TIMEOUT_MS = 55_000;
     const timeoutSentinel = Symbol("timeout");
+    const startMs = Date.now();
     const generationResult = await Promise.race([
       generateTripFromBuilderData(builderData, finalTripId, savedIds),
       new Promise<typeof timeoutSentinel>((resolve) =>
         setTimeout(() => resolve(timeoutSentinel), GENERATION_TIMEOUT_MS),
       ),
     ]);
+    const elapsedMs = Date.now() - startMs;
 
     if (generationResult === timeoutSentinel) {
       logger.error("Itinerary generation timed out", undefined, {
         requestId: finalContext.requestId,
         timeoutMs: GENERATION_TIMEOUT_MS,
+        elapsedMs,
       });
       return addRequestContextHeaders(
         gatewayTimeout(
@@ -150,6 +158,11 @@ export async function POST(request: NextRequest) {
         finalContext,
       );
     }
+
+    logger.info("Itinerary generation completed", {
+      requestId: finalContext.requestId,
+      elapsedMs,
+    });
 
     const { trip, itinerary, dayIntros } = generationResult;
 

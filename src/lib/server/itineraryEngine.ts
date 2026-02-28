@@ -11,6 +11,7 @@ import { isDiningLocation } from "@/lib/mealFiltering";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { generateDayIntros } from "./dayIntroGenerator";
+import { getDayTripsFromCity } from "@/data/dayTrips";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -181,11 +182,32 @@ export async function generateTripFromBuilderData(
   tripId: string,
   savedIds?: string[],
 ): Promise<GeneratedTripResult> {
+  const t0 = Date.now();
+
   // Fetch locations filtered by selected cities (after ward consolidation)
-  const allLocations = await fetchAllLocations({ cities: builderData.cities });
+  // Also fetch day trip target cities for small selections (1-2 cities)
+  // to prevent location exhaustion on longer trips
+  let allLocations = await fetchAllLocations({ cities: builderData.cities });
+  if (builderData.cities && builderData.cities.length <= 2) {
+    const dayTripCityIds = new Set<string>();
+    for (const cityId of builderData.cities) {
+      const trips = getDayTripsFromCity(cityId);
+      trips.forEach((t) => dayTripCityIds.add(t.cityId));
+    }
+    builderData.cities.forEach((c) => dayTripCityIds.delete(c));
+    if (dayTripCityIds.size > 0) {
+      const dayTripLocations = await fetchAllLocations({
+        cities: Array.from(dayTripCityIds),
+      });
+      allLocations = [...allLocations, ...dayTripLocations];
+    }
+  }
+  const t1 = Date.now();
 
   // Generate itinerary using existing generator, including saved locations
-  const rawItinerary = await generateItinerary(builderData, { savedIds });
+  // Pass pre-fetched locations to avoid duplicate Supabase call inside generator
+  const rawItinerary = await generateItinerary(builderData, { savedIds, locations: allLocations });
+  const t2 = Date.now();
 
   // Optimize route order before planning times
   const optimizedItinerary = optimizeItineraryRoutes(rawItinerary, builderData);
@@ -215,51 +237,28 @@ export async function generateTripFromBuilderData(
     }
   }
 
-  // Schedule the itinerary to add arrival/departure times
-  // This uses the dayStartTime from builderData or defaults to 09:00
-  const itinerary = await planItinerary(optimizedItinerary, {
-    defaultDayStart: builderData.dayStartTime ?? "09:00",
-  }, dayEntryPoints);
-  logger.info("Scheduled itinerary with times", {
-    dayStartTime: builderData.dayStartTime ?? "09:00",
+  // Run planItinerary (routing) and Gemini day intros in parallel.
+  // Day intros only need activity titles/cities — not scheduled times —
+  // so we can use the pre-planning optimized itinerary for the prompt.
+  const [itinerary, dayIntros] = await Promise.all([
+    planItinerary(optimizedItinerary, {
+      defaultDayStart: builderData.dayStartTime ?? "09:00",
+    }, dayEntryPoints),
+    generateDayIntros(optimizedItinerary, builderData).catch(() => null),
+  ]);
+  const t3 = Date.now();
+
+  logger.info("Itinerary generation timing", {
+    locationsFetchMs: t1 - t0,
+    generatorMs: t2 - t1,
+    planningAndIntrosMs: t3 - t2,
+    totalMs: t3 - t0,
     daysCount: itinerary.days.length,
+    locationCount: allLocations.length,
+    dayStartTime: builderData.dayStartTime ?? "09:00",
   });
 
-  // Auto-meal insertion is disabled in favor of post-generation smart prompts.
-  // Users can now choose to add meals via the SmartPromptsDrawer after viewing
-  // their generated itinerary. This provides more control and transparency.
-  //
-  // To re-enable auto-meal insertion, uncomment the following code:
-  //
-  // const restaurants = allLocations.filter(isDiningLocation);
-  // const usedLocationIds = new Set<string>();
-  // const usedLocationNames = new Set<string>();
-  // for (const day of itinerary.days) {
-  //   for (const activity of day.activities) {
-  //     if (activity.kind === "place" && activity.locationId) {
-  //       usedLocationIds.add(activity.locationId);
-  //     }
-  //     if (activity.kind === "place" && activity.title) {
-  //       usedLocationNames.add(activity.title.toLowerCase().trim());
-  //     }
-  //   }
-  // }
-  // const daysWithMeals: typeof itinerary.days = [];
-  // for (const day of itinerary.days) {
-  //   const dayWithMeals = await insertMealActivities(
-  //     day,
-  //     builderData,
-  //     restaurants,
-  //     usedLocationIds,
-  //     usedLocationNames,
-  //   );
-  //   daysWithMeals.push(dayWithMeals);
-  // }
-  // itinerary = { ...itinerary, days: daysWithMeals };
   void isDiningLocation; // Silence unused import warning (used in commented code above)
-
-  // Generate personalized day intros via Gemini (non-blocking — falls back to templates)
-  const dayIntros = await generateDayIntros(itinerary, builderData).catch(() => null);
 
   // Convert to Trip domain model
   const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);
