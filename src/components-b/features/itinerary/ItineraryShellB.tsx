@@ -41,6 +41,7 @@ import { DaySelectorB } from "./DaySelectorB";
 import { ItineraryTimelineB } from "./ItineraryTimelineB";
 import { TripConfidenceDashboardB } from "./TripConfidenceDashboardB";
 import { SmartPromptsDrawerB } from "./SmartPromptsDrawerB";
+import { SeasonalBannerB } from "./SeasonalBannerB";
 
 const LocationExpanded = dynamic(
   () =>
@@ -695,6 +696,11 @@ export const ItineraryShellB = ({
               />
             </div>
           </div>
+
+          {/* Seasonal Banner */}
+          {model.seasonalHighlight && (
+            <SeasonalBannerB highlight={model.seasonalHighlight} />
+          )}
 
           {/* ── Trip Confidence Dashboard ── */}
           <AnimatePresence>

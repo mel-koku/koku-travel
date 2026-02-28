@@ -210,6 +210,14 @@ export function TravelSegment({
               Last train
             </span>
           )}
+          {segment.rushHourWarning && !segment.lastTrainWarning && (
+            <span
+              className="text-xs text-warning font-medium"
+              title="Expect crowded trains during rush hour"
+            >
+              Rush hour
+            </span>
+          )}
           {segment.distanceMeters && (
             <>
               <span className="text-stone">&middot;</span>

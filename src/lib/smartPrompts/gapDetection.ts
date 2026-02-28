@@ -7,8 +7,10 @@
 
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { TravelGuidance } from "@/types/travelGuidance";
+import type { WeatherForecast } from "@/types/weather";
 import { getCoveredMealTypes } from "./foodDetection";
 import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
+import { isRainyForecast } from "@/lib/weather/weatherScoring";
 
 /**
  * Types of gaps that can be detected in an itinerary.
@@ -22,7 +24,9 @@ export type GapType =
   | "late_start"
   | "category_imbalance"
   | "guidance"
-  | "reservation_alert";
+  | "reservation_alert"
+  | "lunch_rush"
+  | "rain_contingency";
 
 /**
  * A detected gap with contextual information for prompting.
@@ -119,6 +123,15 @@ export type GapAction =
         dayIndex: number;
         reservationInfo: string;
       }>;
+    }
+  | {
+      type: "acknowledge_lunch_rush";
+      timeSlot: string;
+    }
+  | {
+      type: "swap_for_weather";
+      outdoorActivityId: string;
+      reason: string;
     };
 
 
@@ -619,6 +632,101 @@ function detectCategoryImbalance(day: ItineraryDay, dayIndex: number): DetectedG
 }
 
 /**
+ * Detect lunch rush timing — restaurant/cafe at peak 11:30–13:00 with high rating.
+ * Suggests arriving 30 min early or later to avoid the crowd.
+ * Max 1 per day.
+ */
+function detectLunchRush(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
+
+  const DINING_CATEGORIES = new Set(["restaurant", "cafe"]);
+
+  for (const activity of placeActivities) {
+    const arrivalMinutes = parseTimeToMinutes(activity.schedule?.arrivalTime);
+    if (arrivalMinutes === null) continue;
+
+    // Check if scheduled during peak lunch (11:30–13:00 = 690–780 minutes)
+    if (arrivalMinutes < 690 || arrivalMinutes > 780) continue;
+
+    // Check if it's a dining activity
+    const category = resolveActivityCategory(activity.tags)?.sub?.toLowerCase();
+    const isDining = (category && DINING_CATEGORIES.has(category)) || !!activity.mealType;
+    if (!isDining) continue;
+
+    return [{
+      id: `lunch-rush-${day.id}`,
+      type: "lunch_rush",
+      dayIndex,
+      dayId: day.id,
+      title: "Peak lunch hour",
+      description: `${activity.title} is scheduled during peak lunch. Consider arriving 30 min early to beat the crowd.`,
+      icon: "UtensilsCrossed",
+      action: {
+        type: "acknowledge_lunch_rush",
+        timeSlot: activity.schedule?.arrivalTime ?? "12:00",
+      },
+    }];
+  }
+
+  return [];
+}
+
+/**
+ * Detect outdoor activities scheduled on rainy-forecast days.
+ * Suggests swapping for indoor alternatives. Max 2 per day.
+ */
+function detectRainContingency(
+  day: ItineraryDay,
+  dayIndex: number,
+  forecasts?: Map<string, WeatherForecast>,
+): DetectedGap[] {
+  if (!forecasts) return [];
+
+  // Try to match by dateLabel (ISO date like "2025-03-25")
+  const dayForecast = day.dateLabel ? forecasts.get(day.dateLabel) : undefined;
+  if (!dayForecast || !isRainyForecast(dayForecast)) return [];
+
+  const OUTDOOR_CATEGORIES = new Set([
+    "park", "garden", "viewpoint", "nature", "shrine", "temple", "beach",
+  ]);
+
+  const gaps: DetectedGap[] = [];
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
+  );
+
+  for (const activity of placeActivities) {
+    if (gaps.length >= 2) break;
+
+    const category = resolveActivityCategory(activity.tags)?.sub?.toLowerCase();
+    const isOutdoor =
+      activity.tags?.includes("outdoor") ||
+      (category && OUTDOOR_CATEGORIES.has(category));
+
+    if (!isOutdoor) continue;
+
+    gaps.push({
+      id: `rain-${day.id}-${activity.id}`,
+      type: "rain_contingency",
+      dayIndex,
+      dayId: day.id,
+      title: "Rain expected",
+      description: `${activity.title} is an outdoor activity and rain is forecast. Consider an indoor alternative.`,
+      icon: "CloudRain",
+      action: {
+        type: "swap_for_weather",
+        outdoorActivityId: activity.id,
+        reason: `Rain forecast for ${day.dateLabel ?? `Day ${dayIndex + 1}`}`,
+      },
+    });
+  }
+
+  return gaps;
+}
+
+/**
  * Get suggested alternative categories based on the dominant category.
  */
 function getSuggestedAlternatives(dominantCategory: string): string[] {
@@ -674,6 +782,9 @@ export function detectGaps(
     includeLongGaps?: boolean;
     includeTimingGaps?: boolean;
     includeCategoryBalance?: boolean;
+    includeLunchRush?: boolean;
+    includeRainContingency?: boolean;
+    forecasts?: Map<string, WeatherForecast>;
     maxGapsPerDay?: number;
   } = {}
 ): DetectedGap[] {
@@ -684,6 +795,9 @@ export function detectGaps(
     includeLongGaps = true,
     includeTimingGaps = true,
     includeCategoryBalance = true,
+    includeLunchRush = true,
+    includeRainContingency = true,
+    forecasts,
     maxGapsPerDay = 4,
   } = options;
 
@@ -717,19 +831,29 @@ export function detectGaps(
       dayGaps.push(...detectCategoryImbalance(day, dayIndex));
     }
 
+    if (includeLunchRush) {
+      dayGaps.push(...detectLunchRush(day, dayIndex));
+    }
+
+    if (includeRainContingency) {
+      dayGaps.push(...detectRainContingency(day, dayIndex, forecasts));
+    }
+
     // Prioritize and limit gaps per day
-    // Priority: meals > timing > long gaps > category > transport > experience
+    // Priority: meals > timing > rain/long gaps > lunch_rush > category > transport > experience
     const prioritized = dayGaps.sort((a, b) => {
       const priority: Record<GapType, number> = {
         reservation_alert: -1,
         meal: 0,
         late_start: 1,
         early_end: 1,
+        rain_contingency: 2,
         long_gap: 2,
-        category_imbalance: 3,
-        transport: 4,
-        experience: 5,
-        guidance: 6,
+        lunch_rush: 3,
+        category_imbalance: 4,
+        transport: 5,
+        experience: 6,
+        guidance: 7,
       };
       return priority[a.type] - priority[b.type];
     });

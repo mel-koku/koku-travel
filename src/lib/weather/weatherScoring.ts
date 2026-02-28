@@ -7,7 +7,7 @@ import type { Location } from "@/types/location";
 /**
  * Determine environment from tags first, then fall back to category heuristic.
  */
-function getEnvironment(location: Location): "indoor" | "outdoor" | "mixed" | "unknown" {
+export function getEnvironment(location: Location): "indoor" | "outdoor" | "mixed" | "unknown" {
   if (location.tags?.includes("indoor")) return "indoor";
   if (location.tags?.includes("outdoor")) return "outdoor";
   if (location.tags?.includes("mixed")) return "mixed";
@@ -140,3 +140,13 @@ export function scoreWeatherFit(
   };
 }
 
+/**
+ * Returns true if the forecast indicates rainy conditions.
+ */
+export function isRainyForecast(forecast: WeatherForecast): boolean {
+  return (
+    forecast.condition === "rain" ||
+    forecast.condition === "drizzle" ||
+    forecast.condition === "thunderstorm"
+  );
+}

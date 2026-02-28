@@ -26,6 +26,7 @@ import {
   LONG_DISTANCE_TRAIN_THRESHOLD_MIN,
 } from "@/lib/constants/planning";
 import { LAST_TRAIN_TIMES } from "@/lib/constants/lastTrainTimes";
+import { computeDayPace } from "@/lib/itinerary/energyBudget";
 
 type PlannerOptions = {
   defaultDayStart?: string;
@@ -391,6 +392,11 @@ export async function planItinerary(
     plannedDays.push(current);
   }
 
+  // Compute energy pace for each day
+  for (const day of plannedDays) {
+    day.paceLabel = computeDayPace(day);
+  }
+
   return {
     ...itinerary,
     days: plannedDays,
@@ -649,6 +655,20 @@ async function planItineraryDay(
         }
       }
 
+      // Check if transit departs during rush hour (morning 7:30–9:30 or evening 17:30–19:00)
+      if (
+        travelSegment.departureTime &&
+        travelMode !== "walk" &&
+        travelMode !== "car" &&
+        travelMode !== "taxi" &&
+        travelMode !== "bicycle"
+      ) {
+        const depMinutes = parseTime(travelSegment.departureTime);
+        if (depMinutes !== null && ((depMinutes >= 450 && depMinutes <= 570) || (depMinutes >= 1050 && depMinutes <= 1140))) {
+          travelSegment.rushHourWarning = true;
+        }
+      }
+
       if (lastPlaceIndex != null) {
         const previousActivity = plannedActivities[lastPlaceIndex] as Extract<ItineraryActivity, { kind: "place" }>;
         previousActivity.travelToNext = travelSegment;
@@ -770,6 +790,17 @@ async function planItineraryDay(
               if (depMinutes !== null && depMinutes > lastTrainTime) {
                 returnSegment.lastTrainWarning = true;
               }
+            }
+          }
+
+          // Check if return transit departs during rush hour
+          if (
+            returnSegment.departureTime &&
+            finalMode !== "walk"
+          ) {
+            const depMinutes = parseTime(returnSegment.departureTime);
+            if (depMinutes !== null && ((depMinutes >= 450 && depMinutes <= 570) || (depMinutes >= 1050 && depMinutes <= 1140))) {
+              returnSegment.rushHourWarning = true;
             }
           }
 
