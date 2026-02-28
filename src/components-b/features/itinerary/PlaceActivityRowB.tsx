@@ -21,6 +21,7 @@ import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { ConflictBadgeB } from "./ConflictBadgeB";
 import { ActivityTipBadgeB } from "./ActivityTipB";
 import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGenerator";
+import { PocketPhrasesB } from "./PocketPhrasesB";
 
 // B motion tokens
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -507,6 +508,36 @@ export const PlaceActivityRowB = memo(
                     )}
                   </div>
                 )}
+
+                {/* Insider Tip */}
+                {placeLocation?.insiderTip && (
+                  <div
+                    className="mt-3 rounded-xl p-2.5"
+                    style={{
+                      backgroundColor: "color-mix(in srgb, var(--warning) 8%, transparent)",
+                    }}
+                  >
+                    <p
+                      className="mb-1 text-[10px] font-semibold uppercase tracking-[0.15em]"
+                      style={{ color: "var(--warning)" }}
+                    >
+                      {"✨ "}Insider Tip
+                    </p>
+                    <p
+                      className="text-xs leading-relaxed"
+                      style={{ color: "var(--foreground-body, var(--muted-foreground))" }}
+                    >
+                      {placeLocation.insiderTip}
+                    </p>
+                  </div>
+                )}
+
+                {/* Pocket Phrases */}
+                <PocketPhrasesB
+                  locationCategory={placeLocation?.category}
+                  tags={activity.tags}
+                  seed={activity.id}
+                />
 
                 {/* Short description */}
                 {summary && (

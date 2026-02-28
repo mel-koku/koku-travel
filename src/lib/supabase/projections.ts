@@ -81,6 +81,7 @@ export type LocationDbRow = {
   nearest_station: string | null;
   cash_only: boolean | null;
   reservation_info: "required" | "recommended" | null;
+  insider_tip: string | null;
   tags: string[] | null;
   cuisine_type: string | null;
   // Source tracking
@@ -120,7 +121,8 @@ export const LOCATION_LISTING_COLUMNS = `
   service_options,
   tags,
   name_japanese,
-  nearest_station
+  nearest_station,
+  insider_tip
 `.replace(/\s+/g, "");
 
 /**
@@ -156,7 +158,8 @@ export const LOCATION_EXPLORE_COLUMNS = `
   good_for_groups,
   meal_options,
   service_options,
-  tags
+  tags,
+  insider_tip
 `.replace(/\s+/g, "");
 
 /**
@@ -223,7 +226,8 @@ export const LOCATION_ITINERARY_COLUMNS = `
   accessibility_options,
   dietary_options,
   tags,
-  cuisine_type
+  cuisine_type,
+  insider_tip
 `.replace(/\s+/g, "");
 
 /**
@@ -278,6 +282,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "meal_options"
   | "service_options"
   | "tags"
+  | "insider_tip"
 >;
 
 /**
@@ -360,4 +365,5 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "tags"
   | "name_japanese"
   | "nearest_station"
+  | "insider_tip"
 >;

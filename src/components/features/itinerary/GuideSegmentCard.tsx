@@ -48,6 +48,12 @@ const STYLE_MAP: Record<
     iconBg: "bg-sage/10",
     label: "Day Wrap-Up",
   },
+  neighborhood_narrative: {
+    bg: "bg-sage/5",
+    border: "border-sage/15",
+    iconBg: "bg-sage/10",
+    label: "Neighborhood",
+  },
 };
 
 const DEFAULT_ICONS: Record<GuideContentType, string> = {
@@ -57,6 +63,7 @@ const DEFAULT_ICONS: Record<GuideContentType, string> = {
   cultural_moment: "🏮",
   practical_tip: "💡",
   day_summary: "🌙",
+  neighborhood_narrative: "🏘️",
 };
 
 export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardProps) {

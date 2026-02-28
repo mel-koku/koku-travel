@@ -21,6 +21,7 @@ import { CULTURAL_MOMENT_TEMPLATES } from "@/data/guide/culturalMoments";
 import { PRACTICAL_TIP_TEMPLATES } from "@/data/guide/practicalTips";
 import { DAY_SUMMARY_TEMPLATES } from "@/data/guide/daySummaries";
 import { TRIP_OVERVIEW_TEMPLATES } from "@/data/guide/tripOverviews";
+import { NEIGHBORHOOD_NARRATIVE_TEMPLATES } from "@/data/guide/neighborhoodNarratives";
 
 import {
   resolveActivityCategory,
@@ -34,12 +35,14 @@ import {
   matchPracticalTip,
   matchDaySummary,
   matchTripOverview,
+  matchNeighborhoodNarrative,
   initDayIntroIndex,
   initTransitionIndex,
   initCulturalMomentIndex,
   initPracticalTipIndex,
   initDaySummaryIndex,
   initTripOverviewIndex,
+  initNeighborhoodNarrativeIndex,
   pickDayIntroOpener,
   pickPhrase,
   TRANSITION_BRIDGES,
@@ -59,6 +62,7 @@ function ensureInitialized() {
   initPracticalTipIndex(PRACTICAL_TIP_TEMPLATES);
   initDaySummaryIndex(DAY_SUMMARY_TEMPLATES);
   initTripOverviewIndex(TRIP_OVERVIEW_TEMPLATES);
+  initNeighborhoodNarrativeIndex(NEIGHBORHOOD_NARRATIVE_TEMPLATES);
   initialized = true;
 }
 
@@ -400,6 +404,41 @@ function buildDayGuide(
       beforeActivityId: tipActivity!.id,
       templateId: tipTemplate.id,
     });
+  }
+
+  // ── Neighborhood Narrative (max 1 per day) ──
+  // Scan for runs of 2+ consecutive activities sharing a neighborhood
+  if (activities.length >= 2) {
+    for (let i = 0; i < activities.length - 1; i++) {
+      const currNeighborhood = activities[i]!.neighborhood;
+      const nextNeighborhood = activities[i + 1]!.neighborhood;
+
+      if (
+        currNeighborhood &&
+        nextNeighborhood &&
+        currNeighborhood.toLowerCase() === nextNeighborhood.toLowerCase()
+      ) {
+        // Found a cluster — match narrative via fallback chain
+        const narrative = matchNeighborhoodNarrative(
+          city,
+          currNeighborhood,
+          `${dayId}-nn-${i}`,
+        );
+
+        if (narrative) {
+          segments.push({
+            id: `guide-${dayId}-nn`,
+            type: "neighborhood_narrative",
+            content: narrative.content,
+            icon: narrative.icon ?? "🏘️",
+            dayId,
+            beforeActivityId: activities[i]!.id,
+            templateId: narrative.id,
+          });
+        }
+        break; // Max 1 narrative per day
+      }
+    }
   }
 
   // ── Day Summary (composed from activity names, vibe-aware) ──

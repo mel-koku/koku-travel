@@ -11,6 +11,7 @@ import type {
   PracticalTipTemplate,
   DaySummaryTemplate,
   TripOverviewTemplate,
+  NeighborhoodNarrativeTemplate,
   ResolvedCategory,
 } from "@/types/itineraryGuide";
 import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
@@ -305,6 +306,32 @@ export function matchTripOverview(
   ];
 
   return lookup(tripOverviewIndex, fallbackKeys, seed);
+}
+
+// ── Neighborhood narrative lookup ────────────────────────────────────
+
+let neighborhoodNarrativeIndex: Map<string, NeighborhoodNarrativeTemplate[]> | null = null;
+
+export function initNeighborhoodNarrativeIndex(templates: NeighborhoodNarrativeTemplate[]) {
+  neighborhoodNarrativeIndex = buildIndex(templates);
+}
+
+export function matchNeighborhoodNarrative(
+  city: string,
+  neighborhood: string,
+  seed: string,
+): NeighborhoodNarrativeTemplate | null {
+  if (!neighborhoodNarrativeIndex) return null;
+  const c = city.toLowerCase();
+  const n = neighborhood.toLowerCase();
+
+  const fallbackKeys = [
+    `${c}:${n}`,
+    `${c}:any`,
+    `any:any`,
+  ];
+
+  return lookup(neighborhoodNarrativeIndex, fallbackKeys, seed);
 }
 
 // ── Determine dominant vibe for a day ───────────────────────────────

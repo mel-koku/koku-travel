@@ -341,6 +341,11 @@ export type Location = {
   reservationInfo?: 'required' | 'recommended';
 
   /**
+   * Curated insider tip for this location — local knowledge, hidden features, or best practices.
+   */
+  insiderTip?: string;
+
+  /**
    * Manually curated flag to mark locations for featured carousel display
    * Used for editor-selected featured destinations
    */

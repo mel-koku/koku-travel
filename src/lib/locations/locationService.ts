@@ -69,6 +69,7 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
     dietaryOptions: "dietary_options" in row ? row.dietary_options ?? undefined : undefined,
     // Tags are present in both LocationDbRow and LocationListingDbRow
     tags: "tags" in row ? row.tags ?? undefined : undefined,
+    insiderTip: "insider_tip" in row ? (row as LocationDbRow).insider_tip ?? undefined : undefined,
   };
 
   // Extended fields only present in full LocationDbRow
