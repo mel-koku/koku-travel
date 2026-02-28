@@ -250,7 +250,7 @@ export function ReviewStepB({
                       className={`flex items-start gap-3 rounded-xl border p-3 text-left transition ${
                         field.value === option.value
                           ? "border-[var(--primary)]/30 bg-[var(--primary)]/5 ring-1 ring-[var(--primary)]"
-                          : "border-[var(--border)] hover:bg-[var(--surface)]"
+                          : "border-[var(--border)] hover:bg-[var(--surface)] hover:border-[var(--primary)]/30"
                       }`}
                     >
                       <div
@@ -382,7 +382,7 @@ export function ReviewStepB({
                       className={`min-h-[44px] rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
                         isSelected
                           ? "border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)]"
-                          : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
+                          : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)] hover:border-[var(--primary)]/30 hover:text-[var(--foreground)]"
                       }`}
                     >
                       {option.label}

@@ -338,7 +338,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
               <p className="text-sm text-[var(--error)] mb-6">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition focus:outline-none focus:ring-2 focus:ring-[var(--error)] focus:ring-offset-2"
+                className="rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] focus:outline-none focus:ring-2 focus:ring-[var(--error)] focus:ring-offset-2"
               >
                 {content?.placesRetryText ?? "Try again"}
               </button>

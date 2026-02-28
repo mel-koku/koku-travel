@@ -55,8 +55,7 @@ export function DayStartTimePickerB({ currentTime, onChange }: DayStartTimePicke
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
-        style={{ color: "var(--muted-foreground)" }}
+        className="flex items-center gap-1.5 rounded-xl px-2 py-1 text-sm text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
       >
         <Clock className="h-4 w-4" style={{ color: "var(--primary)" }} />
         <span className="font-medium">
@@ -80,18 +79,11 @@ export function DayStartTimePickerB({ currentTime, onChange }: DayStartTimePicke
               key={option.value}
               type="button"
               onClick={() => handleSelect(option.value)}
-              className="w-full rounded-xl px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
-              style={{
-                backgroundColor:
-                  currentTime === option.value
-                    ? "color-mix(in srgb, var(--primary) 10%, transparent)"
-                    : "transparent",
-                color:
-                  currentTime === option.value
-                    ? "var(--primary)"
-                    : "var(--foreground)",
-                fontWeight: currentTime === option.value ? 600 : 400,
-              }}
+              className={`w-full rounded-xl px-3 py-2 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 ${
+                currentTime === option.value
+                  ? "bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] font-semibold text-[var(--primary)]"
+                  : "text-[var(--foreground)] hover:bg-[var(--surface)]"
+              }`}
             >
               {option.label}
             </button>

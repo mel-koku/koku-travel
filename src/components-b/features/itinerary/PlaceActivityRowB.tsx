@@ -532,8 +532,7 @@ export const PlaceActivityRowB = memo(
                       <button
                         type="button"
                         onClick={handleReplace}
-                        className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors hover:bg-[var(--surface)]"
-                        style={{ color: "var(--muted-foreground)" }}
+                        className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
                         title="Find alternatives"
                       >
                         <ArrowLeftRight className="h-3.5 w-3.5" />
@@ -543,8 +542,7 @@ export const PlaceActivityRowB = memo(
                     <button
                       type="button"
                       onClick={handleDelete}
-                      className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors hover:bg-[color-mix(in_srgb,var(--error)_10%,transparent)]"
-                      style={{ color: "var(--muted-foreground)" }}
+                      className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[color-mix(in_srgb,var(--error)_10%,transparent)] hover:text-[var(--error)]"
                       aria-label={`Delete ${activity.title}`}
                       title="Remove this activity"
                     >

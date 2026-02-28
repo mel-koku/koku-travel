@@ -33,7 +33,7 @@ export const PlacesMapCardB = memo(
           className={`flex items-center gap-2 rounded-xl bg-white pl-2 pr-3 py-1.5 transition ${
             isHighlighted
               ? "ring-1 ring-[var(--primary)]/40 bg-white"
-              : "hover:bg-white"
+              : "hover:bg-[var(--surface)] hover:shadow-[var(--shadow-card)]"
           }`}
           style={{ boxShadow: "var(--shadow-sm)" }}
         >

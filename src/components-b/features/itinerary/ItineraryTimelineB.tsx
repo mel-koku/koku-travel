@@ -1175,7 +1175,7 @@ export const ItineraryTimelineB = ({
               <button
                 type="button"
                 onClick={handleAddNote}
-                className="mt-3 text-sm font-medium transition-colors hover:opacity-80"
+                className="mt-3 text-sm font-medium transition-colors hover:text-[var(--foreground)]"
                 style={{ color: "var(--primary)" }}
               >
                 + Add note

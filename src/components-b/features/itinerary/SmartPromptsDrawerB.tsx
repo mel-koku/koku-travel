@@ -68,7 +68,7 @@ export function SmartPromptsDrawerB({
                 setIsExpanded(!isExpanded);
               }
             }}
-            className="flex w-full cursor-pointer items-center justify-between px-4 py-3"
+            className="flex w-full cursor-pointer items-center justify-between px-4 py-3 transition-colors hover:bg-[var(--surface)]"
           >
             <div className="flex items-center gap-2">
               <Lightbulb className="h-5 w-5" style={{ color: "var(--primary)" }} />
@@ -86,7 +86,7 @@ export function SmartPromptsDrawerB({
                   e.stopPropagation();
                   handleDismiss();
                 }}
-                className="flex h-11 w-11 items-center justify-center rounded-full transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-[var(--surface)]"
                 style={{ color: "var(--muted-foreground)" }}
               >
                 <X className="h-4 w-4" />
@@ -157,7 +157,7 @@ export function SmartPromptsDrawerB({
             <button
               type="button"
               onClick={handleDismiss}
-              className="flex h-11 w-11 items-center justify-center rounded-full transition-colors"
+              className="flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-[var(--surface)]"
               style={{ color: "var(--muted-foreground)" }}
             >
               <X className="h-4 w-4" />

@@ -130,7 +130,7 @@ export function SignInClientB({ content }: SignInClientBProps) {
             <button
               type="submit"
               disabled={!supabase}
-              className="w-full h-12 rounded-xl bg-[var(--primary)] text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+              className="w-full h-12 rounded-xl bg-[var(--primary)] text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               {content?.signInSubmitText ?? "Send Sign-in Link"}
             </button>

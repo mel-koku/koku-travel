@@ -210,8 +210,7 @@ export function WhatsNextCardB({
             <button
               type="button"
               onClick={() => next && onActivityClick?.(next.id)}
-              className="truncate text-sm font-semibold transition-colors"
-              style={{ color: "var(--foreground)" }}
+              className="truncate text-sm font-semibold text-[var(--foreground)] transition-colors hover:text-[var(--primary)]"
             >
               {next?.title}
             </button>

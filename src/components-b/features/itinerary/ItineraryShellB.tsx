@@ -652,7 +652,7 @@ export const ItineraryShellB = ({
                     <button
                       type="button"
                       onClick={() => setShowDashboard((prev) => !prev)}
-                      className="flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-colors active:scale-[0.98]"
+                      className="flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--foreground)]"
                       style={{
                         borderColor: showDashboard ? "var(--primary)" : "var(--border)",
                         backgroundColor: showDashboard
@@ -875,7 +875,7 @@ export const ItineraryShellB = ({
                       setPlanningError(null);
                       scheduleUserPlanning(model);
                     }}
-                    className="mt-2 w-full rounded-xl px-3 py-1.5 text-xs font-medium text-white transition hover:opacity-90 active:scale-[0.98]"
+                    className="mt-2 w-full rounded-xl px-3 py-1.5 text-xs font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
                     style={{ background: "var(--error, #DC2626)" }}
                   >
                     Retry

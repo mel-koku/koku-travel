@@ -675,7 +675,7 @@ function DayOverviewCardB({
 
               <button
                 onClick={onGoToDay}
-                className="text-[11px] font-medium transition-colors duration-200 hover:underline"
+                className="text-[11px] font-medium transition-colors duration-200 hover:underline hover:text-[var(--foreground)]"
                 style={{ color: "var(--primary)" }}
               >
                 Go to Day {day.dayIndex + 1}

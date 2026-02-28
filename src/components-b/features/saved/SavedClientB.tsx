@@ -142,7 +142,7 @@ export function SavedClientB({ content }: SavedClientBProps) {
               </p>
               <Link
                 href="/b/places"
-                className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white active:scale-[0.98]"
+                className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white active:scale-[0.98] transition-shadow hover:shadow-[var(--shadow-elevated)]"
               >
                 Start exploring
               </Link>

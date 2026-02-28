@@ -34,12 +34,11 @@ export const DiscoverMapCardB = memo(
         <button
           type="button"
           onClick={() => onSelect?.(location)}
-          className={`flex w-full items-center gap-2 rounded-xl bg-white pl-2 pr-3 py-1.5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 ${
+          className={`flex w-full items-center gap-2 rounded-xl bg-white pl-2 pr-3 py-1.5 text-left shadow-[var(--shadow-sm)] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 ${
             isHighlighted
               ? "ring-1 ring-[var(--primary)]/40 bg-white"
-              : "hover:bg-white"
+              : "hover:bg-[var(--surface)] hover:shadow-[var(--shadow-card)]"
           }`}
-          style={{ boxShadow: "var(--shadow-sm)" }}
         >
           {thumb && (
             <div className="relative h-8 w-8 shrink-0 rounded-lg overflow-hidden">
