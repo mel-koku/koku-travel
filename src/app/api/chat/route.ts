@@ -14,6 +14,7 @@ import {
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { formatTripContextBlock } from "@/lib/chat/serializeTripContext";
 
 const CHAT_MAX_BODY_SIZE = 256 * 1024; // 256KB
 
@@ -28,6 +29,7 @@ const chatRequestSchema = z.object({
     )
     .min(1, "At least one message is required"),
   context: z.string().optional(),
+  tripContext: z.string().max(10240).optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -89,7 +91,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { messages, context: bodyContext } = parsed.data;
+    const { messages, context: bodyContext, tripContext } = parsed.data;
     const chatContext = bodyContext ?? request.headers.get("X-Koku-Context");
 
     // Cap conversation to last 20 messages for cost control
@@ -110,6 +112,14 @@ export async function POST(request: NextRequest) {
       }
       if (contextParts.length > 0) {
         systemPrompt += `\n\n## Current Context\n\n${contextParts.join("\n")}`;
+      }
+    }
+
+    // Inject trip context when on itinerary page
+    if (tripContext && chatContext === "itinerary") {
+      const contextBlock = formatTripContextBlock(tripContext);
+      if (contextBlock) {
+        systemPrompt += contextBlock;
       }
     }
 

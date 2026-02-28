@@ -28,6 +28,7 @@ import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { cn } from "@/lib/cn";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { RouteOverviewB } from "./RouteOverviewB";
+import { estimateTripCost, formatCostRange, formatYen } from "@/lib/itinerary/costEstimator";
 
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
@@ -42,6 +43,7 @@ type TripConfidenceDashboardBProps = {
   onDayExpand?: (dayIndex: number | null) => void;
   locationMap?: Map<string, Location>;
   mobilityNeeds?: boolean;
+  budgetTotal?: number;
 };
 
 export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
@@ -55,6 +57,7 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
   onDayExpand,
   locationMap,
   mobilityNeeds,
+  budgetTotal,
 }: TripConfidenceDashboardBProps) {
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
@@ -97,7 +100,7 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
       ),
     [itinerary],
   );
-  const { getLocation } = useActivityLocations(allPlaceActivities);
+  const { getLocation, locationsMap } = useActivityLocations(allPlaceActivities);
 
   const toggleChecked = useCallback((id: string) => {
     setCheckedItems((prev) => {
@@ -135,6 +138,17 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
   }, [itinerary, tripStartDate, tripCities]);
 
   const level = getHealthLevel(health.overall);
+
+  const tripBudget = useMemo(
+    () => estimateTripCost(itinerary.days, locationsMap),
+    [itinerary.days, locationsMap],
+  );
+
+  const budgetStatus = useMemo(() => {
+    if (!tripBudget || !budgetTotal) return null;
+    const midEstimate = (tripBudget.min + tripBudget.max) / 2;
+    return midEstimate <= budgetTotal ? "within" : "over";
+  }, [tripBudget, budgetTotal]);
 
   return (
     <motion.div
@@ -259,6 +273,48 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
                 onToggle={() => toggleChecked(item.id)}
               />
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Estimated Cost */}
+      {tripBudget && (
+        <div className="space-y-2">
+          <h3
+            className="text-xs font-semibold uppercase tracking-[0.15em]"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            Estimated Cost
+          </h3>
+          <div
+            className="rounded-2xl p-4"
+            style={{ backgroundColor: "var(--card)", boxShadow: "var(--shadow-card)" }}
+          >
+            <p className="text-lg font-bold" style={{ color: "var(--foreground)" }}>
+              {formatCostRange(tripBudget)}
+            </p>
+            <p className="mt-0.5 text-xs" style={{ color: "var(--muted-foreground)" }}>
+              Activity & transit costs · excluding accommodation
+            </p>
+            {budgetTotal != null && budgetStatus && (
+              <div className="mt-3">
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span style={{ color: budgetStatus === "within" ? "var(--success)" : "var(--warning)" }}>
+                    {budgetStatus === "within" ? "Within budget" : "Over budget"}
+                  </span>
+                  <span style={{ color: "var(--muted-foreground)" }}>Budget: {formatYen(budgetTotal)}</span>
+                </div>
+                <div className="h-1.5 rounded-full" style={{ backgroundColor: "var(--border)" }}>
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{
+                      width: `${Math.min(100, ((tripBudget.min + tripBudget.max) / 2 / budgetTotal) * 100)}%`,
+                      backgroundColor: budgetStatus === "within" ? "var(--success)" : "var(--warning)",
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

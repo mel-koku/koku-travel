@@ -18,6 +18,7 @@ import {
 import { easeReveal, durationFast, durationBase } from "@/lib/motion";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { LocationExpanded } from "@/components/features/places/LocationExpanded";
+import { estimateTripCost, formatCostRange, formatYen } from "@/lib/itinerary/costEstimator";
 
 type TripConfidenceDashboardProps = {
   itinerary: Itinerary;
@@ -34,6 +35,8 @@ type TripConfidenceDashboardProps = {
   locationMap?: Map<string, Location>;
   /** Whether traveler has mobility needs */
   mobilityNeeds?: boolean;
+  /** User's budget total from trip builder (in JPY) */
+  budgetTotal?: number;
 };
 
 export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
@@ -47,6 +50,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   onDayExpand,
   locationMap,
   mobilityNeeds,
+  budgetTotal,
 }: TripConfidenceDashboardProps) {
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
@@ -91,7 +95,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
       ),
     [itinerary],
   );
-  const { getLocation } = useActivityLocations(allPlaceActivities);
+  const { getLocation, locationsMap } = useActivityLocations(allPlaceActivities);
 
   const handleActivityClick = useCallback(
     (activityId: string) => {
@@ -137,6 +141,17 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   }, [itinerary, tripStartDate, tripCities]);
 
   const level = getHealthLevel(health.overall);
+
+  const tripBudget = useMemo(
+    () => estimateTripCost(itinerary.days, locationsMap),
+    [itinerary.days, locationsMap],
+  );
+
+  const budgetStatus = useMemo(() => {
+    if (!tripBudget || !budgetTotal) return null;
+    const midEstimate = (tripBudget.min + tripBudget.max) / 2;
+    return midEstimate <= budgetTotal ? "within" : "over";
+  }, [tripBudget, budgetTotal]);
 
   return (
     <>
@@ -231,6 +246,33 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           })}
         </div>
       </div>
+
+      {/* Estimated Cost */}
+      {tripBudget && (
+        <div className="space-y-2">
+          <h3 className="eyebrow-editorial">Estimated Cost</h3>
+          <div className="rounded-xl border border-border bg-surface/40 p-4">
+            <p className="text-lg font-semibold text-foreground">{formatCostRange(tripBudget)}</p>
+            <p className="mt-0.5 text-xs text-stone">Activity & transit costs · excluding accommodation</p>
+            {budgetTotal != null && budgetStatus && (
+              <div className="mt-3">
+                <div className="flex items-center justify-between text-xs mb-1">
+                  <span className={budgetStatus === "within" ? "text-success" : "text-warning"}>
+                    {budgetStatus === "within" ? "Within budget" : "Over budget"}
+                  </span>
+                  <span className="text-stone">Budget: {formatYen(budgetTotal)}</span>
+                </div>
+                <div className="h-1.5 rounded-full bg-border">
+                  <div
+                    className={`h-full rounded-full transition-all ${budgetStatus === "within" ? "bg-sage" : "bg-warning"}`}
+                    style={{ width: `${Math.min(100, ((tripBudget.min + tripBudget.max) / 2 / budgetTotal) * 100)}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Days */}
       <div className="space-y-2">

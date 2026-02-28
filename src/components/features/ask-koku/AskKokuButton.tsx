@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname } from "next/navigation";
+import { useMemo, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageCircle, X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
 import { AskKokuPanel } from "./AskKokuPanel";
+import { useAppState } from "@/state/AppState";
+import { serializeTripContext } from "@/lib/chat/serializeTripContext";
 import type { AskKokuContext } from "./AskKokuSuggestions";
 
 const HIDDEN_PATHS = ["/studio", "/places"];
@@ -22,6 +24,20 @@ function deriveContext(pathname: string): AskKokuContext {
 export function AskKokuButton() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { trips } = useAppState();
+
+  const context = deriveContext(pathname);
+
+  // Serialize trip context when on itinerary page
+  const tripData = useMemo(() => {
+    if (context !== "itinerary") return undefined;
+    const tripId = searchParams.get("trip");
+    if (!tripId) return undefined;
+    const trip = trips.find((t) => t.id === tripId);
+    if (!trip) return undefined;
+    return serializeTripContext(trip);
+  }, [context, searchParams, trips]);
 
   // Hide on studio and explore
   if (HIDDEN_PATHS.some((p) => pathname.startsWith(p))) {
@@ -29,7 +45,6 @@ export function AskKokuButton() {
   }
 
   const isTripBuilder = pathname.startsWith("/trip-builder");
-  const context = deriveContext(pathname);
 
   return (
     <>
@@ -67,7 +82,7 @@ export function AskKokuButton() {
       {/* Panel */}
       <AnimatePresence>
         {open && (
-          <AskKokuPanel onClose={() => setOpen(false)} context={context} />
+          <AskKokuPanel onClose={() => setOpen(false)} context={context} tripData={tripData} />
         )}
       </AnimatePresence>
     </>
