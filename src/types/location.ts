@@ -368,6 +368,14 @@ export type Location = {
    */
   cuisineType?: string;
 
+  /**
+   * Tattoo policy for onsen/wellness locations.
+   * - 'prohibited': Tattoos not allowed (most traditional onsen in Japan)
+   * - 'cover_required': Must cover tattoos with stickers or bandages
+   * - 'accepted': Tattoo-friendly facility
+   */
+  tattooPolicy?: "prohibited" | "cover_required" | "accepted";
+
   // ============================================
   // Source Tracking
   // ============================================

@@ -42,6 +42,8 @@ import { ItineraryTimelineB } from "./ItineraryTimelineB";
 import { TripConfidenceDashboardB } from "./TripConfidenceDashboardB";
 import { SmartPromptsDrawerB } from "./SmartPromptsDrawerB";
 import { SeasonalBannerB } from "./SeasonalBannerB";
+import { useActivityRatings } from "@/hooks/useActivityRatings";
+import { ActivityRatingsProvider } from "@/components/features/itinerary/ActivityRatingsContext";
 
 const LocationExpanded = dynamic(
   () =>
@@ -487,7 +489,22 @@ export const ItineraryShellB = ({
     0,
   );
 
+  // Activity ratings
+  const activityRatingsHook = useActivityRatings(tripId && !isUsingMock && !isReadOnly ? tripId : undefined);
+  useEffect(() => {
+    if (tripId && !isUsingMock && !isReadOnly) {
+      activityRatingsHook.fetchRatings();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tripId, isUsingMock, isReadOnly]);
+
+  const ratingsContextValue = useMemo(() => ({
+    ratings: activityRatingsHook.ratings,
+    submitRating: activityRatingsHook.submitRating,
+  }), [activityRatingsHook.ratings, activityRatingsHook.submitRating]);
+
   return (
+    <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
     <section
       className="mx-auto min-h-[100dvh] max-w-screen-2xl lg:fixed lg:inset-x-0 lg:top-[var(--header-h)] lg:bottom-0 lg:min-h-0 lg:overflow-hidden"
       style={{ background: "var(--background)" }}
@@ -979,5 +996,6 @@ export const ItineraryShellB = ({
         />
       )}
     </section>
+    </ActivityRatingsProvider>
   );
 };

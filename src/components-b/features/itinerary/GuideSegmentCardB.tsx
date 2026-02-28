@@ -18,6 +18,7 @@ const LABEL_MAP: Record<GuideContentType, string> = {
   practical_tip: "Pro Tip",
   day_summary: "Day Wrap-Up",
   neighborhood_narrative: "Neighborhood",
+  neighborhood_walk: "Neighborhood Walk",
 };
 
 const DEFAULT_ICONS: Record<GuideContentType, string> = {
@@ -28,6 +29,7 @@ const DEFAULT_ICONS: Record<GuideContentType, string> = {
   practical_tip: "\u{1f4a1}",
   day_summary: "\u{1f319}",
   neighborhood_narrative: "\u{1F3D8}\uFE0F",
+  neighborhood_walk: "\u{1F6B6}",
 };
 
 /* ── Combined day guide card (collapsed by default) ── */

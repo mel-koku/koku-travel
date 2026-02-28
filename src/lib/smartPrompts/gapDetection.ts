@@ -26,7 +26,8 @@ export type GapType =
   | "guidance"
   | "reservation_alert"
   | "lunch_rush"
-  | "rain_contingency";
+  | "rain_contingency"
+  | "luggage_needs";
 
 /**
  * A detected gap with contextual information for prompting.
@@ -132,6 +133,11 @@ export type GapAction =
       type: "swap_for_weather";
       outdoorActivityId: string;
       reason: string;
+    }
+  | {
+      type: "acknowledge_luggage";
+      fromCity: string;
+      toCity: string;
     };
 
 
@@ -727,6 +733,33 @@ function detectRainContingency(
 }
 
 /**
+ * Detect luggage logistics needs on city transition days.
+ * Suggests takkyubin forwarding service.
+ */
+function detectLuggageNeeds(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  if (!day.cityTransition) return [];
+
+  const { fromCityId, toCityId } = day.cityTransition;
+  const fromLabel = fromCityId.charAt(0).toUpperCase() + fromCityId.slice(1);
+  const toLabel = toCityId.charAt(0).toUpperCase() + toCityId.slice(1);
+
+  return [{
+    id: `luggage-${day.id}`,
+    type: "luggage_needs",
+    dayIndex,
+    dayId: day.id,
+    title: "Send bags ahead",
+    description: `Moving from ${fromLabel} to ${toLabel}. Send bags via takkyubin (~\u00A52,000\u20133,000/bag). Drop off at any convenience store or hotel front desk the day before.`,
+    icon: "Package",
+    action: {
+      type: "acknowledge_luggage",
+      fromCity: fromCityId,
+      toCity: toCityId,
+    },
+  }];
+}
+
+/**
  * Get suggested alternative categories based on the dominant category.
  */
 function getSuggestedAlternatives(dominantCategory: string): string[] {
@@ -786,6 +819,8 @@ export function detectGaps(
     includeRainContingency?: boolean;
     forecasts?: Map<string, WeatherForecast>;
     maxGapsPerDay?: number;
+    /** When "ryokan", skip breakfast + dinner gap detection (included with stay) */
+    accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
   } = {}
 ): DetectedGap[] {
   const {
@@ -799,6 +834,7 @@ export function detectGaps(
     includeRainContingency = true,
     forecasts,
     maxGapsPerDay = 4,
+    accommodationStyle,
   } = options;
 
   const allGaps: DetectedGap[] = [];
@@ -807,7 +843,15 @@ export function detectGaps(
     const dayGaps: DetectedGap[] = [];
 
     if (includeMeals) {
-      dayGaps.push(...detectMealGaps(day, dayIndex));
+      let mealGaps = detectMealGaps(day, dayIndex);
+      // Ryokan: dinner and breakfast are included with the stay
+      if (accommodationStyle === "ryokan") {
+        mealGaps = mealGaps.filter((g) => {
+          if (g.action.type !== "add_meal" && g.action.type !== "quick_meal") return true;
+          return g.action.mealType === "lunch"; // keep lunch gaps only
+        });
+      }
+      dayGaps.push(...mealGaps);
     }
 
     if (includeTransport) {
@@ -839,12 +883,16 @@ export function detectGaps(
       dayGaps.push(...detectRainContingency(day, dayIndex, forecasts));
     }
 
+    // Luggage needs (city transition days)
+    dayGaps.push(...detectLuggageNeeds(day, dayIndex));
+
     // Prioritize and limit gaps per day
-    // Priority: meals > timing > rain/long gaps > lunch_rush > category > transport > experience
+    // Priority: meals > luggage > timing > rain/long gaps > lunch_rush > category > transport > experience
     const prioritized = dayGaps.sort((a, b) => {
       const priority: Record<GapType, number> = {
         reservation_alert: -1,
         meal: 0,
+        luggage_needs: 1.5,
         late_start: 1,
         early_end: 1,
         rain_contingency: 2,
