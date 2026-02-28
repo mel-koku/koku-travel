@@ -10,16 +10,20 @@ import { AskKokuInput } from "./AskKokuInput";
 type AskKokuChatProps = {
   onClose?: () => void;
   context?: AskKokuContext;
+  tripData?: string;
 };
 
-export function AskKokuChat({ onClose, context = "default" }: AskKokuChatProps) {
+export function AskKokuChat({ onClose, context = "default", tripData }: AskKokuChatProps) {
   const transport = useMemo(
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        headers: { "X-Koku-Context": context },
+        body: {
+          context,
+          ...(tripData ? { tripContext: tripData } : {}),
+        },
       }),
-    [context],
+    [context, tripData],
   );
 
   const {

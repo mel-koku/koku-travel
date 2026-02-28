@@ -5,8 +5,16 @@ import { useCallback, useMemo } from "react";
 import type { ChangeEvent } from "react";
 import { motion } from "framer-motion";
 import type { StoredTrip } from "@/state/AppState";
+import { groupTrips, getTripStatus, type TripLifecycleStatus } from "@/lib/trip/tripStatus";
 
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
+
+const STATUS_CONFIG_B: Record<TripLifecycleStatus, { label: string; tint: string; text: string }> = {
+  active: { label: "Active", tint: "color-mix(in srgb, var(--success) 12%, transparent)", text: "var(--success)" },
+  upcoming: { label: "Upcoming", tint: "color-mix(in srgb, var(--primary) 12%, transparent)", text: "var(--primary)" },
+  completed: { label: "Completed", tint: "color-mix(in srgb, var(--muted-foreground) 12%, transparent)", text: "var(--muted-foreground)" },
+  planning: { label: "Planning", tint: "color-mix(in srgb, var(--warning) 12%, transparent)", text: "var(--warning)" },
+};
 
 type TripsSectionBProps = {
   trips: StoredTrip[];
@@ -57,6 +65,21 @@ export function TripsSectionB({
     return { dayCount, cityCount };
   }, [activeTrip]);
 
+  const tripOptgroups = useMemo(() => {
+    const groups = groupTrips(trips);
+    return [
+      { label: "Active", items: groups.active },
+      { label: "Upcoming", items: groups.upcoming },
+      { label: "Planning", items: groups.planning },
+      { label: "Past", items: groups.past },
+    ];
+  }, [trips]);
+
+  const activeTripStatus = useMemo(
+    () => (activeTrip ? getTripStatus(activeTrip) : null),
+    [activeTrip],
+  );
+
   const createdLabel = activeTrip ? formatDate(activeTrip.createdAt) : null;
   const updatedLabel =
     activeTrip && activeTrip.updatedAt !== activeTrip.createdAt
@@ -95,9 +118,22 @@ export function TripsSectionB({
               {/* Trip header */}
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-col gap-1">
-                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--primary)]">
-                    Active Itinerary
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--primary)]">
+                      Active Itinerary
+                    </p>
+                    {activeTripStatus && (
+                      <span
+                        className="inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+                        style={{
+                          backgroundColor: STATUS_CONFIG_B[activeTripStatus].tint,
+                          color: STATUS_CONFIG_B[activeTripStatus].text,
+                        }}
+                      >
+                        {STATUS_CONFIG_B[activeTripStatus].label}
+                      </span>
+                    )}
+                  </div>
                   <h3 className="text-lg font-bold text-[var(--foreground)]">
                     {activeTrip.name}
                   </h3>
@@ -124,11 +160,17 @@ export function TripsSectionB({
                         value={selectedTripId ?? activeTrip.id}
                         onChange={handleTripChange}
                       >
-                        {trips.map((trip) => (
-                          <option key={trip.id} value={trip.id}>
-                            {trip.name}
-                          </option>
-                        ))}
+                        {tripOptgroups.map(({ label, items }) =>
+                          items.length > 0 ? (
+                            <optgroup key={label} label={label}>
+                              {items.map((trip) => (
+                                <option key={trip.id} value={trip.id}>
+                                  {trip.name}
+                                </option>
+                              ))}
+                            </optgroup>
+                          ) : null,
+                        )}
                       </select>
                       <svg
                         aria-hidden="true"
@@ -174,6 +216,19 @@ export function TripsSectionB({
                 >
                   View full plan
                 </Link>
+                {activeTripStatus === "completed" && (
+                  <Link
+                    href={`/b/dashboard/trip-review?trip=${activeTrip.id}`}
+                    className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition-all hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 active:scale-[0.98]"
+                    style={{
+                      backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)",
+                      color: "var(--primary)",
+                      border: "1px solid color-mix(in srgb, var(--primary) 25%, transparent)",
+                    }}
+                  >
+                    View trip review
+                  </Link>
+                )}
                 <button
                   type="button"
                   onClick={handleDelete}

@@ -115,5 +115,5 @@ export default async function SharedItineraryPageB({ params }: PageProps) {
     notFound();
   }
 
-  return <SharedClientB trip={trip} />;
+  return <SharedClientB trip={trip} token={token} />;
 }

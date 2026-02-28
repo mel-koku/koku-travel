@@ -44,6 +44,9 @@ import { SmartPromptsDrawerB } from "./SmartPromptsDrawerB";
 import { SeasonalBannerB } from "./SeasonalBannerB";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
 import { ActivityRatingsProvider } from "@/components/features/itinerary/ActivityRatingsContext";
+import { PrintHeader } from "@/components/features/itinerary/PrintHeader";
+import { PrintFooter } from "@/components/features/itinerary/PrintFooter";
+import { REGIONS } from "@/data/regions";
 
 const LocationExpanded = dynamic(
   () =>
@@ -503,8 +506,34 @@ export const ItineraryShellB = ({
     submitRating: activityRatingsHook.submitRating,
   }), [activityRatingsHook.ratings, activityRatingsHook.submitRating]);
 
+  // Print export data
+  const printCities = useMemo(() => {
+    const cityMap: Record<string, string> = {};
+    for (const region of REGIONS) {
+      for (const city of region.cities) {
+        cityMap[city.id] = city.name;
+      }
+    }
+    const ids = [...new Set(itinerary.days.map((d) => d.cityId).filter((c): c is string => Boolean(c)))];
+    return ids.map((id) => cityMap[id] ?? id);
+  }, [itinerary.days]);
+
+  const printDateRange = useMemo(() => {
+    const start = tripBuilderData?.dates?.start;
+    const end = tripBuilderData?.dates?.end;
+    if (!start || !end) return undefined;
+    const fmt = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    return `${fmt(start)} – ${fmt(end)}`;
+  }, [tripBuilderData?.dates]);
+
+  const printTripName = useMemo(() => {
+    const stored = getTripById?.(tripId);
+    return stored?.name ?? "My Japan Trip";
+  }, [getTripById, tripId]);
+
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
+    <PrintHeader tripName={printTripName} dateRange={printDateRange} cities={printCities} />
     <section
       className="mx-auto min-h-[100dvh] max-w-screen-2xl lg:fixed lg:inset-x-0 lg:top-[var(--header-h)] lg:bottom-0 lg:min-h-0 lg:overflow-hidden"
       style={{ background: "var(--background)" }}
@@ -743,6 +772,7 @@ export const ItineraryShellB = ({
                   onDayExpand={(dayIndex) => {
                     if (dayIndex != null) handleSelectDayChange(dayIndex);
                   }}
+                  budgetTotal={tripBuilderData?.budget?.total}
                 />
               </motion.div>
             )}
@@ -996,6 +1026,7 @@ export const ItineraryShellB = ({
         />
       )}
     </section>
+    <PrintFooter />
     </ActivityRatingsProvider>
   );
 };

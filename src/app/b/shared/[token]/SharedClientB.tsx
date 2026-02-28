@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Eye, Share2 } from "lucide-react";
 import { ItineraryShellB } from "@b/features/itinerary/ItineraryShellB";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { createClient } from "@/lib/supabase/client";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
 
@@ -20,6 +22,7 @@ type SharedTripData = {
 
 type SharedClientBProps = {
   trip: SharedTripData;
+  token: string;
 };
 
 const formatDateLabel = (iso: string | undefined) => {
@@ -29,7 +32,53 @@ const formatDateLabel = (iso: string | undefined) => {
   return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
 };
 
-export function SharedClientB({ trip }: SharedClientBProps) {
+function SaveCopyButtonB({ token }: { token: string }) {
+  const router = useRouter();
+  const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
+
+  const handleCopy = useCallback(async () => {
+    const supabase = createClient();
+    if (!supabase) {
+      router.push(`/signin?redirect=/b/shared/${token}`);
+      return;
+    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      router.push(`/signin?redirect=/b/shared/${token}`);
+      return;
+    }
+
+    setState("loading");
+    try {
+      const res = await fetch(`/api/shared/${token}/copy`, { method: "POST" });
+      if (!res.ok) {
+        setState("error");
+        return;
+      }
+      setState("done");
+      setTimeout(() => router.push("/b/dashboard"), 1000);
+    } catch {
+      setState("error");
+    }
+  }, [token, router]);
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      disabled={state === "loading" || state === "done"}
+      className="inline-flex items-center rounded-xl border px-6 py-3 text-sm font-semibold transition hover:opacity-80 active:scale-[0.98] disabled:opacity-60"
+      style={{ borderColor: "var(--border)", color: "var(--foreground)", backgroundColor: "var(--card)" }}
+    >
+      {state === "idle" && "Save a Copy"}
+      {state === "loading" && "Saving\u2026"}
+      {state === "done" && "Saved — redirecting"}
+      {state === "error" && "Failed — try again"}
+    </button>
+  );
+}
+
+export function SharedClientB({ trip, token }: SharedClientBProps) {
   const itinerary = trip.itinerary as unknown as Itinerary;
   const builderData = trip.builderData as unknown as TripBuilderData;
 
@@ -82,13 +131,16 @@ export function SharedClientB({ trip }: SharedClientBProps) {
           <p className="mx-auto mt-3 max-w-md text-sm" style={{ color: "var(--muted-foreground)" }}>
             Build a personalized itinerary with curated locations, smart scheduling, and local insights.
           </p>
-          <Link
-            href="/b/trip-builder"
-            className="mt-6 inline-flex items-center rounded-xl px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-[0.98]"
-            style={{ backgroundColor: "var(--primary)" }}
-          >
-            Build My Trip
-          </Link>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/b/trip-builder"
+              className="inline-flex items-center rounded-xl px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 active:scale-[0.98]"
+              style={{ backgroundColor: "var(--primary)" }}
+            >
+              Build My Trip
+            </Link>
+            <SaveCopyButtonB token={token} />
+          </div>
         </div>
       </div>
     </div>

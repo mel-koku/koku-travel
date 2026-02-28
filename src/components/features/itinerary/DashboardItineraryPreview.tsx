@@ -14,6 +14,7 @@ type DashboardItineraryPreviewProps = {
   selectedTripId?: string | null;
   onSelectTrip?: (tripId: string) => void;
   onDeleteTrip?: (tripId: string) => void;
+  isCompleted?: boolean;
 };
 
 type SectionKey = ItineraryActivity["timeOfDay"];
@@ -111,6 +112,7 @@ export const DashboardItineraryPreview = ({
   selectedTripId,
   onSelectTrip,
   onDeleteTrip,
+  isCompleted,
 }: DashboardItineraryPreviewProps) => {
   const [selectedDay, setSelectedDay] = useState(0);
   const days = trip.itinerary.days ?? [];
@@ -212,6 +214,14 @@ export const DashboardItineraryPreview = ({
             >
               View full plan
             </Link>
+            {isCompleted && (
+              <Link
+                href={`/dashboard/trip-review?trip=${trip.id}`}
+                className="inline-flex items-center justify-center rounded-full border border-brand-primary/30 bg-brand-primary/10 px-4 py-2 text-sm font-semibold text-brand-primary shadow-sm transition hover:bg-brand-primary/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+              >
+                View trip review
+              </Link>
+            )}
           </div>
         </div>
       </header>

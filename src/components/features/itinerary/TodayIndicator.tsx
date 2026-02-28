@@ -2,37 +2,13 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/cn";
+import { isToday, parseTimeToMinutes } from "@/lib/itinerary/timeUtils";
 
 export type TodayIndicatorProps = {
   tripStartDate: string;
   dayIndex: number;
   className?: string;
 };
-
-/**
- * Check if the given date is today
- */
-function isToday(tripStartDate: string, dayIndex: number): boolean {
-  try {
-    const [year, month, day] = tripStartDate.split("-").map(Number);
-    if (!year || !month || !day || isNaN(year) || isNaN(month) || isNaN(day)) {
-      return false;
-    }
-
-    const startDate = new Date(year, month - 1, day);
-    const dayDate = new Date(startDate);
-    dayDate.setDate(startDate.getDate() + dayIndex);
-
-    const today = new Date();
-    return (
-      dayDate.getFullYear() === today.getFullYear() &&
-      dayDate.getMonth() === today.getMonth() &&
-      dayDate.getDate() === today.getDate()
-    );
-  } catch {
-    return false;
-  }
-}
 
 /**
  * Format time as HH:MM
@@ -121,19 +97,8 @@ export function useActivityTimeState({
       const now = new Date();
       const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-      // Parse times
-      const parseTime = (timeStr?: string): number | null => {
-        if (!timeStr) return null;
-        const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
-        if (!match) return null;
-        const hours = parseInt(match[1] ?? "0", 10);
-        const minutes = parseInt(match[2] ?? "0", 10);
-        if (isNaN(hours) || isNaN(minutes)) return null;
-        return hours * 60 + minutes;
-      };
-
-      const arrival = parseTime(activityArrivalTime);
-      const departure = parseTime(activityDepartureTime);
+      const arrival = parseTimeToMinutes(activityArrivalTime);
+      const departure = parseTimeToMinutes(activityDepartureTime);
 
       if (arrival === null) {
         setState(null);

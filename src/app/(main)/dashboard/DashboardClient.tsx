@@ -19,6 +19,7 @@ import { AccountSection } from "./components/AccountSection";
 import { VideoImportInput } from "@/components/features/video-import/VideoImportInput";
 import { StatsSection } from "./components/StatsSection";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { groupTrips, getStatusConfig, type TripLifecycleStatus } from "@/lib/trip/tripStatus";
 
 type StoredTrip = ReturnType<typeof useAppState>["trips"][number];
 
@@ -164,34 +165,37 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
   const isAuthenticated = Boolean(sessionUserId);
   const supabaseUnavailable = !supabase;
 
+  const tripGroups = useMemo(() => groupTrips(trips), [trips]);
+
   const tripsWithItinerary = useMemo(() => {
-    if (!trips.length) {
-      return [];
-    }
-    return [...trips]
-      .filter((trip) => (trip.itinerary?.days?.length ?? 0) > 0)
-      .sort((a, b) => {
-        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-      });
-  }, [trips]);
+    return [
+      ...tripGroups.active,
+      ...tripGroups.upcoming,
+      ...tripGroups.planning,
+      ...tripGroups.past,
+    ];
+  }, [tripGroups]);
+
+  const [showAllPast, setShowAllPast] = useState(false);
+  const visiblePastTrips = useMemo(
+    () => (showAllPast ? tripGroups.past : tripGroups.past.slice(0, 3)),
+    [tripGroups.past, showAllPast],
+  );
 
   const selectedTripId = useMemo(() => {
-    if (!tripsWithItinerary.length) {
-      return null;
-    }
-    if (
-      userSelectedTripId &&
-      tripsWithItinerary.some((trip) => trip.id === userSelectedTripId)
-    ) {
+    if (!tripsWithItinerary.length) return null;
+    if (userSelectedTripId && tripsWithItinerary.some((t) => t.id === userSelectedTripId)) {
       return userSelectedTripId;
     }
-    return tripsWithItinerary[0]?.id ?? null;
-  }, [tripsWithItinerary, userSelectedTripId]);
-
-  const activeTrip =
-    selectedTripId && tripsWithItinerary.length
-      ? tripsWithItinerary.find((trip) => trip.id === selectedTripId) ?? tripsWithItinerary[0]
-      : null;
+    // Priority: active > first upcoming > first planning > first past
+    return (
+      tripGroups.active[0]?.id ??
+      tripGroups.upcoming[0]?.id ??
+      tripGroups.planning[0]?.id ??
+      tripGroups.past[0]?.id ??
+      null
+    );
+  }, [tripsWithItinerary, userSelectedTripId, tripGroups]);
 
   useEffect(() => {
     return () => {
@@ -275,16 +279,98 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
           </ScrollReveal>
 
           <div className="mt-8">
-            {activeTrip ? (
-              <ScrollReveal delay={0.1} distance={20}>
-                <DashboardItineraryPreview
-                  trip={activeTrip}
-                  availableTrips={tripsWithItinerary}
-                  selectedTripId={activeTrip.id}
-                  onSelectTrip={setUserSelectedTripId}
-                  onDeleteTrip={handleDeleteTrip}
-                />
-              </ScrollReveal>
+            {tripsWithItinerary.length > 0 ? (
+              <div className="space-y-10">
+                {/* Active trips — elevated */}
+                {tripGroups.active.length > 0 && (
+                  <div>
+                    <TripGroupHeader status="active" />
+                    <div className="mt-4 space-y-4">
+                      {tripGroups.active.map((trip) => (
+                        <ScrollReveal key={trip.id} delay={0.1} distance={20}>
+                          <DashboardItineraryPreview
+                            trip={trip}
+                            availableTrips={tripsWithItinerary}
+                            selectedTripId={selectedTripId ?? trip.id}
+                            onSelectTrip={setUserSelectedTripId}
+                            onDeleteTrip={handleDeleteTrip}
+                          />
+                        </ScrollReveal>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Upcoming trips */}
+                {tripGroups.upcoming.length > 0 && (
+                  <div>
+                    <TripGroupHeader status="upcoming" />
+                    <div className="mt-4 space-y-4">
+                      {tripGroups.upcoming.map((trip) => (
+                        <ScrollReveal key={trip.id} delay={0.1} distance={20}>
+                          <DashboardItineraryPreview
+                            trip={trip}
+                            availableTrips={tripsWithItinerary}
+                            selectedTripId={selectedTripId ?? trip.id}
+                            onSelectTrip={setUserSelectedTripId}
+                            onDeleteTrip={handleDeleteTrip}
+                          />
+                        </ScrollReveal>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Planning trips */}
+                {tripGroups.planning.length > 0 && (
+                  <div>
+                    <TripGroupHeader status="planning" />
+                    <div className="mt-4 space-y-4">
+                      {tripGroups.planning.map((trip) => (
+                        <ScrollReveal key={trip.id} delay={0.1} distance={20}>
+                          <DashboardItineraryPreview
+                            trip={trip}
+                            availableTrips={tripsWithItinerary}
+                            selectedTripId={selectedTripId ?? trip.id}
+                            onSelectTrip={setUserSelectedTripId}
+                            onDeleteTrip={handleDeleteTrip}
+                          />
+                        </ScrollReveal>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Past trips — dimmed */}
+                {tripGroups.past.length > 0 && (
+                  <div>
+                    <TripGroupHeader status="completed" />
+                    <div className="mt-4 space-y-4 opacity-80">
+                      {visiblePastTrips.map((trip) => (
+                        <ScrollReveal key={trip.id} delay={0.1} distance={20}>
+                          <DashboardItineraryPreview
+                            trip={trip}
+                            availableTrips={tripsWithItinerary}
+                            selectedTripId={selectedTripId ?? trip.id}
+                            onSelectTrip={setUserSelectedTripId}
+                            onDeleteTrip={handleDeleteTrip}
+                            isCompleted
+                          />
+                        </ScrollReveal>
+                      ))}
+                      {tripGroups.past.length > 3 && !showAllPast && (
+                        <button
+                          type="button"
+                          onClick={() => setShowAllPast(true)}
+                          className="mt-2 text-sm font-medium text-brand-primary transition hover:text-brand-primary/80"
+                        >
+                          Show all {tripGroups.past.length} past trips
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             ) : (
               <ScrollReveal delay={0.1} distance={20}>
                 {/* Atmospheric empty state */}
@@ -408,6 +494,18 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function TripGroupHeader({ status }: { status: TripLifecycleStatus }) {
+  const config = getStatusConfig(status);
+  return (
+    <div className="flex items-center gap-3">
+      <span className={`inline-flex items-center rounded-lg px-2.5 py-1 text-xs font-semibold uppercase tracking-wide ${config.colorClass} ${config.bgClass}`}>
+        {config.label}
+      </span>
+      <div className="h-px flex-1 bg-border" />
     </div>
   );
 }

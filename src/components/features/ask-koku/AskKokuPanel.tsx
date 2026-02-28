@@ -9,9 +9,10 @@ import type { AskKokuContext } from "./AskKokuSuggestions";
 type AskKokuPanelProps = {
   onClose: () => void;
   context?: AskKokuContext;
+  tripData?: string;
 };
 
-export function AskKokuPanel({ onClose, context }: AskKokuPanelProps) {
+export function AskKokuPanel({ onClose, context, tripData }: AskKokuPanelProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -33,7 +34,7 @@ export function AskKokuPanel({ onClose, context }: AskKokuPanelProps) {
       </div>
 
       {/* Chat area */}
-      <AskKokuChat onClose={onClose} context={context} />
+      <AskKokuChat onClose={onClose} context={context} tripData={tripData} />
     </motion.div>
   );
 }

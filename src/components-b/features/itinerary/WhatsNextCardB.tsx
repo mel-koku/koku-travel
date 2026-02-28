@@ -1,9 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MapPin, Target, Moon } from "lucide-react";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import { RunningLatePopoverB } from "./RunningLatePopoverB";
+import {
+  isToday,
+  parseTimeToMinutes,
+  formatRelativeTime,
+  getCurrentMinutes,
+} from "@/lib/itinerary/timeUtils";
 
 export type WhatsNextCardBProps = {
   day: ItineraryDay;
@@ -12,49 +18,18 @@ export type WhatsNextCardBProps = {
   className?: string;
   onActivityClick?: (activityId: string) => void;
   onDelayRemaining?: (delayMinutes: number) => void;
+  onCheckIn?: (activityId: string) => void;
+  checkedInIds?: Set<string>;
 };
 
-function parseTimeToMinutes(timeStr: string | undefined): number | null {
-  if (!timeStr) return null;
-  const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
-  if (!match) return null;
-  const hours = parseInt(match[1] ?? "0", 10);
-  const minutes = parseInt(match[2] ?? "0", 10);
-  if (isNaN(hours) || isNaN(minutes)) return null;
-  return hours * 60 + minutes;
-}
-
-function formatRelativeTime(minutesUntil: number): string {
-  if (minutesUntil < -30) return "passed";
-  if (minutesUntil < 0) return "just now";
-  if (minutesUntil < 1) return "now";
-  if (minutesUntil < 60) return `in ${Math.round(minutesUntil)} min`;
-  const hours = Math.floor(minutesUntil / 60);
-  const mins = Math.round(minutesUntil % 60);
-  return mins === 0 ? `in ${hours}h` : `in ${hours}h ${mins}m`;
-}
-
-function isToday(tripStartDate: string, dayIndex: number): boolean {
-  try {
-    const [year, month, day] = tripStartDate.split("-").map(Number);
-    if (!year || !month || !day || isNaN(year) || isNaN(month) || isNaN(day)) return false;
-    const startDate = new Date(year, month - 1, day);
-    const dayDate = new Date(startDate);
-    dayDate.setDate(startDate.getDate() + dayIndex);
-    const today = new Date();
-    return (
-      dayDate.getFullYear() === today.getFullYear() &&
-      dayDate.getMonth() === today.getMonth() &&
-      dayDate.getDate() === today.getDate()
-    );
-  } catch {
-    return false;
-  }
-}
-
-function getActivityStatus(activities: ItineraryActivity[], currentTimeMinutes: number) {
+function getActivityStatus(
+  activities: ItineraryActivity[],
+  currentTimeMinutes: number,
+  checkedInIds?: Set<string>,
+) {
   const placeActivities = activities.filter(
-    (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
+    (a): a is Extract<typeof a, { kind: "place" }> =>
+      a.kind === "place" && !checkedInIds?.has(a.id),
   );
   let current: (typeof placeActivities)[number] | null = null;
   let next: (typeof placeActivities)[number] | null = null;
@@ -86,6 +61,13 @@ function getActivityStatus(activities: ItineraryActivity[], currentTimeMinutes: 
   return { current, next, minutesUntilNext };
 }
 
+function buildMapsLink(title: string, coords?: { lat: number; lng: number }): string | null {
+  if (!coords) return null;
+  const isIOS = typeof navigator !== "undefined" && /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isIOS) return `https://maps.apple.com/?q=${encodeURIComponent(title)}&ll=${coords.lat},${coords.lng}`;
+  return `https://www.google.com/maps/search/?api=1&query=${coords.lat},${coords.lng}`;
+}
+
 export function WhatsNextCardB({
   day,
   tripStartDate,
@@ -93,15 +75,27 @@ export function WhatsNextCardB({
   className,
   onActivityClick,
   onDelayRemaining,
+  onCheckIn,
+  checkedInIds,
 }: WhatsNextCardBProps) {
   const showCard = useMemo(() => isToday(tripStartDate, dayIndex), [tripStartDate, dayIndex]);
-  const currentTimeMinutes = useMemo(() => {
-    const now = new Date();
-    return now.getHours() * 60 + now.getMinutes();
-  }, []);
+
+  // Live-updating current time (60s interval)
+  const [currentTimeMinutes, setCurrentTimeMinutes] = useState(getCurrentMinutes);
+  useEffect(() => {
+    if (!showCard) return;
+    const interval = setInterval(() => setCurrentTimeMinutes(getCurrentMinutes()), 60_000);
+    return () => clearInterval(interval);
+  }, [showCard]);
+
   const { current, next, minutesUntilNext } = useMemo(
-    () => getActivityStatus(day.activities, currentTimeMinutes),
-    [day.activities, currentTimeMinutes],
+    () => getActivityStatus(day.activities, currentTimeMinutes, checkedInIds),
+    [day.activities, currentTimeMinutes, checkedInIds],
+  );
+
+  const handleCheckIn = useCallback(
+    (activityId: string) => onCheckIn?.(activityId),
+    [onCheckIn],
   );
 
   if (!showCard) return null;
@@ -133,6 +127,7 @@ export function WhatsNextCardB({
 
   // Currently at an activity
   if (current && !next) {
+    const mapsLink = buildMapsLink(current.title, current.coordinates);
     return (
       <div
         className={`rounded-2xl p-4 ${className ?? ""}`}
@@ -145,29 +140,31 @@ export function WhatsNextCardB({
           <div className="flex min-w-0 items-center gap-3">
             <MapPin className="h-6 w-6 shrink-0" style={{ color: "var(--success)" }} />
             <div className="min-w-0">
-              <p
-                className="text-xs font-medium uppercase tracking-[0.15em]"
-                style={{ color: "var(--success)" }}
-              >
+              <p className="text-xs font-medium uppercase tracking-[0.15em]" style={{ color: "var(--success)" }}>
                 You&apos;re at
               </p>
-              <p
-                className="truncate text-sm font-semibold"
-                style={{ color: "var(--foreground)" }}
-              >
+              <p className="truncate text-sm font-semibold" style={{ color: "var(--foreground)" }}>
                 {current.title}
               </p>
             </div>
           </div>
           {current.schedule?.departureTime && (
             <div className="shrink-0 text-right">
-              <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-                Until
-              </p>
-              <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
-                {current.schedule.departureTime}
-              </p>
+              <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>Until</p>
+              <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{current.schedule.departureTime}</p>
             </div>
+          )}
+        </div>
+        <div className="mt-3 flex items-center gap-2 pt-2" style={{ borderTop: "1px solid color-mix(in srgb, var(--success) 20%, transparent)" }}>
+          {mapsLink && (
+            <a href={mapsLink} target="_blank" rel="noopener noreferrer" className="text-xs font-medium hover:underline" style={{ color: "var(--success)" }}>
+              Open in Maps
+            </a>
+          )}
+          {onCheckIn && (
+            <button type="button" onClick={() => handleCheckIn(current.id)} className="ml-auto text-xs font-medium hover:underline" style={{ color: "var(--success)" }}>
+              Mark as visited
+            </button>
           )}
         </div>
       </div>
@@ -239,11 +236,27 @@ export function WhatsNextCardB({
           )}
         </div>
       </div>
-      {onDelayRemaining && (
-        <div className="mt-2 flex justify-end">
-          <RunningLatePopoverB onApplyDelay={onDelayRemaining} />
-        </div>
-      )}
+      {/* Actions: Maps + check-in + running late */}
+      <div className="mt-3 flex items-center gap-2 pt-2" style={{ borderTop: "1px solid color-mix(in srgb, var(--primary) 20%, transparent)" }}>
+        {next && (() => {
+          const link = buildMapsLink(next.title, next.coordinates);
+          return link ? (
+            <a href={link} target="_blank" rel="noopener noreferrer" className="text-xs font-medium hover:underline" style={{ color: "var(--primary)" }}>
+              Open in Maps
+            </a>
+          ) : null;
+        })()}
+        {current && onCheckIn && (
+          <button type="button" onClick={() => handleCheckIn(current.id)} className="text-xs font-medium hover:underline" style={{ color: "var(--success)" }}>
+            Mark as visited
+          </button>
+        )}
+        {onDelayRemaining && (
+          <div className="ml-auto">
+            <RunningLatePopoverB onApplyDelay={onDelayRemaining} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
