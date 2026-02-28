@@ -111,9 +111,14 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
   if (data.style) normalized.style = data.style;
   if (data.budget) normalized.budget = data.budget;
 
-  // Include accessibility preferences if specified
+  // Include accessibility preferences if specified (including notes for LLM intent)
   if (data.accessibility) {
-    normalized.accessibility = data.accessibility;
+    normalized.accessibility = {
+      mobility: data.accessibility.mobility,
+      dietary: data.accessibility.dietary,
+      dietaryOther: data.accessibility.dietaryOther,
+      notes: data.accessibility.notes?.trim() || undefined,
+    };
   }
 
   // Include traveler profile if it affects generation
