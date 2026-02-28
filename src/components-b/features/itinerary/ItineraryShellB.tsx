@@ -40,6 +40,7 @@ import { ShareButtonB } from "./ShareButtonB";
 import { DaySelectorB } from "./DaySelectorB";
 import { ItineraryTimelineB } from "./ItineraryTimelineB";
 import { TripConfidenceDashboardB } from "./TripConfidenceDashboardB";
+import { Lightbulb } from "lucide-react";
 import { SmartPromptsDrawerB } from "./SmartPromptsDrawerB";
 import { SeasonalBannerB } from "./SeasonalBannerB";
 import { useActivityRatings } from "@/hooks/useActivityRatings";
@@ -1014,6 +1015,22 @@ export const ItineraryShellB = ({
             />
           );
         })()}
+
+      {/* Reopen Smart Suggestions button — shown when dismissed */}
+      {!isReadOnly && showDashboard && suggestions && suggestions.length > 0 && dismissedSuggestions && (
+        <button
+          type="button"
+          onClick={() => setDismissedSuggestions(false)}
+          className="fixed bottom-6 right-6 z-30 flex h-11 items-center gap-2 rounded-full px-4 text-xs font-medium text-[var(--card)] shadow-lg transition-all duration-200 hover:scale-105 active:scale-[0.98] lg:bottom-8 lg:right-8"
+          style={{
+            backgroundColor: "var(--primary)",
+            boxShadow: "var(--shadow-elevated)",
+          }}
+        >
+          <Lightbulb className="h-4 w-4" />
+          <span>{suggestions.length} Suggestion{suggestions.length !== 1 ? "s" : ""}</span>
+        </button>
+      )}
 
       {/* Smart Prompts Drawer — only in Overview tab (day tabs have inline suggestions) */}
       {!isReadOnly && showDashboard && suggestions && suggestions.length > 0 && !dismissedSuggestions && (

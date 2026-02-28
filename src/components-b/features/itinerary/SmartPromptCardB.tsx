@@ -102,7 +102,7 @@ export function SmartPromptCardB({
               {gap.title}
             </h4>
             <span
-              className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+              className="shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold"
               style={{
                 backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)",
                 color: "var(--primary)",
