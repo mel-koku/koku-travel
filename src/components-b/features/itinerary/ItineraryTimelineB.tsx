@@ -909,7 +909,7 @@ export const ItineraryTimelineB = ({
               items={extendedActivities.map((a) => a.id)}
               strategy={verticalListSortingStrategy}
             >
-              {/* Accommodation: Travel estimate from start to first activity */}
+              {/* Accommodation: Start bookend with travel to first activity */}
               {startLocation && !activeId && (() => {
                 const firstPlaceActivity = extendedActivities.find(
                   (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
@@ -919,22 +919,28 @@ export const ItineraryTimelineB = ({
                   ? getActivityCoordinates(firstPlaceActivity)
                   : null;
 
-                return startLocation.coordinates &&
-                  firstCoords &&
-                  bookendEstimates.start ? (
-                  <div className="mb-2 pl-8">
-                    <AccommodationTravelSegment
-                      origin={startLocation.coordinates}
-                      destination={firstCoords}
-                      originName={startLocation.name}
-                      destinationName={
-                        firstPlaceActivity?.title ?? "first stop"
-                      }
-                      estimate={bookendEstimates.start}
-                      timezone={day.timezone}
+                return (
+                  <div className="mb-2 space-y-1 pl-8">
+                    <AccommodationBookendB
+                      location={startLocation}
+                      variant="start"
                     />
+                    {startLocation.coordinates &&
+                      firstCoords &&
+                      bookendEstimates.start && (
+                        <AccommodationTravelSegment
+                          origin={startLocation.coordinates}
+                          destination={firstCoords}
+                          originName={startLocation.name}
+                          destinationName={
+                            firstPlaceActivity?.title ?? "first stop"
+                          }
+                          estimate={bookendEstimates.start}
+                          timezone={day.timezone}
+                        />
+                      )}
                   </div>
-                ) : null;
+                );
               })()}
 
               <ul className="space-y-3 pl-8">
