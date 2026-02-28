@@ -2,6 +2,7 @@
 
 import {
   BookOpen,
+  CalendarCheck,
   Clock,
   Coffee,
   Info,
@@ -24,6 +25,7 @@ import type { DetectedGap, GapType } from "@/lib/smartPrompts/gapDetection";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
+  CalendarCheck,
   Clock,
   Coffee,
   Info,
@@ -80,6 +82,11 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     text: "text-sage",
     badge: "bg-sage/15 text-sage",
   },
+  reservation_alert: {
+    bg: "bg-warning/10",
+    text: "text-warning",
+    badge: "bg-warning/15 text-warning",
+  },
 };
 
 export type SmartPromptCardProps = {
@@ -132,25 +139,52 @@ export function SmartPromptCard({
         </div>
         <p className="mt-0.5 text-xs text-stone line-clamp-2">{gap.description}</p>
 
+        {/* Reservation alert: show location list */}
+        {gap.action.type === "acknowledge_reservation" && (
+          <ul className="mt-1.5 space-y-0.5">
+            {gap.action.locations.map((loc, i) => (
+              <li key={i} className="text-xs text-foreground-secondary">
+                <span className="font-medium text-foreground">{loc.name}</span>
+                {" — Day "}
+                {loc.dayIndex + 1}
+                {loc.reservationInfo === "required" ? " (required)" : " (recommended)"}
+              </li>
+            ))}
+          </ul>
+        )}
+
         {/* Actions */}
         <div className="mt-2 flex gap-2">
-          <Button
-            variant="primary"
-            size="chip"
-            onClick={() => onAccept(gap)}
-            disabled={isLoading}
-            isLoading={isLoading}
-          >
-            {isLoading ? "Adding..." : "Add"}
-          </Button>
-          <Button
-            variant="brand-ghost"
-            size="chip"
-            onClick={() => onSkip(gap)}
-            disabled={isLoading}
-          >
-            Skip
-          </Button>
+          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" ? (
+            <Button
+              variant="primary"
+              size="chip"
+              onClick={() => onSkip(gap)}
+              disabled={isLoading}
+            >
+              Got it
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="primary"
+                size="chip"
+                onClick={() => onAccept(gap)}
+                disabled={isLoading}
+                isLoading={isLoading}
+              >
+                {isLoading ? "Adding..." : "Add"}
+              </Button>
+              <Button
+                variant="brand-ghost"
+                size="chip"
+                onClick={() => onSkip(gap)}
+                disabled={isLoading}
+              >
+                Skip
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

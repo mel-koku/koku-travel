@@ -365,6 +365,8 @@ export const tripBuilderDataSchema = z.object({
   dayStartTime: timeSchema,
   // Content context from guide/experience CTA
   contentContext: contentContextSchema,
+  // First-time visitor flag
+  isFirstTimeVisitor: z.boolean().optional(),
 }).strict();
 
 /**

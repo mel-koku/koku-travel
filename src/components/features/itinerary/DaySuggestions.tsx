@@ -80,6 +80,10 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     bg: "bg-sage/10",
     text: "text-sage",
   },
+  reservation_alert: {
+    bg: "bg-warning/10",
+    text: "text-warning",
+  },
 };
 
 export type DaySuggestionsProps = {

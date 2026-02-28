@@ -21,7 +21,8 @@ export type GapType =
   | "early_end"
   | "late_start"
   | "category_imbalance"
-  | "guidance";
+  | "guidance"
+  | "reservation_alert";
 
 /**
  * A detected gap with contextual information for prompting.
@@ -110,6 +111,14 @@ export type GapAction =
       type: "acknowledge_guidance";
       guidanceId: string;
       guidanceType: string;
+    }
+  | {
+      type: "acknowledge_reservation";
+      locations: Array<{
+        name: string;
+        dayIndex: number;
+        reservationInfo: string;
+      }>;
     };
 
 
@@ -712,6 +721,7 @@ export function detectGaps(
     // Priority: meals > timing > long gaps > category > transport > experience
     const prioritized = dayGaps.sort((a, b) => {
       const priority: Record<GapType, number> = {
+        reservation_alert: -1,
         meal: 0,
         late_start: 1,
         early_end: 1,
@@ -733,6 +743,68 @@ export function detectGaps(
 /**
  * Get a summary of gaps by type.
  */
+/**
+ * Detect activities across all days that require or recommend reservations.
+ * Returns a single smart prompt on Day 0 listing all reservation-needed locations.
+ *
+ * @param itinerary - The itinerary to scan
+ * @param locationLookup - Function to look up reservation info by location ID
+ */
+export function detectReservationNeeds(
+  itinerary: Itinerary,
+  locationLookup: (locationId: string) => { reservationInfo?: string } | undefined
+): DetectedGap[] {
+  const reservationLocations: Array<{
+    name: string;
+    dayIndex: number;
+    reservationInfo: string;
+  }> = [];
+
+  for (let dayIndex = 0; dayIndex < itinerary.days.length; dayIndex++) {
+    const day = itinerary.days[dayIndex];
+    if (!day) continue;
+
+    for (const activity of day.activities) {
+      if (activity.kind !== "place" || !activity.locationId) continue;
+
+      const location = locationLookup(activity.locationId);
+      if (location?.reservationInfo) {
+        reservationLocations.push({
+          name: activity.title,
+          dayIndex,
+          reservationInfo: location.reservationInfo,
+        });
+      }
+    }
+  }
+
+  if (reservationLocations.length === 0) return [];
+
+  const requiredCount = reservationLocations.filter((l) => l.reservationInfo === "required").length;
+  const description =
+    requiredCount > 0
+      ? `${requiredCount} spot${requiredCount > 1 ? "s" : ""} on your trip require${requiredCount === 1 ? "s" : ""} a reservation. Book before you go.`
+      : `${reservationLocations.length} spot${reservationLocations.length > 1 ? "s" : ""} recommend booking ahead.`;
+
+  // Always attach to Day 0 so it appears first
+  const firstDay = itinerary.days[0];
+  return [
+    {
+      id: "reservation-alert-trip",
+      type: "reservation_alert",
+      dayIndex: 0,
+      dayId: firstDay?.id ?? "day-0",
+      title: "Book ahead",
+      description,
+      icon: "CalendarCheck",
+      action: {
+        type: "acknowledge_reservation",
+        locations: reservationLocations,
+      },
+    },
+  ];
+}
+
 /**
  * Guidance type icon mapping
  */

@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/Input";
 import type { TripStyle } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import { useState } from "react";
+import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
 
 type PreferenceFormValues = {
   groupSize?: number;
@@ -167,6 +168,11 @@ export function ReviewStepB({
 
   const warnings = useMemo(() => detectPlanningWarnings(data), [data]);
 
+  const durationWarning = useMemo(
+    () => validateDurationRegionFit(data.duration ?? 0, data.regions ?? [], data.cities ?? []),
+    [data.duration, data.regions, data.cities],
+  );
+
   const handleEditDates = useCallback(() => onGoToStep?.(1), [onGoToStep]);
   const handleEditEntryPoint = useCallback(
     () => onGoToStep?.(2),
@@ -198,6 +204,67 @@ export function ReviewStepB({
 
       {/* Planning Warnings */}
       {warnings.length > 0 && <PlanningWarningsList warnings={warnings} />}
+
+      {/* Duration-to-Region Warning */}
+      {durationWarning && (
+        <div
+          className="flex items-start gap-3 rounded-2xl border px-4 py-3"
+          style={{
+            borderColor: durationWarning.severity === "warning"
+              ? "color-mix(in srgb, var(--warning) 30%, transparent)"
+              : "color-mix(in srgb, var(--primary) 30%, transparent)",
+            backgroundColor: durationWarning.severity === "warning"
+              ? "color-mix(in srgb, var(--warning) 5%, transparent)"
+              : "color-mix(in srgb, var(--primary) 5%, transparent)",
+          }}
+        >
+          <span className="mt-0.5 shrink-0 text-sm">
+            {durationWarning.severity === "warning" ? "\u26A0\uFE0F" : "\u2139\uFE0F"}
+          </span>
+          <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+            {durationWarning.message}
+          </p>
+        </div>
+      )}
+
+      {/* First-Time Visitor Toggle */}
+      <div
+        className="flex items-center justify-between rounded-2xl px-5 py-4"
+        style={{
+          backgroundColor: "var(--card)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
+        <div>
+          <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+            First time in Japan?
+          </p>
+          <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+            We&apos;ll add orientation tips and pace Day 1 gently.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() =>
+            setData((prev) => ({
+              ...prev,
+              isFirstTimeVisitor: !prev.isFirstTimeVisitor,
+            }))
+          }
+          className="relative h-6 w-11 shrink-0 rounded-full transition-colors"
+          style={{
+            backgroundColor: data.isFirstTimeVisitor ? "var(--primary)" : "var(--border)",
+          }}
+        >
+          <span
+            className="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform"
+            style={{
+              transform: data.isFirstTimeVisitor ? "translateX(1.25rem)" : "translateX(0)",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          />
+        </button>
+      </div>
 
       {/* Saved places */}
       <SavedInTripPreview selectedCities={data.cities} />

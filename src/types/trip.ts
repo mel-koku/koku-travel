@@ -212,6 +212,11 @@ export type TripBuilderData = {
     city?: string;
     region?: string;
   };
+  /**
+   * Whether this is the traveler's first time visiting Japan.
+   * Gates Day 1 orientation tips, adjusts hidden gem ratio, adds pacing warnings.
+   */
+  isFirstTimeVisitor?: boolean;
 };
 
 /**

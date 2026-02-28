@@ -498,6 +498,8 @@ function DayInsightsSection({
                 dayIndex={dayIndex}
                 embedded
                 onTipCount={handleTipCount}
+                nextDayActivities={itinerary?.days[dayIndex + 1]?.activities}
+                isFirstTimeVisitor={builderData?.isFirstTimeVisitor}
               />
             </div>
           )}
@@ -512,6 +514,8 @@ function DayInsightsSection({
           dayIndex={dayIndex}
           embedded
           onTipCount={handleTipCount}
+          nextDayActivities={itinerary?.days[dayIndex + 1]?.activities}
+          isFirstTimeVisitor={builderData?.isFirstTimeVisitor}
         />
       </div>
     </div>

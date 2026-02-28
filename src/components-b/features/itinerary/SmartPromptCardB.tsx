@@ -2,6 +2,7 @@
 
 import {
   BookOpen,
+  CalendarCheck,
   Clock,
   Coffee,
   Info,
@@ -23,6 +24,7 @@ import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
+  CalendarCheck,
   Clock,
   Coffee,
   Info,
@@ -57,6 +59,8 @@ export function SmartPromptCardB({
 }: SmartPromptCardBProps) {
   const Icon = ICON_MAP[gap.icon] ?? Plus;
   const isGuidance = gap.action.type === "acknowledge_guidance";
+  const isReservation = gap.action.type === "acknowledge_reservation";
+  const isAcknowledge = isGuidance || isReservation;
 
   return (
     <div
@@ -108,9 +112,23 @@ export function SmartPromptCardB({
             {gap.description}
           </p>
 
+          {/* Reservation alert: location list */}
+          {isReservation && gap.action.type === "acknowledge_reservation" && (
+            <ul className="mt-1.5 space-y-0.5">
+              {gap.action.locations.map((loc, i) => (
+                <li key={i} className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+                  <span className="font-medium" style={{ color: "var(--foreground)" }}>{loc.name}</span>
+                  {" — Day "}
+                  {loc.dayIndex + 1}
+                  {loc.reservationInfo === "required" ? " (required)" : " (recommended)"}
+                </li>
+              ))}
+            </ul>
+          )}
+
           {/* Actions */}
           <div className="mt-3 flex items-center gap-2">
-            {isGuidance ? (
+            {isAcknowledge ? (
               <button
                 type="button"
                 onClick={() => onAccept(gap)}
