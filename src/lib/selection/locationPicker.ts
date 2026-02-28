@@ -125,8 +125,10 @@ export function pickLocationForTimeSlot(
   }
 
   // Filter seasonal locations based on date
+  // Use local-date constructor to avoid UTC midnight timezone bugs
   if (date) {
-    const dateObj = new Date(date);
+    const [dy, dm, dd] = date.split("-").map(Number);
+    const dateObj = (dy && dm && dd) ? new Date(dy, dm - 1, dd) : new Date(date);
     const beforeCount = candidates.length;
     candidates = candidates.filter((loc) => {
       // Non-seasonal locations always pass

@@ -39,15 +39,19 @@ export function TodayIndicatorB({
 }: TodayIndicatorBProps) {
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
 
-  useEffect(() => {
-    const interval = setInterval(() => setCurrentTime(new Date()), 60000);
-    return () => clearInterval(interval);
-  }, []);
-
+  // Only show for today — recalculates when currentTime changes (midnight detection)
   const showIndicator = useMemo(
     () => isToday(tripStartDate, dayIndex),
-    [tripStartDate, dayIndex],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tripStartDate, dayIndex, currentTime.toDateString()],
   );
+
+  // Only run timer when today — prevents wasted intervals on non-today days
+  useEffect(() => {
+    if (!showIndicator) return;
+    const interval = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(interval);
+  }, [showIndicator]);
 
   if (!showIndicator) return null;
 

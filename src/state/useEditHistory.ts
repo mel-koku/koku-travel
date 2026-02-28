@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 import type { Itinerary, ItineraryActivity, ItineraryEdit } from "@/types/itinerary";
 import type { StoredTrip } from "@/services/trip";
 import {
@@ -42,6 +42,9 @@ export function useEditHistory({
   syncTripSave,
   tripSyncDebounceMs,
 }: EditHistoryDeps) {
+  // Ref to track latest trips for debounced sync callbacks (avoids stale closures)
+  const latestTripsRef = useRef<StoredTrip[]>([]);
+
   // Helper for itinerary updates with history
   const updateItineraryWithHistory = useCallback(
     (
@@ -72,6 +75,9 @@ export function useEditHistory({
             : t,
         );
 
+        // Update ref so debounced callback reads the latest state
+        latestTripsRef.current = updatedTrips;
+
         // Schedule debounced sync for activity changes
         if (supabase) {
           const existingTimeout = tripSyncTimeouts.current.get(tripId);
@@ -80,9 +86,10 @@ export function useEditHistory({
           }
 
           const timeout = setTimeout(() => {
-            const updatedTrip = updatedTrips.find((t) => t.id === tripId);
-            if (updatedTrip) {
-              void syncTripSave(supabase, updatedTrip);
+            // Read from ref to get the most recent trips, not a stale closure snapshot
+            const currentTrip = latestTripsRef.current.find((t) => t.id === tripId);
+            if (currentTrip) {
+              void syncTripSave(supabase, currentTrip);
             }
             tripSyncTimeouts.current.delete(tripId);
           }, tripSyncDebounceMs);

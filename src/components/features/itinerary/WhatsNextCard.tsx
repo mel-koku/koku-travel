@@ -104,19 +104,27 @@ export function WhatsNextCard({
   onCheckIn,
   checkedInIds,
 }: WhatsNextCardProps) {
-  // Only show for today
-  const showCard = useMemo(
-    () => isToday(tripStartDate, dayIndex),
-    [tripStartDate, dayIndex],
-  );
-
   // Live-updating current time (60s interval)
   const [currentTimeMinutes, setCurrentTimeMinutes] = useState(getCurrentMinutes);
+  const [todayDate, setTodayDate] = useState(() => new Date().toDateString());
+
+  // Only show for today — depends on todayDate so it recalculates after midnight
+  const showCard = useMemo(
+    () => isToday(tripStartDate, dayIndex),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tripStartDate, dayIndex, todayDate],
+  );
+
+  // Fast timer (60s) when showing, slow timer (5min) when not — detects midnight rollover
   useEffect(() => {
-    if (!showCard) return;
-    const interval = setInterval(() => setCurrentTimeMinutes(getCurrentMinutes()), 60_000);
+    const intervalMs = showCard ? 60_000 : 5 * 60_000;
+    const interval = setInterval(() => {
+      if (showCard) setCurrentTimeMinutes(getCurrentMinutes());
+      const newDate = new Date().toDateString();
+      if (newDate !== todayDate) setTodayDate(newDate);
+    }, intervalMs);
     return () => clearInterval(interval);
-  }, [showCard]);
+  }, [showCard, todayDate]);
 
   // Get activity status
   const { current, next, minutesUntilNext } = useMemo(
