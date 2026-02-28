@@ -475,7 +475,11 @@ export const ItineraryShellB = ({
   }, []);
 
   // ── Trip metadata ──
-  const tripName = currentTrip?.name ?? "Your Itinerary";
+  const rawTripName = currentTrip?.name ?? "Your Itinerary";
+  // Strip date range from title (e.g. "Kyoto & Osaka Trip · Mar 14 – Mar 18" → "Kyoto & Osaka Trip")
+  const tripNameParts = rawTripName.split(" · ");
+  const tripName = tripNameParts[0];
+  const tripDateRange = tripNameParts.length > 1 ? tripNameParts.slice(1).join(" · ") : null;
   const totalDays = days.length;
   const totalActivities = days.reduce(
     (sum, d) => sum + d.activities.filter((a) => a.kind === "place").length,
@@ -607,9 +611,15 @@ export const ItineraryShellB = ({
                     {tripName}
                   </h1>
                   <div
-                    className="mt-1 flex items-center gap-2 text-sm"
+                    className="mt-1 flex flex-wrap items-center gap-2 text-sm"
                     style={{ color: "var(--muted-foreground)" }}
                   >
+                    {tripDateRange && (
+                      <>
+                        <span>{tripDateRange}</span>
+                        {totalDays > 0 && <span aria-hidden="true">·</span>}
+                      </>
+                    )}
                     {totalDays > 0 && (
                       <span>
                         {totalDays} {totalDays === 1 ? "day" : "days"}
