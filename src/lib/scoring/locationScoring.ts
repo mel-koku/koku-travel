@@ -85,6 +85,11 @@ export interface LocationScoringCriteria {
    * Blended with Google rating at 70/30 when present.
    */
   communityRatings?: Map<string, number>;
+  /**
+   * LLM-derived category weight multipliers (0.5-2.0).
+   * Applied as a multiplier on the interest match score.
+   */
+  categoryWeights?: Record<string, number>;
 }
 
 /**
@@ -845,7 +850,19 @@ export function scoreLocation(
   location: Location,
   criteria: LocationScoringCriteria,
 ): LocationScore {
-  const interestResult = scoreInterestMatch(location, criteria.interests, criteria.currentInterest);
+  const rawInterestResult = scoreInterestMatch(location, criteria.interests, criteria.currentInterest);
+
+  // Apply LLM-derived category weight multiplier
+  const categoryWeight = criteria.categoryWeights && location.category
+    ? criteria.categoryWeights[location.category.toLowerCase()] ?? 1.0
+    : 1.0;
+  const interestResult = categoryWeight !== 1.0
+    ? {
+        score: Math.round(rawInterestResult.score * categoryWeight),
+        reasoning: `${rawInterestResult.reasoning} (×${categoryWeight.toFixed(1)} weight)`,
+      }
+    : rawInterestResult;
+
   const ratingResult = scoreRatingQuality(location, criteria.communityRatings);
   const logisticalResult = scoreLogisticalFit(location, criteria);
   const budgetResult = scoreBudgetFit(location, {

@@ -87,6 +87,7 @@ export function pickLocationForTimeSlot(
   contentLocationIds?: Set<string>,
   isZoneClustered?: boolean,
   communityRatings?: Map<string, number>,
+  categoryWeights?: Record<string, number>,
 ): ScoredLocation | undefined {
   // Filter by both ID and name to prevent duplicates (including same-name different branches)
   const unused = list.filter((loc) => {
@@ -167,6 +168,7 @@ export function pickLocationForTimeSlot(
     contentLocationIds,
     isZoneClustered,
     communityRatings,
+    categoryWeights,
   };
 
   const scored = candidates

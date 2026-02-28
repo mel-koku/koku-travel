@@ -15,6 +15,7 @@ import type {
   GuideSegment,
   ResolvedCategory,
 } from "@/types/itineraryGuide";
+import type { GeneratedGuide } from "@/types/llmConstraints";
 
 import { DAY_INTRO_TEMPLATES } from "@/data/guide/dayIntros";
 import { TRANSITION_TEMPLATES } from "@/data/guide/transitions";
@@ -505,11 +506,15 @@ function buildDayGuide(
 /**
  * Build a complete TripGuide from an itinerary.
  * Pure function — no async, no API calls. Safe for useMemo.
+ *
+ * When `guideProse` is provided (from LLM Pass 3), uses generated prose
+ * for each segment and falls back to templates for any missing segment.
  */
 export function buildGuide(
   itinerary: Itinerary,
   tripBuilderData?: TripBuilderData,
   dayIntros?: Record<string, string>,
+  guideProse?: GeneratedGuide,
 ): TripGuide {
   ensureInitialized();
 
@@ -517,35 +522,144 @@ export function buildGuide(
   const days = itinerary.days ?? [];
   const totalDays = days.length;
 
-  // Build per-day guides
-  const dayGuides: DayGuide[] = days.map((day, index) =>
-    buildDayGuide(day, index, totalDays, season, dayIntros?.[day.id]),
-  );
+  // Index generated prose by dayId for O(1) lookup
+  const proseByDay = guideProse
+    ? new Map(guideProse.days.map((d) => [d.dayId, d]))
+    : undefined;
+
+  // Build per-day guides, using generated prose when available
+  const dayGuides: DayGuide[] = days.map((day, index) => {
+    const prose = proseByDay?.get(day.id);
+
+    // Build the template-based guide first (always needed for transitions, cultural moments, etc.)
+    const templateGuide = buildDayGuide(
+      day, index, totalDays, season,
+      // Use AI intro from guideProse if available, then dayIntros, then template
+      prose?.intro ?? dayIntros?.[day.id],
+    );
+
+    if (!prose) return templateGuide;
+
+    // Merge generated prose into the template-based guide
+    const segments: GuideSegment[] = [];
+
+    // Use generated transitions in place of template transitions (activity_context segments)
+    const templateNonTransitions = templateGuide.segments.filter(
+      (s) => s.type !== "activity_context",
+    );
+    const placeActivities = (day.activities ?? []).filter((a) => a.kind === "place");
+
+    // Insert generated transitions between activities
+    for (let i = 0; i < prose.transitions.length && i < placeActivities.length - 1; i++) {
+      const prevActivity = placeActivities[i];
+      if (prevActivity) {
+        segments.push({
+          id: `guide-${day.id}-tr-${i + 1}`,
+          type: "activity_context",
+          content: prose.transitions[i]!,
+          dayId: day.id,
+          afterActivityId: prevActivity.id,
+        });
+      }
+    }
+
+    // Use generated cultural moment if available, otherwise keep template
+    if (prose.culturalMoment) {
+      // Replace template cultural moment
+      const templateCM = templateNonTransitions.filter((s) => s.type !== "cultural_moment");
+      segments.push(...templateCM);
+      // Find the first cultural activity to attach the moment to
+      const culturalActivity = placeActivities.find((a) =>
+        a.tags?.some((t) => ["shrine", "temple", "onsen", "garden", "museum"].includes(t)),
+      );
+      segments.push({
+        id: `guide-${day.id}-cm`,
+        type: "cultural_moment",
+        content: prose.culturalMoment,
+        icon: "⛩️",
+        dayId: day.id,
+        beforeActivityId: culturalActivity?.id,
+      });
+    } else {
+      segments.push(...templateNonTransitions);
+    }
+
+    // Use generated practical tip if available
+    if (prose.practicalTip) {
+      // Remove template practical tip and add generated one
+      const withoutTip = segments.filter((s) => s.type !== "practical_tip");
+      withoutTip.push({
+        id: `guide-${day.id}-tip`,
+        type: "practical_tip",
+        content: prose.practicalTip,
+        icon: "💡",
+        dayId: day.id,
+        beforeActivityId: placeActivities[0]?.id,
+      });
+      segments.length = 0;
+      segments.push(...withoutTip);
+    }
+
+    // Use generated summary
+    const summary: GuideSegment = prose.summary
+      ? {
+          id: `guide-${day.id}-summary`,
+          type: "day_summary",
+          content: prose.summary,
+          icon: "🌙",
+          dayId: day.id,
+        }
+      : templateGuide.summary ?? {
+          id: `guide-${day.id}-summary`,
+          type: "day_summary",
+          content: "",
+          dayId: day.id,
+        };
+
+    return {
+      dayId: day.id,
+      intro: templateGuide.intro, // Already uses prose.intro via the aiIntro parameter
+      segments,
+      summary,
+    };
+  });
 
   // ── Trip Overview ──
-  const cities = [
-    ...new Set(
-      days
-        .map((d) => getCityFromDay(d))
-        .filter((c) => c !== "generic"),
-    ),
-  ];
+  // Use generated overview if available, otherwise template
+  let overview: GuideSegment | undefined;
 
-  const overviewTemplate = matchTripOverview(
-    cities.length > 0 ? cities : ["generic"],
-    season,
-    "trip-overview",
-  );
+  if (guideProse?.tripOverview) {
+    overview = {
+      id: "guide-trip-overview",
+      type: "trip_overview",
+      content: guideProse.tripOverview,
+      icon: "✈️",
+    };
+  } else {
+    const cities = [
+      ...new Set(
+        days
+          .map((d) => getCityFromDay(d))
+          .filter((c) => c !== "generic"),
+      ),
+    ];
 
-  const overview: GuideSegment | undefined = overviewTemplate
-    ? {
-        id: "guide-trip-overview",
-        type: "trip_overview",
-        content: overviewTemplate.content,
-        icon: overviewTemplate.icon,
-        templateId: overviewTemplate.id,
-      }
-    : undefined;
+    const overviewTemplate = matchTripOverview(
+      cities.length > 0 ? cities : ["generic"],
+      season,
+      "trip-overview",
+    );
+
+    overview = overviewTemplate
+      ? {
+          id: "guide-trip-overview",
+          type: "trip_overview",
+          content: overviewTemplate.content,
+          icon: overviewTemplate.icon,
+          templateId: overviewTemplate.id,
+        }
+      : undefined;
+  }
 
   return {
     overview,

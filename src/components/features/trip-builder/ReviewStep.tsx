@@ -8,7 +8,6 @@ import {
   Users,
   Accessibility,
   StickyNote,
-  Hotel,
 } from "lucide-react";
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
@@ -62,12 +61,6 @@ const PACE_OPTIONS = [
   { label: "Full", value: "fast", description: "Packed days, lots of ground covered" },
 ];
 
-const ACCOMMODATION_OPTIONS = [
-  { label: "Hotel", value: "hotel" as const, description: "Standard schedule" },
-  { label: "Ryokan", value: "ryokan" as const, description: "Early evenings, dinner & breakfast included" },
-  { label: "Hostel", value: "hostel" as const, description: "Budget-friendly" },
-  { label: "Mix", value: "mix" as const, description: "Per-city default" },
-];
 
 export type ReviewStepProps = {
   onValidityChange?: (isValid: boolean) => void;
@@ -253,47 +246,6 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             />
           </PreferenceCard>
 
-          {/* Accommodation Style */}
-          <PreferenceCard icon={<Hotel className="h-5 w-5" />} title="Stay" optional info="Ryokan days end at 5 pm with dinner and breakfast included.">
-            <div className="flex flex-col gap-2">
-              {ACCOMMODATION_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() =>
-                    setData((prev) => ({
-                      ...prev,
-                      accommodationStyle: option.value,
-                    }))
-                  }
-                  className={cn(
-                    "flex items-start gap-3 rounded-xl border p-3 text-left transition",
-                    data.accommodationStyle === option.value
-                      ? "border-sage/20 bg-sage/10 ring-1 ring-brand-primary"
-                      : "border-border hover:bg-background"
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 transition",
-                      data.accommodationStyle === option.value
-                        ? "border-brand-primary bg-brand-primary"
-                        : "border-border"
-                    )}
-                  />
-                  <div className="min-w-0">
-                    <span className="text-sm font-medium text-foreground">
-                      {option.label}
-                    </span>
-                    <span className="ml-2 text-xs text-stone">
-                      {option.description}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </PreferenceCard>
-
           {/* Travel Pace */}
           <PreferenceCard icon={<Gauge className="h-5 w-5" />} title={sanityConfig?.reviewPaceTitle ?? "Pace"} optional info={sanityConfig?.reviewPaceTooltip ?? "How packed should each day be?"}>
             <Controller
@@ -448,10 +400,10 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           </PreferenceCard>
 
           {/* Notes */}
-          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title={sanityConfig?.reviewNotesTitle ?? "Notes"} optional info={sanityConfig?.reviewNotesTooltip ?? "Anything we should know \u2014 a birthday, an allergy, a must-visit spot."}>
+          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title={sanityConfig?.reviewNotesTitle ?? "Notes"} optional info={sanityConfig?.reviewNotesTooltip ?? "Koku reads these and builds them into your itinerary."}>
             <textarea
               id="additional-notes"
-              placeholder={sanityConfig?.reviewNotesPlaceholder ?? "A birthday dinner in Kyoto, avoiding steep stairs, must-see spots..."}
+              placeholder={sanityConfig?.reviewNotesPlaceholder ?? "A birthday dinner in Kyoto, must see Fushimi Inari, anything we should know..."}
               className="w-full rounded-xl border border-border bg-background px-3 py-2 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
               rows={4}
               {...register("additionalNotes")}

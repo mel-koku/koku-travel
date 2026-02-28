@@ -11,9 +11,13 @@ import { isDiningLocation } from "@/lib/mealFiltering";
 import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { generateDayIntros } from "./dayIntroGenerator";
+import { extractTripIntent } from "./intentExtractor";
+import { generateGuideProse } from "./guideProseGenerator";
+import { refineDays } from "./dayRefinement";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
 import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
+import type { GeneratedGuide } from "@/types/llmConstraints";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -169,6 +173,7 @@ export type GeneratedTripResult = {
   trip: Trip;
   itinerary: Itinerary;
   dayIntros?: Record<string, string>;
+  guideProse?: GeneratedGuide;
 };
 
 /**
@@ -185,6 +190,10 @@ export async function generateTripFromBuilderData(
   savedIds?: string[],
 ): Promise<GeneratedTripResult> {
   const t0 = Date.now();
+
+  // Run intent extraction in parallel with location fetching — zero added latency.
+  // Intent extraction uses Gemini to reason about vibes, notes, group, pace holistically.
+  const intentPromise = extractTripIntent(builderData).catch(() => null);
 
   // Fetch locations filtered by selected cities (after ward consolidation)
   // Also fetch day trip target cities for small selections (1-2 cities)
@@ -204,6 +213,9 @@ export async function generateTripFromBuilderData(
       allLocations = [...allLocations, ...dayTripLocations];
     }
   }
+
+  // Await intent extraction (should already be resolved by now)
+  const intentResult = await intentPromise;
   const t1 = Date.now();
 
   // Fetch community ratings for scoring blend (non-blocking — falls back to empty)
@@ -216,7 +228,12 @@ export async function generateTripFromBuilderData(
 
   // Generate itinerary using existing generator, including saved locations
   // Pass pre-fetched locations to avoid duplicate Supabase call inside generator
-  const rawItinerary = await generateItinerary(builderData, { savedIds, locations: allLocations, communityRatings });
+  const rawItinerary = await generateItinerary(builderData, {
+    savedIds,
+    locations: allLocations,
+    communityRatings,
+    intentConstraints: intentResult ?? undefined,
+  });
   const t2 = Date.now();
 
   // Optimize route order before planning times
@@ -247,16 +264,27 @@ export async function generateTripFromBuilderData(
     }
   }
 
-  // Run planItinerary (routing) and Gemini day intros in parallel.
-  // Day intros only need activity titles/cities — not scheduled times —
-  // so we can use the pre-planning optimized itinerary for the prompt.
-  const [itinerary, dayIntros] = await Promise.all([
+  // Run planItinerary (routing) and Gemini guide prose in parallel.
+  // Guide prose replaces both day intros and template-based guide text.
+  // Falls back to standalone day intros, then to templates.
+  const [plannedItinerary, guideProse] = await Promise.all([
     planItinerary(optimizedItinerary, {
       defaultDayStart: builderData.dayStartTime ?? "09:00",
       defaultDayEnd: builderData.accommodationStyle === "ryokan" ? "17:00" : undefined,
     }, dayEntryPoints),
-    generateDayIntros(optimizedItinerary, builderData).catch(() => null),
+    generateGuideProse(optimizedItinerary, builderData, intentResult ?? undefined).catch(() => null),
   ]);
+
+  // Extract day intros from guide prose, or fall back to standalone Gemini call
+  const dayIntros = guideProse
+    ? Object.fromEntries(guideProse.days.map(d => [d.dayId, d.intro]))
+    : await generateDayIntros(optimizedItinerary, builderData).catch(() => null);
+
+  // Day refinement: holistic quality pass — can swap, reorder, or flag activities.
+  // Runs sequentially after planning since it needs scheduled times.
+  const itinerary = await refineDays(
+    plannedItinerary, builderData, allLocations, intentResult ?? undefined,
+  );
   const t3 = Date.now();
 
   logger.info("Itinerary generation timing", {
@@ -267,6 +295,8 @@ export async function generateTripFromBuilderData(
     daysCount: itinerary.days.length,
     locationCount: allLocations.length,
     dayStartTime: builderData.dayStartTime ?? "09:00",
+    hasIntentConstraints: !!intentResult,
+    hasGuideProse: !!guideProse,
   });
 
   void isDiningLocation; // Silence unused import warning (used in commented code above)
@@ -292,7 +322,12 @@ export async function generateTripFromBuilderData(
   // Convert to Trip domain model
   const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);
 
-  return { trip, itinerary, dayIntros: dayIntros ?? undefined };
+  return {
+    trip,
+    itinerary,
+    dayIntros: dayIntros ?? undefined,
+    guideProse: guideProse ?? undefined,
+  };
 }
 
 /**

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState as useStateReact } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
-import { Wallet, Gauge, Users, Accessibility, StickyNote, ChevronDown, Check, Hotel } from "lucide-react";
+import { Wallet, Gauge, Users, Accessibility, StickyNote, ChevronDown, Check } from "lucide-react";
 
 import { TripSummaryB } from "./TripSummaryB";
 import { JRPassCardB } from "./JRPassCardB";
@@ -67,12 +67,6 @@ const PACE_OPTIONS = [
   },
 ];
 
-const ACCOMMODATION_OPTIONS = [
-  { label: "Hotel", value: "hotel" as const, description: "Standard schedule" },
-  { label: "Ryokan", value: "ryokan" as const, description: "Early evenings, dinner & breakfast included" },
-  { label: "Hostel", value: "hostel" as const, description: "Budget-friendly" },
-  { label: "Mix", value: "mix" as const, description: "Per-city default" },
-];
 
 export type ReviewStepBProps = {
   onValidityChange?: (isValid: boolean) => void;
@@ -308,50 +302,6 @@ export function ReviewStepB({
             />
           </PreferenceCardB>
 
-          {/* Accommodation Style */}
-          <PreferenceCardB
-            icon={<Hotel className="h-5 w-5" />}
-            title="Stay"
-            hasValue={!!data.accommodationStyle}
-            summary={ACCOMMODATION_OPTIONS.find((o) => o.value === data.accommodationStyle)?.label}
-          >
-            <div className="flex flex-col gap-2">
-              {ACCOMMODATION_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() =>
-                    setData((prev) => ({
-                      ...prev,
-                      accommodationStyle: option.value,
-                    }))
-                  }
-                  className={`flex items-start gap-3 rounded-xl border p-3 text-left transition ${
-                    data.accommodationStyle === option.value
-                      ? "border-[var(--primary)]/30 bg-[var(--primary)]/5 ring-1 ring-[var(--primary)]"
-                      : "border-[var(--border)] hover:bg-[var(--surface)] hover:border-[var(--primary)]/30"
-                  }`}
-                >
-                  <div
-                    className={`mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 transition ${
-                      data.accommodationStyle === option.value
-                        ? "border-[var(--primary)] bg-[var(--primary)]"
-                        : "border-[var(--border)]"
-                    }`}
-                  />
-                  <div className="min-w-0">
-                    <span className="text-sm font-medium text-[var(--foreground)]">
-                      {option.label}
-                    </span>
-                    <span className="ml-2 text-xs text-[var(--muted-foreground)]">
-                      {option.description}
-                    </span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </PreferenceCardB>
-
           {/* Pace */}
           <PreferenceCardB
             icon={<Gauge className="h-5 w-5" />}
@@ -372,7 +322,7 @@ export function ReviewStepB({
                       className={`flex items-start gap-3 rounded-xl border p-3 text-left transition ${
                         field.value === option.value
                           ? "border-[var(--primary)]/30 bg-[var(--primary)]/5 ring-1 ring-[var(--primary)]"
-                          : "border-[var(--border)] hover:bg-[var(--surface)] hover:border-[var(--primary)]/30"
+                          : "border-[var(--border)] hover:bg-[var(--primary)]/5 hover:border-[var(--primary)]/30"
                       }`}
                     >
                       <div
@@ -466,7 +416,7 @@ export function ReviewStepB({
               className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm transition-colors ${
                 formValues.mobilityAssistance
                   ? "border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)]"
-                  : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)]"
+                  : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5"
               }`}
             >
               {formValues.mobilityAssistance && (
@@ -504,7 +454,7 @@ export function ReviewStepB({
                       className={`min-h-[44px] rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${
                         isSelected
                           ? "border-[var(--primary)]/30 bg-[var(--primary)]/10 text-[var(--primary)]"
-                          : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--surface)] hover:border-[var(--primary)]/30 hover:text-[var(--foreground)]"
+                          : "border-[var(--border)] text-[var(--muted-foreground)] hover:bg-[var(--primary)]/5 hover:border-[var(--primary)]/30 hover:text-[var(--foreground)]"
                       }`}
                     >
                       {option.label}
@@ -536,7 +486,7 @@ export function ReviewStepB({
               id="additional-notes-b"
               placeholder={
                 sanityConfig?.reviewNotesPlaceholder ??
-                "A birthday dinner in Kyoto, avoiding steep stairs, must-see spots..."
+                "A birthday dinner in Kyoto, must see Fushimi Inari, anything we should know..."
               }
               className="w-full rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
               rows={4}
@@ -577,7 +527,7 @@ function PreferenceCardB({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-[var(--surface)]/50"
+        className="flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-left transition-colors hover:bg-[var(--primary)]/5"
       >
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--surface)] text-[var(--primary)]">
           {icon}
