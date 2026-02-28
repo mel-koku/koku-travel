@@ -285,8 +285,13 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
   );
 }
 
+const BASE_VB = { x: 0, y: 0, w: 438, h: 516 };
+const MAX_ZOOM = 3;
+const ZOOM_LABEL_THRESHOLD = 1.4; // Show all IATA codes at 1.4x+ zoom
+
 /**
  * Japan map SVG with airport markers — B palette.
+ * Supports wheel-zoom, pan, and reveals all IATA codes when zoomed in.
  */
 function JapanMapB({
   airports,
@@ -301,6 +306,111 @@ function JapanMapB({
 }) {
   const topSet = useMemo(() => new Set(TOP_AIRPORT_CODES), []);
   const svgRef = useRef<SVGSVGElement>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const isZoomedRef = useRef(false);
+
+  // ── Zoom / pan (ref-based to avoid re-renders during interaction) ──
+  const vb = useRef({ ...BASE_VB });
+  const isPanning = useRef(false);
+  const panOrigin = useRef({ x: 0, y: 0 });
+  const didDrag = useRef(false);
+
+  const clampVB = useCallback(
+    (x: number, y: number, w: number, h: number) => ({
+      x: Math.max(0, Math.min(x, BASE_VB.w - w)),
+      y: Math.max(0, Math.min(y, BASE_VB.h - h)),
+      w,
+      h,
+    }),
+    [],
+  );
+
+  const applyVB = useCallback(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const v = vb.current;
+    svg.setAttribute("viewBox", `${v.x} ${v.y} ${v.w} ${v.h}`);
+    const zoomed = v.w < BASE_VB.w - 1;
+    svg.style.cursor = zoomed
+      ? isPanning.current
+        ? "grabbing"
+        : "grab"
+      : "";
+    // Reveal all IATA labels when zoomed past threshold
+    const nowZoomed = v.w < BASE_VB.w / ZOOM_LABEL_THRESHOLD;
+    if (nowZoomed !== isZoomedRef.current) {
+      isZoomedRef.current = nowZoomed;
+      setIsZoomed(nowZoomed);
+    }
+  }, []);
+
+  // Wheel zoom
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const rect = svg.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) / rect.width;
+      const my = (e.clientY - rect.top) / rect.height;
+      const factor = e.deltaY > 0 ? 1.1 : 1 / 1.1;
+      let nw = vb.current.w * factor;
+      let nh = vb.current.h * factor;
+      if (nw >= BASE_VB.w) { nw = BASE_VB.w; nh = BASE_VB.h; }
+      if (nw < BASE_VB.w / MAX_ZOOM) { nw = BASE_VB.w / MAX_ZOOM; nh = BASE_VB.h / MAX_ZOOM; }
+      vb.current = clampVB(
+        vb.current.x + (vb.current.w - nw) * mx,
+        vb.current.y + (vb.current.h - nh) * my,
+        nw,
+        nh,
+      );
+      applyVB();
+    };
+    svg.addEventListener("wheel", onWheel, { passive: false });
+    return () => svg.removeEventListener("wheel", onWheel);
+  }, [clampVB, applyVB]);
+
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
+      if (e.button !== 0) return;
+      isPanning.current = true;
+      didDrag.current = false;
+      panOrigin.current = { x: e.clientX, y: e.clientY };
+    },
+    [],
+  );
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent<SVGSVGElement>) => {
+      if (!isPanning.current) return;
+      const svg = svgRef.current;
+      if (!svg) return;
+      const rect = svg.getBoundingClientRect();
+      const dx = ((e.clientX - panOrigin.current.x) / rect.width) * vb.current.w;
+      const dy = ((e.clientY - panOrigin.current.y) / rect.height) * vb.current.h;
+      panOrigin.current = { x: e.clientX, y: e.clientY };
+      if (Math.abs(dx) > 2 || Math.abs(dy) > 2) didDrag.current = true;
+      vb.current = clampVB(
+        vb.current.x - dx,
+        vb.current.y - dy,
+        vb.current.w,
+        vb.current.h,
+      );
+      applyVB();
+    },
+    [clampVB, applyVB],
+  );
+
+  const onPointerUp = useCallback(() => {
+    isPanning.current = false;
+    applyVB();
+  }, [applyVB]);
+
+  const onDblClick = useCallback(() => {
+    vb.current = { ...BASE_VB };
+    applyVB();
+  }, [applyVB]);
 
   return (
     <div
@@ -313,6 +423,11 @@ function JapanMapB({
         className="h-full w-full"
         aria-hidden
         preserveAspectRatio="xMidYMid meet"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerLeave={onPointerUp}
+        onDoubleClick={onDblClick}
       >
         {ALL_PREFECTURE_PATHS.map((d, i) => (
           <path
@@ -338,7 +453,7 @@ function JapanMapB({
             const isSelected =
               selectedAirport?.iataCode === airport.iataCode;
             const isTop = topSet.has(airport.iataCode);
-            const showLabel = isSelected || isTop;
+            const showLabel = isSelected || isTop || isZoomed;
 
             return (
               <g key={airport.iataCode} className="cursor-pointer">
@@ -362,14 +477,14 @@ function JapanMapB({
                   r={10}
                   fill="transparent"
                   className="cursor-pointer"
-                  onClick={() => onSelectAirport(airport)}
+                  onClick={() => { if (!didDrag.current) onSelectAirport(airport); }}
                   role="button"
                   tabIndex={0}
                   aria-label={`Select ${airport.name}`}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      onSelectAirport(airport);
+                      if (!didDrag.current) onSelectAirport(airport);
                     }
                   }}
                 />
@@ -402,7 +517,8 @@ function JapanMapB({
                     fontSize="8"
                     fontFamily="var(--font-inter), system-ui, sans-serif"
                     textAnchor={pos.x > 320 ? "end" : "start"}
-                    style={{ pointerEvents: "none" }}
+                    className="cursor-pointer"
+                    onClick={() => { if (!didDrag.current) onSelectAirport(airport); }}
                   >
                     {airport.iataCode}
                   </text>

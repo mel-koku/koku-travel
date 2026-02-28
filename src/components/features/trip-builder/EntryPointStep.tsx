@@ -284,6 +284,7 @@ type JapanSilhouetteProps = {
 
 const BASE_VB = { x: 0, y: 0, w: 438, h: 516 };
 const MAX_ZOOM = 3;
+const ZOOM_LABEL_THRESHOLD = 1.4; // Show all IATA codes at 1.4x+ zoom
 
 function JapanSilhouette({
   airports,
@@ -294,6 +295,8 @@ function JapanSilhouette({
 }: JapanSilhouetteProps) {
   const topSet = useMemo(() => new Set(topAirportCodes), [topAirportCodes]);
   const [hoveredAirport, setHoveredAirport] = useState<{ iataCode: string; name: string; x: number; y: number } | null>(null);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const isZoomedRef = useRef(false);
 
   // ── Zoom / pan (ref-based — no re-renders during interaction) ──
   const svgRef = useRef<SVGSVGElement>(null);
@@ -323,6 +326,12 @@ function JapanSilhouette({
         ? "grabbing"
         : "grab"
       : "";
+    // Reveal all IATA labels when zoomed past threshold
+    const nowZoomed = v.w < BASE_VB.w / ZOOM_LABEL_THRESHOLD;
+    if (nowZoomed !== isZoomedRef.current) {
+      isZoomedRef.current = nowZoomed;
+      setIsZoomed(nowZoomed);
+    }
   }, []);
 
   // Wheel zoom — { passive: false } to allow preventDefault
@@ -436,7 +445,7 @@ function JapanSilhouette({
 
             const isSelected = selectedAirport?.iataCode === airport.iataCode;
             const isTop = topSet.has(airport.iataCode);
-            const showLabel = isSelected || isTop;
+            const showLabel = isSelected || isTop || isZoomed;
 
             return (
               <g key={airport.iataCode} className="cursor-pointer">
@@ -499,12 +508,13 @@ function JapanSilhouette({
                     x={pos.x + (pos.x > 320 ? -8 : 10)}
                     y={pos.y + 3}
                     className={cn(
-                      "pointer-events-none font-mono text-[8px]",
+                      "cursor-pointer font-mono text-[8px]",
                       isSelected
                         ? "fill-sage font-bold"
                         : "fill-foreground-secondary"
                     )}
                     textAnchor={pos.x > 320 ? "end" : "start"}
+                    onClick={() => { if (!didDrag.current) onSelectAirport(airport); }}
                   >
                     {airport.iataCode}
                   </text>
