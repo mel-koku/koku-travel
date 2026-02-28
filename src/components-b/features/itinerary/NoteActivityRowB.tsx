@@ -52,7 +52,7 @@ export const NoteActivityRowB = forwardRef<HTMLDivElement, NoteActivityRowBProps
                 e.stopPropagation();
                 onDelete();
               }}
-              className="rounded-xl p-1.5 opacity-0 transition-opacity duration-200 group-hover:opacity-100 hover:bg-[var(--surface)]"
+              className="rounded-xl p-1.5 opacity-0 transition-all duration-200 group-hover:opacity-100 hover:bg-[color-mix(in_srgb,var(--error)_10%,transparent)]"
               style={{ color: "var(--error)" }}
               aria-label="Delete note"
               title="Delete note"

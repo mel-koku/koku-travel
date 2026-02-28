@@ -68,7 +68,7 @@ export function AccommodationPickerB({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="text-xs font-medium transition-colors hover:opacity-80"
+          className="text-xs font-medium transition-colors hover:text-[var(--foreground)]"
           style={{ color: "var(--muted-foreground)" }}
         >
           + Set accommodation
@@ -225,7 +225,7 @@ function LocationFieldB({
           <button
             type="button"
             onClick={handleClear}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-[var(--surface)]"
             style={{ color: "var(--muted-foreground)" }}
             aria-label="Clear"
           >
@@ -275,7 +275,7 @@ function LocationFieldB({
                   <button
                     type="button"
                     onClick={() => handleSelect(s)}
-                    className="w-full rounded-xl px-2.5 py-2 text-left text-sm transition-colors"
+                    className="w-full rounded-xl px-2.5 py-2 text-left text-sm transition-colors hover:bg-[var(--surface)]"
                     style={{ color: "var(--foreground)" }}
                   >
                     <span className="block font-medium">{s.name}</span>

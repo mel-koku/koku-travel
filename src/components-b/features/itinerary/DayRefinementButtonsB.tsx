@@ -95,11 +95,7 @@ export function DayRefinementButtonsB({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-11 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-colors active:scale-[0.98]"
-        style={{
-          borderColor: "var(--border)",
-          color: "var(--muted-foreground)",
-        }}
+        className="flex h-11 items-center gap-1.5 rounded-xl border border-[var(--border)] px-3 text-xs font-medium text-[var(--muted-foreground)] transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--foreground)]"
       >
         <SlidersHorizontal className="h-3.5 w-3.5" />
         Adjust
@@ -127,13 +123,8 @@ export function DayRefinementButtonsB({
                 type="button"
                 onClick={() => handleRefine(option.type)}
                 disabled={isRefining}
-                className="flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-colors active:scale-[0.98]"
-                style={{
-                  borderColor: "var(--border)",
-                  backgroundColor: "var(--background)",
-                  color: "var(--foreground)",
-                  opacity: isRefining ? 0.5 : 1,
-                }}
+                className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-xs font-medium text-[var(--foreground)] transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--primary)]"
+                style={{ opacity: isRefining ? 0.5 : 1 }}
                 title={option.description}
               >
                 <span>{option.icon}</span>

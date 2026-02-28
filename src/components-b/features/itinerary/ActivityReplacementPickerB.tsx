@@ -124,7 +124,7 @@ export function ActivityReplacementPickerB({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex h-11 w-11 items-center justify-center rounded-xl transition-colors"
+                className="flex h-11 w-11 items-center justify-center rounded-xl transition-colors hover:bg-[var(--surface)]"
                 style={{ color: "var(--muted-foreground)" }}
               >
                 <X className="h-5 w-5" />
@@ -150,13 +150,11 @@ export function ActivityReplacementPickerB({
                   <button
                     key={option}
                     onClick={() => setSortBy(option)}
-                    className="rounded-xl px-3 py-1 text-xs font-medium transition-colors"
-                    style={{
-                      backgroundColor:
-                        sortBy === option ? "var(--primary)" : "transparent",
-                      color:
-                        sortBy === option ? "white" : "var(--muted-foreground)",
-                    }}
+                    className={`rounded-xl px-3 py-1 text-xs font-medium transition-colors ${
+                      sortBy === option
+                        ? "bg-[var(--primary)] text-white"
+                        : "text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                    }`}
                   >
                     {option.charAt(0).toUpperCase() + option.slice(1)}
                   </button>
@@ -255,7 +253,7 @@ export function ActivityReplacementPickerB({
                                       <button
                                         type="button"
                                         onClick={() => toggleDescription(location.id)}
-                                        className="mt-1 text-xs font-medium transition-colors"
+                                        className="mt-1 text-xs font-medium transition-colors hover:underline"
                                         style={{ color: "var(--primary)" }}
                                       >
                                         {expandedDescriptions.has(location.id)
@@ -332,7 +330,7 @@ export function ActivityReplacementPickerB({
                               if (isSelected) handleSelect(candidate);
                               else setSelectedIndex(index);
                             }}
-                            className="shrink-0 rounded-xl px-4 py-2 text-sm font-medium transition-colors active:scale-[0.98]"
+                            className="shrink-0 rounded-xl px-4 py-2 text-sm font-medium transition-shadow active:scale-[0.98] hover:shadow-[var(--shadow-elevated)]"
                             style={{
                               backgroundColor: isSelected
                                 ? "var(--primary)"
@@ -358,11 +356,7 @@ export function ActivityReplacementPickerB({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl border px-4 py-2 text-sm font-medium transition-colors active:scale-[0.98]"
-                style={{
-                  borderColor: "var(--border)",
-                  color: "var(--foreground)",
-                }}
+                className="rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--foreground)] transition-colors active:scale-[0.98] hover:bg-[var(--surface)]"
               >
                 Cancel
               </button>

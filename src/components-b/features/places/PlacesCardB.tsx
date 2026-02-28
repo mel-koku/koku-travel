@@ -69,14 +69,9 @@ export const PlacesCardB = memo(function PlacesCardB({
         onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
         className={`block w-full overflow-hidden rounded-2xl bg-white transition-all duration-300 ${
           isHighlighted
-            ? "scale-[1.01]"
-            : "hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+            ? "scale-[1.01] shadow-[var(--shadow-elevated)]"
+            : "shadow-[var(--shadow-card)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
         }`}
-        style={{
-          boxShadow: isHighlighted
-            ? "var(--shadow-elevated)"
-            : "var(--shadow-card)",
-        }}
       >
         {/* Image — 4:3 landscape */}
         <div className="relative w-full overflow-hidden aspect-[4/3]">

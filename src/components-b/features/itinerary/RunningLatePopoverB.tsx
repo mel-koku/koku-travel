@@ -47,7 +47,7 @@ export function RunningLatePopoverB({ onApplyDelay }: RunningLatePopoverBProps) 
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="text-xs transition-colors"
+        className="text-xs transition-colors hover:text-[var(--foreground)] hover:underline"
         style={{ color: "var(--muted-foreground)" }}
       >
         Running late?
@@ -74,11 +74,7 @@ export function RunningLatePopoverB({ onApplyDelay }: RunningLatePopoverBProps) 
                 key={preset.value}
                 type="button"
                 onClick={() => applyPreset(preset.value)}
-                className="min-h-[44px] rounded-xl px-4 py-2.5 text-sm font-medium transition-colors active:scale-[0.98]"
-                style={{
-                  backgroundColor: "var(--background)",
-                  color: "var(--foreground)",
-                }}
+                className="min-h-[44px] rounded-xl bg-[var(--background)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors active:scale-[0.98] hover:bg-[var(--surface)]"
               >
                 {preset.label}
               </button>
@@ -104,11 +100,7 @@ export function RunningLatePopoverB({ onApplyDelay }: RunningLatePopoverBProps) 
               type="button"
               onClick={applyCustom}
               disabled={!customMinutes || parseInt(customMinutes, 10) < 1}
-              className="min-h-[44px] rounded-xl px-4 py-2.5 text-sm font-medium transition-colors active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
-              style={{
-                backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)",
-                color: "var(--primary)",
-              }}
+              className="min-h-[44px] rounded-xl bg-[color-mix(in_srgb,var(--primary)_10%,transparent)] px-4 py-2.5 text-sm font-medium text-[var(--primary)] transition-colors active:scale-[0.98] hover:bg-[color-mix(in_srgb,var(--primary)_18%,transparent)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Apply
             </button>

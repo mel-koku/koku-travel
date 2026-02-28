@@ -265,7 +265,7 @@ function EmailFormB({ content }: { content?: PagesContent }) {
       <button
         type="submit"
         disabled={supabaseUnavailable}
-        className="h-12 rounded-xl bg-[var(--primary)] px-4 text-sm font-medium text-white hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+        className="h-12 rounded-xl bg-[var(--primary)] px-4 text-sm font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
       >
         {content?.accountSendLinkText ?? "Send sign-in link"}
       </button>
