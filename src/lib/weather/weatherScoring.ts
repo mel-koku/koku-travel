@@ -16,13 +16,15 @@ export function getEnvironment(location: Location): "indoor" | "outdoor" | "mixe
   const category = location.category?.toLowerCase() ?? "";
   const outdoorCategories = [
     "park", "garden", "viewpoint", "nature",
-    "shrine", "temple",
+    "shrine", "temple", "beach", "zoo",
   ];
   const indoorCategories = [
     "museum", "restaurant", "shopping", "bar", "entertainment",
+    "aquarium", "cafe", "theater",
   ];
   const mixedCategories = [
     "landmark", "wellness", "market", "culture", "onsen",
+    "castle", "historic_site",
   ];
 
   if (outdoorCategories.includes(category)) return "outdoor";

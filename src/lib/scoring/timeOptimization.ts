@@ -17,12 +17,17 @@ const OPTIMAL_TIMES_BY_CATEGORY: Record<string, Array<"morning" | "afternoon" | 
   bar: ["evening"], // Evening/nightlife
   entertainment: ["evening"], // Evening entertainment
   landmark: ["morning", "afternoon"], // Better lighting, less crowds
-  historic: ["morning", "afternoon"], // Better visibility
+  historic_site: ["morning", "afternoon"], // Better visibility
   nature: ["morning", "afternoon"], // Best lighting, cooler temps
   culture: ["morning", "afternoon"], // Indoor cultural sites
   cafe: ["morning", "afternoon"], // Coffee/tea times
   wellness: ["morning", "evening"], // Relaxation before/after activities
   onsen: ["afternoon", "evening"], // Post-sightseeing soak
+  aquarium: ["morning", "afternoon"], // Indoor, good for daytime
+  beach: ["morning", "afternoon"], // Best before peak heat
+  castle: ["morning", "afternoon"], // Better lighting, cooler temps
+  theater: ["afternoon", "evening"], // Show times
+  zoo: ["morning", "afternoon"], // Animals more active early
 };
 
 /**
