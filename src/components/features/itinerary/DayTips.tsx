@@ -6,6 +6,7 @@ import type { TravelGuidance } from "@/types/travelGuidance";
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { getRegionForCity } from "@/data/regions";
 import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
+import { LAST_TRAIN_TIMES, formatLastTrainTime } from "@/lib/constants/lastTrainTimes";
 
 type DayTipsProps = {
   day: ItineraryDay;
@@ -16,6 +17,10 @@ type DayTipsProps = {
   embedded?: boolean;
   /** Callback fired when tip count changes (for parent badge) */
   onTipCount?: (count: number) => void;
+  /** Next day's activities — used for cash-only advance warning */
+  nextDayActivities?: ItineraryDay["activities"];
+  /** Whether this is the traveler's first time visiting Japan */
+  isFirstTimeVisitor?: boolean;
 };
 
 /** Minimal shape used for rendering — shared by static pro tips and DB tips. */
@@ -54,7 +59,7 @@ function toDisplayTip(tip: TravelGuidance): DisplayTip {
   };
 }
 
-export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount }: DayTipsProps) {
+export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor }: DayTipsProps) {
   const [dbTips, setDbTips] = useState<TravelGuidance[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -225,8 +230,61 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
       });
     }
 
+    // Last train warning — check if any evening return transit departs after last train
+    if (day.cityId) {
+      const lastTrainTime = LAST_TRAIN_TIMES[day.cityId];
+      if (lastTrainTime) {
+        const hasLateTransit = activities.some((a) => {
+          if (a.kind !== "place") return false;
+          const seg = a.travelToNext ?? a.travelFromPrevious;
+          if (!seg?.departureTime) return false;
+          const [dh, dm] = seg.departureTime.split(":").map(Number);
+          if (dh === undefined || dm === undefined) return false;
+          const depMin = dh * 60 + dm;
+          return depMin > lastTrainTime - 30; // Warn 30min before last train
+        });
+        if (hasLateTransit) {
+          tips.push({
+            id: "pro-last-train",
+            title: `Last train from ${day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1)}`,
+            summary: `Last trains leave around ${formatLastTrainTime(lastTrainTime)}. Plan your evening around this or budget for a taxi.`,
+            icon: "🚨",
+          });
+        }
+      }
+    }
+
+    // Cash-only warning — check next day's activities for cash-only locations
+    if (nextDayActivities) {
+      const cashOnlyNames = nextDayActivities
+        .filter((a) => a.kind === "place" && a.tags?.includes("cash-only"))
+        .map((a) => a.title);
+      if (cashOnlyNames.length > 0) {
+        const names = cashOnlyNames.length <= 2
+          ? cashOnlyNames.join(" and ")
+          : `${cashOnlyNames.length} spots`;
+        tips.push({
+          id: "pro-cash-tomorrow",
+          title: "Withdraw cash tonight",
+          summary: `Tomorrow: ${names} ${cashOnlyNames.length === 1 ? "is" : "are"} cash-only. Find a 7-Eleven ATM (international cards accepted 24/7).`,
+          icon: "💴",
+        });
+      }
+    }
+
+    // First-time visitor Day 1 orientation
+    if (dayIndex === 0 && isFirstTimeVisitor) {
+      tips.push({
+        id: "pro-first-time-orientation",
+        title: "Welcome to Japan",
+        summary:
+          "Pick up a pocket Wi-Fi or SIM at the airport, grab an IC card at the nearest station, and download Google Maps offline for your cities.",
+        icon: "✈️",
+      });
+    }
+
     return tips;
-  }, [dayIndex, day.activities, day.cityTransition]);
+  }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor]);
 
   // Combined display list
   const allTips = useMemo<DisplayTip[]>(

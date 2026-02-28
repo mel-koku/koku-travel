@@ -8,10 +8,12 @@ type DayTipsPopoverBProps = {
   day: ItineraryDay;
   tripStartDate?: string;
   dayIndex: number;
+  nextDayActivities?: ItineraryDay["activities"];
+  isFirstTimeVisitor?: boolean;
 };
 
-export function DayTipsPopoverB({ day, tripStartDate, dayIndex }: DayTipsPopoverBProps) {
-  const { tips, isLoading } = useDayTips(day, tripStartDate, dayIndex);
+export function DayTipsPopoverB({ day, tripStartDate, dayIndex, nextDayActivities, isFirstTimeVisitor }: DayTipsPopoverBProps) {
+  const { tips, isLoading } = useDayTips(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 

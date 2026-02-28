@@ -11,10 +11,12 @@ type DayTipsBProps = {
   tripStartDate?: string;
   dayIndex: number;
   className?: string;
+  nextDayActivities?: ItineraryDay["activities"];
+  isFirstTimeVisitor?: boolean;
 };
 
-export function DayTipsB({ day, tripStartDate, dayIndex, className }: DayTipsBProps) {
-  const { tips: allTips, isLoading } = useDayTips(day, tripStartDate, dayIndex);
+export function DayTipsB({ day, tripStartDate, dayIndex, className, nextDayActivities, isFirstTimeVisitor }: DayTipsBProps) {
+  const { tips: allTips, isLoading } = useDayTips(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!isLoading && allTips.length === 0) return null;

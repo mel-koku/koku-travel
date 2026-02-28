@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
 import type { TripStyle } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
 
 type PreferenceFormValues = {
   groupSize?: number;
@@ -144,6 +145,11 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
 
   const warnings = useMemo(() => detectPlanningWarnings(data), [data]);
 
+  const durationWarning = useMemo(
+    () => validateDurationRegionFit(data.duration ?? 0, data.regions ?? [], data.cities ?? []),
+    [data.duration, data.regions, data.cities],
+  );
+
   // Navigation handlers (flat steps: 1=dates, 2=entry, 3=vibes, 4=regions)
   const handleEditDates = useCallback(() => onGoToStep?.(1), [onGoToStep]);
   const handleEditEntryPoint = useCallback(() => onGoToStep?.(2), [onGoToStep]);
@@ -163,6 +169,51 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
 
       {/* Planning Warnings */}
       {warnings.length > 0 && <PlanningWarningsList warnings={warnings} />}
+
+      {/* Duration-to-Region Warning */}
+      {durationWarning && (
+        <div
+          className={cn(
+            "flex items-start gap-3 rounded-xl border px-4 py-3",
+            durationWarning.severity === "warning"
+              ? "border-warning/30 bg-warning/5"
+              : "border-sage/30 bg-sage/5"
+          )}
+        >
+          <span className="mt-0.5 shrink-0 text-sm">
+            {durationWarning.severity === "warning" ? "\u26A0\uFE0F" : "\u2139\uFE0F"}
+          </span>
+          <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
+        </div>
+      )}
+
+      {/* First-Time Visitor Toggle */}
+      <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
+        <div>
+          <p className="text-sm font-medium text-foreground">First time in Japan?</p>
+          <p className="text-xs text-stone">We&apos;ll add orientation tips and pace Day 1 gently.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() =>
+            setData((prev) => ({
+              ...prev,
+              isFirstTimeVisitor: !prev.isFirstTimeVisitor,
+            }))
+          }
+          className={cn(
+            "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+            data.isFirstTimeVisitor ? "bg-brand-primary" : "bg-border"
+          )}
+        >
+          <span
+            className={cn(
+              "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
+              data.isFirstTimeVisitor && "translate-x-5"
+            )}
+          />
+        </button>
+      </div>
 
       {/* Saved places that match selected cities */}
       <SavedInTripPreview selectedCities={data.cities} />
