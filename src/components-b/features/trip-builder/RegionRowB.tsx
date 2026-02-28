@@ -31,6 +31,7 @@ export function RegionRowB({
   regionName,
   heroImage,
   tagline,
+  cityNames,
   additionalCityCount,
   selectedCityCount,
   totalCityCount,
@@ -146,11 +147,16 @@ export function RegionRowB({
             />
           </div>
         </div>
-        <p className="mt-0.5 line-clamp-2 text-xs leading-relaxed text-[var(--muted-foreground)]">
+        <p className="mt-0.5 line-clamp-1 text-xs leading-relaxed text-[var(--muted-foreground)]">
           {tagline}
         </p>
+        {cityNames.length > 0 && (
+          <p className="mt-1 text-[11px] font-medium text-[var(--foreground)]/70">
+            {cityNames.join(", ")}
+          </p>
+        )}
         {additionalCityCount > 0 && (
-          <p className="mt-1 text-[11px] text-[var(--muted-foreground)]/70">
+          <p className="mt-0.5 text-[11px] text-[var(--muted-foreground)]/60">
             +{additionalCityCount} more {additionalCityCount === 1 ? "city" : "cities"} inside
           </p>
         )}
