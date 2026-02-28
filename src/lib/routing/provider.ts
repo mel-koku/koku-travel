@@ -31,18 +31,18 @@ const PROVIDERS: ProviderConfig[] = [
 ];
 
 function resolveProvider(mode?: string): ProviderConfig | null {
+  // Always prefer Google for transit — Mapbox lacks transit support entirely
+  if (mode === "transit") {
+    const google = PROVIDERS.find((p) => p.name === "google");
+    if (google?.isEnabled()) return google;
+  }
+
   const envPreference = (process.env.ROUTING_PROVIDER ?? "").toLowerCase();
   if (envPreference) {
     const preferred = PROVIDERS.find((provider) => provider.name === envPreference);
     if (preferred && preferred.isEnabled()) {
       return preferred;
     }
-  }
-
-  // Prefer Google for transit since Mapbox lacks full transit support
-  if (mode === "transit") {
-    const google = PROVIDERS.find((p) => p.name === "google");
-    if (google?.isEnabled()) return google;
   }
 
   return PROVIDERS.find((provider) => provider.isEnabled()) ?? null;
