@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { MapPin, Flag, X, Pencil } from "lucide-react";
+import { MapPin, Flag, X, Pencil, ChevronUp } from "lucide-react";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import type { EntryPoint } from "@/types/trip";
 
@@ -101,7 +101,7 @@ export function AccommodationPickerB({
   }
 
   return (
-    <div ref={containerRef} className="space-y-2">
+    <div ref={containerRef}>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
         <LocationFieldB
           label="Starting location"
@@ -119,6 +119,15 @@ export function AccommodationPickerB({
           linkedValue={startLocation}
         />
       </div>
+      <button
+        type="button"
+        onClick={() => setExpanded(false)}
+        className="mt-1.5 flex w-full items-center justify-center gap-1 rounded-lg py-1 text-xs font-medium transition-colors hover:bg-[var(--surface)]"
+        style={{ color: "var(--muted-foreground)" }}
+      >
+        <ChevronUp className="h-3.5 w-3.5" />
+        Done
+      </button>
     </div>
   );
 }
