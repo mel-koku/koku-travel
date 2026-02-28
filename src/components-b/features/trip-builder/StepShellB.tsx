@@ -136,7 +136,7 @@ export function StepNavBarB({
               className={`inline-flex h-11 items-center justify-center rounded-xl px-8 text-sm font-medium transition-all active:scale-[0.98] ${
                 nextDisabled
                   ? "cursor-not-allowed bg-[var(--surface)] text-[var(--muted-foreground)]"
-                  : "cursor-pointer bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)]"
+                  : "cursor-pointer bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)] hover:brightness-110"
               }`}
             >
               {nextLabel}
@@ -172,7 +172,7 @@ export function StepNavBarB({
             className={`h-12 flex-1 rounded-xl text-sm font-medium transition-all active:scale-[0.98] ${
               nextDisabled
                 ? "cursor-not-allowed bg-[var(--surface)] text-[var(--muted-foreground)]"
-                : "cursor-pointer bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)]"
+                : "cursor-pointer bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)] hover:brightness-110"
             }`}
           >
             {nextLabel}

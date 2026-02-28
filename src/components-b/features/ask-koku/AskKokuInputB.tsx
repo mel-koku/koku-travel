@@ -41,7 +41,7 @@ export function AskKokuInputB({
         <button
           onClick={onSubmit}
           disabled={isLoading || !value.trim()}
-          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/40"
+          className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] transition-all hover:shadow-[var(--shadow-elevated)] hover:brightness-110 active:scale-[0.98] disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/40"
         >
           {isLoading ? (
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
