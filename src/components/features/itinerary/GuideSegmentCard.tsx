@@ -54,6 +54,12 @@ const STYLE_MAP: Record<
     iconBg: "bg-sage/10",
     label: "Neighborhood",
   },
+  neighborhood_walk: {
+    bg: "bg-sage/5",
+    border: "border-sage/20",
+    iconBg: "bg-sage/10",
+    label: "Neighborhood Walk",
+  },
 };
 
 const DEFAULT_ICONS: Record<GuideContentType, string> = {
@@ -64,6 +70,7 @@ const DEFAULT_ICONS: Record<GuideContentType, string> = {
   practical_tip: "💡",
   day_summary: "🌙",
   neighborhood_narrative: "🏘️",
+  neighborhood_walk: "🚶",
 };
 
 export function GuideSegmentCard({ segment, className = "" }: GuideSegmentCardProps) {

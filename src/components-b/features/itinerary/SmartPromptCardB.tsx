@@ -10,6 +10,7 @@ import {
   Leaf,
   Loader2,
   Moon,
+  Package,
   Plus,
   ShoppingBag,
   Shuffle,
@@ -32,6 +33,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Info,
   Leaf,
   Moon,
+  Package,
   Plus,
   ShoppingBag,
   Shuffle,
@@ -63,8 +65,9 @@ export function SmartPromptCardB({
   const isGuidance = gap.action.type === "acknowledge_guidance";
   const isReservation = gap.action.type === "acknowledge_reservation";
   const isLunchRush = gap.action.type === "acknowledge_lunch_rush";
+  const isLuggage = gap.action.type === "acknowledge_luggage";
   const isWeatherSwap = gap.action.type === "swap_for_weather";
-  const isAcknowledge = isGuidance || isReservation || isLunchRush;
+  const isAcknowledge = isGuidance || isReservation || isLunchRush || isLuggage;
 
   return (
     <div

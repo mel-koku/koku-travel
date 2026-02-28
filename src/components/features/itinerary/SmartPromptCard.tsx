@@ -9,6 +9,7 @@ import {
   Info,
   Leaf,
   Moon,
+  Package,
   Plus,
   ShoppingBag,
   Shuffle,
@@ -33,6 +34,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Info,
   Leaf,
   Moon,
+  Package,
   Plus,
   ShoppingBag,
   Shuffle,
@@ -98,6 +100,11 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     bg: "bg-sage/5",
     text: "text-sage",
     badge: "bg-sage/10 text-sage",
+  },
+  luggage_needs: {
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
+    badge: "bg-brand-secondary/15 text-brand-secondary",
   },
 };
 
@@ -167,7 +174,7 @@ export function SmartPromptCard({
 
         {/* Actions */}
         <div className="mt-2 flex gap-2">
-          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" ? (
+          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" ? (
             <Button
               variant="primary"
               size="chip"

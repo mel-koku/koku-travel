@@ -21,6 +21,8 @@ type DayTipsProps = {
   nextDayActivities?: ItineraryDay["activities"];
   /** Whether this is the traveler's first time visiting Japan */
   isFirstTimeVisitor?: boolean;
+  /** When true, luggage smart prompt is active — suppress the "Send luggage ahead" pro tip */
+  hasLuggagePrompt?: boolean;
 };
 
 /** Minimal shape used for rendering — shared by static pro tips and DB tips. */
@@ -59,7 +61,7 @@ function toDisplayTip(tip: TravelGuidance): DisplayTip {
   };
 }
 
-export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor }: DayTipsProps) {
+export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt }: DayTipsProps) {
   const [dbTips, setDbTips] = useState<TravelGuidance[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -169,8 +171,8 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
       });
     }
 
-    // City transition day
-    if (day.cityTransition) {
+    // City transition day — skip when luggage smart prompt is active (avoids duplication)
+    if (day.cityTransition && !hasLuggagePrompt) {
       tips.push({
         id: "pro-city-transition",
         title: "Send luggage ahead",
@@ -295,7 +297,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     }
 
     return tips;
-  }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor]);
+  }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt]);
 
   // Combined display list
   const allTips = useMemo<DisplayTip[]>(

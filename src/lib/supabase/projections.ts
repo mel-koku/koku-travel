@@ -87,6 +87,8 @@ export type LocationDbRow = {
   // Source tracking
   source: string | null;
   source_url: string | null;
+  // Tattoo policy for onsen/wellness
+  tattoo_policy: "prohibited" | "cover_required" | "accepted" | null;
 };
 
 /**
@@ -227,7 +229,8 @@ export const LOCATION_ITINERARY_COLUMNS = `
   dietary_options,
   tags,
   cuisine_type,
-  insider_tip
+  insider_tip,
+  tattoo_policy
 `.replace(/\s+/g, "");
 
 /**

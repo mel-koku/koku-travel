@@ -11,7 +11,8 @@ export type GuideContentType =
   | "cultural_moment"
   | "practical_tip"
   | "day_summary"
-  | "neighborhood_narrative";
+  | "neighborhood_narrative"
+  | "neighborhood_walk";
 
 export type GuideSegment = {
   id: string;

@@ -168,6 +168,10 @@ export type GenerateItineraryOptions = {
    * These locations will be prioritized and included in the generated itinerary.
    */
   savedIds?: string[];
+  /**
+   * Community ratings map (locationId → avg rating 1-5) for scoring blend.
+   */
+  communityRatings?: Map<string, number>;
 };
 
 export async function generateItinerary(
@@ -586,9 +590,10 @@ export async function generateItinerary(
           usedLocationNames,
           contentLocationIds,
         ] as const;
+        const communityRatings = options?.communityRatings;
 
         let locationResult = isZoneClustered && zoneFilteredLocations
-          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true)
+          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings)
           : null;
 
         // Tier 2: Expand to neighboring zones
@@ -596,13 +601,13 @@ export async function generateItinerary(
           const expandedIds = getExpandedZoneLocationIds(cityZoneMap, selectedZoneId);
           const expandedLocs = availableLocations.filter((loc) => expandedIds.has(loc.id));
           if (expandedLocs.length >= 3) {
-            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true);
+            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings);
           }
         }
 
         // Tier 3: Fall back to full city pool (original behavior)
         if (!locationResult) {
-          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false);
+          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings);
         }
 
         const location = locationResult && "_scoringReasoning" in locationResult
