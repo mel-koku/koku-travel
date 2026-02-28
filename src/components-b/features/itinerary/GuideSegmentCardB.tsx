@@ -17,6 +17,7 @@ const LABEL_MAP: Record<GuideContentType, string> = {
   cultural_moment: "Cultural Insight",
   practical_tip: "Pro Tip",
   day_summary: "Day Wrap-Up",
+  neighborhood_narrative: "Neighborhood",
 };
 
 const DEFAULT_ICONS: Record<GuideContentType, string> = {
@@ -26,6 +27,7 @@ const DEFAULT_ICONS: Record<GuideContentType, string> = {
   cultural_moment: "\u{1f3ee}",
   practical_tip: "\u{1f4a1}",
   day_summary: "\u{1f319}",
+  neighborhood_narrative: "\u{1F3D8}\uFE0F",
 };
 
 /* ── Combined day guide card (collapsed by default) ── */

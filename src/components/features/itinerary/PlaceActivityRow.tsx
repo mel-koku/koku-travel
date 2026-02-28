@@ -25,6 +25,7 @@ import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { PlaceActivityHeader } from "./PlaceActivityHeader";
 import { PlaceActivityReasoning } from "./PlaceActivityReasoning";
+import { PocketPhrases } from "./PocketPhrases";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -722,6 +723,25 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   </div>
                 </div>
               )}
+
+              {/* Insider Tip */}
+              {placeLocation?.insiderTip && (
+                <div className="mt-3 rounded-xl bg-brand-secondary/5 p-2.5">
+                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-brand-secondary">
+                    {"✨ "}Insider Tip
+                  </p>
+                  <p className="text-xs leading-relaxed text-foreground-secondary">
+                    {placeLocation.insiderTip}
+                  </p>
+                </div>
+              )}
+
+              {/* Pocket Phrases */}
+              <PocketPhrases
+                locationCategory={placeLocation?.category}
+                tags={activity.tags}
+                seed={activity.id}
+              />
 
               {activity.recommendationReason && (
                 <PlaceActivityReasoning
