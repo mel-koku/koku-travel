@@ -709,9 +709,10 @@ export async function generateItinerary(
           contentLocationIds,
         ] as const;
         const communityRatings = options?.communityRatings;
+        const dietaryRestrictions = data.accessibility?.dietary;
 
         let locationResult = isZoneClustered && zoneFilteredLocations
-          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights)
+          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions)
           : null;
 
         // Tier 2: Expand to neighboring zones
@@ -719,13 +720,13 @@ export async function generateItinerary(
           const expandedIds = getExpandedZoneLocationIds(cityZoneMap, selectedZoneId);
           const expandedLocs = availableLocations.filter((loc) => expandedIds.has(loc.id));
           if (expandedLocs.length >= 3) {
-            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights);
+            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions);
           }
         }
 
         // Tier 3: Fall back to full city pool (original behavior)
         if (!locationResult) {
-          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights);
+          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions);
         }
 
         const location = locationResult && "_scoringReasoning" in locationResult

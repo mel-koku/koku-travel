@@ -42,6 +42,7 @@ const FACTOR_META: Record<
   groupFit: { label: "Group fit", maxMagnitude: 8 },
   seasonalFit: { label: "Seasonal match", maxMagnitude: 5 },
   contentFit: { label: "Editorial recommendation", maxMagnitude: 20 },
+  dietaryFit: { label: "Dietary fit", maxMagnitude: 5 },
 };
 
 // ---------------------------------------------------------------------------
@@ -115,6 +116,11 @@ function humanizeFactor(
 
     case "contentFit":
       if (score >= 15) return "Featured in editorial content";
+      return "";
+
+    case "dietaryFit":
+      if (score >= 4) return "Matches your dietary needs";
+      if (score <= -4) return "May not meet dietary needs";
       return "";
 
     default:

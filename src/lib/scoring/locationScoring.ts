@@ -90,6 +90,11 @@ export interface LocationScoringCriteria {
    * Applied as a multiplier on the interest match score.
    */
   categoryWeights?: Record<string, number>;
+  /**
+   * Dietary restrictions (e.g. "vegetarian", "vegan", "halal", "gluten-free").
+   * Used as a soft scoring factor for food categories.
+   */
+  dietaryRestrictions?: string[];
 }
 
 /**
@@ -108,6 +113,7 @@ export interface ScoreBreakdown {
   groupFit: number;
   seasonalFit: number;
   contentFit: number;
+  dietaryFit: number;
 }
 
 /**
@@ -844,6 +850,51 @@ function scoreContentFit(
 }
 
 /**
+ * Food-related categories where dietary preferences apply.
+ */
+const DIETARY_CATEGORIES = new Set(["restaurant", "cafe", "bar", "market"]);
+
+/**
+ * Score dietary fit for food locations.
+ * Range: -5 to +5 points. Non-food categories always return 0.
+ *
+ * Only `servesVegetarianFood` has real Google Places data backing.
+ * Other restrictions (halal, kosher, gluten-free) return neutral (0)
+ * because we have no location data to match against.
+ */
+function scoreDietaryFit(
+  location: Location,
+  dietaryRestrictions?: string[],
+): { score: number; reasoning: string } {
+  if (!dietaryRestrictions || dietaryRestrictions.length === 0) {
+    return { score: 0, reasoning: "" };
+  }
+
+  const category = location.category?.toLowerCase() ?? "";
+  if (!DIETARY_CATEGORIES.has(category)) {
+    return { score: 0, reasoning: "" };
+  }
+
+  const restrictions = dietaryRestrictions.map((r) => r.toLowerCase());
+  const needsVegetarian = restrictions.includes("vegetarian") || restrictions.includes("vegan");
+
+  if (needsVegetarian) {
+    const serves = location.dietaryOptions?.servesVegetarianFood;
+    if (serves === true) {
+      return { score: 5, reasoning: "Serves vegetarian food" };
+    }
+    if (serves === false) {
+      return { score: -5, reasoning: "No vegetarian options reported" };
+    }
+    // No data — stay neutral, don't penalize missing info
+    return { score: 0, reasoning: "Vegetarian options unknown" };
+  }
+
+  // Other restrictions (halal, kosher, GF) — no location data to match
+  return { score: 0, reasoning: "" };
+}
+
+/**
  * Score a location based on all criteria.
  */
 export function scoreLocation(
@@ -899,6 +950,9 @@ export function scoreLocation(
   // Content fit scoring (guide/experience editorial boost)
   const contentResult = scoreContentFit(location, criteria.contentLocationIds);
 
+  // Dietary fit scoring (soft factor for food categories)
+  const dietaryResult = scoreDietaryFit(location, criteria.dietaryRestrictions);
+
   // Accommodation style bonus: ryokan guests prefer onsen/garden/nature/wellness
   const RYOKAN_BONUS_CATEGORIES = new Set(["onsen", "garden", "nature", "wellness"]);
   const accommodationBonus = (
@@ -920,6 +974,7 @@ export function scoreLocation(
     groupFit: groupResult.scoreAdjustment,
     seasonalFit: seasonalResult.scoreAdjustment,
     contentFit: contentResult.score,
+    dietaryFit: dietaryResult.score,
   };
 
   const totalScore =
@@ -935,6 +990,7 @@ export function scoreLocation(
     breakdown.groupFit +
     breakdown.seasonalFit +
     breakdown.contentFit +
+    breakdown.dietaryFit +
     accommodationBonus;
 
   const reasoning = [
@@ -951,6 +1007,7 @@ export function scoreLocation(
     groupResult.reasoning,
     seasonalResult.reasoning,
     ...(contentResult.reasoning ? [contentResult.reasoning] : []),
+    ...(dietaryResult.reasoning ? [dietaryResult.reasoning] : []),
     ...(accommodationBonus > 0 ? [`Ryokan stay bonus: +${accommodationBonus} for ${location.category}`] : []),
   ];
 
