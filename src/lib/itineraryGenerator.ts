@@ -234,18 +234,23 @@ export async function generateItinerary(
       }
     }
 
-    // Fetch weather for each city
-    for (const cityId of uniqueCities) {
-      try {
-        const forecasts = await fetchWeatherForecast(cityId, data.dates.start, data.dates.end);
-        weatherContext.cityForecasts.set(cityId, forecasts);
-        // Merge into overall forecasts map (later dates override earlier ones)
-        for (const [date, forecast] of forecasts.entries()) {
-          weatherContext.forecasts.set(date, forecast);
-        }
-      } catch (error) {
-        // Weather fetch failed, continue without weather data
-        logger.warn(`Failed to fetch weather for ${cityId}`, { error: getErrorMessage(error) });
+    // Fetch weather for all cities in parallel (was sequential — major bottleneck)
+    const cityIds = Array.from(uniqueCities);
+    const weatherResults = await Promise.allSettled(
+      cityIds.map((cityId) => fetchWeatherForecast(cityId, data.dates.start!, data.dates.end!)),
+    );
+    for (let i = 0; i < cityIds.length; i++) {
+      const result = weatherResults[i];
+      if (!result || result.status === "rejected") {
+        logger.warn(`Failed to fetch weather for ${cityIds[i]}`, {
+          error: result ? getErrorMessage(result.reason) : "unknown",
+        });
+        continue;
+      }
+      const forecasts = result.value;
+      weatherContext.cityForecasts.set(cityIds[i]!, forecasts);
+      for (const [date, forecast] of forecasts.entries()) {
+        weatherContext.forecasts.set(date, forecast);
       }
     }
   }
