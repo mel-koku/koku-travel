@@ -191,25 +191,36 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
       });
     }
 
-    // Rush hour warning
-    const firstPlace = activities.find(
-      (a) => a.kind === "place" && a.travelFromPrevious,
-    );
-    if (firstPlace?.kind === "place" && firstPlace.travelFromPrevious?.departureTime) {
-      const depTime = firstPlace.travelFromPrevious.departureTime;
-      const [h, m] = depTime.split(":").map(Number);
-      if (h !== undefined && m !== undefined) {
-        const depMinutes = h * 60 + m;
-        if (depMinutes >= 450 && depMinutes <= 570) {
-          tips.push({
-            id: "pro-rush-hour",
-            title: "Morning rush hour",
-            summary:
-              "Early start today — expect crowded trains between 7:30 and 9:30. Stand to the side at platform doors and let passengers off first.",
-            icon: "⏰",
-          });
-        }
-      }
+    // Rush hour warning — check all transit segments for morning (7:30–9:30) and evening (17:30–19:00)
+    let hasMorningRush = false;
+    let hasEveningRush = false;
+    for (const a of activities) {
+      if (a.kind !== "place") continue;
+      const seg = a.travelFromPrevious;
+      if (!seg?.departureTime || !TRANSIT_MODES.has(seg.mode)) continue;
+      const [h, m] = seg.departureTime.split(":").map(Number);
+      if (h === undefined || m === undefined) continue;
+      const depMinutes = h * 60 + m;
+      if (depMinutes >= 450 && depMinutes <= 570) hasMorningRush = true;
+      if (depMinutes >= 1050 && depMinutes <= 1140) hasEveningRush = true;
+    }
+    if (hasMorningRush) {
+      tips.push({
+        id: "pro-rush-hour-morning",
+        title: "Morning rush hour",
+        summary:
+          "Expect crowded trains between 7:30 and 9:30. Stand to the side at platform doors and let passengers off first.",
+        icon: "⏰",
+      });
+    }
+    if (hasEveningRush) {
+      tips.push({
+        id: "pro-rush-hour-evening",
+        title: "Evening rush hour",
+        summary:
+          "Trains get packed again between 17:30 and 19:00. Consider timing your travel just before or after this window.",
+        icon: "⏰",
+      });
     }
 
     // Long train ride

@@ -301,6 +301,26 @@ export function DayHeader({
             )}
             {day.cityId && <span className="text-stone">·</span>}
             <span className="font-mono font-semibold text-sage">{durationLabel}</span>
+            {day.paceLabel && (
+              <>
+                <span className="text-stone">·</span>
+                <span
+                  className={`text-xs font-medium ${
+                    day.paceLabel === "light"
+                      ? "text-success"
+                      : day.paceLabel === "packed"
+                        ? "text-error"
+                        : "text-warning"
+                  }`}
+                >
+                  {day.paceLabel === "light"
+                    ? "Light day"
+                    : day.paceLabel === "packed"
+                      ? "Packed day"
+                      : "Moderate"}
+                </span>
+              </>
+            )}
             {costEstimate && (
               <>
                 <span className="text-stone">·</span>

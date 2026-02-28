@@ -105,6 +105,8 @@ export type ItineraryTravelSegment = {
   transitSteps?: TransitStep[];
   /** True if departure time is after the last train for the city */
   lastTrainWarning?: boolean;
+  /** True if departure falls within morning (7:30–9:30) or evening (17:30–19:00) rush hour */
+  rushHourWarning?: boolean;
 };
 
 export type ItineraryCityTransition = {
@@ -238,6 +240,10 @@ export type ItineraryDay = {
    * One-way travel time in minutes for day trips.
    */
   dayTripTravelMinutes?: number;
+  /**
+   * Energy pace indicator computed from activity count and total scheduled time.
+   */
+  paceLabel?: "light" | "moderate" | "packed";
 };
 
 export type Itinerary = {
@@ -246,6 +252,14 @@ export type Itinerary = {
    * Default timezone for the entire itinerary.
    */
   timezone?: string;
+  /**
+   * Active seasonal event during the trip dates, if any.
+   */
+  seasonalHighlight?: {
+    id: string;
+    label: string;
+    description: string;
+  };
 };
 
 /**

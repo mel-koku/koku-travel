@@ -233,6 +233,15 @@ export function TravelSegmentB({
                   Last train
                 </span>
               )}
+              {segment.rushHourWarning && !segment.lastTrainWarning && (
+                <span
+                  className="text-[10px] font-medium"
+                  style={{ color: "var(--warning)" }}
+                  title="Expect crowded trains during rush hour"
+                >
+                  Rush hour
+                </span>
+              )}
               {distance && (
                 <span
                   className="text-[10px]"

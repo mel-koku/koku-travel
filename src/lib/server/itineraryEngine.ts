@@ -12,6 +12,7 @@ import { optimizeRouteOrder } from "@/lib/routeOptimizer";
 import { getCityCenterCoordinates } from "@/data/entryPoints";
 import { generateDayIntros } from "./dayIntroGenerator";
 import { getDayTripsFromCity } from "@/data/dayTrips";
+import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
 
 /**
  * Converts an Itinerary (legacy format) to Trip (domain model)
@@ -259,6 +260,24 @@ export async function generateTripFromBuilderData(
   });
 
   void isDiningLocation; // Silence unused import warning (used in commented code above)
+
+  // Attach seasonal highlight if trip dates overlap a known event
+  const startDate = builderData.dates.start;
+  if (startDate) {
+    const parts = startDate.split("-").map(Number);
+    const startMonth = parts[1];
+    const startDay = parts[2];
+    if (startMonth && startDay) {
+      const highlight = getSeasonalHighlightForDate(startMonth, startDay);
+      if (highlight) {
+        itinerary.seasonalHighlight = {
+          id: highlight.id,
+          label: highlight.label,
+          description: highlight.description,
+        };
+      }
+    }
+  }
 
   // Convert to Trip domain model
   const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);

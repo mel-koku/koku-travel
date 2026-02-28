@@ -36,6 +36,7 @@ import { useItineraryPlanning } from "./hooks/useItineraryPlanning";
 import { useItineraryScrollSync } from "./hooks/useItineraryScrollSync";
 import { useItineraryGuide } from "./hooks/useItineraryGuide";
 import { ShareButton } from "./ShareButton";
+import { SeasonalBanner } from "./SeasonalBanner";
 
 const LocationExpanded = dynamic(
   () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
@@ -526,6 +527,11 @@ export const ItineraryShell = ({
               </p>
             )}
           </div>
+
+          {/* Seasonal Banner */}
+          {model.seasonalHighlight && (
+            <SeasonalBanner highlight={model.seasonalHighlight} />
+          )}
 
           {/* Trip Confidence Dashboard */}
           <AnimatePresence>
