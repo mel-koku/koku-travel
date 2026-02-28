@@ -25,6 +25,7 @@ import {
   SHORT_DISTANCE_TRAIN_THRESHOLD_MIN,
   LONG_DISTANCE_TRAIN_THRESHOLD_MIN,
 } from "@/lib/constants/planning";
+import { LAST_TRAIN_TIMES } from "@/lib/constants/lastTrainTimes";
 
 type PlannerOptions = {
   defaultDayStart?: string;
@@ -334,7 +335,7 @@ function buildTravelSegment(
   path?: ItineraryTravelSegment["path"],
   instructions?: string[],
   transitSteps?: ItineraryTravelSegment["transitSteps"],
-) {
+): ItineraryTravelSegment {
   const durationMinutes = Math.max(1, Math.round(durationSeconds / 60));
   const arrivalMinutes = departureMinutes + durationMinutes;
   return {
@@ -637,6 +638,17 @@ async function planItineraryDay(
         transitSteps,
       );
 
+      // Check if evening transit departs after last train
+      if (day.cityId && travelSegment.departureTime && cursorMinutes >= 1200) {
+        const lastTrainTime = LAST_TRAIN_TIMES[day.cityId];
+        if (lastTrainTime) {
+          const depMinutes = parseTime(travelSegment.departureTime);
+          if (depMinutes !== null && depMinutes > lastTrainTime) {
+            travelSegment.lastTrainWarning = true;
+          }
+        }
+      }
+
       if (lastPlaceIndex != null) {
         const previousActivity = plannedActivities[lastPlaceIndex] as Extract<ItineraryActivity, { kind: "place" }>;
         previousActivity.travelToNext = travelSegment;
@@ -748,6 +760,18 @@ async function planItineraryDay(
             undefined,
             returnTransitSteps,
           );
+
+          // Check if return departure is after last train
+          const cityId = day.cityId;
+          if (cityId && returnSegment.departureTime) {
+            const lastTrainTime = LAST_TRAIN_TIMES[cityId];
+            if (lastTrainTime) {
+              const depMinutes = parseTime(returnSegment.departureTime);
+              if (depMinutes !== null && depMinutes > lastTrainTime) {
+                returnSegment.lastTrainWarning = true;
+              }
+            }
+          }
 
           (lastActivity as Extract<ItineraryActivity, { kind: "place" }>).travelToNext = returnSegment;
         } catch (err) {

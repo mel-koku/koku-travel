@@ -103,6 +103,8 @@ export type ItineraryTravelSegment = {
   isEstimated?: boolean;
   /** Structured transit steps (walk + transit legs) from Google Directions */
   transitSteps?: TransitStep[];
+  /** True if departure time is after the last train for the city */
+  lastTrainWarning?: boolean;
 };
 
 export type ItineraryCityTransition = {

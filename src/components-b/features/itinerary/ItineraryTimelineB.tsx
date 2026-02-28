@@ -761,6 +761,8 @@ export const ItineraryTimelineB = ({
                 day={day}
                 tripStartDate={tripStartDate}
                 dayIndex={dayIndex}
+                nextDayActivities={model?.days[dayIndex + 1]?.activities}
+                isFirstTimeVisitor={tripBuilderData?.isFirstTimeVisitor}
               />
             ) : undefined
           }

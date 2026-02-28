@@ -70,6 +70,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     weatherPreferences: raw.weatherPreferences ?? base.weatherPreferences,
     travelerProfile: raw.travelerProfile ?? base.travelerProfile,
     dayStartTime: normalizedDayStartTime,
+    isFirstTimeVisitor: raw.isFirstTimeVisitor === true ? true : undefined,
   };
 };
 

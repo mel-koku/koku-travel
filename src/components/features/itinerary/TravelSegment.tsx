@@ -202,6 +202,14 @@ export function TravelSegment({
               Tight
             </span>
           )}
+          {segment.lastTrainWarning && (
+            <span
+              className="text-xs text-error font-medium"
+              title="This departure may be after the last train"
+            >
+              Last train
+            </span>
+          )}
           {segment.distanceMeters && (
             <>
               <span className="text-stone">&middot;</span>
