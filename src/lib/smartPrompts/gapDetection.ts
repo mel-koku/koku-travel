@@ -767,12 +767,14 @@ export async function detectGuidanceGaps(
       city?: string;
       region?: string;
       season?: "spring" | "summer" | "fall" | "winter";
+      month?: number;
     }) => Promise<TravelGuidance[]>;
     season?: "spring" | "summer" | "fall" | "winter";
+    month?: number;
     maxPerDay?: number;
   }
 ): Promise<DetectedGap[]> {
-  const { fetchDayGuidance, season, maxPerDay = 2 } = options;
+  const { fetchDayGuidance, season, month, maxPerDay = 2 } = options;
 
   const placeActivities = day.activities.filter(
     (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
@@ -790,6 +792,7 @@ export async function detectGuidanceGaps(
     categories,
     city: day.cityId,
     season,
+    month,
   });
 
   // Filter to high-value types with priority >= 7
