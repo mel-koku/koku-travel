@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 function getStorageKey(tripId: string, dayId: string): string {
   return `koku:checkins:${tripId}:${dayId}`;
@@ -36,6 +36,15 @@ export function useActivityCheckins(tripId: string | undefined, dayId: string | 
     if (!tripId || !dayId) return new Set();
     return loadCheckins(tripId, dayId);
   });
+
+  // Reload checkins when tripId or dayId changes
+  useEffect(() => {
+    if (!tripId || !dayId) {
+      setCheckedIn(new Set());
+      return;
+    }
+    setCheckedIn(loadCheckins(tripId, dayId));
+  }, [tripId, dayId]);
 
   const checkIn = useCallback(
     (activityId: string) => {

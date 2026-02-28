@@ -52,15 +52,17 @@ function AnimatedCounter({ value }: { value: number }) {
 
   useEffect(() => {
     if (!inView) return;
+    let rafId: number;
     const duration = 1200;
     const start = performance.now();
     function tick(now: number) {
       const t = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - t, 3);
       setDisplay(Math.round(eased * value));
-      if (t < 1) requestAnimationFrame(tick);
+      if (t < 1) rafId = requestAnimationFrame(tick);
     }
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, [inView, value]);
 
   return <span ref={ref}>{display.toLocaleString()}</span>;
@@ -68,10 +70,11 @@ function AnimatedCounter({ value }: { value: number }) {
 
 function StarRating({ rating }: { rating: number }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5 stars`} role="img">
       {[1, 2, 3, 4, 5].map((star) => (
         <Star
           key={star}
+          aria-hidden="true"
           className={`h-4 w-4 ${star <= rating ? "fill-brand-secondary text-brand-secondary" : "text-stone/30"}`}
         />
       ))}

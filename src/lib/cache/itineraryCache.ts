@@ -111,6 +111,26 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
   if (data.style) normalized.style = data.style;
   if (data.budget) normalized.budget = data.budget;
 
+  // Entry point affects city sequencing and day 1 start location
+  if (data.entryPoint) {
+    normalized.entryPoint = {
+      name: data.entryPoint.name,
+      coordinates: data.entryPoint.coordinates,
+    };
+  }
+
+  // Group affects scoring (family-friendly, group size, children ages)
+  if (data.group) {
+    normalized.group = {
+      type: data.group.type,
+      size: data.group.size,
+      childrenAges: data.group.childrenAges ? [...data.group.childrenAges].sort() : undefined,
+    };
+  }
+
+  // Accommodation style affects day end times and ryokan bonuses
+  if (data.accommodationStyle) normalized.accommodationStyle = data.accommodationStyle;
+
   // Include accessibility preferences if specified (including notes for LLM intent)
   if (data.accessibility) {
     normalized.accessibility = {
