@@ -10,7 +10,8 @@ export type GuideContentType =
   | "activity_context"
   | "cultural_moment"
   | "practical_tip"
-  | "day_summary";
+  | "day_summary"
+  | "neighborhood_narrative";
 
 export type GuideSegment = {
   id: string;
@@ -85,6 +86,13 @@ export type DaySummaryTemplate = {
 export type TripOverviewTemplate = {
   id: string;
   key: string; // "city1+city2:season" e.g. "kyoto+osaka:spring"
+  content: string;
+  icon?: string;
+};
+
+export type NeighborhoodNarrativeTemplate = {
+  id: string;
+  key: string; // "city:neighborhood" e.g. "kyoto:higashiyama" or "any:any"
   content: string;
   icon?: string;
 };
