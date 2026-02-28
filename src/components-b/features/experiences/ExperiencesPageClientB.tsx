@@ -71,7 +71,7 @@ export function ExperiencesPageClientB({ experiences, content }: ExperiencesPage
         </p>
         <a
           href="/b/places"
-          className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white active:scale-[0.98]"
+          className="mt-6 inline-flex h-11 items-center justify-center rounded-xl bg-[var(--primary)] px-6 text-sm font-medium text-white transition-all hover:brightness-110 active:scale-[0.98]"
         >
           Browse places
         </a>

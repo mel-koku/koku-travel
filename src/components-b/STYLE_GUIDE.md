@@ -292,11 +292,11 @@ Logo: `KOKU` in Inter bold, not serif. No KokuMark SVG monogram.
 
 ### Buttons
 
-| Type                | Classes                                                                                                                         |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Primary             | `rounded-xl bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]` |
-| Secondary / Outline | `rounded-xl border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--primary)] hover:text-[var(--primary)]`   |
-| Ghost               | `rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)]`                                                      |
+| Type                | Classes                                                                                                                                              |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Primary             | `rounded-xl bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)] hover:brightness-110 active:scale-[0.98]` |
+| Secondary / Outline | `rounded-xl border border-[var(--border)] text-[var(--foreground)] hover:border-[var(--primary)] hover:text-[var(--primary)]`                        |
+| Ghost               | `rounded-xl text-[var(--muted-foreground)] hover:text-[var(--foreground)]`                                                                           |
 
 Standard height: `h-11` (44px) or `h-12` (48px) for hero CTAs.
 
