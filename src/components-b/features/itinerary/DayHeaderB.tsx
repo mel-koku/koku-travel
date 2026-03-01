@@ -121,8 +121,8 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
           )}
         </div>
       </div>
-      {accommodationSlot}
       {dayIntroSlot}
+      {accommodationSlot && <div className="mt-2 pl-8">{accommodationSlot}</div>}
     </div>
   );
 }

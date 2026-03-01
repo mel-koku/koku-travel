@@ -4,10 +4,10 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Clock, ChevronDown } from "lucide-react";
 
 const DAY_START_OPTIONS = [
-  { value: "08:00", label: "8:00 AM" },
-  { value: "09:00", label: "9:00 AM" },
-  { value: "10:00", label: "10:00 AM" },
-  { value: "11:00", label: "11:00 AM" },
+  { value: "08:00", label: "08:00" },
+  { value: "09:00", label: "09:00" },
+  { value: "10:00", label: "10:00" },
+  { value: "11:00", label: "11:00" },
 ] as const;
 
 type DayStartTimePickerBProps = {
@@ -20,9 +20,7 @@ function formatTime(time: string): string {
   if (!match) return time;
   const hours = Number.parseInt(match[1] || "0", 10);
   const minutes = match[2] || "00";
-  const period = hours >= 12 ? "PM" : "AM";
-  const hour12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-  return `${hour12}:${minutes} ${period}`;
+  return `${hours.toString().padStart(2, "0")}:${minutes}`;
 }
 
 export function DayStartTimePickerB({ currentTime, onChange }: DayStartTimePickerBProps) {
