@@ -190,6 +190,8 @@ export type ItineraryActivity =
        * When set, overrides auto-calculated arrival time.
        */
       manualStartTime?: string;
+      /** Fixed activity (airport arrival/departure). Cannot be deleted, replaced, or reordered. */
+      isAnchor?: boolean;
     }
   | {
       kind: "note";

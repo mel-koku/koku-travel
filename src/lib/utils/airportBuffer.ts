@@ -49,13 +49,13 @@ const DEFAULT_DOMESTIC_TRANSIT = 30;
 const DEFAULT_INTL_TRANSIT = 60;
 
 /** Airport processing time after landing (immigration + customs + baggage). */
-function getArrivalProcessing(iataCode?: string): number {
+export function getArrivalProcessing(iataCode?: string): number {
   const isIntl = !iataCode || INTERNATIONAL_IATA.has(iataCode.toUpperCase());
   return isIntl ? 60 : 20;
 }
 
 /** Airport processing time before departure (check-in + security + immigration). */
-function getDepartureProcessing(iataCode?: string): number {
+export function getDepartureProcessing(iataCode?: string): number {
   const isIntl = !iataCode || INTERNATIONAL_IATA.has(iataCode.toUpperCase());
   return isIntl ? 120 : 60;
 }

@@ -546,6 +546,15 @@ export const ItineraryShellB = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tripId, isUsingMock, isReadOnly]);
 
+  // All used location IDs across the entire trip (for AI dedup)
+  const allUsedLocationIds = useMemo(() =>
+    model.days.flatMap(d => d.activities
+      .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place" && !!a.locationId)
+      .map(a => a.locationId)
+    ).filter((id): id is string => !!id),
+    [model.days],
+  );
+
   const ratingsContextValue = useMemo(() => ({
     ratings: activityRatingsHook.ratings,
     submitRating: activityRatingsHook.submitRating,
@@ -791,6 +800,10 @@ export const ItineraryShellB = ({
                     <LocationSearchBarB
                       dayActivities={currentDay.activities}
                       onAddActivity={handleAddSearchedActivity}
+                      cityId={currentDay.cityId ?? ""}
+                      dayIndex={safeSelectedDay}
+                      tripBuilderData={tripBuilderData}
+                      allUsedLocationIds={allUsedLocationIds}
                     />
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">

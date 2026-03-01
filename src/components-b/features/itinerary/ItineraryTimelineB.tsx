@@ -675,11 +675,19 @@ export const ItineraryTimelineB = ({
     const lastActivity = placeActivities[placeActivities.length - 1]!;
 
     if (startLocation?.coordinates) {
-      const firstCoords = getActivityCoordinates(firstActivity);
-      if (firstCoords) {
+      // When first activity is an anchor (airport), estimate airport → hotel (not hotel → first activity)
+      const isFirstAnchor = firstActivity.isAnchor;
+      const estimateOrigin = isFirstAnchor
+        ? getActivityCoordinates(firstActivity)  // airport coords
+        : startLocation.coordinates;             // hotel coords
+      const estimateDestination = isFirstAnchor
+        ? startLocation.coordinates              // hotel coords
+        : getActivityCoordinates(firstActivity); // first real activity coords
+
+      if (estimateOrigin && estimateDestination) {
         const heuristic = estimateHeuristicRoute({
-          origin: startLocation.coordinates,
-          destination: firstCoords,
+          origin: estimateOrigin,
+          destination: estimateDestination,
           mode: "walk",
         });
         startEstimate = {
@@ -867,11 +875,16 @@ export const ItineraryTimelineB = ({
               strategy={verticalListSortingStrategy}
             >
               {/* Accommodation: Start bookend with travel to first activity */}
+              {/* Hidden when first activity is an airport anchor (bookend moves inline after anchor) */}
               {startLocation && !activeId && (() => {
                 const firstPlaceActivity = extendedActivities.find(
                   (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
                     a.kind === "place",
                 );
+
+                // When first is anchor: bookend renders inline after anchor card (see activity loop below)
+                if (firstPlaceActivity?.isAnchor) return null;
+
                 const firstCoords = firstPlaceActivity
                   ? getActivityCoordinates(firstPlaceActivity)
                   : null;
@@ -902,12 +915,13 @@ export const ItineraryTimelineB = ({
 
               <ul className="space-y-3 pl-8">
                 {extendedActivities.map((activity, index) => {
-                  // Calculate place number
+                  // Calculate place number (skip anchors — they don't get numbered)
                   let placeNumber: number | undefined = undefined;
-                  if (activity.kind === "place") {
+                  if (activity.kind === "place" && !activity.isAnchor) {
                     let counter = 1;
                     for (let i = 0; i < index; i++) {
-                      if (extendedActivities[i]?.kind === "place") counter++;
+                      const prev = extendedActivities[i];
+                      if (prev?.kind === "place" && !prev.isAnchor) counter++;
                     }
                     placeNumber = counter;
                   }
@@ -1036,6 +1050,34 @@ export const ItineraryTimelineB = ({
                         activeDragId={activeId}
                         onViewDetails={onViewDetails}
                       />
+                      {/* Hotel bookend after arrival anchor: airport → hotel → first activity */}
+                      {activity.kind === "place" &&
+                        activity.isAnchor &&
+                        activity.id.startsWith("anchor-arrival") &&
+                        startLocation &&
+                        !activeId && (() => {
+                          const anchorCoords = activity.coordinates;
+                          return (
+                            <li className="list-none mt-3 space-y-1">
+                              {anchorCoords &&
+                                startLocation.coordinates &&
+                                bookendEstimates.start && (
+                                  <AccommodationTravelSegment
+                                    origin={anchorCoords}
+                                    destination={startLocation.coordinates}
+                                    originName={activity.title}
+                                    destinationName={startLocation.name}
+                                    estimate={bookendEstimates.start}
+                                    timezone={day.timezone}
+                                  />
+                                )}
+                              <AccommodationBookendB
+                                location={startLocation}
+                                variant="start"
+                              />
+                            </li>
+                          );
+                        })()}
                       {/* Guide segments after */}
                       {!activeId &&
                         guideSegmentsAfter.map((seg) => (
@@ -1080,6 +1122,7 @@ export const ItineraryTimelineB = ({
             )}
 
             {/* Accommodation: End bookend with travel from last activity */}
+            {/* Hidden when last activity is an airport anchor (it replaces the bookend) */}
             {endLocation && !activeId && (() => {
               const lastPlaceActivity = [...extendedActivities]
                 .reverse()
@@ -1087,6 +1130,10 @@ export const ItineraryTimelineB = ({
                   (a): a is Extract<ItineraryActivity, { kind: "place" }> =>
                     a.kind === "place",
                 );
+
+              // Hide end bookend if last activity is an airport anchor
+              if (lastPlaceActivity?.isAnchor) return null;
+
               const lastCoords = lastPlaceActivity
                 ? getActivityCoordinates(lastPlaceActivity)
                 : null;

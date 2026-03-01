@@ -447,8 +447,12 @@ async function planItineraryDay(
     activityId: string;
     explicitMode: ItineraryTravelMode | null;
   }> = [];
-  let prevCoords: Coordinates = startPoint
-    ? { lat: startPoint.coordinates.lat, lng: startPoint.coordinates.lng }
+  // If the first place activity is an anchor (airport), it IS the start point —
+  // don't route from startPoint to anchor (would be hotel→airport, wrong direction)
+  const firstPlace = placeActivities[0];
+  let prevCoords: Coordinates =
+    firstPlace?.isAnchor ? null
+    : startPoint ? { lat: startPoint.coordinates.lat, lng: startPoint.coordinates.lng }
     : null;
 
   for (const activity of placeActivities) {
@@ -464,7 +468,13 @@ async function planItineraryDay(
         explicitMode: hasExplicit ? activity.travelFromPrevious?.mode ?? null : null,
       });
     }
-    prevCoords = coordinates;
+    // After arrival anchor with hotel set: route subsequent activities from hotel (not airport)
+    // User goes airport → hotel (drop luggage) → first real activity
+    if (activity.isAnchor && startPoint && activity.id.startsWith("anchor-arrival")) {
+      prevCoords = { lat: startPoint.coordinates.lat, lng: startPoint.coordinates.lng };
+    } else {
+      prevCoords = coordinates;
+    }
   }
 
   // --- Phase 1: Fetch walk routes + explicit-mode routes in parallel ---
@@ -589,31 +599,34 @@ async function planItineraryDay(
     const meta = metaByActivityId.get(activity.id)!;
 
     // Pre-check: estimate arrival after travel and verify location is open
+    // Skip for anchor activities (airports) — they don't have DB operating hours
     const resolvedForPreCheck = resolvedRouteByActivityId.get(activity.id);
     const estimatedTravelMin = resolvedForPreCheck
       ? Math.max(1, Math.round(resolvedForPreCheck.route.durationSeconds / 60))
       : 0;
     const estimatedArrival = cursorMinutes + estimatedTravelMin;
 
-    const preCheckPeriod = getOperatingPeriodForDay(meta.location?.operatingHours, day.weekday);
-    const preCheck = evaluateOperatingWindow(preCheckPeriod, estimatedArrival, meta.visitDuration);
+    if (!activity.isAnchor) {
+      const preCheckPeriod = getOperatingPeriodForDay(meta.location?.operatingHours, day.weekday);
+      const preCheck = evaluateOperatingWindow(preCheckPeriod, estimatedArrival, meta.visitDuration);
 
-    if (preCheck.status === "closed") {
-      logger.warn("Skipping activity — location is closed at estimated arrival", {
-        activity: activity.title,
-        estimatedArrival: formatTime(estimatedArrival),
-        closesAt: preCheck.window?.closesAt,
-      });
-      continue;
-    }
+      if (preCheck.status === "closed") {
+        logger.warn("Skipping activity — location is closed at estimated arrival", {
+          activity: activity.title,
+          estimatedArrival: formatTime(estimatedArrival),
+          closesAt: preCheck.window?.closesAt,
+        });
+        continue;
+      }
 
-    if (preCheck.status === "out-of-hours" && preCheck.effectiveVisitMinutes < 20) {
-      logger.warn("Skipping activity — insufficient visit time before closing", {
-        activity: activity.title,
-        effectiveVisitMinutes: preCheck.effectiveVisitMinutes,
-        closesAt: preCheck.window?.closesAt,
-      });
-      continue;
+      if (preCheck.status === "out-of-hours" && preCheck.effectiveVisitMinutes < 20) {
+        logger.warn("Skipping activity — insufficient visit time before closing", {
+          activity: activity.title,
+          effectiveVisitMinutes: preCheck.effectiveVisitMinutes,
+          closesAt: preCheck.window?.closesAt,
+        });
+        continue;
+      }
     }
 
     const plannerActivity: ItineraryActivity = { ...activity };
@@ -678,6 +691,19 @@ async function planItineraryDay(
       cursorMinutes += travelSegment.durationMinutes;
     }
 
+    // Preserve pre-set schedule on anchor activities (e.g. departure airport)
+    if (activity.isAnchor && activity.schedule?.arrivalTime) {
+      plannerActivity.schedule = activity.schedule;
+      plannerActivity.durationMin = meta.visitDuration;
+      const depMin = parseTime(activity.schedule.departureTime);
+      if (depMin !== null) {
+        cursorMinutes = depMin + options.transitionBufferMinutes;
+      }
+      plannedActivities.push(plannerActivity);
+      lastPlaceIndex = plannedActivities.length - 1;
+      continue;
+    }
+
     const operatingPeriod = getOperatingPeriodForDay(meta.location?.operatingHours, day.weekday);
     const evaluation = evaluateOperatingWindow(operatingPeriod, cursorMinutes, meta.visitDuration);
 
@@ -727,9 +753,10 @@ async function planItineraryDay(
   }
 
   // Return-to-hotel: add travel segment from last activity back to endPoint (accommodation)
+  // Skip when last activity is an anchor (departure airport) — no return trip needed
   if (endPoint && lastPlaceIndex != null) {
     const lastActivity = plannedActivities[lastPlaceIndex];
-    if (lastActivity && lastActivity.kind === "place") {
+    if (lastActivity && lastActivity.kind === "place" && !lastActivity.isAnchor) {
       const lastCoords = metaByActivityId.get(lastActivity.id)?.coordinates;
       if (lastCoords) {
         try {

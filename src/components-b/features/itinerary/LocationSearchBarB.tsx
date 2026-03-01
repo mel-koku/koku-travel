@@ -2,10 +2,12 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Search, Loader2, X, Star } from "lucide-react";
+import { Plus, Search, Loader2, X, Star, Sparkles } from "lucide-react";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
+import { useAiRecommend, type AiRecommendation } from "@/hooks/useAiRecommend";
 import { createActivityFromLocation } from "@/lib/itinerary/createActivityFromLocation";
 import type { ItineraryActivity } from "@/types/itinerary";
+import type { TripBuilderData } from "@/types/trip";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 
@@ -16,11 +18,23 @@ type LocationSearchBarBProps = {
   dayActivities: ItineraryActivity[];
   /** Callback when a new activity is created from a search result */
   onAddActivity: (activity: Extract<ItineraryActivity, { kind: "place" }>) => void;
+  /** Current day's city ID for AI context */
+  cityId?: string;
+  /** Current day index for AI context */
+  dayIndex?: number;
+  /** Trip builder data for AI scoring context */
+  tripBuilderData?: TripBuilderData;
+  /** All location IDs already used across the entire trip */
+  allUsedLocationIds?: string[];
 };
 
 export function LocationSearchBarB({
   dayActivities,
   onAddActivity,
+  cityId,
+  dayIndex,
+  tripBuilderData,
+  allUsedLocationIds,
 }: LocationSearchBarBProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [query, setQuery] = useState("");
@@ -32,10 +46,21 @@ export function LocationSearchBarB({
     limit: 8,
   });
 
+  const aiMutation = useAiRecommend();
+  const aiMutationRef = useRef(aiMutation);
+  aiMutationRef.current = aiMutation;
+
+  // Reset state when day changes (cityId/dayIndex props change)
+  useEffect(() => {
+    setIsExpanded(false);
+    setQuery("");
+    setFetchingId(null);
+    aiMutationRef.current.reset();
+  }, [cityId, dayIndex]);
+
   // Focus input when expanded
   useEffect(() => {
     if (isExpanded) {
-      // Small delay to let the animation start
       const timer = setTimeout(() => inputRef.current?.focus(), 50);
       return () => clearTimeout(timer);
     }
@@ -59,17 +84,33 @@ export function LocationSearchBarB({
     setIsExpanded(false);
     setQuery("");
     setFetchingId(null);
+    aiMutationRef.current.reset();
   }, []);
 
-  // Escape to collapse
+  // Escape to collapse, Enter to trigger AI
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
         collapse();
+      } else if (e.key === "Enter" && query.trim().length >= 2) {
+        e.preventDefault();
+        aiMutationRef.current.mutate({
+          query: query.trim(),
+          cityId: cityId ?? "",
+          dayIndex: dayIndex ?? 0,
+          dayActivities: dayActivities
+            .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
+            .map((a) => ({
+              name: a.title,
+              category: a.tags?.[0],
+            })),
+          tripBuilderData,
+          usedLocationIds: allUsedLocationIds ?? [],
+        });
       }
     },
-    [collapse],
+    [collapse, query, cityId, dayIndex, dayActivities, tripBuilderData, allUsedLocationIds],
   );
 
   // Check if location already exists in this day
@@ -82,20 +123,14 @@ export function LocationSearchBarB({
     [dayActivities],
   );
 
-  // Handle selecting a search result
+  // Handle selecting a search result (text search or AI recommendation)
   const handleSelect = useCallback(
     async (result: { id: string; name: string }) => {
       if (fetchingId) return;
 
-      // Duplicate warning
-      if (isDuplicate(result.id)) {
-        // Still allow adding — just let them know
-      }
-
       setFetchingId(result.id);
 
       try {
-        // Fetch full location data (need coordinates, recommendedVisit, etc.)
         const res = await fetch(`/api/locations/${result.id}`);
         if (!res.ok) {
           throw new Error(`Failed to fetch location: ${res.status}`);
@@ -110,10 +145,12 @@ export function LocationSearchBarB({
         setFetchingId(null);
       }
     },
-    [fetchingId, isDuplicate, dayActivities, onAddActivity, collapse],
+    [fetchingId, dayActivities, onAddActivity, collapse],
   );
 
   const showDropdown = isExpanded && query.trim().length >= 2;
+  const hasAiResults = aiMutation.isSuccess && aiMutation.data.recommendations.length > 0;
+  const showAiSection = aiMutation.isPending || hasAiResults || (aiMutation.isSuccess && aiMutation.data.recommendations.length === 0);
 
   return (
     <div ref={containerRef} className="relative">
@@ -162,7 +199,7 @@ export function LocationSearchBarB({
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Search locations..."
+                placeholder="Search or describe what you want..."
                 className="h-full flex-1 bg-transparent text-base outline-none placeholder:text-[var(--muted-foreground)]"
                 style={{ color: "var(--foreground)" }}
               />
@@ -191,14 +228,15 @@ export function LocationSearchBarB({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.12, ease: bEase }}
-                  className="absolute inset-x-0 top-full z-30 mt-1 max-h-64 overflow-y-auto rounded-xl border"
+                  className="absolute inset-x-0 top-full z-30 mt-1 max-h-80 overflow-y-auto rounded-xl border"
                   style={{
                     borderColor: "var(--border)",
                     background: "var(--card)",
                     boxShadow: "var(--shadow-elevated)",
                   }}
                 >
-                  {isNotFound && (
+                  {/* Text search results */}
+                  {isNotFound && !showAiSection && (
                     <div
                       className="px-3 py-4 text-center text-sm"
                       style={{ color: "var(--muted-foreground)" }}
@@ -217,7 +255,7 @@ export function LocationSearchBarB({
                         type="button"
                         disabled={!!fetchingId}
                         onClick={() => handleSelect(result)}
-                        className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors first:rounded-t-xl last:rounded-b-xl disabled:opacity-60"
+                        className="flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors disabled:opacity-60"
                         style={{
                           color: "var(--foreground)",
                         }}
@@ -293,12 +331,167 @@ export function LocationSearchBarB({
                       </button>
                     );
                   })}
+
+                  {/* AI Recommendations section */}
+                  {showAiSection && (
+                    <>
+                      {/* Divider */}
+                      {results && results.length > 0 && (
+                        <div
+                          className="mx-3 border-t"
+                          style={{ borderColor: "var(--border)" }}
+                        />
+                      )}
+
+                      {/* AI section header */}
+                      <div className="px-3 pt-3 pb-1.5">
+                        <div
+                          className="flex items-center gap-1.5 text-xs font-medium"
+                          style={{ color: "var(--primary)" }}
+                        >
+                          <Sparkles className="h-3.5 w-3.5" />
+                          <span>Koku recommends</span>
+                        </div>
+                      </div>
+
+                      {/* Loading state */}
+                      {aiMutation.isPending && (
+                        <div className="flex items-center gap-2 px-3 py-3">
+                          <Loader2
+                            className="h-4 w-4 animate-spin"
+                            style={{ color: "var(--primary)" }}
+                          />
+                          <span
+                            className="text-sm"
+                            style={{ color: "var(--muted-foreground)" }}
+                          >
+                            Koku is thinking...
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Empty results */}
+                      {aiMutation.isSuccess && aiMutation.data.recommendations.length === 0 && (
+                        <div
+                          className="px-3 py-3 text-sm"
+                          style={{ color: "var(--muted-foreground)" }}
+                        >
+                          No recommendations found. Try a different description.
+                        </div>
+                      )}
+
+                      {/* Recommendation cards */}
+                      {aiMutation.isSuccess && aiMutation.data.recommendations.map((rec) => (
+                        <AiRecommendationCard
+                          key={rec.id}
+                          recommendation={rec}
+                          isDuplicate={isDuplicate(rec.id)}
+                          isFetching={fetchingId === rec.id}
+                          isDisabled={!!fetchingId}
+                          onAdd={() => handleSelect({ id: rec.id, name: rec.name })}
+                        />
+                      ))}
+                    </>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/**
+ * Card for a single AI recommendation in the dropdown
+ */
+function AiRecommendationCard({
+  recommendation,
+  isDuplicate: duplicate,
+  isFetching,
+  isDisabled,
+  onAdd,
+}: {
+  recommendation: AiRecommendation;
+  isDuplicate: boolean;
+  isFetching: boolean;
+  isDisabled: boolean;
+  onAdd: () => void;
+}) {
+  return (
+    <div
+      className="flex items-center gap-3 px-3 py-2.5"
+      style={{ color: "var(--foreground)" }}
+    >
+      {/* Thumbnail */}
+      {recommendation.image ? (
+        <img
+          src={recommendation.image}
+          alt=""
+          className="h-10 w-10 shrink-0 rounded-lg object-cover"
+        />
+      ) : (
+        <div
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-xs font-medium"
+          style={{
+            background: "color-mix(in srgb, var(--primary) 10%, transparent)",
+            color: "var(--primary)",
+          }}
+        >
+          {recommendation.name.charAt(0)}
+        </div>
+      )}
+
+      {/* Info */}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="truncate text-sm font-medium">
+            {recommendation.name}
+          </span>
+          <span
+            className="shrink-0 text-xs capitalize"
+            style={{ color: "var(--muted-foreground)" }}
+          >
+            {recommendation.category}
+          </span>
+        </div>
+        <div
+          className="mt-0.5 flex items-center gap-1.5 text-xs"
+          style={{ color: "var(--muted-foreground)" }}
+        >
+          {recommendation.rating != null && (
+            <>
+              <Star className="h-3 w-3 fill-current" />
+              <span>{recommendation.rating.toFixed(1)}</span>
+              <span aria-hidden="true">&middot;</span>
+            </>
+          )}
+          <span className="truncate">{recommendation.reasoning}</span>
+        </div>
+      </div>
+
+      {/* Add button */}
+      <button
+        type="button"
+        onClick={onAdd}
+        disabled={isDisabled}
+        className="flex h-8 shrink-0 items-center rounded-lg px-3 text-xs font-medium transition-colors active:scale-[0.98] disabled:opacity-50"
+        style={{
+          background: duplicate
+            ? "color-mix(in srgb, var(--warning) 10%, transparent)"
+            : "color-mix(in srgb, var(--primary) 10%, transparent)",
+          color: duplicate ? "var(--warning)" : "var(--primary)",
+        }}
+      >
+        {isFetching ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : duplicate ? (
+          "Added"
+        ) : (
+          "Add"
+        )}
+      </button>
     </div>
   );
 }
