@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useEffect, useRef, useCallback, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 type DaySelectorBProps = {
@@ -135,6 +136,7 @@ export const DaySelectorB = ({
 
   // Scroll indicator state
   const [scrollInfo, setScrollInfo] = useState({ ratio: 0, thumbRatio: 1 });
+  const [canScrollRight, setCanScrollRight] = useState(false);
 
   const updateScrollInfo = useCallback(() => {
     const el = scrollContainerRef.current;
@@ -143,11 +145,13 @@ export const DaySelectorB = ({
     const overflowWidth = scrollWidth - clientWidth;
     if (overflowWidth <= 0) {
       setScrollInfo({ ratio: 0, thumbRatio: 1 });
+      setCanScrollRight(false);
     } else {
       setScrollInfo({
         ratio: scrollLeft / overflowWidth,
         thumbRatio: clientWidth / scrollWidth,
       });
+      setCanScrollRight(scrollLeft < overflowWidth - 2);
     }
   }, []);
 
@@ -164,6 +168,55 @@ export const DaySelectorB = ({
     };
   }, [updateScrollInfo, days.length]);
 
+  // Wheel → horizontal scroll
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return; // already horizontal
+      const { scrollLeft, scrollWidth, clientWidth } = el;
+      const atStart = scrollLeft <= 0 && e.deltaY < 0;
+      const atEnd = scrollLeft >= scrollWidth - clientWidth - 1 && e.deltaY > 0;
+      if (atStart || atEnd) return; // let page scroll
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  // Drag-to-scroll
+  const isDragging = useRef(false);
+  const dragStart = useRef({ x: 0, scrollLeft: 0 });
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    const el = scrollContainerRef.current;
+    if (!el || el.scrollWidth <= el.clientWidth) return;
+    isDragging.current = true;
+    dragStart.current = { x: e.clientX, scrollLeft: el.scrollLeft };
+    el.setPointerCapture(e.pointerId);
+    el.style.cursor = "grabbing";
+    el.style.userSelect = "none";
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const dx = e.clientX - dragStart.current.x;
+    el.scrollLeft = dragStart.current.scrollLeft - dx;
+  }, []);
+
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.releasePointerCapture(e.pointerId);
+    el.style.cursor = "";
+    el.style.userSelect = "";
+  }, []);
+
   if (days.length === 0) {
     return (
       <p className="text-sm text-[var(--muted-foreground)]">
@@ -176,52 +229,83 @@ export const DaySelectorB = ({
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div
-        ref={scrollContainerRef}
-        data-lenis-prevent
-        className="flex gap-2 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide py-1 px-1"
-        role="tablist"
-        aria-label="Day selector"
-      >
-        {days.map(({ index, label, isToday }) => {
-          const isActive = index === selected;
-          return (
-            <button
-              key={index}
-              ref={(el) => setPillRef(index, el)}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              aria-label={`${label}${isToday ? " (Today)" : ""}`}
-              onClick={() => onChange(index)}
-              className={cn(
-                "relative flex-shrink-0 snap-start rounded-lg px-3 text-xs font-medium whitespace-nowrap transition-colors duration-200",
-                "min-h-[44px] flex items-center justify-center",
-                "active:scale-[0.98]",
-                isActive
-                  ? "bg-[var(--primary)] text-[var(--card)]"
-                  : "bg-white text-[var(--foreground)] hover:bg-[var(--surface)]"
-              )}
-            >
-              <span className="flex items-center gap-1.5">
-                {label}
-                {isToday && (
-                  <span
-                    className={cn(
-                      "text-[10px] font-semibold",
-                      isActive
-                        ? "text-[color-mix(in_srgb,var(--card)_80%,transparent)]"
-                        : "text-[var(--primary)]"
-                    )}
-                  >
-                    (Today)
-                  </span>
+      <div className="relative">
+        <div
+          ref={scrollContainerRef}
+          data-lenis-prevent
+          className="flex gap-2 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide py-1 px-1 cursor-grab"
+          role="tablist"
+          aria-label="Day selector"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+        >
+          {days.map(({ index, label, isToday }) => {
+            const isActive = index === selected;
+            return (
+              <button
+                key={index}
+                ref={(el) => setPillRef(index, el)}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-label={`${label}${isToday ? " (Today)" : ""}`}
+                onClick={() => onChange(index)}
+                className={cn(
+                  "relative flex-shrink-0 snap-start rounded-lg px-3 text-xs font-medium whitespace-nowrap transition-colors duration-200",
+                  "min-h-[44px] flex items-center justify-center",
+                  "active:scale-[0.98]",
+                  isActive
+                    ? "bg-[var(--primary)] text-[var(--card)]"
+                    : "bg-white text-[var(--foreground)] hover:bg-[var(--surface)]"
                 )}
-              </span>
+              >
+                <span className="flex items-center gap-1.5">
+                  {label}
+                  {isToday && (
+                    <span
+                      className={cn(
+                        "text-[10px] font-semibold",
+                        isActive
+                          ? "text-[color-mix(in_srgb,var(--card)_80%,transparent)]"
+                          : "text-[var(--primary)]"
+                      )}
+                    >
+                      (Today)
+                    </span>
+                  )}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-            </button>
-          );
-        })}
+        {/* Right-edge scroll indicator */}
+        <AnimatePresence>
+          {canScrollRight && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="pointer-events-none absolute top-0 right-0 bottom-0 flex items-center"
+              aria-hidden
+            >
+              <div
+                className="flex h-full items-center pl-6 pr-1"
+                style={{
+                  background: "linear-gradient(to right, transparent, var(--background) 60%)",
+                }}
+              >
+                <ChevronRight
+                  className="h-4 w-4 animate-pulse"
+                  style={{ color: "var(--muted-foreground)" }}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Horizontal scroll indicator bar */}
