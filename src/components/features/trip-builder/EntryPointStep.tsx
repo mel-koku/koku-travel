@@ -12,6 +12,7 @@ import type { Airport } from "@/app/api/airports/route";
 import { logger } from "@/lib/logger";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import { PlaneLanding } from "lucide-react";
 
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
 
@@ -24,6 +25,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [exitSearchQuery, setExitSearchQuery] = useState("");
 
   useEffect(() => {
     async function fetchAirports() {
@@ -59,7 +61,39 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   );
 
   const handleClear = useCallback(() => {
-    setData((prev) => ({ ...prev, entryPoint: undefined }));
+    setData((prev) => ({ ...prev, entryPoint: undefined, exitPoint: undefined, sameAsEntry: undefined }));
+  }, [setData]);
+
+  const handleSelectExitAirport = useCallback(
+    (airport: Airport) => {
+      const exitPoint: EntryPoint = {
+        type: "airport",
+        id: airport.id,
+        name: airport.name,
+        coordinates: airport.coordinates,
+        iataCode: airport.iataCode,
+        region: airport.region.toLowerCase() as KnownRegionId,
+      };
+      setData((prev) => ({ ...prev, exitPoint, sameAsEntry: false }));
+      setExitSearchQuery("");
+    },
+    [setData],
+  );
+
+  const handleToggleSameAsEntry = useCallback(
+    (same: boolean) => {
+      setData((prev) => ({
+        ...prev,
+        sameAsEntry: same,
+        exitPoint: same ? undefined : prev.exitPoint,
+      }));
+      setExitSearchQuery("");
+    },
+    [setData],
+  );
+
+  const handleClearExit = useCallback(() => {
+    setData((prev) => ({ ...prev, exitPoint: undefined, sameAsEntry: false }));
   }, [setData]);
 
   const topAirports = useMemo(() => {
@@ -82,6 +116,22 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
       .slice(0, 8);
   }, [airports, searchQuery]);
 
+  const filteredExitAirports = useMemo(() => {
+    if (!exitSearchQuery.trim()) return [];
+    const query = exitSearchQuery.toLowerCase();
+    return airports
+      .filter(
+        (airport) =>
+          airport.name.toLowerCase().includes(query) ||
+          airport.city.toLowerCase().includes(query) ||
+          airport.iataCode.toLowerCase().includes(query) ||
+          airport.shortName.toLowerCase().includes(query),
+      )
+      .slice(0, 8);
+  }, [airports, exitSearchQuery]);
+
+  const sameAsEntry = data.sameAsEntry !== false;
+
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
       {/* Left (60%) — Japan map area with selected airport display */}
@@ -92,6 +142,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
             airports={airports}
             topAirportCodes={TOP_AIRPORT_CODES}
             selectedAirport={data.entryPoint}
+            selectedExitAirport={!sameAsEntry ? data.exitPoint : undefined}
             onSelectAirport={handleSelectAirport}
             isLoading={isLoading}
           />
@@ -144,6 +195,180 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                   >
                     {sanityConfig?.entryPointChangeText ?? "Change"}
                   </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Departure airport section — shown after entry point is selected */}
+          <AnimatePresence>
+            {data.entryPoint && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: easeReveal }}
+                className="overflow-hidden"
+              >
+                <div className="mt-6">
+                  <p className="text-xs font-medium uppercase tracking-wide text-stone">
+                    Departure
+                  </p>
+
+                  {/* Toggle buttons */}
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSameAsEntry(true)}
+                      className={cn(
+                        "flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all",
+                        sameAsEntry
+                          ? "border-sage/30 bg-sage/5 text-sage"
+                          : "border-border bg-background text-stone hover:border-sage/20 hover:text-foreground-secondary",
+                      )}
+                    >
+                      Same airport
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSameAsEntry(false)}
+                      className={cn(
+                        "flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all",
+                        !sameAsEntry
+                          ? "border-sage/30 bg-sage/5 text-sage"
+                          : "border-border bg-background text-stone hover:border-sage/20 hover:text-foreground-secondary",
+                      )}
+                    >
+                      Different airport
+                    </button>
+                  </div>
+
+                  {/* Exit airport selection — only when "Different" is chosen */}
+                  <AnimatePresence>
+                    {!sameAsEntry && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25, ease: easeReveal }}
+                        className="overflow-hidden"
+                      >
+                        {data.exitPoint ? (
+                          <div className="mt-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-primary/20 text-brand-primary">
+                                  <PlaneLanding className="h-5 w-5" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-foreground">{data.exitPoint.name}</p>
+                                  <p className="font-mono text-xs text-brand-primary">{data.exitPoint.iataCode}</p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleClearExit}
+                                className="rounded-xl px-4 py-2 text-xs text-stone hover:bg-surface hover:text-foreground-secondary"
+                              >
+                                Change
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="mt-3">
+                            {/* Search */}
+                            <div className="relative">
+                              <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone">
+                                <Search className="h-4 w-4" />
+                              </div>
+                              <input
+                                type="text"
+                                value={exitSearchQuery}
+                                onChange={(e) => setExitSearchQuery(e.target.value)}
+                                placeholder="Search departure airport..."
+                                className="h-12 w-full rounded-xl border border-border bg-background pl-10 pr-10 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                              />
+                              {exitSearchQuery && (
+                                <button
+                                  type="button"
+                                  onClick={() => setExitSearchQuery("")}
+                                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-stone hover:text-foreground-secondary"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Search results */}
+                            <AnimatePresence>
+                              {exitSearchQuery && filteredExitAirports.length > 0 && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: durationFast, ease: easeReveal }}
+                                  className="overflow-hidden"
+                                >
+                                  <div className="mt-2 max-h-48 overflow-auto rounded-xl border border-border bg-background">
+                                    {filteredExitAirports.map((airport) => (
+                                      <button
+                                        key={airport.id}
+                                        type="button"
+                                        onClick={() => handleSelectExitAirport(airport)}
+                                        className="flex w-full cursor-pointer items-center justify-between px-4 py-2.5 text-left hover:bg-surface"
+                                      >
+                                        <div>
+                                          <p className="text-sm font-medium text-foreground">{airport.name}</p>
+                                          <p className="text-xs text-stone">{airport.city}</p>
+                                        </div>
+                                        <span className="rounded bg-surface px-2 py-0.5 font-mono text-xs text-stone">
+                                          {airport.iataCode}
+                                        </span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+
+                            {exitSearchQuery && filteredExitAirports.length === 0 && (
+                              <p className="mt-2 text-center text-sm text-stone">No airports found</p>
+                            )}
+
+                            {/* Popular airports grid */}
+                            {!exitSearchQuery && (
+                              <>
+                                <p className="mb-2 mt-3 text-xs font-medium uppercase tracking-wide text-stone">
+                                  Popular airports
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {topAirports.map((airport) => (
+                                    <button
+                                      key={airport.id}
+                                      type="button"
+                                      onClick={() => handleSelectExitAirport(airport)}
+                                      className={cn(
+                                        "group flex cursor-pointer flex-col rounded-xl border p-3 text-left transition-all",
+                                        "border-border bg-background hover:border-brand-primary/20 hover:bg-brand-primary/5",
+                                      )}
+                                    >
+                                      <span className="font-mono text-lg font-bold text-brand-primary">
+                                        {airport.iataCode}
+                                      </span>
+                                      <span className="mt-0.5 text-sm font-medium text-foreground">
+                                        {airport.shortName}
+                                      </span>
+                                      <span className="text-xs text-stone">{airport.city}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             )}
@@ -278,6 +503,7 @@ type JapanSilhouetteProps = {
   airports: Airport[];
   topAirportCodes: string[];
   selectedAirport?: EntryPoint;
+  selectedExitAirport?: EntryPoint;
   onSelectAirport: (airport: Airport) => void;
   isLoading: boolean;
 };
@@ -290,6 +516,7 @@ function JapanSilhouette({
   airports,
   topAirportCodes,
   selectedAirport,
+  selectedExitAirport,
   onSelectAirport,
   isLoading,
 }: JapanSilhouetteProps) {
@@ -444,12 +671,13 @@ function JapanSilhouette({
             if (pos.x < 0 || pos.x > 438 || pos.y < 0 || pos.y > 516) return null;
 
             const isSelected = selectedAirport?.iataCode === airport.iataCode;
+            const isExitSelected = selectedExitAirport?.iataCode === airport.iataCode;
             const isTop = topSet.has(airport.iataCode);
-            const showLabel = isSelected || isTop || isZoomed;
+            const showLabel = isSelected || isExitSelected || isTop || isZoomed;
 
             return (
               <g key={airport.iataCode} className="cursor-pointer">
-                {/* Pulse ring for selected */}
+                {/* Pulse ring for selected entry */}
                 {isSelected && (
                   <motion.circle
                     cx={pos.x}
@@ -457,6 +685,21 @@ function JapanSilhouette({
                     r={12}
                     fill="none"
                     className="stroke-sage"
+                    strokeWidth="1.5"
+                    initial={{ r: 6, opacity: 0.6 }}
+                    animate={{ r: 14, opacity: 0 }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                )}
+
+                {/* Pulse ring for selected exit */}
+                {isExitSelected && !isSelected && (
+                  <motion.circle
+                    cx={pos.x}
+                    cy={pos.y}
+                    r={12}
+                    fill="none"
+                    className="stroke-brand-primary"
                     strokeWidth="1.5"
                     initial={{ r: 6, opacity: 0.6 }}
                     animate={{ r: 14, opacity: 0 }}
@@ -489,14 +732,16 @@ function JapanSilhouette({
                 <motion.circle
                   cx={pos.x}
                   cy={pos.y}
-                  r={isSelected ? 5 : isTop ? 3.5 : 2}
+                  r={isSelected || isExitSelected ? 5 : isTop ? 3.5 : 2}
                   className={cn(
                     "cursor-pointer transition-colors",
                     isSelected
                       ? "fill-sage"
-                      : isTop
+                      : isExitSelected
                         ? "fill-brand-primary"
-                        : "fill-brand-primary/50"
+                        : isTop
+                          ? "fill-brand-primary"
+                          : "fill-brand-primary/50"
                   )}
                   whileHover={{ scale: 1.5 }}
                   style={{ pointerEvents: "none" }}
@@ -511,7 +756,9 @@ function JapanSilhouette({
                       "cursor-pointer font-mono text-[8px]",
                       isSelected
                         ? "fill-sage font-bold"
-                        : "fill-foreground-secondary"
+                        : isExitSelected
+                          ? "fill-brand-primary font-bold"
+                          : "fill-foreground-secondary"
                     )}
                     textAnchor={pos.x > 320 ? "end" : "start"}
                     onClick={() => { if (!didDrag.current) onSelectAirport(airport); }}

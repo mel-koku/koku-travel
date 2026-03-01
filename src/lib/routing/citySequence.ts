@@ -49,17 +49,33 @@ export { CITY_INFO_BY_KEY, REGION_ID_BY_LABEL };
  * // 7 days, [Kyoto, Osaka] → Kyoto x4, Osaka x3
  * // 5 days, [Kyoto, Osaka, Tokyo] → Kyoto x2, Osaka x2, Tokyo x1
  */
-export function expandCitySequenceForDays(citySequence: CityInfo[], totalDays: number): CityInfo[] {
+export function expandCitySequenceForDays(
+  citySequence: CityInfo[],
+  totalDays: number,
+  cityDays?: Record<string, number>,
+): CityInfo[] {
   if (citySequence.length === 0 || totalDays === 0) {
     return citySequence;
   }
 
   // If we have exactly the right number of cities, return as-is
-  if (citySequence.length === totalDays) {
+  if (citySequence.length === totalDays && !cityDays) {
     return citySequence;
   }
 
   const expanded: CityInfo[] = [];
+
+  // Use explicit per-city allocation when provided
+  if (cityDays) {
+    for (const cityInfo of citySequence) {
+      const days = cityDays[cityInfo.key] ?? 1;
+      for (let i = 0; i < days && expanded.length < totalDays; i++) {
+        expanded.push(cityInfo);
+      }
+    }
+    return expanded.slice(0, totalDays);
+  }
+
   const totalCities = citySequence.length;
 
   // Calculate base days per city and remainder
@@ -147,10 +163,13 @@ export function resolveCitySequence(
   // If no user selections, use defaults
   const citiesToOptimize = userCities.length > 0 ? userCities : [...DEFAULT_CITY_ROTATION];
 
-  // Always optimize city sequence by region (with or without entry point)
-  // This groups cities geographically to minimize travel time
-  if (citiesToOptimize.length > 0) {
-    const optimizedSequence = optimizeCitySequence(data.entryPoint, citiesToOptimize);
+  // If the user manually reordered cities, respect their order.
+  // Otherwise optimize city sequence by region to minimize travel time.
+  if (data.customCityOrder && citiesToOptimize.length > 0) {
+    citiesToOptimize.forEach((cityId) => addCityByKey(cityId));
+  } else if (citiesToOptimize.length > 0) {
+    const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
+    const optimizedSequence = optimizeCitySequence(data.entryPoint, citiesToOptimize, effectiveExit);
     optimizedSequence.forEach((cityId) => addCityByKey(cityId));
   }
 
@@ -182,6 +201,7 @@ export function resolveCitySequence(
 export function optimizeCitySequence(
   entryPoint: TripBuilderData["entryPoint"],
   cities: CityId[],
+  exitPoint?: TripBuilderData["exitPoint"],
 ): CityId[] {
   if (cities.length === 0) {
     return cities;
@@ -200,21 +220,30 @@ export function optimizeCitySequence(
 
   // If no regions found or only one region, fall back to simple optimization
   if (citiesByRegion.size <= 1) {
-    return optimizeCitiesWithinRegion(cities, entryPoint);
+    return optimizeCitiesWithinRegion(cities, entryPoint, exitPoint, true);
   }
+
+  // Determine optimal region order based on entry point, exit point, and travel time
+  // We need region order first to know which region is last
+  const regionKeys = Array.from(citiesByRegion.keys());
+  const regionOrder = optimizeRegionOrder(
+    regionKeys,
+    entryPoint,
+    citiesByRegion,
+    exitPoint,
+  );
+
+  const lastRegion = regionOrder[regionOrder.length - 1];
 
   // Optimize order within each region
   const optimizedRegions = new Map<RegionId, CityId[]>();
   for (const [regionId, regionCities] of citiesByRegion.entries()) {
-    optimizedRegions.set(regionId, optimizeCitiesWithinRegion(regionCities, entryPoint));
+    const isLastRegion = regionId === lastRegion;
+    optimizedRegions.set(
+      regionId,
+      optimizeCitiesWithinRegion(regionCities, entryPoint, isLastRegion ? exitPoint : undefined, isLastRegion),
+    );
   }
-
-  // Determine optimal region order based on entry point and travel time
-  const regionOrder = optimizeRegionOrder(
-    Array.from(optimizedRegions.keys()),
-    entryPoint,
-    optimizedRegions,
-  );
 
   // Concatenate cities in optimal region order
   const result: CityId[] = [];
@@ -235,6 +264,8 @@ export function optimizeCitySequence(
 export function optimizeCitiesWithinRegion(
   cities: CityId[],
   entryPoint: TripBuilderData["entryPoint"],
+  exitPoint?: TripBuilderData["exitPoint"],
+  isLastRegion?: boolean,
 ): CityId[] {
   if (cities.length <= 1) {
     return cities;
@@ -257,11 +288,20 @@ export function optimizeCitiesWithinRegion(
     return cities; // Fallback if no cities available
   }
 
+  // Find end city pinned to exit point (only for last region)
+  let endCity: CityId | undefined;
+  if (isLastRegion && exitPoint) {
+    const nearestToExit = getNearestCityToEntryPoint(exitPoint);
+    if (nearestToExit && cities.includes(nearestToExit) && nearestToExit !== startCity) {
+      endCity = nearestToExit;
+    }
+  }
+
   const optimized: CityId[] = [startCity];
-  const unvisited = new Set(cities.filter((c) => c !== startCity));
+  const unvisited = new Set(cities.filter((c) => c !== startCity && c !== endCity));
   let currentCity: CityId = startCity;
 
-  // Greedy nearest-neighbor within region
+  // Greedy nearest-neighbor for middle cities
   while (unvisited.size > 0) {
     let nearest: CityId | undefined;
     let minTime = Infinity;
@@ -285,6 +325,11 @@ export function optimizeCitiesWithinRegion(
     }
   }
 
+  // Pin end city last
+  if (endCity) {
+    optimized.push(endCity);
+  }
+
   return optimized;
 }
 
@@ -295,7 +340,8 @@ export function optimizeCitiesWithinRegion(
 export function optimizeRegionOrder(
   regions: RegionId[],
   entryPoint: TripBuilderData["entryPoint"],
-  optimizedRegions: Map<RegionId, CityId[]>,
+  citiesByRegion: Map<RegionId, CityId[]>,
+  exitPoint?: TripBuilderData["exitPoint"],
 ): RegionId[] {
   if (regions.length <= 1) {
     return regions;
@@ -313,6 +359,18 @@ export function optimizeRegionOrder(
     }
   }
 
+  // Find exit region (nearest city to exit point)
+  let exitRegion: RegionId | undefined;
+  if (exitPoint) {
+    const nearestToExit = getNearestCityToEntryPoint(exitPoint);
+    if (nearestToExit) {
+      const nearestRegion = getRegionForCity(nearestToExit);
+      if (nearestRegion && regions.includes(nearestRegion)) {
+        exitRegion = nearestRegion;
+      }
+    }
+  }
+
   // If no entry point or nearest region not in selection, use first region
   if (!startRegion) {
     startRegion = regions[0];
@@ -322,8 +380,15 @@ export function optimizeRegionOrder(
     return regions; // Fallback if no start region
   }
 
+  // If exit region is the same as start region (round-trip), let the
+  // greedy algorithm handle it naturally — no need to pin
+  if (exitRegion === startRegion) {
+    exitRegion = undefined;
+  }
+
   const optimized: RegionId[] = [startRegion];
-  const unvisited = new Set(regions.filter((r) => r !== startRegion));
+  // Exclude both start and pinned exit region from greedy candidates
+  const unvisited = new Set(regions.filter((r) => r !== startRegion && r !== exitRegion));
 
   // Optimize region order using travel time between regions
   // Use the first city of each region as a representative for inter-region travel
@@ -333,11 +398,11 @@ export function optimizeRegionOrder(
     let nearestRegion: RegionId | undefined;
     let minTime = Infinity;
 
-    const currentRegionCities = optimizedRegions.get(currentRegion);
+    const currentRegionCities = citiesByRegion.get(currentRegion);
     const currentRepresentative = currentRegionCities?.[currentRegionCities.length - 1]; // Use last city of current region
 
     for (const region of unvisited) {
-      const regionCities = optimizedRegions.get(region);
+      const regionCities = citiesByRegion.get(region);
       const regionRepresentative = regionCities?.[0]; // Use first city of next region
 
       if (currentRepresentative && regionRepresentative) {
@@ -358,6 +423,11 @@ export function optimizeRegionOrder(
       optimized.push(...Array.from(unvisited));
       break;
     }
+  }
+
+  // Append exit region at the end
+  if (exitRegion) {
+    optimized.push(exitRegion);
   }
 
   return optimized;

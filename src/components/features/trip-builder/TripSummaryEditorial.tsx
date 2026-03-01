@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { Calendar, Plane, Sparkles, MapPin } from "lucide-react";
 
 import { motion } from "framer-motion";
@@ -9,7 +9,10 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getVibeById } from "@/data/vibes";
 import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
-import type { KnownCityId } from "@/types/trip";
+import { optimizeCitySequence } from "@/lib/routing/citySequence";
+import { computeDefaultCityDays, redistributeOnRemove } from "@/lib/tripBuilder/cityDayAllocation";
+import { SortableCityList } from "./SortableCityList";
+import type { CityId, KnownCityId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 type TripSummaryEditorialProps = {
@@ -27,7 +30,7 @@ export function TripSummaryEditorial({
   onEditRegions,
   sanityConfig: _sanityConfig,
 }: TripSummaryEditorialProps) {
-  const { data } = useTripBuilder();
+  const { data, setData } = useTripBuilder();
 
   // Derive region names from cities (primary), fallback to data.regions for backward compat
   const derivedRegionNames = useMemo(() => {
@@ -76,23 +79,84 @@ export function TripSummaryEditorial({
     [data.vibes]
   );
 
-  // City names for destination badges
-  const cityNames = useMemo(() => {
-    const cities = (data.cities ?? []) as KnownCityId[];
-    if (cities.length > 0) {
-      return cities
-        .map((cityId) => {
-          for (const region of REGIONS) {
-            const city = region.cities.find((c) => c.id === cityId);
-            if (city) return city.name;
-          }
-          return null;
-        })
-        .filter(Boolean) as string[];
-    }
-    // Fallback: show region names if no cities
-    return derivedRegionNames;
-  }, [data.cities, derivedRegionNames]);
+  // Effective per-city day allocation
+  const effectiveCityDays = useMemo(() => {
+    const cities = data.cities ?? [];
+    const duration = data.duration;
+    if (cities.length < 2 || !duration || duration <= 0) return undefined;
+    return data.cityDays ?? computeDefaultCityDays(cities, duration);
+  }, [data.cities, data.duration, data.cityDays]);
+
+  // Day change handler — adjusts target city and adjacent city to keep total constant
+  const handleDaysChange = useCallback(
+    (cityId: CityId, newDays: number) => {
+      setData((prev) => {
+        const cities = prev.cities ?? [];
+        const duration = prev.duration;
+        if (!duration || cities.length < 2) return prev;
+
+        const current = prev.cityDays ?? computeDefaultCityDays(cities, duration);
+        const oldDays = current[cityId] ?? 1;
+        const delta = newDays - oldDays;
+        if (delta === 0) return prev;
+
+        // Find adjacent city to absorb the delta
+        const idx = cities.indexOf(cityId);
+        const adjacentIdx = idx < cities.length - 1 ? idx + 1 : idx - 1;
+        const adjacentCity = cities[adjacentIdx];
+        if (!adjacentCity) return prev;
+
+        const adjacentOld = current[adjacentCity] ?? 1;
+        const adjacentNew = adjacentOld - delta;
+        if (adjacentNew < 1 || newDays < 1) return prev;
+
+        return {
+          ...prev,
+          cityDays: { ...current, [cityId]: newDays, [adjacentCity]: adjacentNew },
+        };
+      });
+    },
+    [setData],
+  );
+
+  // City reorder handler (manual drag)
+  const handleCityReorder = useCallback(
+    (newOrder: CityId[]) => {
+      setData((prev) => {
+        // Preserve cityDays across reorder (same cities, different order)
+        return {
+          ...prev,
+          cities: newOrder,
+          regions: deriveRegionsFromCities(newOrder),
+          customCityOrder: true,
+        };
+      });
+    },
+    [setData],
+  );
+
+  // City remove handler (auto-optimizes remaining, redistributes days)
+  const handleCityRemove = useCallback(
+    (cityId: CityId) => {
+      setData((prev) => {
+        const current = new Set<CityId>(prev.cities ?? []);
+        current.delete(cityId);
+        const raw = Array.from(current);
+        const cities = raw.length >= 2
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          : raw;
+
+        // Redistribute freed days to remaining cities
+        let cityDays: Record<CityId, number> | undefined;
+        if (prev.cityDays && cities.length >= 2) {
+          cityDays = redistributeOnRemove(prev.cityDays, cityId, cities);
+        }
+
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false, cityDays };
+      });
+    },
+    [setData],
+  );
 
   // Get images from derived regions for composite — always 3.
   // Uses gallery images from Sanity when available, falls back to hero images.
@@ -177,18 +241,36 @@ export function TripSummaryEditorial({
             onEdit={onEditDates}
           />
 
-          {/* Entry point */}
+          {/* Flights */}
           <SummaryItem
             icon={<Plane className="h-4 w-4" />}
-            label="Arriving at"
+            label="Flights"
             value={
               data.entryPoint ? (
-                <span>
-                  {data.entryPoint.name}
-                  <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
-                    {data.entryPoint.iataCode}
+                <div className="flex flex-col gap-0.5">
+                  <span>
+                    <span className="text-stone">In:</span>{" "}
+                    {data.entryPoint.name}
+                    <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
+                      {data.entryPoint.iataCode}
+                    </span>
                   </span>
-                </span>
+                  <span>
+                    <span className="text-stone">Out:</span>{" "}
+                    {data.sameAsEntry !== false ? (
+                      "Same airport"
+                    ) : data.exitPoint ? (
+                      <>
+                        {data.exitPoint.name}
+                        <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
+                          {data.exitPoint.iataCode}
+                        </span>
+                      </>
+                    ) : (
+                      "Same airport"
+                    )}
+                  </span>
+                </div>
               ) : (
                 <span className="text-stone">Not set</span>
               )
@@ -219,22 +301,21 @@ export function TripSummaryEditorial({
             onEdit={onEditVibes}
           />
 
-          {/* Destinations */}
+          {/* Destinations — reorderable inline */}
           <SummaryItem
             icon={<MapPin className="h-4 w-4" />}
-            label="Destinations"
+            label="Route Order"
             value={
-              cityNames.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5">
-                  {cityNames.map((name) => (
-                    <span
-                      key={name}
-                      className="rounded-full bg-sage/10 px-2.5 py-0.5 text-sm font-medium text-sage"
-                    >
-                      {name}
-                    </span>
-                  ))}
-                </div>
+              (data.cities ?? []).length > 0 ? (
+                <SortableCityList
+                  cities={data.cities ?? []}
+                  onReorder={handleCityReorder}
+                  onRemove={handleCityRemove}
+                  variant="a"
+                  cityDays={effectiveCityDays}
+                  onDaysChange={handleDaysChange}
+                  totalDays={data.duration}
+                />
               ) : (
                 <span className="text-stone">Not set</span>
               )

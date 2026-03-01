@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plane, Search, X } from "lucide-react";
+import { Plane, PlaneLanding, Search, X } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
@@ -30,6 +30,7 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
   const [airports, setAirports] = useState<Airport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [exitSearchQuery, setExitSearchQuery] = useState("");
 
   useEffect(() => {
     async function fetchAirports() {
@@ -68,7 +69,39 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
   );
 
   const handleClear = useCallback(() => {
-    setData((prev) => ({ ...prev, entryPoint: undefined }));
+    setData((prev) => ({ ...prev, entryPoint: undefined, exitPoint: undefined, sameAsEntry: undefined }));
+  }, [setData]);
+
+  const handleSelectExitAirport = useCallback(
+    (airport: Airport) => {
+      const exitPoint: EntryPoint = {
+        type: "airport",
+        id: airport.id,
+        name: airport.name,
+        coordinates: airport.coordinates,
+        iataCode: airport.iataCode,
+        region: airport.region.toLowerCase() as KnownRegionId,
+      };
+      setData((prev) => ({ ...prev, exitPoint, sameAsEntry: false }));
+      setExitSearchQuery("");
+    },
+    [setData],
+  );
+
+  const handleToggleSameAsEntry = useCallback(
+    (same: boolean) => {
+      setData((prev) => ({
+        ...prev,
+        sameAsEntry: same,
+        exitPoint: same ? undefined : prev.exitPoint,
+      }));
+      setExitSearchQuery("");
+    },
+    [setData],
+  );
+
+  const handleClearExit = useCallback(() => {
+    setData((prev) => ({ ...prev, exitPoint: undefined, sameAsEntry: false }));
   }, [setData]);
 
   const topAirports = useMemo(() => {
@@ -91,6 +124,22 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
       .slice(0, 8);
   }, [airports, searchQuery]);
 
+  const filteredExitAirports = useMemo(() => {
+    if (!exitSearchQuery.trim()) return [];
+    const query = exitSearchQuery.toLowerCase();
+    return airports
+      .filter(
+        (airport) =>
+          airport.name.toLowerCase().includes(query) ||
+          airport.city.toLowerCase().includes(query) ||
+          airport.iataCode.toLowerCase().includes(query) ||
+          airport.shortName.toLowerCase().includes(query),
+      )
+      .slice(0, 8);
+  }, [airports, exitSearchQuery]);
+
+  const sameAsEntry = data.sameAsEntry !== false;
+
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
       {/* Left — Japan map */}
@@ -99,6 +148,7 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
           <JapanMapB
             airports={airports}
             selectedAirport={data.entryPoint}
+            selectedExitAirport={!sameAsEntry ? data.exitPoint : undefined}
             onSelectAirport={handleSelectAirport}
             isLoading={isLoading}
           />
@@ -157,6 +207,189 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
                   >
                     Change
                   </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Departure airport section */}
+          <AnimatePresence>
+            {data.entryPoint && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: bEase }}
+                className="overflow-hidden"
+              >
+                <div className="mt-6">
+                  <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                    Departure
+                  </p>
+
+                  <div className="mt-2 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSameAsEntry(true)}
+                      className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all ${
+                        sameAsEntry
+                          ? "border-[var(--primary)]/30 bg-[var(--primary)]/5 text-[var(--primary)]"
+                          : "border-[var(--border)] bg-white text-[var(--muted-foreground)] hover:border-[var(--primary)]/20 hover:text-[var(--foreground)]"
+                      }`}
+                    >
+                      Same airport
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleSameAsEntry(false)}
+                      className={`flex-1 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all ${
+                        !sameAsEntry
+                          ? "border-[var(--primary)]/30 bg-[var(--primary)]/5 text-[var(--primary)]"
+                          : "border-[var(--border)] bg-white text-[var(--muted-foreground)] hover:border-[var(--primary)]/20 hover:text-[var(--foreground)]"
+                      }`}
+                    >
+                      Different airport
+                    </button>
+                  </div>
+
+                  <AnimatePresence>
+                    {!sameAsEntry && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.25, ease: bEase }}
+                        className="overflow-hidden"
+                      >
+                        {data.exitPoint ? (
+                          <div
+                            className="mt-3 rounded-2xl bg-white p-4"
+                            style={{ boxShadow: "var(--shadow-card)" }}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)]/10 text-[var(--primary)]">
+                                  <PlaneLanding className="h-5 w-5" />
+                                </div>
+                                <div>
+                                  <p className="font-medium text-[var(--foreground)]">
+                                    {data.exitPoint.name}
+                                  </p>
+                                  <p className="text-xs text-[var(--muted-foreground)]">
+                                    {data.exitPoint.iataCode}
+                                  </p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleClearExit}
+                                className="rounded-xl px-4 py-2 text-xs font-medium text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+                              >
+                                Change
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="mt-3">
+                            <div className="relative">
+                              <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]">
+                                <Search className="h-4 w-4" />
+                              </div>
+                              <input
+                                type="text"
+                                value={exitSearchQuery}
+                                onChange={(e) => setExitSearchQuery(e.target.value)}
+                                placeholder="Search departure airport..."
+                                className="h-11 w-full rounded-xl border border-[var(--border)] bg-white pl-10 pr-10 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                              />
+                              {exitSearchQuery && (
+                                <button
+                                  type="button"
+                                  onClick={() => setExitSearchQuery("")}
+                                  className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                                >
+                                  <X className="h-4 w-4" />
+                                </button>
+                              )}
+                            </div>
+
+                            <AnimatePresence>
+                              {exitSearchQuery && filteredExitAirports.length > 0 && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.3, ease: bEase }}
+                                  className="overflow-hidden"
+                                >
+                                  <div
+                                    className="mt-2 max-h-48 overflow-auto rounded-2xl bg-white"
+                                    style={{ boxShadow: "var(--shadow-card)" }}
+                                  >
+                                    {filteredExitAirports.map((airport) => (
+                                      <button
+                                        key={airport.id}
+                                        type="button"
+                                        onClick={() => handleSelectExitAirport(airport)}
+                                        className="flex w-full cursor-pointer items-center justify-between px-4 py-2.5 text-left transition-colors hover:bg-[var(--surface)]"
+                                      >
+                                        <div>
+                                          <p className="text-sm font-medium text-[var(--foreground)]">
+                                            {airport.name}
+                                          </p>
+                                          <p className="text-xs text-[var(--muted-foreground)]">
+                                            {airport.city}
+                                          </p>
+                                        </div>
+                                        <span className="rounded-lg bg-[var(--surface)] px-2 py-0.5 text-xs font-medium text-[var(--muted-foreground)]">
+                                          {airport.iataCode}
+                                        </span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+
+                            {exitSearchQuery && filteredExitAirports.length === 0 && (
+                              <p className="mt-2 text-center text-sm text-[var(--muted-foreground)]">
+                                No airports found
+                              </p>
+                            )}
+
+                            {!exitSearchQuery && (
+                              <>
+                                <p className="mb-2 mt-3 text-xs font-medium uppercase tracking-wide text-[var(--muted-foreground)]">
+                                  Popular airports
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  {topAirports.map((airport) => (
+                                    <button
+                                      key={airport.id}
+                                      type="button"
+                                      onClick={() => handleSelectExitAirport(airport)}
+                                      className="group flex cursor-pointer flex-col rounded-2xl bg-white p-3 text-left transition-all hover:shadow-[var(--shadow-elevated)]"
+                                      style={{ boxShadow: "var(--shadow-sm)" }}
+                                    >
+                                      <span className="text-lg font-bold text-[var(--primary)]">
+                                        {airport.iataCode}
+                                      </span>
+                                      <span className="mt-0.5 text-sm font-medium text-[var(--foreground)]">
+                                        {airport.shortName}
+                                      </span>
+                                      <span className="text-xs text-[var(--muted-foreground)]">
+                                        {airport.city}
+                                      </span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </motion.div>
             )}
@@ -296,11 +529,13 @@ const ZOOM_LABEL_THRESHOLD = 1.4; // Show all IATA codes at 1.4x+ zoom
 function JapanMapB({
   airports,
   selectedAirport,
+  selectedExitAirport,
   onSelectAirport,
   isLoading,
 }: {
   airports: Airport[];
   selectedAirport?: EntryPoint;
+  selectedExitAirport?: EntryPoint;
   onSelectAirport: (airport: Airport) => void;
   isLoading: boolean;
 }) {
@@ -452,8 +687,10 @@ function JapanMapB({
 
             const isSelected =
               selectedAirport?.iataCode === airport.iataCode;
+            const isExitSelected =
+              selectedExitAirport?.iataCode === airport.iataCode;
             const isTop = topSet.has(airport.iataCode);
-            const showLabel = isSelected || isTop || isZoomed;
+            const showLabel = isSelected || isExitSelected || isTop || isZoomed;
 
             return (
               <g key={airport.iataCode} className="cursor-pointer">
@@ -464,6 +701,20 @@ function JapanMapB({
                     r={12}
                     fill="none"
                     stroke="var(--primary)"
+                    strokeWidth="1.5"
+                    initial={{ r: 6, opacity: 0.6 }}
+                    animate={{ r: 14, opacity: 0 }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                )}
+
+                {isExitSelected && !isSelected && (
+                  <motion.circle
+                    cx={pos.x}
+                    cy={pos.y}
+                    r={12}
+                    fill="none"
+                    stroke="var(--accent, var(--primary))"
                     strokeWidth="1.5"
                     initial={{ r: 6, opacity: 0.6 }}
                     animate={{ r: 14, opacity: 0 }}
@@ -492,15 +743,17 @@ function JapanMapB({
                 <circle
                   cx={pos.x}
                   cy={pos.y}
-                  r={isSelected ? 5 : isTop ? 3.5 : 2}
+                  r={isSelected || isExitSelected ? 5 : isTop ? 3.5 : 2}
                   fill={
                     isSelected
                       ? "var(--primary)"
-                      : isTop
-                        ? "var(--primary)"
-                        : "var(--muted-foreground)"
+                      : isExitSelected
+                        ? "var(--accent, var(--primary))"
+                        : isTop
+                          ? "var(--primary)"
+                          : "var(--muted-foreground)"
                   }
-                  opacity={isSelected ? 1 : isTop ? 0.8 : 0.4}
+                  opacity={isSelected || isExitSelected ? 1 : isTop ? 0.8 : 0.4}
                   style={{ pointerEvents: "none" }}
                 />
 
@@ -511,9 +764,11 @@ function JapanMapB({
                     fill={
                       isSelected
                         ? "var(--primary)"
-                        : "var(--muted-foreground)"
+                        : isExitSelected
+                          ? "var(--accent, var(--primary))"
+                          : "var(--muted-foreground)"
                     }
-                    fontWeight={isSelected ? "bold" : "normal"}
+                    fontWeight={isSelected || isExitSelected ? "bold" : "normal"}
                     fontSize="8"
                     fontFamily="var(--font-inter), system-ui, sans-serif"
                     textAnchor={pos.x > 320 ? "end" : "start"}
