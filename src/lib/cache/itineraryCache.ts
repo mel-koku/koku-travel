@@ -133,6 +133,10 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
     normalized.sameAsEntry = data.sameAsEntry;
   }
 
+  // Flight times affect Day 1 / last day bounds
+  if (data.arrivalTime) normalized.arrivalTime = data.arrivalTime;
+  if (data.departureTime) normalized.departureTime = data.departureTime;
+
   // Group affects scoring (family-friendly, group size, children ages)
   if (data.group) {
     normalized.group = {

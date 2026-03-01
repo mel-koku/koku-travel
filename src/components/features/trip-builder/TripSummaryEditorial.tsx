@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useCallback, useMemo } from "react";
 import { Calendar, Plane, Sparkles, MapPin } from "lucide-react";
+import { formatTime12h } from "@/lib/utils/timeUtils";
 
 import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -254,6 +255,11 @@ export function TripSummaryEditorial({
                     <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
                       {data.entryPoint.iataCode}
                     </span>
+                    {data.arrivalTime && (
+                      <span className="ml-2 text-xs text-stone">
+                        Landing {formatTime12h(data.arrivalTime)}
+                      </span>
+                    )}
                   </span>
                   <span>
                     <span className="text-stone">Out:</span>{" "}
@@ -268,6 +274,11 @@ export function TripSummaryEditorial({
                       </>
                     ) : (
                       "Same airport"
+                    )}
+                    {data.departureTime && (
+                      <span className="ml-2 text-xs text-stone">
+                        Departing {formatTime12h(data.departureTime)}
+                      </span>
                     )}
                   </span>
                 </div>

@@ -202,6 +202,16 @@ export type TripBuilderData = {
    */
   dayStartTime?: string;
   /**
+   * Flight landing time in HH:MM format (24-hour).
+   * Used to compute a realistic Day 1 start time (arrival + customs/transit buffer).
+   */
+  arrivalTime?: string;
+  /**
+   * Flight departure time in HH:MM format (24-hour).
+   * Used to compute a realistic last-day end time (departure - check-in/transit buffer).
+   */
+  departureTime?: string;
+  /**
    * Content context from a guide or experience page CTA.
    * When present, locations from this content get a scoring boost
    * and are visually attributed in the generated itinerary.
