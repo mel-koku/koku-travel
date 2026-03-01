@@ -58,7 +58,7 @@ export const SortableActivityB = memo(function SortableActivityB({
     isDragging,
     isOver,
     active,
-  } = useSortable({ id: activity.id, disabled: isReadOnly });
+  } = useSortable({ id: activity.id, disabled: isReadOnly || (activity.kind === "place" && activity.isAnchor) });
 
   const showDropIndicator = isOver && active?.id !== activity.id;
 
@@ -124,8 +124,8 @@ export const SortableActivityB = memo(function SortableActivityB({
         </div>
       ) : (
         <div className="relative">
-          {/* Drag handle — always visible */}
-          {!isReadOnly && (
+          {/* Drag handle — hidden for read-only and anchor (airport) activities */}
+          {!isReadOnly && !(activity.kind === "place" && activity.isAnchor) && (
             <div
               className="absolute -left-7 top-1/2 z-10 -translate-y-1/2"
               {...(listeners as Record<string, unknown>)}
