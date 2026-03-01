@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState as useStateReact } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
-import { Wallet, Gauge, Users, Accessibility, StickyNote, ChevronDown, Check } from "lucide-react";
+import { Wallet, Gauge, Users, Accessibility, StickyNote, ChevronDown, Check, Building2, Search, X } from "lucide-react";
 
 import { TripSummaryB } from "./TripSummaryB";
 import { JRPassCardB } from "./JRPassCardB";
@@ -15,10 +15,11 @@ import { BudgetInput, type BudgetMode, type BudgetValue } from "@/components/fea
 import { FormField } from "@/components/ui/FormField";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
-import type { TripStyle } from "@/types/trip";
+import type { TripStyle, TripBuilderData } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import { useState } from "react";
 import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
+import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 
 type PreferenceFormValues = {
   groupSize?: number;
@@ -227,6 +228,44 @@ export function ReviewStepB({
             {durationWarning.message}
           </p>
         </div>
+      )}
+
+      {/* Accommodation — per-city hotel search */}
+      {data.cities && data.cities.length > 0 && (
+        <PreferenceCardB
+          icon={<Building2 className="h-5 w-5" />}
+          title="Accommodation"
+          hasValue={!!data.accommodations && Object.keys(data.accommodations).length > 0}
+          summary={
+            data.accommodations
+              ? `${Object.keys(data.accommodations).length} hotel${Object.keys(data.accommodations).length > 1 ? "s" : ""} set`
+              : undefined
+          }
+        >
+          <p className="text-xs text-[var(--muted-foreground)]">
+            We&apos;ll route your days from your hotel.
+          </p>
+          <div className="flex flex-col gap-3">
+            {data.cities.map((cityId) => (
+              <AccommodationCityFieldB
+                key={cityId}
+                cityId={cityId}
+                value={data.accommodations?.[cityId]}
+                onChange={(accom) => {
+                  setData((prev) => {
+                    const next = { ...prev.accommodations };
+                    if (accom) {
+                      next[cityId] = accom;
+                    } else {
+                      delete next[cityId];
+                    }
+                    return { ...prev, accommodations: Object.keys(next).length > 0 ? next : undefined };
+                  });
+                }}
+              />
+            ))}
+          </div>
+        </PreferenceCardB>
       )}
 
       {/* First-Time Visitor Toggle */}
@@ -493,6 +532,7 @@ export function ReviewStepB({
               {...register("additionalNotes")}
             />
           </PreferenceCardB>
+
         </div>
       </div>
     </div>
@@ -566,6 +606,104 @@ function PreferenceCardB({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/**
+ * Per-city accommodation search field (B variant) using Nominatim geocoding.
+ */
+function AccommodationCityFieldB({
+  cityId,
+  value,
+  onChange,
+}: {
+  cityId: string;
+  value?: NonNullable<TripBuilderData["accommodations"]>[string];
+  onChange: (accom: NonNullable<TripBuilderData["accommodations"]>[string] | undefined) => void;
+}) {
+  const [searchInput, setSearchInput] = useStateReact("");
+  const { suggestions, isLoading } = useMapboxSearch(searchInput ? `${searchInput} ${cityId} Japan` : "");
+
+  const handleSelect = useCallback((suggestion: MapboxSuggestion) => {
+    if (!suggestion.coordinates) return;
+    onChange({
+      name: suggestion.name,
+      coordinates: suggestion.coordinates,
+      placeId: suggestion.mapbox_id,
+    });
+    setSearchInput("");
+  }, [onChange]);
+
+  const cityLabel = cityId.charAt(0).toUpperCase() + cityId.slice(1);
+
+  if (value) {
+    return (
+      <div
+        className="flex items-center justify-between rounded-xl px-4 py-3"
+        style={{
+          backgroundColor: "color-mix(in srgb, var(--primary) 5%, transparent)",
+          border: "1px solid color-mix(in srgb, var(--primary) 20%, transparent)",
+        }}
+      >
+        <div className="flex items-center gap-2 min-w-0">
+          <Check className="h-4 w-4 shrink-0 text-[var(--primary)]" />
+          <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted-foreground)]">{cityLabel}</p>
+            <p className="truncate text-sm text-[var(--foreground)]">{value.name}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => onChange(undefined)}
+          className="shrink-0 rounded-lg p-1 text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-[var(--muted-foreground)]">{cityLabel}</p>
+      <div className="relative">
+        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]">
+          <Search className="h-4 w-4" />
+        </div>
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="Search hotel, Airbnb, address..."
+          className="h-11 w-full rounded-xl border border-[var(--border)] bg-white pl-10 pr-4 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+        />
+        {isLoading && searchInput.length >= 3 && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--primary)] border-t-transparent" />
+          </div>
+        )}
+      </div>
+      {suggestions.length > 0 && (
+        <div
+          className="mt-1.5 max-h-40 overflow-auto rounded-xl bg-white"
+          style={{ boxShadow: "var(--shadow-card)" }}
+        >
+          {suggestions.map((s) => (
+            <button
+              key={s.mapbox_id}
+              type="button"
+              onClick={() => handleSelect(s)}
+              className="flex w-full cursor-pointer flex-col px-4 py-2 text-left transition-colors hover:bg-[var(--surface)]"
+            >
+              <p className="text-sm font-medium text-[var(--foreground)]">{s.name}</p>
+              {s.place_formatted && (
+                <p className="text-xs text-[var(--muted-foreground)]">{s.place_formatted}</p>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

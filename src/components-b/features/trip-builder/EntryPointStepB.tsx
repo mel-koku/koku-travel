@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plane, PlaneLanding, Search, X, Clock } from "lucide-react";
+import { Plane, PlaneLanding, Search, X, Clock, ClipboardPaste, Check } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
@@ -12,6 +12,7 @@ import type { Airport } from "@/app/api/airports/route";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
 import { formatTime12h } from "@/lib/utils/timeUtils";
+import { parseFlightDetails, formatParsedFlight } from "@/lib/utils/flightParser";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
@@ -33,6 +34,9 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [exitSearchQuery, setExitSearchQuery] = useState("");
+  const [showFlightPaste, setShowFlightPaste] = useState(false);
+  const [flightPasteText, setFlightPasteText] = useState("");
+  const [flightParseMessage, setFlightParseMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     async function fetchAirports() {
@@ -119,6 +123,60 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
   const handleClearExit = useCallback(() => {
     setData((prev) => ({ ...prev, exitPoint: undefined, sameAsEntry: false }));
   }, [setData]);
+
+  const handleFlightParse = useCallback(() => {
+    if (!flightPasteText.trim()) return;
+    const result = parseFlightDetails(flightPasteText, airports);
+    const parts: string[] = [];
+
+    if (result.arrival) {
+      if (result.arrival.iataCode) {
+        const matchedAirport = airports.find((a) => a.iataCode === result.arrival!.iataCode);
+        if (matchedAirport) handleSelectAirport(matchedAirport);
+      }
+      if (result.arrival.time) {
+        setData((prev) => ({ ...prev, arrivalTime: result.arrival!.time }));
+      }
+      if (result.arrival.airline || result.arrival.flightNumber) {
+        setData((prev) => ({
+          ...prev,
+          flightDetails: {
+            ...prev.flightDetails,
+            arrival: { airline: result.arrival!.airline, flightNumber: result.arrival!.flightNumber },
+          },
+        }));
+      }
+      parts.push(formatParsedFlight(result.arrival, "arrival"));
+    }
+
+    if (result.departure) {
+      if (result.departure.time) {
+        setData((prev) => ({ ...prev, departureTime: result.departure!.time }));
+      }
+      if (result.departure.iataCode && result.departure.iataCode !== result.arrival?.iataCode) {
+        const exitAirport = airports.find((a) => a.iataCode === result.departure!.iataCode);
+        if (exitAirport) handleSelectExitAirport(exitAirport);
+      }
+      if (result.departure.airline || result.departure.flightNumber) {
+        setData((prev) => ({
+          ...prev,
+          flightDetails: {
+            ...prev.flightDetails,
+            departure: { airline: result.departure!.airline, flightNumber: result.departure!.flightNumber },
+          },
+        }));
+      }
+      parts.push(formatParsedFlight(result.departure, "departure"));
+    }
+
+    if (parts.length > 0) {
+      setFlightParseMessage({ type: "success", text: `Found: ${parts.join(" | ")}` });
+      setShowFlightPaste(false);
+      setFlightPasteText("");
+    } else {
+      setFlightParseMessage({ type: "error", text: "Couldn\u2019t detect flight info. Try entering manually." });
+    }
+  }, [flightPasteText, airports, handleSelectAirport, handleSelectExitAirport, setData]);
 
   const arrivalHint = useMemo(() => {
     const effective = computeEffectiveArrivalStart(data.arrivalTime, data.entryPoint?.iataCode);
@@ -482,7 +540,7 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
             )}
           </AnimatePresence>
 
-          {/* Search + grid */}
+          {/* Flight paste + Search + grid */}
           {!data.entryPoint && !isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -490,6 +548,73 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
               transition={{ delay: 0.2 }}
               className="mt-5"
             >
+              {/* Paste flight details */}
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFlightPaste((v) => !v);
+                    setFlightParseMessage(null);
+                  }}
+                  className="flex items-center gap-1.5 text-xs text-[var(--muted-foreground)] transition-colors hover:text-[var(--foreground)]"
+                >
+                  <ClipboardPaste className="h-3.5 w-3.5" />
+                  {showFlightPaste ? "Hide" : "Or paste your flight details"}
+                </button>
+
+                <AnimatePresence>
+                  {showFlightPaste && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: bEase }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-2">
+                        <textarea
+                          value={flightPasteText}
+                          onChange={(e) => {
+                            setFlightPasteText(e.target.value);
+                            setFlightParseMessage(null);
+                          }}
+                          placeholder={"e.g. NH203 NRT 14:30\nor: Landing Narita 2:30 PM, Departing KIX 18:00"}
+                          rows={3}
+                          className="w-full resize-none rounded-xl border border-[var(--border)] bg-white p-3 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                          style={{ boxShadow: "var(--shadow-sm)" }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleFlightParse}
+                          disabled={!flightPasteText.trim()}
+                          className="mt-2 rounded-xl bg-[var(--primary)]/10 px-4 py-2 text-sm font-medium text-[var(--primary)] transition-colors hover:bg-[var(--primary)]/20 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Auto-fill
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                  {flightParseMessage && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className={`mt-2 text-xs ${
+                        flightParseMessage.type === "success"
+                          ? "flex items-center gap-1 text-[var(--primary)]"
+                          : "text-[var(--muted-foreground)]"
+                      }`}
+                    >
+                      {flightParseMessage.type === "success" && <Check className="h-3.5 w-3.5" />}
+                      {flightParseMessage.text}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Search input */}
               <div className="relative">
                 <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--muted-foreground)]">

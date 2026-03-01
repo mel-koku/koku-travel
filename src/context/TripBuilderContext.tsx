@@ -84,6 +84,8 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     isFirstTimeVisitor: raw.isFirstTimeVisitor === true ? true : undefined,
     customCityOrder: raw.customCityOrder === true ? true : undefined,
     cityDays: sanitizeCityDays(raw.cityDays, normalizedCities, raw.duration),
+    flightDetails: sanitizeFlightDetails(raw.flightDetails),
+    accommodations: sanitizeAccommodations(raw.accommodations, normalizedCities),
   };
 };
 
@@ -133,6 +135,8 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
           dayStartTime: normalizedStored.dayStartTime,
           arrivalTime: normalizedStored.arrivalTime,
           departureTime: normalizedStored.departureTime,
+          flightDetails: normalizedStored.flightDetails,
+          accommodations: normalizedStored.accommodations,
         };
       });
     }
@@ -425,6 +429,63 @@ function sanitizeCityDays(
   if (total !== duration) return undefined;
 
   return { ...cityDays };
+}
+
+/**
+ * Sanitize flightDetails — keep only valid string fields
+ */
+function sanitizeFlightDetails(
+  fd?: TripBuilderData["flightDetails"],
+): TripBuilderData["flightDetails"] | undefined {
+  if (!fd || typeof fd !== "object") return undefined;
+
+  const sanitizeLeg = (leg?: { airline?: string; flightNumber?: string }) => {
+    if (!leg || typeof leg !== "object") return undefined;
+    const airline = typeof leg.airline === "string" ? leg.airline.trim() : undefined;
+    const flightNumber = typeof leg.flightNumber === "string" ? leg.flightNumber.trim() : undefined;
+    if (!airline && !flightNumber) return undefined;
+    return { airline: airline || undefined, flightNumber: flightNumber || undefined };
+  };
+
+  const arrival = sanitizeLeg(fd.arrival);
+  const departure = sanitizeLeg(fd.departure);
+  if (!arrival && !departure) return undefined;
+  return { arrival, departure };
+}
+
+/**
+ * Sanitize accommodations — drop entries for cities not in the current selection
+ */
+function sanitizeAccommodations(
+  accommodations?: TripBuilderData["accommodations"],
+  cities?: CityId[],
+): TripBuilderData["accommodations"] | undefined {
+  if (!accommodations || typeof accommodations !== "object") return undefined;
+  const citySet = new Set(cities ?? []);
+  const result: NonNullable<TripBuilderData["accommodations"]> = {};
+  for (const [cityId, accom] of Object.entries(accommodations)) {
+    if (!citySet.has(cityId)) continue;
+    if (
+      !accom ||
+      typeof accom !== "object" ||
+      typeof accom.name !== "string" ||
+      !accom.name.trim() ||
+      !accom.coordinates ||
+      typeof accom.coordinates.lat !== "number" ||
+      typeof accom.coordinates.lng !== "number"
+    ) {
+      continue;
+    }
+    const lat = accom.coordinates.lat;
+    const lng = accom.coordinates.lng;
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) continue;
+    result[cityId] = {
+      name: accom.name.trim(),
+      coordinates: { lat, lng },
+      placeId: typeof accom.placeId === "string" ? accom.placeId.trim() || undefined : undefined,
+    };
+  }
+  return Object.keys(result).length > 0 ? result : undefined;
 }
 
 function sanitizeDayStartTime(dayStartTime?: string): string | undefined {

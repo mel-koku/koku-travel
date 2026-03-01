@@ -12,9 +12,10 @@ import type { Airport } from "@/app/api/airports/route";
 import { logger } from "@/lib/logger";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
-import { PlaneLanding, Clock } from "lucide-react";
+import { PlaneLanding, Clock, ClipboardPaste, Check } from "lucide-react";
 import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
 import { formatTime12h } from "@/lib/utils/timeUtils";
+import { parseFlightDetails, formatParsedFlight } from "@/lib/utils/flightParser";
 
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
 
@@ -28,6 +29,9 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [exitSearchQuery, setExitSearchQuery] = useState("");
+  const [showFlightPaste, setShowFlightPaste] = useState(false);
+  const [flightPasteText, setFlightPasteText] = useState("");
+  const [flightParseMessage, setFlightParseMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     async function fetchAirports() {
@@ -111,6 +115,76 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
     },
     [setData],
   );
+
+  const handleFlightParse = useCallback(() => {
+    if (!flightPasteText.trim()) return;
+    const result = parseFlightDetails(flightPasteText, airports);
+    const parts: string[] = [];
+
+    if (result.arrival) {
+      // Auto-select airport if matched
+      if (result.arrival.iataCode) {
+        const matchedAirport = airports.find((a) => a.iataCode === result.arrival!.iataCode);
+        if (matchedAirport) {
+          handleSelectAirport(matchedAirport);
+        }
+      }
+      // Set arrival time
+      if (result.arrival.time) {
+        setData((prev) => ({ ...prev, arrivalTime: result.arrival!.time }));
+      }
+      // Store flight details
+      if (result.arrival.airline || result.arrival.flightNumber) {
+        setData((prev) => ({
+          ...prev,
+          flightDetails: {
+            ...prev.flightDetails,
+            arrival: {
+              airline: result.arrival!.airline,
+              flightNumber: result.arrival!.flightNumber,
+            },
+          },
+        }));
+      }
+      parts.push(formatParsedFlight(result.arrival, "arrival"));
+    }
+
+    if (result.departure) {
+      // Set departure time
+      if (result.departure.time) {
+        setData((prev) => ({ ...prev, departureTime: result.departure!.time }));
+      }
+      // Set exit airport if different from arrival
+      if (result.departure.iataCode && result.departure.iataCode !== result.arrival?.iataCode) {
+        const exitAirport = airports.find((a) => a.iataCode === result.departure!.iataCode);
+        if (exitAirport) {
+          handleSelectExitAirport(exitAirport);
+        }
+      }
+      // Store flight details
+      if (result.departure.airline || result.departure.flightNumber) {
+        setData((prev) => ({
+          ...prev,
+          flightDetails: {
+            ...prev.flightDetails,
+            departure: {
+              airline: result.departure!.airline,
+              flightNumber: result.departure!.flightNumber,
+            },
+          },
+        }));
+      }
+      parts.push(formatParsedFlight(result.departure, "departure"));
+    }
+
+    if (parts.length > 0) {
+      setFlightParseMessage({ type: "success", text: `Found: ${parts.join(" | ")}` });
+      setShowFlightPaste(false);
+      setFlightPasteText("");
+    } else {
+      setFlightParseMessage({ type: "error", text: "Couldn\u2019t detect flight info. Try entering manually." });
+    }
+  }, [flightPasteText, airports, handleSelectAirport, handleSelectExitAirport, setData]);
 
   const arrivalHint = useMemo(() => {
     const effective = computeEffectiveArrivalStart(data.arrivalTime, data.entryPoint?.iataCode);
@@ -461,7 +535,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
             )}
           </AnimatePresence>
 
-          {/* Airport search + cards grid */}
+          {/* Flight paste + Airport search + cards grid */}
           {!data.entryPoint && !isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -469,6 +543,74 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
               transition={{ delay: 0.2 }}
               className="mt-5"
             >
+              {/* Paste flight details */}
+              <div className="mb-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFlightPaste((v) => !v);
+                    setFlightParseMessage(null);
+                  }}
+                  className="flex items-center gap-1.5 text-xs text-stone transition-colors hover:text-foreground-secondary"
+                >
+                  <ClipboardPaste className="h-3.5 w-3.5" />
+                  {showFlightPaste ? "Hide" : "Or paste your flight details"}
+                </button>
+
+                <AnimatePresence>
+                  {showFlightPaste && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25, ease: easeReveal }}
+                      className="overflow-hidden"
+                    >
+                      <div className="mt-2">
+                        <textarea
+                          value={flightPasteText}
+                          onChange={(e) => {
+                            setFlightPasteText(e.target.value);
+                            setFlightParseMessage(null);
+                          }}
+                          placeholder={"e.g. NH203 NRT 14:30\nor: Landing Narita 2:30 PM, Departing KIX 18:00"}
+                          rows={3}
+                          className="w-full resize-none rounded-xl border border-border bg-surface p-3 text-base text-foreground placeholder:text-stone focus:border-sage focus:outline-none focus:ring-1 focus:ring-sage"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleFlightParse}
+                          disabled={!flightPasteText.trim()}
+                          className="mt-2 rounded-xl bg-sage/10 px-4 py-2 text-sm font-medium text-sage transition-colors hover:bg-sage/20 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Auto-fill
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Parse result message */}
+                <AnimatePresence>
+                  {flightParseMessage && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className={cn(
+                        "mt-2 text-xs",
+                        flightParseMessage.type === "success"
+                          ? "flex items-center gap-1 text-sage"
+                          : "text-stone",
+                      )}
+                    >
+                      {flightParseMessage.type === "success" && <Check className="h-3.5 w-3.5" />}
+                      {flightParseMessage.text}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Search input — always visible above cards */}
               <div className="relative">
                 <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone">
