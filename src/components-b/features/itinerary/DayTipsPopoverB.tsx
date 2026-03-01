@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
 import type { ItineraryDay } from "@/types/itinerary";
 import { useDayTips } from "./useDayTips";
@@ -17,12 +18,31 @@ export function DayTipsPopoverB({ day, tripStartDate, dayIndex, nextDayActivitie
   const { tips, isLoading } = useDayTips(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
 
-  // Click-outside close (desktop)
+  // Position the fixed popover relative to the trigger button
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPopoverStyle({
+      position: "fixed",
+      top: rect.bottom + 6,
+      right: window.innerWidth - rect.right,
+      zIndex: 50,
+    });
+  }, []);
+
+  // Click-outside close
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (
+        ref.current && !ref.current.contains(target) &&
+        popoverRef.current && !popoverRef.current.contains(target)
+      ) {
         setOpen(false);
       }
     };
@@ -30,12 +50,72 @@ export function DayTipsPopoverB({ day, tripStartDate, dayIndex, nextDayActivitie
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
+  // Reposition on scroll/resize while open
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [open, updatePosition]);
+
   if (isLoading || tips.length === 0) return null;
+
+  const popoverContent = (
+    <>
+      {/* Desktop popover (lg+) — portaled to body */}
+      <div
+        ref={popoverRef}
+        className="hidden w-80 max-h-80 overflow-y-auto rounded-2xl border lg:block"
+        style={{
+          ...popoverStyle,
+          borderColor: "var(--border)",
+          backgroundColor: "var(--card)",
+          boxShadow: "var(--shadow-elevated)",
+        }}
+      >
+        <PopoverContent tips={tips} />
+      </div>
+
+      {/* Mobile bottom sheet (<lg) */}
+      <div
+        className="fixed inset-0 z-30 lg:hidden"
+        style={{ backgroundColor: "color-mix(in srgb, var(--charcoal) 50%, transparent)" }}
+        onClick={() => setOpen(false)}
+      />
+      <div
+        className="fixed inset-x-0 bottom-0 z-40 max-h-[60vh] overflow-y-auto rounded-t-2xl lg:hidden"
+        style={{
+          backgroundColor: "var(--card)",
+          boxShadow: "var(--shadow-elevated)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
+      >
+        <div className="flex justify-center pt-3 pb-1">
+          <div
+            className="h-1 w-8 rounded-full"
+            style={{ backgroundColor: "var(--border)" }}
+          />
+        </div>
+        <div
+          className="px-4 pb-2 text-sm font-semibold"
+          style={{ color: "var(--foreground)" }}
+        >
+          Travel Tips
+        </div>
+        <PopoverContent tips={tips} />
+      </div>
+    </>
+  );
 
   return (
     <div ref={ref} className="relative">
       {/* Trigger pill */}
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex h-7 items-center gap-1 rounded-full px-2 text-[11px] font-semibold transition-colors active:scale-[0.98] bg-[color-mix(in_srgb,var(--primary)_8%,transparent)] hover:bg-[color-mix(in_srgb,var(--primary)_16%,transparent)]"
@@ -46,49 +126,9 @@ export function DayTipsPopoverB({ day, tripStartDate, dayIndex, nextDayActivitie
         <span>{tips.length}</span>
       </button>
 
-      {/* Desktop popover (lg+) */}
-      {open && (
-        <>
-          <div
-            className="absolute right-0 top-full z-30 mt-1.5 hidden w-80 max-h-80 overflow-y-auto rounded-2xl border lg:block"
-            style={{
-              borderColor: "var(--border)",
-              backgroundColor: "var(--card)",
-              boxShadow: "var(--shadow-elevated)",
-            }}
-          >
-            <PopoverContent tips={tips} />
-          </div>
-
-          {/* Mobile bottom sheet (<lg) */}
-          <div
-            className="fixed inset-0 z-30 lg:hidden"
-            style={{ backgroundColor: "color-mix(in srgb, var(--charcoal) 50%, transparent)" }}
-            onClick={() => setOpen(false)}
-          />
-          <div
-            className="fixed inset-x-0 bottom-0 z-40 max-h-[60vh] overflow-y-auto rounded-t-2xl lg:hidden"
-            style={{
-              backgroundColor: "var(--card)",
-              boxShadow: "var(--shadow-elevated)",
-              paddingBottom: "env(safe-area-inset-bottom)",
-            }}
-          >
-            <div className="flex justify-center pt-3 pb-1">
-              <div
-                className="h-1 w-8 rounded-full"
-                style={{ backgroundColor: "var(--border)" }}
-              />
-            </div>
-            <div
-              className="px-4 pb-2 text-sm font-semibold"
-              style={{ color: "var(--foreground)" }}
-            >
-              Travel Tips
-            </div>
-            <PopoverContent tips={tips} />
-          </div>
-        </>
+      {open && createPortal(
+        popoverContent,
+        document.querySelector("[data-variant='b']") ?? document.body,
       )}
     </div>
   );

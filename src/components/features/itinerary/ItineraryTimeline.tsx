@@ -717,13 +717,6 @@ export const ItineraryTimeline = ({
             tripId={isReadOnly ? undefined : tripId}
             builderData={tripBuilderData}
             itinerary={model}
-            onRefineDay={isReadOnly ? undefined : (refinedDay) => {
-              setModel((current) => {
-                const nextDays = [...current.days];
-                nextDays[dayIndex] = refinedDay;
-                return { ...current, days: nextDays };
-              });
-            }}
             suggestions={isReadOnly ? undefined : suggestions}
             onAcceptSuggestion={isReadOnly ? undefined : onAcceptSuggestion}
             onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}

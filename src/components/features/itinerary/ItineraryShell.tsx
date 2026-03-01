@@ -12,10 +12,12 @@ import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
 import { useAppState } from "@/state/AppState";
-import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
+import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import { DaySelector } from "./DaySelector";
+import { LocationSearchBar } from "./LocationSearchBar";
+import { DayRefinementButtons } from "./DayRefinementButtons";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { WhatsNextCard } from "./WhatsNextCard";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
@@ -98,7 +100,7 @@ export const ItineraryShell = ({
   onFilterChange,
   isPreviewLoading,
 }: ItineraryShellProps) => {
-  const { reorderActivities, replaceActivity, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
+  const { reorderActivities, replaceActivity, addActivity, getTripById, dayEntryPoints, cityAccommodations, setDayEntryPoint, setCityAccommodation, undo, redo, canUndo, canRedo } = useAppState();
 
   // Planning hook — model state, travel-time replanning, route optimization
   const {
@@ -401,6 +403,43 @@ export const ItineraryShell = ({
     setExpandedLocation(null);
   }, []);
 
+  // ── Add activity from location search ──
+  const handleAddSearchedActivity = useCallback(
+    (newActivity: Extract<ItineraryActivity, { kind: "place" }>) => {
+      if (!tripId || isUsingMock || !currentDay) return;
+
+      addActivity(tripId, currentDay.id, newActivity);
+
+      const nextDays = model.days.map((d) => {
+        if (d.id !== currentDay.id) return d;
+        return { ...d, activities: [...d.activities, newActivity] };
+      });
+      const nextItinerary = { ...model, days: nextDays };
+
+      setModelState(nextItinerary);
+
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
+    },
+    [tripId, isUsingMock, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
+  );
+
+  // ── Refine day (Adjust button) ──
+  const handleRefineDay = useCallback(
+    (refinedDay: ItineraryDay) => {
+      const nextItinerary = {
+        ...model,
+        days: model.days.map((d, i) => (i === safeSelectedDay ? refinedDay : d)),
+      };
+      setModelState(nextItinerary);
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
+    },
+    [model, safeSelectedDay, setModelState, scheduleUserPlanningRef],
+  );
+
   // Activity ratings
   const activityRatingsHook = useActivityRatings(tripId && !isUsingMock && !isReadOnly ? tripId : undefined);
   useEffect(() => {
@@ -576,6 +615,26 @@ export const ItineraryShell = ({
               <p className="text-xs text-foreground-secondary">
                 * Check <button type="button" onClick={() => setShowDashboard(true)} className="underline hover:text-foreground transition-colors">Overview</button> for reservations and pre-trip to-dos.
               </p>
+            )}
+            {/* Location search bar + Adjust */}
+            {!isReadOnly && !isUsingMock && currentDay && (
+              <div className="mt-2 flex items-start gap-2">
+                <div className="min-w-0 flex-1">
+                  <LocationSearchBar
+                    dayActivities={currentDay.activities}
+                    onAddActivity={handleAddSearchedActivity}
+                  />
+                </div>
+                {tripId && (
+                  <DayRefinementButtons
+                    dayIndex={safeSelectedDay}
+                    tripId={tripId}
+                    builderData={tripBuilderData}
+                    itinerary={model}
+                    onRefine={handleRefineDay}
+                  />
+                )}
+              </div>
             )}
           </div>
 
