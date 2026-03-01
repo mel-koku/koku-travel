@@ -106,8 +106,8 @@ export function DayRefinementButtons({
       });
 
       if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: "Couldn't adjust this day \u2014 try again." }));
-        throw new Error(error.message ?? "Couldn't adjust this day \u2014 try again.");
+        const errorData = await response.json().catch(() => ({ error: "Couldn't adjust this day \u2014 try again." }));
+        throw new Error(errorData.error ?? "Couldn't adjust this day \u2014 try again.");
       }
 
       const data = await response.json();
