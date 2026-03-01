@@ -131,7 +131,15 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
       })
     ).then((results) => {
       if (!cancelled) {
-        setGuidanceGaps(results.flat());
+        // Deduplicate across days — keep only the first occurrence of each guidance tip
+        const seen = new Set<string>();
+        const deduped = results.flat().filter((gap) => {
+          const gId = gap.action && "guidanceId" in gap.action ? gap.action.guidanceId : gap.id;
+          if (seen.has(gId)) return false;
+          seen.add(gId);
+          return true;
+        });
+        setGuidanceGaps(deduped);
       }
     });
 
