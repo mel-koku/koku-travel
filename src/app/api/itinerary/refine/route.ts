@@ -208,6 +208,9 @@ export async function POST(request: NextRequest) {
       dayIndex: z.number().int().min(0).max(30).optional(),
       tripId: z.string().max(255).regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters").optional(),
       builderData: tripBuilderDataSchema.partial().strip().optional(), // Partial TripBuilderData with proper validation
+      itinerary: z.object({
+        days: z.array(z.object({}).passthrough()).min(1),
+      }).passthrough().optional(), // Legacy format: full itinerary for refinement
     }).strip(); // Silently drop unknown fields for security
     
     const bodyValidation = await validateRequestBody(
