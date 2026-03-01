@@ -12,7 +12,9 @@ import type { Airport } from "@/app/api/airports/route";
 import { logger } from "@/lib/logger";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
-import { PlaneLanding } from "lucide-react";
+import { PlaneLanding, Clock } from "lucide-react";
+import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
+import { formatTime12h } from "@/lib/utils/timeUtils";
 
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
 
@@ -61,7 +63,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   );
 
   const handleClear = useCallback(() => {
-    setData((prev) => ({ ...prev, entryPoint: undefined, exitPoint: undefined, sameAsEntry: undefined }));
+    setData((prev) => ({ ...prev, entryPoint: undefined, exitPoint: undefined, sameAsEntry: undefined, arrivalTime: undefined, departureTime: undefined }));
   }, [setData]);
 
   const handleSelectExitAirport = useCallback(
@@ -95,6 +97,35 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   const handleClearExit = useCallback(() => {
     setData((prev) => ({ ...prev, exitPoint: undefined, sameAsEntry: false }));
   }, [setData]);
+
+  const handleArrivalTimeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setData((prev) => ({ ...prev, arrivalTime: e.target.value || undefined }));
+    },
+    [setData],
+  );
+
+  const handleDepartureTimeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setData((prev) => ({ ...prev, departureTime: e.target.value || undefined }));
+    },
+    [setData],
+  );
+
+  const arrivalHint = useMemo(() => {
+    const effective = computeEffectiveArrivalStart(data.arrivalTime, data.entryPoint?.iataCode);
+    if (!effective) return null;
+    return formatTime12h(effective);
+  }, [data.arrivalTime, data.entryPoint?.iataCode]);
+
+  const departureHint = useMemo(() => {
+    const exitIata = data.sameAsEntry !== false
+      ? data.entryPoint?.iataCode
+      : (data.exitPoint?.iataCode ?? data.entryPoint?.iataCode);
+    const effective = computeEffectiveDepartureEnd(data.departureTime, exitIata);
+    if (!effective) return null;
+    return formatTime12h(effective);
+  }, [data.departureTime, data.entryPoint?.iataCode, data.exitPoint?.iataCode, data.sameAsEntry]);
 
   const topAirports = useMemo(() => {
     return TOP_AIRPORT_CODES
@@ -196,6 +227,34 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                     {sanityConfig?.entryPointChangeText ?? "Change"}
                   </button>
                 </div>
+
+                {/* Arrival time */}
+                <div className="mt-3 flex items-center gap-3 border-t border-sage/10 pt-3">
+                  <Clock className="h-4 w-4 shrink-0 text-stone" />
+                  <div className="flex flex-1 items-center gap-2">
+                    <label className="text-xs text-stone whitespace-nowrap">Landing at</label>
+                    <input
+                      type="time"
+                      value={data.arrivalTime ?? ""}
+                      onChange={handleArrivalTimeChange}
+                      className="h-9 w-[7rem] rounded-lg border border-border bg-background px-2 text-base text-foreground focus:border-sage focus:outline-none focus:ring-1 focus:ring-sage"
+                    />
+                    {data.arrivalTime && (
+                      <button
+                        type="button"
+                        onClick={() => setData((prev) => ({ ...prev, arrivalTime: undefined }))}
+                        className="text-xs text-stone hover:text-foreground-secondary"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {arrivalHint && (
+                  <p className="mt-1.5 pl-7 text-xs text-sage">
+                    First activity starts around {arrivalHint}
+                  </p>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -369,6 +428,34 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                       </motion.div>
                     )}
                   </AnimatePresence>
+
+                  {/* Departure time */}
+                  <div className="mt-4 flex items-center gap-3">
+                    <Clock className="h-4 w-4 shrink-0 text-stone" />
+                    <div className="flex flex-1 items-center gap-2">
+                      <label className="text-xs text-stone whitespace-nowrap">Departing at</label>
+                      <input
+                        type="time"
+                        value={data.departureTime ?? ""}
+                        onChange={handleDepartureTimeChange}
+                        className="h-9 w-[7rem] rounded-lg border border-border bg-background px-2 text-base text-foreground focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                      />
+                      {data.departureTime && (
+                        <button
+                          type="button"
+                          onClick={() => setData((prev) => ({ ...prev, departureTime: undefined }))}
+                          className="text-xs text-stone hover:text-foreground-secondary"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {departureHint && (
+                    <p className="mt-1.5 pl-7 text-xs text-brand-primary">
+                      Last activity wraps up around {departureHint}
+                    </p>
+                  )}
                 </div>
               </motion.div>
             )}

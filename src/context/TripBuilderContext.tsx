@@ -36,6 +36,8 @@ const createDefaultData = (): TripBuilderData => ({
   sameAsEntry: undefined,
   accessibility: undefined,
   dayStartTime: undefined,
+  arrivalTime: undefined,
+  departureTime: undefined,
 });
 
 const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
@@ -53,6 +55,8 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedRegions = sanitizeRegions(raw.regions);
   const normalizedCities = sanitizeCities(raw.cities);
   const normalizedDayStartTime = sanitizeDayStartTime(raw.dayStartTime);
+  const normalizedArrivalTime = sanitizeDayStartTime(raw.arrivalTime);
+  const normalizedDepartureTime = sanitizeDayStartTime(raw.departureTime);
   // Only include known TripBuilderData fields — never spread ...raw
   // to prevent stale localStorage keys from reaching .strict() schema validation
   return {
@@ -75,6 +79,8 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     weatherPreferences: raw.weatherPreferences ?? base.weatherPreferences,
     travelerProfile: raw.travelerProfile ?? base.travelerProfile,
     dayStartTime: normalizedDayStartTime,
+    arrivalTime: normalizedArrivalTime,
+    departureTime: normalizedDepartureTime,
     isFirstTimeVisitor: raw.isFirstTimeVisitor === true ? true : undefined,
     customCityOrder: raw.customCityOrder === true ? true : undefined,
     cityDays: sanitizeCityDays(raw.cityDays, normalizedCities, raw.duration),
@@ -125,6 +131,8 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
           sameAsEntry: normalizedStored.sameAsEntry,
           accessibility: normalizedStored.accessibility,
           dayStartTime: normalizedStored.dayStartTime,
+          arrivalTime: normalizedStored.arrivalTime,
+          departureTime: normalizedStored.departureTime,
         };
       });
     }

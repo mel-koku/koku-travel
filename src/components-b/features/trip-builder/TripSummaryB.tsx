@@ -5,6 +5,7 @@ import { Calendar, MapPin, Plane, Compass } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { VIBES, type VibeId } from "@/data/vibes";
+import { formatTime12h } from "@/lib/utils/timeUtils";
 import { deriveRegionsFromCities } from "@/data/regions";
 import { optimizeCitySequence } from "@/lib/routing/citySequence";
 import { computeDefaultCityDays, redistributeOnRemove } from "@/lib/tripBuilder/cityDayAllocation";
@@ -135,13 +136,13 @@ export function TripSummaryB({
       icon: Plane,
       label: "Flights",
       value: data.entryPoint
-        ? `In: ${data.entryPoint.name} [${data.entryPoint.iataCode}] · Out: ${
+        ? `In: ${data.entryPoint.name} [${data.entryPoint.iataCode}]${data.arrivalTime ? ` · Landing ${formatTime12h(data.arrivalTime)}` : ""} · Out: ${
             data.sameAsEntry !== false
               ? "Same airport"
               : data.exitPoint
                 ? `${data.exitPoint.name} [${data.exitPoint.iataCode}]`
                 : "Same airport"
-          }`
+          }${data.departureTime ? ` · Departing ${formatTime12h(data.departureTime)}` : ""}`
         : "Not set",
       onEdit: onEditEntryPoint,
     },
