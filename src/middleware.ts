@@ -15,6 +15,7 @@ const PUBLIC_API_ROUTES = [
   "/api/health",
   "/api/chat",
   "/api/itinerary/plan",
+  "/api/itinerary/schedule",
   "/api/itinerary/refine",
   "/api/itinerary/availability",
   "/api/routing",
