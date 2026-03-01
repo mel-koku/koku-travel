@@ -30,6 +30,7 @@ type DisplayTip = {
   id: string;
   title: string;
   summary: string;
+  content?: string;
   icon: string;
 };
 
@@ -57,14 +58,23 @@ function toDisplayTip(tip: TravelGuidance): DisplayTip {
     id: tip.id,
     title: tip.title,
     summary: tip.summary,
+    content: tip.content,
     icon: tip.icon ?? GUIDANCE_TYPE_ICONS[tip.guidanceType] ?? "💡",
   };
 }
+
+/** Keywords used to detect DB tips that overlap with hardcoded pro tips. */
+const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
+  "pro-ic-card": ["ic card", "suica", "pasmo"],
+  "pro-city-transition": ["takkyubin", "luggage forwarding"],
+  "pro-last-train": ["last train"],
+};
 
 export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt }: DayTipsProps) {
   const [dbTips, setDbTips] = useState<TravelGuidance[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [expandedTipId, setExpandedTipId] = useState<string | null>(null);
 
   // Extract unique location categories from the day's activities
   const dayCategories = useMemo(() => {
@@ -299,11 +309,22 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     return tips;
   }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt]);
 
-  // Combined display list
-  const allTips = useMemo<DisplayTip[]>(
-    () => [...proTips, ...dbTips.map(toDisplayTip)],
-    [proTips, dbTips],
-  );
+  // Combined display list — dedup DB tips that overlap with active pro tips
+  const allTips = useMemo<DisplayTip[]>(() => {
+    const activeProIds = new Set(proTips.map((p) => p.id));
+    const dedupedDb = dbTips.filter((tip) => {
+      const titleLower = tip.title.toLowerCase();
+      const summaryLower = tip.summary.toLowerCase();
+      for (const [proId, keywords] of Object.entries(PRO_TIP_DEDUP_KEYWORDS)) {
+        if (!activeProIds.has(proId)) continue;
+        if (keywords.some((kw) => titleLower.includes(kw) || summaryLower.includes(kw))) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return [...proTips, ...dedupedDb.map(toDisplayTip)];
+  }, [proTips, dbTips]);
 
   // Report tip count to parent
   useEffect(() => {
@@ -326,7 +347,8 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     return allTips.map((tip) => (
       <div
         key={tip.id}
-        className="flex items-start gap-2 rounded-xl bg-background/70 p-2"
+        className={`flex items-start gap-2 rounded-xl bg-background/70 p-2${tip.content ? " cursor-pointer" : ""}`}
+        onClick={tip.content ? () => setExpandedTipId(expandedTipId === tip.id ? null : tip.id) : undefined}
       >
         <span className="shrink-0 text-base">
           {tip.icon}
@@ -338,7 +360,20 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
           <p className="mt-0.5 text-xs leading-relaxed text-foreground-secondary">
             {tip.summary}
           </p>
+          {tip.content && expandedTipId === tip.id && (
+            <p className="mt-1.5 border-t border-border/50 pt-1.5 text-xs leading-relaxed text-foreground-secondary/80">
+              {tip.content}
+            </p>
+          )}
         </div>
+        {tip.content && (
+          <svg
+            className={`mt-0.5 h-3 w-3 shrink-0 text-foreground-secondary/50 transition-transform ${expandedTipId === tip.id ? "rotate-180" : ""}`}
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        )}
       </div>
     ));
   };

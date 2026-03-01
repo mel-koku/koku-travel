@@ -12,6 +12,7 @@ export type DisplayTip = {
   id: string;
   title: string;
   summary: string;
+  content?: string;
   icon: string;
 };
 
@@ -38,9 +39,17 @@ function toDisplayTip(tip: TravelGuidance): DisplayTip {
     id: tip.id,
     title: tip.title,
     summary: tip.summary,
+    content: tip.content,
     icon: tip.icon ?? GUIDANCE_TYPE_ICONS[tip.guidanceType] ?? "\uD83D\uDCA1",
   };
 }
+
+/** Keywords used to detect DB tips that overlap with hardcoded pro tips. */
+const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
+  "pro-ic-card": ["ic card", "suica", "pasmo"],
+  "pro-city-transition": ["takkyubin", "luggage forwarding"],
+  "pro-last-train": ["last train"],
+};
 
 export function useDayTips(
   day: ItineraryDay,
@@ -270,10 +279,22 @@ export function useDayTips(
     return tips;
   }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt]);
 
-  const allTips = useMemo<DisplayTip[]>(
-    () => [...proTips, ...dbTips.map(toDisplayTip)],
-    [proTips, dbTips],
-  );
+  // Combined display list — dedup DB tips that overlap with active pro tips
+  const allTips = useMemo<DisplayTip[]>(() => {
+    const activeProIds = new Set(proTips.map((p) => p.id));
+    const dedupedDb = dbTips.filter((tip) => {
+      const titleLower = tip.title.toLowerCase();
+      const summaryLower = tip.summary.toLowerCase();
+      for (const [proId, keywords] of Object.entries(PRO_TIP_DEDUP_KEYWORDS)) {
+        if (!activeProIds.has(proId)) continue;
+        if (keywords.some((kw) => titleLower.includes(kw) || summaryLower.includes(kw))) {
+          return false;
+        }
+      }
+      return true;
+    });
+    return [...proTips, ...dedupedDb.map(toDisplayTip)];
+  }, [proTips, dbTips]);
 
   return { tips: allTips, isLoading };
 }
