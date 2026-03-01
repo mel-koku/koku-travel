@@ -3,19 +3,14 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import { Location } from "@/types/location";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
-import type { InputMode } from "./CategoryBar";
 import { useAllLocationsSingle, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
 import type { PagesContent } from "@/types/sanitySiteContent";
-import { useVideoImport } from "@/hooks/useVideoImport";
-import { isValidVideoUrl, detectPlatform } from "@/lib/video/platforms";
 
 import { SeasonalBanner } from "./SeasonalBanner";
-import { useToast } from "@/context/ToastContext";
 import type { VibeId } from "@/data/vibes";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
@@ -71,7 +66,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
   } = useAllLocationsSingle();
   const { data: filterMetadata } = useFilterMetadataQuery();
 
-  // Filter + sort + pagination state extracted to hook
   const {
     query, setQuery,
     selectedPrefectures, setSelectedPrefectures,
@@ -103,98 +97,23 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
-  const { showToast } = useToast();
-
-  // ── Unified input state ────────────────────────────────────────────
+  // ── Search input state ──
   const [inputValue, setInputValue] = useState("");
 
-  const [pendingLocationId, setPendingLocationId] = useState<string | null>(null);
-
-  const {
-    state: importState,
-    hintValue: importHintValue,
-    setHintValue: setImportHintValue,
-    handleImport,
-    handleRetryWithHint,
-    reset: resetImport,
-  } = useVideoImport({
-    onImportComplete: (locationId, isNew) => {
-      showToast(
-        isNew ? "New location added to Koku" : "Found in Koku",
-        { variant: "success" },
-      );
-      // Reset input so user can search or import again
-      resetImport();
-      setInputValue("");
-      const match = locations?.find((loc) => loc.id === locationId);
-      if (match) {
-        setExpandedLocation(match);
-        setFlyToLocation(match);
-      } else {
-        setPendingLocationId(locationId);
-      }
-    },
-  });
-
-  // Navigate to the location page when the location isn't in the current dataset
+  // Sync input → search query
   useEffect(() => {
-    if (pendingLocationId) {
-      window.location.href = `/places?location=${pendingLocationId}`;
-    }
-  }, [pendingLocationId]);
-
-  // Derive input mode from URL detection + import state
-  const detectedPlatform = useMemo(
-    () => detectPlatform(inputValue.trim()),
-    [inputValue],
-  );
-  const inputMode: InputMode = useMemo(() => {
-    if (importState.status === "extracting") return "extracting";
-    if (detectedPlatform) return "url-detected";
-    return "search";
-  }, [importState.status, detectedPlatform]);
-
-  // Sync input → search query (only when in search mode)
-  useEffect(() => {
-    if (inputMode === "search") {
-      setQuery(inputValue);
-    } else {
-      // Clear search filter while in URL mode
-      setQuery("");
-    }
-  }, [inputValue, inputMode, setQuery]);
+    setQuery(inputValue);
+  }, [inputValue, setQuery]);
 
   const handleInputChange = (value: string) => {
-    // If user clears the input, also reset any import error state
-    if (!value.trim() && importState.status === "error") {
-      resetImport();
-    }
     setInputValue(value);
   };
 
-  const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const text = e.clipboardData.getData("text").trim();
-    if (text && isValidVideoUrl(text)) {
-      e.preventDefault();
-      setInputValue(text);
-      handleImport(text);
-    }
-  };
-
   const handleInputSubmit = () => {
-    const trimmed = inputValue.trim();
-    if (trimmed && isValidVideoUrl(trimmed)) {
-      handleImport(trimmed);
-    }
-    // For search mode, no-op — search is already live via useEffect
+    // Search is live via useEffect — no-op on submit
   };
 
-  const handleTryAnother = () => {
-    resetImport();
-    setInputValue("");
-  };
-
-  // Auto-open location from ?location= URL param (e.g. from video import "View" button)
+  // Auto-open location from ?location= URL param
   const searchParams = useSearchParams();
   const locationParam = searchParams.get("location");
   const didAutoExpandRef = useRef(false);
@@ -208,7 +127,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
       setExpandedLocation(match);
       setFlyToLocation(match);
       didAutoExpandRef.current = true;
-      // Clean the URL param so back-navigation doesn't re-trigger
       window.history.replaceState(null, "", "/places");
     }
   }, [locationParam, locations]);
@@ -241,7 +159,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
     setExpandedLocation(null);
   }, []);
 
-  // Determine active category for interstitials (null when using vibe filters)
   const activeCategory = null;
 
   const mapAvailable = useMemo(
@@ -251,7 +168,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
   return (
     <div className="min-h-[100dvh] bg-background">
-      {/* Typographic Intro — always renders immediately for entrance animation */}
       <PlacesIntro totalCount={total} content={content} />
 
       {/* Error state */}
@@ -277,7 +193,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
         </div>
       ) : (
       <>
-      {/* Sticky Category Bar */}
       <CategoryBar
         onFiltersClick={() => setIsFilterPanelOpen(true)}
         activeFilterCount={activeFilterCount}
@@ -286,57 +201,10 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onClearAllFilters={clearAllFilters}
         inputValue={inputValue}
         onInputChange={handleInputChange}
-        onInputPaste={handleInputPaste}
         onInputSubmit={handleInputSubmit}
-        inputMode={inputMode}
-        detectedPlatform={detectedPlatform}
         onAskKokuClick={() => setIsChatOpen(true)}
         isChatOpen={isChatOpen}
       />
-
-      {/* Import feedback — shown below CategoryBar */}
-      {importState.status === "extracting" && (
-        <div className="mx-auto max-w-sm px-4 mt-3">
-          <div className="flex items-center gap-2 text-sm text-foreground-secondary">
-            <Loader2 className="h-4 w-4 animate-spin text-brand-primary" />
-            <span>Identifying location...</span>
-          </div>
-        </div>
-      )}
-
-      {importState.status === "error" && (
-        <div className="mx-auto max-w-sm px-4 mt-3 space-y-2.5">
-          <p className="text-sm text-error">{importState.message}</p>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={importHintValue}
-              onChange={(e) => setImportHintValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleRetryWithHint();
-              }}
-              placeholder="e.g. ramen shop in Shibuya"
-              maxLength={200}
-              className="flex-1 rounded-xl border border-border bg-surface/50 px-3 py-2 text-base text-foreground placeholder:text-stone focus:border-brand-primary/50 focus:outline-none focus:ring-1 focus:ring-brand-primary/20 transition"
-            />
-            <button
-              type="button"
-              onClick={handleRetryWithHint}
-              disabled={!importHintValue.trim()}
-              className="shrink-0 rounded-xl bg-brand-primary px-3 py-2 text-sm font-medium text-white hover:bg-brand-primary/90 transition active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              Retry
-            </button>
-          </div>
-          <button
-            type="button"
-            onClick={handleTryAnother}
-            className="text-xs font-medium text-stone underline underline-offset-2 hover:text-foreground-secondary"
-          >
-            Try another URL
-          </button>
-        </div>
-      )}
 
       {/* Seasonal banner */}
       <div className="mt-3">
@@ -349,7 +217,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
       {/* Breathing room between search bar and content */}
       <div className="h-4 sm:h-6" aria-hidden="true" />
 
-      {/* Main Content — Map starts loading tiles immediately, cards show skeleton until data arrives */}
+      {/* Main Content */}
       {mapAvailable ? (
         <PlacesMapLayout
           filteredLocations={filteredLocations}
@@ -375,7 +243,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
         </div>
       ) : (
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          {/* Editorial Grid */}
           <LocationEditorialGrid
             locations={visibleLocations}
             onSelect={handleSelectLocation}
@@ -383,7 +250,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
             activeCategory={activeCategory}
           />
 
-          {/* Progressive loading sentinel */}
           {hasMore && (
             <div ref={sentinelRef} className="py-8 flex justify-center">
               <div className="h-[2px] w-32 bg-brand-primary/30 rounded-full overflow-hidden">
@@ -392,7 +258,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
             </div>
           )}
 
-          {/* End state */}
           {!hasMore && visibleLocations.length > 0 && (
             <div className="py-16 text-center">
               <p className="font-serif italic text-lg text-stone">
@@ -403,7 +268,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
         </main>
       )}
 
-      {/* Filter Panel (right slide) */}
+      {/* Filter Panel */}
       <FilterPanel
         isOpen={isFilterPanelOpen}
         onClose={() => setIsFilterPanelOpen(false)}
@@ -442,6 +307,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
           onClose={handleCloseExpanded}
         />
       )}
+
       </>
       )}
     </div>

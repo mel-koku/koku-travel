@@ -4,19 +4,15 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
-import { Loader2 } from "lucide-react";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBarB } from "./CategoryBarB";
-import type { InputMode } from "./CategoryBarB";
 import { useAllLocationsSingle, useFilterMetadataQuery } from "@/hooks/useLocationsQuery";
 import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePlacesFilters";
 import type { PagesContent } from "@/types/sanitySiteContent";
 import type { Location } from "@/types/location";
-import { useVideoImport } from "@/hooks/useVideoImport";
-import { isValidVideoUrl, detectPlatform } from "@/lib/video/platforms";
 
 import { SeasonalBanner } from "@/components/features/places/SeasonalBanner";
-import { useToast } from "@/context/ToastContext";
+
 import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
 import type { VibeId } from "@/data/vibes";
 
@@ -136,7 +132,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
   );
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const { showToast } = useToast();
+
 
   // ── Category tab counts ──
   const categoryCounts = useMemo(() => {
@@ -172,73 +168,20 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     });
   }, [sortedLocations, selectedCategory]);
 
-  // ── Unified input state ──
+  // ── Search input state ──
   const [inputValue, setInputValue] = useState("");
 
-  const {
-    state: importState,
-    hintValue: importHintValue,
-    setHintValue: setImportHintValue,
-    handleImport,
-    handleRetryWithHint,
-    reset: resetImport,
-  } = useVideoImport({
-    onImportComplete: (locationId, isNew) => {
-      showToast(
-        isNew ? "New location added to Koku" : "Found in Koku",
-        { variant: "success" },
-      );
-      // Reset input so user can search or import again
-      resetImport();
-      setInputValue("");
-      router.push(`/b/places/${locationId}`);
-    },
-  });
-
-  const detectedPlatform = useMemo(
-    () => detectPlatform(inputValue.trim()),
-    [inputValue],
-  );
-  const inputMode: InputMode = useMemo(() => {
-    if (importState.status === "extracting") return "extracting";
-    if (detectedPlatform) return "url-detected";
-    return "search";
-  }, [importState.status, detectedPlatform]);
-
+  // Sync input → search query
   useEffect(() => {
-    if (inputMode === "search") {
-      setQuery(inputValue);
-    } else {
-      setQuery("");
-    }
-  }, [inputValue, inputMode, setQuery]);
+    setQuery(inputValue);
+  }, [inputValue, setQuery]);
 
   const handleInputChange = (value: string) => {
-    if (!value.trim() && importState.status === "error") {
-      resetImport();
-    }
     setInputValue(value);
   };
 
-  const handleInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const text = e.clipboardData.getData("text").trim();
-    if (text && isValidVideoUrl(text)) {
-      e.preventDefault();
-      setInputValue(text);
-      handleImport(text);
-    }
-  };
-
   const handleInputSubmit = () => {
-    const trimmed = inputValue.trim();
-    if (trimmed && isValidVideoUrl(trimmed)) {
-      handleImport(trimmed);
-    }
-  };
-
-  const handleTryAnother = () => {
-    resetImport();
-    setInputValue("");
+    // Search is live via useEffect — no-op on submit
   };
 
   // ── Slug maps for clean ?location= URLs ──
@@ -355,10 +298,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             onClearAllFilters={clearAllFilters}
             inputValue={inputValue}
             onInputChange={handleInputChange}
-            onInputPaste={handleInputPaste}
             onInputSubmit={handleInputSubmit}
-            inputMode={inputMode}
-            detectedPlatform={detectedPlatform}
             tabs={categoryTabs}
             activeTab={selectedCategory}
             onTabChange={setSelectedCategory}
@@ -366,50 +306,6 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             onViewModeChange={setViewMode}
             mapAvailable={mapAvailable}
           />
-
-          {/* Import feedback */}
-          {importState.status === "extracting" && (
-            <div className="mx-auto max-w-sm px-4 mt-3">
-              <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
-                <Loader2 className="h-4 w-4 animate-spin text-[var(--primary)]" />
-                <span>Identifying location...</span>
-              </div>
-            </div>
-          )}
-
-          {importState.status === "error" && (
-            <div className="mx-auto max-w-sm px-4 mt-3 space-y-2.5">
-              <p className="text-sm text-[var(--error)]">{importState.message}</p>
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={importHintValue}
-                  onChange={(e) => setImportHintValue(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleRetryWithHint();
-                  }}
-                  placeholder="e.g. ramen shop in Shibuya"
-                  maxLength={200}
-                  className="flex-1 rounded-xl border border-[var(--border)] bg-white px-3 py-2 text-base sm:text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/20 transition"
-                />
-                <button
-                  type="button"
-                  onClick={handleRetryWithHint}
-                  disabled={!importHintValue.trim()}
-                  className="shrink-0 rounded-xl bg-[var(--primary)] px-3 py-2 text-sm font-medium text-white hover:bg-[var(--brand-secondary)] transition active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Retry
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={handleTryAnother}
-                className="text-xs font-medium text-[var(--muted-foreground)] underline underline-offset-2 hover:text-[var(--foreground)]"
-              >
-                Try another URL
-              </button>
-            </div>
-          )}
 
           {/* Main content — grid or map based on viewMode */}
           {viewMode === "grid" ? (
@@ -489,6 +385,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             selectedSort={selectedSort}
             onSortChange={setSelectedSort}
           />
+
         </>
       )}
     </div>
