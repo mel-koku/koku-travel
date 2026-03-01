@@ -68,7 +68,7 @@ export function AccommodationPickerB({
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="flex items-center gap-1.5 rounded-xl border border-dashed px-3 py-1.5 text-xs font-medium transition-all hover:border-[var(--primary)] hover:text-[var(--primary)]"
+          className="flex items-center gap-1.5 rounded-xl border border-dashed px-3 py-1.5 text-xs font-semibold transition-all hover:border-[var(--primary)] hover:text-[var(--primary)]"
           style={{
             borderColor: "var(--border)",
             color: "var(--muted-foreground)",

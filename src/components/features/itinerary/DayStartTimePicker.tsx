@@ -4,10 +4,10 @@ import { useCallback, useMemo } from "react";
 import { Dropdown } from "@/components/ui/Dropdown";
 
 const DAY_START_OPTIONS = [
-  { value: "08:00", label: "8:00 AM" },
-  { value: "09:00", label: "9:00 AM" },
-  { value: "10:00", label: "10:00 AM" },
-  { value: "11:00", label: "11:00 AM" },
+  { value: "08:00", label: "08:00" },
+  { value: "09:00", label: "09:00" },
+  { value: "10:00", label: "10:00" },
+  { value: "11:00", label: "11:00" },
 ] as const;
 
 type DayStartTimePickerProps = {
@@ -16,18 +16,14 @@ type DayStartTimePickerProps = {
 };
 
 /**
- * Formats a 24-hour time string (HH:MM) to 12-hour format (e.g., "9:00 AM")
+ * Formats a time string to 24-hour display (e.g., "09:00")
  */
 function formatTime(time: string): string {
   const match = time.match(/^(\d{1,2}):(\d{2})$/);
   if (!match) return time;
-
   const hours = Number.parseInt(match[1] || "0", 10);
   const minutes = match[2] || "00";
-  const period = hours >= 12 ? "PM" : "AM";
-  const hour12 = hours === 0 ? 12 : hours > 12 ? hours - 12 : hours;
-
-  return `${hour12}:${minutes} ${period}`;
+  return `${hours.toString().padStart(2, "0")}:${minutes}`;
 }
 
 export function DayStartTimePicker({ currentTime, onChange }: DayStartTimePickerProps) {
