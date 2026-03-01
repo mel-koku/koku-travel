@@ -257,7 +257,7 @@ export async function generateItinerary(
     : 1.0;
 
   const citySequence = resolveCitySequence(data, locationsByCityKey, allLocations);
-  const expandedCitySequence = expandCitySequenceForDays(citySequence, totalDays);
+  const expandedCitySequence = expandCitySequenceForDays(citySequence, totalDays, data.cityDays);
   const interestSequence = resolveInterestSequence(data);
   const usedLocations = new Set<string>();
   const usedLocationNames = new Set<string>(); // Track names to prevent same-name duplicates

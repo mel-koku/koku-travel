@@ -10,6 +10,7 @@ import {
   scoreRegionsForTrip,
   autoSelectCities,
 } from "@/lib/tripBuilder/regionScoring";
+import { optimizeCitySequence } from "@/lib/routing/citySequence";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
 import { CitySearchBar } from "@/components/features/trip-builder/CitySearchBar";
 import { RegionRowB, type RegionSelectionState } from "./RegionRowB";
@@ -155,8 +156,11 @@ export function RegionStepB({
         } else {
           current.add(cityId);
         }
-        const cities = Array.from(current);
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
+        const raw = Array.from(current);
+        const cities = raw.length >= 2
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          : raw;
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
       });
     },
     [setData],
@@ -222,14 +226,15 @@ export function RegionStepB({
       setData((prev) => {
         const current = new Set<CityId>(prev.cities ?? []);
         if (allSelected) {
-          // Deselect all known cities in this region
           for (const id of knownCityIds) current.delete(id);
         } else {
-          // Select all known cities in this region
           for (const id of knownCityIds) current.add(id);
         }
-        const cities = Array.from(current);
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
+        const raw = Array.from(current);
+        const cities = raw.length >= 2
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          : raw;
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
       });
     },
     [selectedCities, setData],

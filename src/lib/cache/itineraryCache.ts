@@ -103,7 +103,10 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
     normalized.regions = [...data.regions].sort();
   }
   if (data.cities && data.cities.length > 0) {
-    normalized.cities = [...data.cities].sort();
+    // When the user manually ordered cities, preserve that order in the cache key.
+    // Otherwise sort for canonical key generation.
+    normalized.cities = data.customCityOrder ? [...data.cities] : [...data.cities].sort();
+    if (data.customCityOrder) normalized.customCityOrder = true;
   }
   if (data.interests && data.interests.length > 0) {
     normalized.interests = [...data.interests].sort();
@@ -117,6 +120,17 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
       name: data.entryPoint.name,
       coordinates: data.entryPoint.coordinates,
     };
+  }
+
+  // Exit point affects city sequencing (last day end location)
+  if (data.exitPoint) {
+    normalized.exitPoint = {
+      name: data.exitPoint.name,
+      coordinates: data.exitPoint.coordinates,
+    };
+  }
+  if (data.sameAsEntry !== undefined) {
+    normalized.sameAsEntry = data.sameAsEntry;
   }
 
   // Group affects scoring (family-friendly, group size, children ages)
@@ -139,6 +153,17 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
       dietaryOther: data.accessibility.dietaryOther,
       notes: data.accessibility.notes?.trim() || undefined,
     };
+  }
+
+  // Per-city day allocation overrides
+  if (data.cityDays) {
+    // Sort by city key for deterministic cache key
+    const sorted = Object.keys(data.cityDays).sort();
+    const cityDaysNormalized: Record<string, number> = {};
+    for (const key of sorted) {
+      cityDaysNormalized[key] = data.cityDays[key] ?? 0;
+    }
+    normalized.cityDays = cityDaysNormalized;
   }
 
   // Include traveler profile if it affects generation

@@ -12,6 +12,7 @@ import {
   scoreRegionsForTrip,
   autoSelectCities,
 } from "@/lib/tripBuilder/regionScoring";
+import { optimizeCitySequence } from "@/lib/routing/citySequence";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
 import type { CityId, KnownRegionId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
@@ -202,7 +203,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     onValidityChange?.(selectedCities.size > 0);
   }, [selectedCities.size, onValidityChange]);
 
-  // Toggle a single city (known or dynamic)
+  // Toggle a single city (known or dynamic) — auto-optimize order
   const toggleCity = useCallback(
     (cityId: CityId) => {
       setData((prev) => {
@@ -212,14 +213,17 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         } else {
           current.add(cityId);
         }
-        const cities = Array.from(current);
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
+        const raw = Array.from(current);
+        const cities = raw.length >= 2
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          : raw;
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
       });
     },
     [setData]
   );
 
-  // Toggle all known cities in a region
+  // Toggle all known cities in a region — auto-optimize order
   const toggleRegion = useCallback(
     (regionId: KnownRegionId) => {
       const regionDef = REGIONS.find((r) => r.id === regionId);
@@ -231,14 +235,15 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
       setData((prev) => {
         const current = new Set<CityId>(prev.cities ?? []);
         if (anySelected) {
-          // Deselect all known cities in this region
           for (const id of knownCityIds) current.delete(id);
         } else {
-          // Select all known cities in this region
           for (const id of knownCityIds) current.add(id);
         }
-        const cities = Array.from(current);
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities) };
+        const raw = Array.from(current);
+        const cities = raw.length >= 2
+          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
+          : raw;
+        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false };
       });
 
       const cityCount = knownCityIds.length;
