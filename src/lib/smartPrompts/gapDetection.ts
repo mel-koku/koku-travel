@@ -901,7 +901,7 @@ export function detectGaps(
         category_imbalance: 4,
         transport: 5,
         experience: 6,
-        guidance: 7,
+        guidance: 5.5,
       };
       return priority[a.type] - priority[b.type];
     });
@@ -993,6 +993,7 @@ const GUIDANCE_ICON_MAP: Record<string, string> = {
   solo: "User",
   food_culture: "UtensilsCrossed",
   cultural_context: "BookMarked",
+  transit: "Train",
 };
 
 /**
@@ -1039,16 +1040,20 @@ export async function detectGuidanceGaps(
     month,
   });
 
-  // Filter to high-value types with priority >= 7
+  // Filter to high-value types with priority >= 7.
+  // Transit tips only qualify at priority >= 9 (critical safety/logistics).
   const HIGH_PRIORITY_TYPES = new Set([
     "etiquette",
     "practical",
     "accessibility",
     "food_culture",
     "cultural_context",
+    "transit",
   ]);
   const highPriority = guidance.filter(
-    (g) => HIGH_PRIORITY_TYPES.has(g.guidanceType) && g.priority >= 7
+    (g) =>
+      HIGH_PRIORITY_TYPES.has(g.guidanceType) &&
+      g.priority >= (g.guidanceType === "transit" ? 9 : 7),
   );
 
   return highPriority.slice(0, maxPerDay).map((g) => ({
