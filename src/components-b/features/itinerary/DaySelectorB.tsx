@@ -185,29 +185,43 @@ export const DaySelectorB = ({
     return () => el.removeEventListener("wheel", onWheel);
   }, []);
 
-  // Drag-to-scroll
+  // Drag-to-scroll (only captures pointer after movement threshold to preserve button clicks)
   const isDragging = useRef(false);
-  const dragStart = useRef({ x: 0, scrollLeft: 0 });
+  const isPending = useRef(false);
+  const dragStart = useRef({ x: 0, scrollLeft: 0, pointerId: 0 });
+  const DRAG_THRESHOLD = 5; // px of movement before drag starts
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     const el = scrollContainerRef.current;
     if (!el || el.scrollWidth <= el.clientWidth) return;
-    isDragging.current = true;
-    dragStart.current = { x: e.clientX, scrollLeft: el.scrollLeft };
-    el.setPointerCapture(e.pointerId);
-    el.style.cursor = "grabbing";
-    el.style.userSelect = "none";
+    isPending.current = true;
+    isDragging.current = false;
+    dragStart.current = { x: e.clientX, scrollLeft: el.scrollLeft, pointerId: e.pointerId };
   }, []);
 
   const onPointerMove = useCallback((e: React.PointerEvent) => {
-    if (!isDragging.current) return;
     const el = scrollContainerRef.current;
     if (!el) return;
-    const dx = e.clientX - dragStart.current.x;
-    el.scrollLeft = dragStart.current.scrollLeft - dx;
+
+    if (isPending.current && !isDragging.current) {
+      const dx = Math.abs(e.clientX - dragStart.current.x);
+      if (dx >= DRAG_THRESHOLD) {
+        isDragging.current = true;
+        isPending.current = false;
+        el.setPointerCapture(dragStart.current.pointerId);
+        el.style.cursor = "grabbing";
+        el.style.userSelect = "none";
+      }
+    }
+
+    if (isDragging.current) {
+      const dx = e.clientX - dragStart.current.x;
+      el.scrollLeft = dragStart.current.scrollLeft - dx;
+    }
   }, []);
 
   const onPointerUp = useCallback((e: React.PointerEvent) => {
+    isPending.current = false;
     if (!isDragging.current) return;
     isDragging.current = false;
     const el = scrollContainerRef.current;
