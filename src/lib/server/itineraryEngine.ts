@@ -15,6 +15,7 @@ import { generateGuideProse } from "./guideProseGenerator";
 import { refineDays } from "./dayRefinement";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
+import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
 import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
 import type { GeneratedGuide } from "@/types/llmConstraints";
 
@@ -264,6 +265,31 @@ export async function generateTripFromBuilderData(
         endPoint: { coordinates: cityCoords },
       };
     }
+  }
+
+  // Set Day 1 / last day bounds from flight arrival/departure times
+  const effectiveArrivalStart = computeEffectiveArrivalStart(
+    builderData.arrivalTime, builderData.entryPoint?.iataCode,
+  );
+  if (effectiveArrivalStart && optimizedItinerary.days[0]) {
+    optimizedItinerary.days[0].bounds = {
+      ...optimizedItinerary.days[0].bounds,
+      startTime: effectiveArrivalStart,
+    };
+  }
+
+  const exitIata = builderData.sameAsEntry !== false
+    ? builderData.entryPoint?.iataCode
+    : (builderData.exitPoint?.iataCode ?? builderData.entryPoint?.iataCode);
+  const effectiveDepartureEnd = computeEffectiveDepartureEnd(
+    builderData.departureTime, exitIata,
+  );
+  const lastIdx = optimizedItinerary.days.length - 1;
+  if (effectiveDepartureEnd && optimizedItinerary.days[lastIdx]) {
+    optimizedItinerary.days[lastIdx].bounds = {
+      ...optimizedItinerary.days[lastIdx].bounds,
+      endTime: effectiveDepartureEnd,
+    };
   }
 
   // Run planItinerary (routing) and Gemini guide prose in parallel.

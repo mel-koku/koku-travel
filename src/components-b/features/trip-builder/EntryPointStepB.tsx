@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plane, PlaneLanding, Search, X } from "lucide-react";
+import { Plane, PlaneLanding, Search, X, Clock } from "lucide-react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { JAPAN_MAP_VIEWBOX, ALL_PREFECTURE_PATHS } from "@/data/japanMapPaths";
@@ -10,6 +10,8 @@ import { logger } from "@/lib/logger";
 import type { EntryPoint, KnownRegionId } from "@/types/trip";
 import type { Airport } from "@/app/api/airports/route";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
+import { formatTime12h } from "@/lib/utils/timeUtils";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
@@ -69,8 +71,22 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
   );
 
   const handleClear = useCallback(() => {
-    setData((prev) => ({ ...prev, entryPoint: undefined, exitPoint: undefined, sameAsEntry: undefined }));
+    setData((prev) => ({ ...prev, entryPoint: undefined, exitPoint: undefined, sameAsEntry: undefined, arrivalTime: undefined, departureTime: undefined }));
   }, [setData]);
+
+  const handleArrivalTimeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setData((prev) => ({ ...prev, arrivalTime: e.target.value || undefined }));
+    },
+    [setData],
+  );
+
+  const handleDepartureTimeChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setData((prev) => ({ ...prev, departureTime: e.target.value || undefined }));
+    },
+    [setData],
+  );
 
   const handleSelectExitAirport = useCallback(
     (airport: Airport) => {
@@ -103,6 +119,21 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
   const handleClearExit = useCallback(() => {
     setData((prev) => ({ ...prev, exitPoint: undefined, sameAsEntry: false }));
   }, [setData]);
+
+  const arrivalHint = useMemo(() => {
+    const effective = computeEffectiveArrivalStart(data.arrivalTime, data.entryPoint?.iataCode);
+    if (!effective) return null;
+    return formatTime12h(effective);
+  }, [data.arrivalTime, data.entryPoint?.iataCode]);
+
+  const departureHint = useMemo(() => {
+    const exitIata = data.sameAsEntry !== false
+      ? data.entryPoint?.iataCode
+      : (data.exitPoint?.iataCode ?? data.entryPoint?.iataCode);
+    const effective = computeEffectiveDepartureEnd(data.departureTime, exitIata);
+    if (!effective) return null;
+    return formatTime12h(effective);
+  }, [data.departureTime, data.entryPoint?.iataCode, data.exitPoint?.iataCode, data.sameAsEntry]);
 
   const topAirports = useMemo(() => {
     return TOP_AIRPORT_CODES.map((code) =>
@@ -208,6 +239,34 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
                     Change
                   </button>
                 </div>
+
+                {/* Arrival time */}
+                <div className="mt-3 flex items-center gap-3 border-t border-[var(--border)] pt-3">
+                  <Clock className="h-4 w-4 shrink-0 text-[var(--muted-foreground)]" />
+                  <div className="flex flex-1 items-center gap-2">
+                    <label className="text-xs text-[var(--muted-foreground)] whitespace-nowrap">Landing at</label>
+                    <input
+                      type="time"
+                      value={data.arrivalTime ?? ""}
+                      onChange={handleArrivalTimeChange}
+                      className="h-9 w-[7rem] rounded-lg border border-[var(--border)] bg-white px-2 text-base text-[var(--foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                    />
+                    {data.arrivalTime && (
+                      <button
+                        type="button"
+                        onClick={() => setData((prev) => ({ ...prev, arrivalTime: undefined }))}
+                        className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+                {arrivalHint && (
+                  <p className="mt-1.5 pl-7 text-xs text-[var(--primary)]">
+                    First activity starts around {arrivalHint}
+                  </p>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -390,6 +449,34 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
                       </motion.div>
                     )}
                   </AnimatePresence>
+
+                  {/* Departure time */}
+                  <div className="mt-4 flex items-center gap-3">
+                    <Clock className="h-4 w-4 shrink-0 text-[var(--muted-foreground)]" />
+                    <div className="flex flex-1 items-center gap-2">
+                      <label className="text-xs text-[var(--muted-foreground)] whitespace-nowrap">Departing at</label>
+                      <input
+                        type="time"
+                        value={data.departureTime ?? ""}
+                        onChange={handleDepartureTimeChange}
+                        className="h-9 w-[7rem] rounded-lg border border-[var(--border)] bg-white px-2 text-base text-[var(--foreground)] focus:border-[var(--primary)] focus:outline-none focus:ring-1 focus:ring-[var(--primary)]"
+                      />
+                      {data.departureTime && (
+                        <button
+                          type="button"
+                          onClick={() => setData((prev) => ({ ...prev, departureTime: undefined }))}
+                          className="text-xs text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {departureHint && (
+                    <p className="mt-1.5 pl-7 text-xs text-[var(--primary)]">
+                      Last activity wraps up around {departureHint}
+                    </p>
+                  )}
                 </div>
               </motion.div>
             )}

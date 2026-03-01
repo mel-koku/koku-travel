@@ -365,6 +365,10 @@ export const tripBuilderDataSchema = z.object({
   travelerProfile: travelerProfileSchema,
   // Day start time in HH:MM format (24-hour)
   dayStartTime: timeSchema,
+  // Flight arrival time in HH:MM format (24-hour)
+  arrivalTime: timeSchema,
+  // Flight departure time in HH:MM format (24-hour)
+  departureTime: timeSchema,
   // Content context from guide/experience CTA
   contentContext: contentContextSchema,
   // First-time visitor flag

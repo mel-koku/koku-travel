@@ -20,3 +20,14 @@ export function formatMinutesToTime(totalMinutes: number): string {
   const m = totalMinutes % 60;
   return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
 }
+
+/** Format "HH:MM" 24-hour to "h:MM AM/PM" display. */
+export function formatTime12h(time: string | undefined | null): string | null {
+  const mins = parseTimeToMinutes(time);
+  if (mins === null) return null;
+  const h24 = Math.floor(mins / 60);
+  const m = mins % 60;
+  const period = h24 >= 12 ? "PM" : "AM";
+  const h12 = h24 === 0 ? 12 : h24 > 12 ? h24 - 12 : h24;
+  return `${h12}:${m.toString().padStart(2, "0")} ${period}`;
+}
