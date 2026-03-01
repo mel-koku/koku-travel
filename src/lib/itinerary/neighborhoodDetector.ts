@@ -32,14 +32,38 @@ export function detectNeighborhoodClusters(day: ItineraryDay): NeighborhoodClust
 
   const clusters: NeighborhoodCluster[] = [];
 
-  // Strategy 1: Named neighborhood match
+  // Strategy 1: Named neighborhood match (with distance sanity check)
+  // Wards like "Chuo Ward" can be large — verify consecutive stops are actually walkable
+  const NAMED_PROXIMITY_KM = 1.5; // ~18 min walk
   let currentNeighborhood: string | null = null;
   let currentRun: typeof placeActivities = [];
 
   for (const item of placeActivities) {
     const neighborhood = item.activity.neighborhood;
     if (neighborhood && neighborhood === currentNeighborhood) {
-      currentRun.push(item);
+      // Also check distance to previous activity in the run
+      const prevItem = currentRun[currentRun.length - 1];
+      const prevCoords = prevItem?.activity.coordinates;
+      const coords = item.activity.coordinates;
+      const tooFar =
+        prevCoords && coords
+          ? calculateDistance(prevCoords, coords) > NAMED_PROXIMITY_KM
+          : false;
+
+      if (tooFar) {
+        // Distance exceeded — flush current run and start fresh
+        if (currentRun.length >= 3 && currentNeighborhood) {
+          clusters.push({
+            name: currentNeighborhood,
+            activityIndices: currentRun.map((r) => r.index),
+            activityNames: currentRun.map((r) => r.activity.title),
+            cityId: day.cityId,
+          });
+        }
+        currentRun = [item];
+      } else {
+        currentRun.push(item);
+      }
     } else {
       if (currentRun.length >= 3 && currentNeighborhood) {
         clusters.push({
