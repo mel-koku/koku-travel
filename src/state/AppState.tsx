@@ -196,6 +196,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const isRefreshingRef = useRef(false);
   const pendingRefreshRef = useRef(false);
 
+  // Track in-flight save operations so refreshFromSupabase doesn't overwrite optimistic state
+  // Maps location ID → 'add' | 'remove' for pending sync operations
+  const pendingSavesRef = useRef<Map<string, "add" | "remove">>(new Map());
+
   // Load from localStorage on mount
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -298,10 +302,21 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
           ? mergeTrips(s.trips, tripsResult.data)
           : s.trips;
 
+        // Merge server saved list with in-flight optimistic changes
+        let mergedSaved = savedResult.success ? (savedResult.data ?? []) : s.saved;
+        if (savedResult.success && pendingSavesRef.current.size > 0) {
+          const savedSet = new Set(mergedSaved);
+          pendingSavesRef.current.forEach((action, id) => {
+            if (action === "add") savedSet.add(id);
+            else savedSet.delete(id);
+          });
+          mergedSaved = Array.from(savedSet);
+        }
+
         return {
           ...s,
           user: buildProfileFromSupabase(user, s.user),
-          saved: savedResult.success ? (savedResult.data ?? []) : s.saved,
+          saved: mergedSaved,
           guideBookmarks: bookmarksResult.success ? (bookmarksResult.data ?? []) : s.guideBookmarks,
           trips: mergedTrips,
           isLoadingRefresh: false,
@@ -536,6 +551,9 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   // Saved places actions
   const toggleSave = useCallback(
     (id: string) => {
+      // Prevent double-toggle race: skip if sync is already in progress for this item
+      if (pendingSavesRef.current.has(id)) return;
+
       let existed = false;
       setState((s) => {
         const set = new Set(s.saved);
@@ -549,14 +567,19 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (supabase) {
+        pendingSavesRef.current.set(id, existed ? "remove" : "add");
         void (async () => {
-          const result = await syncSavedToggle(supabase, id, existed);
-          if (!result.success) {
-            setState((s) => {
-              const set = new Set(s.saved);
-              if (existed) set.add(id); else set.delete(id);
-              return { ...s, saved: Array.from(set) };
-            });
+          try {
+            const result = await syncSavedToggle(supabase, id, existed);
+            if (!result.success) {
+              setState((s) => {
+                const set = new Set(s.saved);
+                if (existed) set.add(id); else set.delete(id);
+                return { ...s, saved: Array.from(set) };
+              });
+            }
+          } finally {
+            pendingSavesRef.current.delete(id);
           }
         })();
       }
