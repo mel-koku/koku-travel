@@ -32,6 +32,8 @@ const createDefaultData = (): TripBuilderData => ({
   interests: [],
   style: undefined,
   entryPoint: undefined,
+  exitPoint: undefined,
+  sameAsEntry: undefined,
   accessibility: undefined,
   dayStartTime: undefined,
 });
@@ -47,6 +49,7 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
   const normalizedStyle = sanitizeStyle(raw.style);
   const normalizedAccessibility = sanitizeAccessibility(raw.accessibility);
   const normalizedEntryPoint = sanitizeEntryPoint(raw.entryPoint);
+  const normalizedExitPoint = sanitizeEntryPoint(raw.exitPoint);
   const normalizedRegions = sanitizeRegions(raw.regions);
   const normalizedCities = sanitizeCities(raw.cities);
   const normalizedDayStartTime = sanitizeDayStartTime(raw.dayStartTime);
@@ -64,6 +67,8 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     interests: derivedInterests,
     style: normalizedStyle,
     entryPoint: normalizedEntryPoint,
+    exitPoint: normalizedExitPoint,
+    sameAsEntry: raw.sameAsEntry === true || raw.sameAsEntry === false ? raw.sameAsEntry : undefined,
     accessibility: normalizedAccessibility,
     budget: raw.budget ?? base.budget,
     group: raw.group ?? base.group,
@@ -71,6 +76,8 @@ const normalizeData = (raw?: TripBuilderData): TripBuilderData => {
     travelerProfile: raw.travelerProfile ?? base.travelerProfile,
     dayStartTime: normalizedDayStartTime,
     isFirstTimeVisitor: raw.isFirstTimeVisitor === true ? true : undefined,
+    customCityOrder: raw.customCityOrder === true ? true : undefined,
+    cityDays: sanitizeCityDays(raw.cityDays, normalizedCities, raw.duration),
   };
 };
 
@@ -114,6 +121,8 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
           interests: normalizedStored.interests,
           style: normalizedStored.style,
           entryPoint: normalizedStored.entryPoint,
+          exitPoint: normalizedStored.exitPoint,
+          sameAsEntry: normalizedStored.sameAsEntry,
           accessibility: normalizedStored.accessibility,
           dayStartTime: normalizedStored.dayStartTime,
         };
@@ -376,6 +385,40 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
 /**
  * Sanitize day start time - validates HH:MM format (24-hour)
  */
+/**
+ * Sanitize cityDays — drop if cities or total don't match.
+ * This handles edge cases where user goes back and changes dates or cities.
+ */
+function sanitizeCityDays(
+  cityDays: Record<string, number> | undefined,
+  cities: CityId[],
+  duration: number | undefined,
+): Record<string, number> | undefined {
+  if (!cityDays || typeof cityDays !== "object") return undefined;
+  if (!duration || duration <= 0 || cities.length === 0) return undefined;
+
+  // Every city must be present and every key must be a current city
+  const keys = Object.keys(cityDays);
+  if (keys.length !== cities.length) return undefined;
+  for (const city of cities) {
+    if (!(city in cityDays)) return undefined;
+  }
+  for (const key of keys) {
+    if (!cities.includes(key)) return undefined;
+  }
+
+  // Each value must be a positive integer, total must equal duration
+  let total = 0;
+  for (const key of keys) {
+    const v = cityDays[key] as number | undefined;
+    if (v === undefined || !Number.isInteger(v) || v < 1) return undefined;
+    total += v;
+  }
+  if (total !== duration) return undefined;
+
+  return { ...cityDays };
+}
+
 function sanitizeDayStartTime(dayStartTime?: string): string | undefined {
   if (!dayStartTime || typeof dayStartTime !== "string") {
     return undefined;

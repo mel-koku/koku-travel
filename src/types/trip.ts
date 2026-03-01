@@ -131,6 +131,8 @@ export type TripBuilderData = {
   interests?: InterestId[]; // derived from vibes for backward compatibility
   style?: TripStyle; // later steps
   entryPoint?: EntryPoint;
+  exitPoint?: EntryPoint;
+  sameAsEntry?: boolean; // true = round-trip (default), false = open-jaw
   accessibility?: {
     mobility?: boolean;
     dietary?: string[];
@@ -225,6 +227,19 @@ export type TripBuilderData = {
    * - "mix": Per-city default — standard schedule
    */
   accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
+  /**
+   * When true, the generator respects data.cities array order instead of
+   * auto-optimizing via nearest-neighbor routing. Set when the user manually
+   * reorders cities in the trip builder.
+   */
+  customCityOrder?: boolean;
+  /**
+   * Per-city day allocation overrides. When set, the generator uses these
+   * counts instead of auto-distributing days via floor division.
+   * Keys are CityId strings, values are day counts (min 1).
+   * Total must equal trip duration. Dropped if cities/duration change.
+   */
+  cityDays?: Record<CityId, number>;
 };
 
 /**

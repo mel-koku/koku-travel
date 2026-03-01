@@ -355,6 +355,8 @@ export const tripBuilderDataSchema = z.object({
   vibes: z.array(vibeIdSchema).max(5).optional(),
   style: tripStyleSchema,
   entryPoint: entryPointSchema,
+  exitPoint: entryPointSchema,
+  sameAsEntry: z.boolean().optional(),
   accessibility: accessibilitySchema,
   budget: budgetSchema,
   group: groupSchema,
@@ -367,6 +369,12 @@ export const tripBuilderDataSchema = z.object({
   contentContext: contentContextSchema,
   // First-time visitor flag
   isFirstTimeVisitor: z.boolean().optional(),
+  // Per-city day allocation overrides
+  cityDays: z.record(cityIdSchema, z.number().int().min(1).max(14)).optional(),
+  // Custom city order flag
+  customCityOrder: z.boolean().optional(),
+  // Accommodation style preference
+  accommodationStyle: z.enum(["hotel", "ryokan", "hostel", "mix"]).optional(),
 }).strict();
 
 /**
