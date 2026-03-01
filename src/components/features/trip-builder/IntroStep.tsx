@@ -8,16 +8,23 @@ import { easeReveal, staggerChar, durationBase } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { deriveRegionsFromCities } from "@/data/regions";
 import { vibesToInterests } from "@/data/vibes";
-import type { TripBuilderData, CityId } from "@/types/trip";
+import type { TripBuilderData, CityId, EntryPoint } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { VibeId } from "@/data/vibes";
 
+const QUICK_ENTRY_POINTS: Record<string, EntryPoint> = {
+  NRT: { type: "airport", id: "nrt", name: "Narita International Airport", iataCode: "NRT", coordinates: { lat: 35.7647, lng: 140.3864 }, region: "kanto" },
+  KIX: { type: "airport", id: "kix", name: "Kansai International Airport", iataCode: "KIX", coordinates: { lat: 34.4347, lng: 135.2441 }, region: "kansai" },
+  CTS: { type: "airport", id: "cts", name: "New Chitose Airport", iataCode: "CTS", coordinates: { lat: 42.7752, lng: 141.6925 }, region: "hokkaido" },
+  FUK: { type: "airport", id: "fuk", name: "Fukuoka Airport", iataCode: "FUK", coordinates: { lat: 33.5859, lng: 130.4510 }, region: "kyushu" },
+};
+
 const QUICK_PRESETS = [
-  { id: "tokyo", label: "Tokyo", cities: ["tokyo"] },
-  { id: "kyoto-osaka", label: "Kyoto & Osaka", cities: ["kyoto", "osaka"] },
-  { id: "tokyo-kyoto", label: "Tokyo + Kyoto", cities: ["tokyo", "kyoto", "osaka"] },
-  { id: "hokkaido", label: "Hokkaido", cities: ["sapporo", "hakodate"] },
-  { id: "kyushu", label: "Kyushu", cities: ["fukuoka", "nagasaki"] },
+  { id: "tokyo", label: "Tokyo", cities: ["tokyo"], airport: "NRT" },
+  { id: "kyoto-osaka", label: "Kyoto & Osaka", cities: ["kyoto", "osaka"], airport: "KIX" },
+  { id: "tokyo-kyoto", label: "Tokyo + Kyoto", cities: ["tokyo", "kyoto", "osaka"], airport: "NRT" },
+  { id: "hokkaido", label: "Hokkaido", cities: ["sapporo", "hakodate"], airport: "CTS" },
+  { id: "kyushu", label: "Kyushu", cities: ["fukuoka", "nagasaki"], airport: "FUK" },
 ] as const;
 
 const DURATION_OPTIONS = [3, 5, 7, 10] as const;
@@ -51,6 +58,8 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
     const fmt = (d: Date) =>
       `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
+    const entryPoint = QUICK_ENTRY_POINTS[preset.airport];
+
     onQuickStart({
       duration: quickDuration,
       dates: { start: fmt(start), end: fmt(end) },
@@ -59,6 +68,8 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
       regions,
       cities,
       style: "balanced",
+      entryPoint,
+      sameAsEntry: true,
     });
   }, [onQuickStart, quickPreset, quickDuration]);
 
