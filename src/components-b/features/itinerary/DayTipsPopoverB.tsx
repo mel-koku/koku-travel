@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { ChevronDown } from "lucide-react";
 import type { ItineraryDay } from "@/types/itinerary";
 import { useDayTips } from "./useDayTips";
 
@@ -93,14 +94,17 @@ export function DayTipsPopoverB({ day, tripStartDate, dayIndex, nextDayActivitie
   );
 }
 
-function PopoverContent({ tips }: { tips: { id: string; title: string; summary: string; icon: string }[] }) {
+function PopoverContent({ tips }: { tips: { id: string; title: string; summary: string; content?: string; icon: string }[] }) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
   return (
     <div className="p-3 space-y-1.5">
       {tips.map((tip) => (
         <div
           key={tip.id}
-          className="flex items-start gap-2.5 rounded-xl p-2.5"
+          className={`flex items-start gap-2.5 rounded-xl p-2.5${tip.content ? " cursor-pointer" : ""}`}
           style={{ backgroundColor: "var(--surface)" }}
+          onClick={tip.content ? () => setExpandedId(expandedId === tip.id ? null : tip.id) : undefined}
         >
           <span className="shrink-0 text-base">{tip.icon}</span>
           <div className="min-w-0 flex-1">
@@ -116,7 +120,25 @@ function PopoverContent({ tips }: { tips: { id: string; title: string; summary: 
             >
               {tip.summary}
             </p>
+            {tip.content && expandedId === tip.id && (
+              <p
+                className="mt-1.5 border-t pt-1.5 text-xs leading-relaxed"
+                style={{ borderColor: "var(--border)", color: "var(--muted-foreground)", opacity: 0.8 }}
+              >
+                {tip.content}
+              </p>
+            )}
           </div>
+          {tip.content && (
+            <ChevronDown
+              className="mt-0.5 h-3 w-3 shrink-0 transition-transform"
+              style={{
+                color: "var(--muted-foreground)",
+                opacity: 0.5,
+                transform: expandedId === tip.id ? "rotate(180deg)" : undefined,
+              }}
+            />
+          )}
         </div>
       ))}
     </div>

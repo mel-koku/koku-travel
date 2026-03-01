@@ -18,6 +18,7 @@ type DayTipsBProps = {
 export function DayTipsB({ day, tripStartDate, dayIndex, className, nextDayActivities, isFirstTimeVisitor }: DayTipsBProps) {
   const { tips: allTips, isLoading } = useDayTips(day, tripStartDate, dayIndex, { nextDayActivities, isFirstTimeVisitor });
   const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedTipId, setExpandedTipId] = useState<string | null>(null);
 
   if (!isLoading && allTips.length === 0) return null;
 
@@ -95,8 +96,9 @@ export function DayTipsB({ day, tripStartDate, dayIndex, className, nextDayActiv
                   allTips.map((tip) => (
                     <div
                       key={tip.id}
-                      className="flex items-start gap-2.5 rounded-xl p-2.5"
+                      className={`flex items-start gap-2.5 rounded-xl p-2.5${tip.content ? " cursor-pointer" : ""}`}
                       style={{ backgroundColor: "var(--surface)" }}
+                      onClick={tip.content ? () => setExpandedTipId(expandedTipId === tip.id ? null : tip.id) : undefined}
                     >
                       <span className="shrink-0 text-base">{tip.icon}</span>
                       <div className="min-w-0 flex-1">
@@ -112,7 +114,25 @@ export function DayTipsB({ day, tripStartDate, dayIndex, className, nextDayActiv
                         >
                           {tip.summary}
                         </p>
+                        {tip.content && expandedTipId === tip.id && (
+                          <p
+                            className="mt-1.5 border-t pt-1.5 text-xs leading-relaxed"
+                            style={{ borderColor: "var(--border)", color: "var(--muted-foreground)", opacity: 0.8 }}
+                          >
+                            {tip.content}
+                          </p>
+                        )}
                       </div>
+                      {tip.content && (
+                        <ChevronDown
+                          className="mt-0.5 h-3 w-3 shrink-0 transition-transform"
+                          style={{
+                            color: "var(--muted-foreground)",
+                            opacity: 0.5,
+                            transform: expandedTipId === tip.id ? "rotate(180deg)" : undefined,
+                          }}
+                        />
+                      )}
                     </div>
                   ))
                 )}
