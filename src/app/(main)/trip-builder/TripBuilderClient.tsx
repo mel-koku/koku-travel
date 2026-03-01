@@ -23,7 +23,7 @@ type PlanApiResponse = {
 function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConfig }) {
   const router = useRouter();
   const { data, reset } = useTripBuilder();
-  const { createTrip, saved } = useAppState();
+  const { createTrip, saved, setCityAccommodation } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -78,6 +78,21 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
         dayIntros: result.dayIntros,
       });
 
+      // Seed city accommodations from builder data so the itinerary page shows pre-filled hotels
+      if (builderData.accommodations) {
+        for (const [cityId, accom] of Object.entries(builderData.accommodations)) {
+          setCityAccommodation(tripId, cityId, {
+            cityId,
+            entryPoint: {
+              type: "accommodation",
+              id: accom.placeId ?? `builder-${cityId}`,
+              name: accom.name,
+              coordinates: accom.coordinates,
+            },
+          });
+        }
+      }
+
       // Clear transient content context after successful trip creation
       localStorage.removeItem("koku:content-context");
 
@@ -87,7 +102,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setIsGenerating(false);
     }
-  }, [data, createTrip, reset, router, saved]);
+  }, [data, createTrip, reset, router, saved, setCityAccommodation]);
 
   return (
     <>
