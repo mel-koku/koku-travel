@@ -170,6 +170,21 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
     normalized.cityDays = cityDaysNormalized;
   }
 
+  // Pre-generation accommodations affect routing (start/end points)
+  if (data.accommodations) {
+    const sorted = Object.keys(data.accommodations).sort();
+    const accomNormalized: Record<string, { name: string; coordinates: { lat: number; lng: number } }> = {};
+    for (const key of sorted) {
+      const a = data.accommodations[key];
+      if (a) {
+        accomNormalized[key] = { name: a.name, coordinates: a.coordinates };
+      }
+    }
+    if (Object.keys(accomNormalized).length > 0) {
+      normalized.accommodations = accomNormalized;
+    }
+  }
+
   // Include traveler profile if it affects generation
   if (data.travelerProfile) {
     normalized.travelerProfile = {

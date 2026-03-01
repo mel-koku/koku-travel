@@ -8,6 +8,10 @@ import {
   Users,
   Accessibility,
   StickyNote,
+  Building2,
+  Search,
+  X,
+  Check,
 } from "lucide-react";
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
@@ -22,9 +26,10 @@ import { FormField } from "@/components/ui/FormField";
 import { Select } from "@/components/ui/Select";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
-import type { TripStyle } from "@/types/trip";
+import type { TripStyle, TripBuilderData } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
+import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 
 type PreferenceFormValues = {
   groupSize?: number;
@@ -186,6 +191,40 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
             {durationWarning.severity === "warning" ? "\u26A0\uFE0F" : "\u2139\uFE0F"}
           </span>
           <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
+        </div>
+      )}
+
+      {/* Accommodation — per-city hotel search */}
+      {data.cities && data.cities.length > 0 && (
+        <div className="rounded-xl border border-border bg-surface p-4">
+          <div className="flex items-center gap-2">
+            <Building2 className="h-4 w-4 text-brand-primary" />
+            <p className="text-sm font-medium text-foreground">Where are you staying?</p>
+            <span className="text-xs text-stone">Optional</span>
+          </div>
+          <p className="mt-1 text-xs text-stone">
+            We&apos;ll route your days from your hotel.
+          </p>
+          <div className="mt-4 flex flex-col gap-3">
+            {data.cities.map((cityId) => (
+              <AccommodationCityField
+                key={cityId}
+                cityId={cityId}
+                value={data.accommodations?.[cityId]}
+                onChange={(accom) => {
+                  setData((prev) => {
+                    const next = { ...prev.accommodations };
+                    if (accom) {
+                      next[cityId] = accom;
+                    } else {
+                      delete next[cityId];
+                    }
+                    return { ...prev, accommodations: Object.keys(next).length > 0 ? next : undefined };
+                  });
+                }}
+              />
+            ))}
+          </div>
         </div>
       )}
 
@@ -411,6 +450,96 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           </PreferenceCard>
         </div>
       </div>
+
+    </div>
+  );
+}
+
+/**
+ * Per-city accommodation search field using Nominatim geocoding.
+ */
+function AccommodationCityField({
+  cityId,
+  value,
+  onChange,
+}: {
+  cityId: string;
+  value?: NonNullable<TripBuilderData["accommodations"]>[string];
+  onChange: (accom: NonNullable<TripBuilderData["accommodations"]>[string] | undefined) => void;
+}) {
+  const [searchInput, setSearchInput] = useState("");
+  const { suggestions, isLoading } = useMapboxSearch(searchInput ? `${searchInput} ${cityId} Japan` : "");
+
+  const handleSelect = useCallback((suggestion: MapboxSuggestion) => {
+    if (!suggestion.coordinates) return;
+    onChange({
+      name: suggestion.name,
+      coordinates: suggestion.coordinates,
+      placeId: suggestion.mapbox_id,
+    });
+    setSearchInput("");
+  }, [onChange]);
+
+  const cityLabel = cityId.charAt(0).toUpperCase() + cityId.slice(1);
+
+  if (value) {
+    return (
+      <div className="flex items-center justify-between rounded-xl border border-sage/20 bg-sage/5 px-4 py-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <Check className="h-4 w-4 shrink-0 text-sage" />
+          <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wide text-stone">{cityLabel}</p>
+            <p className="truncate text-sm text-foreground">{value.name}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={() => onChange(undefined)}
+          className="shrink-0 rounded-lg p-1 text-stone transition-colors hover:bg-surface hover:text-foreground-secondary"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-stone">{cityLabel}</p>
+      <div className="relative">
+        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone">
+          <Search className="h-4 w-4" />
+        </div>
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="Search hotel, Airbnb, address..."
+          className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-4 text-base text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+        />
+        {isLoading && searchInput.length >= 3 && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
+          </div>
+        )}
+      </div>
+      {suggestions.length > 0 && (
+        <div className="mt-1.5 max-h-40 overflow-auto rounded-xl border border-border bg-background">
+          {suggestions.map((s) => (
+            <button
+              key={s.mapbox_id}
+              type="button"
+              onClick={() => handleSelect(s)}
+              className="flex w-full cursor-pointer flex-col px-4 py-2 text-left hover:bg-surface"
+            >
+              <p className="text-sm font-medium text-foreground">{s.name}</p>
+              {s.place_formatted && (
+                <p className="text-xs text-stone">{s.place_formatted}</p>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -267,6 +267,31 @@ export async function generateTripFromBuilderData(
     }
   }
 
+  // Overlay builder accommodations — use hotel coordinates instead of city center
+  if (builderData.accommodations) {
+    for (let i = 0; i < optimizedItinerary.days.length; i++) {
+      const day = optimizedItinerary.days[i];
+      if (!day) continue;
+      const cityId = day.baseCityId ?? day.cityId;
+      const accom = cityId ? builderData.accommodations[cityId] : undefined;
+      if (!accom) continue;
+
+      if (i === 0 && builderData.entryPoint?.coordinates) {
+        // Day 1: start from airport, end at hotel
+        dayEntryPoints[day.id] = {
+          startPoint: { coordinates: builderData.entryPoint.coordinates },
+          endPoint: { coordinates: accom.coordinates },
+        };
+      } else {
+        // Days 2+: start and end at hotel
+        dayEntryPoints[day.id] = {
+          startPoint: { coordinates: accom.coordinates },
+          endPoint: { coordinates: accom.coordinates },
+        };
+      }
+    }
+  }
+
   // Set Day 1 / last day bounds from flight arrival/departure times
   const effectiveArrivalStart = computeEffectiveArrivalStart(
     builderData.arrivalTime, builderData.entryPoint?.iataCode,

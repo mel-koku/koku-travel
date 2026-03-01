@@ -379,6 +379,26 @@ export const tripBuilderDataSchema = z.object({
   customCityOrder: z.boolean().optional(),
   // Accommodation style preference
   accommodationStyle: z.enum(["hotel", "ryokan", "hostel", "mix"]).optional(),
+  // Parsed flight details (display-only metadata)
+  flightDetails: z.object({
+    arrival: z.object({
+      airline: z.string().max(100).optional(),
+      flightNumber: z.string().max(20).optional(),
+    }).strict().optional(),
+    departure: z.object({
+      airline: z.string().max(100).optional(),
+      flightNumber: z.string().max(20).optional(),
+    }).strict().optional(),
+  }).strict().optional(),
+  // Pre-generation accommodation coordinates keyed by city ID
+  accommodations: z.record(
+    cityIdSchema,
+    z.object({
+      name: z.string().min(1).max(500),
+      coordinates: coordinatesSchema,
+      placeId: z.string().max(500).optional(),
+    }).strict(),
+  ).optional(),
 }).strict();
 
 /**

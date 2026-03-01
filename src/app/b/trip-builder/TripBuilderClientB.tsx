@@ -27,7 +27,7 @@ function TripBuilderBContent({
 }) {
   const router = useRouter();
   const { data, reset } = useTripBuilder();
-  const { createTrip, saved } = useAppState();
+  const { createTrip, saved, setCityAccommodation } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,6 +86,21 @@ function TripBuilderBContent({
         dayIntros: result.dayIntros,
       });
 
+      // Seed city accommodations from builder data so the itinerary page shows pre-filled hotels
+      if (builderData.accommodations) {
+        for (const [cityId, accom] of Object.entries(builderData.accommodations)) {
+          setCityAccommodation(tripId, cityId, {
+            cityId,
+            entryPoint: {
+              type: "accommodation",
+              id: accom.placeId ?? `builder-${cityId}`,
+              name: accom.name,
+              coordinates: accom.coordinates,
+            },
+          });
+        }
+      }
+
       localStorage.removeItem("koku:content-context");
       reset();
       router.push(`/b/itinerary?trip=${tripId}`);
@@ -95,7 +110,7 @@ function TripBuilderBContent({
       );
       setIsGenerating(false);
     }
-  }, [data, createTrip, reset, router, saved]);
+  }, [data, createTrip, reset, router, saved, setCityAccommodation]);
 
   return (
     <>

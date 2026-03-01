@@ -250,6 +250,23 @@ export type TripBuilderData = {
    * Total must equal trip duration. Dropped if cities/duration change.
    */
   cityDays?: Record<CityId, number>;
+  /**
+   * Parsed flight details (airline, flight number). Display-only — airport
+   * and times auto-fill existing entryPoint/arrivalTime/departureTime fields.
+   */
+  flightDetails?: {
+    arrival?: { airline?: string; flightNumber?: string };
+    departure?: { airline?: string; flightNumber?: string };
+  };
+  /**
+   * Pre-generation accommodation coordinates keyed by CityId.
+   * Used to route days from the hotel instead of city center.
+   */
+  accommodations?: Record<CityId, {
+    name: string;
+    coordinates: { lat: number; lng: number };
+    placeId?: string;
+  }>;
 };
 
 /**
