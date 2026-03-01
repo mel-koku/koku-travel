@@ -15,7 +15,8 @@ import { generateGuideProse } from "./guideProseGenerator";
 import { refineDays } from "./dayRefinement";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
-import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
+import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, getArrivalProcessing, getDepartureProcessing } from "@/lib/utils/airportBuffer";
+import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/utils/timeUtils";
 import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
 import type { GeneratedGuide } from "@/types/llmConstraints";
 
@@ -292,29 +293,149 @@ export async function generateTripFromBuilderData(
     }
   }
 
-  // Set Day 1 / last day bounds from flight arrival/departure times
-  const effectiveArrivalStart = computeEffectiveArrivalStart(
-    builderData.arrivalTime, builderData.entryPoint?.iataCode,
-  );
-  if (effectiveArrivalStart && optimizedItinerary.days[0]) {
-    optimizedItinerary.days[0].bounds = {
-      ...optimizedItinerary.days[0].bounds,
-      startTime: effectiveArrivalStart,
+  // ── Inject airport arrival activity on Day 1 ──
+  // Only requires entryPoint — arrivalTime is optional (planner uses default day start when absent)
+  const arrivalMins = parseTimeToMinutes(builderData.arrivalTime);
+  if (builderData.entryPoint && optimizedItinerary.days[0]) {
+    const ep = builderData.entryPoint;
+    const iata = ep.iataCode;
+    const processingMin = getArrivalProcessing(iata);
+
+    // Determine timeOfDay from arrival time if available, otherwise default to morning
+    const refMins = arrivalMins ?? parseTimeToMinutes(builderData.dayStartTime ?? "09:00") ?? 540;
+    const timeOfDay: "morning" | "afternoon" | "evening" =
+      refMins < 720 ? "morning" : refMins < 1020 ? "afternoon" : "evening";
+
+    const arrivalActivity: Extract<ItineraryActivity, { kind: "place" }> = {
+      kind: "place",
+      id: `anchor-arrival-${ep.id}`,
+      title: `Arrive at ${ep.name}`,
+      isAnchor: true,
+      coordinates: ep.coordinates,
+      durationMin: processingMin,
+      tags: ["airport"],
+      timeOfDay,
     };
+
+    // Prepend airport activity to Day 1
+    optimizedItinerary.days[0].activities = [
+      arrivalActivity,
+      ...optimizedItinerary.days[0].activities,
+    ];
+
+    // Remove startPoint from dayEntryPoints — airport activity coords serve as routing origin
+    const day0Entry = dayEntryPoints[optimizedItinerary.days[0].id];
+    if (day0Entry) {
+      delete day0Entry.startPoint;
+    }
+
+    // Set Day 1 bounds based on arrival time availability
+    if (arrivalMins !== null) {
+      // Raw arrival time — the airport activity + planner travel accounts for buffer
+      optimizedItinerary.days[0].bounds = {
+        ...optimizedItinerary.days[0].bounds,
+        startTime: builderData.arrivalTime,
+      };
+    } else {
+      // No arrival time — use effective start if available, otherwise leave default
+      const effectiveArrivalStart = computeEffectiveArrivalStart(
+        builderData.arrivalTime, iata,
+      );
+      if (effectiveArrivalStart) {
+        optimizedItinerary.days[0].bounds = {
+          ...optimizedItinerary.days[0].bounds,
+          startTime: effectiveArrivalStart,
+        };
+      }
+    }
+  } else {
+    // No entry point — fall back to effective arrival start for bounds only
+    const effectiveArrivalStart = computeEffectiveArrivalStart(
+      builderData.arrivalTime, builderData.entryPoint?.iataCode,
+    );
+    if (effectiveArrivalStart && optimizedItinerary.days[0]) {
+      optimizedItinerary.days[0].bounds = {
+        ...optimizedItinerary.days[0].bounds,
+        startTime: effectiveArrivalStart,
+      };
+    }
   }
 
-  const exitIata = builderData.sameAsEntry !== false
-    ? builderData.entryPoint?.iataCode
-    : (builderData.exitPoint?.iataCode ?? builderData.entryPoint?.iataCode);
-  const effectiveDepartureEnd = computeEffectiveDepartureEnd(
-    builderData.departureTime, exitIata,
-  );
+  // ── Inject airport departure activity on last day ──
+  // Only requires exitPoint — departureTime is optional
+  const departureMins = parseTimeToMinutes(builderData.departureTime);
+  const exitPoint = builderData.sameAsEntry !== false
+    ? builderData.entryPoint
+    : (builderData.exitPoint ?? builderData.entryPoint);
+  const exitIata = exitPoint?.iataCode;
   const lastIdx = optimizedItinerary.days.length - 1;
-  if (effectiveDepartureEnd && optimizedItinerary.days[lastIdx]) {
-    optimizedItinerary.days[lastIdx].bounds = {
-      ...optimizedItinerary.days[lastIdx].bounds,
-      endTime: effectiveDepartureEnd,
+
+  if (exitPoint && optimizedItinerary.days[lastIdx]) {
+    const processingMin = getDepartureProcessing(exitIata);
+
+    // Build departure activity — pre-set schedule only when departureTime is known
+    const departureActivity: Extract<ItineraryActivity, { kind: "place" }> = {
+      kind: "place",
+      id: `anchor-departure-${exitPoint.id}`,
+      title: `Depart from ${exitPoint.name}`,
+      isAnchor: true,
+      coordinates: exitPoint.coordinates,
+      durationMin: processingMin,
+      tags: ["airport"],
+      timeOfDay: "afternoon" as const,
+      ...(departureMins !== null
+        ? {
+            timeOfDay: (departureMins - processingMin < 720 ? "morning" : departureMins - processingMin < 1020 ? "afternoon" : "evening") as "morning" | "afternoon" | "evening",
+            schedule: {
+              arrivalTime: formatMinutesToTime(departureMins - processingMin),
+              departureTime: builderData.departureTime!,
+              status: "scheduled" as const,
+            },
+          }
+        : {}),
     };
+
+    // Append airport activity to last day
+    optimizedItinerary.days[lastIdx].activities = [
+      ...optimizedItinerary.days[lastIdx].activities,
+      departureActivity,
+    ];
+
+    // Remove endPoint from dayEntryPoints — airport activity serves as routing destination
+    const lastDayEntry = dayEntryPoints[optimizedItinerary.days[lastIdx].id];
+    if (lastDayEntry) {
+      delete lastDayEntry.endPoint;
+    }
+
+    // Set last day bounds based on departure time availability
+    if (departureMins !== null) {
+      // Raw departure time — include full airport time in day window
+      optimizedItinerary.days[lastIdx].bounds = {
+        ...optimizedItinerary.days[lastIdx].bounds,
+        endTime: builderData.departureTime,
+      };
+    } else {
+      const effectiveDepartureEnd = computeEffectiveDepartureEnd(
+        builderData.departureTime, exitIata,
+      );
+      if (effectiveDepartureEnd) {
+        optimizedItinerary.days[lastIdx].bounds = {
+          ...optimizedItinerary.days[lastIdx].bounds,
+          endTime: effectiveDepartureEnd,
+        };
+      }
+    }
+  } else {
+    // No exit point — fall back to effective departure end for bounds only
+    const effectiveDepartureEnd = computeEffectiveDepartureEnd(
+      builderData.departureTime, exitIata,
+    );
+    if (effectiveDepartureEnd && optimizedItinerary.days[lastIdx]) {
+      optimizedItinerary.days[lastIdx].bounds = {
+        ...optimizedItinerary.days[lastIdx].bounds,
+        endTime: effectiveDepartureEnd,
+      };
+    }
   }
 
   // Run planItinerary (routing) and Gemini guide prose in parallel.

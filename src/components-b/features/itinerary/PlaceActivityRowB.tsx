@@ -5,7 +5,7 @@ import { forwardRef, memo, useEffect, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
-import { Star, Clock, MapPin, Trash2, ArrowLeftRight } from "lucide-react";
+import { Star, Clock, MapPin, Trash2, ArrowLeftRight, PlaneLanding, PlaneTakeoff } from "lucide-react";
 
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import type { ItineraryActivity } from "@/types/itinerary";
@@ -306,6 +306,103 @@ export const PlaceActivityRowB = memo(
                   {placeNumber}
                 </span>
               )}
+            </div>
+          </div>
+        );
+      }
+
+      // ── Anchor activity card (airport arrival/departure) ──
+      if (activity.isAnchor) {
+        const isArrival = activity.title.startsWith("Arrive");
+        const PlaneIcon = isArrival ? PlaneLanding : PlaneTakeoff;
+
+        return (
+          <div
+            ref={ref}
+            style={dragStyles}
+            className="focus-visible:outline-none"
+            data-kind="place"
+            data-activity-id={activity.id}
+          >
+            <div className="flex gap-3">
+              <div
+                className="relative min-w-0 flex-1 overflow-hidden rounded-2xl"
+                style={{
+                  backgroundColor: "color-mix(in srgb, var(--primary) 4%, var(--card))",
+                  boxShadow: "var(--shadow-card)",
+                }}
+              >
+                <div className="flex items-start gap-3 p-3 sm:p-4">
+                  {/* Plane icon */}
+                  <div
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor: "color-mix(in srgb, var(--primary) 12%, transparent)",
+                    }}
+                  >
+                    <PlaneIcon
+                      className="h-4.5 w-4.5"
+                      style={{ color: "var(--primary)" }}
+                    />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    {/* Time + title */}
+                    <div className="flex items-start gap-2.5">
+                      <div className="shrink-0 pt-0.5">
+                        {displayArrivalTime ? (
+                          <span
+                            className="text-sm font-semibold"
+                            style={{ color: "var(--foreground)" }}
+                          >
+                            {displayArrivalTime}
+                          </span>
+                        ) : (
+                          <span
+                            className="text-xs capitalize"
+                            style={{ color: "var(--muted-foreground)" }}
+                          >
+                            {activity.timeOfDay || "\u2014"}
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3
+                          className="text-sm font-semibold leading-snug sm:text-base"
+                          style={{ color: "var(--foreground)" }}
+                        >
+                          {activity.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Duration + tag */}
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {durationLabel && (
+                        <span
+                          className="flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                          style={{
+                            backgroundColor: "var(--surface)",
+                            color: "var(--muted-foreground)",
+                          }}
+                        >
+                          <Clock className="h-3 w-3" />
+                          {durationLabel}
+                        </span>
+                      )}
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[11px] font-medium"
+                        style={{
+                          backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)",
+                          color: "var(--primary)",
+                        }}
+                      >
+                        {isArrival ? "Arrival" : "Departure"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         );

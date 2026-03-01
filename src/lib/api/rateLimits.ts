@@ -14,4 +14,5 @@ export const RATE_LIMITS = {
   WEBHOOK: { maxRequests: 30, windowMs: 60_000 },
   HEALTH: { maxRequests: 200, windowMs: 60_000 },
   CHAT: { maxRequests: 30, windowMs: 60_000 },
+  AI_RECOMMEND: { maxRequests: 20, windowMs: 60_000 },
 } as const;
