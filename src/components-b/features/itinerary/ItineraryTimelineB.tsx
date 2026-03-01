@@ -51,13 +51,10 @@ import { TravelSegmentB } from "./TravelSegmentB";
 import { AccommodationBookendB } from "./AccommodationBookendB";
 import { SortableActivityB } from "./SortableActivityB";
 import { DayHeaderB } from "./DayHeaderB";
-import { DayTipsPopoverB } from "./DayTipsPopoverB";
-import { SuggestionsPopoverB } from "./SuggestionsPopoverB";
 import { DayConflictSummaryB } from "./ConflictBadgeB";
 import { WhatsNextCardB } from "./WhatsNextCardB";
 import { useActivityCheckins } from "@/hooks/useActivityCheckins";
 import { TodayIndicatorB } from "./TodayIndicatorB";
-import { DayRefinementButtonsB } from "./DayRefinementButtonsB";
 import { AccommodationPickerB } from "./AccommodationPickerB";
 import { AvailabilityAlertB } from "./AvailabilityAlertB";
 import { useDayAvailability } from "@/hooks/useDayAvailability";
@@ -114,7 +111,7 @@ type ItineraryTimelineBProps = {
 export const ItineraryTimelineB = ({
   day,
   dayIndex,
-  model,
+  model: _model,
   setModel,
   selectedActivityId,
   onSelectActivity,
@@ -122,11 +119,11 @@ export const ItineraryTimelineB = ({
   tripId,
   onReorder,
   onReplace,
-  tripBuilderData,
-  suggestions,
-  onAcceptSuggestion,
-  onSkipSuggestion,
-  loadingSuggestionId,
+  tripBuilderData: _tripBuilderData,
+  suggestions: _suggestions,
+  onAcceptSuggestion: _onAcceptSuggestion,
+  onSkipSuggestion: _onSkipSuggestion,
+  loadingSuggestionId: _loadingSuggestionId,
   conflicts: _conflicts,
   conflictsResult,
   guide,
@@ -242,16 +239,6 @@ export const ItineraryTimelineB = ({
       return { ...current, days: nextDays };
     });
   }, [dayIndex, setModel]);
-
-  const handleRefineDay = useCallback(
-    (refinedDay: ItineraryDay) => {
-      setModel((current) => ({
-        ...current,
-        days: current.days.map((d, i) => (i === dayIndex ? refinedDay : d)),
-      }));
-    },
-    [dayIndex, setModel],
-  );
 
   const handleDayStartTimeChange = useCallback(
     (startTime: string) => {
@@ -746,42 +733,6 @@ export const ItineraryTimelineB = ({
           dayIndex={dayIndex}
           tripStartDate={tripStartDate}
           onDayStartTimeChange={isReadOnly ? undefined : handleDayStartTimeChange}
-          refinementSlot={
-            !isReadOnly && !activeId && tripId ? (
-              <DayRefinementButtonsB
-                dayIndex={dayIndex}
-                tripId={tripId}
-                builderData={tripBuilderData}
-                itinerary={model}
-                onRefine={handleRefineDay}
-              />
-            ) : undefined
-          }
-          tipsSlot={
-            !activeId && extendedActivities.length > 0 ? (
-              <DayTipsPopoverB
-                day={day}
-                tripStartDate={tripStartDate}
-                dayIndex={dayIndex}
-                nextDayActivities={model?.days[dayIndex + 1]?.activities}
-                isFirstTimeVisitor={tripBuilderData?.isFirstTimeVisitor}
-              />
-            ) : undefined
-          }
-          suggestionsSlot={
-            !activeId &&
-            suggestions &&
-            suggestions.length > 0 &&
-            onAcceptSuggestion &&
-            onSkipSuggestion ? (
-              <SuggestionsPopoverB
-                suggestions={suggestions}
-                onAccept={onAcceptSuggestion}
-                onSkip={onSkipSuggestion}
-                loadingSuggestionId={loadingSuggestionId}
-              />
-            ) : undefined
-          }
           accommodationSlot={
             !activeId && (onStartLocationChange || startLocation || endLocation) ? (
               <AccommodationPickerB

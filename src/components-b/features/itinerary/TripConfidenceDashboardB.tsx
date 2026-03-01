@@ -9,7 +9,6 @@ import {
   Check,
   Download,
   Printer,
-  ChevronRight,
 } from "lucide-react";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
@@ -100,7 +99,7 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
       ),
     [itinerary],
   );
-  const { getLocation, locationsMap } = useActivityLocations(allPlaceActivities);
+  const { locationsMap } = useActivityLocations(allPlaceActivities);
 
   const toggleChecked = useCallback((id: string) => {
     setCheckedItems((prev) => {
@@ -340,7 +339,6 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
                 onSelectDay?.(day.dayIndex);
                 onClose();
               }}
-              getLocation={getLocation}
             />
           ))}
         </div>
@@ -513,7 +511,6 @@ function DayOverviewCardB({
   isExpanded,
   onToggle,
   onGoToDay,
-  getLocation,
 }: {
   day: DayHealth;
   itineraryDay?: ItineraryDay;
@@ -521,7 +518,6 @@ function DayOverviewCardB({
   isExpanded: boolean;
   onToggle: () => void;
   onGoToDay: () => void;
-  getLocation?: (activityId: string) => Location | null;
 }) {
   const level = getHealthLevel(day.score);
   const issueCount = day.issues.length;
@@ -636,57 +632,8 @@ function DayOverviewCardB({
               className="border-t px-4 py-3 space-y-2"
               style={{ borderColor: "var(--border)" }}
             >
-              {/* Activity list */}
-              {placeActivities.length > 0 && (
-                <div className="space-y-0.5">
-                  {placeActivities.map((activity, i) => {
-                    const hasLocation = !!getLocation?.(activity.id);
-                    return (
-                      <div
-                        key={activity.id}
-                        className={cn(
-                          "flex items-center gap-2 rounded-lg py-1 px-1 text-xs",
-                          hasLocation && "cursor-pointer hover:bg-[var(--surface)]",
-                        )}
-                      >
-                        <span
-                          className="w-4 shrink-0 text-right text-[10px] tabular-nums"
-                          style={{ color: "var(--muted-foreground)" }}
-                        >
-                          {i + 1}
-                        </span>
-                        <span
-                          className="truncate"
-                          style={{
-                            color: hasLocation
-                              ? "var(--foreground)"
-                              : "var(--muted-foreground)",
-                          }}
-                        >
-                          {activity.title}
-                        </span>
-                        {activity.kind === "place" && activity.mealType && (
-                          <span
-                            className="shrink-0 text-[10px] capitalize"
-                            style={{ color: "var(--muted-foreground)" }}
-                          >
-                            {activity.mealType}
-                          </span>
-                        )}
-                        {hasLocation && (
-                          <ChevronRight
-                            className="ml-auto h-3 w-3 shrink-0"
-                            style={{ color: "var(--muted-foreground)" }}
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-
               {/* Route Overview */}
-              {placeActivities.length > 1 && (
+              {placeActivities.length > 0 && (
                 <RouteOverviewB
                   placeActivities={placeActivities}
                   pointLookup={pointLookup}

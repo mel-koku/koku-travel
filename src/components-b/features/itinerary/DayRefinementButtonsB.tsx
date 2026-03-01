@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { SlidersHorizontal } from "lucide-react";
 import type { RefinementType } from "@/lib/server/refinementEngine";
 import type { Itinerary, ItineraryDay } from "@/types/itinerary";
@@ -39,15 +40,49 @@ export function DayRefinementButtonsB({
   const [refinementError, setRefinementError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const [popoverStyle, setPopoverStyle] = useState<React.CSSProperties>({});
 
+  // Position the fixed popover relative to the trigger button
+  const updatePosition = useCallback(() => {
+    if (!triggerRef.current) return;
+    const rect = triggerRef.current.getBoundingClientRect();
+    setPopoverStyle({
+      position: "fixed",
+      top: rect.bottom + 6,
+      right: window.innerWidth - rect.right,
+      zIndex: 50,
+    });
+  }, []);
+
+  // Click-outside close
   useEffect(() => {
     if (!open) return;
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (
+        ref.current && !ref.current.contains(target) &&
+        popoverRef.current && !popoverRef.current.contains(target)
+      ) {
+        setOpen(false);
+      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
+
+  // Reposition on scroll/resize while open
+  useEffect(() => {
+    if (!open) return;
+    updatePosition();
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+  }, [open, updatePosition]);
 
   const handleRefine = useCallback(
     async (type: RefinementType) => {
@@ -90,9 +125,56 @@ export function DayRefinementButtonsB({
     [builderData, itinerary, tripId, dayIndex, onRefine],
   );
 
+  const popoverContent = (
+    <div
+      ref={popoverRef}
+      className="w-72 rounded-2xl border p-3"
+      style={{
+        ...popoverStyle,
+        borderColor: "var(--border)",
+        backgroundColor: "var(--card)",
+        boxShadow: "var(--shadow-elevated)",
+      }}
+    >
+      <p
+        className="mb-2 text-[11px] font-medium uppercase tracking-[0.15em]"
+        style={{ color: "var(--muted-foreground)" }}
+      >
+        Adjust this day
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {REFINEMENT_OPTIONS.map((option) => (
+          <button
+            key={option.type}
+            type="button"
+            onClick={() => handleRefine(option.type)}
+            disabled={isRefining}
+            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-xs font-medium text-[var(--foreground)] transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--primary)]"
+            style={{ opacity: isRefining ? 0.5 : 1 }}
+            title={option.description}
+          >
+            <span>{option.icon}</span>
+            <span>{option.label}</span>
+          </button>
+        ))}
+      </div>
+      {refinementError && (
+        <p className="mt-2 text-xs" style={{ color: "var(--error)" }}>
+          {refinementError}
+        </p>
+      )}
+      {isRefining && (
+        <p className="mt-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
+          Refining day...
+        </p>
+      )}
+    </div>
+  );
+
   return (
     <div ref={ref} className="relative inline-block">
       <button
+        ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex h-11 items-center gap-1.5 rounded-xl border border-[var(--border)] px-3 text-xs font-medium text-[var(--muted-foreground)] transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--foreground)]"
@@ -101,48 +183,9 @@ export function DayRefinementButtonsB({
         Adjust
       </button>
 
-      {open && (
-        <div
-          className="absolute right-0 top-full z-30 mt-1.5 w-72 rounded-2xl border p-3"
-          style={{
-            borderColor: "var(--border)",
-            backgroundColor: "var(--card)",
-            boxShadow: "var(--shadow-elevated)",
-          }}
-        >
-          <p
-            className="mb-2 text-[11px] font-medium uppercase tracking-[0.15em]"
-            style={{ color: "var(--muted-foreground)" }}
-          >
-            Adjust this day
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            {REFINEMENT_OPTIONS.map((option) => (
-              <button
-                key={option.type}
-                type="button"
-                onClick={() => handleRefine(option.type)}
-                disabled={isRefining}
-                className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-xs font-medium text-[var(--foreground)] transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--primary)]"
-                style={{ opacity: isRefining ? 0.5 : 1 }}
-                title={option.description}
-              >
-                <span>{option.icon}</span>
-                <span>{option.label}</span>
-              </button>
-            ))}
-          </div>
-          {refinementError && (
-            <p className="mt-2 text-xs" style={{ color: "var(--error)" }}>
-              {refinementError}
-            </p>
-          )}
-          {isRefining && (
-            <p className="mt-2 text-xs" style={{ color: "var(--muted-foreground)" }}>
-              Refining day...
-            </p>
-          )}
-        </div>
+      {open && createPortal(
+        popoverContent,
+        document.querySelector("[data-variant='b']") ?? document.body,
       )}
     </div>
   );

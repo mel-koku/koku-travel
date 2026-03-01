@@ -11,7 +11,7 @@ import {
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppState } from "@/state/AppState";
-import type { Itinerary, ItineraryActivity } from "@/types/itinerary";
+import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
 import { ItineraryMapPanel } from "@/components/features/itinerary/ItineraryMapPanel";
@@ -38,6 +38,10 @@ import { useItineraryScrollSync } from "@/components/features/itinerary/hooks/us
 import { useItineraryGuide } from "@/components/features/itinerary/hooks/useItineraryGuide";
 import { ShareButtonB } from "./ShareButtonB";
 import { DaySelectorB } from "./DaySelectorB";
+import { LocationSearchBarB } from "./LocationSearchBarB";
+import { DayTipsPopoverB } from "./DayTipsPopoverB";
+import { SuggestionsPopoverB } from "./SuggestionsPopoverB";
+import { DayRefinementButtonsB } from "./DayRefinementButtonsB";
 import { ItineraryTimelineB } from "./ItineraryTimelineB";
 import { TripConfidenceDashboardB } from "./TripConfidenceDashboardB";
 import { Lightbulb } from "lucide-react";
@@ -114,6 +118,7 @@ export const ItineraryShellB = ({
   const {
     reorderActivities,
     replaceActivity,
+    addActivity,
     getTripById,
     dayEntryPoints,
     cityAccommodations,
@@ -481,6 +486,45 @@ export const ItineraryShellB = ({
     setExpandedLocation(null);
   }, []);
 
+  // ── Add activity from location search ──
+  const handleAddSearchedActivity = useCallback(
+    (newActivity: Extract<ItineraryActivity, { kind: "place" }>) => {
+      if (!tripId || isUsingMock || !currentDay) return;
+
+      // Persist to AppState (edit history + sync)
+      addActivity(tripId, currentDay.id, newActivity);
+
+      // Update local model — append activity to current day
+      const nextDays = model.days.map((d) => {
+        if (d.id !== currentDay.id) return d;
+        return { ...d, activities: [...d.activities, newActivity] };
+      });
+      const nextItinerary = { ...model, days: nextDays };
+      setModelState(nextItinerary);
+
+      // Recalculate travel times
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
+    },
+    [tripId, isUsingMock, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
+  );
+
+  // ── Refine day (Adjust button) ──
+  const handleRefineDay = useCallback(
+    (refinedDay: ItineraryDay) => {
+      const nextItinerary = {
+        ...model,
+        days: model.days.map((d, i) => (i === safeSelectedDay ? refinedDay : d)),
+      };
+      setModelState(nextItinerary);
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
+    },
+    [model, safeSelectedDay, setModelState, scheduleUserPlanningRef],
+  );
+
   // ── Trip metadata ──
   const rawTripName = currentTrip?.name ?? "Your Itinerary";
   // Strip date range from title (e.g. "Kyoto & Osaka Trip · Mar 14 – Mar 18" → "Kyoto & Osaka Trip")
@@ -732,7 +776,7 @@ export const ItineraryShellB = ({
               </div>
             </div>
 
-            {/* Day selector — always visible */}
+            {/* Day selector + search — always visible (sticks with header) */}
             <div style={{ marginTop: headerCollapsed ? 0 : "1rem", transition: "margin-top 0.25s ease" }}>
               <DaySelectorB
                 totalDays={days.length}
@@ -741,6 +785,44 @@ export const ItineraryShellB = ({
                 labels={days.map((day) => day.dateLabel ?? "")}
                 tripStartDate={tripStartDate}
               />
+              {!isReadOnly && !isUsingMock && currentDay && (
+                <div className="mt-2.5 flex items-start gap-2">
+                  <div className="min-w-0 flex-1">
+                    <LocationSearchBarB
+                      dayActivities={currentDay.activities}
+                      onAddActivity={handleAddSearchedActivity}
+                    />
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {currentDay.activities.length > 0 && (
+                      <DayTipsPopoverB
+                        day={currentDay}
+                        tripStartDate={tripStartDate}
+                        dayIndex={safeSelectedDay}
+                        nextDayActivities={model.days[safeSelectedDay + 1]?.activities}
+                        isFirstTimeVisitor={tripBuilderData?.isFirstTimeVisitor}
+                      />
+                    )}
+                    {currentDaySuggestions.length > 0 && onAcceptSuggestion && onSkipSuggestion && (
+                      <SuggestionsPopoverB
+                        suggestions={currentDaySuggestions}
+                        onAccept={handleAcceptSuggestion}
+                        onSkip={onSkipSuggestion}
+                        loadingSuggestionId={loadingSuggestionId}
+                      />
+                    )}
+                    {tripId && (
+                      <DayRefinementButtonsB
+                        dayIndex={safeSelectedDay}
+                        tripId={tripId}
+                        builderData={tripBuilderData}
+                        itinerary={model}
+                        onRefine={handleRefineDay}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
