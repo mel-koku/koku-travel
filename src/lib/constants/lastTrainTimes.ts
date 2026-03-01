@@ -26,12 +26,10 @@ export const LAST_TRAIN_TIMES: Record<string, number> = {
 };
 
 /**
- * Format minutes-since-midnight to a human-readable time string (e.g., "11:30 PM").
+ * Format minutes-since-midnight to a 24-hour time string (e.g., "23:30").
  */
 export function formatLastTrainTime(minutes: number): string {
   const hours24 = Math.floor(minutes / 60) % 24;
   const mins = minutes % 60;
-  const period = hours24 >= 12 ? "PM" : "AM";
-  const hours12 = hours24 === 0 ? 12 : hours24 > 12 ? hours24 - 12 : hours24;
-  return `${hours12}:${mins.toString().padStart(2, "0")} ${period}`;
+  return `${hours24.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
 }
