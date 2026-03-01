@@ -1,13 +1,8 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ActiveFilter } from "@/types/filters";
-import type { VideoPlatform } from "@/lib/video/platforms";
-import { PlatformIcon } from "@/components/features/video-import/PlatformIcon";
-
-export type InputMode = "search" | "url-detected" | "extracting";
 
 type CategoryTab = {
   id: string | null;
@@ -23,10 +18,7 @@ type CategoryBarBProps = {
   onClearAllFilters?: () => void;
   inputValue: string;
   onInputChange: (value: string) => void;
-  onInputPaste: (e: React.ClipboardEvent<HTMLInputElement>) => void;
   onInputSubmit: () => void;
-  inputMode: InputMode;
-  detectedPlatform: VideoPlatform | null;
   tabs?: CategoryTab[];
   activeTab?: string | null;
   onTabChange?: (tabId: string | null) => void;
@@ -43,10 +35,7 @@ export function CategoryBarB({
   onClearAllFilters,
   inputValue,
   onInputChange,
-  onInputPaste,
   onInputSubmit,
-  inputMode,
-  detectedPlatform,
   tabs,
   activeTab,
   onTabChange: _onTabChange,
@@ -57,7 +46,6 @@ export function CategoryBarB({
   const searchInputRef = useRef<HTMLInputElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [isStuck, setIsStuck] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -76,9 +64,6 @@ export function CategoryBarB({
 
   const chipFilters = activeFilters.filter((f) => f.type !== "search");
   const hasChips = chipFilters.length > 0;
-
-  const isExtracting = inputMode === "extracting";
-  const isUrlDetected = inputMode === "url-detected";
 
   return (
     <>
@@ -108,7 +93,8 @@ export function CategoryBarB({
                 </span>
               ) : null;
             })()}
-            {/* Search / link import input */}
+
+            {/* Search input */}
             <form
               className="relative w-full max-w-sm min-w-0"
               onSubmit={(e) => {
@@ -116,66 +102,33 @@ export function CategoryBarB({
                 onInputSubmit();
               }}
             >
-              {detectedPlatform ? (
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <PlatformIcon
-                    platform={detectedPlatform}
-                    className="h-4 w-4 text-[var(--muted-foreground)]"
-                  />
-                </div>
-              ) : (
-                <svg
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)] pointer-events-none"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              )}
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted-foreground)] pointer-events-none"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
               <input
                 ref={searchInputRef}
                 type="text"
                 value={inputValue}
                 onChange={(e) => onInputChange(e.target.value)}
-                onPaste={onInputPaste}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                placeholder="Search places or paste a link..."
-                disabled={isExtracting}
-                className="w-full rounded-xl border border-[var(--border)] bg-white pl-9 pr-12 py-2.5 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition disabled:opacity-60"
+                placeholder="Search places..."
+                className="w-full rounded-xl border border-[var(--border)] bg-white pl-9 pr-12 py-2.5 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition"
               />
               <button
                 type="submit"
-                disabled={isExtracting}
-                title={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--brand-secondary)] active:scale-[0.98] transition disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
-                aria-label={isExtracting ? "Importing..." : isUrlDetected ? "Import link" : "Search"}
+                title="Search"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--brand-secondary)] active:scale-[0.98] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
+                aria-label="Search"
               >
-                {isExtracting ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : isUrlDetected ? (
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                ) : (
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                )}
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </button>
-
-              {/* Link import hint — visible when focused with empty input */}
-              {isFocused && !inputValue.trim() && !isExtracting && (
-                <div className="absolute left-0 right-0 top-full mt-1.5 flex items-center justify-center gap-1.5 text-[11px] text-[var(--muted-foreground)]">
-                  <span>Paste a</span>
-                  <PlatformIcon platform="youtube" className="h-3 w-3" />
-                  <PlatformIcon platform="tiktok" className="h-3 w-3" />
-                  <PlatformIcon platform="instagram" className="h-3 w-3" />
-                  <span>video link to find the location</span>
-                </div>
-              )}
             </form>
 
             {/* Grid / Map toggle */}
