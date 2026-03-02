@@ -123,11 +123,12 @@ function composeDayIntro(
   dayId: string,
   season: string,
   position: string,
+  options?: { isLateArrival?: boolean; startTime?: string },
 ): GuideSegment {
   let content: string;
 
   if (activities.length > 0) {
-    const opener = pickDayIntroOpener(city, `${dayId}-intro`);
+    const opener = pickDayIntroOpener(city, `${dayId}-intro`, options);
     const listing = formatActivityList(activities);
     content = `${opener} Today takes you through ${listing}.`;
 
@@ -315,7 +316,10 @@ function buildDayGuide(
         dayId,
         afterActivityId: null,
       }
-    : composeDayIntro(city, activities, dayId, season, position);
+    : composeDayIntro(city, activities, dayId, season, position, {
+        isLateArrival: day.isLateArrival,
+        startTime: day.bounds?.startTime,
+      });
 
   // ── Transitions + Cultural Moments ──
   let culturalMomentUsed = false;

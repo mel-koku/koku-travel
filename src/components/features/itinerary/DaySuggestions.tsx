@@ -112,6 +112,10 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     bg: "bg-brand-secondary/10",
     text: "text-brand-secondary",
   },
+  late_arrival: {
+    bg: "bg-purple-500/10",
+    text: "text-purple-400",
+  },
 };
 
 export type DaySuggestionsProps = {

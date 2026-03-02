@@ -45,6 +45,7 @@ import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
 import { AccommodationBookend } from "./AccommodationBookend";
+import { LateArrivalCard } from "./LateArrivalCard";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { REGIONS } from "@/data/regions";
@@ -144,6 +145,7 @@ export const ItineraryTimeline = ({
   onViewDetails,
 }: ItineraryTimelineProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [lateArrivalDismissed, setLateArrivalDismissed] = useState(false);
   const isMountedRef = useRef(true);
   const { showToast } = useToast();
 
@@ -957,6 +959,15 @@ export const ItineraryTimeline = ({
                           variant="start"
                           travelMinutes={bookendEstimates.start?.travelMinutes}
                           distanceMeters={bookendEstimates.start?.distanceMeters}
+                        />
+                      </li>
+                    )}
+                    {/* Late arrival card after hotel bookend */}
+                    {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && day.isLateArrival && !lateArrivalDismissed && (
+                      <li className="list-none mt-3">
+                        <LateArrivalCard
+                          city={day.cityId ?? "your destination"}
+                          onDismiss={() => setLateArrivalDismissed(true)}
                         />
                       </li>
                     )}

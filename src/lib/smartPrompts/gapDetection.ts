@@ -35,7 +35,8 @@ export type GapType =
   | "crowd_alert"
   | "festival_alert"
   | "evening_free"
-  | "omiyage_reminder";
+  | "omiyage_reminder"
+  | "late_arrival";
 
 /**
  * A detected gap with contextual information for prompting.
@@ -172,6 +173,11 @@ export type GapAction =
       type: "acknowledge_omiyage";
       city: string;
       items: Array<{ name: string; nameJa: string }>;
+    }
+  | {
+      type: "acknowledge_late_arrival";
+      suggestions: string[];
+      city: string;
     };
 
 
@@ -1063,6 +1069,35 @@ function addDays(dateStr: string, days: number): string {
 }
 
 /**
+ * Detect late arrival on Day 1 — traveler arrives too late for regular activities.
+ * Returns a friendly prompt with evening suggestions for the arrival city.
+ */
+function detectLateArrival(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  if (dayIndex !== 0 || !day.isLateArrival) return [];
+
+  const city = day.cityId ?? "your destination";
+  const suggestions = getEveningSuggestions(city, 3);
+  const suggestionNames = suggestions.map((s) => s.name);
+
+  return [
+    {
+      id: `late-arrival-${day.id}`,
+      type: "late_arrival",
+      dayIndex,
+      dayId: day.id,
+      title: "You get in late today",
+      description: `Take it easy tonight and start fresh tomorrow — or explore late-night ${city}: ${suggestionNames.join(", ")}.`,
+      icon: "Moon",
+      action: {
+        type: "acknowledge_late_arrival",
+        suggestions: suggestionNames,
+        city,
+      },
+    },
+  ];
+}
+
+/**
  * Analyze an itinerary and detect all gaps.
  *
  * @param itinerary - The itinerary to analyze
@@ -1115,6 +1150,14 @@ export function detectGaps(
 
   itinerary.days.forEach((day, dayIndex) => {
     const dayGaps: DetectedGap[] = [];
+
+    // Late arrival: if Day 1 is a late arrival, skip all other detectors
+    // (prevents false "missing breakfast" / "early end" etc.)
+    const lateArrivalGaps = detectLateArrival(day, dayIndex);
+    if (lateArrivalGaps.length > 0) {
+      allGaps.push(...lateArrivalGaps);
+      return;
+    }
 
     if (includeMeals) {
       let mealGaps = detectMealGaps(day, dayIndex);
@@ -1180,6 +1223,7 @@ export function detectGaps(
     // Prioritize and limit gaps per day
     const prioritized = dayGaps.sort((a, b) => {
       const priority: Record<GapType, number> = {
+        late_arrival: -2,
         reservation_alert: -1,
         festival_alert: -0.5,
         meal: 0,

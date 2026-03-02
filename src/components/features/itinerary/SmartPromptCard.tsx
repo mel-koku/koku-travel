@@ -132,6 +132,11 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     text: "text-brand-secondary",
     badge: "bg-brand-secondary/15 text-brand-secondary",
   },
+  late_arrival: {
+    bg: "bg-purple-500/10",
+    text: "text-purple-400",
+    badge: "bg-purple-500/15 text-purple-400",
+  },
 };
 
 export type SmartPromptCardProps = {
@@ -200,7 +205,7 @@ export function SmartPromptCard({
 
         {/* Actions */}
         <div className="mt-2 flex gap-2">
-          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" || gap.action.type === "acknowledge_crowd" || gap.action.type === "acknowledge_festival" || gap.action.type === "acknowledge_omiyage" ? (
+          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" || gap.action.type === "acknowledge_crowd" || gap.action.type === "acknowledge_festival" || gap.action.type === "acknowledge_omiyage" || gap.action.type === "acknowledge_late_arrival" ? (
             <Button
               variant="primary"
               size="chip"
