@@ -161,6 +161,7 @@ export const LOCATION_EXPLORE_COLUMNS = `
   meal_options,
   service_options,
   tags,
+  cuisine_type,
   insider_tip
 `.replace(/\s+/g, "");
 
@@ -285,6 +286,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "meal_options"
   | "service_options"
   | "tags"
+  | "cuisine_type"
   | "insider_tip"
 >;
 

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { VIBES, type VibeId } from "@/data/vibes";
+import { REGION_ORDER, getRegionForPrefecture } from "@/data/prefectures";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 const DURATION_FAST = 0.25;
@@ -85,6 +86,8 @@ export function FilterPanelB({
 }: FilterPanelBProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<Element | null>(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
   const isFoodVibeSelected = selectedVibes.includes("foodie_paradise");
 
@@ -114,7 +117,7 @@ export function FilterPanelB({
     document.body.style.overflow = "hidden";
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     };
     document.addEventListener("keydown", handleEscape);
     return () => {
@@ -122,7 +125,7 @@ export function FilterPanelB({
       document.body.style.overflow = "";
       if (triggerRef.current instanceof HTMLElement) triggerRef.current.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   const toggleVibe = (vibeId: VibeId) => {
     if (selectedVibes.includes(vibeId)) {
@@ -250,11 +253,11 @@ export function FilterPanelB({
 
               {/* Where */}
               <FilterSectionB label="Where" activeCount={whereActiveCount} isExpanded={expandedSections.where} onToggle={() => toggleSection("where")} onClear={whereActiveCount > 0 ? () => onPrefecturesChange([]) : undefined}>
-                <div className="flex flex-wrap gap-2">
-                  {prefectureOptions.map((option) => (
-                    <ChipB key={option.value} label={option.label} isSelected={selectedPrefectures.includes(option.value)} onClick={() => togglePrefecture(option.value)} />
-                  ))}
-                </div>
+                <PrefectureGroupedChipsB
+                  prefectureOptions={prefectureOptions}
+                  selectedPrefectures={selectedPrefectures}
+                  onToggle={togglePrefecture}
+                />
               </FilterSectionB>
 
               {/* Vibe */}
@@ -343,7 +346,7 @@ function FilterSectionB({ label, activeCount, isExpanded, onToggle, onClear, chi
     <motion.div className="border-b border-[var(--border)]/50 last:border-b-0" variants={sectionVariants}>
       <button
         onClick={onToggle}
-        className="flex items-center justify-between w-full py-3.5 group hover:bg-[var(--surface)] rounded-lg px-1 -mx-1 transition-colors"
+        className="flex items-center justify-between w-full py-3.5 group transition-colors"
         aria-expanded={isExpanded}
       >
         <div className="flex items-center gap-2">
@@ -396,6 +399,66 @@ function FilterSectionB({ label, activeCount, isExpanded, onToggle, onClear, chi
         )}
       </AnimatePresence>
     </motion.div>
+  );
+}
+
+function PrefectureGroupedChipsB({
+  prefectureOptions,
+  selectedPrefectures,
+  onToggle,
+}: {
+  prefectureOptions: readonly { value: string; label: string }[];
+  selectedPrefectures: string[];
+  onToggle: (value: string) => void;
+}) {
+  const grouped = new Map<string, { value: string; label: string }[]>();
+  const ungrouped: { value: string; label: string }[] = [];
+
+  for (const option of prefectureOptions) {
+    const region = getRegionForPrefecture(option.label);
+    if (region) {
+      if (!grouped.has(region)) grouped.set(region, []);
+      grouped.get(region)!.push(option);
+    } else {
+      ungrouped.push(option);
+    }
+  }
+
+  const orderedRegions = REGION_ORDER.filter((r) => grouped.has(r));
+
+  return (
+    <div className="space-y-3">
+      {orderedRegions.map((region) => (
+        <div key={region}>
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[var(--muted-foreground)] mb-1.5">{region}</p>
+          <div className="flex flex-wrap gap-2">
+            {grouped.get(region)!.map((option) => (
+              <ChipB
+                key={option.value}
+                label={option.label}
+                isSelected={selectedPrefectures.includes(option.value)}
+                onClick={() => onToggle(option.value)}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+      {ungrouped.length > 0 && (
+        <div>
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[var(--muted-foreground)] mb-1.5">Other</p>
+          <div className="flex flex-wrap gap-2">
+            {ungrouped.map((option) => (
+              <ChipB
+                key={option.value}
+                label={option.label}
+                isSelected={selectedPrefectures.includes(option.value)}
+                onClick={() => onToggle(option.value)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

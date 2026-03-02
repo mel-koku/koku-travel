@@ -193,7 +193,9 @@ export function usePlacesFilters(
         location.city.toLowerCase().includes(normalizedQuery) ||
         location.prefecture?.toLowerCase().includes(normalizedQuery) ||
         location.region.toLowerCase().includes(normalizedQuery) ||
-        location.category.toLowerCase().includes(normalizedQuery);
+        location.category.toLowerCase().includes(normalizedQuery) ||
+        location.tags?.some((t) => t.toLowerCase().includes(normalizedQuery)) ||
+        location.cuisineType?.toLowerCase().includes(normalizedQuery);
 
       const matchesPrefecture = selectedPrefectures.length === 0
         ? true

@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import { easeReveal, durationFast } from "@/lib/motion";
 import { VIBES, type VibeId } from "@/data/vibes";
+import { REGION_ORDER, getRegionForPrefecture } from "@/data/prefectures";
 
 type SortOptionId = "recommended" | "in_season" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
@@ -90,6 +91,8 @@ export function FilterPanel({
 }: FilterPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<Element | null>(null);
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
   const isFoodVibeSelected = selectedVibes.includes("foodie_paradise");
 
@@ -123,7 +126,7 @@ export function FilterPanel({
     document.body.style.overflow = "hidden";
 
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") onCloseRef.current();
     };
     document.addEventListener("keydown", handleEscape);
 
@@ -134,7 +137,7 @@ export function FilterPanel({
         triggerRef.current.focus();
       }
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   const toggleVibe = (vibeId: VibeId) => {
     if (selectedVibes.includes(vibeId)) {
@@ -277,16 +280,11 @@ export function FilterPanel({
                 onToggle={() => toggleSection("where")}
                 onClear={whereActiveCount > 0 ? () => onPrefecturesChange([]) : undefined}
               >
-                <div className="flex flex-wrap gap-2">
-                  {prefectureOptions.map((option) => (
-                    <PanelChip
-                      key={option.value}
-                      label={option.label}
-                      isSelected={selectedPrefectures.includes(option.value)}
-                      onClick={() => togglePrefecture(option.value)}
-                    />
-                  ))}
-                </div>
+                <PrefectureGroupedChips
+                  prefectureOptions={prefectureOptions}
+                  selectedPrefectures={selectedPrefectures}
+                  onToggle={togglePrefecture}
+                />
               </FilterSection>
 
               {/* Vibe */}
@@ -505,6 +503,66 @@ function FilterSection({ label, activeCount, isExpanded, onToggle, onClear, chil
         )}
       </AnimatePresence>
     </motion.div>
+  );
+}
+
+function PrefectureGroupedChips({
+  prefectureOptions,
+  selectedPrefectures,
+  onToggle,
+}: {
+  prefectureOptions: readonly { value: string; label: string }[];
+  selectedPrefectures: string[];
+  onToggle: (value: string) => void;
+}) {
+  const grouped = new Map<string, { value: string; label: string }[]>();
+  const ungrouped: { value: string; label: string }[] = [];
+
+  for (const option of prefectureOptions) {
+    const region = getRegionForPrefecture(option.label);
+    if (region) {
+      if (!grouped.has(region)) grouped.set(region, []);
+      grouped.get(region)!.push(option);
+    } else {
+      ungrouped.push(option);
+    }
+  }
+
+  const orderedRegions = REGION_ORDER.filter((r) => grouped.has(r));
+
+  return (
+    <div className="space-y-3">
+      {orderedRegions.map((region) => (
+        <div key={region}>
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-stone mb-1.5">{region}</p>
+          <div className="flex flex-wrap gap-2">
+            {grouped.get(region)!.map((option) => (
+              <PanelChip
+                key={option.value}
+                label={option.label}
+                isSelected={selectedPrefectures.includes(option.value)}
+                onClick={() => onToggle(option.value)}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+      {ungrouped.length > 0 && (
+        <div>
+          <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-stone mb-1.5">Other</p>
+          <div className="flex flex-wrap gap-2">
+            {ungrouped.map((option) => (
+              <PanelChip
+                key={option.value}
+                label={option.label}
+                isSelected={selectedPrefectures.includes(option.value)}
+                onClick={() => onToggle(option.value)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
