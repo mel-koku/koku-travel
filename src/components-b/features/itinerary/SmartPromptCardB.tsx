@@ -75,8 +75,9 @@ export function SmartPromptCardB({
   const isCrowd = gap.action.type === "acknowledge_crowd";
   const isFestivalAck = gap.action.type === "acknowledge_festival";
   const isOmiyage = gap.action.type === "acknowledge_omiyage";
+  const isLateArrival = gap.action.type === "acknowledge_late_arrival";
   const isWeatherSwap = gap.action.type === "swap_for_weather";
-  const isAcknowledge = isGuidance || isReservation || isLunchRush || isLuggage || isCrowd || isFestivalAck || isOmiyage;
+  const isAcknowledge = isGuidance || isReservation || isLunchRush || isLuggage || isCrowd || isFestivalAck || isOmiyage || isLateArrival;
 
   return (
     <div

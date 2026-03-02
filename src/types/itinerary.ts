@@ -246,6 +246,8 @@ export type ItineraryDay = {
    * Energy pace indicator computed from activity count and total scheduled time.
    */
   paceLabel?: "light" | "moderate" | "packed";
+  /** True when the traveler arrives late (effective arrival >= 19:00) and Day 1 activities are stripped. */
+  isLateArrival?: boolean;
 };
 
 export type Itinerary = {

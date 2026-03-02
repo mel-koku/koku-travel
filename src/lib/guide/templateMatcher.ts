@@ -438,6 +438,20 @@ export const DAY_INTRO_OPENERS: string[] = [
   "{city}, day ahead.",
 ];
 
+export const DAY_INTRO_OPENERS_EVENING: string[] = [
+  "Evening in {city}.",
+  "{city} tonight.",
+  "{city} — winding down.",
+  "A late start in {city}.",
+];
+
+export const DAY_INTRO_OPENERS_LATE_ARRIVAL: string[] = [
+  "Welcome to {city}.",
+  "{city} at last.",
+  "You've made it to {city}.",
+  "Touching down in {city}.",
+];
+
 export const TRANSITION_BRIDGES: string[] = [
   "{name} is next",
   "From here, {name}",
@@ -478,8 +492,28 @@ export function pickPhrase(
 
 /**
  * Get a day intro opener, preferring city-specific variants when available.
+ * Picks time-appropriate openers for late arrivals and evening starts.
  */
-export function pickDayIntroOpener(city: string, seed: string): string {
+export function pickDayIntroOpener(
+  city: string,
+  seed: string,
+  options?: { isLateArrival?: boolean; startTime?: string },
+): string {
+  const displayCity = capitalize(city);
+
+  // Late arrival — use arrival-specific openers (no "Morning in...")
+  if (options?.isLateArrival) {
+    return pickPhrase(DAY_INTRO_OPENERS_LATE_ARRIVAL, seed, { city: displayCity });
+  }
+
+  // Evening start (>= 17:00) — use evening openers
+  if (options?.startTime) {
+    const [h] = options.startTime.split(":").map(Number);
+    if (h != null && h >= 17) {
+      return pickPhrase(DAY_INTRO_OPENERS_EVENING, seed, { city: displayCity });
+    }
+  }
+
   const cityKey = city.toLowerCase();
   const cityPhrases = CITY_SPECIFIC_OPENERS[cityKey];
   if (cityPhrases && cityPhrases.length > 0) {
@@ -490,7 +524,6 @@ export function pickDayIntroOpener(city: string, seed: string): string {
     }
   }
   // Fall back to generic opener with city name interpolated
-  const displayCity = capitalize(city);
   return pickPhrase(DAY_INTRO_OPENERS, seed, { city: displayCity });
 }
 

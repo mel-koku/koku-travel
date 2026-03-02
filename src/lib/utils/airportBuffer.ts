@@ -110,3 +110,20 @@ export function computeEffectiveDepartureEnd(
   const effective = Math.max(mins - getDepartureBuffer(iataCode), MIN_EFFECTIVE_END);
   return formatMinutesToTime(effective);
 }
+
+/** Effective arrival >= 19:00 means less than 1 usable hour before default day end (21:00). */
+export const LATE_ARRIVAL_THRESHOLD = 19 * 60;
+
+/**
+ * Compute the raw (uncapped) effective arrival time in minutes.
+ * arrival + processing + transit — no MAX_EFFECTIVE_START cap.
+ * Returns null if arrivalTime is not provided / invalid.
+ */
+export function computeRawEffectiveArrival(
+  arrivalTime: string | undefined,
+  iataCode?: string,
+): number | null {
+  const mins = parseTimeToMinutes(arrivalTime);
+  if (mins === null) return null;
+  return mins + getArrivalBuffer(iataCode);
+}
