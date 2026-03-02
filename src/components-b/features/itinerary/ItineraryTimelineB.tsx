@@ -56,6 +56,7 @@ import { WhatsNextCardB } from "./WhatsNextCardB";
 import { useActivityCheckins } from "@/hooks/useActivityCheckins";
 import { TodayIndicatorB } from "./TodayIndicatorB";
 import { AccommodationPickerB } from "./AccommodationPickerB";
+import { LateArrivalCardB } from "./LateArrivalCardB";
 import { AvailabilityAlertB } from "./AvailabilityAlertB";
 import { useDayAvailability } from "@/hooks/useDayAvailability";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
@@ -143,6 +144,7 @@ export const ItineraryTimelineB = ({
   onViewDetails,
 }: ItineraryTimelineBProps) => {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [lateArrivalDismissed, setLateArrivalDismissed] = useState(false);
   const isMountedRef = useRef(true);
   const { checkedIn, checkIn } = useActivityCheckins(tripId, day.id);
   const { showToast: _showToast } = useToast();
@@ -1078,6 +1080,20 @@ export const ItineraryTimelineB = ({
                             </li>
                           );
                         })()}
+                      {/* Late arrival card after hotel bookend */}
+                      {activity.kind === "place" &&
+                        activity.isAnchor &&
+                        activity.id.startsWith("anchor-arrival") &&
+                        day.isLateArrival &&
+                        !lateArrivalDismissed &&
+                        !activeId && (
+                          <li className="list-none mt-3">
+                            <LateArrivalCardB
+                              city={day.cityId ?? "your destination"}
+                              onDismiss={() => setLateArrivalDismissed(true)}
+                            />
+                          </li>
+                        )}
                       {/* Guide segments after */}
                       {!activeId &&
                         guideSegmentsAfter.map((seg) => (

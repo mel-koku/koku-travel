@@ -15,7 +15,7 @@ import { generateGuideProse } from "./guideProseGenerator";
 import { refineDays } from "./dayRefinement";
 import { getDayTripsFromCity } from "@/data/dayTrips";
 import { getSeasonalHighlightForDate } from "@/lib/utils/seasonUtils";
-import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, getArrivalProcessing, getDepartureProcessing } from "@/lib/utils/airportBuffer";
+import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd, computeRawEffectiveArrival, getArrivalProcessing, getDepartureProcessing, LATE_ARRIVAL_THRESHOLD } from "@/lib/utils/airportBuffer";
 import { parseTimeToMinutes, formatMinutesToTime } from "@/lib/utils/timeUtils";
 import { fetchCommunityRatings } from "@/lib/ratings/communityRatings";
 import type { GeneratedGuide } from "@/types/llmConstraints";
@@ -434,6 +434,23 @@ export async function generateTripFromBuilderData(
         ...optimizedItinerary.days[lastIdx].bounds,
         endTime: effectiveDepartureEnd,
       };
+    }
+  }
+
+  // ── Late arrival: strip Day 1 activities when effective arrival >= 19:00 ──
+  // After reaching the hotel at 20:00+, less than 1 usable hour remains.
+  if (builderData.arrivalTime && optimizedItinerary.days[0]) {
+    const entryIata = builderData.entryPoint?.iataCode;
+    const rawEffective = computeRawEffectiveArrival(builderData.arrivalTime, entryIata);
+    if (rawEffective !== null && rawEffective >= LATE_ARRIVAL_THRESHOLD) {
+      optimizedItinerary.days[0].activities = optimizedItinerary.days[0].activities.filter(
+        (a) => a.kind === "place" && a.isAnchor,
+      );
+      optimizedItinerary.days[0].isLateArrival = true;
+      logger.info("[engine] Late arrival detected — Day 1 activities stripped", {
+        rawEffective,
+        threshold: LATE_ARRIVAL_THRESHOLD,
+      });
     }
   }
 
