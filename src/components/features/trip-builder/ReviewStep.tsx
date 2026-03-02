@@ -17,7 +17,7 @@ import {
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
 import { JRPassCard } from "./JRPassCard";
-import { PackingChecklistCard } from "./PackingChecklistCard";
+
 import { PlanningWarningsList } from "./PlanningWarning";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { SavedInTripPreview } from "./SavedInTripPreview";
@@ -287,15 +287,6 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
 
       {/* JR Pass Calculator */}
       <JRPassCard duration={data.duration} cities={data.cities} />
-
-      {/* Packing Checklist */}
-      <PackingChecklistCard
-        duration={data.duration}
-        cities={data.cities}
-        month={data.dates?.start ? parseInt(data.dates.start.split("-")[1] ?? "0", 10) || undefined : undefined}
-        groupType={data.group?.type}
-        interests={data.interests}
-      />
 
       {/* Saved places that match selected cities */}
       <SavedInTripPreview selectedCities={data.cities} />

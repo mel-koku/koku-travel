@@ -661,6 +661,7 @@ export const ItineraryShell = ({
                     if (dayIndex != null) handleSelectDayChange(dayIndex);
                   }}
                   budgetTotal={tripBuilderData?.budget?.total}
+                  tripBuilderData={tripBuilderData}
                 />
               </div>
             )}

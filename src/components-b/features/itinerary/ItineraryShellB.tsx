@@ -869,6 +869,7 @@ export const ItineraryShellB = ({
                     if (dayIndex != null) handleSelectDayChange(dayIndex);
                   }}
                   budgetTotal={tripBuilderData?.budget?.total}
+                  tripBuilderData={tripBuilderData}
                 />
               </motion.div>
             )}
