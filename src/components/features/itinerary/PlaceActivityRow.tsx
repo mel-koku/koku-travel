@@ -11,6 +11,7 @@ import type { ItineraryActivity } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import { useActivityLocation } from "@/hooks/useActivityLocations";
 import { DragHandle } from "./DragHandle";
+import { PlaneLanding, PlaneTakeoff, Clock } from "lucide-react";
 import {
   getShortOverview,
   getLocationRating,
@@ -481,8 +482,15 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
               {displayArrivalTime ?? activity.timeOfDay ?? "—"}
             </span>
 
-            {/* Category color dot */}
-            <div className={`h-2 w-2 shrink-0 rounded-full ${colorScheme.badge}`} />
+            {/* Category color dot / Plane icon for anchors */}
+            {activity.isAnchor ? (
+              (() => {
+                const PlaneIcon = activity.title.startsWith("Arrive") ? PlaneLanding : PlaneTakeoff;
+                return <PlaneIcon className="h-3.5 w-3.5 shrink-0 text-brand-primary" />;
+              })()
+            ) : (
+              <div className={`h-2 w-2 shrink-0 rounded-full ${colorScheme.badge}`} />
+            )}
 
             {/* Number badge */}
             {displayLabel !== undefined && (
@@ -502,6 +510,57 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                 {activity.neighborhood}
               </span>
             )}
+          </div>
+        </div>
+      );
+    }
+
+    // Anchor activities (airport arrival/departure) — dedicated minimal card
+    if (activity.isAnchor) {
+      const isArrival = activity.title.startsWith("Arrive");
+      const PlaneIcon = isArrival ? PlaneLanding : PlaneTakeoff;
+
+      return (
+        <div
+          ref={ref}
+          style={dragStyles}
+          className="focus-visible:outline-none"
+          data-kind="place"
+          data-activity-id={activity.id}
+        >
+          <div className="flex gap-3">
+            {/* Left: Time Column */}
+            <div className="flex w-16 shrink-0 flex-col items-center pt-3" data-cursor="default">
+              <span className="font-mono text-sm font-bold text-foreground">
+                {displayArrivalTime ?? activity.timeOfDay ?? "—"}
+              </span>
+            </div>
+
+            {/* Right: Anchor Card */}
+            <div className="flex flex-1 items-center gap-3 rounded-xl bg-background p-3 shadow-sm">
+              {/* Plane icon circle */}
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-primary/10">
+                <PlaneIcon className="h-5 w-5 text-brand-primary" />
+              </div>
+
+              {/* Title + duration */}
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-foreground">
+                  {activity.title}
+                </p>
+                {durationLabel && (
+                  <div className="mt-0.5 flex items-center gap-1 text-xs text-foreground-secondary">
+                    <Clock className="h-3 w-3" />
+                    <span>{durationLabel}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Arrival / Departure badge */}
+              <span className="shrink-0 rounded-full bg-brand-primary/10 px-2.5 py-1 text-[11px] font-semibold text-brand-primary">
+                {isArrival ? "Arrival" : "Departure"}
+              </span>
+            </div>
           </div>
         </div>
       );

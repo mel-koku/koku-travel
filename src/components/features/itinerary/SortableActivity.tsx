@@ -57,7 +57,7 @@ export const SortableActivity = memo(function SortableActivity({
     isDragging,
     isOver,
     active,
-  } = useSortable({ id: activity.id, disabled: isReadOnly });
+  } = useSortable({ id: activity.id, disabled: isReadOnly || (activity.kind === "place" && activity.isAnchor) });
 
   // Show drop indicator when something else is being dragged over this item
   const showDropIndicator = isOver && active?.id !== activity.id;
