@@ -110,6 +110,9 @@ export async function findReplacementCandidates(
     timeSlot: activity.timeOfDay,
     date: options?.date,
     group: tripData.group,
+    collectGoshuin: tripData.collectGoshuin,
+    hasPhotographyVibe: tripData.interests?.includes("photography"),
+    accommodationStyle: tripData.accommodationStyle,
   };
 
   // Get the city to filter by (prefer original location's city over neighborhood)

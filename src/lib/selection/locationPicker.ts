@@ -89,6 +89,10 @@ export function pickLocationForTimeSlot(
   communityRatings?: Map<string, number>,
   categoryWeights?: Record<string, number>,
   dietaryRestrictions?: string[],
+  collectGoshuin?: boolean,
+  hasPhotographyVibe?: boolean,
+  isWeekend?: boolean,
+  accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix",
 ): ScoredLocation | undefined {
   // Filter by both ID and name to prevent duplicates (including same-name different branches)
   const unused = list.filter((loc) => {
@@ -173,6 +177,10 @@ export function pickLocationForTimeSlot(
     communityRatings,
     categoryWeights,
     dietaryRestrictions,
+    collectGoshuin,
+    hasPhotographyVibe,
+    isWeekend,
+    accommodationStyle,
   };
 
   const scored = candidates

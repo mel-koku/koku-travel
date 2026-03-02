@@ -28,6 +28,9 @@ import { PlaceActivityReasoning } from "./PlaceActivityReasoning";
 import { PocketPhrases } from "./PocketPhrases";
 import { ActivityRating } from "./ActivityRating";
 import { useActivityRatingsContext } from "./ActivityRatingsContext";
+import { getSeasonalFoodsForActivity, formatSeasonalFoodTip } from "@/data/seasonalFoods";
+import { getPhotoTiming, formatPhotoTiming } from "@/data/photoSpotTiming";
+import { hasGoshuin, getGoshuinInfo } from "@/data/goshuinData";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -202,6 +205,10 @@ type PlaceActivityRowProps = {
   activeDragId?: string | null;
   /** Open the LocationExpanded slide-in panel for this location */
   onViewDetails?: (location: Location) => void;
+  /** Trip month (1-12) for seasonal food badges */
+  tripMonth?: number;
+  /** City ID for this day */
+  dayCityId?: string;
 };
 
 export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRowProps>(
@@ -229,6 +236,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       isReadOnly,
       activeDragId,
       onViewDetails,
+      tripMonth,
+      dayCityId,
     },
     ref,
   ) => {
@@ -751,6 +760,48 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                   </p>
                 </div>
               )}
+
+              {/* Seasonal Food Badge */}
+              {tripMonth && dayCityId && placeLocation?.category && (() => {
+                const foods = getSeasonalFoodsForActivity(tripMonth, dayCityId, placeLocation.category);
+                if (foods.length === 0) return null;
+                return (
+                  <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-sage/5 px-2.5 py-1.5">
+                    <span className="shrink-0 text-sm">🍽️</span>
+                    <span className="text-xs text-sage">
+                      In season: {formatSeasonalFoodTip(foods)}
+                    </span>
+                  </div>
+                );
+              })()}
+
+              {/* Photo Timing Badge */}
+              {placeLocation && (() => {
+                const timing = getPhotoTiming(placeLocation.id, placeLocation.category);
+                if (!timing) return null;
+                return (
+                  <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-brand-secondary/5 px-2.5 py-1.5">
+                    <span className="shrink-0 text-sm">📸</span>
+                    <span className="text-xs text-brand-secondary">
+                      Best light: {formatPhotoTiming(timing.bestTimes)}
+                    </span>
+                  </div>
+                );
+              })()}
+
+              {/* Goshuin Badge */}
+              {placeLocation && hasGoshuin(placeLocation.id) && (() => {
+                const info = getGoshuinInfo(placeLocation.id);
+                if (!info) return null;
+                return (
+                  <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-brand-primary/5 px-2.5 py-1.5">
+                    <span className="shrink-0 text-sm">⛩️</span>
+                    <span className="text-xs text-brand-primary">
+                      Goshuin available (¥{info.cost}){info.notable ? " — Notable" : ""}
+                    </span>
+                  </div>
+                );
+              })()}
 
               {/* Pocket Phrases */}
               <PocketPhrases

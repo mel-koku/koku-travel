@@ -402,6 +402,17 @@ export async function POST(request: NextRequest) {
       tripDate = d.toISOString().split("T")[0];
     }
 
+    // Pre-compute scoring criteria shared across all action branches
+    const isWeekend = (() => {
+      if (!tripDate) return undefined;
+      const [y, m, d] = tripDate.split("-").map(Number);
+      const dow = (y && m && d) ? new Date(y, m - 1, d).getDay() : undefined;
+      return dow === 0 || dow === 6;
+    })();
+    const hasPhotographyVibe = tripBuilderData?.interests?.includes("photography") || undefined;
+    const collectGoshuin = tripBuilderData?.collectGoshuin;
+    const accommodationStyle = tripBuilderData?.accommodationStyle;
+
     let recommendation: Location | null = null;
     let activity: ItineraryActivity | null = null;
     let position = 0;
@@ -553,6 +564,10 @@ export async function POST(request: NextRequest) {
             .map((a) => a.tags?.[0] ?? "")
             .filter(Boolean),
           timeSlot: action.timeSlot,
+          collectGoshuin,
+          hasPhotographyVibe,
+          isWeekend,
+          accommodationStyle,
         })
       );
 
@@ -616,6 +631,10 @@ export async function POST(request: NextRequest) {
             .map((a) => a.tags?.[0] ?? "")
             .filter(Boolean),
           timeSlot: action.timeSlot,
+          collectGoshuin,
+          hasPhotographyVibe,
+          isWeekend,
+          accommodationStyle,
         })
       );
 
@@ -673,6 +692,10 @@ export async function POST(request: NextRequest) {
             .map((a) => a.tags?.[0] ?? "")
             .filter(Boolean),
           timeSlot,
+          collectGoshuin,
+          hasPhotographyVibe,
+          isWeekend,
+          accommodationStyle,
         })
       );
 
@@ -730,6 +753,10 @@ export async function POST(request: NextRequest) {
             .map((a) => a.tags?.[0] ?? "")
             .filter(Boolean),
           timeSlot: action.timeSlot,
+          collectGoshuin,
+          hasPhotographyVibe,
+          isWeekend,
+          accommodationStyle,
         })
       );
 

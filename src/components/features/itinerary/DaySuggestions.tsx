@@ -96,6 +96,22 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     bg: "bg-brand-secondary/10",
     text: "text-brand-secondary",
   },
+  crowd_alert: {
+    bg: "bg-brand-primary/5",
+    text: "text-foreground-secondary",
+  },
+  festival_alert: {
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
+  },
+  evening_free: {
+    bg: "bg-sage/5",
+    text: "text-sage",
+  },
+  omiyage_reminder: {
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
+  },
 };
 
 export type DaySuggestionsProps = {

@@ -7,6 +7,11 @@ import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
 import { getRegionForCity } from "@/data/regions";
 import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
 import { LAST_TRAIN_TIMES, formatLastTrainTime } from "@/lib/constants/lastTrainTimes";
+import { getSeasonalFoods, formatSeasonalFoodTip } from "@/data/seasonalFoods";
+import { getActiveHolidays } from "@/data/crowdPatterns";
+import { getFestivalsForDay } from "@/data/festivalCalendar";
+import { getEkibenForCity } from "@/data/ekibenGuide";
+import { getOmiyageForCity } from "@/data/omiyageGuide";
 
 export type DisplayTip = {
   id: string;
@@ -221,6 +226,21 @@ export function useDayTips(
           "Book reserved seats on the Shinkansen if you haven't already. Oversized luggage needs a reservation for the last-row space.",
         icon: "\uD83D\uDE85",
       });
+
+      // Ekiben tip for long train rides
+      if (day.cityId) {
+        const ekiben = getEkibenForCity(day.cityId);
+        if (ekiben.length > 0) {
+          const top = ekiben.slice(0, 2);
+          const names = top.map((e) => `${e.name} (${e.nameJa})`).join(", ");
+          tips.push({
+            id: "pro-ekiben",
+            title: "Grab an ekiben",
+            summary: `Pick up a station bento before boarding: ${names}. Available at ${top[0]!.station} Station.`,
+            icon: "\uD83C\uDF71",
+          });
+        }
+      }
     }
 
     // Last train warning
@@ -276,8 +296,79 @@ export function useDayTips(
       });
     }
 
+    // Seasonal food tip
+    const month = dayDate.getMonth() + 1;
+    const hasRestaurant = dayCategories.some((c) => ["restaurant", "cafe", "market"].includes(c));
+    if (hasRestaurant && day.cityId) {
+      const seasonalFoods = getSeasonalFoods(month, day.cityId);
+      if (seasonalFoods.length > 0) {
+        const foodText = formatSeasonalFoodTip(seasonalFoods.slice(0, 3));
+        tips.push({
+          id: "pro-seasonal-food",
+          title: "What's in season",
+          summary: `Try local seasonal picks: ${foodText}`,
+          icon: "\uD83C\uDF7D\uFE0F",
+        });
+      }
+    }
+
+    // Holiday crowd warning (Day 1 only)
+    if (dayIndex === 0) {
+      const dayOfMonth = dayDate.getDate();
+      const holidays = getActiveHolidays(month, dayOfMonth, month, dayOfMonth);
+      if (holidays.length > 0) {
+        const holiday = holidays[0]!;
+        tips.push({
+          id: "pro-holiday-crowd",
+          title: holiday.name,
+          summary: holiday.description,
+          icon: "\uD83C\uDFEE",
+        });
+      }
+    }
+
+    // Omiyage tip — on city transition days
+    if (day.cityTransition && day.cityId) {
+      const omiyage = getOmiyageForCity(day.cityId, 2);
+      if (omiyage.length > 0) {
+        const names = omiyage.map((o) => `${o.name} (${o.nameJa})`).join(", ");
+        const cityLabel = day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1);
+        tips.push({
+          id: "pro-omiyage",
+          title: `${cityLabel} omiyage`,
+          summary: `Last chance to grab souvenirs: ${names}. Available at ${omiyage[0]!.whereToBuy}.`,
+          icon: "\uD83C\uDF81",
+        });
+      }
+    }
+
+    // Goshuin etiquette tip — Day 1 when itinerary has temples/shrines
+    if (dayIndex === 0 && (dayCategories.includes("temple") || dayCategories.includes("shrine"))) {
+      tips.push({
+        id: "pro-goshuin-etiquette",
+        title: "Goshuin etiquette",
+        summary: "Bring a goshuincho (stamp book) to collect temple stamps. Present it open to the correct page, pay \u00A5300-500, and wait quietly. Never use it for non-religious stamps.",
+        icon: "\u26E9\uFE0F",
+      });
+    }
+
+    // Festival tip
+    if (day.cityId) {
+      const dayOfMonth = dayDate.getDate();
+      const festivals = getFestivalsForDay(month, dayOfMonth, day.cityId);
+      if (festivals.length > 0) {
+        const festival = festivals[0]!;
+        tips.push({
+          id: `pro-festival-${festival.id}`,
+          title: festival.name,
+          summary: festival.description,
+          icon: "\uD83C\uDF86",
+        });
+      }
+    }
+
     return tips;
-  }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt]);
+  }, [dayIndex, day.activities, day.cityTransition, day.cityId, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, dayDate, dayCategories]);
 
   // Combined display list — dedup DB tips that overlap with active pro tips
   const allTips = useMemo<DisplayTip[]>(() => {

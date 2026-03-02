@@ -264,6 +264,11 @@ export async function generateItinerary(
   const pace = data.style ?? "balanced";
   const travelTime = getTravelTime(pace);
 
+  // Pre-compute trip-level scoring criteria (constant across all days/slots)
+  const hasPhotographyVibe = data.interests?.includes("photography") || undefined;
+  const collectGoshuin = data.collectGoshuin || undefined;
+  const accommodationStyle = data.accommodationStyle;
+
   // Fetch weather forecasts for all cities and dates
   const weatherContext: TripWeatherContext = {
     forecasts: new Map(),
@@ -623,6 +628,22 @@ export async function generateItinerary(
     let exhaustionAttempts = 0;
     const maxExhaustionAttempts = 3; // Try 3 different interests before giving up
 
+    // Compute day-level date and weekend flag (constant across all time slots)
+    const dayDate = data.dates.start
+      ? (() => {
+          const startDate = new Date(data.dates.start);
+          startDate.setDate(startDate.getDate() + dayIndex);
+          return startDate.toISOString().split("T")[0];
+        })()
+      : undefined;
+    const isWeekend = dayDate
+      ? (() => {
+          const [yw, mw, dw] = dayDate.split("-").map(Number);
+          const dow = (yw && mw && dw) ? new Date(yw, mw - 1, dw).getDay() : undefined;
+          return dow === 0 || dow === 6;
+        })()
+      : undefined;
+
     // Fill each time slot intelligently
     for (const timeSlot of TIME_OF_DAY_SEQUENCE) {
       let availableMinutes = Math.round(getAvailableTimeForSlot(timeSlot, pace) * pacingModifier);
@@ -672,13 +693,6 @@ export async function generateItinerary(
         }
 
         // Get weather forecast for this day and city
-        const dayDate = data.dates.start
-          ? (() => {
-              const startDate = new Date(data.dates.start);
-              startDate.setDate(startDate.getDate() + dayIndex);
-              return startDate.toISOString().split("T")[0];
-            })()
-          : undefined;
         const dayCityId = cityInfo.key as CityId | undefined;
         const dayWeatherForecast: WeatherForecast | undefined = dayDate && dayCityId
           ? weatherContext.cityForecasts.get(dayCityId)?.get(dayDate ?? "")
@@ -712,7 +726,7 @@ export async function generateItinerary(
         const dietaryRestrictions = data.accessibility?.dietary;
 
         let locationResult = isZoneClustered && zoneFilteredLocations
-          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions)
+          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle)
           : null;
 
         // Tier 2: Expand to neighboring zones
@@ -720,13 +734,13 @@ export async function generateItinerary(
           const expandedIds = getExpandedZoneLocationIds(cityZoneMap, selectedZoneId);
           const expandedLocs = availableLocations.filter((loc) => expandedIds.has(loc.id));
           if (expandedLocs.length >= 3) {
-            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions);
+            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle);
           }
         }
 
         // Tier 3: Fall back to full city pool (original behavior)
         if (!locationResult) {
-          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions);
+          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle);
         }
 
         const location = locationResult && "_scoringReasoning" in locationResult
