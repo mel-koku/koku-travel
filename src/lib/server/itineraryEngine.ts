@@ -199,33 +199,32 @@ export async function generateTripFromBuilderData(
   // Intent extraction uses Gemini to reason about vibes, notes, group, pace holistically.
   const intentPromise = extractTripIntent(builderData).catch(() => null);
 
-  // Fetch locations filtered by selected cities (after ward consolidation)
-  // Also fetch day trip target cities for small selections (1-2 cities)
-  // to prevent location exhaustion on longer trips
-  let allLocations = await fetchAllLocations({ cities: builderData.cities });
+  // Compute day trip cities upfront (synchronous) for 1-2 city trips
+  const dayTripCityIds = new Set<string>();
   if (builderData.cities && builderData.cities.length <= 2) {
-    const dayTripCityIds = new Set<string>();
     for (const cityId of builderData.cities) {
-      const trips = getDayTripsFromCity(cityId);
-      trips.forEach((t) => dayTripCityIds.add(t.cityId));
+      getDayTripsFromCity(cityId).forEach((t) => dayTripCityIds.add(t.cityId));
     }
     builderData.cities.forEach((c) => dayTripCityIds.delete(c));
-    if (dayTripCityIds.size > 0) {
-      const dayTripLocations = await fetchAllLocations({
-        cities: Array.from(dayTripCityIds),
-      });
-      allLocations = [...allLocations, ...dayTripLocations];
-    }
   }
 
-  // Await intent extraction (should already be resolved by now)
-  const intentResult = await intentPromise;
-  const t1 = Date.now();
+  // Fire main + day-trip location fetches in parallel
+  const [mainLocations, dayTripLocations] = await Promise.all([
+    fetchAllLocations({ cities: builderData.cities }),
+    dayTripCityIds.size > 0
+      ? fetchAllLocations({ cities: Array.from(dayTripCityIds) })
+      : Promise.resolve([]),
+  ]);
+  const allLocations = dayTripLocations.length > 0
+    ? [...mainLocations, ...dayTripLocations]
+    : mainLocations;
 
-  // Fetch community ratings for scoring blend (non-blocking — falls back to empty)
-  const communityRatingsMap = await fetchCommunityRatings(
-    allLocations.map((l) => l.id),
-  );
+  // Await intent extraction + community ratings in parallel
+  const [intentResult, communityRatingsMap] = await Promise.all([
+    intentPromise,
+    fetchCommunityRatings(allLocations.map((l) => l.id)),
+  ]);
+  const t1 = Date.now();
   const communityRatings = communityRatingsMap.size > 0
     ? new Map([...communityRatingsMap.entries()].map(([k, v]) => [k, v.avgRating]))
     : undefined;
