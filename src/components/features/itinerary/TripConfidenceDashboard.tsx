@@ -17,7 +17,12 @@ import {
 } from "@/lib/itinerary/tripHealth";
 import { easeReveal, durationFast, durationBase } from "@/lib/motion";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
-import { LocationExpanded } from "@/components/features/places/LocationExpanded";
+import dynamic from "next/dynamic";
+
+const LocationExpanded = dynamic(
+  () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
+  { ssr: false },
+);
 import { estimateTripCost, formatCostRange, formatYen } from "@/lib/itinerary/costEstimator";
 
 type TripConfidenceDashboardProps = {
