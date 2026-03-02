@@ -19,11 +19,23 @@ export interface AiRecommendation {
 }
 
 /**
+ * Command response from natural language commands (swap, move, remove, optimize)
+ */
+export interface CommandResponse {
+  type: "swap" | "move" | "remove" | "optimize_route";
+  targetActivityId: string;
+  secondActivityId?: string;
+  movePosition?: "before" | "after";
+  description: string;
+}
+
+/**
  * Response from the AI recommend endpoint
  */
-interface AiRecommendResponse {
+export interface AiRecommendResponse {
   recommendations: AiRecommendation[];
   fallback: boolean;
+  command?: CommandResponse;
 }
 
 /**
@@ -33,9 +45,14 @@ export interface AiRecommendParams {
   query: string;
   cityId: string;
   dayIndex: number;
+  dayDate?: string;
   dayActivities: Array<{
+    id?: string;
     name?: string;
     category?: string;
+    isAnchor?: boolean;
+    departureTime?: string;
+    arrivalTime?: string;
   }>;
   tripBuilderData?: unknown;
   usedLocationIds: string[];

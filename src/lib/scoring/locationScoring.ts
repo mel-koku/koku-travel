@@ -112,6 +112,11 @@ export interface LocationScoringCriteria {
    * Boosts temples/shrines with notable goshuin.
    */
   collectGoshuin?: boolean;
+  /**
+   * Preferred tags from AI intent extraction (e.g. ["quiet", "outdoor"]).
+   * Each overlapping tag = +2, capped at +8.
+   */
+  preferredTags?: string[];
 }
 
 /**
@@ -133,6 +138,7 @@ export interface ScoreBreakdown {
   dietaryFit: number;
   crowdFit: number;
   photoFit: number;
+  tagMatch: number;
 }
 
 /**
@@ -1023,6 +1029,32 @@ function scoreGoshuinFit(
 }
 
 /**
+ * Score tag overlap between location tags and AI-extracted preferred tags.
+ * Range: 0 to +8 points (+2 per matching tag, capped).
+ */
+function scoreTagMatch(
+  location: Location,
+  preferredTags?: string[],
+): { score: number; reasoning: string } {
+  if (!preferredTags || preferredTags.length === 0 || !location.tags || location.tags.length === 0) {
+    return { score: 0, reasoning: "" };
+  }
+
+  const locationTagSet = new Set(location.tags.map((t) => t.toLowerCase()));
+  const matches = preferredTags.filter((t) => locationTagSet.has(t.toLowerCase()));
+
+  if (matches.length === 0) {
+    return { score: 0, reasoning: "" };
+  }
+
+  const score = Math.min(matches.length * 2, 8);
+  return {
+    score,
+    reasoning: `Tag match: ${matches.join(", ")} (+${score})`,
+  };
+}
+
+/**
  * Score a location based on all criteria.
  */
 export function scoreLocation(
@@ -1090,6 +1122,9 @@ export function scoreLocation(
   // Goshuin fit scoring
   const goshuinResult = scoreGoshuinFit(location, criteria.collectGoshuin);
 
+  // Tag match scoring (AI intent preferred tags)
+  const tagMatchResult = scoreTagMatch(location, criteria.preferredTags);
+
   // Accommodation style bonus: ryokan guests prefer onsen/garden/nature/wellness
   const RYOKAN_BONUS_CATEGORIES = new Set(["onsen", "garden", "nature", "wellness"]);
   const accommodationBonus = (
@@ -1114,6 +1149,7 @@ export function scoreLocation(
     dietaryFit: dietaryResult.score,
     crowdFit: crowdResult.score,
     photoFit: photoResult.score,
+    tagMatch: tagMatchResult.score,
   };
 
   const totalScore =
@@ -1132,6 +1168,7 @@ export function scoreLocation(
     breakdown.dietaryFit +
     breakdown.crowdFit +
     breakdown.photoFit +
+    breakdown.tagMatch +
     goshuinResult.score +
     accommodationBonus;
 
@@ -1152,6 +1189,7 @@ export function scoreLocation(
     ...(dietaryResult.reasoning ? [dietaryResult.reasoning] : []),
     ...(crowdResult.reasoning ? [crowdResult.reasoning] : []),
     ...(photoResult.reasoning ? [photoResult.reasoning] : []),
+    ...(tagMatchResult.reasoning ? [tagMatchResult.reasoning] : []),
     ...(goshuinResult.reasoning ? [goshuinResult.reasoning] : []),
     ...(accommodationBonus > 0 ? [`Ryokan stay bonus: +${accommodationBonus} for ${location.category}`] : []),
   ];
