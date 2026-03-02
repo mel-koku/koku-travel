@@ -437,6 +437,7 @@ export const aiRecommendRequestSchema = z.object({
   query: z.string().min(1).max(500),
   cityId: z.string().max(255),
   dayIndex: z.number().int().min(0).max(30).optional(),
+  dayDate: z.string().max(20).optional(),
   dayActivities: z.array(z.object({
     name: z.string().max(500).optional(),
     category: z.string().max(100).optional(),

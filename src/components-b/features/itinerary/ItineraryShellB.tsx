@@ -119,6 +119,7 @@ export const ItineraryShellB = ({
     reorderActivities,
     replaceActivity,
     addActivity,
+    deleteActivity,
     getTripById,
     dayEntryPoints,
     cityAccommodations,
@@ -510,6 +511,53 @@ export const ItineraryShellB = ({
     [tripId, isUsingMock, currentDay, model, addActivity, setModelState, scheduleUserPlanningRef],
   );
 
+  // ── Command bar handlers (AI-driven reorder/remove/optimize) ──
+
+  const handleCommandReorder = useCallback(
+    (activityIds: string[]) => {
+      if (!tripId || isUsingMock || !currentDay) return;
+      reorderActivities(tripId, currentDay.id, activityIds);
+
+      const reorderedActivities = activityIds
+        .map((id) => currentDay.activities.find((a) => a.id === id))
+        .filter(Boolean) as typeof currentDay.activities;
+      const nextDays = model.days.map((d) => {
+        if (d.id !== currentDay.id) return d;
+        return { ...d, activities: reorderedActivities };
+      });
+      const nextItinerary = { ...model, days: nextDays };
+      setModelState(nextItinerary);
+      skipAutoOptimizeRef.current = true;
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
+    },
+    [tripId, isUsingMock, currentDay, model, reorderActivities, setModelState, skipAutoOptimizeRef, scheduleUserPlanningRef],
+  );
+
+  const handleCommandRemove = useCallback(
+    (activityId: string) => {
+      if (!tripId || isUsingMock || !currentDay) return;
+      deleteActivity(tripId, currentDay.id, activityId);
+
+      const nextDays = model.days.map((d) => {
+        if (d.id !== currentDay.id) return d;
+        return { ...d, activities: d.activities.filter((a) => a.id !== activityId) };
+      });
+      const nextItinerary = { ...model, days: nextDays };
+      setModelState(nextItinerary);
+      setTimeout(() => {
+        scheduleUserPlanningRef.current?.(nextItinerary);
+      }, 0);
+    },
+    [tripId, isUsingMock, currentDay, model, deleteActivity, setModelState, scheduleUserPlanningRef],
+  );
+
+  const handleCommandOptimize = useCallback(() => {
+    skipAutoOptimizeRef.current = false;
+    scheduleUserPlanning(model);
+  }, [model, skipAutoOptimizeRef, scheduleUserPlanning]);
+
   // ── Refine day (Adjust button) ──
   const handleRefineDay = useCallback(
     (refinedDay: ItineraryDay) => {
@@ -802,8 +850,12 @@ export const ItineraryShellB = ({
                       onAddActivity={handleAddSearchedActivity}
                       cityId={currentDay.cityId ?? ""}
                       dayIndex={safeSelectedDay}
+                      dayDate={currentDay.dateLabel}
                       tripBuilderData={tripBuilderData}
                       allUsedLocationIds={allUsedLocationIds}
+                      onReorderActivities={handleCommandReorder}
+                      onRemoveActivity={handleCommandRemove}
+                      onOptimizeRoute={handleCommandOptimize}
                     />
                   </div>
                   <div className="flex shrink-0 items-center gap-1.5">

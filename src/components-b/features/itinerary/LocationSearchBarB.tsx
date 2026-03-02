@@ -4,7 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Search, Loader2, X, Star, Sparkles } from "lucide-react";
 import { useLocationSearch } from "@/hooks/useLocationSearch";
-import { useAiRecommend, type AiRecommendation } from "@/hooks/useAiRecommend";
+import { useAiRecommend, type AiRecommendation, type AiRecommendResponse } from "@/hooks/useAiRecommend";
 import { createActivityFromLocation } from "@/lib/itinerary/createActivityFromLocation";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -22,10 +22,18 @@ type LocationSearchBarBProps = {
   cityId?: string;
   /** Current day index for AI context */
   dayIndex?: number;
+  /** Current day's date label (e.g. "2026-03-15") for schedule-aware scoring */
+  dayDate?: string;
   /** Trip builder data for AI scoring context */
   tripBuilderData?: TripBuilderData;
   /** All location IDs already used across the entire trip */
   allUsedLocationIds?: string[];
+  /** Callback when AI command reorders activities */
+  onReorderActivities?: (activityIds: string[]) => void;
+  /** Callback when AI command removes an activity */
+  onRemoveActivity?: (activityId: string) => void;
+  /** Callback when AI command triggers route optimization */
+  onOptimizeRoute?: () => void;
 };
 
 export function LocationSearchBarB({
@@ -33,8 +41,12 @@ export function LocationSearchBarB({
   onAddActivity,
   cityId,
   dayIndex,
+  dayDate,
   tripBuilderData,
   allUsedLocationIds,
+  onReorderActivities,
+  onRemoveActivity,
+  onOptimizeRoute,
 }: LocationSearchBarBProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [query, setQuery] = useState("");
@@ -87,6 +99,62 @@ export function LocationSearchBarB({
     aiMutationRef.current.reset();
   }, []);
 
+  // Handle command response from AI (swap, move, remove, optimize)
+  const handleCommandResponse = useCallback(
+    (data: AiRecommendResponse) => {
+      if (!data.command) return false;
+
+      const { command } = data;
+      const placeActivities = dayActivities.filter(
+        (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place",
+      );
+      const activityIds = placeActivities.map((a) => a.id);
+
+      switch (command.type) {
+        case "swap": {
+          if (!onReorderActivities || !command.targetActivityId || !command.secondActivityId) break;
+          const idxA = activityIds.indexOf(command.targetActivityId);
+          const idxB = activityIds.indexOf(command.secondActivityId);
+          if (idxA === -1 || idxB === -1) break;
+          const newOrder = [...activityIds];
+          newOrder[idxA] = command.secondActivityId;
+          newOrder[idxB] = command.targetActivityId;
+          onReorderActivities(newOrder);
+          collapse();
+          return true;
+        }
+        case "move": {
+          if (!onReorderActivities || !command.targetActivityId || !command.secondActivityId) break;
+          const targetIdx = activityIds.indexOf(command.targetActivityId);
+          const refIdx = activityIds.indexOf(command.secondActivityId);
+          if (targetIdx === -1 || refIdx === -1) break;
+          const newOrder = activityIds.filter((id) => id !== command.targetActivityId);
+          const insertIdx = newOrder.indexOf(command.secondActivityId);
+          if (insertIdx === -1) break;
+          const pos = command.movePosition === "after" ? insertIdx + 1 : insertIdx;
+          newOrder.splice(pos, 0, command.targetActivityId);
+          onReorderActivities(newOrder);
+          collapse();
+          return true;
+        }
+        case "remove": {
+          if (!onRemoveActivity || !command.targetActivityId) break;
+          onRemoveActivity(command.targetActivityId);
+          collapse();
+          return true;
+        }
+        case "optimize_route": {
+          if (!onOptimizeRoute) break;
+          onOptimizeRoute();
+          collapse();
+          return true;
+        }
+      }
+      return false;
+    },
+    [dayActivities, onReorderActivities, onRemoveActivity, onOptimizeRoute, collapse],
+  );
+
   // Escape to collapse, Enter to trigger AI
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -95,22 +163,34 @@ export function LocationSearchBarB({
         collapse();
       } else if (e.key === "Enter" && query.trim().length >= 2) {
         e.preventDefault();
-        aiMutationRef.current.mutate({
-          query: query.trim(),
-          cityId: cityId ?? "",
-          dayIndex: dayIndex ?? 0,
-          dayActivities: dayActivities
-            .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
-            .map((a) => ({
-              name: a.title,
-              category: a.tags?.[0],
-            })),
-          tripBuilderData,
-          usedLocationIds: allUsedLocationIds ?? [],
-        });
+        aiMutationRef.current.mutate(
+          {
+            query: query.trim(),
+            cityId: cityId ?? "",
+            dayIndex: dayIndex ?? 0,
+            dayDate,
+            dayActivities: dayActivities
+              .filter((a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place")
+              .map((a) => ({
+                id: a.id,
+                name: a.title,
+                category: a.tags?.[0],
+                isAnchor: a.isAnchor,
+                departureTime: a.schedule?.departureTime,
+                arrivalTime: a.schedule?.arrivalTime,
+              })),
+            tripBuilderData,
+            usedLocationIds: allUsedLocationIds ?? [],
+          },
+          {
+            onSuccess: (data) => {
+              handleCommandResponse(data);
+            },
+          },
+        );
       }
     },
-    [collapse, query, cityId, dayIndex, dayActivities, tripBuilderData, allUsedLocationIds],
+    [collapse, query, cityId, dayIndex, dayDate, dayActivities, tripBuilderData, allUsedLocationIds, handleCommandResponse],
   );
 
   // Check if location already exists in this day
@@ -149,8 +229,9 @@ export function LocationSearchBarB({
   );
 
   const showDropdown = isExpanded && query.trim().length >= 2;
-  const hasAiResults = aiMutation.isSuccess && aiMutation.data.recommendations.length > 0;
-  const showAiSection = aiMutation.isPending || hasAiResults || (aiMutation.isSuccess && aiMutation.data.recommendations.length === 0);
+  const hasCommand = aiMutation.isSuccess && !!aiMutation.data.command;
+  const hasAiResults = aiMutation.isSuccess && !hasCommand && aiMutation.data.recommendations.length > 0;
+  const showAiSection = !hasCommand && (aiMutation.isPending || hasAiResults || (aiMutation.isSuccess && aiMutation.data.recommendations.length === 0));
 
   return (
     <div ref={containerRef} className="relative">

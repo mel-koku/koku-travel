@@ -14,20 +14,31 @@ import { z } from "zod";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 
+/** Valid DB categories — constrains Gemini to only return real values */
+const VALID_CATEGORIES = [
+  "restaurant", "cafe", "bar", "shrine", "temple", "landmark", "museum",
+  "park", "garden", "shopping", "onsen", "entertainment", "market",
+  "wellness", "viewpoint", "nature", "aquarium", "beach", "castle",
+  "historic_site", "theater", "zoo",
+] as const;
+
 /**
- * Schema for structured place intent extraction
+ * Schema for structured place intent extraction with command classification
  */
 const placeIntentSchema = z.object({
+  commandType: z
+    .enum(["search", "move", "swap", "remove", "optimize_route"])
+    .describe("What action the user wants: 'search' to find new places, 'move' to reorder, 'swap' to exchange two activities, 'remove' to delete, 'optimize_route' to reorder for best walking route"),
   categories: z
-    .array(z.string())
-    .describe("Location categories that match the query"),
+    .array(z.enum(VALID_CATEGORIES))
+    .describe("Location categories that match the query (only for 'search' commands)"),
   tags: z
     .array(z.string())
-    .describe("Relevant tags from the tag dimensions"),
+    .describe("Relevant tags from the tag dimensions (only for 'search' commands)"),
   searchQuery: z
     .string()
     .optional()
-    .describe("A refined text search query to use for name/description matching"),
+    .describe("A refined keyword for text search (e.g. 'ramen' from 'quiet ramen spot'). Omit if purely descriptive or not a search command."),
   mealType: z
     .enum(["breakfast", "lunch", "dinner", "snack"])
     .optional()
@@ -40,6 +51,18 @@ const placeIntentSchema = z.object({
     .enum(["morning", "afternoon", "evening"])
     .optional()
     .describe("If the query implies a time of day"),
+  targetActivityName: z
+    .string()
+    .optional()
+    .describe("For move/swap/remove commands: the name of the activity to act on (must match one of the current activities)"),
+  secondActivityName: z
+    .string()
+    .optional()
+    .describe("For move/swap commands: the reference activity name"),
+  movePosition: z
+    .enum(["before", "after"])
+    .optional()
+    .describe("For move commands: whether to place the target before or after the reference activity"),
 });
 
 export type PlaceIntent = z.infer<typeof placeIntentSchema>;
@@ -47,7 +70,7 @@ export type PlaceIntent = z.infer<typeof placeIntentSchema>;
 interface PlaceIntentContext {
   query: string;
   cityId: string;
-  dayActivities?: Array<{ name: string; category?: string }>;
+  dayActivities?: Array<{ id?: string; name: string; category?: string; isAnchor?: boolean }>;
   interests?: string[];
 }
 
@@ -66,29 +89,38 @@ export async function extractPlaceIntent(
 
   const { query, cityId, dayActivities, interests } = context;
 
-  const existingActivities = dayActivities?.length
+  const activityListText = dayActivities?.length
     ? dayActivities
-        .map((a) => `${a.name} (${a.category ?? "unknown"})`)
-        .join(", ")
+        .map((a, i) => `${i + 1}. ${a.name} (${a.category ?? "unknown"})${a.isAnchor ? " [anchor — cannot be moved/removed]" : ""}`)
+        .join("\n")
     : "none yet";
 
   const tripInterests = interests?.length
     ? interests.join(", ")
     : "general sightseeing";
 
-  const prompt = `You are a Japan travel assistant. A traveler in ${cityId} described what they want to add to their day. Extract structured search parameters from their natural language query.
+  const prompt = `You are a Japan travel assistant. A traveler in ${cityId} is using a search bar that can both find new places AND manage their existing itinerary. Classify their query and extract structured parameters.
 
 ## Query
 "${query}"
 
-## Current Day
-- City: ${cityId}
-- Activities already planned: ${existingActivities}
-- Trip interests: ${tripInterests}
+## Current Day Activities
+${activityListText}
 
-## Your Task
+## Trip Interests
+${tripInterests}
 
-Map the query to structured search parameters:
+## Command Classification
+
+First, determine the **commandType**:
+
+- **"search"** (default): The user wants to find/add a new place. Examples: "quiet ramen spot", "something fun for kids", "a nice park", "sushi"
+- **"swap"**: Exchange the positions of two activities. Examples: "swap the temple and the garden", "switch Fushimi Inari and Kinkaku-ji"
+- **"move"**: Move one activity before or after another. Examples: "move the museum before lunch", "put Senso-ji after the market"
+- **"remove"**: Delete an activity from the day. Examples: "remove the museum", "take out Tsukiji Market", "drop the shrine"
+- **"optimize_route"**: Reorder all activities for the most efficient walking route. Examples: "optimize my route", "reorder for best walking path", "minimize travel time"
+
+## For "search" commands, also extract:
 
 1. **categories**: Which location categories match? Pick from:
    restaurant, cafe, bar, shrine, temple, landmark, museum, park, garden, shopping, onsen, entertainment, market, wellness, viewpoint, nature, aquarium, beach, castle, historic_site, theater, zoo
@@ -103,19 +135,27 @@ Map the query to structured search parameters:
    - For: solo, couples, families, groups
    - Character: traditional-japan, modern-japan, quirky-japan, zen-japan, pop-culture
 
-3. **searchQuery**: A refined keyword for text search (e.g., "ramen" from "quiet ramen spot"). Omit if the query is purely descriptive with no specific name/type.
+3. **searchQuery**: A refined keyword for text search (e.g., "ramen" from "quiet ramen spot"). Omit if purely descriptive.
 
-4. **mealType**: If the query implies a meal (breakfast, lunch, dinner, snack). Omit if not food-related.
+4. **mealType**: If the query implies a meal. Omit if not food-related.
 
-5. **pricePreference**: If the query implies a budget (budget, moderate, luxury). Omit if not mentioned.
+5. **pricePreference**: If the query implies a budget. Omit if not mentioned.
 
-6. **timePreference**: If the query implies a time of day (morning, afternoon, evening). Omit if not mentioned.
+6. **timePreference**: If the query implies a time of day. Omit if not mentioned.
 
-Important:
-- Be generous with categories — include all that could match
-- If the query mentions a specific food type (ramen, sushi, etc.), include "restaurant" in categories and the food type in searchQuery
-- If the query is vague ("something fun"), use trip interests to guide category selection
-- Empty arrays are fine if nothing specific applies`;
+## For command types (swap/move/remove), also extract:
+
+- **targetActivityName**: The activity to act on (must match one of the current activities above)
+- **secondActivityName**: The reference activity (for swap/move only)
+- **movePosition**: "before" or "after" (for move only, default "before" if ambiguous)
+
+## Important Rules
+- Default to "search" if the query is ambiguous or doesn't clearly reference existing activities
+- Activity names must closely match the current day's activities listed above
+- Activities marked [anchor] cannot be moved, swapped, or removed — use "search" instead
+- Be generous with categories for search — include all that could match
+- If the query mentions a specific food type, include "restaurant" in categories and the food type in searchQuery
+- Empty arrays are fine for categories/tags if nothing specific applies`;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
@@ -133,8 +173,10 @@ Important:
     logger.info("Place intent extraction completed", {
       query,
       cityId,
+      commandType: result.object.commandType,
       categories: result.object.categories,
       searchQuery: result.object.searchQuery,
+      targetActivityName: result.object.targetActivityName,
     });
 
     return result.object;
