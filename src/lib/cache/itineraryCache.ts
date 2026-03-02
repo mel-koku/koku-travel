@@ -194,6 +194,21 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
     };
   }
 
+  // Goshuin collection affects temple/shrine scoring
+  if (data.collectGoshuin) normalized.collectGoshuin = true;
+
+  // First time visitor affects pro tips and guidance
+  if (data.isFirstTimeVisitor !== undefined) normalized.isFirstTimeVisitor = data.isFirstTimeVisitor;
+
+  // Weather preferences affect indoor/outdoor scoring
+  if (data.weatherPreferences) {
+    normalized.weatherPreferences = {
+      preferIndoorOnRain: data.weatherPreferences.preferIndoorOnRain,
+      minTemperature: data.weatherPreferences.minTemperature,
+      maxTemperature: data.weatherPreferences.maxTemperature,
+    };
+  }
+
   return normalized;
 }
 

@@ -1,4 +1,5 @@
-import type { CityId } from "@/types/trip";
+import type { CityId, KnownCityId } from "@/types/trip";
+import { calculateRegionalPassRecommendations, type RegionalPass } from "./regionalPassData";
 
 /**
  * JR Pass types with current pricing (as of 2024).
@@ -131,4 +132,25 @@ export function calculateJRPassValue(
     savings,
     journeys,
   };
+}
+
+export type RegionalPassRecommendation = {
+  pass: RegionalPass;
+  coveredCities: KnownCityId[];
+  coverageRatio: number;
+};
+
+/**
+ * Calculate regional pass recommendations for a trip.
+ * Returns top 3 passes that cover the most planned cities.
+ */
+export function calculatePassRecommendations(
+  duration: number,
+  cities: CityId[],
+): { jrPass: JRPassRecommendation; regionalPasses: RegionalPassRecommendation[] } {
+  const jrPass = calculateJRPassValue(duration, cities);
+  const knownCities = cities as KnownCityId[];
+  const regionalPasses = calculateRegionalPassRecommendations(knownCities, duration).slice(0, 3);
+
+  return { jrPass, regionalPasses };
 }

@@ -36,8 +36,8 @@ export type InterestId = (typeof INTEREST_CATEGORIES)[number]["id"];
  */
 export type KnownCityId =
   | "kyoto" | "osaka" | "nara" | "kobe"  // Kansai
-  | "tokyo" | "yokohama"                  // Kanto
-  | "nagoya" | "kanazawa"                 // Chubu
+  | "tokyo" | "yokohama" | "kamakura" | "nikko" | "hakone"  // Kanto
+  | "nagoya" | "kanazawa" | "takayama" | "nagano"            // Chubu
   | "fukuoka" | "nagasaki"                // Kyushu
   | "sapporo" | "hakodate"                // Hokkaido
   | "sendai"                              // Tohoku
@@ -237,6 +237,11 @@ export type TripBuilderData = {
    * - "mix": Per-city default — standard schedule
    */
   accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
+  /**
+   * Whether the user wants to collect goshuin (temple stamps).
+   * Boosts temples/shrines with notable goshuin in scoring.
+   */
+  collectGoshuin?: boolean;
   /**
    * When true, the generator respects data.cities array order instead of
    * auto-optimizing via nearest-neighbor routing. Set when the user manually

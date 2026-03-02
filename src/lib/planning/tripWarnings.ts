@@ -9,6 +9,7 @@
 import type { TripBuilderData, RegionId } from "@/types/trip";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { calculateDistance } from "@/lib/utils/geoUtils";
+import { getFestivalsForTrip } from "@/data/festivalCalendar";
 
 /**
  * Warning severity levels
@@ -25,7 +26,8 @@ export type WarningType =
   | "seasonal_autumn"
   | "holiday"
   | "distance"
-  | "weather";
+  | "weather"
+  | "festival";
 
 /**
  * A single planning warning
@@ -486,7 +488,45 @@ export function detectPlanningWarnings(data: TripBuilderData): PlanningWarning[]
   const seasonalWarnings = detectSeasonalWarnings(data);
   warnings.push(...seasonalWarnings);
 
+  // Detect festival overlaps
+  const festivalWarnings = detectFestivalWarnings(data);
+  warnings.push(...festivalWarnings);
+
   return warnings;
+}
+
+/**
+ * Detect festivals overlapping with the trip dates in planned cities
+ */
+function detectFestivalWarnings(data: TripBuilderData): PlanningWarning[] {
+  if (!data.dates?.start || !data.dates?.end) return [];
+
+  const startParts = data.dates.start.split("-").map(Number);
+  const endParts = data.dates.end.split("-").map(Number);
+  if (!startParts[1] || !startParts[2] || !endParts[1] || !endParts[2]) return [];
+
+  const festivals = getFestivalsForTrip(
+    startParts[1], startParts[2],
+    endParts[1], endParts[2]
+  );
+
+  // Filter to festivals in planned cities (or show all if no cities selected)
+  const cities = data.cities ?? [];
+  const relevant = cities.length > 0
+    ? festivals.filter((f) => cities.includes(f.city as typeof cities[number]))
+    : festivals;
+
+  if (relevant.length === 0) return [];
+
+  // Show up to 2 festival warnings
+  return relevant.slice(0, 2).map((f) => ({
+    id: `festival-${f.id}`,
+    type: "festival" as const,
+    severity: (f.crowdImpact >= 4 ? "caution" : "info") as WarningSeverity,
+    title: `${f.name} (${f.nameJa})`,
+    message: f.description,
+    icon: "🎆",
+  }));
 }
 
 /**

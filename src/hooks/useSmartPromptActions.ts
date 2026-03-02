@@ -134,8 +134,18 @@ export function useSmartPromptActions(
 
   const acceptGap = useCallback(
     async (gap: DetectedGap): Promise<AcceptGapResult> => {
-      // Guidance gaps: just acknowledge, no API call
-      if (gap.action.type === "acknowledge_guidance") {
+      // Guidance/informational gaps: just acknowledge, no API call
+      if (
+        gap.action.type === "acknowledge_guidance" ||
+        gap.action.type === "acknowledge_crowd" ||
+        gap.action.type === "acknowledge_reservation" ||
+        gap.action.type === "acknowledge_lunch_rush" ||
+        gap.action.type === "acknowledge_luggage" ||
+        gap.action.type === "acknowledge_festival" ||
+        gap.action.type === "acknowledge_omiyage" ||
+        gap.action.type === "inject_festival" ||
+        gap.action.type === "add_evening"
+      ) {
         return { success: true };
       }
 

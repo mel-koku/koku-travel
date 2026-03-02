@@ -11,6 +11,10 @@ import type { WeatherForecast } from "@/types/weather";
 import { getCoveredMealTypes } from "./foodDetection";
 import { resolveActivityCategory } from "@/lib/guide/templateMatcher";
 import { isRainyForecast } from "@/lib/weather/weatherScoring";
+import { getCrowdLevel, getCrowdWarning } from "@/data/crowdPatterns";
+import { getFestivalsForDay, type Festival } from "@/data/festivalCalendar";
+import { getEveningSuggestions, formatEveningSuggestions } from "@/data/nightActivities";
+import { getOmiyageForCity, formatOmiyageItems } from "@/data/omiyageGuide";
 
 /**
  * Types of gaps that can be detected in an itinerary.
@@ -27,7 +31,11 @@ export type GapType =
   | "reservation_alert"
   | "lunch_rush"
   | "rain_contingency"
-  | "luggage_needs";
+  | "luggage_needs"
+  | "crowd_alert"
+  | "festival_alert"
+  | "evening_free"
+  | "omiyage_reminder";
 
 /**
  * A detected gap with contextual information for prompting.
@@ -138,6 +146,32 @@ export type GapAction =
       type: "acknowledge_luggage";
       fromCity: string;
       toCity: string;
+    }
+  | {
+      type: "acknowledge_crowd";
+      activityName: string;
+      crowdLevel: number;
+    }
+  | {
+      type: "inject_festival";
+      festivalId: string;
+      festivalName: string;
+      suggestedActivity?: string;
+    }
+  | {
+      type: "acknowledge_festival";
+      festivalId: string;
+      festivalName: string;
+    }
+  | {
+      type: "add_evening";
+      suggestions: string[];
+      city: string;
+    }
+  | {
+      type: "acknowledge_omiyage";
+      city: string;
+      items: Array<{ name: string; nameJa: string }>;
     };
 
 
@@ -760,6 +794,200 @@ function detectLuggageNeeds(day: ItineraryDay, dayIndex: number): DetectedGap[] 
 }
 
 /**
+ * Detect activities scheduled at high crowd levels (>=4).
+ * Returns a single crowd_alert per day with the worst offender.
+ */
+function detectCrowdAlerts(
+  day: ItineraryDay,
+  dayIndex: number,
+  options?: { month?: number; dayOfMonth?: number; isWeekend?: boolean }
+): DetectedGap[] {
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
+
+  const CROWD_THRESHOLD = 4;
+
+  for (const activity of placeActivities) {
+    const arrivalMinutes = parseTimeToMinutes(activity.schedule?.arrivalTime);
+    if (arrivalMinutes === null) continue;
+
+    const hour = Math.floor(arrivalMinutes / 60);
+    const category = resolveActivityCategory(activity.tags)?.sub?.toLowerCase() ?? "";
+    const crowdLevel = getCrowdLevel(category, hour, {
+      locationId: activity.locationId,
+      month: options?.month,
+      day: options?.dayOfMonth,
+      isWeekend: options?.isWeekend,
+    });
+
+    if (crowdLevel >= CROWD_THRESHOLD) {
+      const warning = activity.locationId
+        ? getCrowdWarning(activity.locationId)
+        : undefined;
+
+      return [{
+        id: `crowd-${day.id}-${activity.id}`,
+        type: "crowd_alert",
+        dayIndex,
+        dayId: day.id,
+        title: crowdLevel >= 5 ? "Expect large crowds" : "Busy period ahead",
+        description: warning
+          ? `${activity.title}: ${warning}`
+          : `${activity.title} is scheduled during peak hours. ${crowdLevel >= 5 ? "Expect long queues." : "Arrive early to beat the rush."}`,
+        icon: "Users",
+        action: {
+          type: "acknowledge_crowd",
+          activityName: activity.title,
+          crowdLevel,
+        },
+      }];
+    }
+  }
+
+  return [];
+}
+
+/**
+ * Detect festivals overlapping a day in the day's city.
+ * Returns up to 1 festival_alert per day.
+ */
+function detectFestivalOverlaps(
+  day: ItineraryDay,
+  dayIndex: number,
+  options?: { month?: number; dayOfMonth?: number }
+): DetectedGap[] {
+  if (!options?.month || !options?.dayOfMonth || !day.cityId) return [];
+
+  const festivals = getFestivalsForDay(options.month, options.dayOfMonth, day.cityId);
+  if (festivals.length === 0) return [];
+
+  const festival = festivals[0] as Festival;
+
+  if (festival.suggestedActivity) {
+    return [{
+      id: `festival-${day.id}-${festival.id}`,
+      type: "festival_alert",
+      dayIndex,
+      dayId: day.id,
+      title: `${festival.name}`,
+      description: `${festival.description}${festival.crowdImpact >= 4 ? " Expect heavy crowds." : ""}`,
+      icon: "PartyPopper",
+      action: {
+        type: "inject_festival",
+        festivalId: festival.id,
+        festivalName: festival.name,
+        suggestedActivity: festival.suggestedActivity,
+      },
+    }];
+  }
+
+  return [{
+    id: `festival-${day.id}-${festival.id}`,
+    type: "festival_alert",
+    dayIndex,
+    dayId: day.id,
+    title: `${festival.name}`,
+    description: `${festival.description}${festival.crowdImpact >= 4 ? " Expect heavy crowds." : ""}`,
+    icon: "PartyPopper",
+    action: {
+      type: "acknowledge_festival",
+      festivalId: festival.id,
+      festivalName: festival.name,
+    },
+  }];
+}
+
+/**
+ * Detect days ending before 20:00 that could benefit from evening activities.
+ */
+function detectEveningFree(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
+
+  if (placeActivities.length === 0) return [];
+
+  const EVENING_THRESHOLD = 20 * 60; // 8pm
+
+  const lastActivity = placeActivities[placeActivities.length - 1];
+  if (!lastActivity) return [];
+
+  const lastDeparture = parseTimeToMinutes(lastActivity.schedule?.departureTime);
+  if (lastDeparture === null || lastDeparture >= EVENING_THRESHOLD) return [];
+
+  // Already has evening activities? Skip
+  const hasEvening = placeActivities.some((a) => a.timeOfDay === "evening");
+  if (hasEvening) return [];
+
+  const city = day.cityId ?? "the area";
+
+  // Get city-specific evening suggestions from night activities data
+  const topActivities = getEveningSuggestions(city, 3);
+  const suggestionNames = topActivities.map((a) => a.name);
+  const suggestionText = formatEveningSuggestions(topActivities);
+
+  return [{
+    id: `evening-free-${day.id}`,
+    type: "evening_free",
+    dayIndex,
+    dayId: day.id,
+    title: "Free evening",
+    description: `Your day ends early. Explore ${city}'s evening scene — ${suggestionText}.`,
+    icon: "Moon",
+    action: {
+      type: "add_evening",
+      suggestions: suggestionNames,
+      city,
+    },
+  }];
+}
+
+/**
+ * Detect last day in each city for omiyage (souvenir) reminders.
+ */
+function detectOmiyageReminders(
+  itinerary: Itinerary,
+): DetectedGap[] {
+  const gaps: DetectedGap[] = [];
+
+  // Find last day index for each city
+  const lastDayPerCity = new Map<string, number>();
+  itinerary.days.forEach((day, idx) => {
+    if (day.cityId) lastDayPerCity.set(day.cityId, idx);
+  });
+
+  for (const [city, dayIndex] of lastDayPerCity) {
+    const day = itinerary.days[dayIndex];
+    if (!day) continue;
+
+    const cityLabel = city.charAt(0).toUpperCase() + city.slice(1);
+    const omiyage = getOmiyageForCity(city, 3);
+    const omiyageItems = formatOmiyageItems(omiyage);
+    const omiyageText = omiyage.length > 0
+      ? ` Try: ${omiyage.map((o) => o.name).join(", ")}.`
+      : "";
+
+    gaps.push({
+      id: `omiyage-${day.id}`,
+      type: "omiyage_reminder",
+      dayIndex,
+      dayId: day.id,
+      title: `${cityLabel} souvenirs`,
+      description: `Last day in ${cityLabel}. Pick up local omiyage before you leave.${omiyageText}`,
+      icon: "Gift",
+      action: {
+        type: "acknowledge_omiyage",
+        city,
+        items: omiyageItems,
+      },
+    });
+  }
+
+  return gaps;
+}
+
+/**
  * Get suggested alternative categories based on the dominant category.
  */
 function getSuggestedAlternatives(dominantCategory: string): string[] {
@@ -800,6 +1028,41 @@ function formatCategoryName(category: string): string {
 }
 
 /**
+ * Extract month/day/weekend info for a day in the itinerary.
+ */
+function getDayDateInfo(
+  day: ItineraryDay,
+  dayIndex: number,
+  tripStartDate?: string,
+): { month?: number; dayOfMonth?: number; isWeekend?: boolean } {
+  // Prefer dateLabel from the day itself
+  const dateStr = day.dateLabel ?? (tripStartDate ? addDays(tripStartDate, dayIndex) : undefined);
+  if (!dateStr) return {};
+
+  const parts = dateStr.split("-");
+  const year = parseInt(parts[0] ?? "0", 10);
+  const month = parseInt(parts[1] ?? "0", 10);
+  const dayOfMonth = parseInt(parts[2] ?? "0", 10);
+
+  // Use local date constructor to avoid UTC offset issue
+  const date = new Date(year, month - 1, dayOfMonth);
+  const dayOfWeek = date.getDay();
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+  return { month, dayOfMonth, isWeekend };
+}
+
+function addDays(dateStr: string, days: number): string {
+  const parts = dateStr.split("-");
+  const d = new Date(
+    parseInt(parts[0] ?? "0", 10),
+    parseInt(parts[1] ?? "0", 10) - 1,
+    parseInt(parts[2] ?? "0", 10) + days,
+  );
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/**
  * Analyze an itinerary and detect all gaps.
  *
  * @param itinerary - The itinerary to analyze
@@ -817,10 +1080,16 @@ export function detectGaps(
     includeCategoryBalance?: boolean;
     includeLunchRush?: boolean;
     includeRainContingency?: boolean;
+    includeCrowdAlerts?: boolean;
+    includeFestivalAlerts?: boolean;
+    includeEveningFree?: boolean;
+    includeOmiyageReminders?: boolean;
     forecasts?: Map<string, WeatherForecast>;
     maxGapsPerDay?: number;
     /** When "ryokan", skip breakfast + dinner gap detection (included with stay) */
     accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix";
+    /** Trip start date for date-based features */
+    tripStartDate?: string;
   } = {}
 ): DetectedGap[] {
   const {
@@ -832,9 +1101,14 @@ export function detectGaps(
     includeCategoryBalance = true,
     includeLunchRush = true,
     includeRainContingency = true,
+    includeCrowdAlerts = true,
+    includeFestivalAlerts = true,
+    includeEveningFree = true,
+    includeOmiyageReminders = true,
     forecasts,
     maxGapsPerDay = 4,
     accommodationStyle,
+    tripStartDate,
   } = options;
 
   const allGaps: DetectedGap[] = [];
@@ -886,28 +1160,53 @@ export function detectGaps(
     // Luggage needs (city transition days)
     dayGaps.push(...detectLuggageNeeds(day, dayIndex));
 
+    // Crowd alerts
+    if (includeCrowdAlerts) {
+      const dateInfo = getDayDateInfo(day, dayIndex, tripStartDate);
+      dayGaps.push(...detectCrowdAlerts(day, dayIndex, dateInfo));
+    }
+
+    // Festival alerts
+    if (includeFestivalAlerts) {
+      const dateInfo = getDayDateInfo(day, dayIndex, tripStartDate);
+      dayGaps.push(...detectFestivalOverlaps(day, dayIndex, dateInfo));
+    }
+
+    // Evening free
+    if (includeEveningFree) {
+      dayGaps.push(...detectEveningFree(day, dayIndex));
+    }
+
     // Prioritize and limit gaps per day
-    // Priority: meals > luggage > timing > rain/long gaps > lunch_rush > category > transport > experience
     const prioritized = dayGaps.sort((a, b) => {
       const priority: Record<GapType, number> = {
         reservation_alert: -1,
+        festival_alert: -0.5,
         meal: 0,
         luggage_needs: 1.5,
         late_start: 1,
         early_end: 1,
         rain_contingency: 2,
         long_gap: 2,
+        crowd_alert: 2.5,
         lunch_rush: 3,
         category_imbalance: 4,
         transport: 5,
         experience: 6,
         guidance: 5.5,
+        evening_free: 6.5,
+        omiyage_reminder: 7,
       };
       return priority[a.type] - priority[b.type];
     });
 
     allGaps.push(...prioritized.slice(0, maxGapsPerDay));
   });
+
+  // Trip-level detections (not per-day)
+  if (includeOmiyageReminders) {
+    allGaps.push(...detectOmiyageReminders(itinerary));
+  }
 
   return allGaps;
 }

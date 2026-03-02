@@ -7,6 +7,9 @@ import { scoreWeatherFit } from "@/lib/weather/weatherScoring";
 import { scoreTimeOfDayFit, checkOpeningHoursFit } from "./timeOptimization";
 import { scoreGroupFit } from "./groupScoring";
 import { MONTH_TO_SEASON_TAGS } from "@/lib/utils/seasonUtils";
+import { getCrowdLevel } from "@/data/crowdPatterns";
+import { getPhotoTiming, isPhotoOptimalTime } from "@/data/photoSpotTiming";
+import { hasGoshuin, isNotableGoshuin } from "@/data/goshuinData";
 
 /**
  * Criteria for scoring a location.
@@ -95,6 +98,20 @@ export interface LocationScoringCriteria {
    * Used as a soft scoring factor for food categories.
    */
   dietaryRestrictions?: string[];
+  /**
+   * Whether the current day falls on a weekend (for crowd scoring).
+   */
+  isWeekend?: boolean;
+  /**
+   * Whether the user selected a photography-related vibe.
+   * Enables photo timing scoring bonus.
+   */
+  hasPhotographyVibe?: boolean;
+  /**
+   * Whether the user wants to collect goshuin (temple stamps).
+   * Boosts temples/shrines with notable goshuin.
+   */
+  collectGoshuin?: boolean;
 }
 
 /**
@@ -114,6 +131,8 @@ export interface ScoreBreakdown {
   seasonalFit: number;
   contentFit: number;
   dietaryFit: number;
+  crowdFit: number;
+  photoFit: number;
 }
 
 /**
@@ -895,6 +914,115 @@ function scoreDietaryFit(
 }
 
 /**
+ * Score crowd fit — prefer less crowded times, penalize peak crowds.
+ * Range: -8 to +8 points
+ */
+function scoreCrowdFit(
+  location: Location,
+  criteria: LocationScoringCriteria,
+): { score: number; reasoning: string } {
+  if (!criteria.timeSlot || !location.category) {
+    return { score: 0, reasoning: "" };
+  }
+
+  // Map time slot to approximate hour
+  const SLOT_TO_HOUR: Record<string, number> = {
+    morning: 9,
+    afternoon: 14,
+    evening: 19,
+  };
+  const hour = SLOT_TO_HOUR[criteria.timeSlot] ?? 12;
+
+  // Parse date for weekend/holiday detection
+  let month: number | undefined;
+  let dayOfMonth: number | undefined;
+  if (criteria.date) {
+    const parts = criteria.date.split("-");
+    month = parseInt(parts[1] ?? "0", 10);
+    dayOfMonth = parseInt(parts[2] ?? "0", 10);
+  }
+
+  const crowdLevel = getCrowdLevel(location.category, hour, {
+    locationId: location.id,
+    month,
+    day: dayOfMonth,
+    isWeekend: criteria.isWeekend,
+  });
+
+  // Score: low crowds = bonus, high crowds = penalty
+  if (crowdLevel <= 1) return { score: 8, reasoning: "Very low crowds expected" };
+  if (crowdLevel === 2) return { score: 4, reasoning: "Light crowds expected" };
+  if (crowdLevel === 3) return { score: 0, reasoning: "Moderate crowds expected" };
+  if (crowdLevel === 4) return { score: -4, reasoning: "Busy — consider off-peak timing" };
+  return { score: -8, reasoning: "Peak crowds — expect long queues" };
+}
+
+/**
+ * Score photo timing fit — bonus when activity is scheduled at optimal photo time.
+ * Range: 0 to +5 points. Only active when photography vibe is selected.
+ */
+function scorePhotoFit(
+  location: Location,
+  criteria: LocationScoringCriteria,
+): { score: number; reasoning: string } {
+  if (!criteria.hasPhotographyVibe || !criteria.timeSlot) {
+    return { score: 0, reasoning: "" };
+  }
+
+  const timing = getPhotoTiming(location.id, location.category);
+  if (!timing) {
+    return { score: 0, reasoning: "" };
+  }
+
+  // Map time slot to approximate hour
+  const SLOT_TO_HOUR: Record<string, number> = {
+    morning: 8,
+    afternoon: 15,
+    evening: 18,
+  };
+  const hour = SLOT_TO_HOUR[criteria.timeSlot] ?? 12;
+
+  if (isPhotoOptimalTime(hour, timing.bestTimes)) {
+    const tipNote = timing.tip ? ` — ${timing.tip}` : "";
+    return {
+      score: 5,
+      reasoning: `Optimal photo time for ${location.name}${tipNote}`,
+    };
+  }
+
+  return { score: 0, reasoning: "" };
+}
+
+/**
+ * Score goshuin (temple stamp) availability — bonus for temples/shrines
+ * when collectGoshuin is enabled.
+ * Range: 0 to +5 points.
+ */
+function scoreGoshuinFit(
+  location: Location,
+  collectGoshuin?: boolean,
+): { score: number; reasoning: string } {
+  if (!collectGoshuin) {
+    return { score: 0, reasoning: "" };
+  }
+
+  const GOSHUIN_CATEGORIES = new Set(["temple", "shrine"]);
+  if (!location.category || !GOSHUIN_CATEGORIES.has(location.category)) {
+    return { score: 0, reasoning: "" };
+  }
+
+  if (isNotableGoshuin(location.id)) {
+    return { score: 5, reasoning: "Notable goshuin available" };
+  }
+
+  if (hasGoshuin(location.id)) {
+    return { score: 3, reasoning: "Goshuin available" };
+  }
+
+  return { score: 0, reasoning: "" };
+}
+
+/**
  * Score a location based on all criteria.
  */
 export function scoreLocation(
@@ -953,6 +1081,15 @@ export function scoreLocation(
   // Dietary fit scoring (soft factor for food categories)
   const dietaryResult = scoreDietaryFit(location, criteria.dietaryRestrictions);
 
+  // Crowd fit scoring
+  const crowdResult = scoreCrowdFit(location, criteria);
+
+  // Photo timing fit scoring
+  const photoResult = scorePhotoFit(location, criteria);
+
+  // Goshuin fit scoring
+  const goshuinResult = scoreGoshuinFit(location, criteria.collectGoshuin);
+
   // Accommodation style bonus: ryokan guests prefer onsen/garden/nature/wellness
   const RYOKAN_BONUS_CATEGORIES = new Set(["onsen", "garden", "nature", "wellness"]);
   const accommodationBonus = (
@@ -975,6 +1112,8 @@ export function scoreLocation(
     seasonalFit: seasonalResult.scoreAdjustment,
     contentFit: contentResult.score,
     dietaryFit: dietaryResult.score,
+    crowdFit: crowdResult.score,
+    photoFit: photoResult.score,
   };
 
   const totalScore =
@@ -991,6 +1130,9 @@ export function scoreLocation(
     breakdown.seasonalFit +
     breakdown.contentFit +
     breakdown.dietaryFit +
+    breakdown.crowdFit +
+    breakdown.photoFit +
+    goshuinResult.score +
     accommodationBonus;
 
   const reasoning = [
@@ -1008,6 +1150,9 @@ export function scoreLocation(
     seasonalResult.reasoning,
     ...(contentResult.reasoning ? [contentResult.reasoning] : []),
     ...(dietaryResult.reasoning ? [dietaryResult.reasoning] : []),
+    ...(crowdResult.reasoning ? [crowdResult.reasoning] : []),
+    ...(photoResult.reasoning ? [photoResult.reasoning] : []),
+    ...(goshuinResult.reasoning ? [goshuinResult.reasoning] : []),
     ...(accommodationBonus > 0 ? [`Ryokan stay bonus: +${accommodationBonus} for ${location.category}`] : []),
   ];
 

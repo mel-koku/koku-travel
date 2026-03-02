@@ -6,16 +6,19 @@ import {
   Clock,
   CloudRain,
   Coffee,
+  Gift,
   Info,
   Leaf,
   Moon,
   Package,
+  PartyPopper,
   Plus,
   ShoppingBag,
   Shuffle,
   Sunrise,
   Sunset,
   Train,
+  Users,
   Utensils,
   UtensilsCrossed,
   type LucideIcon,
@@ -31,16 +34,19 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Clock,
   CloudRain,
   Coffee,
+  Gift,
   Info,
   Leaf,
   Moon,
   Package,
+  PartyPopper,
   Plus,
   ShoppingBag,
   Shuffle,
   Sunrise,
   Sunset,
   Train,
+  Users,
   Utensils,
   UtensilsCrossed,
 };
@@ -102,6 +108,26 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-sage/10 text-sage",
   },
   luggage_needs: {
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
+    badge: "bg-brand-secondary/15 text-brand-secondary",
+  },
+  crowd_alert: {
+    bg: "bg-blue-500/10",
+    text: "text-blue-400",
+    badge: "bg-blue-500/15 text-blue-400",
+  },
+  festival_alert: {
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
+    badge: "bg-brand-secondary/15 text-brand-secondary",
+  },
+  evening_free: {
+    bg: "bg-purple-500/10",
+    text: "text-purple-400",
+    badge: "bg-purple-500/15 text-purple-400",
+  },
+  omiyage_reminder: {
     bg: "bg-brand-secondary/10",
     text: "text-brand-secondary",
     badge: "bg-brand-secondary/15 text-brand-secondary",
@@ -174,7 +200,7 @@ export function SmartPromptCard({
 
         {/* Actions */}
         <div className="mt-2 flex gap-2">
-          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" ? (
+          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" || gap.action.type === "acknowledge_crowd" || gap.action.type === "acknowledge_festival" || gap.action.type === "acknowledge_omiyage" ? (
             <Button
               variant="primary"
               size="chip"
