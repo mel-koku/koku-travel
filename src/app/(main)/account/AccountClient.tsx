@@ -11,6 +11,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
+import { debounce } from "@/lib/utils";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 type AccountClientProps = {
@@ -281,20 +282,4 @@ function EmailForm({ content }: { content?: PagesContent }) {
     <div className="text-xs text-stone">{status}</div>
   </form>
   );
-}
-
-function debounce<TArgs extends unknown[]>(
-  fn: (...args: TArgs) => void,
-  ms = 300,
-): (...args: TArgs) => void {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  return (...args: TArgs) => {
-    if (timeoutId !== null) {
-      clearTimeout(timeoutId);
-    }
-    timeoutId = setTimeout(() => {
-      timeoutId = null;
-      fn(...args);
-    }, ms);
-  };
 }

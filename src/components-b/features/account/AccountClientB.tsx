@@ -10,6 +10,7 @@ import { syncLocalToCloudOnce } from "@/lib/accountSync";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
+import { debounce } from "@/lib/utils";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -272,18 +273,4 @@ function EmailFormB({ content }: { content?: PagesContent }) {
       {status && <p className="text-xs text-[var(--muted-foreground)]">{status}</p>}
     </form>
   );
-}
-
-function debounce<TArgs extends unknown[]>(
-  fn: (...args: TArgs) => void,
-  ms = 300,
-): (...args: TArgs) => void {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null;
-  return (...args: TArgs) => {
-    if (timeoutId !== null) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      timeoutId = null;
-      fn(...args);
-    }, ms);
-  };
 }
