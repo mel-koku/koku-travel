@@ -43,6 +43,8 @@ const FACTOR_META: Record<
   seasonalFit: { label: "Seasonal match", maxMagnitude: 5 },
   contentFit: { label: "Editorial recommendation", maxMagnitude: 20 },
   dietaryFit: { label: "Dietary fit", maxMagnitude: 5 },
+  crowdFit: { label: "Crowd level", maxMagnitude: 8 },
+  photoFit: { label: "Photo timing", maxMagnitude: 5 },
 };
 
 // ---------------------------------------------------------------------------

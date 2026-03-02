@@ -7,6 +7,7 @@ import { Wallet, Gauge, Users, Accessibility, StickyNote, ChevronDown, Check, Bu
 
 import { TripSummaryB } from "./TripSummaryB";
 import { JRPassCardB } from "./JRPassCardB";
+import { PackingChecklistCardB } from "./PackingChecklistCardB";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
 import { PlanningWarningsList } from "@/components/features/trip-builder/PlanningWarning";
@@ -307,8 +308,56 @@ export function ReviewStepB({
         </button>
       </div>
 
+      {/* Goshuin Collection Toggle */}
+      <div
+        className="flex items-center justify-between rounded-2xl px-5 py-4"
+        style={{
+          backgroundColor: "var(--card)",
+          boxShadow: "var(--shadow-card)",
+        }}
+      >
+        <div>
+          <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
+            Collect goshuin?
+          </p>
+          <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
+            Prioritize temples and shrines with stamp books.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() =>
+            setData((prev) => ({
+              ...prev,
+              collectGoshuin: !prev.collectGoshuin,
+            }))
+          }
+          className="relative h-6 w-11 shrink-0 rounded-full transition-colors"
+          style={{
+            backgroundColor: data.collectGoshuin ? "var(--primary)" : "var(--border)",
+          }}
+        >
+          <span
+            className="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform"
+            style={{
+              transform: data.collectGoshuin ? "translateX(1.25rem)" : "translateX(0)",
+              boxShadow: "var(--shadow-sm)",
+            }}
+          />
+        </button>
+      </div>
+
       {/* JR Pass Calculator */}
       <JRPassCardB duration={data.duration} cities={data.cities} />
+
+      {/* Packing Checklist */}
+      <PackingChecklistCardB
+        duration={data.duration}
+        cities={data.cities}
+        month={data.dates?.start ? parseInt(data.dates.start.split("-")[1] ?? "0", 10) || undefined : undefined}
+        groupType={data.group?.type}
+        interests={data.interests}
+      />
 
       {/* Saved places */}
       <SavedInTripPreview selectedCities={data.cities} />

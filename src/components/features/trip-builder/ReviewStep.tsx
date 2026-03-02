@@ -17,6 +17,7 @@ import {
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
 import { JRPassCard } from "./JRPassCard";
+import { PackingChecklistCard } from "./PackingChecklistCard";
 import { PlanningWarningsList } from "./PlanningWarning";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
 import { SavedInTripPreview } from "./SavedInTripPreview";
@@ -256,8 +257,45 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
         </button>
       </div>
 
+      {/* Goshuin Collection Toggle */}
+      <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
+        <div>
+          <p className="text-sm font-medium text-foreground">Collect goshuin?</p>
+          <p className="text-xs text-stone">Prioritize temples and shrines with stamp books.</p>
+        </div>
+        <button
+          type="button"
+          onClick={() =>
+            setData((prev) => ({
+              ...prev,
+              collectGoshuin: !prev.collectGoshuin,
+            }))
+          }
+          className={cn(
+            "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+            data.collectGoshuin ? "bg-brand-primary" : "bg-border"
+          )}
+        >
+          <span
+            className={cn(
+              "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
+              data.collectGoshuin && "translate-x-5"
+            )}
+          />
+        </button>
+      </div>
+
       {/* JR Pass Calculator */}
       <JRPassCard duration={data.duration} cities={data.cities} />
+
+      {/* Packing Checklist */}
+      <PackingChecklistCard
+        duration={data.duration}
+        cities={data.cities}
+        month={data.dates?.start ? parseInt(data.dates.start.split("-")[1] ?? "0", 10) || undefined : undefined}
+        groupType={data.group?.type}
+        interests={data.interests}
+      />
 
       {/* Saved places that match selected cities */}
       <SavedInTripPreview selectedCities={data.cities} />

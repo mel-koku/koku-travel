@@ -24,6 +24,9 @@ import { generateActivityTipsAsync, type ActivityTip } from "@/lib/tips/tipGener
 import { PocketPhrasesB } from "./PocketPhrasesB";
 import { ActivityRatingB } from "./ActivityRatingB";
 import { useActivityRatingsContext } from "@/components/features/itinerary/ActivityRatingsContext";
+import { getSeasonalFoodsForActivity, formatSeasonalFoodTip } from "@/data/seasonalFoods";
+import { getPhotoTiming, formatPhotoTiming } from "@/data/photoSpotTiming";
+import { hasGoshuin, getGoshuinInfo } from "@/data/goshuinData";
 
 // B motion tokens
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -91,6 +94,8 @@ type PlaceActivityRowBProps = {
   isReadOnly?: boolean;
   activeDragId?: string | null;
   onViewDetails?: (location: Location) => void;
+  tripMonth?: number;
+  dayCityId?: string;
 };
 
 export const PlaceActivityRowB = memo(
@@ -119,6 +124,8 @@ export const PlaceActivityRowB = memo(
         isReadOnly,
         activeDragId,
         onViewDetails,
+        tripMonth,
+        dayCityId,
       },
       ref,
     ) => {
@@ -651,6 +658,57 @@ export const PlaceActivityRowB = memo(
                     </p>
                   </div>
                 )}
+
+                {/* Seasonal Food Badge */}
+                {tripMonth && dayCityId && placeLocation?.category && (() => {
+                  const foods = getSeasonalFoodsForActivity(tripMonth, dayCityId, placeLocation.category);
+                  if (foods.length === 0) return null;
+                  return (
+                    <div
+                      className="mt-3 flex items-center gap-1.5 rounded-xl px-2.5 py-1.5"
+                      style={{ backgroundColor: "color-mix(in srgb, var(--success) 8%, transparent)" }}
+                    >
+                      <span className="shrink-0 text-sm">🍽️</span>
+                      <span className="text-xs" style={{ color: "var(--success)" }}>
+                        In season: {formatSeasonalFoodTip(foods)}
+                      </span>
+                    </div>
+                  );
+                })()}
+
+                {/* Photo Timing Badge */}
+                {placeLocation && (() => {
+                  const timing = getPhotoTiming(placeLocation.id, placeLocation.category);
+                  if (!timing) return null;
+                  return (
+                    <div
+                      className="mt-3 flex items-center gap-1.5 rounded-xl px-2.5 py-1.5"
+                      style={{ backgroundColor: "color-mix(in srgb, var(--warning) 8%, transparent)" }}
+                    >
+                      <span className="shrink-0 text-sm">📸</span>
+                      <span className="text-xs" style={{ color: "var(--warning)" }}>
+                        Best light: {formatPhotoTiming(timing.bestTimes)}
+                      </span>
+                    </div>
+                  );
+                })()}
+
+                {/* Goshuin Badge */}
+                {placeLocation && hasGoshuin(placeLocation.id) && (() => {
+                  const info = getGoshuinInfo(placeLocation.id);
+                  if (!info) return null;
+                  return (
+                    <div
+                      className="mt-3 flex items-center gap-1.5 rounded-xl px-2.5 py-1.5"
+                      style={{ backgroundColor: "color-mix(in srgb, var(--primary) 8%, transparent)" }}
+                    >
+                      <span className="shrink-0 text-sm">⛩️</span>
+                      <span className="text-xs" style={{ color: "var(--primary)" }}>
+                        Goshuin available (¥{info.cost}){info.notable ? " — Notable" : ""}
+                      </span>
+                    </div>
+                  );
+                })()}
 
                 {/* Pocket Phrases */}
                 <PocketPhrasesB

@@ -6,17 +6,20 @@ import {
   Clock,
   CloudRain,
   Coffee,
+  Gift,
   Info,
   Leaf,
   Loader2,
   Moon,
   Package,
+  PartyPopper,
   Plus,
   ShoppingBag,
   Shuffle,
   Sunrise,
   Sunset,
   Train,
+  Users,
   Utensils,
   UtensilsCrossed,
   type LucideIcon,
@@ -30,16 +33,19 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Clock,
   CloudRain,
   Coffee,
+  Gift,
   Info,
   Leaf,
   Moon,
   Package,
+  PartyPopper,
   Plus,
   ShoppingBag,
   Shuffle,
   Sunrise,
   Sunset,
   Train,
+  Users,
   Utensils,
   UtensilsCrossed,
 };
@@ -66,8 +72,11 @@ export function SmartPromptCardB({
   const isReservation = gap.action.type === "acknowledge_reservation";
   const isLunchRush = gap.action.type === "acknowledge_lunch_rush";
   const isLuggage = gap.action.type === "acknowledge_luggage";
+  const isCrowd = gap.action.type === "acknowledge_crowd";
+  const isFestivalAck = gap.action.type === "acknowledge_festival";
+  const isOmiyage = gap.action.type === "acknowledge_omiyage";
   const isWeatherSwap = gap.action.type === "swap_for_weather";
-  const isAcknowledge = isGuidance || isReservation || isLunchRush || isLuggage;
+  const isAcknowledge = isGuidance || isReservation || isLunchRush || isLuggage || isCrowd || isFestivalAck || isOmiyage;
 
   return (
     <div
