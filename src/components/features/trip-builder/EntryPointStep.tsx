@@ -16,6 +16,7 @@ import { PlaneLanding, Clock, ClipboardPaste, Check } from "lucide-react";
 import { computeEffectiveArrivalStart, computeEffectiveDepartureEnd } from "@/lib/utils/airportBuffer";
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { parseFlightDetails, formatParsedFlight } from "@/lib/utils/flightParser";
+import { TimePicker } from "@/components/ui/TimePicker";
 
 const TOP_AIRPORT_CODES = ["HND", "NRT", "KIX", "CTS", "FUK", "NGO"];
 
@@ -103,15 +104,15 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   }, [setData]);
 
   const handleArrivalTimeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setData((prev) => ({ ...prev, arrivalTime: e.target.value || undefined }));
+    (time: string | undefined) => {
+      setData((prev) => ({ ...prev, arrivalTime: time }));
     },
     [setData],
   );
 
   const handleDepartureTimeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setData((prev) => ({ ...prev, departureTime: e.target.value || undefined }));
+    (time: string | undefined) => {
+      setData((prev) => ({ ...prev, departureTime: time }));
     },
     [setData],
   );
@@ -189,7 +190,10 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   const arrivalHint = useMemo(() => {
     const effective = computeEffectiveArrivalStart(data.arrivalTime, data.entryPoint?.iataCode);
     if (!effective) return null;
-    return formatTime12h(effective);
+    const hh = Number(effective.split(":")[0]);
+    if (hh >= 20) return "Day 1 is arrival day — grab dinner and settle in";
+    if (hh >= 18) return "Just enough time for dinner near your hotel";
+    return `First activity starts around ${formatTime12h(effective)}`;
   }, [data.arrivalTime, data.entryPoint?.iataCode]);
 
   const departureHint = useMemo(() => {
@@ -307,11 +311,11 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                   <Clock className="h-4 w-4 shrink-0 text-stone" />
                   <div className="flex flex-1 items-center gap-2">
                     <label className="text-xs text-stone whitespace-nowrap">Landing at</label>
-                    <input
-                      type="time"
-                      value={data.arrivalTime ?? ""}
+                    <TimePicker
+                      value={data.arrivalTime}
                       onChange={handleArrivalTimeChange}
-                      className="h-9 w-[7rem] rounded-lg border border-border bg-background px-2 text-base text-foreground focus:border-sage focus:outline-none focus:ring-1 focus:ring-sage"
+                      accent="sage"
+                      placeholder="Set time"
                     />
                     {data.arrivalTime && (
                       <button
@@ -326,7 +330,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                 </div>
                 {arrivalHint && (
                   <p className="mt-1.5 pl-7 text-xs text-sage">
-                    First activity starts around {arrivalHint}
+                    {arrivalHint}
                   </p>
                 )}
               </motion.div>
@@ -508,11 +512,11 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
                     <Clock className="h-4 w-4 shrink-0 text-stone" />
                     <div className="flex flex-1 items-center gap-2">
                       <label className="text-xs text-stone whitespace-nowrap">Departing at</label>
-                      <input
-                        type="time"
-                        value={data.departureTime ?? ""}
+                      <TimePicker
+                        value={data.departureTime}
                         onChange={handleDepartureTimeChange}
-                        className="h-9 w-[7rem] rounded-lg border border-border bg-background px-2 text-base text-foreground focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                        accent="brand-primary"
+                        placeholder="Set time"
                       />
                       {data.departureTime && (
                         <button
