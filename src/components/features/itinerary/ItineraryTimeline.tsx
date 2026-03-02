@@ -791,15 +791,19 @@ export const ItineraryTimeline = ({
           </div>
         )}
 
-        {/* Accommodation: Start bookend */}
-        {startLocation && extendedActivities.length > 0 && !activeId && (
-          <AccommodationBookend
-            location={startLocation}
-            variant="start"
-            travelMinutes={bookendEstimates.start?.travelMinutes}
-            distanceMeters={bookendEstimates.start?.distanceMeters}
-          />
-        )}
+        {/* Accommodation: Start bookend — skip if day starts with an arrival anchor (rendered inline after anchor instead) */}
+        {startLocation && extendedActivities.length > 0 && !activeId && (() => {
+          const firstPlace = extendedActivities.find((a) => a.kind === "place");
+          if (firstPlace?.kind === "place" && firstPlace.isAnchor) return null;
+          return (
+            <AccommodationBookend
+              location={startLocation}
+              variant="start"
+              travelMinutes={bookendEstimates.start?.travelMinutes}
+              distanceMeters={bookendEstimates.start?.distanceMeters}
+            />
+          );
+        })()}
 
         {/* Simple list of activities with travel segments */}
         {extendedActivities.length > 0 ? (
@@ -815,13 +819,14 @@ export const ItineraryTimeline = ({
 
             <ul className="space-y-3">
               {extendedActivities.map((activity, index) => {
-                // Calculate place number (only for place activities, 1-indexed to match map pins)
+                // Calculate place number (only for non-anchor place activities, 1-indexed to match map pins)
                 let placeNumber: number | undefined = undefined;
-                if (activity.kind === "place") {
-                  // Count place activities before this index, starting from 1
+                if (activity.kind === "place" && !activity.isAnchor) {
+                  // Count non-anchor place activities before this index, starting from 1
                   let placeCounter = 1;
                   for (let i = 0; i < index; i++) {
-                    if (extendedActivities[i]?.kind === "place") {
+                    const prev = extendedActivities[i];
+                    if (prev?.kind === "place" && !prev.isAnchor) {
                       placeCounter++;
                     }
                   }
@@ -944,6 +949,17 @@ export const ItineraryTimeline = ({
                         </div>
                       </li>
                     ))}
+                    {/* Inline accommodation bookend after arrival anchor */}
+                    {!activeId && activity.kind === "place" && activity.isAnchor && activity.id.startsWith("anchor-arrival") && startLocation && (
+                      <li className="list-none">
+                        <AccommodationBookend
+                          location={startLocation}
+                          variant="start"
+                          travelMinutes={bookendEstimates.start?.travelMinutes}
+                          distanceMeters={bookendEstimates.start?.distanceMeters}
+                        />
+                      </li>
+                    )}
                   </Fragment>
                 );
               })}
@@ -955,15 +971,19 @@ export const ItineraryTimeline = ({
             )}
           </SortableContext>
 
-          {/* Accommodation: End bookend */}
-          {endLocation && !activeId && (
-            <AccommodationBookend
-              location={endLocation}
-              variant="end"
-              travelMinutes={bookendEstimates.end?.travelMinutes}
-              distanceMeters={bookendEstimates.end?.distanceMeters}
-            />
-          )}
+          {/* Accommodation: End bookend — skip if day ends with a departure anchor */}
+          {endLocation && !activeId && (() => {
+            const lastPlace = [...extendedActivities].reverse().find((a) => a.kind === "place");
+            if (lastPlace?.kind === "place" && lastPlace.isAnchor) return null;
+            return (
+              <AccommodationBookend
+                location={endLocation}
+                variant="end"
+                travelMinutes={bookendEstimates.end?.travelMinutes}
+                distanceMeters={bookendEstimates.end?.distanceMeters}
+              />
+            );
+          })()}
           </>
         ) : (
           <div className="rounded-xl border-2 border-dashed border-border p-6 text-center text-stone">
