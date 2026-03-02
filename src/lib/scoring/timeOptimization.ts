@@ -28,6 +28,7 @@ const OPTIMAL_TIMES_BY_CATEGORY: Record<string, Array<"morning" | "afternoon" | 
   castle: ["morning", "afternoon"], // Better lighting, cooler temps
   theater: ["afternoon", "evening"], // Show times
   zoo: ["morning", "afternoon"], // Animals more active early
+  craft: ["morning", "afternoon"], // Workshop hours
 };
 
 /**

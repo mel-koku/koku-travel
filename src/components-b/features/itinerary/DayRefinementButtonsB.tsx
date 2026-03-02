@@ -27,6 +27,7 @@ const REFINEMENT_OPTIONS: Array<{
   { type: "more_culture", label: "More Culture", icon: "\uD83C\uDFDB\uFE0F", description: "Add cultural sites" },
   { type: "more_kid_friendly", label: "Kid Friendly", icon: "\uD83D\uDC76", description: "Make it family-friendly" },
   { type: "more_rest", label: "More Rest", icon: "\uD83D\uDE34", description: "Add rest time" },
+  { type: "more_craft", label: "More Craft", icon: "\uD83C\uDFA8", description: "Add craft workshops" },
 ];
 
 export function DayRefinementButtonsB({

@@ -245,14 +245,15 @@ export function pickLocationForTimeSlot(
  * Category mapping for interest-based location filtering.
  */
 const CATEGORY_MAP: Record<InterestId, LocationCategory[]> = {
-  culture: ["shrine", "temple", "landmark", "historic"],
+  culture: ["shrine", "temple", "landmark", "historic", "craft"],
   food: ["restaurant", "market"],
   nature: ["park", "garden"],
   nightlife: ["bar", "entertainment"],
   shopping: ["shopping", "market"],
   photography: ["landmark", "viewpoint", "park"],
   wellness: ["park", "garden"],
-  history: ["shrine", "temple", "historic", "museum"],
+  history: ["shrine", "temple", "historic", "museum", "craft"],
+  craft: ["craft", "museum", "shopping"],
 };
 
 /**

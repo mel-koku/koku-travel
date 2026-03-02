@@ -91,17 +91,18 @@ Extract structured constraints from ALL the above information:
 
 5. **categoryWeights**: Multipliers (0.5-2.0) based on vibes + group. Examples:
    - "foodie_paradise" → { "restaurant": 1.5, "market": 1.3, "cafe": 1.2 }
-   - "temples_tradition" → { "shrine": 1.5, "temple": 1.5, "garden": 1.3 }
+   - "temples_tradition" → { "shrine": 1.5, "temple": 1.5, "garden": 1.3, "craft": 1.2 }
    - "nature_adventure" → { "nature": 1.5, "park": 1.3, "garden": 1.2 }
    - "family_fun" → { "aquarium": 1.3, "zoo": 1.3, "park": 1.3, "entertainment": 1.2 }
    - "neon_nightlife" → { "bar": 1.5, "entertainment": 1.4 }
+   - "artisan_craft" → { "craft": 2.0, "museum": 1.3, "shopping": 1.0 }
 
 6. **timePreference**: Infer from notes or vibes. Night-focused vibes → "night_owl". Early temple visits → "morning_person". Default to "no_preference".
 
 7. **additionalInsights**: Any insights that couldn't be structured above.
 
 Important:
-- Category names must be from: restaurant, cafe, bar, shrine, temple, landmark, museum, park, garden, shopping, onsen, entertainment, market, wellness, viewpoint, nature, aquarium, beach, castle, historic_site, theater, zoo
+- Category names must be from: restaurant, cafe, bar, shrine, temple, landmark, museum, park, garden, shopping, onsen, entertainment, market, wellness, viewpoint, nature, aquarium, beach, castle, historic_site, theater, zoo, craft
 - Be conservative — only extract what's clearly implied
 - Empty arrays are fine if nothing applies`;
 

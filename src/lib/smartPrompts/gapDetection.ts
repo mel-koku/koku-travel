@@ -998,15 +998,16 @@ function detectOmiyageReminders(
  */
 function getSuggestedAlternatives(dominantCategory: string): string[] {
   const alternatives: Record<string, string[]> = {
-    temple: ["garden", "shopping", "restaurant", "museum"],
-    shrine: ["garden", "market", "restaurant", "nature"],
-    museum: ["garden", "shopping", "cafe", "nature"],
+    temple: ["garden", "shopping", "restaurant", "museum", "craft"],
+    shrine: ["garden", "market", "restaurant", "nature", "craft"],
+    museum: ["garden", "shopping", "cafe", "nature", "craft"],
     shopping: ["temple", "garden", "museum", "nature"],
     restaurant: ["temple", "garden", "museum", "nature"],
     garden: ["temple", "museum", "shopping", "cafe"],
     nature: ["temple", "museum", "shopping", "restaurant"],
     landmark: ["garden", "shopping", "restaurant", "museum"],
     onsen: ["temple", "garden", "nature", "cafe"],
+    craft: ["temple", "garden", "museum", "shopping", "cafe"],
   };
 
   return alternatives[dominantCategory] ?? ["garden", "cafe", "shopping"];
@@ -1028,6 +1029,7 @@ function formatCategoryName(category: string): string {
     cafe: "cafes",
     onsen: "onsen spots",
     bar: "bars",
+    craft: "craft workshops",
   };
 
   return names[category] ?? category;

@@ -84,6 +84,7 @@ export const CATEGORY_CROWD_PATTERNS: Record<string, HourlyPattern> = {
   wellness: FLAT_MODERATE,
   aquarium: MIDDAY_PEAK,
   zoo: MIDDAY_PEAK,
+  craft: FLAT_MODERATE,
 };
 
 // ---------------------------------------------------------------------------

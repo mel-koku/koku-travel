@@ -45,7 +45,7 @@ export const chatTools = {
         .string()
         .optional()
         .describe(
-          "Filter by category: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, entertainment, market, wellness, viewpoint, bar, garden, onsen",
+          "Filter by category: restaurant, nature, landmark, culture, shrine, museum, park, temple, shopping, entertainment, market, wellness, viewpoint, bar, garden, onsen, craft",
         ),
       priceLevel: z
         .number()
@@ -370,7 +370,7 @@ export const chatTools = {
         .array(z.string())
         .optional()
         .describe(
-          "Travel vibe IDs (max 3). Valid IDs: temples_tradition (shrines, temples, traditional arts), foodie_paradise (ramen, sushi, izakayas, street food), nature_adventure (mountains, trails, outdoor thrills), zen_wellness (onsen, gardens, quiet retreats), neon_nightlife (city lights, bars, entertainment), pop_culture (anime, manga, quirky cafes), local_secrets (hidden gems, neighborhood favorites), family_fun (aquariums, zoos, parks, beaches), history_buff (museums, castles, historic sites)",
+          "Travel vibe IDs (max 3). Valid IDs: temples_tradition (shrines, temples, traditional arts), foodie_paradise (ramen, sushi, izakayas, street food), nature_adventure (mountains, trails, outdoor thrills), zen_wellness (onsen, gardens, quiet retreats), neon_nightlife (city lights, bars, entertainment), pop_culture (anime, manga, quirky cafes), local_secrets (hidden gems, neighborhood favorites), family_fun (aquariums, zoos, parks, beaches), history_buff (museums, castles, historic sites), artisan_craft (pottery, textiles, lacquerware, traditional workshops)",
         ),
       style: z
         .enum(["relaxed", "balanced", "fast"])
