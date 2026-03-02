@@ -45,15 +45,14 @@ export const POST = withApiHandler(
       return badRequest("Unsupported URL. Paste a YouTube, TikTok, or Instagram link.");
     }
 
-    // Daily cap for authenticated users
-    if (user) {
-      const overLimit = await checkDailyLimit(user.id);
-      if (overLimit) {
-        return NextResponse.json(
-          { error: "Daily import limit reached. Try again tomorrow." },
-          { status: 429 },
-        );
-      }
+    // Daily cap — use user ID or IP as lookup key
+    const limitKey = user?.id ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
+    const overLimit = await checkDailyLimit(limitKey);
+    if (overLimit) {
+      return NextResponse.json(
+        { error: "Daily import limit reached. Try again tomorrow." },
+        { status: 429 },
+      );
     }
 
     // Step 1: Extract video metadata via oEmbed
@@ -144,7 +143,7 @@ export const POST = withApiHandler(
     });
   },
   {
-    rateLimit: { maxRequests: 10, windowMs: 60_000 },
+    rateLimit: { maxRequests: 5, windowMs: 60_000 },
     optionalAuth: true,
     requireJson: true,
   },

@@ -73,9 +73,9 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-warning/15 text-warning",
   },
   early_end: {
-    bg: "bg-semantic-error/10",
-    text: "text-semantic-error",
-    badge: "bg-semantic-error/15 text-semantic-error",
+    bg: "bg-error/10",
+    text: "text-error",
+    badge: "bg-error/15 text-error",
   },
   late_start: {
     bg: "bg-brand-primary/10",
@@ -113,9 +113,9 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-brand-secondary/15 text-brand-secondary",
   },
   crowd_alert: {
-    bg: "bg-blue-500/10",
-    text: "text-blue-400",
-    badge: "bg-blue-500/15 text-blue-400",
+    bg: "bg-brand-secondary/10",
+    text: "text-brand-secondary",
+    badge: "bg-brand-secondary/15 text-brand-secondary",
   },
   festival_alert: {
     bg: "bg-brand-secondary/10",
@@ -123,9 +123,9 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-brand-secondary/15 text-brand-secondary",
   },
   evening_free: {
-    bg: "bg-purple-500/10",
-    text: "text-purple-400",
-    badge: "bg-purple-500/15 text-purple-400",
+    bg: "bg-sage/10",
+    text: "text-sage",
+    badge: "bg-sage/15 text-sage",
   },
   omiyage_reminder: {
     bg: "bg-brand-secondary/10",
@@ -133,9 +133,9 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     badge: "bg-brand-secondary/15 text-brand-secondary",
   },
   late_arrival: {
-    bg: "bg-purple-500/10",
-    text: "text-purple-400",
-    badge: "bg-purple-500/15 text-purple-400",
+    bg: "bg-sage/10",
+    text: "text-sage",
+    badge: "bg-sage/15 text-sage",
   },
 };
 

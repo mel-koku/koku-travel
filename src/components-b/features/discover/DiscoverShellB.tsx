@@ -34,6 +34,7 @@ const FALLBACK_POSITION = { lat: 35.6812, lng: 139.7671 };
 export function DiscoverShellB() {
   const geoLocation = useCurrentLocation();
   const [discoverCategory, setDiscoverCategory] = useState("");
+  const [openNow, setOpenNow] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [highlightedLocationId, setHighlightedLocationId] = useState<string | null>(null);
@@ -57,7 +58,7 @@ export function DiscoverShellB() {
 
   const { data: nearbyData, isLoading: isNearbyLoading } = useNearbyLocationsQuery(userLat, userLng, {
     category: discoverCategory || undefined,
-    openNow: true,
+    openNow,
     radius: usingFallback ? 5 : 1.5,
     limit: 20,
   });
@@ -175,14 +176,24 @@ export function DiscoverShellB() {
 
           <div className="h-4 w-px bg-[var(--border)] shrink-0" />
 
-          {/* Open now */}
-          <span className="relative flex h-2 w-2 shrink-0">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--success)] opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--success)]" />
-          </span>
-          <span className="text-[10px] text-[var(--success)] font-medium whitespace-nowrap mr-0.5">
-            Open now
-          </span>
+          {/* Open now toggle */}
+          <button
+            type="button"
+            onClick={() => setOpenNow((v) => !v)}
+            className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-medium whitespace-nowrap transition ${
+              openNow
+                ? "bg-[color-mix(in_srgb,var(--success)_12%,transparent)] text-[var(--success)]"
+                : "bg-[var(--surface)] text-[var(--muted-foreground)]"
+            }`}
+            aria-pressed={openNow}
+            title={openNow ? "Showing open places only" : "Showing all places"}
+          >
+            <span className="relative flex h-2 w-2 shrink-0">
+              {openNow && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--success)] opacity-75" />}
+              <span className={`relative inline-flex h-2 w-2 rounded-full ${openNow ? "bg-[var(--success)]" : "bg-[var(--muted-foreground)]"}`} />
+            </span>
+            {openNow ? "Open now" : "All hours"}
+          </button>
 
           <div className="h-4 w-px bg-[var(--border)] shrink-0" />
 

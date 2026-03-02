@@ -139,48 +139,65 @@ function PopoverContent({ tips }: { tips: { id: string; title: string; summary: 
 
   return (
     <div className="p-3 space-y-1.5">
-      {tips.map((tip) => (
-        <div
-          key={tip.id}
-          className={`flex items-start gap-2.5 rounded-xl p-2.5${tip.content ? " cursor-pointer" : ""}`}
-          style={{ backgroundColor: "var(--surface)" }}
-          onClick={tip.content ? () => setExpandedId(expandedId === tip.id ? null : tip.id) : undefined}
-        >
-          <span className="shrink-0 text-base">{tip.icon}</span>
-          <div className="min-w-0 flex-1">
-            <p
-              className="text-xs font-semibold"
-              style={{ color: "var(--foreground)" }}
-            >
-              {tip.title}
-            </p>
-            <p
-              className="mt-0.5 text-xs leading-relaxed"
-              style={{ color: "var(--muted-foreground)" }}
-            >
-              {tip.summary}
-            </p>
-            {tip.content && expandedId === tip.id && (
+      {tips.map((tip) => {
+        const isTipExpanded = expandedId === tip.id;
+        const handleToggle = tip.content ? () => setExpandedId(isTipExpanded ? null : tip.id) : undefined;
+        const handleKeyDown = tip.content ? (e: React.KeyboardEvent) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setExpandedId(isTipExpanded ? null : tip.id);
+          }
+        } : undefined;
+        const Wrapper = tip.content ? "button" : "div";
+        return (
+          <Wrapper
+            key={tip.id}
+            {...(tip.content ? {
+              type: "button" as const,
+              "aria-expanded": isTipExpanded,
+              tabIndex: 0,
+              onClick: handleToggle,
+              onKeyDown: handleKeyDown,
+            } : {})}
+            className={`flex items-start gap-2.5 rounded-xl p-2.5 text-left${tip.content ? " cursor-pointer" : ""}`}
+            style={{ backgroundColor: "var(--surface)" }}
+          >
+            <span className="shrink-0 text-base">{tip.icon}</span>
+            <div className="min-w-0 flex-1">
               <p
-                className="mt-1.5 border-t pt-1.5 text-xs leading-relaxed"
-                style={{ borderColor: "var(--border)", color: "var(--muted-foreground)", opacity: 0.8 }}
+                className="text-xs font-semibold"
+                style={{ color: "var(--foreground)" }}
               >
-                {tip.content}
+                {tip.title}
               </p>
+              <p
+                className="mt-0.5 text-xs leading-relaxed"
+                style={{ color: "var(--muted-foreground)" }}
+              >
+                {tip.summary}
+              </p>
+              {tip.content && isTipExpanded && (
+                <p
+                  className="mt-1.5 border-t pt-1.5 text-xs leading-relaxed"
+                  style={{ borderColor: "var(--border)", color: "var(--muted-foreground)", opacity: 0.8 }}
+                >
+                  {tip.content}
+                </p>
+              )}
+            </div>
+            {tip.content && (
+              <ChevronDown
+                className="mt-0.5 h-3 w-3 shrink-0 transition-transform"
+                style={{
+                  color: "var(--muted-foreground)",
+                  opacity: 0.5,
+                  transform: isTipExpanded ? "rotate(180deg)" : undefined,
+                }}
+              />
             )}
-          </div>
-          {tip.content && (
-            <ChevronDown
-              className="mt-0.5 h-3 w-3 shrink-0 transition-transform"
-              style={{
-                color: "var(--muted-foreground)",
-                opacity: 0.5,
-                transform: expandedId === tip.id ? "rotate(180deg)" : undefined,
-              }}
-            />
-          )}
-        </div>
-      ))}
+          </Wrapper>
+        );
+      })}
     </div>
   );
 }

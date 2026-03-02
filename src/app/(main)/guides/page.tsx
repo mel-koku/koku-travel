@@ -28,7 +28,7 @@ export default async function GuidesPage() {
   return (
     <>
       {lcpImageUrl && <link rel="preload" as="image" href={lcpImageUrl} />}
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <GuidesPageClient guides={guides} content={content ?? undefined} />
       </div>
     </>

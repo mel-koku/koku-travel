@@ -1,7 +1,6 @@
 "use client";
 
-import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Location } from "@/types/location";
 import type { PaginatedResponse } from "@/lib/api/pagination";
 import type { FilterMetadata } from "@/types/filters";
@@ -61,24 +60,6 @@ export const locationsKeys = {
   filterMetadata: () => [...locationsKeys.all, "filter-metadata", "v3"] as const,
 };
 
-type LocationsResponse = PaginatedResponse<Location>;
-
-/**
- * Fetches a page of locations from the API
- */
-async function fetchLocationsPage(
-  page: number,
-  limit: number = 100,
-): Promise<LocationsResponse> {
-  const response = await fetch(`/api/locations?page=${page}&limit=${limit}`);
-
-  if (!response.ok) {
-    throw new Error(await extractFetchErrorMessage(response));
-  }
-
-  return (await response.json()) as LocationsResponse;
-}
-
 /**
  * Fetches filter metadata from localStorage or API
  * Persists to localStorage after successful fetch for 24-hour caching
@@ -106,34 +87,6 @@ async function fetchFilterMetadata(): Promise<FilterMetadata> {
 }
 
 /**
- * React Query hook for fetching all locations with progressive loading
- *
- * Features:
- * - Loads first 100 locations immediately
- * - Progressively fetches remaining locations in background
- * - Automatic caching with TTL (10 min stale, 1 hour garbage collection)
- * - Automatic retry on failure
- *
- * @returns Infinite query result with pages of locations
- */
-export function useAllLocationsQuery() {
-  return useInfiniteQuery({
-    queryKey: locationsKeys.list(),
-    queryFn: ({ pageParam = 1 }) => fetchLocationsPage(pageParam, 100),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      return lastPage.pagination.hasNext
-        ? lastPage.pagination.page + 1
-        : undefined;
-    },
-    staleTime: LOCATION_STALE_TIME,
-    gcTime: LOCATION_GC_TIME,
-    retry: 2,
-    refetchOnWindowFocus: false,
-  });
-}
-
-/**
  * React Query hook for fetching filter metadata
  *
  * Features:
@@ -152,52 +105,6 @@ export function useFilterMetadataQuery() {
     retry: 2,
     refetchOnWindowFocus: false,
   });
-}
-
-/**
- * Aggregates all pages from infinite query into a single locations array
- *
- * @returns Object with flattened locations array and loading states
- */
-export function useAggregatedLocations() {
-  const {
-    data,
-    status,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    refetch,
-  } = useAllLocationsQuery();
-
-  // Flatten all pages into single array
-  const locations = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data) || [];
-  }, [data?.pages]);
-
-  // Get total from first page
-  const total = data?.pages[0]?.pagination.total ?? 0;
-
-  // Check if we're still loading more pages
-  const isLoadingMore = isFetchingNextPage;
-
-  // Check if initial load is complete
-  const isLoading = status === "pending";
-
-  // Map error
-  const errorMessage = error instanceof Error ? error.message : error ? String(error) : null;
-
-  return {
-    locations,
-    total,
-    isLoading,
-    isLoadingMore,
-    error: errorMessage,
-    hasNextPage,
-    fetchNextPage,
-    refetch,
-    status,
-  };
 }
 
 /**
@@ -248,21 +155,6 @@ export function useLocationSearchQuery(query: string) {
     staleTime: 60_000,
     gcTime: 5 * 60_000,
     refetchOnWindowFocus: false,
-  });
-}
-
-/**
- * Prefetch all locations into the cache
- * Useful for preloading data before navigation
- */
-export function prefetchAllLocations(
-  queryClient: ReturnType<typeof useQueryClient>,
-) {
-  return queryClient.prefetchInfiniteQuery({
-    queryKey: locationsKeys.list(),
-    queryFn: ({ pageParam = 1 }) => fetchLocationsPage(pageParam, 100),
-    initialPageParam: 1,
-    staleTime: LOCATION_STALE_TIME,
   });
 }
 

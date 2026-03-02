@@ -5,7 +5,7 @@
 export const RATE_LIMITS = {
   LOCATIONS: { maxRequests: 100, windowMs: 60_000 },
   PLACES: { maxRequests: 60, windowMs: 60_000 },
-  ITINERARY_PLAN: { maxRequests: 100, windowMs: 60_000 },
+  ITINERARY_PLAN: { maxRequests: 20, windowMs: 60_000 },
   ITINERARY_REFINE: { maxRequests: 30, windowMs: 60_000 },
   ITINERARY_SCHEDULE: { maxRequests: 30, windowMs: 60_000 },
   ITINERARY_AVAILABILITY: { maxRequests: 60, windowMs: 60_000 },

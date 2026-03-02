@@ -24,9 +24,9 @@ export function PlanningWarningCard({ warning, className }: PlanningWarningCardP
       title: "text-brand-secondary",
     },
     caution: {
-      container: "bg-semantic-error/5 border-semantic-error/20",
-      icon: "bg-semantic-error/10",
-      title: "text-semantic-error",
+      container: "bg-error/5 border-error/20",
+      icon: "bg-error/10",
+      title: "text-error",
     },
   };
 

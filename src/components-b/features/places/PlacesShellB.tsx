@@ -11,7 +11,7 @@ import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePla
 import type { PagesContent } from "@/types/sanitySiteContent";
 import type { Location } from "@/types/location";
 
-import { SeasonalBanner } from "@/components/features/places/SeasonalBanner";
+import { SeasonalBannerB } from "./SeasonalBannerB";
 
 import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
 import type { VibeId } from "@/data/vibes";
@@ -312,7 +312,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             <>
               {/* Seasonal banner */}
               <div className="mx-auto mt-3 max-w-2xl">
-                <SeasonalBanner
+                <SeasonalBannerB
                   locations={locations}
                   onFilterSeasonal={handleFilterSeasonal}
                 />

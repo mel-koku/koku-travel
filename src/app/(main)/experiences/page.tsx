@@ -29,7 +29,7 @@ export default async function ExperiencesPage() {
   return (
     <>
       {lcpImageUrl && <link rel="preload" as="image" href={lcpImageUrl} />}
-      <div className="min-h-screen bg-background">
+      <div className="min-h-[100dvh] bg-background">
         <ExperiencesPageClient experiences={experiences} content={content ?? undefined} />
       </div>
     </>

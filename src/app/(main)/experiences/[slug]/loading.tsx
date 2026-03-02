@@ -1,6 +1,6 @@
 export default function Loading() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-[100dvh] bg-background">
       {/* Hero skeleton */}
       <div className="aspect-[21/9] w-full bg-surface animate-pulse" />
       {/* Content skeleton */}

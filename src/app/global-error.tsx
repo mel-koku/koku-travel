@@ -22,7 +22,7 @@ export default function GlobalError({
   return (
     <html>
       <body>
-        <div className="flex min-h-screen flex-col items-center justify-center bg-surface px-4">
+        <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-surface px-4">
           <div className="w-full max-w-md rounded-lg bg-background p-8 shadow-lg text-center">
             <h2 className="mb-4 font-serif italic text-2xl text-foreground">
               Application Error

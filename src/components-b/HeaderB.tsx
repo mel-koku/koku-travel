@@ -88,7 +88,7 @@ export function HeaderB() {
         className="fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow] duration-300"
         style={{
           height: "var(--header-h)",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--background)",
           boxShadow: scrolled ? "var(--shadow-sm)" : "none",
         }}
       >

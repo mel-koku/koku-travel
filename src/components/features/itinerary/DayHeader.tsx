@@ -500,18 +500,17 @@ function DayInsightsSection({
         </div>
       )}
 
-      {/* Hidden DayTips to report count (always mounted for the badge) */}
-      <div className="hidden">
-        <DayTips
-          day={day}
-          tripStartDate={tripStartDate}
-          dayIndex={dayIndex}
-          embedded
-          onTipCount={handleTipCount}
-          nextDayActivities={itinerary?.days[dayIndex + 1]?.activities}
-          isFirstTimeVisitor={builderData?.isFirstTimeVisitor}
-        />
-      </div>
+      {/* Count-only DayTips — fetches and reports count without rendering UI */}
+      <DayTips
+        day={day}
+        tripStartDate={tripStartDate}
+        dayIndex={dayIndex}
+        embedded
+        onTipCount={handleTipCount}
+        nextDayActivities={itinerary?.days[dayIndex + 1]?.activities}
+        isFirstTimeVisitor={builderData?.isFirstTimeVisitor}
+        countOnly
+      />
     </div>
   );
 }

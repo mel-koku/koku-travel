@@ -64,7 +64,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
 
   if (prefersReducedMotion) {
     return (
-      <section className="relative h-[100dvh] w-full overflow-hidden bg-background">
+      <section aria-label="Hero" className="relative h-[100dvh] w-full overflow-hidden bg-background">
         <div className="absolute inset-0">
           <Image
             src={imageSrc}
@@ -126,6 +126,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
   return (
     <section
       ref={containerRef}
+      aria-label="Hero"
       className="relative h-[100dvh] w-full overflow-hidden bg-background"
     >
       {/* Image layer: scroll parallax (outer) + entrance animation (inner) */}

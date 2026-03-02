@@ -159,7 +159,20 @@ export function PlacesShell({ content }: PlacesShellProps) {
     setExpandedLocation(null);
   }, []);
 
-  const activeCategory = null;
+  const activeCategory = useMemo(() => {
+    // Map selected vibes to the closest editorial category for interstitial messages
+    const vibeToCategory: Record<string, string> = {
+      temples_tradition: "culture",
+      foodie_paradise: "food",
+      nature_adventure: "nature",
+      pop_culture: "shopping",
+      neon_nightlife: "shopping",
+    };
+    if (selectedVibes.length === 1) {
+      return vibeToCategory[selectedVibes[0]!] ?? null;
+    }
+    return null;
+  }, [selectedVibes]);
 
   const mapAvailable = useMemo(
     () => featureFlags.enableMapbox && !featureFlags.cheapMode,

@@ -77,6 +77,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Validate coordinates are finite numbers within Japan bounds
+  const coords = [payload.origin, payload.destination];
+  for (const coord of coords) {
+    if (
+      !Number.isFinite(coord.lat) || !Number.isFinite(coord.lng) ||
+      coord.lat < 24 || coord.lat > 46 || coord.lng < 122 || coord.lng > 154
+    ) {
+      return addRequestContextHeaders(
+        badRequest("Coordinates must be finite numbers within Japan bounds (lat 24-46, lng 122-154)", undefined, {
+          requestId: finalContext.requestId,
+        }),
+        finalContext,
+      );
+    }
+  }
+
   // Validate and translate internal travel mode to routing mode
   if (!VALID_INTERNAL_MODES.has(payload.mode)) {
     return addRequestContextHeaders(
