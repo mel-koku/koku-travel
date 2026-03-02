@@ -45,6 +45,7 @@ const FACTOR_META: Record<
   dietaryFit: { label: "Dietary fit", maxMagnitude: 5 },
   crowdFit: { label: "Crowd level", maxMagnitude: 8 },
   photoFit: { label: "Photo timing", maxMagnitude: 5 },
+  tagMatch: { label: "Tag match", maxMagnitude: 8 },
 };
 
 // ---------------------------------------------------------------------------

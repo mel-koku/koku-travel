@@ -58,6 +58,7 @@ export async function POST(request: NextRequest) {
     query,
     cityId,
     dayActivities,
+    dayDate,
     tripBuilderData,
     usedLocationIds,
   } = validation.data;
@@ -69,54 +70,101 @@ export async function POST(request: NextRequest) {
     const intent = await extractPlaceIntent({
       query,
       cityId,
-      dayActivities: dayActivities?.map((a: { name?: string; category?: string }) => ({
+      dayActivities: dayActivities?.map((a: { id?: string; name?: string; category?: string; isAnchor?: boolean }) => ({
+        id: a.id,
         name: a.name ?? "",
         category: a.category,
+        isAnchor: a.isAnchor,
       })),
       interests: (tripBuilderData as TripBuilderData | undefined)?.interests,
     });
 
     const isFallback = intent === null;
 
-    // Build Supabase query
-    let dbQuery = supabase
-      .from("locations")
-      .select(LOCATION_ITINERARY_COLUMNS)
-      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
-
-    // City filter
-    if (cityId) {
-      dbQuery = dbQuery.ilike("city", cityId);
+    // Handle command intents (swap, move, remove, optimize_route)
+    if (intent && intent.commandType && intent.commandType !== "search") {
+      const command = resolveCommand(intent, dayActivities);
+      if (command) {
+        const response = NextResponse.json({
+          recommendations: [],
+          fallback: false,
+          command,
+        });
+        return addRequestContextHeaders(response, ctx, request);
+      }
+      // Resolution failed — fall through to search
     }
 
-    // Apply intent-based filters
-    if (intent?.categories?.length) {
-      dbQuery = dbQuery.in("category", intent.categories);
+    const hasCategories = !!intent?.categories?.length;
+
+    // Helper: build and execute a location query against the city
+    const fetchLocations = async (options: {
+      categories?: string[];
+      searchText?: string;
+    }) => {
+      let q = supabase
+        .from("locations")
+        .select(LOCATION_ITINERARY_COLUMNS)
+        .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+
+      if (cityId) q = q.ilike("city", cityId);
+      if (options.categories?.length) q = q.in("category", options.categories);
+      if (options.searchText) {
+        q = q.or(
+          `name.ilike.%${options.searchText}%,short_description.ilike.%${options.searchText}%`,
+        );
+      }
+
+      const { data, error } = await q.limit(50);
+      if (error) {
+        logger.error("Supabase query failed in ai-recommend", undefined, {
+          error: error.message,
+          requestId: ctx.requestId,
+        });
+        return null;
+      }
+      return (data ?? []) as unknown as LocationDbRow[];
+    };
+
+    // Progressive query: narrow → broad
+    let rows: LocationDbRow[] | null = null;
+
+    if (hasCategories) {
+      // Pass 1: category filter from Gemini intent
+      rows = await fetchLocations({ categories: intent!.categories });
+      // Pass 2: broaden — drop categories, keep searchQuery if available
+      if (rows?.length === 0 && intent?.searchQuery) {
+        rows = await fetchLocations({ searchText: intent.searchQuery });
+      }
+      // Pass 3: all city locations — let scoring rank them
+      if (rows?.length === 0) {
+        rows = await fetchLocations({});
+      }
+    } else if (!isFallback && intent?.searchQuery) {
+      // Intent extracted, no categories — use refined searchQuery
+      rows = await fetchLocations({ searchText: intent.searchQuery });
+      if (rows?.length === 0) {
+        rows = await fetchLocations({});
+      }
+    } else {
+      // Gemini failed — extract keywords from raw query
+      const keywords = extractKeywords(query);
+      if (keywords) {
+        rows = await fetchLocations({ searchText: keywords });
+      }
+      // Broaden to all city locations
+      if (!rows?.length) {
+        rows = await fetchLocations({});
+      }
     }
 
-    // Text search — use intent's searchQuery or raw query as fallback
-    const searchText = intent?.searchQuery ?? (isFallback ? query : null);
-    if (searchText) {
-      dbQuery = dbQuery.or(
-        `name.ilike.%${searchText}%,short_description.ilike.%${searchText}%`,
-      );
-    }
-
-    dbQuery = dbQuery.limit(50);
-
-    const { data: rows, error: dbError } = await dbQuery;
-
-    if (dbError) {
-      logger.error("Supabase query failed in ai-recommend", undefined, {
-        error: dbError.message,
-        requestId: ctx.requestId,
-      });
+    if (rows === null) {
       return internalError("Failed to search locations", undefined, {
         requestId: ctx.requestId,
       });
     }
 
-    if (!rows || rows.length === 0) {
+    if (rows.length === 0) {
       const response = NextResponse.json({
         recommendations: [],
         fallback: isFallback,
@@ -126,7 +174,7 @@ export async function POST(request: NextRequest) {
 
     // Transform and filter out already-used locations
     const usedSet = new Set(usedLocationIds ?? []);
-    const locations: Location[] = (rows as unknown as LocationDbRow[])
+    const locations: Location[] = rows
       .map(transformDbRowToLocation)
       .filter((loc) => !usedSet.has(loc.id));
 
@@ -144,16 +192,22 @@ export async function POST(request: NextRequest) {
       .map((a: { name?: string; category?: string }) => a.category)
       .filter((c: string | undefined): c is string => !!c);
 
+    // Infer time slot from schedule context (last activity's end time)
+    const inferredTimeSlot = inferTimeSlot(dayActivities, intent?.timePreference);
+
     const scored = locations.map((location) => {
       const result = scoreLocation(location, {
         interests: builderData?.interests ?? [],
         travelStyle: builderData?.style ?? "balanced",
-        budgetLevel: builderData?.budget?.level,
+        budgetLevel: intent?.pricePreference ?? builderData?.budget?.level,
         accessibility: builderData?.accessibility?.mobility
           ? { wheelchairAccessible: true }
           : undefined,
         availableMinutes: 120,
         recentCategories,
+        timeSlot: inferredTimeSlot,
+        date: dayDate,
+        preferredTags: intent?.tags,
         group: builderData?.group
           ? {
               size: builderData.group.size ?? undefined,
@@ -201,6 +255,144 @@ export async function POST(request: NextRequest) {
     return internalError("Failed to generate recommendations", undefined, {
       requestId: ctx.requestId,
     });
+  }
+}
+
+/**
+ * Extracts meaningful keywords from a raw natural language query.
+ * Strips stop words so ILIKE has a chance of matching location names/descriptions.
+ */
+function extractKeywords(query: string): string | undefined {
+  const stopWords = new Set([
+    "i", "we", "me", "my", "our", "want", "to", "go", "a", "an", "the",
+    "when", "get", "in", "from", "at", "for", "some", "find", "looking",
+    "need", "would", "like", "can", "could", "should", "where", "what",
+    "is", "are", "be", "do", "does", "have", "has", "with", "that", "this",
+    "it", "of", "on", "and", "or", "but", "not", "no", "something",
+    "somewhere", "place", "spot", "good", "nice", "great", "best", "near",
+    "nearby", "around", "here", "there", "after", "before",
+  ]);
+  const words = query
+    .toLowerCase()
+    .replace(/[^\w\s]/g, "")
+    .split(/\s+/)
+    .filter((w) => !stopWords.has(w) && w.length > 2);
+  return words.length > 0 ? words[0] : undefined;
+}
+
+/**
+ * Infers the appropriate time slot based on the last activity's departure time.
+ * Falls back to the intent's timePreference, or undefined if neither is available.
+ */
+function inferTimeSlot(
+  dayActivities: Array<{ departureTime?: string; [key: string]: unknown }> | undefined,
+  intentTimePreference?: "morning" | "afternoon" | "evening",
+): "morning" | "afternoon" | "evening" | undefined {
+  // Try to infer from the last activity's end time
+  if (dayActivities?.length) {
+    // Find the last activity with a departureTime
+    for (let i = dayActivities.length - 1; i >= 0; i--) {
+      const dep = dayActivities[i]?.departureTime;
+      if (typeof dep === "string" && dep.includes(":")) {
+        const hour = parseInt(dep.split(":")[0] ?? "0", 10);
+        if (!isNaN(hour)) {
+          if (hour < 12) return "morning";
+          if (hour < 17) return "afternoon";
+          return "evening";
+        }
+      }
+    }
+  }
+
+  return intentTimePreference;
+}
+
+interface CommandResponse {
+  type: "swap" | "move" | "remove" | "optimize_route";
+  targetActivityId: string;
+  secondActivityId?: string;
+  movePosition?: "before" | "after";
+  description: string;
+}
+
+/**
+ * Resolves a command intent into concrete activity IDs.
+ * Returns null if resolution fails (e.g. activity not found, anchor blocked).
+ */
+function resolveCommand(
+  intent: PlaceIntent,
+  dayActivities: Array<{ id?: string; name?: string; isAnchor?: boolean; [key: string]: unknown }> | undefined,
+): CommandResponse | null {
+  const activities = (dayActivities ?? []).filter((a) => a.id && a.name);
+
+  if (intent.commandType === "optimize_route") {
+    return {
+      type: "optimize_route",
+      targetActivityId: "",
+      description: "Optimizing route for best travel efficiency",
+    };
+  }
+
+  // Fuzzy match an activity name to an ID
+  const findActivity = (name?: string) => {
+    if (!name) return null;
+    const lower = name.toLowerCase();
+    // Exact match
+    const exact = activities.find((a) => a.name?.toLowerCase() === lower);
+    if (exact) return exact;
+    // Prefix match
+    const prefix = activities.find((a) => a.name?.toLowerCase().startsWith(lower));
+    if (prefix) return prefix;
+    // Contains match
+    const contains = activities.find((a) => a.name?.toLowerCase().includes(lower));
+    if (contains) return contains;
+    // Reverse contains (query name contained in activity name)
+    const reverseContains = activities.find((a) =>
+      lower.includes(a.name?.toLowerCase() ?? ""),
+    );
+    if (reverseContains) return reverseContains;
+    return null;
+  };
+
+  const target = findActivity(intent.targetActivityName);
+  if (!target || !target.id) return null;
+
+  // Block commands on anchor activities
+  if (target.isAnchor) return null;
+
+  switch (intent.commandType) {
+    case "remove":
+      return {
+        type: "remove",
+        targetActivityId: target.id,
+        description: `Removing ${target.name}`,
+      };
+
+    case "swap": {
+      const second = findActivity(intent.secondActivityName);
+      if (!second || !second.id || second.isAnchor) return null;
+      return {
+        type: "swap",
+        targetActivityId: target.id,
+        secondActivityId: second.id,
+        description: `Swapping ${target.name} and ${second.name}`,
+      };
+    }
+
+    case "move": {
+      const ref = findActivity(intent.secondActivityName);
+      if (!ref || !ref.id) return null;
+      return {
+        type: "move",
+        targetActivityId: target.id,
+        secondActivityId: ref.id,
+        movePosition: intent.movePosition ?? "before",
+        description: `Moving ${target.name} ${intent.movePosition ?? "before"} ${ref.name}`,
+      };
+    }
+
+    default:
+      return null;
   }
 }
 
