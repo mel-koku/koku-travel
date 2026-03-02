@@ -23,7 +23,7 @@ export function ActivityTipBadge({ tip, className }: ActivityTipBadgeProps) {
     crowd: { bg: "bg-brand-secondary/10", text: "text-brand-secondary" },
     photo: { bg: "bg-stone/10", text: "text-foreground-secondary" },
     weather: { bg: "bg-brand-primary/10", text: "text-brand-primary" },
-    timing: { bg: "bg-semantic-error/10", text: "text-semantic-error" },
+    timing: { bg: "bg-error/10", text: "text-error" },
     accessibility: { bg: "bg-sage/10", text: "text-sage" },
     budget: { bg: "bg-warning/10", text: "text-warning" },
     general: { bg: "bg-surface", text: "text-foreground-secondary" },

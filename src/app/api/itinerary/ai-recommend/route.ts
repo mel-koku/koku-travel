@@ -13,6 +13,7 @@ import {
 import { validateRequestBody, aiRecommendRequestSchema } from "@/lib/api/schemas";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
+import { escapePostgrestValue } from "@/lib/supabase/sanitize";
 import { extractPlaceIntent, type PlaceIntent } from "@/lib/server/placeRecommender";
 import type { TripBuilderData } from "@/types/trip";
 import type { Location } from "@/types/location";
@@ -110,8 +111,9 @@ export async function POST(request: NextRequest) {
       if (cityId) q = q.ilike("city", cityId);
       if (options.categories?.length) q = q.in("category", options.categories);
       if (options.searchText) {
+        const escaped = escapePostgrestValue(options.searchText);
         q = q.or(
-          `name.ilike.%${options.searchText}%,short_description.ilike.%${options.searchText}%`,
+          `name.ilike.%${escaped}%,short_description.ilike.%${escaped}%`,
         );
       }
 

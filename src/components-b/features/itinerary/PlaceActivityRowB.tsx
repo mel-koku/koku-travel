@@ -348,7 +348,7 @@ export const PlaceActivityRowB = memo(
                     }}
                   >
                     <PlaneIcon
-                      className="h-4.5 w-4.5"
+                      className="h-[18px] w-[18px]"
                       style={{ color: "var(--primary)" }}
                     />
                   </div>

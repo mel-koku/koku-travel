@@ -14,7 +14,7 @@ const DEFAULT_ZOOM = 5;
 // B cluster palette — Ai-iro navy steps
 const CLUSTER_SMALL = "#2D4B8E";
 const CLUSTER_MEDIUM = "#3A5FA0";
-const CLUSTER_LARGE = "#059669";
+const CLUSTER_LARGE = "#1E3A6E";
 
 type MapboxModule = typeof import("mapbox-gl");
 

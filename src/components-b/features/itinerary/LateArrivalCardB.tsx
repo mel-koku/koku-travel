@@ -25,7 +25,7 @@ export function LateArrivalCardB({ city, onDismiss, className }: LateArrivalCard
             backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)",
           }}
         >
-          <Moon className="h-4.5 w-4.5" style={{ color: "var(--primary)" }} />
+          <Moon className="h-[18px] w-[18px]" style={{ color: "var(--primary)" }} />
         </div>
         <div className="min-w-0 flex-1">
           <h4

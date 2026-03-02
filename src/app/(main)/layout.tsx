@@ -34,7 +34,7 @@ export default async function VariantALayout({
     <VariantProvider variant="a">
       <div
         data-variant="a"
-        className={`${dmSans.variable} ${geistMono.variable} ${instrumentSerif.variable} min-h-screen bg-background font-sans text-foreground`}
+        className={`${dmSans.variable} ${geistMono.variable} ${instrumentSerif.variable} min-h-[100dvh] bg-background font-sans text-foreground`}
       >
         <WebVitals />
         <LayoutWrapper siteSettings={siteSettings ?? undefined}>

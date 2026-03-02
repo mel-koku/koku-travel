@@ -71,7 +71,10 @@ function TripBuilderBContent({
       const result: PlanApiResponse = await response.json();
 
       const cityNames = data.cities?.slice(0, 2).map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(" & ") || "Japan";
-      const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      const fmt = (iso: string) => {
+        const [y, m, d] = iso.split("-").map(Number);
+        return new Date(y!, m! - 1, d!).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      };
       const dateRange = data.dates?.start && data.dates?.end
         ? `${fmt(data.dates.start)} – ${fmt(data.dates.end)}`
         : data.dates?.start ? fmt(data.dates.start) : "";

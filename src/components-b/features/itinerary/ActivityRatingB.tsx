@@ -66,7 +66,7 @@ export function ActivityRatingB({
               style={{
                 color:
                   star <= displayRating
-                    ? "var(--warning, #d4b83d)"
+                    ? "var(--warning)"
                     : "color-mix(in srgb, var(--muted-foreground) 30%, transparent)",
               }}
             >

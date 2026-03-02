@@ -494,14 +494,14 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           )}
 
           {/* Opening hours */}
-          {status === "success" && (
+          {status === "success" && details && (
             <section className="space-y-2">
               <h3 className="eyebrow-editorial">
                 Opening hours
               </h3>
               {hasOpeningHours ? (
                 <ul className="space-y-1 text-sm text-foreground-secondary">
-                  {(details!.currentOpeningHours ?? details!.regularOpeningHours ?? []).map(
+                  {(details?.currentOpeningHours ?? details?.regularOpeningHours ?? []).map(
                     (entry) => (
                       <li key={entry}>{entry}</li>
                     ),
@@ -514,16 +514,16 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           )}
 
           {/* Links */}
-          {hasLinks && (
+          {status === "success" && details && hasLinks && (
             <section className="space-y-2">
               <h3 className="eyebrow-editorial">
                 Links
               </h3>
               <ul className="space-y-1 text-sm text-sage">
-                {details!.websiteUri && (
+                {details?.websiteUri && (
                   <li>
                     <a
-                      href={details!.websiteUri}
+                      href={details?.websiteUri}
                       target="_blank"
                       rel="noreferrer"
                       className="transition hover:underline"
@@ -532,13 +532,13 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                     </a>
                   </li>
                 )}
-                {details!.internationalPhoneNumber && (
-                  <li className="text-foreground-secondary">{details!.internationalPhoneNumber}</li>
+                {details?.internationalPhoneNumber && (
+                  <li className="text-foreground-secondary">{details?.internationalPhoneNumber}</li>
                 )}
-                {details!.googleMapsUri && (
+                {details?.googleMapsUri && (
                   <li>
                     <a
-                      href={details!.googleMapsUri}
+                      href={details?.googleMapsUri}
                       target="_blank"
                       rel="noreferrer"
                       className="transition hover:underline"

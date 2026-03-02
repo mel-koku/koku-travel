@@ -152,17 +152,21 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
   if (!featured) return null;
 
   return (
-    <section className="bg-background py-12 sm:py-20 lg:py-28">
+    <section aria-label="Testimonials" className="bg-background py-12 sm:py-20 lg:py-28">
       {/* Featured testimonial — full-bleed hero moment */}
       <div className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
-        <Image
-          src={featured.image}
-          alt={featured.alt}
-          fill
-          className="object-cover"
-          sizes="100vw"
-          priority
-        />
+        {featured.image ? (
+          <Image
+            src={featured.image}
+            alt={featured.alt}
+            fill
+            className="object-cover"
+            sizes="100vw"
+            priority
+          />
+        ) : (
+          <div className="absolute inset-0 bg-charcoal" />
+        )}
         <div className="absolute inset-0 bg-charcoal/60" />
 
         <div className="relative z-10 max-w-3xl px-6 pb-12 text-center sm:px-8">

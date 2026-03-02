@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GEOLOCATION_STORAGE_KEY } from "@/lib/constants/storage";
 import { getSession, setSession, removeSession } from "@/lib/storageHelpers";
 
@@ -44,8 +44,6 @@ export function useCurrentLocation(): CurrentLocationState {
   const [position, setPosition] = useState<GeoPosition | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const watchId = useRef<number | null>(null);
-
   const isSupported =
     typeof window !== "undefined" && "geolocation" in navigator;
 
@@ -101,15 +99,6 @@ export function useCurrentLocation(): CurrentLocationState {
       { enableHighAccuracy: false, timeout: 10000, maximumAge: CACHE_TTL },
     );
   }, [isSupported]);
-
-  // Cleanup watch on unmount
-  useEffect(() => {
-    return () => {
-      if (watchId.current !== null) {
-        navigator.geolocation.clearWatch(watchId.current);
-      }
-    };
-  }, []);
 
   return { position, error, isLoading, isSupported, request };
 }

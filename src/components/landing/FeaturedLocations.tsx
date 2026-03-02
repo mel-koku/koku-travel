@@ -77,7 +77,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
   return (
     <>
       {/* Desktop: Scroll-pinned horizontal gallery */}
-      <section ref={containerRef} className="relative hidden h-[180vh] bg-canvas xl:block">
+      <section ref={containerRef} aria-label="Featured locations" className="relative hidden h-[180vh] bg-canvas xl:block">
         {/* Sticky viewport — stays visible while user scrolls the 250vh */}
         <div className="sticky top-0 flex h-[100dvh] flex-col justify-center overflow-hidden py-12">
           {/* Gallery row */}
@@ -143,7 +143,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
       </section>
 
       {/* Mobile: Simple horizontal scroll gallery */}
-      <section className="bg-canvas py-12 sm:py-20 lg:py-28 xl:hidden">
+      <section aria-label="Featured locations" className="bg-canvas py-12 sm:py-20 lg:py-28 xl:hidden">
         <div className="px-6">
           <p className="eyebrow-editorial text-brand-primary">
             {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
@@ -152,7 +152,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
             {content?.featuredLocationsHeading ?? "Places that stay with you"}
           </h2>
           <p className="mt-2 font-mono text-sm text-foreground-secondary">
-            3,700+ places
+            {locations.length > 0 ? `${Math.floor(locations.length / 100) * 100}+ places` : "3,700+ places"}
           </p>
           <p className="mt-4 max-w-md text-base text-foreground-secondary">
             {content?.featuredLocationsDescription ?? "Hidden shrines. Neighborhood favorites. The places guidebooks don\u2019t know about."}

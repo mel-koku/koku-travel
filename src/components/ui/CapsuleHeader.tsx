@@ -19,7 +19,7 @@ export default function CapsuleHeader({
         flex items-center justify-between
         w-full max-w-4xl
         bg-surface rounded-xl border border-border
-        shadow-soft backdrop-blur
+        shadow-sm backdrop-blur
         px-8 py-4 mx-auto
       "
     >

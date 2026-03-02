@@ -11,10 +11,7 @@
 // Location data hooks
 export {
   locationsKeys,
-  useAllLocationsQuery,
   useFilterMetadataQuery,
-  useAggregatedLocations,
-  prefetchAllLocations,
   prefetchFilterMetadata,
 } from "./useLocationsQuery";
 

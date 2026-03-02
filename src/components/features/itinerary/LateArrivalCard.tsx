@@ -18,8 +18,8 @@ export function LateArrivalCard({ city, onDismiss, className }: LateArrivalCardP
       )}
     >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-500/10">
-          <Moon className="h-5 w-5 text-purple-400" />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sage/10">
+          <Moon className="h-5 w-5 text-sage" />
         </div>
         <div className="min-w-0 flex-1">
           <h4 className="text-sm font-medium text-foreground">

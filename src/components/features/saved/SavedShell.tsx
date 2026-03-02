@@ -36,7 +36,7 @@ export default function SavedShell() {
     return (
       <section className="bg-background py-12 sm:py-16 lg:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="py-32 text-center text-destructive">
+          <div className="py-32 text-center text-error">
             <p>Your saved places didn&apos;t load. Give it another shot.</p>
             <button
               onClick={() => window.location.reload()}

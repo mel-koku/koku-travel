@@ -232,6 +232,7 @@ export function TravelSegment({
                 className="text-sm text-sage hover:text-sage/80 font-medium"
                 onClick={() => setIsExpanded(!isExpanded)}
                 title="Show step-by-step transit directions"
+                aria-expanded={isExpanded}
               >
                 Steps {isExpanded ? "\u25B4" : "\u25BE"}
               </button>

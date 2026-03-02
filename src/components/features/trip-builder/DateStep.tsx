@@ -59,7 +59,10 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
     return diffDays;
   }, [startValue, endValue]);
 
-  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const today = useMemo(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  }, []);
 
   const minEndDate = useMemo(() => {
     if (!startValue) return today;
@@ -204,9 +207,9 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
                 aria-live="polite"
               >
                 <p className="font-mono text-sm text-sage">
-                  {calculatedDuration} days &middot;{" "}
-                  {calculatedDuration - 1} night
-                  {calculatedDuration - 1 !== 1 ? "s" : ""}
+                  {calculatedDuration === 1
+                    ? "Day trip"
+                    : `${calculatedDuration} days \u00B7 ${calculatedDuration - 1} night${calculatedDuration - 1 !== 1 ? "s" : ""}`}
                 </p>
               </motion.div>
             )}

@@ -1088,7 +1088,7 @@ export const ItineraryShellB = ({
                       scheduleUserPlanning(model);
                     }}
                     className="mt-2 w-full rounded-xl px-3 py-1.5 text-xs font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
-                    style={{ background: "var(--error, #DC2626)" }}
+                    style={{ background: "var(--error)" }}
                   >
                     Retry
                   </button>
@@ -1165,7 +1165,7 @@ export const ItineraryShellB = ({
         })()}
 
       {/* Reopen Smart Suggestions button — shown when dismissed */}
-      {!isReadOnly && showDashboard && suggestions && suggestions.length > 0 && dismissedSuggestions && (
+      {!isReadOnly && suggestions && suggestions.length > 0 && dismissedSuggestions && (
         <button
           type="button"
           onClick={() => setDismissedSuggestions(false)}
@@ -1181,7 +1181,7 @@ export const ItineraryShellB = ({
       )}
 
       {/* Smart Prompts Drawer — only in Overview tab (day tabs have inline suggestions) */}
-      {!isReadOnly && showDashboard && suggestions && suggestions.length > 0 && !dismissedSuggestions && (
+      {!isReadOnly && suggestions && suggestions.length > 0 && !dismissedSuggestions && (
         <SmartPromptsDrawerB
           gaps={suggestions}
           onAccept={handleAcceptSuggestion}

@@ -183,14 +183,6 @@ export function TravelModeSelector({
     return duration === "—" ? duration : `${icon} ${duration} ${label}`;
   };
 
-  const _formatDistance = (meters?: number) => {
-    if (!meters) return null;
-    if (meters < 1000) return `${Math.ceil(meters)} meters`;
-    const km = (meters / 1000).toFixed(1);
-    return `${km}km`;
-  };
-  void _formatDistance; // Intentionally unused - kept for future use
-
   const getEstimate = (mode: ItineraryTravelMode): ModeEstimate | undefined => {
     return estimates.get(mode);
   };

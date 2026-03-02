@@ -39,12 +39,12 @@ function SaveCopyButtonB({ token }: { token: string }) {
   const handleCopy = useCallback(async () => {
     const supabase = createClient();
     if (!supabase) {
-      router.push(`/signin?redirect=/b/shared/${token}`);
+      router.push(`/b/signin?redirect=/b/shared/${token}`);
       return;
     }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      router.push(`/signin?redirect=/b/shared/${token}`);
+      router.push(`/b/signin?redirect=/b/shared/${token}`);
       return;
     }
 

@@ -24,17 +24,18 @@ const defaultNavColumns = [
   {
     title: "Company",
     links: [
-      { label: "About", href: "#" },
-      { label: "Contact", href: "#" },
-      { label: "Privacy", href: "#" },
+      { label: "About", href: "/about" },
+      { label: "Contact", href: "/contact" },
+      { label: "Privacy", href: "/privacy" },
     ],
   },
 ];
 
-const defaultSocialLinks = [
-  { label: "IG", href: "#" },
-  { label: "X", href: "#" },
-  { label: "YT", href: "#" },
+// Social links hidden until real URLs are available
+const defaultSocialLinks: { label: string; href: string }[] = [
+  // { label: "IG", href: "#" },
+  // { label: "X", href: "#" },
+  // { label: "YT", href: "#" },
 ];
 
 type FooterProps = {

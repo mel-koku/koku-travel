@@ -27,7 +27,7 @@ export default function IdentityBadge({
   const supabase = createClient();
   const { user } = useAppState();
   const [email, setEmail] = useState<string | null>(null);
-  const [_isSignedIn, setIsSignedIn] = useState<boolean>(false);
+  const [, setIsSignedIn] = useState<boolean>(false);
 
   useEffect(() => {
     let alive = true;
