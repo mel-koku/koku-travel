@@ -28,6 +28,8 @@ export function VariantToggle() {
     router.push(targetPath);
   };
 
+  if (process.env.NODE_ENV !== "development" && !process.env.NEXT_PUBLIC_SHOW_VARIANT_TOGGLE) return null;
+
   return (
     <button
       type="button"

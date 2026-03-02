@@ -8,28 +8,28 @@ import {
   addRequestContextHeaders,
   requireJsonContentType,
 } from "@/lib/api/middleware";
+import { validateRequestBody } from "@/lib/api/schemas";
+import { z } from "zod";
 import { planItinerary } from "@/lib/itineraryPlanner";
-import type { Itinerary } from "@/types/itinerary";
 
-/**
- * Request body for scheduling an itinerary
- */
-interface ScheduleItineraryRequest {
-  itinerary: Itinerary;
-  options?: {
-    defaultDayStart?: string;
-    defaultDayEnd?: string;
-    defaultVisitMinutes?: number;
-    transitionBufferMinutes?: number;
-  };
-  dayEntryPoints?: Record<
-    string,
-    {
-      startPoint?: { coordinates: { lat: number; lng: number } };
-      endPoint?: { coordinates: { lat: number; lng: number } };
-    }
-  >;
-}
+const scheduleRequestSchema = z.object({
+  itinerary: z.object({
+    days: z.array(z.unknown()).min(1),
+  }).passthrough(),
+  options: z.object({
+    defaultDayStart: z.string().regex(/^([01]?\d|2[0-3]):[0-5]\d$/).optional(),
+    defaultDayEnd: z.string().regex(/^([01]?\d|2[0-3]):[0-5]\d$/).optional(),
+    defaultVisitMinutes: z.number().int().min(5).max(480).optional(),
+    transitionBufferMinutes: z.number().int().min(0).max(120).optional(),
+  }).strict().optional(),
+  dayEntryPoints: z.record(
+    z.string(),
+    z.object({
+      startPoint: z.object({ coordinates: z.object({ lat: z.number(), lng: z.number() }) }).optional(),
+      endPoint: z.object({ coordinates: z.object({ lat: z.number(), lng: z.number() }) }).optional(),
+    }),
+  ).optional(),
+});
 
 /**
  * POST /api/itinerary/schedule
@@ -60,19 +60,17 @@ export async function POST(request: NextRequest) {
   if (contentTypeError) return contentTypeError;
 
   try {
-    const body = (await request.json()) as ScheduleItineraryRequest;
-
-    const { itinerary, options, dayEntryPoints } = body;
-
-    // Validate required fields
-    if (!itinerary || !itinerary.days) {
+    const validation = await validateRequestBody(request, scheduleRequestSchema);
+    if (!validation.success) {
       return addRequestContextHeaders(
-        badRequest("Invalid or missing itinerary", undefined, {
+        badRequest("Invalid request body", validation.error, {
           requestId: context.requestId,
         }),
         context,
       );
     }
+
+    const { itinerary, options, dayEntryPoints } = validation.data;
 
     // Schedule the itinerary
     const scheduled = await planItinerary(itinerary, options, dayEntryPoints);

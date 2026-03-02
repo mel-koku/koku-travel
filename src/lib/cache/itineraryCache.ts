@@ -13,6 +13,7 @@ import { env } from "@/lib/env";
 import type { TripBuilderData } from "@/types/trip";
 import type { Trip } from "@/types/tripDomain";
 import type { Itinerary } from "@/types/itinerary";
+import type { GeneratedGuide } from "@/types/llmConstraints";
 
 /** Cache TTL: 24 hours in seconds */
 const CACHE_TTL_SECONDS = 24 * 60 * 60;
@@ -25,6 +26,7 @@ type CachedItineraryResult = {
   trip: Trip;
   itinerary: Itinerary;
   dayIntros?: Record<string, string>;
+  guideProse?: GeneratedGuide;
   cachedAt: string;
 };
 
@@ -220,7 +222,7 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
  */
 export async function getCachedItinerary(
   builderData: TripBuilderData,
-): Promise<{ trip: Trip; itinerary: Itinerary; dayIntros?: Record<string, string> } | null> {
+): Promise<{ trip: Trip; itinerary: Itinerary; dayIntros?: Record<string, string>; guideProse?: GeneratedGuide } | null> {
   initializeRedis();
 
   if (!redisAvailable || !redisClient) {
@@ -238,6 +240,7 @@ export async function getCachedItinerary(
         trip: cached.trip,
         itinerary: cached.itinerary,
         dayIntros: cached.dayIntros,
+        guideProse: cached.guideProse,
       };
     }
 
@@ -264,6 +267,7 @@ export async function cacheItinerary(
   trip: Trip,
   itinerary: Itinerary,
   dayIntros?: Record<string, string>,
+  guideProse?: GeneratedGuide,
 ): Promise<void> {
   initializeRedis();
 
@@ -278,6 +282,7 @@ export async function cacheItinerary(
       trip,
       itinerary,
       dayIntros,
+      guideProse,
       cachedAt: new Date().toISOString(),
     };
 

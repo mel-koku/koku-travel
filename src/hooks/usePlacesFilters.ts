@@ -407,6 +407,7 @@ export function usePlacesFilters(
     setOpenNow(false);
     setWheelchairAccessible(false);
     setVegetarianFriendly(false);
+    setSelectedSort("recommended");
   }, []);
 
   return {

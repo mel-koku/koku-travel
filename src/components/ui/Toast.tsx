@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 export type ToastVariant = "success" | "info" | "error";
@@ -27,6 +27,7 @@ const VARIANT_STYLES: Record<ToastVariant, string> = {
 
 export function Toast({ toast, onDismiss }: ToastProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const dismissTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     // Trigger enter animation
@@ -36,12 +37,13 @@ export function Toast({ toast, onDismiss }: ToastProps) {
     const duration = toast.duration ?? 4000;
     const dismissTimeout = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(() => onDismiss(toast.id), 300);
+      dismissTimerRef.current = setTimeout(() => onDismiss(toast.id), 300);
     }, duration);
 
     return () => {
       clearTimeout(showTimeout);
       clearTimeout(dismissTimeout);
+      clearTimeout(dismissTimerRef.current);
     };
   }, [toast.id, toast.duration, onDismiss]);
 

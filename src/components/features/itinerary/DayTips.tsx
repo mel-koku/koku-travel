@@ -28,6 +28,8 @@ type DayTipsProps = {
   isFirstTimeVisitor?: boolean;
   /** When true, luggage smart prompt is active — suppress the "Send luggage ahead" pro tip */
   hasLuggagePrompt?: boolean;
+  /** When true, runs fetch logic and fires onTipCount but renders nothing */
+  countOnly?: boolean;
 };
 
 /** Minimal shape used for rendering — shared by static pro tips and DB tips. */
@@ -75,7 +77,7 @@ const PRO_TIP_DEDUP_KEYWORDS: Record<string, string[]> = {
   "pro-last-train": ["last train"],
 };
 
-export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt }: DayTipsProps) {
+export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onTipCount, nextDayActivities, isFirstTimeVisitor, hasLuggagePrompt, countOnly }: DayTipsProps) {
   const [dbTips, setDbTips] = useState<TravelGuidance[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -160,7 +162,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     return () => {
       cancelled = true;
     };
-  }, [dayCategories, day.cityId, dayDate]);
+  }, [dayCategories, day.cityId, dayDate, dayIndex]);
 
   // Computed pro tips based on day data
   const proTips = useMemo<DisplayTip[]>(() => {
@@ -342,8 +344,8 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
       }
     }
 
-    // Holiday crowd warning
-    if (dayIndex === 0) {
+    // Holiday crowd warning — show on all days, not just Day 1
+    {
       const dayOfMonth = dayDate.getDate();
       const holidays = getActiveHolidays(month, dayOfMonth, month, dayOfMonth);
       if (holidays.length > 0) {
@@ -422,6 +424,11 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
     onTipCount?.(allTips.length);
   }, [allTips.length, onTipCount]);
 
+  // Count-only mode: run fetch + report count, but render nothing
+  if (countOnly) {
+    return null;
+  }
+
   // Don't render if no tips
   if (!isLoading && allTips.length === 0) {
     return null;
@@ -435,38 +442,46 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
         </div>
       );
     }
-    return allTips.map((tip) => (
-      <div
-        key={tip.id}
-        className={`flex items-start gap-2 rounded-xl bg-background/70 p-2${tip.content ? " cursor-pointer" : ""}`}
-        onClick={tip.content ? () => setExpandedTipId(expandedTipId === tip.id ? null : tip.id) : undefined}
-      >
-        <span className="shrink-0 text-base">
-          {tip.icon}
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold text-foreground">
-            {tip.title}
-          </p>
-          <p className="mt-0.5 text-xs leading-relaxed text-foreground-secondary">
-            {tip.summary}
-          </p>
-          {tip.content && expandedTipId === tip.id && (
-            <p className="mt-1.5 border-t border-border/50 pt-1.5 text-xs leading-relaxed text-foreground-secondary/80">
-              {tip.content}
+    return allTips.map((tip) => {
+      const isTipExpanded = expandedTipId === tip.id;
+      const Wrapper = tip.content ? "button" : "div";
+      return (
+        <Wrapper
+          key={tip.id}
+          {...(tip.content ? {
+            type: "button" as const,
+            "aria-expanded": isTipExpanded,
+            onClick: () => setExpandedTipId(isTipExpanded ? null : tip.id),
+          } : {})}
+          className={`flex items-start gap-2 rounded-xl bg-background/70 p-2 text-left${tip.content ? " cursor-pointer" : ""}`}
+        >
+          <span className="shrink-0 text-base">
+            {tip.icon}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold text-foreground">
+              {tip.title}
             </p>
+            <p className="mt-0.5 text-xs leading-relaxed text-foreground-secondary">
+              {tip.summary}
+            </p>
+            {tip.content && isTipExpanded && (
+              <p className="mt-1.5 border-t border-border/50 pt-1.5 text-xs leading-relaxed text-foreground-secondary/80">
+                {tip.content}
+              </p>
+            )}
+          </div>
+          {tip.content && (
+            <svg
+              className={`mt-0.5 h-3 w-3 shrink-0 text-foreground-secondary/50 transition-transform ${isTipExpanded ? "rotate-180" : ""}`}
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
           )}
-        </div>
-        {tip.content && (
-          <svg
-            className={`mt-0.5 h-3 w-3 shrink-0 text-foreground-secondary/50 transition-transform ${expandedTipId === tip.id ? "rotate-180" : ""}`}
-            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-          </svg>
-        )}
-      </div>
-    ));
+        </Wrapper>
+      );
+    });
   };
 
   // Embedded mode: just render the items without wrapper
@@ -479,6 +494,7 @@ export function DayTips({ day, tripStartDate, dayIndex, className, embedded, onT
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
+        aria-expanded={isExpanded}
         className="flex w-full items-center justify-between p-3 text-left"
       >
         <div className="flex items-center gap-2">

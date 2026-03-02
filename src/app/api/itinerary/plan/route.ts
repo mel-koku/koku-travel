@@ -4,6 +4,7 @@ import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
 import { validateItinerary } from "@/lib/validation/itineraryValidator";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import {
   createRequestContext,
   addRequestContextHeaders,
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
   const context = createRequestContext(request);
 
   // Rate limiting: 20 requests per minute per IP (expensive AI generation)
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 20, windowMs: 60 * 1000 });
+  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.ITINERARY_PLAN);
   if (rateLimitResponse) {
     return addRequestContextHeaders(rateLimitResponse, context);
   }
@@ -104,6 +105,7 @@ export async function POST(request: NextRequest) {
           trip: cachedResult.trip,
           itinerary: cachedResult.itinerary,
           dayIntros: cachedResult.dayIntros,
+          guideProse: cachedResult.guideProse,
           validation: tripValidation,
           itineraryValidation: {
             valid: itineraryValidation.valid,
@@ -167,7 +169,7 @@ export async function POST(request: NextRequest) {
     const { trip, itinerary, dayIntros, guideProse } = generationResult;
 
     // Cache the generated itinerary for future requests
-    await cacheItinerary(builderData, trip, itinerary, dayIntros);
+    await cacheItinerary(builderData, trip, itinerary, dayIntros, guideProse);
 
     // Validate trip constraints (domain-level validation)
     const tripValidation = validateTripConstraints(trip);

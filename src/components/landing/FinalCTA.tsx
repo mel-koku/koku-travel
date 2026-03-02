@@ -11,6 +11,7 @@ type FinalCTAProps = {
 export function FinalCTA({ content }: FinalCTAProps) {
   return (
     <section
+      aria-label="Get started"
       className="relative overflow-hidden"
     >
       <div className="texture-grain pointer-events-none absolute inset-0 z-20" />

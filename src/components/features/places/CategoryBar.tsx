@@ -30,7 +30,6 @@ export function CategoryBar({
   onAskKokuClick,
   isChatOpen = false,
 }: CategoryBarProps) {
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [isStuck, setIsStuck] = useState(false);
 
@@ -84,7 +83,6 @@ export function CategoryBar({
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
-                ref={searchInputRef}
                 type="text"
                 value={inputValue}
                 onChange={(e) => onInputChange(e.target.value)}

@@ -171,19 +171,6 @@ export async function deleteTrip(
 }
 
 /**
- * Helper to extract error message from various error types
- */
-function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === "object" && error && "message" in error) {
-    return String((error as { message?: unknown }).message);
-  }
-  return String(error);
-}
-
-/**
  * Syncs a trip save to Supabase
  * Handles auth checking and error logging
  */
@@ -198,7 +185,7 @@ export async function syncTripSave(
     } = await supabase.auth.getUser();
 
     if (authError) {
-      const errorMessage = extractErrorMessage(authError);
+      const errorMessage = getErrorMessage(authError);
 
       // Suppress "Auth session missing" errors (expected when not logged in)
       if (errorMessage.includes("Auth session missing")) {
@@ -237,7 +224,7 @@ export async function syncTripDelete(
     } = await supabase.auth.getUser();
 
     if (authError) {
-      const errorMessage = extractErrorMessage(authError);
+      const errorMessage = getErrorMessage(authError);
 
       // Suppress "Auth session missing" errors (expected when not logged in)
       if (errorMessage.includes("Auth session missing")) {

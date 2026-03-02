@@ -60,12 +60,12 @@ type ActData = {
 
 function resolveActs(content?: LandingPageContent): ActData[] {
   if (content?.showcaseActs?.length === 3) {
-    return content.showcaseActs.map((act) => ({
+    return content.showcaseActs.map((act, i) => ({
       number: act.number,
       eyebrow: act.eyebrow,
       title: act.title,
       description: act.description,
-      image: act.image?.url ?? defaultActs[0]!.image,
+      image: act.image?.url ?? defaultActs[i]?.image ?? defaultActs[0]!.image,
       alt: act.alt,
     }));
   }
@@ -121,7 +121,7 @@ function ImmersiveShowcaseDesktop({ acts }: { acts: ActData[] }) {
   }, []);
 
   return (
-    <section ref={containerRef} className="relative h-[220vh] shrink-0 bg-background">
+    <section ref={containerRef} aria-label="Immersive showcase" className="relative h-[220vh] shrink-0 bg-background">
       <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-background">
         {acts.map((act, index) => (
           <Act
@@ -350,7 +350,7 @@ function Act({
 
 function ImmersiveShowcaseMobile({ acts }: { acts: ActData[] }) {
   return (
-    <section className="bg-background py-12 sm:py-20 lg:py-28">
+    <section aria-label="Immersive showcase" className="bg-background py-12 sm:py-20 lg:py-28">
       {acts.map((act, i) => (
         <div key={act.number} className={`px-6 ${i > 0 ? "mt-12 sm:mt-16" : ""}`}>
           <div className="mx-auto max-w-3xl">

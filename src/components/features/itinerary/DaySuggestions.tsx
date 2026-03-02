@@ -65,8 +65,8 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     text: "text-warning",
   },
   early_end: {
-    bg: "bg-semantic-error/10",
-    text: "text-semantic-error",
+    bg: "bg-error/10",
+    text: "text-error",
   },
   late_start: {
     bg: "bg-brand-primary/10",
@@ -113,8 +113,8 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     text: "text-brand-secondary",
   },
   late_arrival: {
-    bg: "bg-purple-500/10",
-    text: "text-purple-400",
+    bg: "bg-sage/10",
+    text: "text-sage",
   },
 };
 

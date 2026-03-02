@@ -80,7 +80,7 @@ export function SmartPromptGroupCardB({
             backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)",
           }}
         >
-          <Icon className="h-4.5 w-4.5" style={{ color: "var(--primary)" }} />
+          <Icon className="h-[18px] w-[18px]" style={{ color: "var(--primary)" }} />
         </div>
 
         {/* Content */}

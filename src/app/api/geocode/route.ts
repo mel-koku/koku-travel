@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/api/rateLimit";
+import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
 
 /**
  * GET /api/geocode?q=apa+hotel+kobe
@@ -7,6 +9,10 @@ import { NextRequest, NextResponse } from "next/server";
  * Server-side to set proper User-Agent header (forbidden in browser Fetch API).
  */
 export async function GET(request: NextRequest) {
+  const context = createRequestContext(request);
+
+  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60_000 });
+  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
   const q = request.nextUrl.searchParams.get("q")?.trim();
 
   if (!q || q.length < 3) {

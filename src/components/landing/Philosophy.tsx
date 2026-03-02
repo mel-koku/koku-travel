@@ -13,7 +13,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
   const stats = content?.philosophyStats;
 
   return (
-    <section className="bg-canvas min-h-[50vh]">
+    <section aria-label="Our philosophy" className="bg-canvas min-h-[50vh]">
       <div className="flex min-h-[50vh] flex-col items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
         {/* Eyebrow */}
         <p className="eyebrow-mono">
@@ -52,7 +52,10 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
           {/* Stat 2 — Prefectures */}
           <div className="text-center">
             <AnimatedNumber
-              value={stats?.[1]?.value ? parseInt(stats[1].value, 10) : 47}
+              value={(() => {
+                const parsed = stats?.[1]?.value ? parseInt(stats[1].value, 10) : 47;
+                return isNaN(parsed) ? 47 : parsed;
+              })()}
               className="text-[clamp(4rem,10vw,8rem)] font-mono font-light text-foreground leading-none"
             />
             <p className="eyebrow-mono mt-3">

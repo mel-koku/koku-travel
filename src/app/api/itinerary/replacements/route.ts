@@ -7,21 +7,20 @@ import {
   addRequestContextHeaders,
   requireJsonContentType,
 } from "@/lib/api/middleware";
+import { validateRequestBody } from "@/lib/api/schemas";
+import { z } from "zod";
 import { findReplacementCandidates } from "@/lib/activityReplacement";
-import type { ItineraryActivity } from "@/types/itinerary";
-import type { TripBuilderData } from "@/types/trip";
 
-/**
- * Request body for finding replacement candidates
- */
-interface FindReplacementsRequest {
-  activity: Extract<ItineraryActivity, { kind: "place" }>;
-  tripData: TripBuilderData;
-  allActivities: ItineraryActivity[];
-  dayActivities: ItineraryActivity[];
-  currentDayIndex: number;
-  maxCandidates?: number;
-}
+const replacementsRequestSchema = z.object({
+  activity: z.object({
+    kind: z.literal("place"),
+  }).passthrough(),
+  tripData: z.object({}).passthrough(),
+  allActivities: z.array(z.unknown()).max(500),
+  dayActivities: z.array(z.unknown()).max(100),
+  currentDayIndex: z.number().int().min(0).max(30),
+  maxCandidates: z.number().int().min(1).max(50).optional(),
+});
 
 /**
  * POST /api/itinerary/replacements
@@ -50,7 +49,15 @@ export async function POST(request: NextRequest) {
   if (contentTypeError) return contentTypeError;
 
   try {
-    const body = (await request.json()) as FindReplacementsRequest;
+    const validation = await validateRequestBody(request, replacementsRequestSchema);
+    if (!validation.success) {
+      return addRequestContextHeaders(
+        badRequest("Invalid request body", validation.error, {
+          requestId: context.requestId,
+        }),
+        context,
+      );
+    }
 
     const {
       activity,
@@ -59,35 +66,12 @@ export async function POST(request: NextRequest) {
       dayActivities,
       currentDayIndex,
       maxCandidates = 10,
-    } = body;
-
-    // Validate required fields
-    if (!activity || activity.kind !== "place") {
-      return addRequestContextHeaders(
-        badRequest("Invalid or missing activity", undefined, {
-          requestId: context.requestId,
-        }),
-        context,
-      );
-    }
-
-    if (!tripData) {
-      return addRequestContextHeaders(
-        badRequest("Missing tripData", undefined, {
-          requestId: context.requestId,
-        }),
-        context,
-      );
-    }
-
-    if (!Array.isArray(allActivities) || !Array.isArray(dayActivities)) {
-      return addRequestContextHeaders(
-        badRequest("allActivities and dayActivities must be arrays", undefined, {
-          requestId: context.requestId,
-        }),
-        context,
-      );
-    }
+    } = validation.data as z.infer<typeof replacementsRequestSchema> & {
+      activity: Parameters<typeof findReplacementCandidates>[0];
+      tripData: Parameters<typeof findReplacementCandidates>[1];
+      allActivities: Parameters<typeof findReplacementCandidates>[2];
+      dayActivities: Parameters<typeof findReplacementCandidates>[3];
+    };
 
     // Find replacement candidates
     const result = await findReplacementCandidates(

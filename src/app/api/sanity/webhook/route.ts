@@ -56,7 +56,12 @@ export async function POST(request: NextRequest) {
     return addRequestContextHeaders(unauthorized(), context);
   }
 
-  const body = (await request.json()) as SanityWebhookBody;
+  let body: SanityWebhookBody;
+  try {
+    body = (await request.json()) as SanityWebhookBody;
+  } catch {
+    return addRequestContextHeaders(badRequest("Invalid JSON body"), context);
+  }
 
   let response: NextResponse;
   switch (body._type) {

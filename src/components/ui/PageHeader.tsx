@@ -10,8 +10,6 @@ type PageHeaderProps = {
   eyebrow?: string;
   title: string;
   subtitle?: string;
-  /** @deprecated Use imageUrl instead — variant is ignored, always renders dark hero */
-  variant?: "rich" | "compact";
   imageUrl?: string;
   children?: React.ReactNode;
   /** Use smaller min-height for functional pages like Account */

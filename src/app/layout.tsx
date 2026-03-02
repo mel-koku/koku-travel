@@ -18,7 +18,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://mbjcxrfuuczlauavashs.supabase.co" />
         <link rel="preconnect" href="https://cdn.sanity.io" />
       </head>
-      <body className="min-h-screen antialiased">
+      <body className="min-h-[100dvh] antialiased">
         {children}
       </body>
     </html>

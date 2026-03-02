@@ -19,7 +19,7 @@ export default function DashboardError({ error, reset }: ErrorProps) {
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-surface p-4">
+    <div className="flex min-h-[100dvh] items-center justify-center bg-surface p-4">
       <div className="w-full max-w-md rounded-xl border border-border bg-background p-8 text-center shadow-lg">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-error/10">
           <svg

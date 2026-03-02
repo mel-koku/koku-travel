@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { forwardRef, memo, useMemo, useState, useEffect, type ChangeEvent } from "react";
+import { forwardRef, memo, useMemo, useState, useEffect, useRef as useReactRef, type ChangeEvent } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { CSS } from "@dnd-kit/utilities";
 import type { Transform } from "@dnd-kit/utilities";
@@ -253,6 +253,20 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     const [tips, setTips] = useState<ActivityTip[]>([]);
     const prefersReducedMotion = useReducedMotion();
     const ratingsCtx = useActivityRatingsContext();
+    const timePickerRef = useReactRef<HTMLDivElement>(null);
+
+    // Close time picker on click-outside
+    useEffect(() => {
+      if (!showTimePicker) return;
+      function onMouseDown(e: MouseEvent) {
+        if (timePickerRef.current && !timePickerRef.current.contains(e.target as Node)) {
+          setShowTimePicker(false);
+        }
+      }
+      document.addEventListener("mousedown", onMouseDown);
+      return () => document.removeEventListener("mousedown", onMouseDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- timePickerRef is a stable ref
+    }, [showTimePicker]);
 
 
     const durationLabel = useMemo(() => {
@@ -628,6 +642,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             {/* Time picker popover */}
             {showTimePicker && (
               <div
+                ref={timePickerRef}
                 className="absolute left-0 top-full z-50 mt-1 rounded-xl border border-border bg-background p-3 shadow-lg"
                 onClick={(e) => e.stopPropagation()}
               >

@@ -93,11 +93,15 @@ export default async function Home() {
         <ErrorBoundary fallback={null}>
           <TestimonialTheater content={landingContent ?? undefined} />
         </ErrorBoundary>
-        <FeaturedGuides
-          guides={featuredGuides}
-          content={landingContent ?? undefined}
-        />
-        <FinalCTA content={landingContent ?? undefined} />
+        <ErrorBoundary fallback={null}>
+          <FeaturedGuides
+            guides={featuredGuides}
+            content={landingContent ?? undefined}
+          />
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
+          <FinalCTA content={landingContent ?? undefined} />
+        </ErrorBoundary>
       </main>
     </>
   );
