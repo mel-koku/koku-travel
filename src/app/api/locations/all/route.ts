@@ -148,6 +148,7 @@ export async function GET(request: NextRequest) {
       mealOptions: row.meal_options ?? undefined,
       serviceOptions: row.service_options ?? undefined,
       tags: row.tags ?? undefined,
+      cuisineType: row.cuisine_type ?? undefined,
     }));
 
     // Cache the result in-memory
