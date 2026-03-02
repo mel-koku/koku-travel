@@ -42,6 +42,12 @@ export const CATEGORY_HIERARCHY: CategoryHierarchy[] = [
         patterns: [/theatre|theater|kabuki|concert|hall|studio|opera/i],
         googleTypes: ["performing_arts_theater", "concert_hall", "cultural_center"],
       },
+      {
+        id: "craft",
+        label: "Craft Workshop",
+        patterns: [/craft|artisan|workshop|pottery|ceramics|weaving|textile|lacquer|washi|glass.?blow|indigo|shibori|kumihimo|kintsugi/i],
+        googleTypes: ["art_studio", "pottery_store"],
+      },
     ],
   },
   {
@@ -303,6 +309,7 @@ const DATABASE_CATEGORY_TO_PARENT: Record<string, string> = {
   castle: "culture",
   historic_site: "culture",
   theater: "culture",
+  craft: "culture",
   // Accommodation
   accommodation: "accommodation",
 };

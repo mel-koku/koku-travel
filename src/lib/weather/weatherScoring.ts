@@ -20,7 +20,7 @@ export function getEnvironment(location: Location): "indoor" | "outdoor" | "mixe
   ];
   const indoorCategories = [
     "museum", "restaurant", "shopping", "bar", "entertainment",
-    "aquarium", "cafe", "theater",
+    "aquarium", "cafe", "theater", "craft",
   ];
   const mixedCategories = [
     "landmark", "wellness", "market", "culture", "onsen",

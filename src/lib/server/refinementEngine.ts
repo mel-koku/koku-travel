@@ -11,7 +11,8 @@ export type RefinementType =
   | "more_food"
   | "more_culture"
   | "more_kid_friendly"
-  | "more_rest";
+  | "more_rest"
+  | "more_craft";
 
 /**
  * Refinement request
@@ -47,6 +48,8 @@ export async function refineDay(request: RefinementRequest): Promise<TripDay> {
       return await refineMoreKidFriendly(day, trip);
     case "more_rest":
       return refineMoreRest(day, trip);
+    case "more_craft":
+      return await refineMoreCraft(day, trip);
     default:
       return day;
   }
@@ -238,7 +241,7 @@ async function refineMoreCulture(day: TripDay, trip: Trip): Promise<TripDay> {
 
   // Find culture locations from the database
   const cultureLocations = await fetchLocationsByCategories(
-    ["shrine", "temple", "museum", "historic"],
+    ["shrine", "temple", "museum", "historic", "craft"],
     {
       city: day.cityId,
       limit: 30,
@@ -413,6 +416,70 @@ function refineMoreRest(day: TripDay, _trip: Trip): TripDay {
 }
 
 /**
+ * Adds more craft/artisan activities
+ */
+async function refineMoreCraft(day: TripDay, trip: Trip): Promise<TripDay> {
+  const activities = [...day.activities];
+  const usedLocationIds = new Set(activities.map((a) => a.locationId));
+
+  const craftLocations = await fetchLocationsByCategories(
+    ["craft", "museum"],
+    {
+      city: day.cityId,
+      limit: 30,
+      excludeIds: Array.from(usedLocationIds).filter((id): id is string => Boolean(id)),
+      requirePlaceId: false,
+    },
+  );
+
+  if (craftLocations.length === 0) {
+    return day;
+  }
+
+  const criteria: LocationScoringCriteria = {
+    interests: trip.travelerProfile.interests.filter((i) => i === "craft" || i === "culture"),
+    travelStyle: trip.travelerProfile.pace,
+    budgetLevel: trip.travelerProfile.budget.level,
+    budgetTotal: trip.travelerProfile.budget.total,
+    budgetPerDay: trip.travelerProfile.budget.perDay,
+    accessibility: trip.travelerProfile.mobility.required
+      ? {
+          wheelchairAccessible: trip.travelerProfile.mobility.required,
+          elevatorRequired: trip.travelerProfile.mobility.needs?.includes("elevator") ?? false,
+        }
+      : undefined,
+    group: trip.travelerProfile.group,
+    availableMinutes: 120,
+    recentCategories: day.activities.map((a) => a.location?.category ?? "").filter(Boolean),
+    timeSlot: "morning",
+  };
+
+  const scored = craftLocations.map((loc) => scoreLocation(loc, criteria));
+  scored.sort((a, b) => b.score - a.score);
+
+  const bestCraftLocation = scored[0];
+  if (!bestCraftLocation) {
+    return day;
+  }
+
+  const newCraftActivity = {
+    id: `${day.id}-craft-${Date.now()}`,
+    locationId: bestCraftLocation.location.id,
+    location: bestCraftLocation.location,
+    timeSlot: "morning" as const,
+    duration: 90,
+  };
+
+  const newActivities = [newCraftActivity, ...activities];
+
+  return {
+    ...day,
+    activities: newActivities,
+    explanation: generateRefinementExplanation(day, "more_craft"),
+  };
+}
+
+/**
  * Generates explanation text for refinement
  */
 function generateRefinementExplanation(day: TripDay, type: RefinementType): string {
@@ -429,6 +496,8 @@ function generateRefinementExplanation(day: TripDay, type: RefinementType): stri
       return "Adjusted activities to be more suitable for children.";
     case "more_rest":
       return "Added more rest time between activities.";
+    case "more_craft":
+      return "Added craft workshops for hands-on cultural experiences.";
     default:
       return day.explanation ?? "";
   }

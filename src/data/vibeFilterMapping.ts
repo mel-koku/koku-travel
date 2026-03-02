@@ -11,7 +11,7 @@ export const VIBE_FILTER_MAP: Record<
   }
 > = {
   temples_tradition: {
-    dbCategories: ["shrine", "temple", "castle", "historic_site"],
+    dbCategories: ["shrine", "temple", "castle", "historic_site", "craft"],
     tags: ["traditional-japan", "spiritual"],
   },
   foodie_paradise: {
@@ -40,12 +40,16 @@ export const VIBE_FILTER_MAP: Record<
     hiddenGemOnly: true,
   },
   family_fun: {
-    dbCategories: ["aquarium", "zoo", "park", "beach"],
+    dbCategories: ["aquarium", "zoo", "park", "beach", "craft"],
     tags: ["families"],
   },
   history_buff: {
     dbCategories: ["museum", "castle", "historic_site", "landmark"],
     tags: ["learning"],
+  },
+  artisan_craft: {
+    dbCategories: ["craft", "museum"],
+    tags: ["hands-on", "learning", "traditional-japan"],
   },
   in_season: {
     dbCategories: [], // cross-category — uses seasonal tag matching

@@ -306,14 +306,15 @@ export function selectZoneForDay(
   if (zoneMap.zones.size === 0) return null;
 
   const interestToCategory: Record<string, string[]> = {
-    culture: ["shrine", "temple", "landmark", "museum", "castle", "historic_site"],
+    culture: ["shrine", "temple", "landmark", "museum", "castle", "historic_site", "craft"],
     food: ["restaurant", "cafe", "market", "bar"],
     nature: ["park", "garden", "nature", "beach", "viewpoint"],
     nightlife: ["bar", "entertainment"],
     shopping: ["shopping", "market"],
     photography: ["landmark", "viewpoint", "park"],
     wellness: ["onsen", "garden", "park"],
-    history: ["shrine", "temple", "museum", "castle", "historic_site"],
+    history: ["shrine", "temple", "museum", "castle", "historic_site", "craft"],
+    craft: ["craft", "museum"],
   };
 
   // Build set of categories relevant to user interests

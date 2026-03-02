@@ -32,6 +32,7 @@ const CATEGORY_DEFAULT_DURATIONS: Record<string, number> = {
   zoo: 180, // Zoos - large grounds
   beach: 180, // Beach visits - leisurely
   historic_site: 90, // Historic sites - variable
+  craft: 90, // Craft workshops - typically 1-2 hours
 
   // Generic fallback categories (for legacy data)
   culture: 90, // Generic cultural sites

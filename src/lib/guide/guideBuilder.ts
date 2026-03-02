@@ -574,7 +574,7 @@ export function buildGuide(
       segments.push(...templateCM);
       // Find the first cultural activity to attach the moment to
       const culturalActivity = placeActivities.find((a) =>
-        a.tags?.some((t) => ["shrine", "temple", "onsen", "garden", "museum"].includes(t)),
+        a.tags?.some((t) => ["shrine", "temple", "onsen", "garden", "museum", "craft"].includes(t)),
       );
       segments.push({
         id: `guide-${day.id}-cm`,

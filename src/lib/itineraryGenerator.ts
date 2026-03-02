@@ -75,7 +75,7 @@ function pickTimeSlotForSaved(
 
   // Category → preferred time slot mapping
   const EVENING_CATS = new Set(["bar", "entertainment"]);
-  const AFTERNOON_CATS = new Set(["museum", "shopping", "mall"]);
+  const AFTERNOON_CATS = new Set(["museum", "shopping", "mall", "craft"]);
   const MORNING_CATS = new Set(["shrine", "temple", "park", "garden", "market", "nature", "viewpoint"]);
 
   let preferred: "morning" | "afternoon" | "evening" = "morning";
@@ -679,7 +679,7 @@ export async function generateItinerary(
           // Map category emphasis to an interest (e.g., "restaurant" → "food")
           const emphasisToInterest: Record<string, InterestId> = {
             restaurant: "food", cafe: "food", market: "food",
-            shrine: "culture", temple: "culture", museum: "culture", castle: "culture",
+            shrine: "culture", temple: "culture", museum: "culture", castle: "culture", craft: "craft",
             park: "nature", garden: "nature", nature: "nature",
             bar: "nightlife", entertainment: "nightlife",
             shopping: "shopping",
@@ -972,6 +972,7 @@ function buildTags(interest: InterestId, category: LocationCategory): string[] {
     photography: "photo spot",
     wellness: "relaxation",
     history: "historical",
+    craft: "artisan",
   };
 
   const categoryMap: Record<string, string> = {
@@ -998,6 +999,7 @@ function buildTags(interest: InterestId, category: LocationCategory): string[] {
     historic_site: "historic site",
     theater: "theater",
     zoo: "zoo",
+    craft: "craft workshop",
   };
 
   const interestTag = interestMap[interest];

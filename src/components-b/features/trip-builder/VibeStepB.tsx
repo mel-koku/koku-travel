@@ -7,6 +7,7 @@ import {
   Gamepad2,
   Leaf,
   Mountain,
+  Palette,
   Smile,
   Sparkles,
   Utensils,
@@ -52,6 +53,7 @@ const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
   Gamepad2: Gamepad2,
   Smile: Smile,
   BookOpen: BookOpen,
+  Palette: Palette,
 };
 
 const TRIP_BUILDER_VIBES = VIBES.filter((v) => v.id !== "in_season");

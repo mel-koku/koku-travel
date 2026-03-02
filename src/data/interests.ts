@@ -7,6 +7,7 @@ export const INTEREST_CATEGORIES = [
   { id: "nightlife", name: "Nightlife" },
   { id: "wellness", name: "Wellness" },
   { id: "history", name: "History" },
+  { id: "craft", name: "Craft & Artisan" },
 ] as const;
 
 

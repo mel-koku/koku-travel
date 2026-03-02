@@ -70,11 +70,11 @@ function slugify(text: string): string {
 /* ── Category tab definitions ─────────────────────────────────── */
 
 const PARENT_CATEGORIES = [
-  { id: "Culture", label: "Culture" },
-  { id: "Food", label: "Food" },
-  { id: "Nature", label: "Nature" },
-  { id: "Shopping", label: "Shopping" },
-  { id: "View", label: "View" },
+  { id: "culture", label: "Culture" },
+  { id: "food", label: "Food" },
+  { id: "nature", label: "Nature" },
+  { id: "shopping", label: "Shopping" },
+  { id: "view", label: "View" },
 ] as const;
 
 export function PlacesShellB({ content }: PlacesShellBProps) {
