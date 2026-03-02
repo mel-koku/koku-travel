@@ -297,3 +297,22 @@ export function regionHasMultiplePrefectures(regionName: string): boolean {
   const prefectures = getPrefecturesForRegion(regionName);
   return !!prefectures && prefectures.length > 1;
 }
+
+/** Region names in geographic order (north → south). */
+export const REGION_ORDER = Object.keys(PREFECTURE_DATA);
+
+// Build the inverse lookup: prefecture name → region name
+const _prefectureToRegion = new Map<string, string>();
+for (const [region, prefectures] of Object.entries(PREFECTURE_DATA)) {
+  for (const prefecture of Object.keys(prefectures)) {
+    _prefectureToRegion.set(prefecture, region);
+  }
+}
+
+/**
+ * Look up the region for a given prefecture name.
+ * Returns undefined for unmapped prefectures.
+ */
+export function getRegionForPrefecture(prefecture: string): string | undefined {
+  return _prefectureToRegion.get(prefecture);
+}
