@@ -7,7 +7,7 @@ import { Wallet, Gauge, Users, Accessibility, StickyNote, ChevronDown, Check, Bu
 
 import { TripSummaryB } from "./TripSummaryB";
 import { JRPassCardB } from "./JRPassCardB";
-import { PackingChecklistCardB } from "./PackingChecklistCardB";
+
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
 import { PlanningWarningsList } from "@/components/features/trip-builder/PlanningWarning";
@@ -349,15 +349,6 @@ export function ReviewStepB({
 
       {/* JR Pass Calculator */}
       <JRPassCardB duration={data.duration} cities={data.cities} />
-
-      {/* Packing Checklist */}
-      <PackingChecklistCardB
-        duration={data.duration}
-        cities={data.cities}
-        month={data.dates?.start ? parseInt(data.dates.start.split("-")[1] ?? "0", 10) || undefined : undefined}
-        groupType={data.group?.type}
-        interests={data.interests}
-      />
 
       {/* Saved places */}
       <SavedInTripPreview selectedCities={data.cities} />

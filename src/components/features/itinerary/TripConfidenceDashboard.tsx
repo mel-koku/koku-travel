@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
+import type { TripBuilderData } from "@/types/trip";
+import { PackingChecklistCard } from "@/components/features/trip-builder/PackingChecklistCard";
 import { REGIONS } from "@/data/regions";
 import {
   calculateTripHealth,
@@ -42,6 +44,8 @@ type TripConfidenceDashboardProps = {
   mobilityNeeds?: boolean;
   /** User's budget total from trip builder (in JPY) */
   budgetTotal?: number;
+  /** Trip builder data for packing checklist */
+  tripBuilderData?: TripBuilderData;
 };
 
 export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
@@ -56,6 +60,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
   locationMap,
   mobilityNeeds,
   budgetTotal,
+  tripBuilderData,
 }: TripConfidenceDashboardProps) {
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
@@ -199,6 +204,19 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
           </div>
         </div>
       )}
+
+      {/* Packing Checklist */}
+      <PackingChecklistCard
+        duration={tripBuilderData?.duration ?? itinerary.days.length}
+        cities={tripBuilderData?.cities}
+        month={
+          tripStartDate
+            ? new Date(tripStartDate + "T12:00:00").getMonth() + 1
+            : undefined
+        }
+        groupType={tripBuilderData?.group?.type}
+        interests={tripBuilderData?.interests}
+      />
 
       {/* Overall Health */}
       <div className="rounded-xl border border-border bg-surface/40 p-4">

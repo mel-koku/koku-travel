@@ -16,6 +16,10 @@ const MINUTES = Array.from({ length: 12 }, (_, i) =>
   (i * 5).toString().padStart(2, "0"),
 );
 
+// Hardcoded because the portal renders to document.body (outside [data-variant="b"]),
+// so var(--primary) resolves to Variant A's crimson instead of B's navy.
+const NAVY = "#2D4B8E";
+
 export function TimePickerB({
   value,
   onChange,
@@ -170,7 +174,7 @@ export function TimePickerB({
               zIndex: 60,
               display: "flex",
               borderRadius: 16,
-              border: "1px solid color-mix(in srgb, var(--border) 50%, transparent)",
+              border: "1px solid color-mix(in srgb, var(--border) 25%, transparent)",
               backgroundColor: "white",
               boxShadow: "var(--shadow-card, 0 4px 24px rgba(0,0,0,0.08))",
             }}
@@ -185,8 +189,7 @@ export function TimePickerB({
                 width: 64,
                 overflowY: "auto",
                 overscrollBehavior: "contain",
-                borderRight: "1px solid color-mix(in srgb, var(--border) 40%, transparent)",
-                paddingTop: 4,
+                borderRight: "1px solid color-mix(in srgb, var(--border) 18%, transparent)",
                 paddingBottom: 4,
               }}
             >
@@ -195,13 +198,14 @@ export function TimePickerB({
                   position: "sticky",
                   top: 0,
                   zIndex: 1,
-                  backgroundColor: "white",
-                  padding: "4px 8px 4px",
+                  backgroundColor: "#f3f2ef",
+                  padding: "8px 8px 6px",
                   fontSize: 10,
-                  fontWeight: 500,
+                  fontWeight: 600,
                   textTransform: "uppercase",
                   letterSpacing: "0.05em",
-                  color: "var(--muted-foreground)",
+                  color: "#8a8a8a",
+                  borderTopLeftRadius: 15,
                 }}
               >
                 Hr
@@ -228,17 +232,17 @@ export function TimePickerB({
                     transition: "background-color 0.15s, color 0.15s",
                     backgroundColor:
                       h === hour
-                        ? "color-mix(in srgb, var(--primary) 15%, transparent)"
+                        ? `color-mix(in srgb, ${NAVY} 15%, transparent)`
                         : "transparent",
                     color:
                       h === hour
-                        ? "var(--primary)"
-                        : "var(--muted-foreground)",
+                        ? NAVY
+                        : "#8a8a8a",
                   }}
                   onMouseEnter={(e) => {
                     if (h !== hour) {
                       e.currentTarget.style.backgroundColor =
-                        "color-mix(in srgb, var(--primary) 8%, transparent)";
+                        `color-mix(in srgb, ${NAVY} 8%, transparent)`;
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -262,7 +266,6 @@ export function TimePickerB({
                 width: 64,
                 overflowY: "auto",
                 overscrollBehavior: "contain",
-                paddingTop: 4,
                 paddingBottom: 4,
               }}
             >
@@ -271,13 +274,14 @@ export function TimePickerB({
                   position: "sticky",
                   top: 0,
                   zIndex: 1,
-                  backgroundColor: "white",
-                  padding: "4px 8px 4px",
+                  backgroundColor: "#f3f2ef",
+                  padding: "8px 8px 6px",
                   fontSize: 10,
-                  fontWeight: 500,
+                  fontWeight: 600,
                   textTransform: "uppercase",
                   letterSpacing: "0.05em",
-                  color: "var(--muted-foreground)",
+                  color: "#8a8a8a",
+                  borderTopRightRadius: 15,
                 }}
               >
                 Min
@@ -304,17 +308,17 @@ export function TimePickerB({
                     transition: "background-color 0.15s, color 0.15s",
                     backgroundColor:
                       m === minute
-                        ? "color-mix(in srgb, var(--primary) 15%, transparent)"
+                        ? `color-mix(in srgb, ${NAVY} 15%, transparent)`
                         : "transparent",
                     color:
                       m === minute
-                        ? "var(--primary)"
-                        : "var(--muted-foreground)",
+                        ? NAVY
+                        : "#8a8a8a",
                   }}
                   onMouseEnter={(e) => {
                     if (m !== minute) {
                       e.currentTarget.style.backgroundColor =
-                        "color-mix(in srgb, var(--primary) 8%, transparent)";
+                        `color-mix(in srgb, ${NAVY} 8%, transparent)`;
                     }
                   }}
                   onMouseLeave={(e) => {

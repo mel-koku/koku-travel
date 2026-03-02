@@ -13,6 +13,8 @@ import {
 import type { Itinerary, ItineraryDay, ItineraryActivity } from "@/types/itinerary";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { Location } from "@/types/location";
+import type { TripBuilderData } from "@/types/trip";
+import { PackingChecklistCardB } from "@b/features/trip-builder/PackingChecklistCardB";
 import { REGIONS } from "@/data/regions";
 import {
   calculateTripHealth,
@@ -43,6 +45,7 @@ type TripConfidenceDashboardBProps = {
   locationMap?: Map<string, Location>;
   mobilityNeeds?: boolean;
   budgetTotal?: number;
+  tripBuilderData?: TripBuilderData;
 };
 
 export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
@@ -57,6 +60,7 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
   locationMap,
   mobilityNeeds,
   budgetTotal,
+  tripBuilderData,
 }: TripConfidenceDashboardBProps) {
   const health = useMemo(
     () => calculateTripHealth(itinerary, conflicts),
@@ -275,6 +279,19 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
           </div>
         </div>
       )}
+
+      {/* Packing Checklist */}
+      <PackingChecklistCardB
+        duration={tripBuilderData?.duration ?? itinerary.days.length}
+        cities={tripBuilderData?.cities}
+        month={
+          tripStartDate
+            ? new Date(tripStartDate + "T12:00:00").getMonth() + 1
+            : undefined
+        }
+        groupType={tripBuilderData?.group?.type}
+        interests={tripBuilderData?.interests}
+      />
 
       {/* Estimated Cost */}
       {tripBudget && (
