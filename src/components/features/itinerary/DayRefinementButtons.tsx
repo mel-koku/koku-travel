@@ -56,6 +56,12 @@ const REFINEMENT_OPTIONS: Array<{
     icon: "\uD83D\uDE34",
     description: "Add rest time",
   },
+  {
+    type: "more_craft",
+    label: "More Craft",
+    icon: "\uD83C\uDFA8",
+    description: "Add craft workshops",
+  },
 ];
 
 export function DayRefinementButtons({

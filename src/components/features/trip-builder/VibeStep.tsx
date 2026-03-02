@@ -7,6 +7,7 @@ import {
   Gamepad2,
   Leaf,
   Mountain,
+  Palette,
   Smile,
   Sparkles,
   Utensils,
@@ -52,6 +53,7 @@ const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
   Gamepad2: Gamepad2,
   Smile: Smile,
   BookOpen: BookOpen,
+  Palette: Palette,
 };
 
 // Vibe images — using existing region hero images as placeholders
@@ -65,6 +67,7 @@ const VIBE_IMAGES: Record<VibeId, string> = {
   local_secrets: "/images/regions/shikoku-hero.jpg",
   family_fun: "/images/regions/okinawa-hero.jpg",
   history_buff: "/images/regions/chugoku-hero.jpg",
+  artisan_craft: "/images/regions/chubu-hero.jpg",
   in_season: "", // Not used in trip builder
 };
 

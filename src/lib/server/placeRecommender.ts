@@ -19,7 +19,7 @@ const VALID_CATEGORIES = [
   "restaurant", "cafe", "bar", "shrine", "temple", "landmark", "museum",
   "park", "garden", "shopping", "onsen", "entertainment", "market",
   "wellness", "viewpoint", "nature", "aquarium", "beach", "castle",
-  "historic_site", "theater", "zoo",
+  "historic_site", "theater", "zoo", "craft",
 ] as const;
 
 /**

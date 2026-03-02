@@ -15,7 +15,7 @@ import type { VideoMetadata } from "./metadataExtractor";
 const VALID_CATEGORIES = [
   "restaurant", "nature", "landmark", "culture", "shrine", "museum",
   "park", "temple", "shopping", "garden", "onsen", "entertainment",
-  "market", "wellness", "viewpoint", "bar",
+  "market", "wellness", "viewpoint", "bar", "craft",
 ] as const;
 
 const extractionSchema = z.object({

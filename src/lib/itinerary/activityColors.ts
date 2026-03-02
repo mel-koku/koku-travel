@@ -169,6 +169,13 @@ const COLOR_SCHEMES = {
     badge: "bg-brand-primary",
     badgeText: "text-white",
   },
+  // Craft workshops — muted indigo
+  craft: {
+    border: "border-l-[#6366f1]",
+    background: "bg-[#6366f1]/10",
+    badge: "bg-[#6366f1]",
+    badgeText: "text-white",
+  },
 } as const satisfies Record<string, ActivityColorScheme>;
 
 type ColorSchemeKey = keyof typeof COLOR_SCHEMES;
@@ -319,6 +326,8 @@ const HEX_COLORS: Record<string, string> = {
   zoo: "#2d7a6f",
   beach: "#2d7a6f",
   historic_site: "#8c2f2f",
+  // Craft workshops — muted indigo
+  craft: "#5b5fc7",
   // Default — crimson
   default: "#8c2f2f",
 };

@@ -14,6 +14,7 @@ export type VibeId =
   | "local_secrets"
   | "family_fun"
   | "history_buff"
+  | "artisan_craft"
   | "in_season";
 
 /**
@@ -94,6 +95,13 @@ export const VIBES: readonly VibeDefinition[] = [
     description: "Museums, castles, and historic sites",
     icon: "BookOpen",
     interests: ["history", "culture"],
+  },
+  {
+    id: "artisan_craft",
+    name: "Artisan Craft",
+    description: "Pottery, textiles, lacquerware, and traditional workshops",
+    icon: "Palette",
+    interests: ["craft", "culture"],
   },
   {
     id: "in_season",

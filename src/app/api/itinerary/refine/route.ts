@@ -50,6 +50,7 @@ const VALID_REFINEMENT_TYPES: RefinementType[] = [
   "more_culture",
   "more_kid_friendly",
   "more_rest",
+  "more_craft",
 ];
 
 /**
@@ -204,7 +205,7 @@ export async function POST(request: NextRequest) {
 
     const refineSchema = z.object({
       trip: tripForRefinementSchema, // Trip object with basic structure validation
-      refinementType: z.enum(["too_busy", "too_light", "more_food", "more_culture", "more_kid_friendly", "more_rest"]).optional(),
+      refinementType: z.enum(["too_busy", "too_light", "more_food", "more_culture", "more_kid_friendly", "more_rest", "more_craft"]).optional(),
       dayIndex: z.number().int().min(0).max(30).optional(),
       tripId: z.string().max(255).regex(/^[A-Za-z0-9._-]+$/, "Trip ID contains invalid characters").optional(),
       builderData: tripBuilderDataSchema.partial().strip().optional(), // Partial TripBuilderData with proper validation
