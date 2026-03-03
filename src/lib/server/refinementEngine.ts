@@ -60,28 +60,34 @@ export async function refineDay(request: RefinementRequest): Promise<TripDay> {
  * Considers TravelerProfile pace preference when determining how many to remove
  */
 function refineTooBusy(day: TripDay, trip: Trip): TripDay {
-  // Remove activities from the middle of the day, keeping first and last
   const activities = [...day.activities];
-  if (activities.length <= 2) {
-    return day; // Already minimal
+  // Separate anchors (airport arrival/departure) from removable activities
+  const anchors = activities.filter((a) => a.isAnchor);
+  const removable = activities.filter((a) => !a.isAnchor);
+
+  if (removable.length <= 2) {
+    return day; // Already minimal (excluding anchors)
   }
 
   // Adjust removal based on pace preference
-  // Relaxed pace: remove more activities, Fast pace: remove fewer
   const paceMultiplier = {
-    relaxed: 0.7, // Remove 70% of removable activities
-    balanced: 0.5, // Remove 50% of removable activities
-    fast: 0.3, // Remove 30% of removable activities
+    relaxed: 0.7,
+    balanced: 0.5,
+    fast: 0.3,
   }[trip.travelerProfile.pace] ?? 0.5;
 
-  // Remove middle activities (keep first and last)
-  const removableCount = activities.length - 2;
+  // Remove middle activities (keep first and last removable)
+  const removableCount = removable.length - 2;
   const toRemove = Math.max(1, Math.floor(removableCount * paceMultiplier));
-  const newActivities = [
-    activities[0],
-    ...activities.slice(1 + toRemove, activities.length - 1),
-    activities[activities.length - 1],
-  ].filter((a): a is typeof activities[0] => a !== undefined);
+  const keptRemovable = [
+    removable[0],
+    ...removable.slice(1 + toRemove, removable.length - 1),
+    removable[removable.length - 1],
+  ].filter((a): a is typeof removable[0] => a !== undefined);
+
+  // Reconstruct: preserve original order by keeping anchors in position
+  const keptIds = new Set([...anchors.map((a) => a.id), ...keptRemovable.map((a) => a.id)]);
+  const newActivities = activities.filter((a) => keptIds.has(a.id));
 
   return {
     ...day,
@@ -137,17 +143,26 @@ async function refineTooLight(day: TripDay, trip: Trip): Promise<TripDay> {
     return true;
   });
 
-  // Add 1-2 new activities
+  // Add 1-2 new activities — insert before any departure anchor at the end
   const toAdd = Math.min(2, uniqueScored.length);
-  const newActivities = activities.concat(
-    uniqueScored.slice(0, toAdd).map((scoredLoc, index) => ({
-      id: `${day.id}-added-${Date.now()}-${index}`,
-      locationId: scoredLoc.location.id,
-      location: scoredLoc.location,
-      timeSlot: "afternoon" as const,
-      duration: 90,
-    })),
-  );
+  const newItems = uniqueScored.slice(0, toAdd).map((scoredLoc, index) => ({
+    id: `${day.id}-added-${Date.now()}-${index}`,
+    locationId: scoredLoc.location.id,
+    location: scoredLoc.location,
+    timeSlot: "afternoon" as const,
+    duration: 90,
+  }));
+
+  // Find insertion point: before the last anchor (departure) if present
+  const lastAnchorIndex = activities.findLastIndex((a) => a.isAnchor);
+  const insertIndex = lastAnchorIndex >= 0 && activities[lastAnchorIndex]?.id.startsWith("anchor-departure")
+    ? lastAnchorIndex
+    : activities.length;
+  const newActivities = [
+    ...activities.slice(0, insertIndex),
+    ...newItems,
+    ...activities.slice(insertIndex),
+  ];
 
   return {
     ...day,
@@ -289,8 +304,14 @@ async function refineMoreCulture(day: TripDay, trip: Trip): Promise<TripDay> {
     duration: 90,
   };
 
-  // Insert at the beginning
-  const newActivities = [newCultureActivity, ...activities];
+  // Insert after any leading anchor (airport arrival)
+  const firstNonAnchorIndex = activities.findIndex((a) => !a.isAnchor);
+  const insertIndex = firstNonAnchorIndex >= 0 ? firstNonAnchorIndex : 0;
+  const newActivities = [
+    ...activities.slice(0, insertIndex),
+    newCultureActivity,
+    ...activities.slice(insertIndex),
+  ];
 
   return {
     ...day,
@@ -372,8 +393,9 @@ async function refineMoreKidFriendly(day: TripDay, trip: Trip): Promise<TripDay>
     };
   }
 
-  // Replace middle activity with kid-friendly one
-  const replaceIndex = Math.floor(activities.length / 2);
+  // Replace a non-anchor middle activity with kid-friendly one
+  const nonAnchorIndices = activities.map((a, i) => a.isAnchor ? -1 : i).filter((i) => i >= 0);
+  const replaceIndex = nonAnchorIndices[Math.floor(nonAnchorIndices.length / 2)] ?? Math.floor(activities.length / 2);
   const newActivities = [...activities];
   newActivities[replaceIndex] = {
     id: `${day.id}-kid-friendly-${Date.now()}`,
@@ -394,15 +416,23 @@ async function refineMoreKidFriendly(day: TripDay, trip: Trip): Promise<TripDay>
  * Adds more rest time
  */
 function refineMoreRest(day: TripDay, _trip: Trip): TripDay {
-  // Remove some activities and add rest gaps
+  // Remove some non-anchor activities and add rest gaps
   const activities = [...day.activities];
-  if (activities.length <= 1) {
+  const nonAnchorCount = activities.filter((a) => !a.isAnchor).length;
+  if (nonAnchorCount <= 1) {
     return day; // Already minimal
   }
 
-  // Remove middle activities
-  const toRemove = Math.floor(activities.length / 3);
-  const newActivities = activities.slice(0, activities.length - toRemove);
+  // Remove non-anchor activities from the end
+  const toRemove = Math.floor(nonAnchorCount / 3);
+  let removed = 0;
+  const newActivities = [...activities];
+  for (let i = newActivities.length - 1; i >= 0 && removed < toRemove; i--) {
+    if (!newActivities[i]?.isAnchor) {
+      newActivities.splice(i, 1);
+      removed++;
+    }
+  }
 
   return {
     ...day,
@@ -470,7 +500,14 @@ async function refineMoreCraft(day: TripDay, trip: Trip): Promise<TripDay> {
     duration: 90,
   };
 
-  const newActivities = [newCraftActivity, ...activities];
+  // Insert after any leading anchor (airport arrival)
+  const firstNonAnchorIndex = activities.findIndex((a) => !a.isAnchor);
+  const insertIndex = firstNonAnchorIndex >= 0 ? firstNonAnchorIndex : 0;
+  const newActivities = [
+    ...activities.slice(0, insertIndex),
+    newCraftActivity,
+    ...activities.slice(insertIndex),
+  ];
 
   return {
     ...day,
