@@ -249,12 +249,13 @@ export type TripBuilderData = {
    */
   customCityOrder?: boolean;
   /**
-   * Per-city day allocation overrides. When set, the generator uses these
-   * counts instead of auto-distributing days via floor division.
-   * Keys are CityId strings, values are day counts (min 1).
-   * Total must equal trip duration. Dropped if cities/duration change.
+   * Per-city day allocation overrides as a parallel array to `cities`.
+   * cityDays[i] = number of days for cities[i]. Supports duplicate cities
+   * (e.g., Tokyo → Osaka → Tokyo round trips).
+   * Each value min 1, total must equal trip duration.
+   * Dropped if cities/duration change.
    */
-  cityDays?: Record<CityId, number>;
+  cityDays?: number[];
   /**
    * Parsed flight details (airline, flight number). Display-only — airport
    * and times auto-fill existing entryPoint/arrivalTime/departureTime fields.

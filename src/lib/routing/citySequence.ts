@@ -52,7 +52,7 @@ export { CITY_INFO_BY_KEY, REGION_ID_BY_LABEL };
 export function expandCitySequenceForDays(
   citySequence: CityInfo[],
   totalDays: number,
-  cityDays?: Record<string, number>,
+  cityDays?: number[],
 ): CityInfo[] {
   if (citySequence.length === 0 || totalDays === 0) {
     return citySequence;
@@ -65,12 +65,12 @@ export function expandCitySequenceForDays(
 
   const expanded: CityInfo[] = [];
 
-  // Use explicit per-city allocation when provided
+  // Use explicit per-city allocation when provided (parallel array)
   if (cityDays) {
-    for (const cityInfo of citySequence) {
-      const days = cityDays[cityInfo.key] ?? 1;
-      for (let i = 0; i < days && expanded.length < totalDays; i++) {
-        expanded.push(cityInfo);
+    for (let i = 0; i < citySequence.length; i++) {
+      const days = cityDays[i] ?? 1;
+      for (let d = 0; d < days && expanded.length < totalDays; d++) {
+        expanded.push(citySequence[i]!);
       }
     }
     return expanded.slice(0, totalDays);
@@ -121,8 +121,8 @@ export function resolveCitySequence(
   const sequence: CityInfo[] = [];
   const seen = new Set<string>();
 
-  function addCityByKey(cityKey: string | undefined): void {
-    if (!cityKey || seen.has(cityKey)) {
+  function addCityByKey(cityKey: string | undefined, allowDuplicate = false): void {
+    if (!cityKey || (!allowDuplicate && seen.has(cityKey))) {
       return;
     }
     if (!locationsByCityKey.has(cityKey)) {
@@ -164,9 +164,10 @@ export function resolveCitySequence(
   const citiesToOptimize = userCities.length > 0 ? userCities : [...DEFAULT_CITY_ROTATION];
 
   // If the user manually reordered cities, respect their order.
+  // Allow duplicates (e.g., Tokyo → Osaka → Tokyo round trips).
   // Otherwise optimize city sequence by region to minimize travel time.
   if (data.customCityOrder && citiesToOptimize.length > 0) {
-    citiesToOptimize.forEach((cityId) => addCityByKey(cityId));
+    citiesToOptimize.forEach((cityId) => addCityByKey(cityId, true));
   } else if (citiesToOptimize.length > 0) {
     const effectiveExit = data.sameAsEntry !== false ? data.entryPoint : data.exitPoint;
     const optimizedSequence = optimizeCitySequence(data.entryPoint, citiesToOptimize, effectiveExit);
