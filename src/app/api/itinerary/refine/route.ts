@@ -148,7 +148,8 @@ const mapTripActivityToItineraryActivity = (
           }
         : undefined,
     mealType: activity.mealType === "snack" ? undefined : activity.mealType,
-    coordinates: location?.coordinates,
+    coordinates: activity.coordinates ?? location?.coordinates,
+    isAnchor: activity.isAnchor,
   };
 };
 
