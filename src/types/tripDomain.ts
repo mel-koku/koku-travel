@@ -163,6 +163,14 @@ export type TripActivity = {
    * Meal type if this is a meal activity
    */
   mealType?: "breakfast" | "lunch" | "dinner" | "snack";
+  /**
+   * Fixed activity (airport arrival/departure). Cannot be deleted, replaced, or reordered.
+   */
+  isAnchor?: boolean;
+  /**
+   * Embedded coordinates for activities without a database location (e.g., airports).
+   */
+  coordinates?: { lat: number; lng: number };
 };
 
 /**
