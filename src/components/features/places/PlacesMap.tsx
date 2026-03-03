@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
 import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
+import { getCraftTypeColor } from "@/data/craftTypes";
 import { debounce } from "@/lib/utils";
 import { mapColors } from "@/lib/mapColors";
 import type { Location } from "@/types/location";
@@ -56,9 +57,10 @@ type PlacesMapProps = {
   showResetButton?: boolean;
   /** When set, the map flies to this location's coordinates. */
   flyToLocation?: Location | null;
+  useCraftTypeColors?: boolean;
 };
 
-function buildFeatureCollection(locations: Location[]): GeoJSON.FeatureCollection {
+function buildFeatureCollection(locations: Location[], craftTypeColors?: boolean): GeoJSON.FeatureCollection {
   return {
     type: "FeatureCollection",
     features: locations
@@ -70,7 +72,9 @@ function buildFeatureCollection(locations: Location[]): GeoJSON.FeatureCollectio
           locationId: loc.id,
           name: loc.name,
           category: loc.category,
-          color: getCategoryHexColor(loc.category),
+          color: craftTypeColors && loc.craftType
+            ? getCraftTypeColor(loc.craftType)
+            : getCategoryHexColor(loc.category),
         },
         geometry: {
           type: "Point" as const,
@@ -103,6 +107,7 @@ export function PlacesMap({
   onHoverChange,
   showResetButton,
   flyToLocation,
+  useCraftTypeColors,
 }: PlacesMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
@@ -122,7 +127,7 @@ export function PlacesMap({
   const accessToken = useMemo(() => mapboxService.getAccessToken(), []);
 
   const featureCollection = useMemo(() => {
-    const fc = buildFeatureCollection(locations);
+    const fc = buildFeatureCollection(locations, useCraftTypeColors);
     // Build lookup map for click handling
     const lookup = new Map<number, Location>();
     for (const loc of locations) {
@@ -134,7 +139,7 @@ export function PlacesMap({
     featureCollectionRef.current = fc;
     return fc;
   // eslint-disable-next-line react-hooks/exhaustive-deps -- rebuild only when count changes, not on reference identity
-  }, [locations.length]);
+  }, [locations.length, useCraftTypeColors]);
 
   // Debounced bounds callback
   const debouncedBoundsChange = useMemo(

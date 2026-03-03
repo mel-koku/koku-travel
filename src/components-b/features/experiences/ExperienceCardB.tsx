@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
+import { getCraftTypeById } from "@/data/craftTypes";
 
 const EXPERIENCE_TYPE_LABELS: Record<ExperienceType, string> = {
   workshop: "Workshop",
@@ -65,6 +66,16 @@ export function ExperienceCardB({ experience, eager = false }: ExperienceCardBPr
           <p className="text-xs text-[var(--foreground-body)] line-clamp-2 leading-relaxed">
             {experience.summary}
           </p>
+
+          {experience.craftType && (() => {
+            const ct = getCraftTypeById(experience.craftType as never);
+            return ct ? (
+              <p className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--surface)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--muted-foreground)]">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: ct.color }} />
+                {ct.label}
+              </p>
+            ) : null;
+          })()}
 
           {experience.estimatedCost && (
             <p className="inline-flex items-center rounded-lg bg-[var(--surface)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--muted-foreground)]">

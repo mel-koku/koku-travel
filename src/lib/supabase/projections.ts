@@ -84,6 +84,7 @@ export type LocationDbRow = {
   insider_tip: string | null;
   tags: string[] | null;
   cuisine_type: string | null;
+  craft_type: string | null;
   // Source tracking
   source: string | null;
   source_url: string | null;
@@ -162,6 +163,7 @@ export const LOCATION_EXPLORE_COLUMNS = `
   service_options,
   tags,
   cuisine_type,
+  craft_type,
   insider_tip
 `.replace(/\s+/g, "");
 
@@ -287,6 +289,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "service_options"
   | "tags"
   | "cuisine_type"
+  | "craft_type"
   | "insider_tip"
 >;
 

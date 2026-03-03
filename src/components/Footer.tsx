@@ -8,6 +8,7 @@ const defaultNavColumns = [
     title: "Explore",
     links: [
       { label: "Places", href: "/places" },
+      { label: "Crafts", href: "/crafts" },
       { label: "Discover", href: "/discover" },
       { label: "Guides", href: "/guides" },
       { label: "Experiences", href: "/experiences" },

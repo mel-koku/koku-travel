@@ -15,12 +15,14 @@ type PlacesMapLayoutBProps = {
   isLoading?: boolean;
   hasActiveChips?: boolean;
   onSelectLocation?: (location: Location) => void;
+  useCraftTypeColors?: boolean;
 };
 
 export function PlacesMapLayoutB({
   filteredLocations,
   sortedLocations,
   onSelectLocation,
+  useCraftTypeColors,
 }: PlacesMapLayoutBProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
@@ -130,6 +132,7 @@ export function PlacesMapLayoutB({
             onHoverChange={handleMapHoverChange}
             showResetButton={showResetButton}
             flyToLocation={flyToLocation}
+            useCraftTypeColors={useCraftTypeColors}
           />
         </ErrorBoundary>
 
