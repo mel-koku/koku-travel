@@ -10,6 +10,7 @@ import type { TripBuilderData, RegionId } from "@/types/trip";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { calculateDistance } from "@/lib/utils/geoUtils";
 import { getFestivalsForTrip } from "@/data/festivalCalendar";
+import { travelTimeFromEntryPoint, getNearestCityToEntryPoint } from "@/lib/travelTime";
 
 /**
  * Warning severity levels
@@ -27,7 +28,8 @@ export type WarningType =
   | "holiday"
   | "distance"
   | "weather"
-  | "festival";
+  | "festival"
+  | "return_to_airport";
 
 /**
  * A single planning warning
@@ -39,6 +41,8 @@ export type PlanningWarning = {
   title: string;
   message: string;
   icon: string;
+  action?: string;
+  actionData?: Record<string, unknown>;
 };
 
 /**
@@ -463,6 +467,51 @@ function detectDistanceWarnings(data: TripBuilderData): PlanningWarning | null {
 }
 
 /**
+ * Detect when the last city is far from the departure airport.
+ * Fires when travel time exceeds 120 minutes.
+ */
+function detectReturnToAirportWarning(data: TripBuilderData): PlanningWarning | null {
+  const cities = data.cities ?? [];
+  if (cities.length === 0) return null;
+
+  // Resolve effective exit point: round-trip uses entryPoint, open-jaw uses exitPoint
+  const effectiveExit = data.sameAsEntry !== false
+    ? data.entryPoint
+    : (data.exitPoint ?? data.entryPoint);
+
+  if (!effectiveExit) return null;
+
+  const lastCity = cities[cities.length - 1];
+  if (!lastCity) return null;
+
+  const travelMinutes = travelTimeFromEntryPoint(effectiveExit, lastCity);
+  if (travelMinutes === undefined || travelMinutes <= 120) return null;
+
+  const nearestCity = getNearestCityToEntryPoint(effectiveExit);
+  if (!nearestCity || lastCity === nearestCity) return null;
+
+  const nearestCityName = nearestCity.charAt(0).toUpperCase() + nearestCity.slice(1);
+  const hours = Math.floor(travelMinutes / 60);
+  const mins = travelMinutes % 60;
+  const timeStr = mins > 0 ? `${hours}h ${mins}m` : `${hours}h`;
+
+  return {
+    id: "return-to-airport",
+    type: "return_to_airport",
+    severity: "caution",
+    title: "Long Trip to Your Departure Airport",
+    message: `Your last city is ~${timeStr} from your departure airport. Consider adding a return day in ${nearestCityName} so you're not rushing on your final day.`,
+    icon: "✈️",
+    action: `Add return day in ${nearestCityName}`,
+    actionData: {
+      returnCityId: nearestCity,
+      returnCityName: nearestCityName,
+      travelMinutes,
+    },
+  };
+}
+
+/**
  * Main function to detect all planning warnings
  */
 export function detectPlanningWarnings(data: TripBuilderData): PlanningWarning[] {
@@ -491,6 +540,12 @@ export function detectPlanningWarnings(data: TripBuilderData): PlanningWarning[]
   // Detect festival overlaps
   const festivalWarnings = detectFestivalWarnings(data);
   warnings.push(...festivalWarnings);
+
+  // Detect return-to-airport issue
+  const returnWarning = detectReturnToAirportWarning(data);
+  if (returnWarning) {
+    warnings.push(returnWarning);
+  }
 
   return warnings;
 }

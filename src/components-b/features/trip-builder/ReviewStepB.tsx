@@ -9,7 +9,7 @@ import { TripSummaryB } from "./TripSummaryB";
 import { JRPassCardB } from "./JRPassCardB";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { detectPlanningWarnings } from "@/lib/planning/tripWarnings";
+import { detectPlanningWarnings, type PlanningWarning } from "@/lib/planning/tripWarnings";
 import { PlanningWarningsList } from "@/components/features/trip-builder/PlanningWarning";
 import { SavedInTripPreview } from "@/components/features/trip-builder/SavedInTripPreview";
 import { BudgetInput, type BudgetMode, type BudgetValue } from "@/components/features/trip-builder/BudgetInput";
@@ -20,6 +20,7 @@ import type { TripStyle, TripBuilderData } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import { useState } from "react";
 import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
+import { computeDefaultCityDays } from "@/lib/tripBuilder/cityDayAllocation";
 import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 
 type PreferenceFormValues = {
@@ -185,6 +186,39 @@ export function ReviewStepB({
   const handleEditVibes = useCallback(() => onGoToStep?.(3), [onGoToStep]);
   const handleEditRegions = useCallback(() => onGoToStep?.(4), [onGoToStep]);
 
+  const handleWarningAction = useCallback(
+    (warning: PlanningWarning) => {
+      if (warning.type !== "return_to_airport") return;
+      const returnCityId = warning.actionData?.returnCityId as string | undefined;
+      if (!returnCityId) return;
+
+      setData((prev) => {
+        const cities = prev.cities ?? [];
+        if (cities.length === 0) return prev;
+
+        const duration = prev.duration ?? cities.length;
+        const currentDays = prev.cityDays ?? computeDefaultCityDays(cities, duration);
+        const lastDays = currentDays[currentDays.length - 1] ?? 1;
+
+        // Can't steal from a 1-day city
+        if (lastDays < 2) return prev;
+
+        const newCities = [...cities, returnCityId];
+        const newDays = [...currentDays];
+        newDays[newDays.length - 1] = lastDays - 1;
+        newDays.push(1);
+
+        return {
+          ...prev,
+          cities: newCities,
+          cityDays: newDays,
+          customCityOrder: true,
+        };
+      });
+    },
+    [setData],
+  );
+
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-8 pb-24 lg:pb-8">
       {/* Trip Summary */}
@@ -207,7 +241,7 @@ export function ReviewStepB({
       />
 
       {/* Planning Warnings */}
-      {warnings.length > 0 && <PlanningWarningsList warnings={warnings} />}
+      {warnings.length > 0 && <PlanningWarningsList warnings={warnings} onAction={handleWarningAction} />}
 
       {/* Duration-to-Region Warning */}
       {durationWarning && (

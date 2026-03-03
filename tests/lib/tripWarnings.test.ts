@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { detectPlanningWarnings, getWarningsSummary } from "@/lib/planning/tripWarnings";
-import type { TripBuilderData } from "@/types/trip";
+import type { TripBuilderData, EntryPoint } from "@/types/trip";
 
 // Mock regionDescriptions to provide coordinates for distance checks
 vi.mock("@/data/regionDescriptions", () => ({
@@ -56,6 +56,30 @@ vi.mock("@/data/regionDescriptions", () => ({
       coordinates: { lat: 26.2124, lng: 127.6809 },
     },
   ],
+}));
+
+// Mock travelTime for return-to-airport detection
+vi.mock("@/lib/travelTime", () => ({
+  travelTimeFromEntryPoint: (entryPoint: EntryPoint, cityId: string) => {
+    // Simulate: HND is near Tokyo, far from Hiroshima
+    if (entryPoint.id === "HND") {
+      if (cityId === "tokyo") return 45;
+      if (cityId === "hiroshima") return 280;
+      if (cityId === "osaka") return 180;
+    }
+    // KIX is near Osaka, moderate to Hiroshima
+    if (entryPoint.id === "KIX") {
+      if (cityId === "osaka") return 30;
+      if (cityId === "hiroshima") return 90;
+      if (cityId === "tokyo") return 180;
+    }
+    return undefined;
+  },
+  getNearestCityToEntryPoint: (entryPoint: EntryPoint) => {
+    if (entryPoint.id === "HND") return "tokyo";
+    if (entryPoint.id === "KIX") return "osaka";
+    return undefined;
+  },
 }));
 
 function makeTrip(overrides: Partial<TripBuilderData> = {}): TripBuilderData {
@@ -255,6 +279,85 @@ describe("tripWarnings", () => {
         }));
         const distance = warnings.find((w) => w.type === "distance");
         expect(distance).toBeUndefined();
+      });
+    });
+
+    describe("return to airport warnings", () => {
+      const HND_ENTRY: EntryPoint = {
+        type: "airport",
+        id: "HND",
+        name: "Haneda Airport",
+        coordinates: { lat: 35.5494, lng: 139.7798 },
+        cityId: "tokyo",
+        iataCode: "HND",
+      };
+
+      const KIX_ENTRY: EntryPoint = {
+        type: "airport",
+        id: "KIX",
+        name: "Kansai International Airport",
+        coordinates: { lat: 34.4320, lng: 135.2304 },
+        cityId: "osaka",
+        iataCode: "KIX",
+      };
+
+      it("warns when last city is far from departure airport", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["tokyo", "osaka", "hiroshima"],
+          duration: 7,
+          entryPoint: HND_ENTRY,
+          sameAsEntry: true,
+        }));
+        const returnWarning = warnings.find((w) => w.type === "return_to_airport");
+        expect(returnWarning).toBeDefined();
+        expect(returnWarning!.severity).toBe("caution");
+        expect(returnWarning!.action).toContain("Tokyo");
+        expect(returnWarning!.actionData?.returnCityId).toBe("tokyo");
+      });
+
+      it("no warning when last city is near airport", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["osaka", "hiroshima", "tokyo"],
+          duration: 7,
+          entryPoint: HND_ENTRY,
+          sameAsEntry: true,
+        }));
+        const returnWarning = warnings.find((w) => w.type === "return_to_airport");
+        expect(returnWarning).toBeUndefined();
+      });
+
+      it("no warning when no entry point set", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["tokyo", "osaka", "hiroshima"],
+          duration: 7,
+        }));
+        const returnWarning = warnings.find((w) => w.type === "return_to_airport");
+        expect(returnWarning).toBeUndefined();
+      });
+
+      it("uses exitPoint for open-jaw trips", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["tokyo", "osaka", "hiroshima"],
+          duration: 7,
+          entryPoint: HND_ENTRY,
+          exitPoint: KIX_ENTRY,
+          sameAsEntry: false,
+        }));
+        // KIX → Hiroshima is 90 min (≤120), so no warning
+        const returnWarning = warnings.find((w) => w.type === "return_to_airport");
+        expect(returnWarning).toBeUndefined();
+      });
+
+      it("no warning when last city IS the airport city", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["hiroshima", "osaka", "tokyo"],
+          duration: 7,
+          entryPoint: HND_ENTRY,
+          sameAsEntry: true,
+        }));
+        // Last city is tokyo, nearest to HND is tokyo — no warning
+        const returnWarning = warnings.find((w) => w.type === "return_to_airport");
+        expect(returnWarning).toBeUndefined();
       });
     });
   });
