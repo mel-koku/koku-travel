@@ -22,6 +22,7 @@ type PlacesMapLayoutProps = {
   hasActiveChips?: boolean;
   /** When set, the map flies to this location. */
   flyToLocation?: Location | null;
+  useCraftTypeColors?: boolean;
 };
 
 export function PlacesMapLayout({
@@ -34,6 +35,7 @@ export function PlacesMapLayout({
   onChatClose,
   hasActiveChips = false,
   flyToLocation,
+  useCraftTypeColors,
 }: PlacesMapLayoutProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
@@ -108,6 +110,7 @@ export function PlacesMapLayout({
               onHoverChange={handleHoverChange}
               showResetButton={showResetButton}
               flyToLocation={flyToLocation}
+              useCraftTypeColors={useCraftTypeColors}
             />
           </ErrorBoundary>
 

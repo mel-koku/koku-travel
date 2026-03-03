@@ -127,6 +127,28 @@ export const experience = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "craftType",
+      title: "Craft Type",
+      type: "string",
+      description: "Specific craft technique (only for workshop experiences)",
+      options: {
+        list: [
+          { title: "Pottery & Ceramics", value: "pottery" },
+          { title: "Textile & Weaving", value: "textile" },
+          { title: "Woodwork & Carving", value: "woodwork" },
+          { title: "Washi & Paper", value: "papermaking" },
+          { title: "Lacquerware", value: "lacquerware" },
+          { title: "Metalwork & Blades", value: "metalwork" },
+          { title: "Dyeing & Indigo", value: "dyeing" },
+          { title: "Glasswork", value: "glasswork" },
+          { title: "Calligraphy", value: "calligraphy" },
+          { title: "Kintsugi", value: "kintsugi" },
+          { title: "Mixed / Other", value: "mixed" },
+        ],
+      },
+      hidden: ({ parent }) => parent?.experienceType !== "workshop",
+    }),
+    defineField({
       name: "duration",
       title: "Duration",
       type: "string",

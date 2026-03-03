@@ -315,6 +315,7 @@ export const experienceBySlugQuery = groq`
       socialLinks
     },
     experienceType,
+    craftType,
     duration,
     groupSizeMin,
     groupSizeMax,
@@ -356,6 +357,7 @@ export const featuredExperiencesQuery = groq`
       "url": asset->url
     },
     experienceType,
+    craftType,
     duration,
     difficulty,
     estimatedCost,
@@ -384,6 +386,7 @@ export const allPublishedExperiencesQuery = groq`
       "url": asset->url
     },
     experienceType,
+    craftType,
     duration,
     difficulty,
     estimatedCost,

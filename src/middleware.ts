@@ -27,6 +27,7 @@ const PUBLIC_API_ROUTES = [
   "/api/video-import",
   "/api/shared",
   "/api/geocode",
+  "/api/experiences/workshops",
 ];
 
 /**

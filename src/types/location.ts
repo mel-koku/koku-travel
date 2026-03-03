@@ -369,6 +369,12 @@ export type Location = {
   cuisineType?: string;
 
   /**
+   * Craft technique type for craft workshop locations (e.g., pottery, textile, lacquerware).
+   * Only set when category is "craft".
+   */
+  craftType?: string;
+
+  /**
    * Tattoo policy for onsen/wellness locations.
    * - 'prohibited': Tattoos not allowed (most traditional onsen in Japan)
    * - 'cover_required': Must cover tattoos with stickers or bandages

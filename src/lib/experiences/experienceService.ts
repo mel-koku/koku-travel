@@ -126,6 +126,83 @@ export async function getExperiencesBySeason(
 }
 
 /**
+ * Fetches all published workshop experiences, sorted by rank.
+ */
+export async function getWorkshopExperiences(): Promise<ExperienceSummary[]> {
+  try {
+    const result = await sanityClient.fetch<ExperienceSummary[]>(
+      `*[_type == "experience" && editorialStatus == "published" && experienceType == "workshop"] | order(sortOrder asc, publishedAt desc) {
+        _id,
+        title,
+        "slug": slug.current,
+        summary,
+        "featuredImage": featuredImage {
+          ...,
+          "url": asset->url
+        },
+        "thumbnailImage": thumbnailImage {
+          ...,
+          "url": asset->url
+        },
+        experienceType,
+        duration,
+        difficulty,
+        estimatedCost,
+        city,
+        region,
+        readingTimeMinutes,
+        tags,
+        craftType,
+        publishedAt
+      }`
+    );
+    return result || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Fetches published workshop experiences filtered by craft type.
+ */
+export async function getWorkshopExperiencesByCraftType(
+  craftType: string
+): Promise<ExperienceSummary[]> {
+  try {
+    const result = await sanityClient.fetch<ExperienceSummary[]>(
+      `*[_type == "experience" && editorialStatus == "published" && experienceType == "workshop" && craftType == $craftType] | order(sortOrder asc, publishedAt desc) {
+        _id,
+        title,
+        "slug": slug.current,
+        summary,
+        "featuredImage": featuredImage {
+          ...,
+          "url": asset->url
+        },
+        "thumbnailImage": thumbnailImage {
+          ...,
+          "url": asset->url
+        },
+        experienceType,
+        duration,
+        difficulty,
+        estimatedCost,
+        city,
+        region,
+        readingTimeMinutes,
+        tags,
+        craftType,
+        publishedAt
+      }`,
+      { craftType }
+    );
+    return result || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Fetches related experiences by type, excluding current.
  */
 export async function getRelatedExperiences(
