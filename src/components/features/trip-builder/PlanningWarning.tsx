@@ -6,12 +6,13 @@ import type { PlanningWarning } from "@/lib/planning/tripWarnings";
 export type PlanningWarningCardProps = {
   warning: PlanningWarning;
   className?: string;
+  onAction?: (warning: PlanningWarning) => void;
 };
 
 /**
  * Displays a single planning warning with appropriate styling based on severity.
  */
-export function PlanningWarningCard({ warning, className }: PlanningWarningCardProps) {
+export function PlanningWarningCard({ warning, className, onAction }: PlanningWarningCardProps) {
   const severityStyles = {
     info: {
       container: "bg-sage/10 border-sage/20",
@@ -56,6 +57,15 @@ export function PlanningWarningCard({ warning, className }: PlanningWarningCardP
           <p className="mt-1 text-sm text-foreground-secondary leading-relaxed">
             {warning.message}
           </p>
+          {warning.action && onAction && (
+            <button
+              type="button"
+              onClick={() => onAction(warning)}
+              className="mt-2 h-9 rounded-xl bg-brand-primary px-4 text-sm font-medium text-white active:scale-[0.98] transition-transform"
+            >
+              {warning.action}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -65,12 +75,13 @@ export function PlanningWarningCard({ warning, className }: PlanningWarningCardP
 export type PlanningWarningsListProps = {
   warnings: PlanningWarning[];
   className?: string;
+  onAction?: (warning: PlanningWarning) => void;
 };
 
 /**
  * Displays a list of planning warnings grouped by severity.
  */
-export function PlanningWarningsList({ warnings, className }: PlanningWarningsListProps) {
+export function PlanningWarningsList({ warnings, className, onAction }: PlanningWarningsListProps) {
   if (warnings.length === 0) {
     return null;
   }
@@ -91,7 +102,7 @@ export function PlanningWarningsList({ warnings, className }: PlanningWarningsLi
       </div>
       <div className="space-y-2">
         {sortedWarnings.map((warning) => (
-          <PlanningWarningCard key={warning.id} warning={warning} />
+          <PlanningWarningCard key={warning.id} warning={warning} onAction={onAction} />
         ))}
       </div>
     </div>
