@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Pass 2: Day Refinement — Holistic quality pass on the planned itinerary.
  *

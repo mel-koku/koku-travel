@@ -5,6 +5,7 @@ import type { AutocompletePlace } from "@/lib/googlePlaces";
 import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { checkRateLimit } from "@/lib/api/rateLimit";
+import { checkBodySizeLimit } from "@/lib/api/bodySizeLimit";
 import {
   createRequestContext,
   addRequestContextHeaders,
@@ -12,6 +13,8 @@ import {
 } from "@/lib/api/middleware";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
+
+const AUTOCOMPLETE_MAX_BODY_SIZE = 16 * 1024; // 16KB — autocomplete requests are small
 
 // ── Server-side LRU cache for autocomplete results ──────────────────
 const AUTOCOMPLETE_CACHE_MAX = 100;
@@ -77,6 +80,12 @@ export async function POST(request: NextRequest) {
   const rateLimitResponse = await checkRateLimit(request, { maxRequests: 60, windowMs: 60 * 1000 });
   if (rateLimitResponse) {
     return addRequestContextHeaders(rateLimitResponse, context);
+  }
+
+  // Body size check
+  const bodySizeResult = await checkBodySizeLimit(request, AUTOCOMPLETE_MAX_BODY_SIZE);
+  if (bodySizeResult) {
+    return addRequestContextHeaders(bodySizeResult, context);
   }
 
   // Optional authentication (for future user-specific features)

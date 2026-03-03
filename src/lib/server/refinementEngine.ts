@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { Trip, TripDay } from "@/types/tripDomain";
 import { fetchLocationsByCity, fetchLocationsByCategories } from "@/lib/locations/locationService";
 import { scoreLocation, type LocationScoringCriteria } from "@/lib/scoring/locationScoring";
