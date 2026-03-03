@@ -49,7 +49,8 @@ type Coordinates = {
 
 const MINUTES_IN_DAY = 24 * 60;
 
-function formatTime(totalMinutes: number): string {
+/** @internal Exported for testing */
+export function formatTime(totalMinutes: number): string {
   const normalized = ((totalMinutes % MINUTES_IN_DAY) + MINUTES_IN_DAY) % MINUTES_IN_DAY;
   const hours = Math.floor(normalized / 60);
   const minutes = Math.round(normalized % 60);
@@ -80,7 +81,8 @@ function lookupCoordinates(activity: Extract<ItineraryActivity, { kind: "place" 
   return null;
 }
 
-function parseEstimatedDuration(text?: string | null): number | null {
+/** @internal Exported for testing */
+export function parseEstimatedDuration(text?: string | null): number | null {
   if (!text) {
     return null;
   }
@@ -137,14 +139,16 @@ async function determineVisitDuration(
   return options.defaultVisitMinutes;
 }
 
-function getOperatingPeriodForDay(hours: LocationOperatingHours | undefined, weekday?: Weekday): LocationOperatingPeriod | null {
+/** @internal Exported for testing */
+export function getOperatingPeriodForDay(hours: LocationOperatingHours | undefined, weekday?: Weekday): LocationOperatingPeriod | null {
   if (!hours || !weekday || !Array.isArray(hours.periods)) {
     return null;
   }
   return hours.periods.find((period) => period.day === weekday) ?? null;
 }
 
-function evaluateOperatingWindow(
+/** @internal Exported for testing */
+export function evaluateOperatingWindow(
   period: LocationOperatingPeriod | null,
   arrivalMinutes: number,
   durationMinutes: number,
