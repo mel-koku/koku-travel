@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect } from "react";
 
 type Variant = "a" | "b";
 
@@ -22,6 +22,16 @@ export function VariantProvider({
   children: React.ReactNode;
 }) {
   const basePath = variant === "b" ? "/b" : "";
+
+  // Sync data-variant to <html> so Radix portals (rendered at body level)
+  // inherit the correct CSS custom properties for each variant.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-variant", variant);
+    return () => {
+      document.documentElement.removeAttribute("data-variant");
+    };
+  }, [variant]);
+
   return (
     <VariantContext.Provider value={{ variant, basePath }}>
       {children}
