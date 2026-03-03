@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { MapPin, Target, Moon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { MapPin, Target } from "lucide-react";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import { RunningLatePopoverB } from "./RunningLatePopoverB";
 import {
@@ -18,18 +18,14 @@ export type WhatsNextCardBProps = {
   className?: string;
   onActivityClick?: (activityId: string) => void;
   onDelayRemaining?: (delayMinutes: number) => void;
-  onCheckIn?: (activityId: string) => void;
-  checkedInIds?: Set<string>;
 };
 
 function getActivityStatus(
   activities: ItineraryActivity[],
   currentTimeMinutes: number,
-  checkedInIds?: Set<string>,
 ) {
   const placeActivities = activities.filter(
-    (a): a is Extract<typeof a, { kind: "place" }> =>
-      a.kind === "place" && !checkedInIds?.has(a.id),
+    (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
   );
   let current: (typeof placeActivities)[number] | null = null;
   let next: (typeof placeActivities)[number] | null = null;
@@ -75,8 +71,6 @@ export function WhatsNextCardB({
   className,
   onActivityClick,
   onDelayRemaining,
-  onCheckIn,
-  checkedInIds,
 }: WhatsNextCardBProps) {
   // Live-updating current time (60s interval)
   const [currentTimeMinutes, setCurrentTimeMinutes] = useState(getCurrentMinutes);
@@ -101,41 +95,14 @@ export function WhatsNextCardB({
   }, [showCard, todayDate]);
 
   const { current, next, minutesUntilNext } = useMemo(
-    () => getActivityStatus(day.activities, currentTimeMinutes, checkedInIds),
-    [day.activities, currentTimeMinutes, checkedInIds],
-  );
-
-  const handleCheckIn = useCallback(
-    (activityId: string) => onCheckIn?.(activityId),
-    [onCheckIn],
+    () => getActivityStatus(day.activities, currentTimeMinutes),
+    [day.activities, currentTimeMinutes],
   );
 
   if (!showCard) return null;
 
-  // Day complete
-  if (!current && !next) {
-    return (
-      <div
-        className={`rounded-2xl p-4 ${className ?? ""}`}
-        style={{
-          backgroundColor: "color-mix(in srgb, var(--success) 8%, transparent)",
-          border: "1px solid color-mix(in srgb, var(--success) 20%, transparent)",
-        }}
-      >
-        <div className="flex items-center gap-3">
-          <Moon className="h-6 w-6" style={{ color: "var(--success)" }} />
-          <div>
-            <p className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>
-              Day complete!
-            </p>
-            <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-              All activities for today are done. Enjoy your evening!
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // No upcoming activities — hide card
+  if (!current && !next) return null;
 
   // Currently at an activity
   if (current && !next) {
@@ -167,18 +134,13 @@ export function WhatsNextCardB({
             </div>
           )}
         </div>
-        <div className="mt-3 flex items-center gap-2 pt-2" style={{ borderTop: "1px solid color-mix(in srgb, var(--success) 20%, transparent)" }}>
-          {mapsLink && (
+        {mapsLink && (
+          <div className="mt-3 flex items-center gap-2 pt-2" style={{ borderTop: "1px solid color-mix(in srgb, var(--success) 20%, transparent)" }}>
             <a href={mapsLink} target="_blank" rel="noopener noreferrer" className="text-xs font-medium hover:underline" style={{ color: "var(--success)" }}>
               Open in Maps
             </a>
-          )}
-          {onCheckIn && (
-            <button type="button" onClick={() => handleCheckIn(current.id)} className="ml-auto text-xs font-medium hover:underline" style={{ color: "var(--success)" }}>
-              Mark as visited
-            </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -248,7 +210,7 @@ export function WhatsNextCardB({
           )}
         </div>
       </div>
-      {/* Actions: Maps + check-in + running late */}
+      {/* Actions: Maps + running late */}
       <div className="mt-3 flex items-center gap-2 pt-2" style={{ borderTop: "1px solid color-mix(in srgb, var(--primary) 20%, transparent)" }}>
         {next && (() => {
           const link = buildMapsLink(next.title, next.coordinates);
@@ -258,11 +220,6 @@ export function WhatsNextCardB({
             </a>
           ) : null;
         })()}
-        {current && onCheckIn && (
-          <button type="button" onClick={() => handleCheckIn(current.id)} className="text-xs font-medium hover:underline" style={{ color: "var(--success)" }}>
-            Mark as visited
-          </button>
-        )}
         {onDelayRemaining && (
           <div className="ml-auto">
             <RunningLatePopoverB onApplyDelay={onDelayRemaining} />
