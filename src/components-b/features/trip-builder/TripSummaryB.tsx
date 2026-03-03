@@ -7,7 +7,6 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { deriveRegionsFromCities } from "@/data/regions";
-import { optimizeCitySequence } from "@/lib/routing/citySequence";
 import { computeDefaultCityDays, redistributeOnRemove } from "@/lib/tripBuilder/cityDayAllocation";
 import { SortableCityList } from "@/components/features/trip-builder/SortableCityList";
 import type { CityId } from "@/types/trip";
@@ -49,7 +48,7 @@ export function TripSummaryB({
       .join(", ");
   }, [data.vibes]);
 
-  // Effective per-city day allocation
+  // Effective per-city day allocation (parallel array)
   const effectiveCityDays = useMemo(() => {
     const cities = data.cities ?? [];
     const duration = data.duration;
@@ -57,67 +56,108 @@ export function TripSummaryB({
     return data.cityDays ?? computeDefaultCityDays(cities, duration);
   }, [data.cities, data.duration, data.cityDays]);
 
-  // Day change handler — adjusts target city and adjacent city to keep total constant
+  // Day change handler — adjusts target entry and adjacent entry to keep total constant
   const handleDaysChange = useCallback(
-    (cityId: CityId, newDays: number) => {
+    (index: number, newDays: number) => {
       setData((prev) => {
         const cities = prev.cities ?? [];
         const duration = prev.duration;
         if (!duration || cities.length < 2) return prev;
 
         const current = prev.cityDays ?? computeDefaultCityDays(cities, duration);
-        const oldDays = current[cityId] ?? 1;
+        const oldDays = current[index] ?? 1;
         const delta = newDays - oldDays;
         if (delta === 0) return prev;
 
-        // Find adjacent city to absorb the delta
-        const idx = cities.indexOf(cityId);
-        const adjacentIdx = idx < cities.length - 1 ? idx + 1 : idx - 1;
-        const adjacentCity = cities[adjacentIdx];
-        if (!adjacentCity) return prev;
-
-        const adjacentOld = current[adjacentCity] ?? 1;
+        // Find adjacent entry to absorb the delta
+        const adjacentIdx = index < cities.length - 1 ? index + 1 : index - 1;
+        const adjacentOld = current[adjacentIdx] ?? 1;
         const adjacentNew = adjacentOld - delta;
         if (adjacentNew < 1 || newDays < 1) return prev;
 
-        return {
-          ...prev,
-          cityDays: { ...current, [cityId]: newDays, [adjacentCity]: adjacentNew },
-        };
+        const next = [...current];
+        next[index] = newDays;
+        next[adjacentIdx] = adjacentNew;
+        return { ...prev, cityDays: next };
       });
     },
     [setData],
   );
 
+  // City reorder handler (manual drag) — moves both cities and cityDays together
   const handleCityReorder = useCallback(
-    (newOrder: CityId[]) => {
+    (newCities: CityId[], newCityDays?: number[]) => {
       setData((prev) => ({
         ...prev,
-        cities: newOrder,
-        regions: deriveRegionsFromCities(newOrder),
+        cities: newCities,
+        cityDays: newCityDays ?? prev.cityDays,
+        regions: deriveRegionsFromCities(newCities),
         customCityOrder: true,
       }));
     },
     [setData],
   );
 
+  // City remove handler (by index, redistributes days)
   const handleCityRemove = useCallback(
-    (cityId: CityId) => {
+    (index: number) => {
       setData((prev) => {
-        const current = new Set<CityId>(prev.cities ?? []);
-        current.delete(cityId);
-        const raw = Array.from(current);
-        const cities = raw.length >= 2
-          ? optimizeCitySequence(prev.entryPoint, raw, prev.sameAsEntry !== false ? prev.entryPoint : prev.exitPoint)
-          : raw;
+        const oldCities = prev.cities ?? [];
+        if (index < 0 || index >= oldCities.length) return prev;
 
-        // Redistribute freed days to remaining cities
-        let cityDays: Record<CityId, number> | undefined;
+        const cities = [...oldCities];
+        cities.splice(index, 1);
+
+        // Redistribute freed days to remaining entries
+        let cityDays: number[] | undefined;
         if (prev.cityDays && cities.length >= 2) {
-          cityDays = redistributeOnRemove(prev.cityDays, cityId, cities);
+          cityDays = redistributeOnRemove(prev.cityDays, index);
+        } else {
+          cityDays = undefined;
         }
 
-        return { ...prev, cities, regions: deriveRegionsFromCities(cities), customCityOrder: false, cityDays };
+        // Check if duplicates exist — if so, keep customCityOrder
+        const uniqueCities = new Set(cities);
+        const hasDuplicates = uniqueCities.size < cities.length;
+
+        return {
+          ...prev,
+          cities,
+          regions: deriveRegionsFromCities(cities),
+          customCityOrder: hasDuplicates || undefined,
+          cityDays,
+        };
+      });
+    },
+    [setData],
+  );
+
+  // Duplicate a city — inserts a copy at index+1, steals 1 day from source
+  const handleDuplicateCity = useCallback(
+    (index: number) => {
+      setData((prev) => {
+        const oldCities = prev.cities ?? [];
+        const duration = prev.duration;
+        if (index < 0 || index >= oldCities.length || !duration) return prev;
+
+        const current = prev.cityDays ?? computeDefaultCityDays(oldCities, duration);
+        const sourceDays = current[index] ?? 1;
+        if (sourceDays < 2) return prev; // Can't duplicate with only 1 day
+
+        const cities = [...oldCities];
+        cities.splice(index + 1, 0, oldCities[index]!);
+
+        const cityDays = [...current];
+        cityDays[index] = sourceDays - 1;
+        cityDays.splice(index + 1, 0, 1);
+
+        return {
+          ...prev,
+          cities,
+          cityDays,
+          regions: deriveRegionsFromCities(cities),
+          customCityOrder: true,
+        };
       });
     },
     [setData],
@@ -209,6 +249,7 @@ export function TripSummaryB({
                   cityDays={effectiveCityDays}
                   onDaysChange={handleDaysChange}
                   totalDays={data.duration}
+                  onDuplicate={handleDuplicateCity}
                 />
               ) : (
                 <p className="mt-0.5 text-sm font-medium text-[var(--foreground)]">

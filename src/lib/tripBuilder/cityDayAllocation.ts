@@ -2,62 +2,55 @@
  * Per-city day allocation utilities for the trip builder.
  *
  * Pure functions — no React dependencies.
+ * Uses parallel number[] arrays that map 1:1 with the cities array.
  */
 
 import type { CityId } from "@/types/trip";
 
 /**
- * Compute a default day allocation that mirrors the existing floor-division
- * algorithm in `expandCitySequenceForDays`.
+ * Compute a default day allocation as a parallel array.
+ * cityDays[i] = days for cities[i].
  *
  * Earlier cities in the array receive the remainder days first.
  */
 export function computeDefaultCityDays(
   cities: CityId[],
   totalDays: number,
-): Record<CityId, number> {
-  const result: Record<CityId, number> = {};
-  if (cities.length === 0 || totalDays <= 0) return result;
+): number[] {
+  if (cities.length === 0 || totalDays <= 0) return [];
 
   const base = Math.max(1, Math.floor(totalDays / cities.length));
   let remainder = totalDays - base * cities.length;
 
-  for (const city of cities) {
+  return cities.map(() => {
     let days = base;
     if (remainder > 0) {
       days += 1;
       remainder -= 1;
     }
-    result[city] = days;
-  }
-
-  return result;
+    return days;
+  });
 }
 
 /**
- * Redistribute the days of a removed city among the remaining cities.
+ * Redistribute the days of a removed entry among the remaining entries.
  *
- * Freed days are distributed round-robin starting from the first city
- * in `remainingCities` order.
+ * Freed days are distributed round-robin starting from index 0
+ * of the resulting array (after the removed index is spliced out).
  */
 export function redistributeOnRemove(
-  cityDays: Record<CityId, number>,
-  removedCity: CityId,
-  remainingCities: CityId[],
-): Record<CityId, number> {
-  if (remainingCities.length === 0) return {};
+  cityDays: number[],
+  removedIndex: number,
+): number[] {
+  if (cityDays.length <= 1) return [];
 
-  const freed = cityDays[removedCity] ?? 0;
-  const result: Record<CityId, number> = {};
-
-  for (const city of remainingCities) {
-    result[city] = cityDays[city] ?? 1;
-  }
+  const freed = cityDays[removedIndex] ?? 0;
+  const result = cityDays.filter((_, i) => i !== removedIndex);
 
   // Distribute freed days round-robin
   for (let i = 0; i < freed; i++) {
-    const target = remainingCities[i % remainingCities.length]!;
-    result[target] = (result[target] ?? 1) + 1;
+    const idx = i % result.length;
+    result[idx] = (result[idx] ?? 0) + 1;
   }
 
   return result;
