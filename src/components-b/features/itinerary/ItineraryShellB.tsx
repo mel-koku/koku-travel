@@ -53,10 +53,10 @@ import { PrintHeader } from "@/components/features/itinerary/PrintHeader";
 import { PrintFooter } from "@/components/features/itinerary/PrintFooter";
 import { REGIONS } from "@/data/regions";
 
-const LocationExpanded = dynamic(
+const PlaceDetailPanelBLazy = dynamic(
   () =>
-    import("@/components/features/places/LocationExpanded").then((m) => ({
-      default: m.LocationExpanded,
+    import("@b/features/places/PlaceDetailPanelB").then((m) => ({
+      default: m.PlaceDetailPanelB,
     })),
   { ssr: false },
 );
@@ -1130,7 +1130,7 @@ export const ItineraryShellB = ({
       {/* Location Detail Panel */}
       <AnimatePresence>
         {expandedLocation && (
-          <LocationExpanded
+          <PlaceDetailPanelBLazy
             location={expandedLocation}
             onClose={handleCloseExpanded}
           />
