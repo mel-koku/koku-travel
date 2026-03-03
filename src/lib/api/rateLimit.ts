@@ -39,6 +39,8 @@ const RATE_LIMIT_CONSTANTS = {
 type RateLimitConfig = {
   maxRequests: number;
   windowMs: number; // Time window in milliseconds
+  /** Optional suffix to distinguish multiple rate limit tiers on the same endpoint */
+  keySuffix?: string;
 };
 
 type RateLimitEntry = {
@@ -263,7 +265,8 @@ export async function checkRateLimit(
   const clientIp = getClientIp(request);
   // Include the endpoint path in the key so different endpoints have separate rate limits
   const pathname = request.nextUrl.pathname;
-  const ip = `${clientIp}:${pathname}`;
+  const suffix = config.keySuffix ? `:${config.keySuffix}` : "";
+  const ip = `${clientIp}:${pathname}${suffix}`;
 
   // Tighten limits for unidentifiable clients to prevent bypass via missing headers
   const effectiveConfig = clientIp === "unknown"

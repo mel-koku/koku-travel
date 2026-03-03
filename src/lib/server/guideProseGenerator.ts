@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Pass 3: Guide Prose — Generates personalized narrative for the entire trip guide.
  *

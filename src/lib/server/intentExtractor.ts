@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Pass 1: Intent Extraction — Extracts structured constraints from builder data.
  *

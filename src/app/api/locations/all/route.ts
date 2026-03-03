@@ -81,27 +81,52 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
 
     // Supabase PostgREST caps results at 1000 rows per request,
-    // so we paginate to fetch all locations.
+    // so we paginate. First get the count, then fetch all pages in parallel.
     const PAGE_SIZE = 1000;
-    let allRows: LocationExploreDbRow[] = [];
-    let page = 0;
-    let hasMore = true;
 
-    while (hasMore) {
+    const { count, error: countError } = await supabase
+      .from("locations")
+      .select("id", { count: "exact", head: true })
+      .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
+
+    if (countError) {
+      logger.error("Failed to count locations", {
+        error: countError,
+        requestId: context.requestId,
+      });
+      return addRequestContextHeaders(
+        internalError("Failed to fetch locations from database", { error: countError.message }, {
+          requestId: context.requestId,
+        }),
+        context,
+      );
+    }
+
+    const totalRows = count ?? 4000; // fallback estimate if count is null
+    const totalPages = Math.ceil(totalRows / PAGE_SIZE);
+
+    // Fetch all pages in parallel
+    const pagePromises = Array.from({ length: totalPages }, (_, page) => {
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-
-      const { data: batch, error } = await supabase
+      return supabase
         .from("locations")
         .select(LOCATION_EXPLORE_COLUMNS)
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .order("name", { ascending: true })
         .range(from, to);
+    });
 
+    const pageResults = await Promise.all(pagePromises);
+
+    // Check for errors and concat results
+    let allRows: LocationExploreDbRow[] = [];
+    for (const [i, result] of pageResults.entries()) {
+      const { data: batch, error } = result;
       if (error) {
         logger.error("Failed to fetch locations page", {
           error,
-          page,
+          page: i,
           requestId: context.requestId,
         });
         return addRequestContextHeaders(
@@ -111,11 +136,8 @@ export async function GET(request: NextRequest) {
           context,
         );
       }
-
       const rows = (batch || []) as unknown as LocationExploreDbRow[];
       allRows = allRows.concat(rows);
-      hasMore = rows.length === PAGE_SIZE;
-      page++;
     }
 
     const locations: Location[] = allRows.map((row) => ({

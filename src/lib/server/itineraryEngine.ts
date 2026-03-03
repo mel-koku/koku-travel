@@ -1,3 +1,5 @@
+import "server-only";
+
 import { generateItinerary } from "@/lib/itineraryGenerator";
 import { planItinerary } from "@/lib/itineraryPlanner";
 import { buildTravelerProfile } from "@/lib/domain/travelerProfile";
