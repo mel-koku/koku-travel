@@ -373,8 +373,11 @@ export const tripBuilderDataSchema = z.object({
   contentContext: contentContextSchema,
   // First-time visitor flag
   isFirstTimeVisitor: z.boolean().optional(),
-  // Per-city day allocation overrides
-  cityDays: z.record(cityIdSchema, z.number().int().min(1).max(14)).optional(),
+  // Per-city day allocation overrides (array = new format, record = legacy)
+  cityDays: z.union([
+    z.array(z.number().int().min(1).max(14)),
+    z.record(cityIdSchema, z.number().int().min(1).max(14)),
+  ]).optional(),
   // Custom city order flag
   customCityOrder: z.boolean().optional(),
   // Accommodation style preference

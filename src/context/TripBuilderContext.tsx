@@ -255,21 +255,17 @@ function sanitizeRegions(regions?: RegionId[] | string[]): RegionId[] {
 }
 
 /**
- * Sanitize cities - accepts any string as city ID now that we support dynamic cities
+ * Sanitize cities - accepts any string as city ID now that we support dynamic cities.
+ * Allows duplicate cities (e.g., Tokyo → Osaka → Tokyo round trips).
  */
 function sanitizeCities(cities?: CityId[] | string[]): CityId[] {
   if (!cities || cities.length === 0) {
     return [];
   }
   const next: CityId[] = [];
-  const seen = new Set<string>();
   for (const city of cities) {
     if (typeof city === "string" && city.trim().length > 0) {
-      const cityId = city.trim();
-      if (!seen.has(cityId)) {
-        seen.add(cityId);
-        next.push(cityId);
-      }
+      next.push(city.trim());
     }
   }
   return next;
@@ -399,36 +395,38 @@ function sanitizeEntryPoint(entryPoint?: EntryPoint): EntryPoint | undefined {
  */
 /**
  * Sanitize cityDays — drop if cities or total don't match.
+ * Accepts both new number[] format and old Record<string, number> (auto-migrates).
  * This handles edge cases where user goes back and changes dates or cities.
  */
 function sanitizeCityDays(
-  cityDays: Record<string, number> | undefined,
+  cityDays: number[] | Record<string, number> | undefined,
   cities: CityId[],
   duration: number | undefined,
-): Record<string, number> | undefined {
+): number[] | undefined {
   if (!cityDays || typeof cityDays !== "object") return undefined;
   if (!duration || duration <= 0 || cities.length === 0) return undefined;
 
-  // Every city must be present and every key must be a current city
-  const keys = Object.keys(cityDays);
-  if (keys.length !== cities.length) return undefined;
-  for (const city of cities) {
-    if (!(city in cityDays)) return undefined;
+  // Migrate old Record format → parallel array
+  let arr: number[];
+  if (Array.isArray(cityDays)) {
+    arr = cityDays;
+  } else {
+    // Old Record<CityId, number> — convert using cities order
+    arr = cities.map((cityId) => (cityDays as Record<string, number>)[cityId] ?? 1);
   }
-  for (const key of keys) {
-    if (!cities.includes(key)) return undefined;
-  }
+
+  // Length must match cities array
+  if (arr.length !== cities.length) return undefined;
 
   // Each value must be a positive integer, total must equal duration
   let total = 0;
-  for (const key of keys) {
-    const v = cityDays[key] as number | undefined;
-    if (v === undefined || !Number.isInteger(v) || v < 1) return undefined;
+  for (const v of arr) {
+    if (!Number.isInteger(v) || v < 1) return undefined;
     total += v;
   }
   if (total !== duration) return undefined;
 
-  return { ...cityDays };
+  return [...arr];
 }
 
 /**

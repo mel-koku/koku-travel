@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, X, Minus, Plus } from "lucide-react";
+import { GripVertical, X, Minus, Plus, Copy } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { REGIONS } from "@/data/regions";
@@ -28,6 +28,7 @@ import type { CityId } from "@/types/trip";
 
 type CityDisplay = {
   id: CityId;
+  index: number;
   name: string;
   regionName?: string;
 };
@@ -40,39 +41,57 @@ for (const r of REGIONS) {
   }
 }
 
-function resolveCityDisplay(cityId: CityId): CityDisplay {
+function resolveCityDisplay(cityId: CityId, index: number): CityDisplay {
   const known = KNOWN_CITY_MAP.get(cityId);
-  if (known) return { id: cityId, name: known.name, regionName: known.regionName };
+  if (known) return { id: cityId, index, name: known.name, regionName: known.regionName };
 
   const regionId = getRegionForCity(cityId);
   const region = regionId ? REGIONS.find((r) => r.id === regionId) : undefined;
   return {
     id: cityId,
+    index,
     name: cityId.charAt(0).toUpperCase() + cityId.slice(1),
     regionName: region?.name,
   };
+}
+
+/** Composite sortable ID: unique even with duplicate cities */
+function sortableId(cityId: CityId, index: number): string {
+  return `${cityId}-${index}`;
+}
+
+/** Parse index from composite sortable ID */
+function parseIndex(compositeId: string): number {
+  const lastDash = compositeId.lastIndexOf("-");
+  return Number(compositeId.slice(lastDash + 1));
 }
 
 // --- Sortable item ---
 
 function SortableCityItem({
   city,
+  compositeId,
   onRemove,
+  onDuplicate,
   variant,
   days,
   onIncrement,
   onDecrement,
   canIncrement,
   canDecrement,
+  canDuplicate,
 }: {
   city: CityDisplay;
-  onRemove: (cityId: CityId) => void;
+  compositeId: string;
+  onRemove: (index: number) => void;
+  onDuplicate?: (index: number) => void;
   variant: "a" | "b";
   days?: number;
   onIncrement?: () => void;
   onDecrement?: () => void;
   canIncrement?: boolean;
   canDecrement?: boolean;
+  canDuplicate?: boolean;
 }) {
   const {
     attributes,
@@ -81,7 +100,7 @@ function SortableCityItem({
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: city.id });
+  } = useSortable({ id: compositeId });
 
   const style = {
     transform: transform ? CSS.Transform.toString(transform) : undefined,
@@ -181,10 +200,30 @@ function SortableCityItem({
         </div>
       )}
 
+      {/* Duplicate button */}
+      {onDuplicate && (
+        <button
+          type="button"
+          onClick={() => onDuplicate(city.index)}
+          disabled={!canDuplicate}
+          className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
+            !canDuplicate
+              ? "opacity-30 cursor-not-allowed"
+              : isA
+                ? "hover:bg-brand-primary/10 text-stone hover:text-foreground"
+                : "hover:bg-[var(--primary)]/10 text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+          }`}
+          aria-label={`Duplicate ${city.name}`}
+          title="Return to this city"
+        >
+          <Copy className="h-3 w-3" />
+        </button>
+      )}
+
       {/* Remove button */}
       <button
         type="button"
-        onClick={() => onRemove(city.id)}
+        onClick={() => onRemove(city.index)}
         className={`flex h-6 w-6 items-center justify-center rounded-full transition-colors ${
           isA
             ? "hover:bg-brand-primary/10"
@@ -266,12 +305,13 @@ function PendingCityItem({
 
 export type SortableCityListProps = {
   cities: CityId[];
-  onReorder: (newOrder: CityId[]) => void;
-  onRemove: (cityId: CityId) => void;
+  onReorder: (newCities: CityId[], newCityDays?: number[]) => void;
+  onRemove: (index: number) => void;
   variant?: "a" | "b";
-  cityDays?: Record<CityId, number>;
-  onDaysChange?: (cityId: CityId, days: number) => void;
+  cityDays?: number[];
+  onDaysChange?: (index: number, days: number) => void;
   totalDays?: number;
+  onDuplicate?: (index: number) => void;
 };
 
 export function SortableCityList({
@@ -282,6 +322,7 @@ export function SortableCityList({
   cityDays,
   onDaysChange,
   totalDays,
+  onDuplicate,
 }: SortableCityListProps) {
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 6 },
@@ -291,10 +332,11 @@ export function SortableCityList({
   });
   const sensors = useSensors(pointerSensor, touchSensor);
 
-  // --- Undo-on-remove state ---
-  const [pendingRemoves, setPendingRemoves] = useState<Set<CityId>>(new Set());
+  // --- Undo-on-remove state (by index) ---
+  const [pendingRemoves, setPendingRemoves] = useState<Set<number>>(new Set());
   const onRemoveRef = useRef(onRemove);
   const pendingRef = useRef(pendingRemoves);
+  const citiesRef = useRef(cities);
 
   useEffect(() => {
     onRemoveRef.current = onRemove;
@@ -304,56 +346,78 @@ export function SortableCityList({
     pendingRef.current = pendingRemoves;
   }, [pendingRemoves]);
 
-  const handleRemove = useCallback((cityId: CityId) => {
-    setPendingRemoves((prev) => new Set(prev).add(cityId));
+  useEffect(() => {
+    citiesRef.current = cities;
+  }, [cities]);
+
+  // Reset pending removes when cities change (e.g., new city added externally)
+  useEffect(() => {
+    setPendingRemoves(new Set());
+  }, [cities.length]);
+
+  const handleRemove = useCallback((index: number) => {
+    setPendingRemoves((prev) => new Set(prev).add(index));
   }, []);
 
-  const handleUndo = useCallback((cityId: CityId) => {
+  const handleUndo = useCallback((index: number) => {
     setPendingRemoves((prev) => {
       const next = new Set(prev);
-      next.delete(cityId);
+      next.delete(index);
       return next;
     });
   }, []);
 
-  // Commit all pending removals on unmount
+  // Commit all pending removals on unmount (highest index first to keep indices stable)
   useEffect(() => {
     return () => {
-      for (const id of pendingRef.current) {
-        onRemoveRef.current(id);
+      const sorted = Array.from(pendingRef.current).sort((a, b) => b - a);
+      for (const idx of sorted) {
+        onRemoveRef.current(idx);
       }
     };
   }, []);
 
-  const cityDisplays = cities.map(resolveCityDisplay);
+  const cityDisplays = cities.map((c, i) => resolveCityDisplay(c, i));
   const hasPending = pendingRemoves.size > 0;
-  const sortableIds = hasPending
-    ? cities.filter((id) => !pendingRemoves.has(id))
-    : cities;
+
+  // Active (non-pending) indices
+  const activeIndices = useMemo(
+    () => cities.map((_, i) => i).filter((i) => !pendingRemoves.has(i)),
+    [cities, pendingRemoves],
+  );
+
+  // Composite sortable IDs for active items
+  const activeSortableIds = useMemo(
+    () => activeIndices.map((i) => sortableId(cities[i]!, i)),
+    [activeIndices, cities],
+  );
 
   // Compute display-level days that reflect pending removals
   const displayCityDays = useMemo(() => {
     if (!cityDays || !hasPending) return cityDays;
-    let days = { ...cityDays };
-    for (const removedId of pendingRemoves) {
-      const remaining = sortableIds.filter((id) => id in days || !pendingRemoves.has(id));
-      days = redistributeOnRemove(days, removedId, remaining);
+    let days = [...cityDays];
+    // Remove in descending index order to keep indices stable
+    const sorted = Array.from(pendingRemoves).sort((a, b) => b - a);
+    for (const idx of sorted) {
+      days = redistributeOnRemove(days, idx);
     }
     return days;
-  }, [cityDays, hasPending, pendingRemoves, sortableIds]);
+  }, [cityDays, hasPending, pendingRemoves]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
       if (!over || active.id === over.id) return;
 
-      const oldIndex = cities.indexOf(String(active.id));
-      const newIndex = cities.indexOf(String(over.id));
-      if (oldIndex === -1 || newIndex === -1) return;
+      const oldIndex = parseIndex(String(active.id));
+      const newIndex = parseIndex(String(over.id));
+      if (oldIndex === newIndex) return;
 
-      onReorder(arrayMove(cities, oldIndex, newIndex));
+      const newCities = arrayMove(cities, oldIndex, newIndex);
+      const newDays = cityDays ? arrayMove([...cityDays], oldIndex, newIndex) : undefined;
+      onReorder(newCities, newDays);
     },
-    [cities, onReorder],
+    [cities, cityDays, onReorder],
   );
 
   if (cities.length === 0) return null;
@@ -361,11 +425,12 @@ export function SortableCityList({
   const isA = variant === "a";
 
   // Only show steppers when cityDays is provided, 2+ active cities, and no pending removes
-  const showSteppers = !!cityDays && !!onDaysChange && sortableIds.length >= 2 && !hasPending;
+  const activeCount = activeIndices.length;
+  const showSteppers = !!cityDays && !!onDaysChange && activeCount >= 2 && !hasPending;
 
   // Calculate allocated days for the status line using display values
   const allocatedDays = displayCityDays
-    ? Object.values(displayCityDays).reduce<number>((sum, d) => sum + d, 0)
+    ? displayCityDays.reduce((sum, d) => sum + d, 0)
     : undefined;
 
   return (
@@ -386,16 +451,18 @@ export function SortableCityList({
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={sortableIds}
+          items={activeSortableIds}
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-1.5">
             <AnimatePresence initial={false}>
               {cityDisplays.map((city) => {
-                if (pendingRemoves.has(city.id)) {
+                const cId = sortableId(city.id, city.index);
+
+                if (pendingRemoves.has(city.index)) {
                   return (
                     <motion.div
-                      key={city.id}
+                      key={cId}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
@@ -403,26 +470,26 @@ export function SortableCityList({
                     >
                       <PendingCityItem
                         city={city}
-                        onUndo={() => handleUndo(city.id)}
+                        onUndo={() => handleUndo(city.index)}
                         variant={variant}
                       />
                     </motion.div>
                   );
                 }
 
+                // Map from the original index to the display-days index (after pending removals)
+                const displayIndex = activeIndices.indexOf(city.index);
                 const daysSource = displayCityDays ?? cityDays;
-                const showDays = !!daysSource && !!onDaysChange && sortableIds.length >= 2;
-                const days = showDays ? daysSource[city.id] : undefined;
-                // Find adjacent city to take/give a day (skip pending cities)
-                const activeCities = sortableIds;
-                const activeIndex = activeCities.indexOf(city.id);
-                const adjacentIndex = activeIndex < activeCities.length - 1 ? activeIndex + 1 : activeIndex - 1;
-                const adjacentCity = activeCities[adjacentIndex];
-                const adjacentDays = adjacentCity && daysSource ? daysSource[adjacentCity] : undefined;
+                const showDays = !!daysSource && !!onDaysChange && activeCount >= 2;
+                const days = showDays ? daysSource[displayIndex] : undefined;
+
+                // Find adjacent entry to take/give a day
+                const adjacentDisplayIdx = displayIndex < activeCount - 1 ? displayIndex + 1 : displayIndex - 1;
+                const adjacentDays = adjacentDisplayIdx >= 0 && daysSource ? daysSource[adjacentDisplayIdx] : undefined;
 
                 return (
                   <motion.div
-                    key={city.id}
+                    key={cId}
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
@@ -430,19 +497,22 @@ export function SortableCityList({
                   >
                     <SortableCityItem
                       city={city}
+                      compositeId={cId}
                       onRemove={handleRemove}
+                      onDuplicate={onDuplicate}
                       variant={variant}
                       days={days}
                       canDecrement={showSteppers && (days ?? 0) > 1}
                       canIncrement={showSteppers && (adjacentDays ?? 0) > 1}
+                      canDuplicate={!!onDuplicate && (cityDays ? (cityDays[city.index] ?? 0) >= 2 : true)}
                       onDecrement={
                         showSteppers && onDaysChange
-                          ? () => onDaysChange(city.id, (days ?? 1) - 1)
+                          ? () => onDaysChange(city.index, (cityDays?.[city.index] ?? 1) - 1)
                           : undefined
                       }
                       onIncrement={
                         showSteppers && onDaysChange
-                          ? () => onDaysChange(city.id, (days ?? 1) + 1)
+                          ? () => onDaysChange(city.index, (cityDays?.[city.index] ?? 1) + 1)
                           : undefined
                       }
                     />
@@ -455,7 +525,7 @@ export function SortableCityList({
       </DndContext>
 
       {/* Day allocation status line */}
-      {!!displayCityDays && !!onDaysChange && sortableIds.length >= 2 && totalDays !== undefined && allocatedDays !== undefined && (
+      {!!displayCityDays && !!onDaysChange && activeCount >= 2 && totalDays !== undefined && allocatedDays !== undefined && (
         <p
           className={`mt-2 text-xs font-mono tabular-nums ${
             allocatedDays === totalDays

@@ -161,15 +161,9 @@ function normalizeBuilderData(data: TripBuilderData): Record<string, unknown> {
     };
   }
 
-  // Per-city day allocation overrides
+  // Per-city day allocation overrides (parallel array — order matches cities which is already in the key)
   if (data.cityDays) {
-    // Sort by city key for deterministic cache key
-    const sorted = Object.keys(data.cityDays).sort();
-    const cityDaysNormalized: Record<string, number> = {};
-    for (const key of sorted) {
-      cityDaysNormalized[key] = data.cityDays[key] ?? 0;
-    }
-    normalized.cityDays = cityDaysNormalized;
+    normalized.cityDays = [...data.cityDays];
   }
 
   // Pre-generation accommodations affect routing (start/end points)
