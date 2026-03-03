@@ -420,6 +420,22 @@ export type Location = {
    * Loaded from location_availability table when needed.
    */
   availability?: LocationAvailability[];
+
+  // ============================================
+  // Experience-specific fields (from experiences table)
+  // ============================================
+
+  /** Sanity CMS slug for editorial content link */
+  sanitySlug?: string;
+
+  /** Whether this experience has rich editorial content in Sanity */
+  hasEditorial?: boolean;
+
+  /** External booking URL */
+  bookingUrl?: string;
+
+  /** Difficulty level for experiences */
+  difficulty?: string;
 };
 
 export type LocationReview = {
