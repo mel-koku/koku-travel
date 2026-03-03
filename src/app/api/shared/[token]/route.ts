@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { logger } from "@/lib/logger";
@@ -6,6 +7,11 @@ import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middle
 import { badRequest, notFound, internalError } from "@/lib/api/errors";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+
+/** Hash a share token for safe logging (no partial token leakage). */
+function hashToken(token: string): string {
+  return crypto.createHash("sha256").update(token).digest("hex").substring(0, 8);
+}
 
 // base64url: 22 chars from 16 bytes
 const tokenSchema = z.string().min(16).max(32).regex(/^[A-Za-z0-9_-]+$/);
@@ -47,7 +53,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     if (shareError) {
       logger.error("Failed to fetch share", new Error(shareError.message), {
-        token: token.substring(0, 6) + "...",
+        tokenHash: hashToken(token),
       });
       return internalError("Failed to load shared itinerary");
     }
@@ -119,7 +125,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     return addRequestContextHeaders(response, context, request);
   } catch (error) {
     logger.error("Error loading shared itinerary", new Error(getErrorMessage(error)), {
-      token: token.substring(0, 6) + "...",
+      tokenHash: hashToken(token),
     });
     return internalError("Failed to load shared itinerary");
   }

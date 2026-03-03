@@ -69,6 +69,14 @@ export async function POST(request: NextRequest) {
   const authResult = await getOptionalAuth(request, context);
   const finalContext = authResult.context;
 
+  // Stricter rate limit for unauthenticated requests (5 req/min vs 20)
+  if (!authResult.user) {
+    const unauthRateLimitResponse = await checkRateLimit(request, RATE_LIMITS.ITINERARY_PLAN_UNAUTH);
+    if (unauthRateLimitResponse) {
+      return addRequestContextHeaders(unauthRateLimitResponse, finalContext);
+    }
+  }
+
   // Validate request body with size limit (1MB)
   const validation = await validateRequestBody(request, planRequestSchema, 1024 * 1024);
   if (!validation.success) {

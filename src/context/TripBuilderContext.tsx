@@ -198,7 +198,13 @@ export function TripBuilderProvider({ initialData, children }: TripBuilderProvid
       }
       setData((prev) => {
         const next = typeof updater === "function" ? updater(prev) : updater;
-        return normalizeData(next);
+        const normalized = normalizeData(next);
+        // Skip state update if normalization didn't change anything
+        // This prevents unnecessary re-renders from rapid updates (e.g., keystrokes)
+        if (shallowEqualTripData(prev, normalized)) {
+          return prev;
+        }
+        return normalized;
       });
     },
     [],
@@ -508,4 +514,65 @@ function sanitizeDayStartTime(dayStartTime?: string): string | undefined {
   return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
+/**
+ * Shallow comparison of two TripBuilderData objects.
+ * Returns true if all top-level primitives match and all arrays/objects
+ * are structurally identical, avoiding unnecessary re-renders when
+ * normalizeData() produces an equivalent result.
+ */
+function shallowEqualTripData(a: TripBuilderData, b: TripBuilderData): boolean {
+  // Quick reference check
+  if (a === b) return true;
+
+  // Scalar fields
+  if (
+    a.duration !== b.duration ||
+    a.budget !== b.budget ||
+    a.group !== b.group ||
+    a.sameAsEntry !== b.sameAsEntry ||
+    a.isFirstTimeVisitor !== b.isFirstTimeVisitor ||
+    a.customCityOrder !== b.customCityOrder ||
+    a.dayStartTime !== b.dayStartTime ||
+    a.arrivalTime !== b.arrivalTime ||
+    a.departureTime !== b.departureTime ||
+    a.weatherPreferences !== b.weatherPreferences
+  ) {
+    return false;
+  }
+
+  // Dates
+  if (a.dates?.start !== b.dates?.start || a.dates?.end !== b.dates?.end) {
+    return false;
+  }
+
+  // Style / entry/exit (objects compared by identity or value)
+  if (a.style !== b.style) return false;
+
+  // Arrays — order-sensitive comparison
+  if (!arraysEqual(a.vibes, b.vibes)) return false;
+  if (!arraysEqual(a.regions, b.regions)) return false;
+  if (!arraysEqual(a.cities, b.cities)) return false;
+  if (!arraysEqual(a.interests, b.interests)) return false;
+  if (!arraysEqual(a.cityDays, b.cityDays)) return false;
+
+  // Entry/exit points — compare by serialized value (small objects)
+  if (JSON.stringify(a.entryPoint) !== JSON.stringify(b.entryPoint)) return false;
+  if (JSON.stringify(a.exitPoint) !== JSON.stringify(b.exitPoint)) return false;
+  if (JSON.stringify(a.accessibility) !== JSON.stringify(b.accessibility)) return false;
+  if (JSON.stringify(a.travelerProfile) !== JSON.stringify(b.travelerProfile)) return false;
+  if (JSON.stringify(a.flightDetails) !== JSON.stringify(b.flightDetails)) return false;
+  if (JSON.stringify(a.accommodations) !== JSON.stringify(b.accommodations)) return false;
+
+  return true;
+}
+
+function arraysEqual<T>(a: T[] | undefined, b: T[] | undefined): boolean {
+  if (a === b) return true;
+  if (!a || !b) return a === b;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
 

@@ -175,7 +175,13 @@ export function AccountClient({ content }: AccountClientProps) {
                 <h2 className="font-serif italic text-xl text-foreground sm:text-2xl">{content?.accountProfileHeading ?? "Profile"}</h2>
                 {signedIn && supabase && (
                   <button
-                    onClick={() => supabase.auth.signOut()}
+                    onClick={async () => {
+                      try {
+                        await supabase.auth.signOut();
+                      } catch {
+                        // Sign-out failure is non-critical — session will expire naturally
+                      }
+                    }}
                     className="h-12 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface hover:text-foreground transition"
                   >
                     {content?.accountSignOutText ?? "Sign out"}

@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Day Intro Generator — Uses Gemini to generate personalized day introductions.
  *

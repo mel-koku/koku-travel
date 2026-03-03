@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * AI-powered place intent extraction — Extracts structured search params
  * from natural language queries like "quiet ramen spot" or "fun for kids".

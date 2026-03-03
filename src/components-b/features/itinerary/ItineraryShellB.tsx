@@ -14,6 +14,7 @@ import { useAppState } from "@/state/AppState";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
 import type { EntryPoint, TripBuilderData } from "@/types/trip";
+// Intentionally shared — ItineraryMapPanel is variant-agnostic (Mapbox wrapper)
 import { ItineraryMapPanel } from "@/components/features/itinerary/ItineraryMapPanel";
 import { logger } from "@/lib/logger";
 import { ErrorBoundary } from "@/components/ErrorBoundary";

@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Zod schemas for the hybrid LLM layer.
  *

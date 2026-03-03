@@ -168,13 +168,13 @@ async function checkDailyLimit(userId: string): Promise<boolean> {
       .gte("created_at", todayStart.toISOString());
 
     if (error) {
-      logger.warn("[checkDailyLimit] Query failed, allowing import", { error: error.message });
-      return false; // fail open
+      logger.warn("[checkDailyLimit] Query failed, blocking import (fail-closed)", { error: error.message });
+      return true; // fail closed — deny on query failure
     }
 
     return (count ?? 0) >= MAX_DAILY_IMPORTS_PER_USER;
   } catch {
-    return false; // fail open if table doesn't exist yet
+    return true; // fail closed — deny if table doesn't exist or unexpected error
   }
 }
 

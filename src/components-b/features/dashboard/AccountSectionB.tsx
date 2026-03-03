@@ -58,7 +58,13 @@ export function AccountSectionB({
         <h2 className="text-lg font-bold text-[var(--foreground)]">Account</h2>
         {isAuthenticated && supabase && (
           <button
-            onClick={() => supabase.auth.signOut()}
+            onClick={async () => {
+              try {
+                await supabase.auth.signOut();
+              } catch {
+                // Sign-out failure is non-critical — session will expire naturally
+              }
+            }}
             className="h-11 rounded-xl border border-[var(--border)] bg-[var(--background)] px-4 text-sm font-medium text-[var(--foreground-body)] transition hover:bg-[var(--surface)] active:scale-[0.98]"
           >
             Sign out

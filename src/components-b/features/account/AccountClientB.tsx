@@ -171,7 +171,13 @@ export function AccountClientB({ content }: AccountClientBProps) {
               </h2>
               {signedIn && supabase && (
                 <button
-                  onClick={() => supabase.auth.signOut()}
+                  onClick={async () => {
+                    try {
+                      await supabase.auth.signOut();
+                    } catch {
+                      // Sign-out failure is non-critical — session will expire naturally
+                    }
+                  }}
                   className="h-11 rounded-xl border border-[var(--border)] px-4 text-sm text-[var(--muted-foreground)] hover:bg-[var(--surface)] hover:text-[var(--foreground)] transition active:scale-[0.98]"
                 >
                   {content?.accountSignOutText ?? "Sign out"}

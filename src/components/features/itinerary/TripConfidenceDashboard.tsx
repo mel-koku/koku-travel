@@ -130,6 +130,8 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
     navigator.clipboard.writeText(text).then(() => {
       setCopiedToast(true);
       setTimeout(() => setCopiedToast(false), 2000);
+    }).catch(() => {
+      // Clipboard API can fail in insecure contexts or when denied by permissions
     });
   }, [itinerary, tripStartDate]);
 
