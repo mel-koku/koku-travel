@@ -48,8 +48,7 @@ export const VIBE_FILTER_MAP: Record<
     tags: ["learning"],
   },
   artisan_craft: {
-    dbCategories: ["craft", "museum"],
-    tags: ["hands-on", "learning", "traditional-japan"],
+    dbCategories: ["craft"],
   },
   in_season: {
     dbCategories: [], // cross-category — uses seasonal tag matching
