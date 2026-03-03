@@ -16,11 +16,6 @@ export type BudgetLevel = "budget" | "moderate" | "luxury";
 export type GroupType = "solo" | "couple" | "family" | "friends" | "business";
 
 /**
- * Experience level for activities
- */
-export type ExperienceLevel = "beginner" | "intermediate" | "advanced";
-
-/**
  * Weather preference for planning
  */
 export type WeatherPreference = "indoor_alternatives" | "outdoor_preferred" | "no_preference";
@@ -102,11 +97,6 @@ export type TravelerProfile = {
      */
     notes?: string;
   };
-
-  /**
-   * Experience level for activities
-   */
-  experienceLevel?: ExperienceLevel;
 
   /**
    * Weather preferences
