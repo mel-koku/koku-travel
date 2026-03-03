@@ -7,9 +7,8 @@ const COLUMNS = [
     title: "Explore",
     links: [
       { label: "Places", href: "/b/places" },
-      { label: "Crafts", href: "/b/crafts" },
-      { label: "Guides", href: "/b/guides" },
       { label: "Experiences", href: "/b/experiences" },
+      { label: "Guides", href: "/b/guides" },
       { label: "Discover", href: "/b/discover" },
     ],
   },

@@ -11,10 +11,9 @@ import { useAppState } from "@/state/AppState";
 
 const NAV_ITEMS = [
   { label: "Places", href: "/b/places" },
-  { label: "Crafts", href: "/b/crafts" },
+  { label: "Experiences", href: "/b/experiences" },
   { label: "Discover", href: "/b/discover" },
   { label: "Guides", href: "/b/guides" },
-  { label: "Experiences", href: "/b/experiences" },
 ];
 
 export function HeaderB() {

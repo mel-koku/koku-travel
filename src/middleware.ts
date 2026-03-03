@@ -28,6 +28,7 @@ const PUBLIC_API_ROUTES = [
   "/api/shared",
   "/api/geocode",
   "/api/experiences/workshops",
+  "/api/experiences/all",
 ];
 
 /**

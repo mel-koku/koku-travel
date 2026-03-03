@@ -299,6 +299,41 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
  */
 // Note: Add "is_featured" once migration 20260124_add_is_featured_column.sql is run
 /**
+ * Columns for the experiences /api/experiences/all endpoint.
+ * Slim projection for grid/map browsing of experiences.
+ */
+export const EXPERIENCE_EXPLORE_COLUMNS = `
+  id,
+  name,
+  region,
+  city,
+  prefecture,
+  experience_type,
+  image,
+  short_description,
+  summary,
+  estimated_duration,
+  rating,
+  review_count,
+  coordinates,
+  primary_photo_url,
+  craft_type,
+  tags,
+  sanity_slug,
+  has_editorial,
+  difficulty,
+  best_season,
+  booking_url,
+  meeting_point,
+  is_hidden_gem,
+  insider_tip,
+  operating_hours,
+  name_japanese,
+  nearest_station,
+  price_level
+`.replace(/\s+/g, "");
+
+/**
  * Columns needed for AI chat responses (18 columns)
  * Used by: Ask Koku chat tools
  */

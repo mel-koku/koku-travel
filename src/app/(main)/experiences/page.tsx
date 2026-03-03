@@ -1,8 +1,7 @@
-import { getPublishedExperiences } from "@/lib/experiences/experienceService";
-import { getPagesContent } from "@/lib/sanity/contentService";
-import { ExperiencesPageClient } from "@/components/features/experiences/ExperiencesPageClient";
+import type { Metadata } from "next";
+import { ExperiencesShellLazy } from "@/components/features/experiences-unified/ExperiencesShellLazy";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Experiences | Koku Travel",
   description:
     "Discover hands-on workshops, cultural immersions, and unforgettable experiences across Japan. From traditional crafts to culinary adventures.",
@@ -16,22 +15,6 @@ export const metadata = {
 
 export const revalidate = 3600;
 
-export default async function ExperiencesPage() {
-  const [experiences, content] = await Promise.all([
-    getPublishedExperiences(),
-    getPagesContent(),
-  ]);
-
-  // Preload LCP image — first experience card's thumbnail/featured image
-  const lcpImageUrl =
-    experiences[0]?.thumbnailImage?.url || experiences[0]?.featuredImage?.url;
-
-  return (
-    <>
-      {lcpImageUrl && <link rel="preload" as="image" href={lcpImageUrl} />}
-      <div className="min-h-[100dvh] bg-background">
-        <ExperiencesPageClient experiences={experiences} content={content ?? undefined} />
-      </div>
-    </>
-  );
+export default function ExperiencesPage() {
+  return <ExperiencesShellLazy />;
 }
