@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
+import { getCraftTypeById } from "@/data/craftTypes";
 
 const EXPERIENCE_TYPE_LABELS: Record<ExperienceType, string> = {
   workshop: "Workshop",
@@ -72,6 +73,17 @@ export function ExperienceCard({ experience, index, eager = false }: ExperienceC
         <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-foreground-secondary">
           {experience.summary}
         </p>
+
+        {/* Craft type badge */}
+        {experience.craftType && (() => {
+          const ct = getCraftTypeById(experience.craftType as never);
+          return ct ? (
+            <p className="mt-2 inline-flex items-center gap-1.5 rounded-xl border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: ct.color }} />
+              {ct.label}
+            </p>
+          ) : null;
+        })()}
 
         {/* Cost badge */}
         {experience.estimatedCost && (

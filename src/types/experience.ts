@@ -25,5 +25,6 @@ export type ExperienceSummary = {
   locationIds?: string[];
   readingTimeMinutes?: number;
   tags?: string[];
+  craftType?: string;
   publishedAt?: string;
 };

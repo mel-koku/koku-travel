@@ -16,7 +16,7 @@ import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
  * file cache (survives dev server restarts). This prevents Supabase
  * fetch timeouts during Turbopack compilation pressure.
  */
-const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
+const CACHE_TTL = 30 * 60 * 1000; // 30 min in-memory cache
 const FILE_CACHE_KEY = "locations-all";
 const FILE_CACHE_TTL = 2 * 60 * 60 * 1000; // 2 hour file cache (longer since it's fallback)
 
@@ -149,6 +149,7 @@ export async function GET(request: NextRequest) {
       serviceOptions: row.service_options ?? undefined,
       tags: row.tags ?? undefined,
       cuisineType: row.cuisine_type ?? undefined,
+      craftType: row.craft_type ?? undefined,
     }));
 
     // Cache the result in-memory

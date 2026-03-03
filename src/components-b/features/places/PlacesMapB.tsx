@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { mapboxService } from "@/lib/mapbox/mapService";
 import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
+import { getCraftTypeColor } from "@/data/craftTypes";
 import { debounce } from "@/lib/utils";
 import type { Location } from "@/types/location";
 
@@ -53,9 +54,10 @@ type PlacesMapBProps = {
   onHoverChange: (locationId: string | null) => void;
   showResetButton?: boolean;
   flyToLocation?: Location | null;
+  useCraftTypeColors?: boolean;
 };
 
-function buildFeatureCollection(locations: Location[]): GeoJSON.FeatureCollection {
+function buildFeatureCollection(locations: Location[], craftTypeColors?: boolean): GeoJSON.FeatureCollection {
   return {
     type: "FeatureCollection",
     features: locations
@@ -67,7 +69,9 @@ function buildFeatureCollection(locations: Location[]): GeoJSON.FeatureCollectio
           locationId: loc.id,
           name: loc.name,
           category: loc.category,
-          color: getCategoryHexColor(loc.category),
+          color: craftTypeColors && loc.craftType
+            ? getCraftTypeColor(loc.craftType)
+            : getCategoryHexColor(loc.category),
         },
         geometry: {
           type: "Point" as const,
@@ -99,6 +103,7 @@ export function PlacesMapB({
   onHoverChange,
   showResetButton,
   flyToLocation,
+  useCraftTypeColors,
 }: PlacesMapBProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
@@ -126,7 +131,7 @@ export function PlacesMapB({
   const accessToken = useMemo(() => mapboxService.getAccessToken(), []);
 
   const featureCollection = useMemo(() => {
-    const fc = buildFeatureCollection(locations);
+    const fc = buildFeatureCollection(locations, useCraftTypeColors);
     const lookup = new Map<number, Location>();
     for (const loc of locations) {
       if (loc.coordinates?.lat != null && loc.coordinates?.lng != null) {
@@ -137,7 +142,7 @@ export function PlacesMapB({
     featureCollectionRef.current = fc;
     return fc;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [locations.length]);
+  }, [locations.length, useCraftTypeColors]);
 
   const debouncedBoundsChange = useMemo(
     () => debounce((bounds: MapBounds) => onBoundsChangeRef.current(bounds), 300),
