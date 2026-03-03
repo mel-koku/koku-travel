@@ -525,8 +525,9 @@ export async function generateTripFromBuilderData(
 /**
  * Parse price level from minBudget string.
  * Returns numeric value or symbol count.
+ * @internal Exported for testing
  */
-function parsePriceLevel(minBudget?: string): { level: number; type: "numeric" | "symbol" } {
+export function parsePriceLevel(minBudget?: string): { level: number; type: "numeric" | "symbol" } {
   if (!minBudget) {
     return { level: 0, type: "numeric" };
   }
@@ -558,8 +559,9 @@ const BUDGET_TOLERANCE = 1.1;
 
 /**
  * Validates that a day doesn't exceed the maximum activity duration
+ * @internal Exported for testing
  */
-function validateDayDuration(day: TripDay, dayIndex: number): string[] {
+export function validateDayDuration(day: TripDay, dayIndex: number): string[] {
   const issues: string[] = [];
   const totalDuration = day.activities.reduce((sum, activity) => sum + activity.duration, 0);
 
@@ -575,7 +577,8 @@ function validateDayDuration(day: TripDay, dayIndex: number): string[] {
 /**
  * Calculates the cost of a day's activities and validates against per-day budget
  */
-function validateDayBudget(
+/** @internal Exported for testing */
+export function validateDayBudget(
   day: TripDay,
   dayIndex: number,
   perDayBudget: number | undefined,
@@ -605,7 +608,8 @@ function validateDayBudget(
 /**
  * Validates that total trip cost doesn't exceed total budget
  */
-function validateTotalBudget(totalCost: number, totalBudget: number | undefined): string[] {
+/** @internal Exported for testing */
+export function validateTotalBudget(totalCost: number, totalBudget: number | undefined): string[] {
   const issues: string[] = [];
 
   if (totalBudget !== undefined && totalCost > totalBudget * BUDGET_TOLERANCE) {
@@ -622,7 +626,8 @@ function validateTotalBudget(totalCost: number, totalBudget: number | undefined)
  * Validates that activities don't conflict with typical nap times (1pm-3pm)
  * Only applies when children are present in the travel group
  */
-function validateNapScheduling(day: TripDay, dayIndex: number): string[] {
+/** @internal Exported for testing */
+export function validateNapScheduling(day: TripDay, dayIndex: number): string[] {
   const issues: string[] = [];
 
   const conflictingActivities = day.activities.filter((activity) => {

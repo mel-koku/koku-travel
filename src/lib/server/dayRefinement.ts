@@ -168,8 +168,9 @@ ${runnerUpContext}
 /**
  * Applies refinement patches to the itinerary.
  * Invalid patches are silently skipped — LLM output is never trusted blindly.
+ * @internal Exported for testing
  */
-function applyPatches(
+export function applyPatches(
   itinerary: Itinerary,
   patches: RefinementPatch[],
   allLocations: Location[],
