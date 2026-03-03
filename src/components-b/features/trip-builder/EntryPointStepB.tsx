@@ -67,6 +67,7 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
         name: airport.name,
         coordinates: airport.coordinates,
         iataCode: airport.iataCode,
+        cityId: airport.city.toLowerCase(),
         region: airport.region.toLowerCase() as KnownRegionId,
       };
       setData((prev) => ({ ...prev, entryPoint }));
@@ -101,6 +102,7 @@ export function EntryPointStepB({ sanityConfig }: EntryPointStepBProps) {
         name: airport.name,
         coordinates: airport.coordinates,
         iataCode: airport.iataCode,
+        cityId: airport.city.toLowerCase(),
         region: airport.region.toLowerCase() as KnownRegionId,
       };
       setData((prev) => ({ ...prev, exitPoint, sameAsEntry: false }));

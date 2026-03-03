@@ -81,9 +81,14 @@ export function travelTimeFromEntryPoint(
 }
 
 /**
- * Get the nearest city to an entry point
+ * Get the nearest city to an entry point.
+ * Prefers the explicit cityId when set (e.g. HND → "tokyo"),
+ * falling back to geographic distance.
  */
 export function getNearestCityToEntryPoint(entryPoint: EntryPoint): CityId | undefined {
+  if (entryPoint.cityId) {
+    return entryPoint.cityId;
+  }
   return getNearestCity(entryPoint.coordinates);
 }
 
