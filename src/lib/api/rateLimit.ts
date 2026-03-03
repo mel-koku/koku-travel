@@ -180,22 +180,8 @@ function getUpstashRatelimit(config: RateLimitConfig): Ratelimit | null {
   return instance;
 }
 
-// Cleanup function to ensure interval is cleared
-function cleanupRateLimitStore(): void {
-  if (cleanupInterval) {
-    clearInterval(cleanupInterval);
-    cleanupInterval = null;
-  }
-}
-
-// Initialize cleanup interval only once (prevent memory leaks on module reload)
-let cleanupInitialized = false;
-
 // Cleanup old entries every 5 minutes (for in-memory fallback)
-if (typeof process !== "undefined" && !cleanupInitialized) {
-  // Clear any existing interval before creating a new one (handles module reload)
-  cleanupRateLimitStore();
-  
+if (typeof process !== "undefined" && !cleanupInterval) {
   cleanupInterval = setInterval(() => {
     const now = Date.now();
     for (const [ip, entry] of rateLimitStore.entries()) {
@@ -205,38 +191,9 @@ if (typeof process !== "undefined" && !cleanupInitialized) {
     }
   }, RATE_LIMIT_CONSTANTS.CLEANUP_INTERVAL_MS);
 
-  // Cleanup on process exit
-  const cleanupOnExit = () => {
-    cleanupRateLimitStore();
-  };
-  
-  // Register cleanup handlers (only once)
-  if (process.listenerCount("SIGTERM") === 0) {
-    process.on("SIGTERM", cleanupOnExit);
-  }
-  if (process.listenerCount("SIGINT") === 0) {
-    process.on("SIGINT", cleanupOnExit);
-  }
-  if (process.listenerCount("uncaughtException") === 0) {
-    process.on("uncaughtException", cleanupOnExit);
-  }
-  if (process.listenerCount("unhandledRejection") === 0) {
-    process.on("unhandledRejection", cleanupOnExit);
-  }
-  
-  cleanupInitialized = true;
-  
-  // Cleanup on module unload (for development hot reload)
-  if (typeof process !== "undefined" && process.env.NODE_ENV === "development") {
-    // In Next.js, modules can be reloaded, so we need to handle cleanup
-    // This is a best-effort cleanup for development
-    const originalExit = process.exit;
-    process.exit = function(code?: number): never {
-      cleanupRateLimitStore();
-      originalExit.call(process, code);
-      // This will never be reached, but satisfies TypeScript's never return type
-      throw new Error("Process exit should not return");
-    };
+  // Don't hold the process open just for rate limit cleanup
+  if (cleanupInterval && typeof cleanupInterval === "object" && "unref" in cleanupInterval) {
+    cleanupInterval.unref();
   }
 }
 
