@@ -8,7 +8,7 @@ import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
 import type { Location } from "@/types/location";
-import { SeasonalBadge } from "@/components/features/places/SeasonalBadge";
+import { SeasonalBadgeB } from "./SeasonalBadgeB";
 
 const FALLBACK_IMAGE =
   "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
@@ -85,8 +85,8 @@ export const PlacesCardB = memo(function PlacesCardB({
           />
 
           {/* Seasonal badge */}
-          <div className="absolute top-3 left-3 z-10 [&_span]:bg-white/90 [&_span]:text-[var(--foreground)] [&_span]:shadow-none">
-            <SeasonalBadge tags={location.tags} />
+          <div className="absolute top-3 left-3 z-10">
+            <SeasonalBadgeB tags={location.tags} />
           </div>
 
           {/* Save button */}
@@ -102,7 +102,7 @@ export const PlacesCardB = memo(function PlacesCardB({
                 toggleSave(location.id);
               }}
               aria-label={active ? "Unsave" : "Save for trip"}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[36px] text-xs font-medium transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-xs font-medium transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 ${
                 active
                   ? "bg-[var(--primary)] text-white"
                   : "bg-white/80 text-[var(--foreground)]"

@@ -16,8 +16,7 @@ const MINUTES = Array.from({ length: 12 }, (_, i) =>
   (i * 5).toString().padStart(2, "0"),
 );
 
-// Hardcoded because the portal renders to document.body (outside [data-variant="b"]),
-// so var(--primary) resolves to Variant A's crimson instead of B's navy.
+// Hardcoded for color-mix in inline styles where CSS var interpolation is unreliable.
 const NAVY = "#2D4B8E";
 
 export function TimePickerB({
@@ -166,180 +165,182 @@ export function TimePickerB({
       {open &&
         typeof document !== "undefined" &&
         createPortal(
-          <div
-            ref={panelRef}
-            data-lenis-prevent
-            style={{
-              ...position,
-              zIndex: 60,
-              display: "flex",
-              height: 280,
-              borderRadius: 16,
-              border: "1px solid color-mix(in srgb, var(--border) 25%, transparent)",
-              backgroundColor: "white",
-              boxShadow: "var(--shadow-card, 0 4px 24px rgba(0,0,0,0.08))",
-            }}
-          >
-            {/* Hours column */}
+          <div data-variant="b">
             <div
+              ref={panelRef}
+              data-lenis-prevent
               style={{
+                ...position,
+                zIndex: 60,
                 display: "flex",
-                flexDirection: "column",
-                width: 64,
-                borderRight: "1px solid color-mix(in srgb, var(--border) 18%, transparent)",
+                height: 280,
+                borderRadius: 16,
+                border: "1px solid color-mix(in srgb, var(--border) 25%, transparent)",
+                backgroundColor: "white",
+                boxShadow: "var(--shadow-card, 0 4px 24px rgba(0,0,0,0.08))",
               }}
             >
-              <span
-                style={{
-                  backgroundColor: "#f3f2ef",
-                  padding: "8px 8px 6px",
-                  fontSize: 10,
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  color: "#8a8a8a",
-                  borderTopLeftRadius: 15,
-                }}
-              >
-                Hr
-              </span>
+              {/* Hours column */}
               <div
-                ref={hoursRef}
-                className="scrollbar-thin"
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  flex: 1,
-                  overflowY: "auto",
-                  overscrollBehavior: "contain",
-                  paddingBottom: 4,
+                  width: 64,
+                  borderRight: "1px solid color-mix(in srgb, var(--border) 18%, transparent)",
                 }}
               >
-                {HOURS.map((h) => (
-                  <button
-                    key={h}
-                    type="button"
-                    data-value={h}
-                    onClick={() => selectHour(h)}
-                    style={{
-                      margin: "0 4px",
-                      display: "flex",
-                      height: 36,
-                      minHeight: 36,
-                      flexShrink: 0,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: 8,
-                      border: "none",
-                      fontFamily: "var(--font-mono, ui-monospace, monospace)",
-                      fontSize: 14,
-                      cursor: "pointer",
-                      transition: "background-color 0.15s, color 0.15s",
-                      backgroundColor:
-                        h === hour
-                          ? `color-mix(in srgb, ${NAVY} 15%, transparent)`
-                          : "transparent",
-                      color:
-                        h === hour
-                          ? NAVY
-                          : "#8a8a8a",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (h !== hour) {
-                        e.currentTarget.style.backgroundColor =
-                          `color-mix(in srgb, ${NAVY} 8%, transparent)`;
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (h !== hour) {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                      }
-                    }}
-                  >
-                    {h}
-                  </button>
-                ))}
+                <span
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    padding: "8px 8px 6px",
+                    fontSize: 10,
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "var(--muted-foreground)",
+                    borderTopLeftRadius: 15,
+                  }}
+                >
+                  Hr
+                </span>
+                <div
+                  ref={hoursRef}
+                  className="scrollbar-thin"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 1,
+                    overflowY: "auto",
+                    overscrollBehavior: "contain",
+                    paddingBottom: 4,
+                  }}
+                >
+                  {HOURS.map((h) => (
+                    <button
+                      key={h}
+                      type="button"
+                      data-value={h}
+                      onClick={() => selectHour(h)}
+                      style={{
+                        margin: "0 4px",
+                        display: "flex",
+                        height: 36,
+                        minHeight: 36,
+                        flexShrink: 0,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: 8,
+                        border: "none",
+                        fontFamily: "var(--font-mono, ui-monospace, monospace)",
+                        fontSize: 14,
+                        cursor: "pointer",
+                        transition: "background-color 0.15s, color 0.15s",
+                        backgroundColor:
+                          h === hour
+                            ? `color-mix(in srgb, ${NAVY} 15%, transparent)`
+                            : "transparent",
+                        color:
+                          h === hour
+                            ? NAVY
+                            : "var(--muted-foreground)",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (h !== hour) {
+                          e.currentTarget.style.backgroundColor =
+                            `color-mix(in srgb, ${NAVY} 8%, transparent)`;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (h !== hour) {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                        }
+                      }}
+                    >
+                      {h}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Minutes column */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                width: 64,
-              }}
-            >
-              <span
-                style={{
-                  backgroundColor: "#f3f2ef",
-                  padding: "8px 8px 6px",
-                  fontSize: 10,
-                  fontWeight: 600,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  color: "#8a8a8a",
-                  borderTopRightRadius: 15,
-                }}
-              >
-                Min
-              </span>
+              {/* Minutes column */}
               <div
-                ref={minutesRef}
-                className="scrollbar-thin"
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  flex: 1,
-                  overflowY: "auto",
-                  overscrollBehavior: "contain",
-                  paddingBottom: 4,
+                  width: 64,
                 }}
               >
-                {MINUTES.map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    data-value={m}
-                    onClick={() => selectMinute(m)}
-                    style={{
-                      margin: "0 4px",
-                      display: "flex",
-                      height: 36,
-                      minHeight: 36,
-                      flexShrink: 0,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderRadius: 8,
-                      border: "none",
-                      fontFamily: "var(--font-mono, ui-monospace, monospace)",
-                      fontSize: 14,
-                      cursor: "pointer",
-                      transition: "background-color 0.15s, color 0.15s",
-                      backgroundColor:
-                        m === minute
-                          ? `color-mix(in srgb, ${NAVY} 15%, transparent)`
-                          : "transparent",
-                      color:
-                        m === minute
-                          ? NAVY
-                          : "#8a8a8a",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (m !== minute) {
-                        e.currentTarget.style.backgroundColor =
-                          `color-mix(in srgb, ${NAVY} 8%, transparent)`;
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (m !== minute) {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                      }
-                    }}
-                  >
-                    {m}
-                  </button>
-                ))}
+                <span
+                  style={{
+                    backgroundColor: "var(--surface)",
+                    padding: "8px 8px 6px",
+                    fontSize: 10,
+                    fontWeight: 600,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.05em",
+                    color: "var(--muted-foreground)",
+                    borderTopRightRadius: 15,
+                  }}
+                >
+                  Min
+                </span>
+                <div
+                  ref={minutesRef}
+                  className="scrollbar-thin"
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    flex: 1,
+                    overflowY: "auto",
+                    overscrollBehavior: "contain",
+                    paddingBottom: 4,
+                  }}
+                >
+                  {MINUTES.map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      data-value={m}
+                      onClick={() => selectMinute(m)}
+                      style={{
+                        margin: "0 4px",
+                        display: "flex",
+                        height: 36,
+                        minHeight: 36,
+                        flexShrink: 0,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: 8,
+                        border: "none",
+                        fontFamily: "var(--font-mono, ui-monospace, monospace)",
+                        fontSize: 14,
+                        cursor: "pointer",
+                        transition: "background-color 0.15s, color 0.15s",
+                        backgroundColor:
+                          m === minute
+                            ? `color-mix(in srgb, ${NAVY} 15%, transparent)`
+                            : "transparent",
+                        color:
+                          m === minute
+                            ? NAVY
+                            : "var(--muted-foreground)",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (m !== minute) {
+                          e.currentTarget.style.backgroundColor =
+                            `color-mix(in srgb, ${NAVY} 8%, transparent)`;
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (m !== minute) {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                        }
+                      }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>,

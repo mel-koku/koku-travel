@@ -21,6 +21,14 @@ const COLUMNS = [
       { label: "Account", href: "/b/account" },
     ],
   },
+  {
+    title: "Company",
+    links: [
+      { label: "About", href: "/b/about" },
+      { label: "Contact", href: "/b/contact" },
+      { label: "Privacy", href: "/b/privacy" },
+    ],
+  },
 ];
 
 export function FooterB() {

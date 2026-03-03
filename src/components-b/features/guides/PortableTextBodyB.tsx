@@ -7,10 +7,10 @@ import {
   type PortableTextBlock,
 } from "@portabletext/react";
 import { urlFor } from "@/sanity/image";
-import { TipCalloutBlock } from "@/components/features/guides/blocks/TipCalloutBlock";
-import { LocationEmbedBlock } from "@/components/features/guides/blocks/LocationEmbedBlock";
-import { ImageGalleryBlock } from "@/components/features/guides/blocks/ImageGalleryBlock";
-import { ExperienceHighlightBlock } from "@/components/features/experiences/blocks/ExperienceHighlightBlock";
+import { TipCalloutBlockB } from "./blocks/TipCalloutBlockB";
+import { LocationEmbedBlockB } from "./blocks/LocationEmbedBlockB";
+import { ImageGalleryBlockB } from "./blocks/ImageGalleryBlockB";
+import { ExperienceHighlightBlockB } from "./blocks/ExperienceHighlightBlockB";
 
 type PortableTextBodyBProps = {
   body: unknown[];
@@ -110,11 +110,11 @@ const components: PortableTextComponents = {
         </div>
       );
     },
-    tipCallout: ({ value }) => <TipCalloutBlock value={value} />,
-    locationRef: ({ value }) => <LocationEmbedBlock value={value} />,
-    imageGallery: ({ value }) => <ImageGalleryBlock value={value} />,
+    tipCallout: ({ value }) => <TipCalloutBlockB value={value} />,
+    locationRef: ({ value }) => <LocationEmbedBlockB value={value} />,
+    imageGallery: ({ value }) => <ImageGalleryBlockB value={value} />,
     experienceHighlight: ({ value }) => (
-      <ExperienceHighlightBlock value={value} />
+      <ExperienceHighlightBlockB value={value} />
     ),
   },
 };
