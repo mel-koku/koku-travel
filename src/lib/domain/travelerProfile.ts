@@ -28,8 +28,6 @@ export function buildTravelerProfile(data: TripBuilderData): TravelerProfile {
 
   const profile: TravelerProfile = {
     ...DEFAULT_TRAVELER_PROFILE,
-    // Preserve existing top-level fields
-    experienceLevel: existing?.experienceLevel,
     // Override with TripBuilderData mappings, falling back to existing values
     pace: data.style ?? existing?.pace ?? "balanced",
     interests: data.interests ?? existing?.interests ?? [],
@@ -105,11 +103,6 @@ export function validateTravelerProfile(profile: TravelerProfile): {
     if (invalidAges.length > 0) {
       errors.push("Children ages must be between 0 and 18");
     }
-  }
-
-  // Validate experience level if provided
-  if (profile.experienceLevel && !["beginner", "intermediate", "advanced"].includes(profile.experienceLevel)) {
-    errors.push("Invalid experience level");
   }
 
   // Validate weather preferences if provided

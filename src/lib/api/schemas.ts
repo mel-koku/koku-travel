@@ -316,7 +316,6 @@ const travelerProfileSchema = z.object({
     restrictions: z.array(z.string().max(500)).max(50),
     notes: z.string().max(1000).optional(),
   }).strict(),
-  experienceLevel: z.enum(["beginner", "intermediate", "advanced"]).optional(),
   weatherPreferences: z.object({
     preference: z.enum(["indoor_alternatives", "outdoor_preferred", "no_preference"]),
   }).strict().optional(),
