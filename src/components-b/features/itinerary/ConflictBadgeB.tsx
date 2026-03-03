@@ -70,7 +70,7 @@ export function ConflictBadgeB({
           </span>
           {errorCount > 0 && (
             <span
-              className="rounded-full px-1.5 py-0.5 text-[10px] font-bold"
+              className="rounded-full px-1.5 py-0.5 text-[11px] font-bold"
               style={{
                 backgroundColor: `color-mix(in srgb, var(--error) 15%, transparent)`,
                 color: "var(--error)",

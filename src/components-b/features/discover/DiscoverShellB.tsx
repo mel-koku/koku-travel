@@ -180,7 +180,7 @@ export function DiscoverShellB() {
           <button
             type="button"
             onClick={() => setOpenNow((v) => !v)}
-            className={`flex items-center gap-1.5 rounded-lg px-2 py-1 text-[10px] font-medium whitespace-nowrap transition ${
+            className={`flex items-center gap-1.5 rounded-lg px-2 py-1.5 min-h-[36px] text-[11px] font-medium whitespace-nowrap transition ${
               openNow
                 ? "bg-[color-mix(in_srgb,var(--success)_12%,transparent)] text-[var(--success)]"
                 : "bg-[var(--surface)] text-[var(--muted-foreground)]"
