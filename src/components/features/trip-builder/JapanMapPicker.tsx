@@ -47,6 +47,7 @@ export function JapanMapPicker({
         name: airport.name,
         coordinates: airport.coordinates,
         iataCode: airport.iataCode,
+        cityId: airport.city.toLowerCase(),
         region: airport.region.toLowerCase() as KnownRegionId,
       };
       onChange(entryPoint);

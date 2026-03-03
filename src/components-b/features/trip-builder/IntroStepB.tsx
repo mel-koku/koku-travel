@@ -11,10 +11,10 @@ import type { VibeId } from "@/data/vibes";
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
 const QUICK_ENTRY_POINTS: Record<string, EntryPoint> = {
-  NRT: { type: "airport", id: "nrt", name: "Narita International Airport", iataCode: "NRT", coordinates: { lat: 35.7647, lng: 140.3864 }, region: "kanto" },
-  KIX: { type: "airport", id: "kix", name: "Kansai International Airport", iataCode: "KIX", coordinates: { lat: 34.4347, lng: 135.2441 }, region: "kansai" },
-  CTS: { type: "airport", id: "cts", name: "New Chitose Airport", iataCode: "CTS", coordinates: { lat: 42.7752, lng: 141.6925 }, region: "hokkaido" },
-  FUK: { type: "airport", id: "fuk", name: "Fukuoka Airport", iataCode: "FUK", coordinates: { lat: 33.5859, lng: 130.4510 }, region: "kyushu" },
+  NRT: { type: "airport", id: "nrt", name: "Narita International Airport", iataCode: "NRT", cityId: "tokyo", coordinates: { lat: 35.7647, lng: 140.3864 }, region: "kanto" },
+  KIX: { type: "airport", id: "kix", name: "Kansai International Airport", iataCode: "KIX", cityId: "osaka", coordinates: { lat: 34.4347, lng: 135.2441 }, region: "kansai" },
+  CTS: { type: "airport", id: "cts", name: "New Chitose Airport", iataCode: "CTS", cityId: "sapporo", coordinates: { lat: 42.7752, lng: 141.6925 }, region: "hokkaido" },
+  FUK: { type: "airport", id: "fuk", name: "Fukuoka Airport", iataCode: "FUK", cityId: "fukuoka", coordinates: { lat: 33.5859, lng: 130.4510 }, region: "kyushu" },
 };
 
 const QUICK_PRESETS = [
