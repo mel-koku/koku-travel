@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { cn } from "@/lib/cn";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import {
@@ -16,26 +16,21 @@ export type WhatsNextCardProps = {
   dayIndex: number;
   className?: string;
   onActivityClick?: (activityId: string) => void;
-  onCheckIn?: (activityId: string) => void;
-  checkedInIds?: Set<string>;
 };
 
 /**
  * Get current activity and next activity based on current time.
- * Skips activities that have been checked in.
  */
 function getActivityStatus(
   activities: ItineraryActivity[],
   currentTimeMinutes: number,
-  checkedInIds?: Set<string>,
 ): {
   current: Extract<ItineraryActivity, { kind: "place" }> | null;
   next: Extract<ItineraryActivity, { kind: "place" }> | null;
   minutesUntilNext: number | null;
 } {
   const placeActivities = activities.filter(
-    (a): a is Extract<typeof a, { kind: "place" }> =>
-      a.kind === "place" && !checkedInIds?.has(a.id),
+    (a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place",
   );
 
   let current: (typeof placeActivities)[number] | null = null;
@@ -101,8 +96,6 @@ export function WhatsNextCard({
   dayIndex,
   className,
   onActivityClick,
-  onCheckIn,
-  checkedInIds,
 }: WhatsNextCardProps) {
   // Live-updating current time (60s interval)
   const [currentTimeMinutes, setCurrentTimeMinutes] = useState(getCurrentMinutes);
@@ -128,41 +121,17 @@ export function WhatsNextCard({
 
   // Get activity status
   const { current, next, minutesUntilNext } = useMemo(
-    () => getActivityStatus(day.activities, currentTimeMinutes, checkedInIds),
-    [day.activities, currentTimeMinutes, checkedInIds],
-  );
-
-  const handleCheckIn = useCallback(
-    (activityId: string) => {
-      onCheckIn?.(activityId);
-    },
-    [onCheckIn],
+    () => getActivityStatus(day.activities, currentTimeMinutes),
+    [day.activities, currentTimeMinutes],
   );
 
   if (!showCard) {
     return null;
   }
 
-  // Day is over - all activities passed
+  // No upcoming activities — hide card
   if (!current && !next) {
-    return (
-      <div
-        className={cn(
-          "rounded-xl border border-sage/30 bg-sage/10 p-4",
-          className
-        )}
-      >
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">🌙</span>
-          <div>
-            <p className="text-sm font-semibold text-foreground">Day complete!</p>
-            <p className="text-xs text-foreground-secondary">
-              All activities for today are done. Enjoy your evening!
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   // Currently at an activity
@@ -196,18 +165,13 @@ export function WhatsNextCard({
             </div>
           )}
         </div>
-        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-sage/20">
-          {mapsLink && (
+        {mapsLink && (
+          <div className="mt-3 flex items-center gap-2 pt-2 border-t border-sage/20">
             <a href={mapsLink} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-sage hover:underline">
               Open in Maps
             </a>
-          )}
-          {onCheckIn && (
-            <button type="button" onClick={() => handleCheckIn(current.id)} className="ml-auto text-xs font-medium text-sage hover:underline">
-              Mark as visited
-            </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -263,29 +227,22 @@ export function WhatsNextCard({
         </div>
       </div>
 
-      {/* Actions: Maps deeplink + check-in */}
-      {next && (
-        <div className="mt-3 flex items-center gap-2 pt-2 border-t border-brand-primary/20">
-          {(() => {
-            const link = buildMapsLink(next.title, next.coordinates);
-            return link ? (
-              <a href={link} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-brand-primary hover:underline">
-                Open in Maps
-              </a>
-            ) : null;
-          })()}
-          {current && onCheckIn && (
-            <button type="button" onClick={() => handleCheckIn(current.id)} className="ml-auto text-xs font-medium text-sage hover:underline">
-              Mark as visited
-            </button>
-          )}
-          {minutesUntilNext !== null && minutesUntilNext <= 15 && minutesUntilNext > -15 && (
-            <span className="text-xs text-foreground-secondary ml-auto">
-              Running late? Adjust or skip.
-            </span>
-          )}
-        </div>
-      )}
+      {/* Maps deeplink */}
+      {next && (() => {
+        const link = buildMapsLink(next.title, next.coordinates);
+        return link ? (
+          <div className="mt-3 flex items-center gap-2 pt-2 border-t border-brand-primary/20">
+            <a href={link} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-brand-primary hover:underline">
+              Open in Maps
+            </a>
+            {minutesUntilNext !== null && minutesUntilNext <= 15 && minutesUntilNext > -15 && (
+              <span className="text-xs text-foreground-secondary ml-auto">
+                Running late? Adjust or skip.
+              </span>
+            )}
+          </div>
+        ) : null;
+      })()}
     </div>
   );
 }

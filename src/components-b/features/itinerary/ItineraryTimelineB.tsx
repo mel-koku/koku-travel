@@ -53,7 +53,7 @@ import { SortableActivityB } from "./SortableActivityB";
 import { DayHeaderB } from "./DayHeaderB";
 import { DayConflictSummaryB } from "./ConflictBadgeB";
 import { WhatsNextCardB } from "./WhatsNextCardB";
-import { useActivityCheckins } from "@/hooks/useActivityCheckins";
+
 import { TodayIndicatorB } from "./TodayIndicatorB";
 import { AccommodationPickerB } from "./AccommodationPickerB";
 import { LateArrivalCardB } from "./LateArrivalCardB";
@@ -146,7 +146,6 @@ export const ItineraryTimelineB = ({
   const [activeId, setActiveId] = useState<string | null>(null);
   const [lateArrivalDismissed, setLateArrivalDismissed] = useState(false);
   const isMountedRef = useRef(true);
-  const { checkedIn, checkIn } = useActivityCheckins(tripId, day.id);
   const { showToast: _showToast } = useToast();
   const availabilityIssues = useDayAvailability(day, dayIndex, tripStartDate);
 
@@ -857,8 +856,6 @@ export const ItineraryTimelineB = ({
                 dayIndex={dayIndex}
                 onActivityClick={onSelectActivity}
                 onDelayRemaining={isReadOnly ? undefined : handleDelayRemaining}
-                onCheckIn={isReadOnly ? undefined : checkIn}
-                checkedInIds={checkedIn}
                 className="mb-3"
               />
             )}

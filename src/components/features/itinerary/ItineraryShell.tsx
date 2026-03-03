@@ -44,7 +44,7 @@ import { ActivityRatingsProvider } from "./ActivityRatingsContext";
 import { PrintHeader } from "./PrintHeader";
 import { PrintFooter } from "./PrintFooter";
 import { REGIONS } from "@/data/regions";
-import { useActivityCheckins } from "@/hooks/useActivityCheckins";
+
 
 const LocationExpanded = dynamic(
   () => import("@/components/features/places/LocationExpanded").then((m) => ({ default: m.LocationExpanded })),
@@ -479,9 +479,7 @@ export const ItineraryShell = ({
     return stored?.name ?? "My Japan Trip";
   }, [getTripById, tripId]);
 
-  // Activity check-ins (day-of ephemeral state)
-  const currentDayId = currentDay?.id;
-  const { checkedIn, checkIn } = useActivityCheckins(tripId, currentDayId);
+
 
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
@@ -693,8 +691,6 @@ export const ItineraryShell = ({
                 tripStartDate={tripStartDate}
                 dayIndex={safeSelectedDay}
                 onActivityClick={handleSelectActivity}
-                onCheckIn={!isReadOnly ? checkIn : undefined}
-                checkedInIds={checkedIn}
                 className="mb-3"
               />
             )}
