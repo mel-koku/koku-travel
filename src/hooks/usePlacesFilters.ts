@@ -57,7 +57,12 @@ export type { EnhancedLocation };
 
 function parseDuration(value?: string): number | null {
   if (!value) return null;
-  const normalized = value.trim().toLowerCase();
+  const trimmed = value.trim();
+  // After normalization, most durations are plain integers (minutes)
+  const asInt = parseInt(trimmed, 10);
+  if (!isNaN(asInt) && String(asInt) === trimmed) return asInt;
+  // Legacy text formats (backward compat)
+  const normalized = trimmed.toLowerCase();
   const match = normalized.match(
     /([0-9]+(?:\.[0-9]+)?)\s*(hour|hours|hr|hrs|minute|minutes|day|days)/
   );
@@ -117,6 +122,7 @@ export function usePlacesFilters(
   const [openNow, setOpenNow] = useState(false);
   const [wheelchairAccessible, setWheelchairAccessible] = useState(false);
   const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
+  const [featuredOnly, setFeaturedOnly] = useState(false);
 
   // Sort + pagination — auto-select "in_season" when the current month has notable events
   const [selectedSort, setSelectedSort] = useState<SortOptionId>(
@@ -136,6 +142,7 @@ export function usePlacesFilters(
     openNow,
     wheelchairAccessible,
     vegetarianFriendly,
+    featuredOnly,
     selectedSort,
   ]);
 
@@ -227,6 +234,10 @@ export function usePlacesFilters(
         ? true
         : location.dietaryOptions?.servesVegetarianFood === true;
 
+      const matchesFeatured = !featuredOnly
+        ? true
+        : location.isFeatured === true;
+
       return (
         matchesQuery &&
         matchesPrefecture &&
@@ -235,10 +246,11 @@ export function usePlacesFilters(
         matchesVibe &&
         matchesOpenNow &&
         matchesWheelchair &&
-        matchesVegetarian
+        matchesVegetarian &&
+        matchesFeatured
       );
     });
-  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly]);
 
   // Sort
   const sortedLocations = useMemo(() => {
@@ -358,6 +370,10 @@ export function usePlacesFilters(
       filters.push({ type: "vegetarian", value: "true", label: "Vegetarian friendly" });
     }
 
+    if (featuredOnly) {
+      filters.push({ type: "featured", value: "true", label: "Featured" });
+    }
+
     return filters;
   }, [
     query,
@@ -369,6 +385,7 @@ export function usePlacesFilters(
     openNow,
     wheelchairAccessible,
     vegetarianFriendly,
+    featuredOnly,
   ]);
 
   const activeFilterCount = activeFilters.filter((f) => f.type !== "search").length;
@@ -399,6 +416,9 @@ export function usePlacesFilters(
       case "vegetarian":
         setVegetarianFriendly(false);
         break;
+      case "featured":
+        setFeaturedOnly(false);
+        break;
     }
   }, []);
 
@@ -411,6 +431,7 @@ export function usePlacesFilters(
     setOpenNow(false);
     setWheelchairAccessible(false);
     setVegetarianFriendly(false);
+    setFeaturedOnly(false);
     setSelectedSort("recommended");
   }, []);
 
@@ -424,6 +445,7 @@ export function usePlacesFilters(
     openNow, setOpenNow,
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
+    featuredOnly, setFeaturedOnly,
     // Sort
     selectedSort, setSelectedSort,
     // Pagination

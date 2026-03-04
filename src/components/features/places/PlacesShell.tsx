@@ -75,6 +75,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     openNow, setOpenNow,
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
+    featuredOnly, setFeaturedOnly,
     selectedSort, setSelectedSort,
     setPage, hasMore,
     filteredLocations,
@@ -217,6 +218,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onInputSubmit={handleInputSubmit}
         onAskKokuClick={() => setIsChatOpen(true)}
         isChatOpen={isChatOpen}
+        featuredOnly={featuredOnly}
+        onFeaturedToggle={() => setFeaturedOnly((prev: boolean) => !prev)}
       />
 
       {/* Seasonal banner */}

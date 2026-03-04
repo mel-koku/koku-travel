@@ -97,8 +97,6 @@ export type LocationDbRow = {
  * Used by: PlacesShell, search results
  * Includes Google Places enrichment fields for filtering
  */
-// Note: is_featured column requires migration 20260124_add_is_featured_column.sql
-// Once migration is run, add is_featured to this list to enable manual curation
 export const LOCATION_LISTING_COLUMNS = `
   id,
   name,
@@ -125,7 +123,8 @@ export const LOCATION_LISTING_COLUMNS = `
   tags,
   name_japanese,
   nearest_station,
-  insider_tip
+  insider_tip,
+  is_featured
 `.replace(/\s+/g, "");
 
 /**
@@ -152,6 +151,7 @@ export const LOCATION_EXPLORE_COLUMNS = `
   accessibility_options,
   dietary_options,
   is_hidden_gem,
+  is_featured,
   name_japanese,
   nearest_station,
   cash_only,
@@ -278,6 +278,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "accessibility_options"
   | "dietary_options"
   | "is_hidden_gem"
+  | "is_featured"
   | "name_japanese"
   | "nearest_station"
   | "cash_only"
@@ -297,7 +298,6 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
  * Subset of LocationDbRow for listing endpoint
  * Includes Google Places enrichment fields for filtering
  */
-// Note: Add "is_featured" once migration 20260124_add_is_featured_column.sql is run
 /**
  * Columns for the experiences /api/experiences/all endpoint.
  * Slim projection for grid/map browsing of experiences.
@@ -409,4 +409,5 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "name_japanese"
   | "nearest_station"
   | "insider_tip"
+  | "is_featured"
 >;
