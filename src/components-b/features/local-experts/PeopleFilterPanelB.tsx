@@ -1,19 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { REGION_ORDER, getRegionForPrefecture } from "@/data/prefectures";
 import type { PeopleSortOption } from "@/hooks/usePeopleFilters";
-
-const TOP_CITIES_COUNT = 12;
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
-  cities: string[];
-  cityCountMap: Record<string, number>;
+  prefectures: string[];
   languages: string[];
-  selectedCity: string | null;
-  onCityChange: (c: string | null) => void;
+  selectedPrefecture: string | null;
+  onPrefectureChange: (p: string | null) => void;
   selectedLanguage: string | null;
   onLanguageChange: (l: string | null) => void;
   sort: PeopleSortOption;
@@ -31,11 +28,10 @@ const SORT_OPTIONS: { label: string; value: PeopleSortOption }[] = [
 export function PeopleFilterPanelB({
   isOpen,
   onClose,
-  cities,
-  cityCountMap,
+  prefectures,
   languages,
-  selectedCity,
-  onCityChange,
+  selectedPrefecture,
+  onPrefectureChange,
   selectedLanguage,
   onLanguageChange,
   sort,
@@ -43,18 +39,21 @@ export function PeopleFilterPanelB({
   onClearAll,
   resultCount,
 }: Props) {
-  const [citySearch, setCitySearch] = useState("");
-  const [showAllCities, setShowAllCities] = useState(false);
+  // Group prefectures by region
+  const grouped = new Map<string, string[]>();
+  const ungrouped: string[] = [];
 
-  // Cities already sorted by count desc from the hook
-  const topCities = cities.slice(0, TOP_CITIES_COUNT);
-  const hasMore = cities.length > TOP_CITIES_COUNT;
+  for (const pref of prefectures) {
+    const region = getRegionForPrefecture(pref);
+    if (region) {
+      if (!grouped.has(region)) grouped.set(region, []);
+      grouped.get(region)!.push(pref);
+    } else {
+      ungrouped.push(pref);
+    }
+  }
 
-  const searchedCities = useMemo(() => {
-    if (!citySearch.trim()) return showAllCities ? cities : topCities;
-    const q = citySearch.toLowerCase();
-    return cities.filter((c) => c.toLowerCase().includes(q));
-  }, [cities, topCities, showAllCities, citySearch]);
+  const orderedRegions = REGION_ORDER.filter((r) => grouped.has(r));
 
   return (
     <AnimatePresence>
@@ -105,7 +104,7 @@ export function PeopleFilterPanelB({
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
+            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8" data-lenis-prevent>
               {/* Sort */}
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
@@ -129,77 +128,78 @@ export function PeopleFilterPanelB({
                 </div>
               </div>
 
-              {/* City */}
+              {/* Prefecture (grouped by region) */}
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
-                  City
-                </p>
-
-                {/* Search input */}
-                {cities.length > TOP_CITIES_COUNT && (
-                  <div className="relative mt-3">
-                    <svg
-                      className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                    </svg>
-                    <input
-                      type="text"
-                      value={citySearch}
-                      onChange={(e) => setCitySearch(e.target.value)}
-                      placeholder="Search cities..."
-                      className="h-9 w-full rounded-xl border border-[var(--border)] bg-white pl-9 pr-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30"
-                    />
-                  </div>
-                )}
-
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => onCityChange(null)}
-                    className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
-                      !selectedCity
-                        ? "bg-[var(--foreground)] text-white"
-                        : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
-                    }`}
-                  >
-                    All cities
-                  </button>
-                  {searchedCities.map((city) => (
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
+                    Prefecture
+                  </p>
+                  {selectedPrefecture && (
                     <button
-                      key={city}
                       type="button"
-                      onClick={() =>
-                        onCityChange(selectedCity === city ? null : city)
-                      }
-                      className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
-                        selectedCity === city
-                          ? "bg-[var(--foreground)] text-white"
-                          : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
-                      }`}
+                      onClick={() => onPrefectureChange(null)}
+                      className="text-xs font-medium text-[var(--primary)] hover:underline"
                     >
-                      {city}
-                      <span className="ml-1 text-xs opacity-50">{cityCountMap[city]}</span>
+                      Clear
                     </button>
-                  ))}
+                  )}
                 </div>
-
-                {/* Show more / less toggle */}
-                {hasMore && !citySearch && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAllCities(!showAllCities)}
-                    className="mt-2 text-xs font-medium text-[var(--primary)] hover:underline"
-                  >
-                    {showAllCities
-                      ? "Show fewer"
-                      : `Show all ${cities.length} cities`}
-                  </button>
-                )}
+                <div className="mt-3 space-y-3">
+                  {orderedRegions.map((region) => (
+                    <div key={region}>
+                      <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[var(--muted-foreground)] mb-1.5">
+                        {region}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {grouped.get(region)!.map((pref) => (
+                          <button
+                            key={pref}
+                            type="button"
+                            onClick={() =>
+                              onPrefectureChange(
+                                selectedPrefecture === pref ? null : pref,
+                              )
+                            }
+                            className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                              selectedPrefecture === pref
+                                ? "bg-[var(--foreground)] text-white"
+                                : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
+                            }`}
+                          >
+                            {pref}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  {ungrouped.length > 0 && (
+                    <div>
+                      <p className="text-[10px] font-medium uppercase tracking-[0.15em] text-[var(--muted-foreground)] mb-1.5">
+                        Other
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {ungrouped.map((pref) => (
+                          <button
+                            key={pref}
+                            type="button"
+                            onClick={() =>
+                              onPrefectureChange(
+                                selectedPrefecture === pref ? null : pref,
+                              )
+                            }
+                            className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                              selectedPrefecture === pref
+                                ? "bg-[var(--foreground)] text-white"
+                                : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
+                            }`}
+                          >
+                            {pref}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Language */}
@@ -225,7 +225,7 @@ export function PeopleFilterPanelB({
                       type="button"
                       onClick={() =>
                         onLanguageChange(
-                          selectedLanguage === lang ? null : lang
+                          selectedLanguage === lang ? null : lang,
                         )
                       }
                       className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${

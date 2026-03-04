@@ -19,14 +19,13 @@ export function LocalExpertsShellB() {
   const {
     filters,
     filteredPeople,
-    cities,
-    cityCountMap,
+    prefectures,
     languages,
     typeCounts,
     activeFilterCount,
     setQuery,
     setType,
-    setCity,
+    setPrefecture,
     setLanguage,
     setSort,
     clearAll,
@@ -109,11 +108,10 @@ export function LocalExpertsShellB() {
       <PeopleFilterPanelB
         isOpen={filterPanelOpen}
         onClose={() => setFilterPanelOpen(false)}
-        cities={cities}
-        cityCountMap={cityCountMap}
+        prefectures={prefectures}
         languages={languages}
-        selectedCity={filters.city}
-        onCityChange={setCity}
+        selectedPrefecture={filters.prefecture}
+        onPrefectureChange={setPrefecture}
         selectedLanguage={filters.language}
         onLanguageChange={setLanguage}
         sort={filters.sort}
