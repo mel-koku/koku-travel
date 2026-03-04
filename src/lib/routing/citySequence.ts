@@ -8,7 +8,7 @@
 import { getRegionForCity, REGIONS } from "@/data/regions";
 import type { CityId, RegionId, TripBuilderData } from "@/types/trip";
 import type { Location } from "@/types/location";
-import { getNearestCityToEntryPoint, travelMinutes } from "@/lib/travelTime";
+import { getNearestCityToEntryPoint, travelMinutes, travelTimeFromEntryPoint } from "@/lib/travelTime";
 import { normalizeKey } from "@/lib/utils/stringUtils";
 
 export type CityInfo = {
@@ -221,7 +221,8 @@ export function optimizeCitySequence(
 
   // If no regions found or only one region, fall back to simple optimization
   if (citiesByRegion.size <= 1) {
-    return optimizeCitiesWithinRegion(cities, entryPoint, exitPoint, true);
+    const result = optimizeCitiesWithinRegion(cities, entryPoint, exitPoint, true);
+    return appendReturnCityIfNeeded(result, entryPoint, exitPoint);
   }
 
   // Determine optimal region order based on entry point, exit point, and travel time
@@ -255,7 +256,30 @@ export function optimizeCitySequence(
     }
   }
 
-  return result;
+  return appendReturnCityIfNeeded(result, entryPoint, exitPoint);
+}
+
+/**
+ * Auto-append the airport city when the last city is far (>2h) from the
+ * departure airport. Only called during sequence optimization (not custom order).
+ */
+function appendReturnCityIfNeeded(
+  cities: CityId[],
+  entryPoint: TripBuilderData["entryPoint"],
+  exitPoint?: TripBuilderData["exitPoint"],
+): CityId[] {
+  const effectiveExit = exitPoint ?? entryPoint;
+  if (!effectiveExit || cities.length === 0) return cities;
+
+  const lastCity = cities[cities.length - 1]!;
+  const nearestCity = getNearestCityToEntryPoint(effectiveExit);
+  if (!nearestCity || lastCity === nearestCity) return cities;
+
+  const time = travelTimeFromEntryPoint(effectiveExit, lastCity);
+  if (time !== undefined && time > 120) {
+    cities.push(nearestCity);
+  }
+  return cities;
 }
 
 /**
