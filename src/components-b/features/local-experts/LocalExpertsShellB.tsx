@@ -37,7 +37,7 @@ export function LocalExpertsShellB() {
   // Auto-filter from ?type= URL param
   useEffect(() => {
     const typeParam = searchParams.get("type");
-    if (typeParam && ["artisan", "guide", "host", "interpreter", "author"].includes(typeParam)) {
+    if (typeParam && ["artisan", "guide", "interpreter", "author"].includes(typeParam)) {
       setType(typeParam as Parameters<typeof setType>[0]);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

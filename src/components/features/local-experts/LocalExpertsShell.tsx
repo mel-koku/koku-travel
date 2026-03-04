@@ -16,7 +16,6 @@ const TYPE_TABS: { label: string; value: PersonType | null }[] = [
   { label: "All", value: null },
   { label: "Artisans", value: "artisan" },
   { label: "Guides", value: "guide" },
-  { label: "Hosts", value: "host" },
   { label: "Interpreters", value: "interpreter" },
   { label: "Authors", value: "author" },
 ];
@@ -139,8 +138,8 @@ export function LocalExpertsShell() {
             }}
             className="mx-auto mt-4 max-w-2xl text-base text-foreground-secondary"
           >
-            Artisans, guides, and hosts who bring Japan to life. Browse by
-            specialty, city, or craft — then request a booking directly.
+            Artisans and guides who bring Japan to life. Browse by specialty,
+            city, or craft — then request a booking directly.
           </motion.p>
         </div>
       </section>

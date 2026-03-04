@@ -7,7 +7,6 @@ import type { Person } from "@/types/person";
 const TYPE_LABELS: Record<string, string> = {
   artisan: "Artisan",
   guide: "Guide",
-  host: "Host",
   interpreter: "Interpreter",
 };
 

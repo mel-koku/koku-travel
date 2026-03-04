@@ -1,5 +1,5 @@
-export type PersonType = "artisan" | "guide" | "interpreter" | "host" | "author";
-export type PersonRole = "lead" | "assistant" | "interpreter" | "host";
+export type PersonType = "artisan" | "guide" | "interpreter" | "author";
+export type PersonRole = "lead" | "assistant" | "interpreter";
 
 export type Person = {
   id: string;

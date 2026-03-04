@@ -27,7 +27,6 @@ export const person = defineType({
           { title: "Artisan", value: "artisan" },
           { title: "Guide", value: "guide" },
           { title: "Interpreter", value: "interpreter" },
-          { title: "Host", value: "host" },
         ],
       },
       validation: (rule) => rule.required(),
@@ -145,7 +144,6 @@ export const person = defineType({
         artisan: "Artisan",
         guide: "Guide",
         interpreter: "Interpreter",
-        host: "Host",
       };
       return {
         title,
