@@ -95,14 +95,14 @@ export function DatePicker({
               "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
               "disabled:cursor-not-allowed disabled:opacity-50",
               error && "border-destructive focus-visible:ring-destructive",
-              !selected && "text-stone",
+              !selected && "text-muted-foreground",
               inputClassName,
             )}
           >
             <span className="flex-1 truncate">
               {displayValue || "Select a date"}
             </span>
-            <CalendarIcon className="ml-2 h-4 w-4 shrink-0 opacity-60" />
+            <CalendarIcon className="ml-2 h-4 w-4 shrink-0 text-muted-foreground" />
           </button>
         </Popover.Trigger>
 
@@ -156,12 +156,12 @@ export function DatePicker({
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 ),
                 selected:
-                  "[&>.rdp-day_button]:bg-primary [&>.rdp-day_button]:text-primary-foreground [&>.rdp-day_button]:hover:bg-primary [&>.rdp-day_button]:font-semibold",
+                  "[&>button]:bg-primary [&>button]:text-primary-foreground [&>button]:hover:bg-primary [&>button]:font-semibold",
                 today:
-                  "[&>.rdp-day_button]:border [&>.rdp-day_button]:border-primary/40",
-                outside: "[&>.rdp-day_button]:text-muted-foreground/40",
+                  "[&>button]:border [&>button]:border-primary/40",
+                outside: "[&>button]:opacity-40",
                 disabled:
-                  "[&>.rdp-day_button]:text-muted-foreground/30 [&>.rdp-day_button]:pointer-events-none [&>.rdp-day_button]:cursor-not-allowed [&>.rdp-day_button]:opacity-30",
+                  "opacity-30 pointer-events-none",
                 hidden: "invisible",
               }}
               components={{
