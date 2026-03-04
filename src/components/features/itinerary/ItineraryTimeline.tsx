@@ -164,7 +164,7 @@ export const ItineraryTimeline = ({
 
   // Activities list - entry points are not displayed in the timeline
   // (they are shown on the map via ItineraryMapPanel)
-  const extendedActivities = day.activities ?? [];
+  const extendedActivities = useMemo(() => day.activities ?? [], [day.activities]);
 
   const handleDelete = useCallback(
     (activityId: string) => {

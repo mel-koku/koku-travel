@@ -70,6 +70,13 @@ export function LocationSearchBarB({
     aiMutationRef.current.reset();
   }, [cityId, dayIndex]);
 
+  const collapse = useCallback(() => {
+    setIsExpanded(false);
+    setQuery("");
+    setFetchingId(null);
+    aiMutationRef.current.reset();
+  }, []);
+
   // Focus input when expanded
   useEffect(() => {
     if (isExpanded) {
@@ -90,14 +97,7 @@ export function LocationSearchBarB({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isExpanded]);
-
-  const collapse = useCallback(() => {
-    setIsExpanded(false);
-    setQuery("");
-    setFetchingId(null);
-    aiMutationRef.current.reset();
-  }, []);
+  }, [isExpanded, collapse]);
 
   // Handle command response from AI (swap, move, remove, optimize)
   const handleCommandResponse = useCallback(
