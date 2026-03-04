@@ -7,6 +7,7 @@ import {
   getRelatedExperiences,
 } from "@/lib/experiences/experienceService";
 import { fetchLocationsByIds } from "@/lib/locations/locationService";
+import { getPeopleByExperienceSlug } from "@/lib/people/peopleService";
 import { ExperienceDetailClientB } from "@/components-b/features/experiences/ExperienceDetailClientB";
 import { urlFor } from "@/sanity/image";
 
@@ -53,11 +54,12 @@ export default async function ExperienceDetailPageB({ params }: Props) {
     notFound();
   }
 
-  const [relatedExperiences, locations] = await Promise.all([
+  const [relatedExperiences, locations, people] = await Promise.all([
     getRelatedExperiences(experience.experienceType, experience.slug, 3),
     experience.locationIds?.length
       ? fetchLocationsByIds(experience.locationIds)
       : Promise.resolve([]),
+    getPeopleByExperienceSlug(slug),
   ]);
 
   return (
@@ -65,6 +67,7 @@ export default async function ExperienceDetailPageB({ params }: Props) {
       experience={experience}
       relatedExperiences={relatedExperiences}
       locations={locations}
+      people={people}
     />
   );
 }
