@@ -91,6 +91,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     openNow, setOpenNow,
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
+    featuredOnly, setFeaturedOnly,
     selectedSort, setSelectedSort,
     filteredLocations,
     sortedLocations,
@@ -305,6 +306,8 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             mapAvailable={mapAvailable}
+            featuredOnly={featuredOnly}
+            onFeaturedToggle={() => setFeaturedOnly((prev: boolean) => !prev)}
           />
 
           {/* Main content — grid or map based on viewMode */}
