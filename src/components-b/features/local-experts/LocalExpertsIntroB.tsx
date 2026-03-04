@@ -10,35 +10,37 @@ type Props = {
 
 export function LocalExpertsIntroB({ total }: Props) {
   return (
-    <section className="px-4 pt-10 pb-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
-          className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]"
-        >
-          {total} local experts across Japan
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: bEase, delay: 0.2 }}
-          className="mt-3 font-bold tracking-tight text-[var(--foreground)]"
-          style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
-        >
-          Meet the people behind the experiences
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: bEase, delay: 0.3 }}
-          className="mx-auto mt-4 max-w-2xl text-base text-[var(--muted-foreground)]"
-        >
-          Artisans, guides, and hosts who bring Japan to life. Browse by
-          specialty, city, or craft — then request a booking directly.
-        </motion.p>
-      </div>
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-32 lg:pt-36 pb-4 sm:pb-6 text-center">
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: bEase }}
+        className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]"
+      >
+        {total} local experts across Japan
+      </motion.p>
+
+      <motion.h1
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: bEase, delay: 0.1 }}
+        className="mt-4 text-[clamp(2rem,4vw,3rem)] font-semibold leading-[1.1] text-[var(--foreground)] max-w-3xl mx-auto"
+      >
+        Meet the people behind the experiences
+      </motion.h1>
+
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, ease: bEase, delay: 0.2 }}
+        className="text-base text-[var(--foreground-body)] max-w-2xl mx-auto mt-6 leading-relaxed"
+      >
+        Artisans, guides, and hosts who bring Japan to life. Browse by
+        specialty, city, or craft.
+      </motion.p>
     </section>
   );
 }
