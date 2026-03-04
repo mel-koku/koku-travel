@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Lightbulb, X, ChevronDown, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { SmartPromptCardB } from "./SmartPromptCardB";
-import { SmartPromptGroupCardB } from "./SmartPromptGroupCardB";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -29,93 +28,26 @@ export function SmartPromptsDrawerB({
   const [isExpanded, setIsExpanded] = useState(true);
   const [isVisible, setIsVisible] = useState(gaps.length > 0);
 
+  // Meal gaps are handled by day-level suggestions, so exclude them here
+  const nonMealGaps = useMemo(
+    () => gaps.filter((gap) => gap.action.type !== "add_meal" && gap.action.type !== "quick_meal"),
+    [gaps]
+  );
+
   useEffect(() => {
-    if (gaps.length > 0) setIsVisible(true);
-  }, [gaps.length]);
+    if (nonMealGaps.length > 0) setIsVisible(true);
+  }, [nonMealGaps.length]);
 
   const handleDismiss = useCallback(() => {
     setIsVisible(false);
     onDismissAll();
   }, [onDismissAll]);
 
-  // Group meal gaps by mealType across days
-  const { groupedMeals, individualGaps, displayCount } = useMemo(() => {
-    const mealMap = new Map<
-      string,
-      { restaurant: DetectedGap[]; konbini: DetectedGap[] }
-    >();
-    const nonMeal: DetectedGap[] = [];
-
-    for (const gap of gaps) {
-      if (
-        gap.action.type === "add_meal" ||
-        gap.action.type === "quick_meal"
-      ) {
-        const key = gap.action.mealType;
-        if (!mealMap.has(key)) {
-          mealMap.set(key, { restaurant: [], konbini: [] });
-        }
-        const group = mealMap.get(key)!;
-        if (gap.action.type === "add_meal") {
-          group.restaurant.push(gap);
-        } else {
-          group.konbini.push(gap);
-        }
-      } else {
-        nonMeal.push(gap);
-      }
-    }
-
-    // Split into multi-day groups vs single-day individuals
-    const grouped: {
-      mealType: "breakfast" | "lunch" | "dinner";
-      restaurant: DetectedGap[];
-      konbini: DetectedGap[];
-    }[] = [];
-    const singleDayMeals: DetectedGap[] = [];
-
-    const mealOrder: ("breakfast" | "lunch" | "dinner")[] = [
-      "breakfast",
-      "lunch",
-      "dinner",
-    ];
-    for (const mt of mealOrder) {
-      const entry = mealMap.get(mt);
-      if (!entry) continue;
-      const dayCount = Math.max(entry.restaurant.length, entry.konbini.length);
-      if (dayCount >= 2) {
-        grouped.push({
-          mealType: mt,
-          restaurant: entry.restaurant,
-          konbini: entry.konbini,
-        });
-      } else {
-        singleDayMeals.push(...entry.restaurant, ...entry.konbini);
-      }
-    }
-
-    const individual = [...singleDayMeals, ...nonMeal];
-    const count = grouped.length + individual.length;
-
-    return { groupedMeals: grouped, individualGaps: individual, displayCount: count };
-  }, [gaps]);
-
-  if (!isVisible || gaps.length === 0) return null;
+  if (!isVisible || nonMealGaps.length === 0) return null;
 
   const renderCards = () => (
     <>
-      {groupedMeals.map((group) => (
-        <SmartPromptGroupCardB
-          key={`group-${group.mealType}`}
-          mealType={group.mealType}
-          restaurantGaps={group.restaurant}
-          konbiniGaps={group.konbini}
-          onAccept={onAccept}
-          onSkip={onSkip}
-          loadingGapId={loadingGapId}
-        />
-      ))}
-      {individualGaps.map((gap) => (
+      {nonMealGaps.map((gap) => (
         <SmartPromptCardB
           key={gap.id}
           gap={gap}
@@ -164,7 +96,7 @@ export function SmartPromptsDrawerB({
                 className="text-sm font-semibold"
                 style={{ color: "var(--foreground)" }}
               >
-                {displayCount} suggestion{displayCount !== 1 ? "s" : ""}
+                {nonMealGaps.length} suggestion{nonMealGaps.length !== 1 ? "s" : ""}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -231,7 +163,7 @@ export function SmartPromptsDrawerB({
                   color: "var(--primary)",
                 }}
               >
-                {displayCount}
+                {nonMealGaps.length}
               </span>
             </div>
             <button
@@ -250,8 +182,8 @@ export function SmartPromptsDrawerB({
             style={{ borderColor: "var(--border)" }}
           >
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
-              We noticed some opportunities to enhance your itinerary. Add meals,
-              optimize transport, or discover more experiences.
+              We noticed some opportunities to enhance your itinerary. Optimize
+              transport, discover more experiences, and more.
             </p>
           </div>
 
