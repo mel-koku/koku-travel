@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
       response = await handleSingletonRevalidation(body._type, [
         "/places",
         "/guides",
-        "/guides/authors",
+        "/local-experts",
         "/saved",
         "/dashboard",
         "/account",
@@ -176,9 +176,9 @@ async function handleGuide(body: SanityWebhookBody) {
 async function handleExperience(body: SanityWebhookBody) {
   const slug = body.slug?.current;
 
-  revalidatePath("/experiences");
+  revalidatePath("/guides");
   if (slug) {
-    revalidatePath(`/experiences/${slug}`);
+    revalidatePath(`/guides/${slug}`);
   }
 
   return NextResponse.json({ ok: true, action: "revalidated", slug });

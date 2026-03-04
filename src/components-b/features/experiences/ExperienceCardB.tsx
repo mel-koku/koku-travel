@@ -32,7 +32,7 @@ export function ExperienceCardB({ experience, eager = false }: ExperienceCardBPr
   return (
     <article className="group animate-card-in">
       <Link
-        href={`/b/experiences/${experience.slug}`}
+        href={`/b/guides/${experience.slug}`}
         className="block w-full overflow-hidden rounded-2xl bg-white shadow-[var(--shadow-card)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
       >
         {/* Image */}

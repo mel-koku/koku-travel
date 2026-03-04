@@ -16,29 +16,41 @@ type SignInClientBProps = {
 
 function getRedirectUrl(): string {
   const siteUrl = env.siteUrl;
-  if (siteUrl) return `${siteUrl}/auth/callback`;
-  if (typeof window !== "undefined") return `${window.location.origin}/auth/callback`;
-  return "/auth/callback";
+  const base = siteUrl ?? (typeof window !== "undefined" ? window.location.origin : "");
+  const callbackUrl = `${base}/auth/callback`;
+
+  if (typeof window !== "undefined") {
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    if (next && next.startsWith("/") && !next.startsWith("//")) {
+      return `${callbackUrl}?next=${encodeURIComponent(next)}`;
+    }
+  }
+  return callbackUrl;
 }
 
 export function SignInClientB({ content }: SignInClientBProps) {
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<{ message: string; isError: boolean } | null>(null);
   const supabase = createClient();
 
   async function sendMagicLink(e: FormEvent) {
     e.preventDefault();
     if (!supabase) {
-      setStatus("Sign-in is temporarily unavailable.");
+      setStatus({ message: "Sign-in is temporarily unavailable.", isError: true });
       return;
     }
-    setStatus("Sending your sign-in link\u2026");
+    setStatus({ message: "Sending your sign-in link\u2026", isError: false });
     const redirectUrl = getRedirectUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: redirectUrl },
     });
-    setStatus(error ? `Error: ${error.message}` : "Sign-in link sent \u2014 check your inbox.");
+    setStatus(
+      error
+        ? { message: `Error: ${error.message}`, isError: true }
+        : { message: "Sign-in link sent \u2014 check your inbox.", isError: false },
+    );
   }
 
   return (
@@ -135,7 +147,7 @@ export function SignInClientB({ content }: SignInClientBProps) {
               {content?.signInSubmitText ?? "Send Sign-in Link"}
             </button>
 
-            {status && <p className="text-xs text-[var(--muted-foreground)]">{status}</p>}
+            {status && <p className={`text-xs ${status.isError ? "text-error" : "text-success"}`}>{status.message}</p>}
           </motion.form>
 
           <motion.div

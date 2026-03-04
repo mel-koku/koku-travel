@@ -40,7 +40,7 @@ export function CategoryBarB({
   onInputSubmit,
   tabs,
   activeTab,
-  onTabChange: _onTabChange,
+  onTabChange,
   viewMode = "grid",
   onViewModeChange,
   mapAvailable = false,
@@ -214,6 +214,28 @@ export function CategoryBarB({
               )}
             </button>
           </div>
+
+          {/* Category tabs */}
+          {tabs && tabs.length > 1 && onTabChange && (
+            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1.5 -mt-0.5">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id ?? "__all"}
+                  type="button"
+                  onClick={() => onTabChange(tab.id)}
+                  className={cn(
+                    "shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition whitespace-nowrap",
+                    activeTab === tab.id
+                      ? "bg-[var(--primary)] text-white"
+                      : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
+                  )}
+                >
+                  {tab.label}
+                  <span className="ml-1 opacity-60">{tab.count}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
           {/* Active filter chips */}
           {hasChips && (

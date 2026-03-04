@@ -41,8 +41,8 @@ export default function Error({
             <Button onClick={reset} variant="primary">
               Try again
             </Button>
-            <Button asChild href="/experiences" variant="secondary">
-              Browse experiences
+            <Button asChild href="/guides?type=activity" variant="secondary">
+              Browse guides
             </Button>
           </div>
         </div>

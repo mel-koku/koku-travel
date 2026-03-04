@@ -21,9 +21,9 @@ import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.
 
 const navItems = [
   { label: "Places", href: "/places" },
-  { label: "Experiences", href: "/experiences" },
-  { label: "Discover", href: "/discover" },
   { label: "Guides", href: "/guides" },
+  { label: "Discover", href: "/discover" },
+  { label: "Local Experts", href: "/local-experts" },
 ];
 
 function UserMenu({
@@ -157,7 +157,7 @@ export default function Header() {
     }
 
     // Pages with sticky sub-nav: always visible
-    if (pathname === "/places" || pathname === "/discover" || pathname === "/guides" || pathname === "/experiences" || pathname.startsWith("/itinerary")) {
+    if (pathname === "/places" || pathname === "/discover" || pathname === "/guides" || pathname.startsWith("/itinerary")) {
       setIsVisible(true);
       return;
     }

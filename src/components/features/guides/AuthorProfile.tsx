@@ -11,6 +11,7 @@ const GUIDE_TYPE_LABELS: Record<GuideType, string> = {
   listicle: "Top Picks",
   deep_dive: "Deep Dive",
   seasonal: "Seasonal",
+  activity: "Activity",
 };
 
 type AuthorProfileProps = {
@@ -156,7 +157,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
       {/* Back link */}
       <div className="mx-auto max-w-2xl px-6 pb-20 text-center">
         <Link
-          href="/guides/authors"
+          href="/local-experts?type=author"
           className="link-reveal inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-stone transition-colors hover:text-foreground"
         >
           <svg

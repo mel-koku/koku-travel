@@ -136,7 +136,22 @@ export function PlacesMapLayoutB({
           />
         </ErrorBoundary>
 
-        {/* Floating pill column — left side, vertical scroll */}
+        {/* Mobile: horizontal snap-scroll strip at bottom */}
+        <div className="absolute bottom-3 left-0 right-0 z-10 flex md:hidden pointer-events-auto overflow-x-auto overscroll-contain snap-x snap-mandatory gap-2 px-3 scrollbar-hide">
+          {visibleLocations.map((location) => (
+            <div key={location.id} className="w-48 shrink-0 snap-start">
+              <PlacesMapCardB
+                ref={setCardRef(location.id)}
+                location={location}
+                isHighlighted={hoveredLocationId === location.id}
+                onHover={handleCardHoverChange}
+                onSelect={handleCardSelect}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: Floating pill column — left side, vertical scroll */}
         <div
           className="absolute top-3 left-3 bottom-3 z-10 hidden w-56 flex-col pointer-events-none md:flex"
         >

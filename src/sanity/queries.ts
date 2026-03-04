@@ -48,7 +48,21 @@ export const guideBySlugQuery = groq`
     sortOrder,
     publishedAt,
     _createdAt,
-    _updatedAt
+    _updatedAt,
+    // Activity-specific fields
+    experienceType,
+    craftType,
+    duration,
+    groupSizeMin,
+    groupSizeMax,
+    difficulty,
+    bestSeason,
+    meetingPoint,
+    whatsIncluded,
+    whatToBring,
+    nearestStation,
+    estimatedCost,
+    bookingUrl
   }
 `;
 

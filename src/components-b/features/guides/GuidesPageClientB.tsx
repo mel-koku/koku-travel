@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { GuideCardB } from "./GuideCardB";
@@ -19,6 +20,8 @@ const GUIDE_TYPE_OPTIONS: { value: GuideType; label: string }[] = [
   { value: "itinerary", label: "Itinerary" },
   { value: "listicle", label: "Top Picks" },
   { value: "deep_dive", label: "Deep Dive" },
+  { value: "seasonal", label: "Seasonal" },
+  { value: "activity", label: "Activities" },
 ];
 
 const SEASON_OPTIONS: { value: string; label: string }[] = [
@@ -33,7 +36,11 @@ function seasonToDbSeason(season: Season): string {
 }
 
 export function GuidesPageClientB({ guides, content }: GuidesPageClientBProps) {
-  const [selectedType, setSelectedType] = useState<GuideType | null>(null);
+  const searchParams = useSearchParams();
+  const initialType = searchParams.get("type") as GuideType | null;
+  const [selectedType, setSelectedType] = useState<GuideType | null>(
+    initialType && GUIDE_TYPE_OPTIONS.some((o) => o.value === initialType) ? initialType : null
+  );
   const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
   const [isStuck, setIsStuck] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
