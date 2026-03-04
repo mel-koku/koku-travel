@@ -44,6 +44,10 @@ const remotePatterns: Array<{
     hostname: "mbjcxrfuuczlauavashs.supabase.co",
     pathname: "/storage/v1/object/public/**",
   },
+  {
+    protocol: "https",
+    hostname: "api.dicebear.com",
+  },
 ];
 
 if (siteUrl) {

@@ -108,6 +108,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
   }, [activeItinerary]);
 
   // Fetch guidance gaps asynchronously per day
+  const tripStartDate = selectedTrip?.builderData?.dates?.start;
   useEffect(() => {
     if (!activeItinerary) {
       setGuidanceGaps([]);
@@ -115,8 +116,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     }
 
     let cancelled = false;
-    const tripStart = selectedTrip?.builderData?.dates?.start;
-    const startDate = tripStart ? parseTripDate(tripStart) : new Date();
+    const startDate = tripStartDate ? parseTripDate(tripStartDate) : new Date();
 
     Promise.all(
       activeItinerary.days.map((day, dayIndex) => {
@@ -146,7 +146,7 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
     return () => {
       cancelled = true;
     };
-  }, [activeItinerary]);
+  }, [activeItinerary, tripStartDate]);
 
   // Merge sync gaps + async guidance gaps
   const initialGaps = useMemo(() => {

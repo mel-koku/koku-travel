@@ -21,8 +21,8 @@ export function ItineraryPreview() {
 
   const duration = data.duration ?? 0;
   const startDate = data.dates.start;
-  const cities = data.cities ?? [];
-  const interests = data.interests ?? [];
+  const cities = useMemo(() => data.cities ?? [], [data.cities]);
+  const interests = useMemo(() => data.interests ?? [], [data.interests]);
 
   // Generate day previews
   const dayPreviews = useMemo<DayPreview[]>(() => {

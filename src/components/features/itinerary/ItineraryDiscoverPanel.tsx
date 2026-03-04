@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { CATEGORY_CHIPS } from "@/lib/constants/discoverCategories";
 import { getCategoryHexColor } from "@/lib/itinerary/activityColors";
@@ -159,9 +160,11 @@ export function ItineraryDiscoverPanel({
                   <div className="flex items-start gap-3">
                     {/* Thumbnail */}
                     {loc.primaryPhotoUrl ? (
-                      <img
+                      <Image
                         src={loc.primaryPhotoUrl}
                         alt=""
+                        width={56}
+                        height={56}
                         className="h-14 w-14 shrink-0 rounded-lg object-cover"
                       />
                     ) : (

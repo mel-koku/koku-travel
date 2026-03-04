@@ -158,16 +158,20 @@ export function ItineraryMap({
     });
     mapInstanceRef.current = map;
 
+    // Capture refs at effect time for stable cleanup
+    const markers = markersRef.current;
+    const clickHandlers = markerClickHandlersRef.current;
+
     return () => {
       // Clean up click handlers before destroying map
-      markerClickHandlersRef.current.forEach((handler, id) => {
-        const marker = markersRef.current.get(id);
+      clickHandlers.forEach((handler, id) => {
+        const marker = markers.get(id);
         if (marker) {
           marker.getElement().removeEventListener("click", handler);
         }
       });
-      markerClickHandlersRef.current.clear();
-      markersRef.current.clear();
+      clickHandlers.clear();
+      markers.clear();
       map.remove();
       mapInstanceRef.current = null;
       setMapReady(false);

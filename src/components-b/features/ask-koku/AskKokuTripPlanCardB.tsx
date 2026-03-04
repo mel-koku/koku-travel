@@ -28,7 +28,7 @@ function formatDuration(duration?: number, startDate?: string, endDate?: string)
   if (duration) return `${duration} day${duration !== 1 ? "s" : ""}`;
   if (startDate && endDate) {
     const diff = Math.round(
-      (new Date(endDate).getTime() - new Date(startDate).getTime()) /
+      (new Date(endDate + "T00:00:00").getTime() - new Date(startDate + "T00:00:00").getTime()) /
         (1000 * 60 * 60 * 24),
     );
     if (diff > 0) return `${diff} day${diff !== 1 ? "s" : ""}`;
