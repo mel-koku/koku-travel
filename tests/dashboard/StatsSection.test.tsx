@@ -1,6 +1,34 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { StatsSection } from "@/app/dashboard/components/StatsSection";
+
+// Mock framer-motion
+vi.mock("framer-motion", () => ({
+  motion: {
+    div: ({ children, ...props }: Record<string, unknown>) => <div {...props}>{children as React.ReactNode}</div>,
+  },
+  useScroll: () => ({ scrollYProgress: { get: () => 0 } }),
+  useTransform: () => ({ get: () => 1 }),
+  useReducedMotion: () => false,
+}));
+
+// Mock ScrollReveal to render children directly
+vi.mock("@/components/ui/ScrollReveal", () => ({
+  ScrollReveal: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
+
+// Mock AnimatedNumber to render the value as text
+vi.mock("@/components/ui/AnimatedNumber", () => ({
+  AnimatedNumber: ({ value, className }: { value: number; className?: string }) => (
+    <span className={className}>{value}</span>
+  ),
+}));
+
+// Mock parallaxSection
+vi.mock("@/lib/motion", () => ({
+  parallaxSection: { from: 1, to: 1.1 },
+}));
+
+import { StatsSection } from "@/app/(main)/dashboard/components/StatsSection";
 
 describe("StatsSection", () => {
   describe("Rendering", () => {
