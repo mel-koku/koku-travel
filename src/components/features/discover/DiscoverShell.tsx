@@ -6,6 +6,7 @@ import { featureFlags } from "@/lib/env/featureFlags";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import { useNearbyLocationsQuery } from "@/hooks/useLocationsQuery";
 import type { Location } from "@/types/location";
+import { CATEGORY_CHIPS } from "@/lib/constants/discoverCategories";
 
 const DiscoverMap = dynamic(
   () => import("./DiscoverMap").then((m) => ({ default: m.DiscoverMap })),
@@ -19,15 +20,6 @@ const LocationExpanded = dynamic(
     })),
   { ssr: false },
 );
-
-const CATEGORY_CHIPS = [
-  { id: "", label: "All" },
-  { id: "restaurant", label: "Food" },
-  { id: "culture", label: "Culture" },
-  { id: "nature", label: "Nature" },
-  { id: "bar", label: "Nightlife" },
-  { id: "shopping", label: "Shopping" },
-] as const;
 
 const FALLBACK_POSITION = { lat: 35.6812, lng: 139.7671 }; // Tokyo Station
 
