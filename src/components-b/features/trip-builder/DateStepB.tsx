@@ -26,12 +26,17 @@ export type DateStepBProps = {
 export function DateStepB({ onValidityChange, sanityConfig }: DateStepBProps) {
   const { data, setData } = useTripBuilder();
 
+  const todayStr = useMemo(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  }, []);
+
   const formValues = useMemo<DateFormValues>(
     () => ({
-      start: data.dates.start ?? "",
+      start: data.dates.start || todayStr,
       end: data.dates.end ?? "",
     }),
-    [data.dates.start, data.dates.end],
+    [data.dates.start, data.dates.end, todayStr],
   );
 
   const {
@@ -59,7 +64,7 @@ export function DateStepB({ onValidityChange, sanityConfig }: DateStepBProps) {
     return diffDays;
   }, [startValue, endValue]);
 
-  const today = useMemo(() => new Date().toISOString().split("T")[0], []);
+  const today = todayStr;
 
   const minEndDate = useMemo(() => {
     if (!startValue) return today;
