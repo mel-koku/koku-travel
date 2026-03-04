@@ -50,6 +50,7 @@ export async function GET(request: NextRequest) {
     const region = searchParams.get("region");
     const category = searchParams.get("category");
     const search = searchParams.get("search");
+    const featured = searchParams.get("featured");
 
     // Get total count for pagination metadata (with filters)
     // Exclude permanently closed locations at the database level
@@ -59,6 +60,7 @@ export async function GET(request: NextRequest) {
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
     if (region) countQuery = countQuery.eq("region", region);
     if (category) countQuery = countQuery.eq("category", category);
+    if (featured === "true") countQuery = countQuery.eq("is_featured", true);
     if (search) {
       countQuery = applySearchFilter(countQuery, search);
     }
@@ -87,6 +89,7 @@ export async function GET(request: NextRequest) {
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
     if (region) dataQuery = dataQuery.eq("region", region);
     if (category) dataQuery = dataQuery.eq("category", category);
+    if (featured === "true") dataQuery = dataQuery.eq("is_featured", true);
     if (search) {
       dataQuery = applySearchFilter(dataQuery, search);
     }
@@ -133,8 +136,7 @@ export async function GET(request: NextRequest) {
         dietaryOptions: row.dietary_options ?? undefined,
         serviceOptions: row.service_options ?? undefined,
         coordinates: row.coordinates ?? undefined,
-        // Note: isFeatured requires migration 20260124_add_is_featured_column.sql
-        // Once run, add: isFeatured: row.is_featured ?? undefined,
+        isFeatured: row.is_featured ?? undefined,
       }));
 
     // Create paginated response

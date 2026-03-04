@@ -160,6 +160,7 @@ export async function GET(request: NextRequest) {
       dietaryOptions: row.dietary_options ?? undefined,
       coordinates: row.coordinates ?? undefined,
       isHiddenGem: row.is_hidden_gem ?? undefined,
+      isFeatured: row.is_featured ?? undefined,
       nameJapanese: row.name_japanese ?? undefined,
       nearestStation: row.nearest_station ?? undefined,
       cashOnly: row.cash_only ?? undefined,
