@@ -10,7 +10,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: BASE_URL, lastModified: new Date(), changeFrequency: "weekly", priority: 1.0 },
     { url: `${BASE_URL}/places`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/guides`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE_URL}/experiences`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE_URL}/local-experts`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE_URL}/discover`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.7 },
     { url: `${BASE_URL}/trip-builder`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
   ];
@@ -24,10 +24,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // Dynamic experience routes
+  // Dynamic experience routes (redirected to /guides/ canonical URLs)
   const experiences = await getPublishedExperiences();
   const experienceRoutes: MetadataRoute.Sitemap = experiences.map((exp) => ({
-    url: `${BASE_URL}/experiences/${exp.slug}`,
+    url: `${BASE_URL}/guides/${exp.slug}`,
     lastModified: exp.publishedAt ? new Date(exp.publishedAt) : new Date(),
     changeFrequency: "monthly" as const,
     priority: 0.7,

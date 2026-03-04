@@ -80,8 +80,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(`${origin}/auth/error?message=session_creation_failed`);
     }
 
-    // Success: redirect to dashboard
-    return NextResponse.redirect(`${origin}/dashboard`);
+    // Redirect to the page the user came from, or dashboard as fallback
+    const next = searchParams.get("next");
+    const redirectPath = next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard";
+    return NextResponse.redirect(`${origin}${redirectPath}`);
   } catch (error) {
     logger.error("Supabase callback client unavailable", error);
     return NextResponse.redirect(`${origin}/auth/error?message=service_unavailable`);

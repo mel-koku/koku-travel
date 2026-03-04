@@ -94,8 +94,6 @@ export function FilterPanel({
   const onCloseRef = useRef(onClose);
   useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
 
-  const isFoodVibeSelected = selectedVibes.includes("foodie_paradise");
-
   // Section expand/collapse state
   const [expandedSections, setExpandedSections] = useState({
     sort: true,
@@ -380,14 +378,12 @@ export function FilterPanel({
                     onChange={onWheelchairAccessibleChange}
                   />
 
-                  {isFoodVibeSelected && (
-                    <ToggleOption
-                      label="Vegetarian friendly"
-                      description="Restaurants with vegetarian options"
-                      checked={vegetarianFriendly}
-                      onChange={onVegetarianFriendlyChange}
-                    />
-                  )}
+                  <ToggleOption
+                    label="Vegetarian friendly"
+                    description="Restaurants with vegetarian options"
+                    checked={vegetarianFriendly}
+                    onChange={onVegetarianFriendlyChange}
+                  />
                 </div>
               </FilterSection>
             </motion.div>

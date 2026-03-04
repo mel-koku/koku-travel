@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { GuideSummary, GuideType } from "@/types/guide";
@@ -19,6 +20,7 @@ const GUIDE_TYPE_OPTIONS: { value: GuideType; label: string }[] = [
   { value: "listicle", label: "Top Picks" },
   { value: "deep_dive", label: "Deep Dive" },
   { value: "seasonal", label: "Seasonal" },
+  { value: "activity", label: "Activities" },
 ];
 
 const SEASON_OPTIONS: { value: string; label: string }[] = [
@@ -34,7 +36,11 @@ function seasonToDbSeason(season: Season): string {
 }
 
 export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
-  const [selectedType, setSelectedType] = useState<GuideType | null>(null);
+  const searchParams = useSearchParams();
+  const initialType = searchParams.get("type") as GuideType | null;
+  const [selectedType, setSelectedType] = useState<GuideType | null>(
+    initialType && GUIDE_TYPE_OPTIONS.some((o) => o.value === initialType) ? initialType : null
+  );
   const [selectedSeason, setSelectedSeason] = useState<string | null>(null);
 
   const typeCounts = useMemo(() => {

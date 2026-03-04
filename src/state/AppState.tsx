@@ -712,6 +712,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   // Clear all local data
   const clearAllLocalData = useCallback(() => {
+    // Flush any pending trip sync timeouts to prevent stale writes after clear
+    tripSyncTimeouts.current.forEach((timeout) => clearTimeout(timeout));
+    tripSyncTimeouts.current.clear();
+
     const next: InternalState = {
       user: { id: newId(), displayName: "Guest" },
       saved: [],

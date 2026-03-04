@@ -72,7 +72,7 @@ export function FeaturedExperiencesB({
               style={{ borderRadius: "1rem" }}
             >
               <Link
-                href={`/b/experiences/${exp.slug}`}
+                href={`/b/guides/${exp.slug}`}
                 className="group block overflow-hidden rounded-2xl bg-[var(--surface)] shadow-[var(--shadow-card)]"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
@@ -109,7 +109,7 @@ export function FeaturedExperiencesB({
           className="mt-10 text-center"
         >
           <Link
-            href="/b/experiences"
+            href="/b/guides?type=activity"
             className="inline-flex h-11 items-center justify-center rounded-xl border border-[var(--border)] px-6 text-sm font-medium text-[var(--foreground)] transition-all duration-200 hover:border-[var(--primary)] hover:text-[var(--primary)]"
           >
             View All Experiences

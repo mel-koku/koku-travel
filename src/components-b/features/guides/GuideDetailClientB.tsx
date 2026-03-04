@@ -27,6 +27,7 @@ const GUIDE_TYPE_LABELS: Record<string, string> = {
   listicle: "Top Picks",
   deep_dive: "Deep Dive",
   seasonal: "Seasonal",
+  activity: "Activity",
 };
 
 type GuideDetailClientBProps =
@@ -71,6 +72,7 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
   const featuredImage = isSanity ? sg!.featuredImage?.url || "" : g!.featuredImage;
   const author: string | SanityAuthor = isSanity ? sg!.author : g!.author;
   const authorName = typeof author === "string" ? author : author.name;
+  const authorSlug = typeof author !== "string" ? author.slug : undefined;
 
   const dateLabel = publishedAt
     ? new Date(publishedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
@@ -156,7 +158,21 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
                 {summary}
               </p>
               <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--muted-foreground)]">
-                {authorName && <span>By {authorName}</span>}
+                {authorName && (
+                  <span>
+                    By{" "}
+                    {authorSlug ? (
+                      <Link
+                        href={`/b/local-experts?person=${authorSlug}`}
+                        className="text-[var(--primary)] hover:underline"
+                      >
+                        {authorName}
+                      </Link>
+                    ) : (
+                      authorName
+                    )}
+                  </span>
+                )}
                 {dateLabel && (
                   <>
                     <span className="text-[var(--border)]">&middot;</span>
@@ -337,7 +353,17 @@ export function GuideDetailClientB(props: GuideDetailClientBProps) {
       <section className="bg-white border-t border-[var(--border)]">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8 text-center">
           <p className="text-sm text-[var(--muted-foreground)]">
-            Written by {authorName}
+            Written by{" "}
+            {authorSlug ? (
+              <Link
+                href={`/b/local-experts?person=${authorSlug}`}
+                className="text-[var(--primary)] hover:underline"
+              >
+                {authorName}
+              </Link>
+            ) : (
+              authorName
+            )}
             {dateLabel ? ` \u00b7 Published ${dateLabel}` : ""}
           </p>
           <Link

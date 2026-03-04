@@ -10,7 +10,7 @@ import { useAppState } from "@/state/AppState";
 import { serializeTripContext } from "@/lib/chat/serializeTripContext";
 import type { AskKokuContext } from "./AskKokuSuggestions";
 
-const HIDDEN_PATHS = ["/studio", "/places"];
+const HIDDEN_PATHS = ["/studio"];
 
 function deriveContext(pathname: string): AskKokuContext {
   if (pathname.startsWith("/places")) return "places";

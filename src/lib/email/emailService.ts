@@ -1,0 +1,99 @@
+import { logger } from "@/lib/logger";
+import { env } from "@/lib/env";
+
+type InquiryEmailData = {
+  personName: string;
+  personType: string;
+  userEmail: string;
+  preferredDatesStart?: string;
+  preferredDatesEnd?: string;
+  groupSize?: number;
+  message?: string;
+};
+
+/**
+ * Send admin notification about a new booking inquiry.
+ * Gracefully degrades if RESEND_API_KEY is not set.
+ */
+export async function sendInquiryNotification(
+  data: InquiryEmailData
+): Promise<void> {
+  const apiKey = env.resendApiKey;
+  if (!apiKey) {
+    logger.warn(
+      "RESEND_API_KEY not set — skipping admin inquiry notification email"
+    );
+    return;
+  }
+
+  try {
+    const { Resend } = await import("resend");
+    const resend = new Resend(apiKey);
+
+    const dates =
+      data.preferredDatesStart && data.preferredDatesEnd
+        ? `${data.preferredDatesStart} to ${data.preferredDatesEnd}`
+        : data.preferredDatesStart ?? "Not specified";
+
+    await resend.emails.send({
+      from: "Koku Travel <noreply@koku.travel>",
+      to: "inquiries@koku.travel",
+      subject: `New inquiry for ${data.personName} (${data.personType})`,
+      text: [
+        `New booking inquiry received.`,
+        ``,
+        `Expert: ${data.personName} (${data.personType})`,
+        `From: ${data.userEmail}`,
+        `Dates: ${dates}`,
+        `Group size: ${data.groupSize ?? "Not specified"}`,
+        ``,
+        `Message:`,
+        data.message || "(no message)",
+      ].join("\n"),
+    });
+  } catch (err) {
+    logger.error(
+      "Failed to send inquiry notification email",
+      err instanceof Error ? err : new Error(String(err))
+    );
+  }
+}
+
+/**
+ * Send confirmation email to the user who submitted an inquiry.
+ * Gracefully degrades if RESEND_API_KEY is not set.
+ */
+export async function sendInquiryConfirmation(
+  data: InquiryEmailData
+): Promise<void> {
+  const apiKey = env.resendApiKey;
+  if (!apiKey) {
+    logger.warn(
+      "RESEND_API_KEY not set — skipping user inquiry confirmation email"
+    );
+    return;
+  }
+
+  try {
+    const { Resend } = await import("resend");
+    const resend = new Resend(apiKey);
+
+    await resend.emails.send({
+      from: "Koku Travel <noreply@koku.travel>",
+      to: data.userEmail,
+      subject: `Your inquiry for ${data.personName} has been received`,
+      text: [
+        `Thanks for your interest in booking with ${data.personName}.`,
+        ``,
+        `We've received your inquiry and will get back to you within 48 hours.`,
+        ``,
+        `— Koku Travel`,
+      ].join("\n"),
+    });
+  } catch (err) {
+    logger.error(
+      "Failed to send inquiry confirmation email",
+      err instanceof Error ? err : new Error(String(err))
+    );
+  }
+}

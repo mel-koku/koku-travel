@@ -67,9 +67,16 @@ export function useTripBuilderNavigation({
   useEffect(() => {
     if (initialStep === "5" && !didDeepLink.current) {
       didDeepLink.current = true;
+      // If data is empty, deep-link to step 5 is invalid — reset to step 0
+      if (dataIsEmpty) {
+        setCurrentStep(0);
+        setDatesValid(false);
+        setVibesValid(false);
+        setRegionsValid(false);
+      }
       router.replace(basePath ?? "/trip-builder", { scroll: false });
     }
-  }, [initialStep, router]);
+  }, [initialStep, router, dataIsEmpty, basePath]);
 
   // Listen for Ask Koku trip plan updates when already on /trip-builder
   useEffect(() => {

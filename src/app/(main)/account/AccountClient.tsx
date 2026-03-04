@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import type { FormEvent } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Modal } from "@/components/ui/Modal";
 import { useAppState } from "@/state/AppState";
 import IdentityBadge from "@/components/ui/IdentityBadge";
 import { syncLocalToCloudOnce } from "@/lib/accountSync";
@@ -212,13 +213,11 @@ export function AccountClient({ content }: AccountClientProps) {
                         status
                       )}
                     </div>
-                    <button
-                      onClick={clearAllLocalData}
+                    <ClearDataButton
+                      onConfirm={clearAllLocalData}
                       disabled={isLoadingProfile || isLoadingRefresh}
-                      className="h-10 rounded-xl border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                    >
-                      {content?.accountClearDataText ?? "Clear local data"}
-                    </button>
+                      label={content?.accountClearDataText ?? "Clear local data"}
+                    />
                   </div>
                 </>
               ) : (
@@ -229,6 +228,46 @@ export function AccountClient({ content }: AccountClientProps) {
         </div>
       </section>
     </div>
+  );
+}
+
+function ClearDataButton({ onConfirm, disabled, label }: { onConfirm: () => void; disabled: boolean; label: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleConfirm = useCallback(() => {
+    setIsOpen(false);
+    onConfirm();
+  }, [onConfirm]);
+
+  return (
+    <>
+      <button
+        onClick={() => setIsOpen(true)}
+        disabled={disabled}
+        className="h-10 rounded-xl border border-error/30 bg-error/10 px-4 text-sm text-error hover:bg-error/20 disabled:opacity-50 disabled:cursor-not-allowed transition"
+      >
+        {label}
+      </button>
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="Clear all local data?">
+        <p className="text-sm text-foreground-secondary">
+          This removes all saved trips, favorites, and preferences from this device. Anything synced to your account stays safe in the cloud.
+        </p>
+        <div className="mt-6 flex gap-3 justify-end">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="h-11 rounded-xl border border-border px-5 text-sm font-medium text-foreground transition-colors hover:bg-surface"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirm}
+            className="h-11 rounded-xl bg-error px-5 text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
+          >
+            Clear data
+          </button>
+        </div>
+      </Modal>
+    </>
   );
 }
 

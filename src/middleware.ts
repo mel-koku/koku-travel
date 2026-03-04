@@ -44,8 +44,8 @@ const AUTH_REQUIRED_SUB_ROUTES = [
  * Auth-related routes that authenticated users should be redirected away from.
  */
 const AUTH_ROUTES = [
-  "/auth/login",
-  "/auth/signup",
+  "/signin",
+  "/b/signin",
 ];
 
 /**

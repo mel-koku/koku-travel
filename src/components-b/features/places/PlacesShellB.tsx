@@ -250,10 +250,6 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     const match = slugToLocation.get(locationParam);
     if (match) {
       setExpandedLocation(match);
-      const params = new URLSearchParams(searchParams.toString());
-      params.delete("location");
-      const qs = params.toString();
-      window.history.replaceState(null, "", `/b/places${qs ? `?${qs}` : ""}`);
     }
   }, [locationParam, locations, searchParams, slugToLocation]);
 

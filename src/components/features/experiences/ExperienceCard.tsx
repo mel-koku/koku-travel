@@ -37,7 +37,7 @@ export function ExperienceCard({ experience, index, eager = false }: ExperienceC
   return (
     <Wrapper {...wrapperProps}>
       <Link
-        href={`/experiences/${experience.slug}`}
+        href={`/guides/${experience.slug}`}
         className="group block"
       >
         {/* Image */}

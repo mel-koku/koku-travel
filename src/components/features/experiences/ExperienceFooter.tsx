@@ -56,7 +56,7 @@ export function ExperienceFooter({
             {relatedExperiences.map((related) => (
               <Link
                 key={related._id}
-                href={`/experiences/${related.slug}`}
+                href={`/guides/${related.slug}`}
                 className="group relative block overflow-hidden rounded-xl"
               >
                 <div className="relative aspect-[4/3] w-full bg-charcoal">
@@ -92,7 +92,7 @@ export function ExperienceFooter({
       {/* Back to experiences */}
       <div className="mx-auto mt-12 max-w-2xl px-6 text-center">
         <Link
-          href="/experiences"
+          href="/guides?type=activity"
           className="link-reveal inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wide text-stone transition-colors hover:text-foreground"
           aria-label="Back to all experiences"
         >

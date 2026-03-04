@@ -46,6 +46,20 @@ export type SanityGuide = {
   publishedAt?: string;
   _createdAt: string;
   _updatedAt: string;
+  // Activity-specific fields (present when guideType === "activity")
+  experienceType?: string;
+  craftType?: string;
+  duration?: string;
+  groupSizeMin?: number;
+  groupSizeMax?: number;
+  difficulty?: string;
+  bestSeason?: string[];
+  meetingPoint?: string;
+  whatsIncluded?: string[];
+  whatToBring?: string[];
+  nearestStation?: string;
+  estimatedCost?: string;
+  bookingUrl?: string;
 };
 
 export type SanityAuthorFull = SanityAuthor & {
