@@ -169,7 +169,7 @@ export function GuidesPageClientB({ guides, content }: GuidesPageClientBProps) {
         )}
         style={{
           top: isStuck ? "calc(var(--header-h) - 3px)" : "var(--header-h)",
-          backgroundColor: isStuck ? "rgba(255,255,255,1)" : "transparent",
+          backgroundColor: isStuck ? "var(--card)" : "transparent",
           boxShadow: isStuck ? "var(--shadow-sm)" : "none",
         }}
       >

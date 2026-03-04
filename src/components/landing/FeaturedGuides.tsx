@@ -101,7 +101,7 @@ function GuideCard({
           src={imageSrc || "/placeholder.jpg"}
           alt={guide.title}
           fill
-          className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02] group-active:scale-[1.02]"
+          className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04] group-active:scale-[1.04]"
           sizes={
             featured
               ? "(min-width: 1024px) 66vw, 100vw"
@@ -134,7 +134,7 @@ function GuideCard({
           )}
           <p
             className={cn(
-              "mt-1 font-serif italic text-white transition-transform duration-500 group-hover:-translate-y-1",
+              "mt-1 font-serif italic text-white transition-all duration-500 group-hover:-translate-y-1 group-hover:text-brand-primary",
               featured ? "text-xl sm:text-2xl lg:text-3xl" : "text-xl sm:text-2xl"
             )}
           >

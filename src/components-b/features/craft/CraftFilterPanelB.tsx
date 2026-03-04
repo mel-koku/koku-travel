@@ -6,7 +6,7 @@ import { X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { CRAFT_TYPES, type CraftTypeId } from "@/data/craftTypes";
 import { REGION_ORDER, getRegionForPrefecture } from "@/data/prefectures";
-import type { FilterOption } from "@/types/filters";
+import type { FilterOption, ActiveFilter } from "@/types/filters";
 import type { CraftSortOptionId } from "@/hooks/useCraftFilters";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
@@ -38,6 +38,9 @@ type CraftFilterPanelBProps = {
   // Results
   resultsCount: number;
   onClearAll: () => void;
+  // Active filter chips
+  activeFilters?: ActiveFilter[];
+  onRemoveFilter?: (filter: ActiveFilter) => void;
 };
 
 export function CraftFilterPanelB({
@@ -57,6 +60,8 @@ export function CraftFilterPanelB({
   onSortChange,
   resultsCount,
   onClearAll,
+  activeFilters = [],
+  onRemoveFilter,
 }: CraftFilterPanelBProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -114,6 +119,34 @@ export function CraftFilterPanelB({
                 <X className="h-4 w-4" />
               </button>
             </div>
+
+            {/* Active filter chips */}
+            {activeFilters.filter((f) => f.type !== "search").length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] px-5 py-3">
+                {activeFilters
+                  .filter((f) => f.type !== "search")
+                  .map((filter, index) => (
+                    <button
+                      key={`${filter.type}-${filter.value}-${index}`}
+                      onClick={() => onRemoveFilter?.(filter)}
+                      title={`Remove ${filter.label}`}
+                      className="inline-flex items-center gap-1 rounded-xl bg-[var(--surface)] px-2.5 py-1 text-xs font-medium text-[var(--foreground-secondary)] hover:bg-[var(--border)] border border-[var(--border)] transition group"
+                      aria-label={`Remove ${filter.label} filter`}
+                    >
+                      <span>{filter.label}</span>
+                      <svg
+                        className="h-3 w-3 text-[var(--muted-foreground)] group-hover:text-[var(--primary)] transition"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  ))}
+              </div>
+            )}
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">

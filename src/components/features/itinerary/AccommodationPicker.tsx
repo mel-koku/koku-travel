@@ -151,7 +151,7 @@ function LocationField({
 
   return (
     <div ref={ref} className="relative flex-1 min-w-0">
-      <label className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.1em] text-foreground-secondary">
+      <label className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-foreground-secondary">
         {icon}
         {label}
       </label>

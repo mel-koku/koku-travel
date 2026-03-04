@@ -557,7 +557,7 @@ function AiRecommendationCard({
         type="button"
         onClick={onAdd}
         disabled={isDisabled}
-        className="flex h-8 shrink-0 items-center rounded-lg px-3 text-xs font-medium transition-colors active:scale-[0.98] disabled:opacity-50"
+        className="flex h-11 shrink-0 items-center rounded-lg px-3 text-xs font-medium transition-colors active:scale-[0.98] disabled:opacity-50"
         style={{
           background: duplicate
             ? "color-mix(in srgb, var(--warning) 10%, transparent)"

@@ -12,7 +12,7 @@ export function SeasonalBadgeB({ tags }: SeasonalBadgeBProps) {
 
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold shadow-sm"
+      className="inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold shadow-[var(--shadow-sm)]"
       style={{
         backgroundColor: "color-mix(in srgb, var(--primary) 15%, transparent)",
         color: "var(--primary)",

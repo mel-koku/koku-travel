@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/cn";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { REGION_ORDER, getRegionForPrefecture } from "@/data/prefectures";
+import type { ActiveFilter } from "@/types/filters";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 const DURATION_FAST = 0.25;
@@ -42,6 +43,11 @@ type FilterPanelBProps = {
   sortOptions: readonly SortOption[];
   selectedSort: SortOptionId;
   onSortChange: (sort: SortOptionId) => void;
+  activeFilters?: ActiveFilter[];
+  onRemoveFilter?: (filter: ActiveFilter) => void;
+  categoryTabs?: { id: string | null; label: string; count: number }[];
+  activeCategory?: string | null;
+  onCategoryChange?: (id: string | null) => void;
 };
 
 const PRICE_OPTIONS = [
@@ -83,6 +89,11 @@ export function FilterPanelB({
   sortOptions,
   selectedSort,
   onSortChange,
+  activeFilters = [],
+  onRemoveFilter,
+  categoryTabs,
+  activeCategory,
+  onCategoryChange,
 }: FilterPanelBProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<Element | null>(null);
@@ -200,6 +211,34 @@ export function FilterPanelB({
               </button>
             </div>
 
+            {/* Active filter chips */}
+            {activeFilters.filter((f) => f.type !== "search").length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 border-b border-[var(--border)] px-6 py-3">
+                {activeFilters
+                  .filter((f) => f.type !== "search")
+                  .map((filter, index) => (
+                    <button
+                      key={`${filter.type}-${filter.value}-${index}`}
+                      onClick={() => onRemoveFilter?.(filter)}
+                      title={`Remove ${filter.label}`}
+                      className="inline-flex items-center gap-1 rounded-xl bg-[var(--surface)] px-2.5 py-1 text-xs font-medium text-[var(--foreground-secondary)] hover:bg-[var(--border)] border border-[var(--border)] transition group"
+                      aria-label={`Remove ${filter.label} filter`}
+                    >
+                      <span>{filter.label}</span>
+                      <svg
+                        className="h-3 w-3 text-[var(--muted-foreground)] group-hover:text-[var(--primary)] transition"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  ))}
+              </div>
+            )}
+
             {/* Content */}
             <motion.div
               className="flex-1 overflow-y-auto px-6 py-6 pb-[env(safe-area-inset-bottom)] space-y-1"
@@ -241,6 +280,22 @@ export function FilterPanelB({
                   </button>
                 )}
               </motion.div>
+
+              {/* Category */}
+              {categoryTabs && categoryTabs.length > 1 && onCategoryChange && (
+                <FilterSectionB label="Category" activeCount={activeCategory ? 1 : 0} isExpanded={true} onToggle={() => {}}>
+                  <div className="flex flex-wrap gap-2">
+                    {categoryTabs.map((tab) => (
+                      <ChipB
+                        key={tab.id ?? "__all"}
+                        label={`${tab.label} ${tab.count}`}
+                        isSelected={activeCategory === tab.id}
+                        onClick={() => onCategoryChange(tab.id)}
+                      />
+                    ))}
+                  </div>
+                </FilterSectionB>
+              )}
 
               {/* Sort */}
               <FilterSectionB label="Sort by" activeCount={sortActiveCount} isExpanded={expandedSections.sort} onToggle={() => toggleSection("sort")}>
