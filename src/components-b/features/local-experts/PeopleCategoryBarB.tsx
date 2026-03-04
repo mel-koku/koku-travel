@@ -1,22 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { PersonType } from "@/types/person";
-
-const TYPE_TABS: { label: string; value: PersonType | null }[] = [
-  { label: "All", value: null },
-  { label: "Artisans", value: "artisan" },
-  { label: "Guides", value: "guide" },
-  { label: "Interpreters", value: "interpreter" },
-  { label: "Authors", value: "author" },
-];
+import { cn } from "@/lib/cn";
 
 type Props = {
   query: string;
   onQueryChange: (q: string) => void;
-  activeType: PersonType | null;
-  onTypeChange: (t: PersonType | null) => void;
-  typeCounts: Record<PersonType, number>;
   total: number;
   activeFilterCount: number;
   onRefineClick: () => void;
@@ -25,9 +14,6 @@ type Props = {
 export function PeopleCategoryBarB({
   query,
   onQueryChange,
-  activeType,
-  onTypeChange,
-  typeCounts,
   total,
   activeFilterCount,
   onRefineClick,
@@ -50,105 +36,84 @@ export function PeopleCategoryBarB({
 
   return (
     <>
-      <div ref={sentinelRef} className="h-0" aria-hidden />
+      <div ref={sentinelRef} className="h-0 w-full" aria-hidden="true" />
       <div
-        className={`sticky top-[var(--header-h)] z-30 transition-shadow duration-200 ${
-          isStuck
-            ? "bg-white shadow-[var(--shadow-sm)]"
-            : "bg-[var(--background)]"
-        }`}
+        className={cn(
+          "sticky transition-[background-color,box-shadow] duration-300",
+          isStuck ? "z-50" : "z-40",
+          !isStuck && "bg-transparent",
+        )}
+        style={{
+          top: isStuck ? "calc(var(--header-h) - 3px)" : "var(--header-h)",
+          backgroundColor: isStuck ? "var(--card)" : undefined,
+          boxShadow: isStuck ? "var(--shadow-sm)" : "none",
+        }}
       >
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          {/* Count */}
-          <span className="hidden text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--muted-foreground)] sm:block">
-            {total}
-          </span>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          {/* Search row */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 py-2">
+            {/* Count */}
+            <span className="hidden shrink-0 text-xs font-medium text-[var(--muted-foreground)] whitespace-nowrap sm:inline">
+              {total.toLocaleString()} people
+            </span>
 
-          {/* Type tabs */}
-          <div className="flex items-center gap-1">
-            {TYPE_TABS.map((tab) => {
-              const isActive = activeType === tab.value;
-              const count =
-                tab.value === null
-                  ? total
-                  : typeCounts[tab.value] ?? 0;
-              return (
-                <button
-                  key={tab.label}
-                  type="button"
-                  onClick={() => onTypeChange(tab.value)}
-                  className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-[var(--foreground)] text-white"
-                      : "text-[var(--muted-foreground)] hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
-                  }`}
-                >
-                  {tab.label}
-                  <span
-                    className={`text-xs ${
-                      isActive ? "text-white/70" : "text-[var(--muted-foreground)]"
-                    }`}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+            {/* Search input */}
+            <div className="relative w-full max-w-sm min-w-0">
+              <svg
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => onQueryChange(e.target.value)}
+                placeholder="Search by name or specialty"
+                className="w-full rounded-xl border border-[var(--border)] bg-white pl-9 pr-3 py-2.5 text-base text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[var(--primary)]/20 transition"
+              />
+            </div>
+
+            {/* Refine button */}
+            <button
+              type="button"
+              onClick={onRefineClick}
+              className={cn(
+                "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30",
+                activeFilterCount > 0
+                  ? "border-[var(--primary)] text-[var(--primary)]"
+                  : "border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--primary)] hover:text-[var(--foreground)]",
+              )}
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                />
+              </svg>
+              <span className="hidden sm:inline">Refine</span>
+              {activeFilterCount > 0 && (
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-semibold text-white">
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
           </div>
 
-          {/* Spacer */}
-          <div className="flex-1" />
-
-          {/* Search */}
-          <div className="relative">
-            <svg
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--muted-foreground)]"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-              />
-            </svg>
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => onQueryChange(e.target.value)}
-              placeholder="Search by name or specialty"
-              className="h-9 w-44 rounded-xl border border-[var(--border)] bg-white pl-9 pr-3 text-sm text-[var(--foreground)] placeholder:text-[var(--muted-foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/30 sm:w-56"
-            />
-          </div>
-
-          {/* Refine button */}
-          <button
-            type="button"
-            onClick={onRefineClick}
-            className="relative flex h-9 items-center gap-1.5 rounded-xl border border-[var(--border)] px-3 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface)]"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-              />
-            </svg>
-            Refine
-            {activeFilterCount > 0 && (
-              <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--primary)] px-1.5 text-[10px] font-bold text-white">
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
         </div>
       </div>
     </>

@@ -94,7 +94,7 @@ export function JRPassCardB({ duration, cities }: JRPassCardBProps) {
                 <span style={{ color: "var(--muted-foreground)" }}>
                   {capitalizeCity(journey.from)} → {capitalizeCity(journey.to)}
                 </span>
-                <span className="font-mono" style={{ color: "var(--muted-foreground)" }}>
+                <span className="tabular-nums" style={{ color: "var(--muted-foreground)" }}>
                   {formatYen(journey.fare)}
                 </span>
               </div>
@@ -106,7 +106,7 @@ export function JRPassCardB({ duration, cities }: JRPassCardBProps) {
               <span className="font-medium" style={{ color: "var(--foreground)" }}>
                 Individual tickets
               </span>
-              <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>
+              <span className="tabular-nums font-medium" style={{ color: "var(--foreground)" }}>
                 {formatYen(recommendation.individualTotal)}
               </span>
             </div>
@@ -119,7 +119,7 @@ export function JRPassCardB({ duration, cities }: JRPassCardBProps) {
                   {recommendation.passType.name} JR Pass
                 </span>
                 <span
-                  className="font-mono font-medium"
+                  className="tabular-nums font-medium"
                   style={{ color: isSave ? "var(--success)" : "var(--foreground)" }}
                 >
                   {formatYen(recommendation.passType.price)}

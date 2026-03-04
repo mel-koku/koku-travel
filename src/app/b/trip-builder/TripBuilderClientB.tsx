@@ -124,7 +124,7 @@ function TripBuilderBContent({
       </AnimatePresence>
 
       {error && (
-        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[var(--error)] px-4 py-3 text-white shadow-lg lg:bottom-8">
+        <div className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-[var(--error)] px-4 py-3 text-white shadow-[var(--shadow-elevated)] lg:bottom-8">
           <div className="flex items-center gap-2">
             <svg
               className="h-5 w-5"

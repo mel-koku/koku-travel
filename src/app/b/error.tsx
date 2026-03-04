@@ -45,7 +45,7 @@ export default function VariantBError({
           </button>
           <a
             href="/b/"
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-[var(--border)] px-6 text-sm font-medium text-[var(--foreground)] transition-shadow hover:shadow-[var(--shadow-sm)]"
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-[var(--border)] px-6 text-sm font-medium text-[var(--foreground)] transition-all hover:shadow-[var(--shadow-sm)] active:scale-[0.98]"
           >
             Go home
           </a>

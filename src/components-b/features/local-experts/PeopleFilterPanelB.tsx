@@ -3,6 +3,15 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { REGION_ORDER, getRegionForPrefecture } from "@/data/prefectures";
 import type { PeopleSortOption } from "@/hooks/usePeopleFilters";
+import type { PersonType } from "@/types/person";
+
+const TYPE_TABS: { label: string; value: PersonType | null }[] = [
+  { label: "All", value: null },
+  { label: "Artisans", value: "artisan" },
+  { label: "Guides", value: "guide" },
+  { label: "Interpreters", value: "interpreter" },
+  { label: "Authors", value: "author" },
+];
 
 type Props = {
   isOpen: boolean;
@@ -17,6 +26,10 @@ type Props = {
   onSortChange: (s: PeopleSortOption) => void;
   onClearAll: () => void;
   resultCount: number;
+  activeType: PersonType | null;
+  onTypeChange: (t: PersonType | null) => void;
+  typeCounts: Record<PersonType, number>;
+  total: number;
 };
 
 const SORT_OPTIONS: { label: string; value: PeopleSortOption }[] = [
@@ -38,6 +51,10 @@ export function PeopleFilterPanelB({
   onSortChange,
   onClearAll,
   resultCount,
+  activeType,
+  onTypeChange,
+  typeCounts,
+  total,
 }: Props) {
   // Group prefectures by region
   const grouped = new Map<string, string[]>();
@@ -105,6 +122,32 @@ export function PeopleFilterPanelB({
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8" data-lenis-prevent>
+              {/* Type */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
+                  Type
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {TYPE_TABS.map((tab) => {
+                    const count = tab.value === null ? total : typeCounts[tab.value] ?? 0;
+                    return (
+                      <button
+                        key={tab.label}
+                        type="button"
+                        onClick={() => onTypeChange(tab.value)}
+                        className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                          activeType === tab.value
+                            ? "bg-[var(--primary)] text-white"
+                            : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
+                        }`}
+                      >
+                        {tab.label} <span className="opacity-60">{count}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Sort */}
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
@@ -118,7 +161,7 @@ export function PeopleFilterPanelB({
                       onClick={() => onSortChange(opt.value)}
                       className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                         sort === opt.value
-                          ? "bg-[var(--foreground)] text-white"
+                          ? "bg-[var(--primary)] text-white"
                           : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
                       }`}
                     >
@@ -162,7 +205,7 @@ export function PeopleFilterPanelB({
                             }
                             className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                               selectedPrefecture === pref
-                                ? "bg-[var(--foreground)] text-white"
+                                ? "bg-[var(--primary)] text-white"
                                 : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
                             }`}
                           >
@@ -189,7 +232,7 @@ export function PeopleFilterPanelB({
                             }
                             className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                               selectedPrefecture === pref
-                                ? "bg-[var(--foreground)] text-white"
+                                ? "bg-[var(--primary)] text-white"
                                 : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
                             }`}
                           >
@@ -213,7 +256,7 @@ export function PeopleFilterPanelB({
                     onClick={() => onLanguageChange(null)}
                     className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                       !selectedLanguage
-                        ? "bg-[var(--foreground)] text-white"
+                        ? "bg-[var(--primary)] text-white"
                         : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
                     }`}
                   >
@@ -230,7 +273,7 @@ export function PeopleFilterPanelB({
                       }
                       className={`rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                         selectedLanguage === lang
-                          ? "bg-[var(--foreground)] text-white"
+                          ? "bg-[var(--primary)] text-white"
                           : "border border-[var(--border)] text-[var(--foreground)] hover:bg-[var(--surface)]"
                       }`}
                     >

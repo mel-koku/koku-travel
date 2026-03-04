@@ -30,7 +30,7 @@ export function ExperienceArtisanSection({ people }: Props) {
   const heading = HEADING_BY_TYPE[primary!.type] ?? "Your Guide";
 
   return (
-    <section className="bg-canvas py-12 sm:py-16">
+    <section className="bg-canvas py-12 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-4xl px-6">
         <ScrollReveal>
           <p className="eyebrow-editorial mb-6">{heading}</p>

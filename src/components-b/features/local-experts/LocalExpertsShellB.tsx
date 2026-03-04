@@ -95,9 +95,6 @@ export function LocalExpertsShellB() {
       <PeopleCategoryBarB
         query={filters.query}
         onQueryChange={setQuery}
-        activeType={filters.type}
-        onTypeChange={setType}
-        typeCounts={typeCounts}
         total={filteredPeople.length}
         activeFilterCount={activeFilterCount}
         onRefineClick={() => setFilterPanelOpen(true)}
@@ -118,6 +115,10 @@ export function LocalExpertsShellB() {
         onSortChange={setSort}
         onClearAll={clearAll}
         resultCount={filteredPeople.length}
+        activeType={filters.type}
+        onTypeChange={setType}
+        typeCounts={typeCounts}
+        total={allPeople?.length ?? 0}
       />
 
       <PersonDetailPanelB

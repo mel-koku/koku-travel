@@ -36,7 +36,7 @@ export function FinalCtaB({ content }: FinalCtaBProps) {
             </Link>
             <Link
               href="/b/places"
-              className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-8 text-sm font-medium text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+              className="inline-flex h-12 items-center justify-center rounded-xl border border-white/30 px-8 text-sm font-medium text-white transition-all hover:bg-white/10 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
             >
               {content?.finalCtaSecondaryText ?? "Explore Places"}
             </Link>

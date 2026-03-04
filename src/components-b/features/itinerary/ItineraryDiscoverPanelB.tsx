@@ -107,7 +107,7 @@ export function ItineraryDiscoverPanelB({
           <button
             type="button"
             onClick={() => onOpenNowChange(!openNow)}
-            className="flex h-9 shrink-0 items-center gap-1 rounded-xl border px-2.5 text-xs font-medium transition-colors"
+            className="flex h-11 shrink-0 items-center gap-1 rounded-xl border px-2.5 text-xs font-medium transition-colors"
             style={{
               borderColor: openNow ? "var(--primary)" : "var(--border)",
               backgroundColor: openNow
