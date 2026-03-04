@@ -121,6 +121,7 @@ export function DatePicker({
               selected={selected}
               onSelect={handleSelect}
               defaultMonth={selected ?? fromDate ?? new Date()}
+              startMonth={fromDate}
               disabled={[
                 ...(fromDate ? [{ before: fromDate }] : []),
                 ...(toDate ? [{ after: toDate }] : []),
@@ -160,7 +161,7 @@ export function DatePicker({
                   "[&>.rdp-day_button]:border [&>.rdp-day_button]:border-primary/40",
                 outside: "[&>.rdp-day_button]:text-muted-foreground/40",
                 disabled:
-                  "[&>.rdp-day_button]:text-muted-foreground/30 [&>.rdp-day_button]:pointer-events-none",
+                  "[&>.rdp-day_button]:text-muted-foreground/30 [&>.rdp-day_button]:pointer-events-none [&>.rdp-day_button]:cursor-not-allowed [&>.rdp-day_button]:opacity-30",
                 hidden: "invisible",
               }}
               components={{
