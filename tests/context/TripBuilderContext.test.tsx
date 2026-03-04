@@ -196,7 +196,7 @@ describe("TripBuilderContext", () => {
       expect(result.current.data.regions).toEqual(["kansai", "kanto", "tohoku"]);
     });
 
-    it("should deduplicate cities", () => {
+    it("should allow duplicate cities (return-to-airport pattern)", () => {
       const { result } = renderHook(() => useTripBuilder(), {
         wrapper: createContextWrapper(TripBuilderProvider),
       });
@@ -204,12 +204,11 @@ describe("TripBuilderContext", () => {
       act(() => {
         result.current.setData((prev) => ({
           ...prev,
-          cities: ["kyoto", "osaka", "kyoto", "tokyo"],
+          cities: ["tokyo", "osaka", "tokyo"],
         }));
       });
 
-      contextAssertions.arrayIsUnique(result.current.data.cities);
-      expect(result.current.data.cities).toEqual(["kyoto", "osaka", "tokyo"]);
+      expect(result.current.data.cities).toEqual(["tokyo", "osaka", "tokyo"]);
     });
 
     it("should reject entry points with invalid coordinate bounds", () => {

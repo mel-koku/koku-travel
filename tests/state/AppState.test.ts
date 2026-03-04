@@ -200,11 +200,14 @@ describe("AppState", () => {
 
       expect(result.current.isSaved("place-1")).toBe(true);
 
-      act(() => {
-        result.current.toggleSave("place-1");
+      // Wait for the pending sync from the first toggle to resolve
+      // so the double-toggle guard (pendingSavesRef) clears
+      await waitFor(() => {
+        act(() => {
+          result.current.toggleSave("place-1");
+        });
+        expect(result.current.isSaved("place-1")).toBe(false);
       });
-
-      expect(result.current.isSaved("place-1")).toBe(false);
     });
 
     it("should create trip", async () => {

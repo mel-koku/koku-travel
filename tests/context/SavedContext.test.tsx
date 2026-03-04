@@ -72,11 +72,14 @@ describe("SavedContext", () => {
       expect(result.current.isInSaved("place-1")).toBe(true);
       expect(result.current.saved).toContain("place-1");
 
-      act(() => {
-        result.current.toggleSave("place-1");
+      // Wait for the pending sync from the first toggle to resolve
+      // so the double-toggle guard (pendingSavesRef) clears
+      await waitFor(() => {
+        act(() => {
+          result.current.toggleSave("place-1");
+        });
+        expect(result.current.isInSaved("place-1")).toBe(false);
       });
-
-      expect(result.current.isInSaved("place-1")).toBe(false);
       expect(result.current.saved).not.toContain("place-1");
     });
 
