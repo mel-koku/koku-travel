@@ -38,8 +38,8 @@ export function LocalExpertsIntroB({ total }: Props) {
         transition={{ duration: 0.6, ease: bEase, delay: 0.2 }}
         className="text-base text-[var(--foreground-body)] max-w-2xl mx-auto mt-6 leading-relaxed"
       >
-        Artisans, guides, and hosts who bring Japan to life. Browse by
-        specialty, city, or craft.
+        Artisans and guides who bring Japan to life. Browse by specialty,
+        city, or craft.
       </motion.p>
     </section>
   );

@@ -331,7 +331,7 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
           {people.length > 0 && (
             <section className="space-y-3">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
-                {people[0]!.type === "guide" ? "Your Guide" : people[0]!.type === "host" ? "Your Host" : people[0]!.type === "interpreter" ? "Your Interpreter" : "Meet the Artisan"}
+                {people[0]!.type === "guide" ? "Your Guide" : people[0]!.type === "interpreter" ? "Your Interpreter" : "Meet the Artisan"}
               </h3>
               {people.map((person) => (
                 <div

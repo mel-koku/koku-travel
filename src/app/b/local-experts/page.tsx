@@ -5,9 +5,9 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Local Experts — Artisans, Guides & Hosts | Koku Travel",
+  title: "Local Experts — Artisans & Guides | Koku Travel",
   description:
-    "Browse local artisans, guides, and hosts across Japan. Find the right expert for your trip and request a booking.",
+    "Browse local artisans and guides across Japan. Find the right expert for your trip and request a booking.",
 };
 
 export default function LocalExpertsBPage() {
