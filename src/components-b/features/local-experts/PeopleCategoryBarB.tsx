@@ -7,7 +7,6 @@ const TYPE_TABS: { label: string; value: PersonType | null }[] = [
   { label: "All", value: null },
   { label: "Artisans", value: "artisan" },
   { label: "Guides", value: "guide" },
-  { label: "Hosts", value: "host" },
   { label: "Interpreters", value: "interpreter" },
   { label: "Authors", value: "author" },
 ];

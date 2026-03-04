@@ -8,7 +8,6 @@ const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 const TYPE_LABELS: Record<string, string> = {
   artisan: "Artisan",
   guide: "Guide",
-  host: "Host",
   interpreter: "Interpreter",
 };
 

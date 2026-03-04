@@ -101,11 +101,10 @@ export function usePeopleFilters(people: Person[] | undefined) {
   // Type counts for tabs
   const typeCounts = useMemo(() => {
     if (!people)
-      return { artisan: 0, guide: 0, host: 0, interpreter: 0, author: 0 };
+      return { artisan: 0, guide: 0, interpreter: 0, author: 0 };
     const counts: Record<string, number> = {
       artisan: 0,
       guide: 0,
-      host: 0,
       interpreter: 0,
       author: 0,
     };

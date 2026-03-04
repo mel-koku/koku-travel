@@ -17,7 +17,6 @@ const HEADING_BY_TYPE: Record<string, string> = {
   artisan: "Meet the Artisan",
   guide: "Your Guide",
   interpreter: "Your Interpreter",
-  host: "Your Host",
 };
 
 function roleLabel(role: string): string {
@@ -25,7 +24,6 @@ function roleLabel(role: string): string {
     lead: "Lead",
     assistant: "Assistant",
     interpreter: "Interpreter",
-    host: "Host",
   };
   return labels[role] || role;
 }
@@ -38,7 +36,7 @@ export function ExperienceArtisanSectionB({ people }: Props) {
   if (people.length === 0) return null;
 
   const primary = people.find((p) => p.is_primary) || people[0];
-  const heading = HEADING_BY_TYPE[primary!.type] ?? "Meet Your Host";
+  const heading = HEADING_BY_TYPE[primary!.type] ?? "Your Guide";
 
   return (
     <motion.section
