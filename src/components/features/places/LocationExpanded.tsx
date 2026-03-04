@@ -9,6 +9,7 @@ import { useLenis } from "@/providers/LenisProvider";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
+import { useExperiencePeople } from "@/hooks/useExperiencePeople";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
@@ -42,6 +43,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   const { pause, resume } = useLenis();
   const { status, details, fetchedLocation } = useLocationDetailsQuery(location.id);
   const locationWithDetails = fetchedLocation ?? location;
+  const people = useExperiencePeople(locationWithDetails.sanitySlug, locationWithDetails.id);
   const { isInSaved, toggleSave } = useSaved();
   const showFirstSaveToast = useFirstSaveToast();
   const [heartAnimating, setHeartAnimating] = useState(false);
@@ -319,6 +321,66 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
                 Overview
               </h3>
               <p className="text-base leading-relaxed text-foreground-secondary">{description}</p>
+            </section>
+          )}
+
+          {/* Artisan / Guide profile */}
+          {people.length > 0 && (
+            <section className="space-y-3">
+              <h3 className="eyebrow-editorial">
+                {people[0]!.type === "guide" ? "Your Guide" : people[0]!.type === "host" ? "Your Host" : people[0]!.type === "interpreter" ? "Your Interpreter" : "Meet the Artisan"}
+              </h3>
+              {people.map((person) => (
+                <div
+                  key={person.id}
+                  className="flex items-start gap-4 rounded-xl bg-surface p-4"
+                >
+                  {person.photo_url && (
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
+                      <Image
+                        src={person.photo_url}
+                        alt={person.name}
+                        fill
+                        className="object-cover"
+                        sizes="56px"
+                      />
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">{person.name}</p>
+                      {person.name_japanese && (
+                        <span className="text-xs text-foreground-secondary">{person.name_japanese}</span>
+                      )}
+                    </div>
+                    {person.bio && (
+                      <p className="mt-1 text-xs leading-relaxed text-foreground-secondary line-clamp-3">
+                        {person.bio}
+                      </p>
+                    )}
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {person.years_experience && (
+                        <span className="text-[11px] text-stone">
+                          {person.years_experience}+ years
+                        </span>
+                      )}
+                      {person.specialties.length > 0 && person.specialties.slice(0, 3).map((s) => (
+                        <span
+                          key={s}
+                          className="rounded-full border border-border px-2 py-0.5 text-[11px] text-foreground-secondary"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                    {person.languages.length > 0 && (
+                      <p className="mt-1.5 text-[11px] text-stone">
+                        Speaks {person.languages.join(", ")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </section>
           )}
 

@@ -9,11 +9,13 @@ import { siteSettings } from "./siteSettings";
 import { landingPage } from "./landingPage";
 import { tripBuilderConfig } from "./tripBuilderConfig";
 import { pagesContent } from "./pagesContent";
+import { person } from "./person";
 
 export const schemaTypes = [
   guide,
   experience,
   author,
+  person,
   locationRef,
   tipCallout,
   experienceHighlight,

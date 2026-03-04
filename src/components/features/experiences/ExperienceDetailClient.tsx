@@ -14,20 +14,24 @@ import { ExperienceFooter } from "./ExperienceFooter";
 import { LinkedLocations } from "@/components/features/guides/LinkedLocations";
 import { ArticleFloatingCTA } from "@/components/features/guides/ArticleFloatingCTA";
 import { GuideProgressBar } from "@/components/features/guides/GuideProgressBar";
+import { ExperienceArtisanSection } from "./ExperienceArtisanSection";
 import { useAppState } from "@/state/AppState";
 import { useBookmarks } from "@/hooks/useBookmarksQuery";
 import type { Location } from "@/types/location";
+import type { ExperiencePerson } from "@/types/person";
 
 type ExperienceDetailClientProps = {
   experience: SanityExperience;
   relatedExperiences: ExperienceSummary[];
   locations?: Location[];
+  people?: ExperiencePerson[];
 };
 
 export function ExperienceDetailClient({
   experience,
   relatedExperiences,
   locations = [],
+  people = [],
 }: ExperienceDetailClientProps) {
   const { user } = useAppState();
   const { isBookmarked, toggleBookmark, isToggling } = useBookmarks(user?.id);
@@ -69,6 +73,8 @@ export function ExperienceDetailClient({
         isToggling={isToggling}
         onToggleBookmark={() => toggleBookmark(bookmarkId)}
       />
+
+      <ExperienceArtisanSection people={people} />
 
       {/* Article body + sidebar grid (2fr / 1fr on xl+) */}
       <div className="xl:mx-auto xl:grid xl:max-w-[1400px] xl:grid-cols-[2fr_1fr] xl:gap-10 xl:px-8 xl:pb-16">
