@@ -82,6 +82,7 @@ type DiscoverMapProps = {
   onLocationClick: (location: Location) => void;
   highlightedLocationId: string | null;
   isLoading: boolean;
+  initialCenter?: [number, number];
 };
 
 export function DiscoverMap({
@@ -90,6 +91,7 @@ export function DiscoverMap({
   onLocationClick,
   highlightedLocationId,
   isLoading,
+  initialCenter,
 }: DiscoverMapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<InstanceType<MapboxModule["Map"]> | null>(null);
@@ -158,7 +160,7 @@ export function DiscoverMap({
 
     const center: [number, number] = userPosition
       ? [userPosition.lng, userPosition.lat]
-      : DEFAULT_CENTER;
+      : initialCenter ?? DEFAULT_CENTER;
 
     const map = new mapboxModule.Map({
       container: mapContainerRef.current,

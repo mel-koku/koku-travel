@@ -53,6 +53,15 @@ import { ActivityRatingsProvider } from "@/components/features/itinerary/Activit
 import { PrintHeader } from "@/components/features/itinerary/PrintHeader";
 import { PrintFooter } from "@/components/features/itinerary/PrintFooter";
 import { REGIONS } from "@/data/regions";
+import { useItineraryDiscover } from "@/components/features/itinerary/hooks/useItineraryDiscover";
+import { ItineraryDiscoverPanelB } from "./ItineraryDiscoverPanelB";
+
+const DiscoverMapB = dynamic(
+  () => import("@b/features/discover/DiscoverMapB").then((m) => ({ default: m.DiscoverMapB })),
+  { ssr: false },
+);
+
+type ItineraryViewMode = "timeline" | "dashboard" | "discover";
 
 const PlaceDetailPanelBLazy = dynamic(
   () =>
@@ -154,7 +163,7 @@ export const ItineraryShellB = ({
 
   const [selectedDay, setSelectedDay] = useState(0);
   const [mapExpanded, setMapExpanded] = useState(false);
-  const [showDashboard, setShowDashboard] = useState(false);
+  const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
   const [dismissedSuggestions, setDismissedSuggestions] = useState(false);
   const [headerCollapsed, setHeaderCollapsed] = useState(false);
   const lastScrollTopRef = useRef(0);
@@ -586,6 +595,21 @@ export const ItineraryShellB = ({
     0,
   );
 
+  // ── Discover mode ──
+  const discover = useItineraryDiscover({
+    model,
+    currentDay,
+    dayIndex: safeSelectedDay,
+  });
+
+  const handleAddDiscoverActivity = useCallback(
+    (location: Location) => {
+      const newActivity = discover.buildActivity(location);
+      handleAddSearchedActivity(newActivity);
+    },
+    [discover, handleAddSearchedActivity],
+  );
+
   // Activity ratings
   const activityRatingsHook = useActivityRatings(tripId && !isUsingMock && !isReadOnly ? tripId : undefined);
   useEffect(() => {
@@ -644,7 +668,7 @@ export const ItineraryShellB = ({
       {/* ── Mobile peek map strip (< lg) ── */}
       <div className="relative lg:hidden">
         <motion.div
-          animate={{ height: mapExpanded ? "100dvh" : "30vh" }}
+          animate={{ height: viewMode === "discover" ? "50vh" : mapExpanded ? "100dvh" : "30vh" }}
           transition={{ duration: bDurationMedium, ease: bEase }}
           className={
             mapExpanded
@@ -662,6 +686,17 @@ export const ItineraryShellB = ({
               </div>
             }
           >
+            {viewMode === "discover" ? (
+              <DiscoverMapB
+                locations={discover.locations}
+                userPosition={discover.userPosition}
+                onLocationClick={discover.setExpandedLocation}
+                onHoverChange={discover.setHighlightedLocationId}
+                highlightedLocationId={discover.highlightedLocationId}
+                isLoading={discover.isLoading}
+                initialCenter={discover.mapInitialCenter}
+              />
+            ) : (
             <ItineraryMapPanel
               day={safeSelectedDay}
               activities={currentDay?.activities ?? []}
@@ -673,10 +708,11 @@ export const ItineraryShellB = ({
               tripStartDate={tripStartDate}
               dayLabel={currentDay?.dateLabel}
             />
+            )}
           </ErrorBoundary>
 
           {/* Tap-to-expand overlay (when collapsed) */}
-          {!mapExpanded && (
+          {!mapExpanded && viewMode !== "discover" && (
             <button
               type="button"
               onClick={() => setMapExpanded(true)}
@@ -809,23 +845,31 @@ export const ItineraryShellB = ({
                 {/* Action buttons */}
                 <div className="flex shrink-0 items-center gap-2">
                   {!isReadOnly && tripId && !isUsingMock && (
-                    <button
-                      type="button"
-                      onClick={() => setShowDashboard((prev) => !prev)}
-                      className="flex h-9 items-center gap-1.5 rounded-xl border px-3 text-xs font-medium transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--foreground)]"
-                      style={{
-                        borderColor: showDashboard ? "var(--primary)" : "var(--border)",
-                        backgroundColor: showDashboard
-                          ? "color-mix(in srgb, var(--primary) 10%, transparent)"
-                          : "transparent",
-                        color: showDashboard ? "var(--primary)" : "var(--muted-foreground)",
-                      }}
+                    <div
+                      className="flex h-9 shrink-0 items-center rounded-xl border p-0.5"
+                      style={{ borderColor: "var(--border)", backgroundColor: "var(--surface)" }}
                     >
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                      <span className="hidden sm:inline">{showDashboard ? "Day View" : "Overview"}</span>
-                    </button>
+                      {(
+                        [
+                          { key: "timeline", label: "Timeline" },
+                          { key: "dashboard", label: "Overview" },
+                          ...(!isReadOnly ? [{ key: "discover", label: "Discover" }] : []),
+                        ] as { key: ItineraryViewMode; label: string }[]
+                      ).map((tab) => (
+                        <button
+                          key={tab.key}
+                          type="button"
+                          onClick={() => setViewMode(tab.key)}
+                          className="rounded-lg px-2.5 py-1 text-xs font-medium transition-colors"
+                          style={{
+                            backgroundColor: viewMode === tab.key ? "var(--primary)" : "transparent",
+                            color: viewMode === tab.key ? "white" : "var(--muted-foreground)",
+                          }}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
                   )}
                   {!isReadOnly && tripId && !isUsingMock && (
                     <ShareButtonB tripId={tripId} />
@@ -899,7 +943,7 @@ export const ItineraryShellB = ({
 
           {/* ── Trip Confidence Dashboard ── */}
           <AnimatePresence>
-            {showDashboard && (
+            {viewMode === "dashboard" && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -913,10 +957,10 @@ export const ItineraryShellB = ({
                   conflicts={conflictsResult.conflicts}
                   tripStartDate={tripStartDate}
                   selectedDay={safeSelectedDay}
-                  onClose={() => setShowDashboard(false)}
+                  onClose={() => setViewMode("timeline")}
                   onSelectDay={(dayIndex) => {
                     handleSelectDayChange(dayIndex);
-                    setShowDashboard(false);
+                    setViewMode("timeline");
                   }}
                   onDayExpand={(dayIndex) => {
                     if (dayIndex != null) handleSelectDayChange(dayIndex);
@@ -928,11 +972,36 @@ export const ItineraryShellB = ({
             )}
           </AnimatePresence>
 
+          {/* ── Discover Panel ── */}
+          {viewMode === "discover" && (
+            <div className="flex-1 overflow-hidden">
+              <ItineraryDiscoverPanelB
+                locations={discover.locations}
+                isLoading={discover.isLoading}
+                category={discover.category}
+                onCategoryChange={discover.setCategory}
+                openNow={discover.openNow}
+                onOpenNowChange={discover.setOpenNow}
+                searchQuery={discover.searchQuery}
+                onSearchQueryChange={discover.setSearchQuery}
+                highlightedLocationId={discover.highlightedLocationId}
+                onHighlightChange={discover.setHighlightedLocationId}
+                onLocationClick={discover.setExpandedLocation}
+                onAddToDay={handleAddDiscoverActivity}
+                usedLocationIds={discover.usedLocationIds}
+                dayLabel={discover.dayLabel}
+                userPosition={discover.userPosition}
+                onRequestGeolocation={discover.requestGeolocation}
+                geoLoading={discover.geoLocation.isLoading}
+              />
+            </div>
+          )}
+
           {/* ── Activities List ── */}
           <div
             data-itinerary-activities
             data-lenis-prevent
-            className={`relative flex-1 overflow-y-auto overscroll-contain p-4 pb-[env(safe-area-inset-bottom)] lg:p-5 ${showDashboard ? "hidden" : ""}`}
+            className={`relative flex-1 overflow-y-auto overscroll-contain p-4 pb-[env(safe-area-inset-bottom)] lg:p-5 ${viewMode !== "timeline" ? "hidden" : ""}`}
             style={{ background: "var(--background)" }}
           >
             {/* Day transition interstitial */}
@@ -1112,17 +1181,29 @@ export const ItineraryShellB = ({
                 </div>
               }
             >
-              <ItineraryMapPanel
-                day={safeSelectedDay}
-                activities={currentDay?.activities ?? []}
-                selectedActivityId={selectedActivityId}
-                onSelectActivity={handleSelectActivity}
-                isPlanning={isPlanning}
-                startPoint={effectiveMapStartPoint}
-                endPoint={effectiveMapEndPoint}
-                tripStartDate={tripStartDate}
-                dayLabel={currentDay?.dateLabel}
-              />
+              {viewMode === "discover" ? (
+                <DiscoverMapB
+                  locations={discover.locations}
+                  userPosition={discover.userPosition}
+                  onLocationClick={discover.setExpandedLocation}
+                  onHoverChange={discover.setHighlightedLocationId}
+                  highlightedLocationId={discover.highlightedLocationId}
+                  isLoading={discover.isLoading}
+                  initialCenter={discover.mapInitialCenter}
+                />
+              ) : (
+                <ItineraryMapPanel
+                  day={safeSelectedDay}
+                  activities={currentDay?.activities ?? []}
+                  selectedActivityId={selectedActivityId}
+                  onSelectActivity={handleSelectActivity}
+                  isPlanning={isPlanning}
+                  startPoint={effectiveMapStartPoint}
+                  endPoint={effectiveMapEndPoint}
+                  tripStartDate={tripStartDate}
+                  dayLabel={currentDay?.dateLabel}
+                />
+              )}
             </ErrorBoundary>
           </div>
         </div>
@@ -1130,10 +1211,13 @@ export const ItineraryShellB = ({
 
       {/* Location Detail Panel */}
       <AnimatePresence>
-        {expandedLocation && (
+        {(expandedLocation || discover.expandedLocation) && (
           <PlaceDetailPanelBLazy
-            location={expandedLocation}
-            onClose={handleCloseExpanded}
+            location={(expandedLocation ?? discover.expandedLocation)!}
+            onClose={() => {
+              handleCloseExpanded();
+              discover.setExpandedLocation(null);
+            }}
           />
         )}
       </AnimatePresence>
