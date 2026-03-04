@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
 import { useLenis } from "@/providers/LenisProvider";
@@ -100,9 +101,11 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                 {/* Profile header */}
                 <div className="flex items-start gap-5">
                   {displayPerson.photo_url ? (
-                    <img
+                    <Image
                       src={displayPerson.photo_url}
                       alt={displayPerson.name}
+                      width={96}
+                      height={96}
                       className="h-24 w-24 flex-shrink-0 rounded-full object-cover"
                     />
                   ) : (

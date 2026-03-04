@@ -707,7 +707,7 @@ function AccommodationCityFieldB({
       placeId: suggestion.mapbox_id,
     });
     setSearchInput("");
-  }, [onChange]);
+  }, [onChange, setSearchInput]);
 
   const cityLabel = cityId.charAt(0).toUpperCase() + cityId.slice(1);
 

@@ -400,6 +400,7 @@ export function PlacesMap({
         }
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- flyToLocation read is intentional one-time check for initial bounds
   }, [featureCollection, mapReady]);
 
   // Highlight sync

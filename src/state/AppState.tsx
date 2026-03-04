@@ -431,9 +431,10 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   // Cleanup pending trip sync timeouts on unmount
   useEffect(() => {
+    const timeouts = tripSyncTimeouts.current;
     return () => {
-      tripSyncTimeouts.current.forEach((timeout) => clearTimeout(timeout));
-      tripSyncTimeouts.current.clear();
+      timeouts.forEach((timeout) => clearTimeout(timeout));
+      timeouts.clear();
     };
   }, []);
 

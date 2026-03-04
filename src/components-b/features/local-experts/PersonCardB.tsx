@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import type { Person } from "@/types/person";
 
@@ -41,9 +42,11 @@ export function PersonCardB({ person, index, onClick }: Props) {
     >
       {/* Photo / Avatar */}
       {person.photo_url ? (
-        <img
+        <Image
           src={person.photo_url}
           alt={person.name}
+          width={80}
+          height={80}
           className="h-20 w-20 rounded-full object-cover"
         />
       ) : (

@@ -34,7 +34,7 @@ export function TripMap() {
     []
   );
 
-  const cities = data.cities ?? [];
+  const cities = useMemo(() => data.cities ?? [], [data.cities]);
 
   // Get city coordinates
   const cityCoordinates = useMemo(() => {

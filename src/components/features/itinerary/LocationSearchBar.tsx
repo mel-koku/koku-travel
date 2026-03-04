@@ -31,6 +31,12 @@ export function LocationSearchBar({
     limit: 8,
   });
 
+  const collapse = useCallback(() => {
+    setIsExpanded(false);
+    setQuery("");
+    setFetchingId(null);
+  }, []);
+
   // Focus input when expanded
   useEffect(() => {
     if (isExpanded) {
@@ -51,13 +57,7 @@ export function LocationSearchBar({
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isExpanded]);
-
-  const collapse = useCallback(() => {
-    setIsExpanded(false);
-    setQuery("");
-    setFetchingId(null);
-  }, []);
+  }, [isExpanded, collapse]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
