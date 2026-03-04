@@ -63,7 +63,7 @@ export function GuidePreamble({
             <p className="font-mono text-xs uppercase tracking-wide text-stone">
               {authorSlug ? (
                 <Link
-                  href={`/guides/authors/${authorSlug}`}
+                  href={`/local-experts?person=${authorSlug}`}
                   className="link-reveal hover:text-foreground transition-colors"
                 >
                   {authorName}

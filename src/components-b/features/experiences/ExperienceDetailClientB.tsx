@@ -372,7 +372,7 @@ export function ExperienceDetailClientB({
                   whileHover={{ y: -3, transition: { type: "spring", stiffness: 300, damping: 20 } }}
                 >
                   <Link
-                    href={`/b/experiences/${exp.slug}`}
+                    href={`/b/guides/${exp.slug}`}
                     className="group block rounded-2xl bg-white overflow-hidden transition-shadow hover:shadow-[var(--shadow-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
                     style={{ boxShadow: "var(--shadow-card)" }}
                   >
@@ -411,7 +411,7 @@ export function ExperienceDetailClientB({
             {dateLabel ? ` \u00b7 Published ${dateLabel}` : ""}
           </p>
           <Link
-            href="/b/experiences"
+            href="/b/guides?type=activity"
             className="mt-4 inline-flex text-sm font-medium text-[var(--primary)] hover:underline rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2"
           >
             &larr; All experiences

@@ -10,6 +10,7 @@ const GUIDE_TYPE_LABELS: Record<GuideType, string> = {
   listicle: "Top Picks",
   deep_dive: "Deep Dive",
   seasonal: "Seasonal",
+  activity: "Activity",
 };
 
 type GuideFooterProps = {

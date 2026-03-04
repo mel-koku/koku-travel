@@ -11,6 +11,7 @@ const GUIDE_TYPE_LABELS: Record<GuideSummary["guideType"], string> = {
   listicle: "Top Picks",
   deep_dive: "Deep Dive",
   seasonal: "Seasonal",
+  activity: "Activity",
 };
 
 const SEASON_LABELS: Record<string, string> = {

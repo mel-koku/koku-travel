@@ -16,20 +16,25 @@ type SignInClientProps = {
 
 function getRedirectUrl(): string {
   const siteUrl = env.siteUrl;
-  if (siteUrl) {
-    return `${siteUrl}/auth/callback`;
-  }
+  const base = siteUrl ?? (typeof window !== "undefined" ? window.location.origin : "");
+  const callbackUrl = `${base}/auth/callback`;
+
+  // Preserve current page as post-sign-in redirect target
   if (typeof window !== "undefined") {
-    return `${window.location.origin}/auth/callback`;
+    const params = new URLSearchParams(window.location.search);
+    const next = params.get("next");
+    if (next && next.startsWith("/") && !next.startsWith("//")) {
+      return `${callbackUrl}?next=${encodeURIComponent(next)}`;
+    }
   }
-  return "/auth/callback";
+  return callbackUrl;
 }
 
 export function SignInClient({ content }: SignInClientProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState<{ message: string; isError: boolean } | null>(null);
   const supabase = createClient();
 
   const { scrollYProgress } = useScroll({
@@ -46,10 +51,10 @@ export function SignInClient({ content }: SignInClientProps) {
   async function sendMagicLink(e: FormEvent) {
     e.preventDefault();
     if (!supabase) {
-      setStatus("Sign-in is temporarily unavailable.");
+      setStatus({ message: "Sign-in is temporarily unavailable.", isError: true });
       return;
     }
-    setStatus("Sending your sign-in link\u2026");
+    setStatus({ message: "Sending your sign-in link\u2026", isError: false });
     const redirectUrl = getRedirectUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -57,8 +62,8 @@ export function SignInClient({ content }: SignInClientProps) {
     });
     setStatus(
       error
-        ? `Error: ${error.message}`
-        : "Sign-in link sent \u2014 check your inbox.",
+        ? { message: `Error: ${error.message}`, isError: true }
+        : { message: "Sign-in link sent \u2014 check your inbox.", isError: false },
     );
   }
 
@@ -153,7 +158,7 @@ export function SignInClient({ content }: SignInClientProps) {
             </button>
 
             {status && (
-              <p className="text-xs text-stone">{status}</p>
+              <p className={`text-xs ${status.isError ? "text-error" : "text-success"}`}>{status.message}</p>
             )}
           </motion.form>
 

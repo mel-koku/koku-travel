@@ -41,6 +41,9 @@ type EnvConfig = {
   // Video Import
   ENABLE_VIDEO_IMPORT?: string;
   META_OEMBED_ACCESS_TOKEN?: string;
+
+  // Email (Resend)
+  RESEND_API_KEY?: string;
 };
 
 type RequiredEnvKeys =
@@ -104,6 +107,7 @@ function createLenientConfig(): EnvConfig {
     ENABLE_CHAT: process.env.ENABLE_CHAT,
     ENABLE_VIDEO_IMPORT: process.env.ENABLE_VIDEO_IMPORT,
     META_OEMBED_ACCESS_TOKEN: process.env.META_OEMBED_ACCESS_TOKEN,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
   };
 }
 
@@ -170,6 +174,7 @@ function validateEnv(): EnvConfig {
     ENABLE_CHAT: getOptionalEnv("ENABLE_CHAT"),
     ENABLE_VIDEO_IMPORT: getOptionalEnv("ENABLE_VIDEO_IMPORT"),
     META_OEMBED_ACCESS_TOKEN: getOptionalEnv("META_OEMBED_ACCESS_TOKEN"),
+    RESEND_API_KEY: getOptionalEnv("RESEND_API_KEY"),
   };
 }
 
@@ -233,5 +238,8 @@ export const env = {
   },
   get isChatEnabled() {
     return envConfig.ENABLE_CHAT !== "false";
+  },
+  get resendApiKey() {
+    return envConfig.RESEND_API_KEY;
   },
 } as const;

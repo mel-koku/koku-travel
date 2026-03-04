@@ -128,7 +128,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
       setExpandedLocation(match);
       setFlyToLocation(match);
       didAutoExpandRef.current = true;
-      window.history.replaceState(null, "", "/places");
     }
   }, [locationParam, locations]);
 

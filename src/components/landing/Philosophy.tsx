@@ -77,6 +77,19 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
             </p>
           </div>
         </div>
+
+        {/* Mid-page CTA */}
+        <ScrollReveal delay={0.3}>
+          <a
+            href="/trip-builder"
+            className="link-reveal mt-12 inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground-secondary transition-colors hover:text-foreground"
+          >
+            Build my itinerary
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
+        </ScrollReveal>
       </div>
     </section>
   );
