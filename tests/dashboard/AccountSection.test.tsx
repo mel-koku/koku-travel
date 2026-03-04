@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AccountSection } from "@/app/dashboard/components/AccountSection";
+import { AccountSection } from "@/app/(main)/dashboard/components/AccountSection";
 
 // Mock IdentityBadge component
 vi.mock("@/components/ui/IdentityBadge", () => ({
