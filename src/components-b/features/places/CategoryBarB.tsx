@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect } from "react";
 import { cn } from "@/lib/cn";
-import type { ActiveFilter } from "@/types/filters";
 
 type CategoryTab = {
   id: string | null;
@@ -13,15 +12,12 @@ type CategoryTab = {
 type CategoryBarBProps = {
   onFiltersClick: () => void;
   activeFilterCount: number;
-  activeFilters?: ActiveFilter[];
-  onRemoveFilter?: (filter: ActiveFilter) => void;
-  onClearAllFilters?: () => void;
   inputValue: string;
   onInputChange: (value: string) => void;
   onInputSubmit: () => void;
   tabs?: CategoryTab[];
   activeTab?: string | null;
-  onTabChange?: (tabId: string | null) => void;
+
   viewMode?: "grid" | "map";
   onViewModeChange?: (mode: "grid" | "map") => void;
   mapAvailable?: boolean;
@@ -32,15 +28,11 @@ type CategoryBarBProps = {
 export function CategoryBarB({
   onFiltersClick,
   activeFilterCount,
-  activeFilters = [],
-  onRemoveFilter,
-  onClearAllFilters,
   inputValue,
   onInputChange,
   onInputSubmit,
   tabs,
   activeTab,
-  onTabChange,
   viewMode = "grid",
   onViewModeChange,
   mapAvailable = false,
@@ -66,9 +58,6 @@ export function CategoryBarB({
     return () => observer.disconnect();
   }, []);
 
-  const chipFilters = activeFilters.filter((f) => f.type !== "search");
-  const hasChips = chipFilters.length > 0;
-
   return (
     <>
       <div ref={sentinelRef} className="h-0 w-full" aria-hidden="true" />
@@ -81,7 +70,7 @@ export function CategoryBarB({
         )}
         style={{
           top: isStuck || viewMode === "map" ? "calc(var(--header-h) - 3px)" : "var(--header-h)",
-          backgroundColor: isStuck || viewMode === "map" ? "#fff" : undefined,
+          backgroundColor: isStuck || viewMode === "map" ? "var(--card)" : undefined,
           boxShadow: isStuck || viewMode === "map" ? "var(--shadow-sm)" : "none",
         }}
       >
@@ -215,61 +204,7 @@ export function CategoryBarB({
             </button>
           </div>
 
-          {/* Category tabs */}
-          {tabs && tabs.length > 1 && onTabChange && (
-            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide pb-1.5 -mt-0.5">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id ?? "__all"}
-                  type="button"
-                  onClick={() => onTabChange(tab.id)}
-                  className={cn(
-                    "shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium transition whitespace-nowrap",
-                    activeTab === tab.id
-                      ? "bg-[var(--primary)] text-white"
-                      : "bg-[var(--surface)] text-[var(--muted-foreground)] hover:text-[var(--foreground)]",
-                  )}
-                >
-                  {tab.label}
-                  <span className="ml-1 opacity-60">{tab.count}</span>
-                </button>
-              ))}
-            </div>
-          )}
 
-          {/* Active filter chips */}
-          {hasChips && (
-            <div className="flex flex-wrap items-center justify-center gap-2 pb-3">
-              {chipFilters.map((filter, index) => (
-                <button
-                  key={`${filter.type}-${filter.value}-${index}`}
-                  onClick={() => onRemoveFilter?.(filter)}
-                  title={`Remove ${filter.label}`}
-                  className="inline-flex items-center gap-1 rounded-xl bg-[var(--surface)] px-2.5 py-1 text-xs font-medium text-[var(--foreground-secondary)] hover:bg-[var(--border)] border border-[var(--border)] transition group"
-                  aria-label={`Remove ${filter.label} filter`}
-                >
-                  <span>{filter.label}</span>
-                  <svg
-                    className="h-3 w-3 text-[var(--muted-foreground)] group-hover:text-[var(--primary)] transition"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              ))}
-              {chipFilters.length > 1 && (
-                <button
-                  onClick={onClearAllFilters}
-                  className="text-xs font-medium text-[var(--muted-foreground)] hover:text-[var(--foreground)] underline underline-offset-2 transition ml-1"
-                >
-                  Clear all
-                </button>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </>

@@ -19,7 +19,7 @@ export function CraftWorkshopSection({ selectedCraftType }: CraftWorkshopSection
   if (isLoading || !workshops || workshops.length === 0) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 bg-canvas">
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 bg-canvas">
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

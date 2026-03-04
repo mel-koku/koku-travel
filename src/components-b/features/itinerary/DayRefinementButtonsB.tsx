@@ -150,7 +150,7 @@ export function DayRefinementButtonsB({
             type="button"
             onClick={() => handleRefine(option.type)}
             disabled={isRefining}
-            className="flex h-9 items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-xs font-medium text-[var(--foreground)] transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--primary)]"
+            className="flex h-11 items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--background)] px-3 text-xs font-medium text-[var(--foreground)] transition-colors active:scale-[0.98] hover:border-[var(--primary)] hover:text-[var(--primary)]"
             style={{ opacity: isRefining ? 0.5 : 1 }}
             title={option.description}
           >

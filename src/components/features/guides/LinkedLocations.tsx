@@ -69,7 +69,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
                       src={imageSrc}
                       alt={location.name}
                       fill
-                      className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02]"
+                      className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
                       sizes={
                         isFeatured
                           ? "(min-width: 1024px) 33vw, 95vw"
@@ -84,7 +84,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
 
                   {/* Overlay text */}
                   <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
-                    <h3 className="font-serif text-lg italic text-white sm:text-xl">
+                    <h3 className="font-serif text-lg italic text-white transition-colors duration-500 group-hover:text-brand-primary sm:text-xl">
                       {location.name}
                     </h3>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-white/70">

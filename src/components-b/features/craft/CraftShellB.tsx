@@ -226,10 +226,6 @@ export function CraftShellB() {
     [],
   );
 
-  const handleTabChange = useCallback((tabId: string | null) => {
-    setSelectedCraftType(tabId as CraftTypeId | null);
-  }, [setSelectedCraftType]);
-
   // ── Best photo per craft type for taxonomy cards ──
   // Prefer unique location photos; fall back to curated thumbnails from CRAFT_TYPES
   const craftTypeImages = useMemo(() => {
@@ -288,7 +284,7 @@ export function CraftShellB() {
               <p className="text-sm text-[var(--error)] mb-6">{error ?? "Please try again."}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)]"
+                className="rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
               >
                 Try again
               </button>
@@ -300,15 +296,12 @@ export function CraftShellB() {
           <CategoryBarB
             onFiltersClick={() => setIsFilterPanelOpen(true)}
             activeFilterCount={activeFilterCount}
-            activeFilters={activeFilters}
-            onRemoveFilter={removeFilter}
-            onClearAllFilters={clearAllFilters}
             inputValue={inputValue}
             onInputChange={setInputValue}
             onInputSubmit={() => {}}
             tabs={craftTypeTabs}
             activeTab={selectedCraftType}
-            onTabChange={handleTabChange}
+
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             mapAvailable={mapAvailable}
@@ -345,7 +338,6 @@ export function CraftShellB() {
               sortedLocations={sortedLocations}
               totalCount={total}
               isLoading={isLoading}
-              hasActiveChips={activeFilters.filter((f) => f.type !== "search").length > 0}
               onSelectLocation={handleSelectLocation}
               useCraftTypeColors
             />
@@ -387,6 +379,8 @@ export function CraftShellB() {
             onSortChange={setSelectedSort}
             resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
             onClearAll={clearAllFilters}
+            activeFilters={activeFilters}
+            onRemoveFilter={removeFilter}
           />
         </>
       )}

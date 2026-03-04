@@ -1157,7 +1157,7 @@ export const ItineraryShellB = ({
                       setPlanningError(null);
                       scheduleUserPlanning(model);
                     }}
-                    className="mt-2 w-full rounded-xl px-3 py-1.5 text-xs font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
+                    className="mt-2 h-11 w-full rounded-xl px-3 text-xs font-medium text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
                     style={{ background: "var(--error)" }}
                   >
                     Retry
@@ -1254,7 +1254,7 @@ export const ItineraryShellB = ({
         <button
           type="button"
           onClick={() => setDismissedSuggestions(false)}
-          className="fixed bottom-6 right-6 z-30 flex h-11 items-center gap-2 rounded-full px-4 text-xs font-medium text-[var(--card)] shadow-lg transition-all duration-200 hover:scale-105 active:scale-[0.98] lg:bottom-8 lg:right-8"
+          className="fixed bottom-6 right-6 z-30 flex h-11 items-center gap-2 rounded-full px-4 text-xs font-medium text-[var(--card)] transition-all duration-200 hover:scale-105 active:scale-[0.98] lg:bottom-8 lg:right-8"
           style={{
             backgroundColor: "var(--primary)",
             boxShadow: "var(--shadow-elevated)",

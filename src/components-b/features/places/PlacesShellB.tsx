@@ -278,7 +278,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
               <p className="text-sm text-[var(--error)] mb-6">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)] focus:outline-none focus:ring-2 focus:ring-[var(--error)] focus:ring-offset-2"
+                className="rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[var(--error)] focus:ring-offset-2"
               >
                 {content?.placesRetryText ?? "Try again"}
               </button>
@@ -290,15 +290,12 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
           <CategoryBarB
             onFiltersClick={() => setIsFilterPanelOpen(true)}
             activeFilterCount={activeFilterCount}
-            activeFilters={activeFilters}
-            onRemoveFilter={removeFilter}
-            onClearAllFilters={clearAllFilters}
             inputValue={inputValue}
             onInputChange={handleInputChange}
             onInputSubmit={handleInputSubmit}
             tabs={categoryTabs}
             activeTab={selectedCategory}
-            onTabChange={setSelectedCategory}
+
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             mapAvailable={mapAvailable}
@@ -333,7 +330,6 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
               sortedLocations={categoryFilteredLocations}
               totalCount={total}
               isLoading={isLoading}
-              hasActiveChips={activeFilters.filter((f) => f.type !== "search").length > 0}
               onSelectLocation={handleSelectLocation}
             />
           ) : (
@@ -383,6 +379,11 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             sortOptions={SORT_OPTIONS}
             selectedSort={selectedSort}
             onSortChange={setSelectedSort}
+            activeFilters={activeFilters}
+            onRemoveFilter={removeFilter}
+            categoryTabs={categoryTabs}
+            activeCategory={selectedCategory}
+            onCategoryChange={setSelectedCategory}
           />
 
         </>

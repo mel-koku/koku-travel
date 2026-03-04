@@ -327,7 +327,7 @@ export function ExperiencesShellB() {
               <p className="text-sm text-[var(--error)] mb-6">{error ?? "Please try again."}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-shadow hover:shadow-[var(--shadow-elevated)]"
+                className="rounded-xl bg-[var(--error)] px-5 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-sm)] transition-all hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
               >
                 Try again
               </button>
@@ -339,15 +339,12 @@ export function ExperiencesShellB() {
           <CategoryBarB
             onFiltersClick={() => setIsFilterPanelOpen(true)}
             activeFilterCount={activeFilterCount}
-            activeFilters={activeFilters}
-            onRemoveFilter={removeFilter}
-            onClearAllFilters={clearAllFilters}
             inputValue={inputValue}
             onInputChange={setInputValue}
             onInputSubmit={() => {}}
             tabs={experienceTypeTabs}
             activeTab={selectedType}
-            onTabChange={handleTabChange}
+
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             mapAvailable={mapAvailable}
@@ -385,7 +382,6 @@ export function ExperiencesShellB() {
                 sortedLocations={mappableSorted}
                 totalCount={mappableSorted.length}
                 isLoading={isLoading}
-                hasActiveChips={activeFilters.filter((f) => f.type !== "search" && f.type !== "experienceType").length > 0}
                 onSelectLocation={handleSelectLocation}
                 useCraftTypeColors={isWorkshopTab}
               />
@@ -422,7 +418,7 @@ export function ExperiencesShellB() {
             isOpen={isFilterPanelOpen}
             onClose={() => setIsFilterPanelOpen(false)}
             selectedType={selectedType}
-            onTypeChange={setSelectedType}
+            onTypeChange={handleTabChange}
             typeCounts={typeCounts}
             selectedCraftType={selectedCraftType}
             onCraftTypeChange={setSelectedCraftType}
@@ -441,6 +437,8 @@ export function ExperiencesShellB() {
             onSortChange={setSelectedSort}
             resultsCount={activeFilters.length === 0 ? total : filteredExperiences.length}
             onClearAll={clearAllFilters}
+            activeFilters={activeFilters}
+            onRemoveFilter={removeFilter}
           />
         </>
       )}

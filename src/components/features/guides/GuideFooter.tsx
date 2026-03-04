@@ -56,7 +56,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
                 src={relatedGuide.featuredImage}
                 alt={relatedGuide.title}
                 fill
-                className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.02]"
+                className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
                 sizes="(min-width: 1280px) 80vw, 95vw"
               />
               {/* Gradient overlay — recedes on hover */}
@@ -72,7 +72,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
                 {relatedGuide.readingTimeMinutes &&
                   ` \u00b7 ${relatedGuide.readingTimeMinutes} min`}
               </p>
-              <p className="font-serif text-2xl italic text-white sm:text-3xl">
+              <p className="font-serif text-2xl italic text-white transition-colors duration-500 group-hover:text-brand-primary sm:text-3xl">
                 {relatedGuide.title}
               </p>
             </div>
