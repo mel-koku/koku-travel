@@ -8,9 +8,11 @@ import { motion } from "framer-motion";
 import { useAppState } from "@/state/AppState";
 import { useBookmarks } from "@/hooks/useBookmarksQuery";
 import { PortableTextBodyB } from "@b/features/guides/PortableTextBodyB";
+import { ExperienceArtisanSectionB } from "./ExperienceArtisanSectionB";
 import type { SanityExperience } from "@/types/sanityExperience";
 import type { ExperienceSummary } from "@/types/experience";
 import type { Location } from "@/types/location";
+import type { ExperiencePerson } from "@/types/person";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 
@@ -31,12 +33,14 @@ type ExperienceDetailClientBProps = {
   experience: SanityExperience;
   relatedExperiences: ExperienceSummary[];
   locations?: Location[];
+  people?: ExperiencePerson[];
 };
 
 export function ExperienceDetailClientB({
   experience,
   relatedExperiences,
   locations = [],
+  people = [],
 }: ExperienceDetailClientBProps) {
   const router = useRouter();
   const { user } = useAppState();
@@ -212,6 +216,8 @@ export function ExperienceDetailClientB({
           </div>
         </div>
       </motion.section>
+
+      <ExperienceArtisanSectionB people={people} />
 
       {/* Body */}
       <section className="bg-white">

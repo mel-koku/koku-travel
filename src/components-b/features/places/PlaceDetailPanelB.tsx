@@ -7,6 +7,7 @@ import { useLenis } from "lenis/react";
 import type { Location } from "@/types/location";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
+import { useExperiencePeople } from "@/hooks/useExperiencePeople";
 import { useSaved } from "@/context/SavedContext";
 import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { getLocationDisplayName } from "@/lib/locationNameUtils";
@@ -24,6 +25,7 @@ type PlaceDetailPanelBProps = {
 export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps) {
   const { status, details, fetchedLocation } = useLocationDetailsQuery(location.id);
   const loc = fetchedLocation ?? location;
+  const people = useExperiencePeople(loc.sanitySlug, loc.id);
   const { isInSaved, toggleSave } = useSaved();
   const showFirstSaveToast = useFirstSaveToast();
   const lenis = useLenis();
@@ -322,6 +324,66 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
                 Overview
               </h3>
               <p className="text-sm leading-relaxed text-[var(--foreground-body)]">{description}</p>
+            </section>
+          )}
+
+          {/* Artisan / Guide profile */}
+          {people.length > 0 && (
+            <section className="space-y-3">
+              <h3 className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">
+                {people[0]!.type === "guide" ? "Your Guide" : people[0]!.type === "host" ? "Your Host" : people[0]!.type === "interpreter" ? "Your Interpreter" : "Meet the Artisan"}
+              </h3>
+              {people.map((person) => (
+                <div
+                  key={person.id}
+                  className="flex items-start gap-4 rounded-2xl bg-[var(--surface)] p-4"
+                >
+                  {person.photo_url && (
+                    <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full">
+                      <Image
+                        src={person.photo_url}
+                        alt={person.name}
+                        fill
+                        className="object-cover"
+                        sizes="56px"
+                      />
+                    </div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-[var(--foreground)]">{person.name}</p>
+                      {person.name_japanese && (
+                        <span className="text-xs text-[var(--muted-foreground)]">{person.name_japanese}</span>
+                      )}
+                    </div>
+                    {person.bio && (
+                      <p className="mt-1 text-xs leading-relaxed text-[var(--foreground-body)] line-clamp-3">
+                        {person.bio}
+                      </p>
+                    )}
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
+                      {person.years_experience && (
+                        <span className="text-[11px] text-[var(--muted-foreground)]">
+                          {person.years_experience}+ years
+                        </span>
+                      )}
+                      {person.specialties.length > 0 && person.specialties.slice(0, 3).map((s) => (
+                        <span
+                          key={s}
+                          className="rounded-full bg-white px-2 py-0.5 text-[11px] font-medium text-[var(--muted-foreground)]"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                    {person.languages.length > 0 && (
+                      <p className="mt-1.5 text-[11px] text-[var(--muted-foreground)]">
+                        Speaks {person.languages.join(", ")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </section>
           )}
 

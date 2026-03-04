@@ -29,6 +29,7 @@ const PUBLIC_API_ROUTES = [
   "/api/geocode",
   "/api/experiences/workshops",
   "/api/experiences/all",
+  "/api/people",
 ];
 
 /**
