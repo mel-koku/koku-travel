@@ -145,8 +145,8 @@ export function SmartPromptsDrawer({
         {/* Description */}
         <div className="border-b border-border px-4 py-3">
           <p className="text-xs text-stone">
-            We noticed some opportunities to enhance your itinerary. Add meals,
-            optimize transport, or discover more experiences.
+            We noticed some opportunities to enhance your itinerary. Optimize
+            transport, discover more experiences, and more.
           </p>
         </div>
 
@@ -196,7 +196,11 @@ export function useSmartPrompts(initialGaps: DetectedGap[], tripId?: string) {
   }, [initialGaps]);
 
   const visibleGaps = gaps.filter(
-    (gap) => !skippedIds.has(gap.id) && !acceptedIds.has(gap.id)
+    (gap) =>
+      !skippedIds.has(gap.id) &&
+      !acceptedIds.has(gap.id) &&
+      gap.action.type !== "add_meal" &&
+      gap.action.type !== "quick_meal"
   );
 
   const handleAccept = useCallback((gap: DetectedGap) => {
