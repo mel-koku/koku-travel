@@ -360,7 +360,8 @@ export const LOCATION_CHAT_COLUMNS = `
   operating_hours,
   coordinates,
   primary_photo_url,
-  business_status
+  business_status,
+  jta_approved
 `.replace(/\s+/g, "");
 
 /**
@@ -385,6 +386,7 @@ export type LocationChatDbRow = Pick<LocationDbRow,
   | "coordinates"
   | "primary_photo_url"
   | "business_status"
+  | "jta_approved"
 >;
 
 export type LocationListingDbRow = Pick<LocationDbRow,

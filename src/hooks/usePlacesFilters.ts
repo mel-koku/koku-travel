@@ -124,6 +124,10 @@ export function usePlacesFilters(
   const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [kokuIds, setKokuIds] = useState<string[]>([]);
+  // URL-driveable filters (set from ?city=, ?category=, ?jta= params)
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [jtaApprovedOnly, setJtaApprovedOnly] = useState(false);
 
   // Sort + pagination — auto-select "in_season" when the current month has notable events
   const [selectedSort, setSelectedSort] = useState<SortOptionId>(
@@ -145,6 +149,9 @@ export function usePlacesFilters(
     vegetarianFriendly,
     featuredOnly,
     kokuIds,
+    selectedCity,
+    selectedCategory,
+    jtaApprovedOnly,
     selectedSort,
   ]);
 
@@ -246,6 +253,18 @@ export function usePlacesFilters(
         ? true
         : location.isFeatured === true;
 
+      const matchesCity = !selectedCity
+        ? true
+        : location.city.toLowerCase() === selectedCity.toLowerCase();
+
+      const matchesCategory = !selectedCategory
+        ? true
+        : location.category === selectedCategory;
+
+      const matchesJta = !jtaApprovedOnly
+        ? true
+        : location.jtaApproved === true;
+
       return (
         matchesQuery &&
         matchesPrefecture &&
@@ -255,10 +274,13 @@ export function usePlacesFilters(
         matchesOpenNow &&
         matchesWheelchair &&
         matchesVegetarian &&
-        matchesFeatured
+        matchesFeatured &&
+        matchesCity &&
+        matchesCategory &&
+        matchesJta
       );
     });
-  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, kokuIds]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, kokuIds, selectedCity, selectedCategory, jtaApprovedOnly]);
 
   // Sort
   const sortedLocations = useMemo(() => {
@@ -382,6 +404,20 @@ export function usePlacesFilters(
       filters.push({ type: "featured", value: "true", label: "Featured" });
     }
 
+    if (selectedCity) {
+      const label = selectedCity.charAt(0).toUpperCase() + selectedCity.slice(1);
+      filters.push({ type: "city", value: selectedCity, label });
+    }
+
+    if (selectedCategory) {
+      const label = selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
+      filters.push({ type: "category", value: selectedCategory, label });
+    }
+
+    if (jtaApprovedOnly) {
+      filters.push({ type: "jta", value: "true", label: "JTA Approved" });
+    }
+
     return filters;
   }, [
     query,
@@ -394,6 +430,9 @@ export function usePlacesFilters(
     wheelchairAccessible,
     vegetarianFriendly,
     featuredOnly,
+    selectedCity,
+    selectedCategory,
+    jtaApprovedOnly,
   ]);
 
   const activeFilterCount = activeFilters.filter((f) => f.type !== "search").length;
@@ -427,6 +466,15 @@ export function usePlacesFilters(
       case "featured":
         setFeaturedOnly(false);
         break;
+      case "city":
+        setSelectedCity(null);
+        break;
+      case "category":
+        setSelectedCategory(null);
+        break;
+      case "jta":
+        setJtaApprovedOnly(false);
+        break;
     }
   }, []);
 
@@ -441,6 +489,9 @@ export function usePlacesFilters(
     setVegetarianFriendly(false);
     setFeaturedOnly(false);
     setKokuIds([]);
+    setSelectedCity(null);
+    setSelectedCategory(null);
+    setJtaApprovedOnly(false);
     setSelectedSort("recommended");
   }, []);
 
@@ -460,6 +511,9 @@ export function usePlacesFilters(
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
     kokuIds, setKokuIds, clearKokuFilter,
+    selectedCity, setSelectedCity,
+    selectedCategory, setSelectedCategory,
+    jtaApprovedOnly, setJtaApprovedOnly,
     // Sort
     selectedSort, setSelectedSort,
     // Pagination

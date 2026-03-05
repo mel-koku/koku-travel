@@ -93,6 +93,9 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
     kokuIds, setKokuIds, clearKokuFilter,
+    setSelectedCity,
+    setSelectedCategory: applyKokuCategory,
+    setJtaApprovedOnly,
     selectedSort, setSelectedSort,
     filteredLocations,
     sortedLocations,
@@ -240,17 +243,26 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     window.history.replaceState(null, "", `/b/places${qs ? `?${qs}` : ""}`);
   }, [searchParams]);
 
-  // Read ?koku= param and apply Koku ID filter (runs once on mount)
+  // Read Koku-generated URL params once on mount
   const kokuParam = searchParams.get("koku");
+  const cityParam = searchParams.get("city");
+  const categoryParam = searchParams.get("category");
+  const qParam = searchParams.get("q");
+  const jtaParam = searchParams.get("jta");
   const didApplyKokuRef = useRef(false);
   useEffect(() => {
-    if (!kokuParam || didApplyKokuRef.current) return;
-    const ids = kokuParam.split(",").map((s) => s.trim()).filter(Boolean);
-    if (ids.length > 0) {
-      setKokuIds(ids);
-      didApplyKokuRef.current = true;
+    if (didApplyKokuRef.current) return;
+    didApplyKokuRef.current = true;
+    if (kokuParam) {
+      const ids = kokuParam.split(",").map((s) => s.trim()).filter(Boolean);
+      if (ids.length > 0) setKokuIds(ids);
     }
-  }, [kokuParam, setKokuIds]);
+    if (cityParam) setSelectedCity(cityParam);
+    if (categoryParam) applyKokuCategory(categoryParam);
+    if (qParam) setInputValue(qParam);
+    if (jtaParam === "true") setJtaApprovedOnly(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Deep link: ?location={slug} → auto-open panel
   const locationParam = searchParams.get("location");

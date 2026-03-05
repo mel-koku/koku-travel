@@ -77,6 +77,9 @@ export function PlacesShell({ content }: PlacesShellProps) {
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
     kokuIds, setKokuIds, clearKokuFilter,
+    setSelectedCity,
+    setSelectedCategory,
+    setJtaApprovedOnly,
     selectedSort, setSelectedSort,
     setPage, hasMore,
     filteredLocations,
@@ -120,17 +123,26 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const locationParam = searchParams.get("location");
   const didAutoExpandRef = useRef(false);
 
-  // Read ?koku= param and apply Koku ID filter (runs once on mount)
+  // Read Koku-generated URL params once on mount
   const kokuParam = searchParams.get("koku");
+  const cityParam = searchParams.get("city");
+  const categoryParam = searchParams.get("category");
+  const qParam = searchParams.get("q");
+  const jtaParam = searchParams.get("jta");
   const didApplyKokuRef = useRef(false);
   useEffect(() => {
-    if (!kokuParam || didApplyKokuRef.current) return;
-    const ids = kokuParam.split(",").map((s) => s.trim()).filter(Boolean);
-    if (ids.length > 0) {
-      setKokuIds(ids);
-      didApplyKokuRef.current = true;
+    if (didApplyKokuRef.current) return;
+    didApplyKokuRef.current = true;
+    if (kokuParam) {
+      const ids = kokuParam.split(",").map((s) => s.trim()).filter(Boolean);
+      if (ids.length > 0) setKokuIds(ids);
     }
-  }, [kokuParam, setKokuIds]);
+    if (cityParam) setSelectedCity(cityParam);
+    if (categoryParam) setSelectedCategory(categoryParam);
+    if (qParam) setInputValue(qParam);
+    if (jtaParam === "true") setJtaApprovedOnly(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
 
   useEffect(() => {
