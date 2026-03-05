@@ -161,6 +161,7 @@ export async function GET(request: NextRequest) {
       coordinates: row.coordinates ?? undefined,
       isHiddenGem: row.is_hidden_gem ?? undefined,
       isFeatured: row.is_featured ?? undefined,
+      jtaApproved: row.jta_approved ?? undefined,
       nameJapanese: row.name_japanese ?? undefined,
       nearestStation: row.nearest_station ?? undefined,
       cashOnly: row.cash_only ?? undefined,

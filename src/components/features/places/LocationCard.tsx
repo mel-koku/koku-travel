@@ -132,11 +132,16 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
 
             <p className="text-sm text-stone line-clamp-2">{summary}</p>
 
-            {/* Category Pill and Duration */}
-            <div className="flex items-center gap-2 pt-1">
+            {/* Category Pill, Duration, JTA Badge */}
+            <div className="flex items-center gap-2 pt-1 flex-wrap">
               <span className="text-xs font-medium capitalize bg-sand/50 text-foreground-secondary px-2.5 py-1 rounded-xl">
                 {location.category}
               </span>
+              {location.jtaApproved && (
+                <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-brand-secondary border border-brand-secondary/40 px-2 py-0.5 rounded-xl">
+                  JTA Approved
+                </span>
+              )}
               {estimatedDuration ? (
                 <>
                   <span className="text-border">·</span>

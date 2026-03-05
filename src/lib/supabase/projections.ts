@@ -67,6 +67,7 @@ export type LocationDbRow = {
   } | null;
   is_featured: boolean | null;
   is_hidden_gem: boolean | null;
+  jta_approved: boolean | null;
   // Enhanced enrichment fields
   good_for_children: boolean | null;
   good_for_groups: boolean | null;
@@ -124,7 +125,8 @@ export const LOCATION_LISTING_COLUMNS = `
   name_japanese,
   nearest_station,
   insider_tip,
-  is_featured
+  is_featured,
+  jta_approved
 `.replace(/\s+/g, "");
 
 /**
@@ -164,7 +166,8 @@ export const LOCATION_EXPLORE_COLUMNS = `
   tags,
   cuisine_type,
   craft_type,
-  insider_tip
+  insider_tip,
+  jta_approved
 `.replace(/\s+/g, "");
 
 /**
@@ -189,7 +192,8 @@ export const LOCATION_DETAIL_COLUMNS = `
   coordinates,
   timezone,
   place_id,
-  preferred_transit_modes
+  preferred_transit_modes,
+  jta_approved
 `.replace(/\s+/g, "");
 
 /**
@@ -292,6 +296,7 @@ export type LocationExploreDbRow = Pick<LocationDbRow,
   | "cuisine_type"
   | "craft_type"
   | "insider_tip"
+  | "jta_approved"
 >;
 
 /**
@@ -410,4 +415,5 @@ export type LocationListingDbRow = Pick<LocationDbRow,
   | "nearest_station"
   | "insider_tip"
   | "is_featured"
+  | "jta_approved"
 >;

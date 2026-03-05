@@ -97,6 +97,7 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
       // Enrichment fields used by scoring (tags, cuisine, hidden gems, practical info)
       cuisineType: fullRow.cuisine_type ?? undefined,
       isHiddenGem: fullRow.is_hidden_gem ?? undefined,
+      jtaApproved: fullRow.jta_approved ?? undefined,
       cashOnly: fullRow.cash_only ?? undefined,
       reservationInfo: fullRow.reservation_info ?? undefined,
       nameJapanese: fullRow.name_japanese ?? undefined,
