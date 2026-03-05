@@ -6,25 +6,39 @@ import { motion, AnimatePresence } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
 import { useLenis } from "@/providers/LenisProvider";
 import { usePersonDetail } from "@/hooks/usePeopleQuery";
+import {
+  resolvePersonCategoryId,
+  getCategoryById,
+} from "@/lib/activityCategories";
 import { InquiryForm } from "./InquiryForm";
 import type { Person } from "@/types/person";
-
-const TYPE_LABELS: Record<string, string> = {
-  artisan: "Artisan",
-  guide: "Guide",
-  interpreter: "Interpreter",
-  author: "Author",
-};
 
 type Props = {
   person: Person | null;
   onClose: () => void;
 };
 
+const GENERIC_SPECIALTIES = new Set([
+  "local knowledge",
+  "traditional crafts",
+  "cultural immersion",
+]);
+
 export function PersonDetailPanel({ person, onClose }: Props) {
   const { pause, resume } = useLenis();
   const { data: detail } = usePersonDetail(person?.slug ?? null);
   const displayPerson = detail ?? person;
+
+  const categoryId = displayPerson
+    ? resolvePersonCategoryId(displayPerson.specialties)
+    : null;
+  const category = categoryId ? getCategoryById(categoryId) : null;
+
+  const specificSpecialties = displayPerson
+    ? displayPerson.specialties.filter(
+        (s) => !GENERIC_SPECIALTIES.has(s.toLowerCase())
+      )
+    : [];
 
   // Scroll lock + Lenis pause
   useEffect(() => {
@@ -70,9 +84,14 @@ export function PersonDetailPanel({ person, onClose }: Props) {
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-border px-6 py-4">
-              <span className="eyebrow-editorial">
-                {TYPE_LABELS[displayPerson.type] ?? displayPerson.type}
-              </span>
+              <div className="flex items-center gap-2">
+                {category && (
+                  <span className="text-base leading-none">{category.emoji}</span>
+                )}
+                <span className="eyebrow-editorial">
+                  {category?.label ?? "Local Expert"}
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={onClose}
@@ -104,12 +123,12 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                     <Image
                       src={displayPerson.photo_url}
                       alt={displayPerson.name}
-                      width={96}
-                      height={96}
-                      className="h-24 w-24 flex-shrink-0 rounded-full object-cover"
+                      width={80}
+                      height={80}
+                      className="h-20 w-20 flex-shrink-0 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-24 w-24 flex-shrink-0 items-center justify-center rounded-full bg-canvas text-2xl font-bold text-foreground-secondary">
+                    <div className="flex h-20 w-20 flex-shrink-0 items-center justify-center rounded-full bg-canvas text-xl font-bold text-foreground-secondary">
                       {displayPerson.name
                         .split(" ")
                         .map((n) => n[0])
@@ -140,7 +159,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                         <>
                           <span className="text-border">·</span>
                           <span>
-                            {displayPerson.years_experience} years experience
+                            {displayPerson.years_experience} yrs experience
                           </span>
                         </>
                       )}
@@ -148,22 +167,12 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                   </div>
                 </div>
 
-                {/* Bio */}
-                {displayPerson.bio && (
+                {/* What I offer — moved above bio */}
+                {specificSpecialties.length > 0 && (
                   <div className="mt-6">
-                    <p className="eyebrow-editorial">About</p>
-                    <p className="mt-2 text-sm leading-relaxed text-foreground-body">
-                      {displayPerson.bio}
-                    </p>
-                  </div>
-                )}
-
-                {/* Specialties */}
-                {displayPerson.specialties.length > 0 && (
-                  <div className="mt-6">
-                    <p className="eyebrow-editorial">Specialties</p>
+                    <p className="eyebrow-editorial">What I offer</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {displayPerson.specialties.map((s) => (
+                      {specificSpecialties.map((s) => (
                         <span
                           key={s}
                           className="rounded-xl bg-canvas px-3 py-1.5 text-sm text-foreground"
@@ -172,6 +181,16 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                         </span>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Bio */}
+                {displayPerson.bio && (
+                  <div className="mt-6">
+                    <p className="eyebrow-editorial">About</p>
+                    <p className="mt-2 text-sm leading-relaxed text-foreground-body">
+                      {displayPerson.bio}
+                    </p>
                   </div>
                 )}
 
@@ -185,19 +204,16 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                   </div>
                 )}
 
-                {/* Experiences */}
+                {/* Linked experiences */}
                 {detail?.experiences && detail.experiences.length > 0 && (
                   <div className="mt-6">
-                    <p className="eyebrow-editorial">Experiences</p>
+                    <p className="eyebrow-editorial">Related experiences</p>
                     <ul className="mt-2 space-y-1.5">
                       {detail.experiences.map((exp) => (
-                        <li
-                          key={exp.slug}
-                          className="text-sm text-foreground"
-                        >
+                        <li key={exp.slug} className="text-sm text-foreground">
                           <a
-                            href={`/guides/${exp.slug}`}
-                            className="capitalize hover:text-brand-primary transition-colors"
+                            href={`/experiences/${exp.slug}`}
+                            className="capitalize transition-colors hover:text-brand-primary"
                           >
                             {exp.slug.replace(/-/g, " ")}
                           </a>
@@ -212,7 +228,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                   </div>
                 )}
 
-                {/* Links */}
+                {/* Website */}
                 {displayPerson.website_url && (
                   <div className="mt-6">
                     <p className="eyebrow-editorial">Website</p>
@@ -227,7 +243,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                   </div>
                 )}
 
-                {/* Inquiry Form */}
+                {/* Booking inquiry */}
                 <div className="mt-8">
                   <InquiryForm person={displayPerson} />
                 </div>
