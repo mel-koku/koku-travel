@@ -89,7 +89,7 @@ function GuideCard({
   return (
     <Link
       href={`/guides/${guide.id}`}
-      className="group relative block h-full overflow-hidden rounded-xl"
+      className="group relative block h-full overflow-hidden rounded-xl transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
     >
       <div
         className={cn(
@@ -134,7 +134,7 @@ function GuideCard({
           )}
           <p
             className={cn(
-              "mt-1 font-serif italic text-white transition-all duration-500 group-hover:-translate-y-1 group-hover:text-brand-primary",
+              "mt-1 font-serif italic text-white",
               featured ? "text-xl sm:text-2xl lg:text-3xl" : "text-xl sm:text-2xl"
             )}
           >

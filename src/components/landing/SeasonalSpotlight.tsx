@@ -146,7 +146,7 @@ function SpotlightCard({ card, idx }: { card: CardData; idx: number }) {
   return (
     <Link
       href={card.href}
-      className={`group relative block text-foreground ${idx >= 2 ? "hidden sm:block" : ""}`}
+      className={`group relative block text-foreground rounded-xl transition-shadow duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.45)] ${idx >= 2 ? "hidden sm:block" : ""}`}
     >
       <div className="relative w-full overflow-hidden rounded-xl aspect-[4/3]">
         <Image
@@ -165,15 +165,13 @@ function SpotlightCard({ card, idx }: { card: CardData; idx: number }) {
           </span>
         </div>
 
-        {/* Bottom accent line on hover */}
-        <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-brand-secondary origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
 
         {/* Text overlay */}
         <div className="absolute inset-x-0 bottom-0 p-3">
           <p className="text-[10px] uppercase tracking-[0.25em] text-white/60 mb-0.5 font-mono">
             {card.subtitle}
           </p>
-          <p className="font-serif italic text-white text-base line-clamp-1 group-hover:text-brand-primary transition-colors">
+          <p className="font-serif italic text-white text-base line-clamp-1">
             {card.title}
           </p>
         </div>
