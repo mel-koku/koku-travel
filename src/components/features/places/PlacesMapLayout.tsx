@@ -233,6 +233,26 @@ export function PlacesMapLayout({
         </div>
       </div>
 
+      {/* Sticky "Open map" pill — visible on mobile when map is collapsed and scrolled past */}
+      {!mapExpanded && (
+        <div className="pointer-events-none fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] inset-x-0 z-40 flex justify-center lg:hidden">
+          <button
+            type="button"
+            onClick={() => {
+              setMapExpanded(true);
+              mobileMapRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
+            className="pointer-events-auto flex items-center gap-2 rounded-full bg-charcoal/90 px-4 py-2.5 text-sm font-medium text-white shadow-lg backdrop-blur-sm active:scale-[0.98]"
+            aria-label="Open map"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+            Open map
+          </button>
+        </div>
+      )}
+
       {/* Chat panel — right slide (matches LocationExpanded) */}
       <AnimatePresence>
         {isChatOpen && (

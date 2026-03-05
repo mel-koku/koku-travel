@@ -44,6 +44,9 @@ type FilterPanelProps = {
   // Dietary filter
   vegetarianFriendly: boolean;
   onVegetarianFriendlyChange: (value: boolean) => void;
+  // Featured filter
+  featuredOnly: boolean;
+  onFeaturedToggle: (value: boolean) => void;
   // Results count
   resultsCount: number;
   // Clear all
@@ -83,6 +86,8 @@ export function FilterPanel({
   onWheelchairAccessibleChange,
   vegetarianFriendly,
   onVegetarianFriendlyChange,
+  featuredOnly,
+  onFeaturedToggle,
   resultsCount,
   onClearAll,
   sortOptions,
@@ -114,7 +119,7 @@ export function FilterPanel({
   const whatActiveCount = selectedVibes.length;
   const durationActiveCount = selectedDuration ? 1 : 0;
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
-  const togglesActiveCount = (openNow ? 1 : 0) + (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
+  const togglesActiveCount = (openNow ? 1 : 0) + (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0) + (featuredOnly ? 1 : 0);
 
   // Close on escape key + focus management
   useEffect(() => {
@@ -165,6 +170,7 @@ export function FilterPanel({
     openNow ||
     wheelchairAccessible ||
     vegetarianFriendly ||
+    featuredOnly ||
     selectedSort !== "recommended";
 
   return (
@@ -195,10 +201,15 @@ export function FilterPanel({
             aria-labelledby="filter-panel-title"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border px-6 py-4 shrink-0">
-              <h2 id="filter-panel-title" className="font-serif text-base italic text-foreground">
-                Refine
-              </h2>
+            <div className="flex items-start justify-between border-b border-border px-6 py-4 shrink-0">
+              <div>
+                <h2 id="filter-panel-title" className="font-serif text-xl italic text-foreground">
+                  Refine
+                </h2>
+                <p className="mt-0.5 text-xs text-foreground-secondary">
+                  Sort, filter by location, vibe, price, and more.
+                </p>
+              </div>
               <button
                 onClick={onClose}
                 className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-surface transition duration-300"
@@ -364,6 +375,13 @@ export function FilterPanel({
                 onToggle={() => toggleSection("toggles")}
               >
                 <div className="space-y-4">
+                  <ToggleOption
+                    label="Featured only"
+                    description="Handpicked places worth the trip"
+                    checked={featuredOnly}
+                    onChange={onFeaturedToggle}
+                  />
+
                   <ToggleOption
                     label="Open now"
                     description="Only show places currently open"
