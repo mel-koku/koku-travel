@@ -217,8 +217,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onInputSubmit={handleInputSubmit}
         onAskKokuClick={() => setIsChatOpen(true)}
         isChatOpen={isChatOpen}
-        featuredOnly={featuredOnly}
-        onFeaturedToggle={() => setFeaturedOnly((prev: boolean) => !prev)}
       />
 
       {/* Seasonal banner */}
@@ -308,6 +306,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onWheelchairAccessibleChange={setWheelchairAccessible}
         vegetarianFriendly={vegetarianFriendly}
         onVegetarianFriendlyChange={setVegetarianFriendly}
+        featuredOnly={featuredOnly}
+        onFeaturedToggle={setFeaturedOnly}
         resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
         onClearAll={clearAllFilters}
         sortOptions={SORT_OPTIONS}
