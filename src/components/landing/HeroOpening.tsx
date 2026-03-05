@@ -34,7 +34,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
     content?.heroHeadline ?? "Travel Japan like the people who live here";
   const description = (
     content?.heroDescription ??
-    "{locationCount}+ places and experiences we'd actually send our friends to."
+    "{locationCount}+ places we'd actually recommend, with days planned around how you travel."
   ).replace("{locationCount}", locationCount.toLocaleString());
   const primaryCta = content?.heroPrimaryCtaText ?? "Build My Trip";
   const secondaryCta = content?.heroSecondaryCtaText ?? "Explore Places";

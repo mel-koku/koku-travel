@@ -38,7 +38,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             transition={{ duration: durationBase, delay: 0.5, ease: [...easeReveal] as [number, number, number, number] }}
             className="mx-auto mt-8 max-w-md text-base text-white/90"
           >
-            {content?.finalCtaDescription ?? "Pick a place. We'll build the rest."}
+            {content?.finalCtaDescription ?? "Tell us when you're going. We'll handle everything else."}
           </motion.p>
 
           <motion.div
