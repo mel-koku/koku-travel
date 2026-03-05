@@ -56,20 +56,25 @@ export function PlacesMapLayout({
 
     const { north, south, east, west } = mapBounds;
     return sortedLocations.filter((loc) => {
-      if (!loc.coordinates) return false;
+      if (!loc.coordinates) return true; // no coords → show in list, no map pin
       const { lat, lng } = loc.coordinates;
       return lat >= south && lat <= north && lng >= west && lng <= east;
     });
   }, [sortedLocations, mapBounds]);
 
-  const showZoomHint = mapBounds !== null && boundsFilteredLocations.length <= 10 && boundsFilteredLocations.length < totalCount;
+  // Locations that actually have map pins (coords within bounds)
+  const mappedCount = mapBounds
+    ? boundsFilteredLocations.filter((loc) => loc.coordinates).length
+    : sortedLocations.filter((loc) => loc.coordinates).length;
+
+  const showZoomHint = mapBounds !== null && mappedCount <= 10 && mappedCount < totalCount;
 
   const countLabel = mapBounds
     ? `${boundsFilteredLocations.length.toLocaleString()} of ${totalCount.toLocaleString()} places in view${showZoomHint ? " — Zoom out to see more" : ""}`
     : `${totalCount.toLocaleString()} places`;
 
-  // Show reset button when the map has loaded bounds but no places are visible
-  const showResetButton = mapBounds !== null && boundsFilteredLocations.length === 0;
+  // Show reset button when the map has bounds but no pinned places are visible
+  const showResetButton = mapBounds !== null && mappedCount === 0 && sortedLocations.filter((loc) => loc.coordinates).length > 0;
 
   // Trigger map resize after mobile expand/collapse animation
   const handleAnimationComplete = useCallback(() => {
