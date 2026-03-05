@@ -137,6 +137,7 @@ export async function GET(request: NextRequest) {
         serviceOptions: row.service_options ?? undefined,
         coordinates: row.coordinates ?? undefined,
         isFeatured: row.is_featured ?? undefined,
+        jtaApproved: row.jta_approved ?? undefined,
       }));
 
     // Create paginated response
