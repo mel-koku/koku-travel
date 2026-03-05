@@ -51,6 +51,10 @@ export const chatTools = {
         .number()
         .optional()
         .describe("Max price level (1=cheap, 2=moderate, 3=expensive, 4=very expensive)"),
+      jtaApproved: z
+        .boolean()
+        .optional()
+        .describe("If true, only return JTA-approved locations (Japan Tourism Agency certified)"),
     }),
     execute: async (params) => {
       const results = await searchLocationsForChat({
@@ -59,6 +63,7 @@ export const chatTools = {
         region: params.region,
         category: params.category,
         priceLevel: params.priceLevel,
+        jtaApproved: params.jtaApproved,
       });
       return { locations: results, count: results.length };
     },

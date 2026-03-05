@@ -23,6 +23,7 @@ export type ChatLocationResult = {
   operatingHours: LocationChatDbRow["operating_hours"];
   coordinates: { lat: number; lng: number } | null;
   primaryPhotoUrl: string | null;
+  jtaApproved: boolean | null;
 };
 
 function transformChatRow(row: LocationChatDbRow): ChatLocationResult {
@@ -44,6 +45,7 @@ function transformChatRow(row: LocationChatDbRow): ChatLocationResult {
     operatingHours: row.operating_hours,
     coordinates: row.coordinates,
     primaryPhotoUrl: row.primary_photo_url,
+    jtaApproved: row.jta_approved,
   };
 }
 
@@ -53,6 +55,7 @@ export type LocationSearchFilters = {
   region?: string;
   category?: string;
   priceLevel?: number;
+  jtaApproved?: boolean;
   limit?: number;
 };
 
@@ -84,6 +87,9 @@ export async function searchLocationsForChat(
     }
     if (filters.priceLevel !== undefined) {
       query = query.lte("price_level", filters.priceLevel);
+    }
+    if (filters.jtaApproved) {
+      query = query.eq("jta_approved", true);
     }
     if (filters.query) {
       query = query.or(

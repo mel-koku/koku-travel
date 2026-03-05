@@ -21,6 +21,54 @@ type LocationToolResult = {
   primaryPhotoUrl: string | null;
 };
 
+type ToolContext = {
+  toolName: string | null;
+  toolInput: Record<string, unknown>;
+};
+
+function extractToolContext(message: UIMessage): ToolContext {
+  for (const part of message.parts) {
+    if (part.type.startsWith("tool-") || part.type === "dynamic-tool") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const p = part as any;
+      if (p.state !== "output-available") continue;
+      const result = p.output as Record<string, unknown> | undefined;
+      if (!result) continue;
+      if (result.locations && Array.isArray(result.locations)) {
+        return {
+          toolName: p.toolName ?? p.toolInvocation?.toolName ?? null,
+          toolInput: p.input ?? p.toolInvocation?.args ?? {},
+        };
+      }
+    }
+  }
+  return { toolName: null, toolInput: {} };
+}
+
+function buildBrowseUrl(basePath: string, toolName: string | null, toolInput: Record<string, unknown>): string | null {
+  const params = new URLSearchParams();
+  if (toolInput.city) params.set("city", String(toolInput.city));
+  if (toolInput.region) params.set("region", String(toolInput.region));
+  if (toolInput.category) params.set("category", String(toolInput.category));
+  if (toolInput.query) params.set("q", String(toolInput.query));
+  if (toolInput.jtaApproved) params.set("jta", "true");
+  const qs = params.toString();
+  if (!qs) return null;
+  // nearby searches aren't browseable by filter (no city/category param), skip
+  if (toolName === "searchNearby") return null;
+  return `${basePath}/places?${qs}`;
+}
+
+function buildBrowseLabel(toolInput: Record<string, unknown>): string {
+  const parts: string[] = [];
+  if (toolInput.jtaApproved) parts.push("JTA Approved");
+  if (toolInput.category) parts.push(String(toolInput.category));
+  if (toolInput.city) parts.push(`in ${String(toolInput.city)}`);
+  else if (toolInput.region) parts.push(`in ${String(toolInput.region)}`);
+  else if (toolInput.query) parts.push(`for "${String(toolInput.query)}"`);
+  return parts.length > 0 ? `Browse all ${parts.join(" ")}` : "Browse all";
+}
+
 function extractLocations(message: UIMessage): LocationToolResult[] {
   const locations: LocationToolResult[] = [];
   const seenIds = new Set<string>();
@@ -111,6 +159,13 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
   const tripPlan = isUser ? null : extractTripPlan(message);
   const videoImport = isUser ? null : extractVideoImport(message);
   const textContent = getTextContent(message);
+  const { toolName, toolInput } = isUser ? { toolName: null, toolInput: {} } : extractToolContext(message);
+  const basePath = "";
+  const viewAllUrl = locations.length >= 2
+    ? `${basePath}/places?koku=${locations.map((l) => l.id).join(",")}`
+    : null;
+  const browseUrl = buildBrowseUrl(basePath, toolName, toolInput);
+  const browseLabel = buildBrowseLabel(toolInput);
 
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
@@ -185,16 +240,31 @@ export function AskKokuMessage({ message, onClosePanel }: AskKokuMessageProps) {
                 primaryPhotoUrl={loc.primaryPhotoUrl}
               />
             ))}
-            {locations.length >= 2 && (
-              <a
-                href={`/places?koku=${locations.map((l) => l.id).join(",")}`}
-                className="mt-1 flex items-center justify-center gap-1.5 rounded-xl border border-brand-primary/30 py-2 text-xs font-medium text-brand-primary transition-colors hover:bg-brand-primary/10"
-              >
-                View all in Places
-                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </a>
+            {(viewAllUrl || browseUrl) && (
+              <div className="mt-1 flex flex-col gap-1">
+                {viewAllUrl && (
+                  <a
+                    href={viewAllUrl}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-brand-primary/30 py-2 text-xs font-medium text-brand-primary transition-colors hover:bg-brand-primary/10"
+                  >
+                    View these {locations.length} in Places
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                  </a>
+                )}
+                {browseUrl && (
+                  <a
+                    href={browseUrl}
+                    className="flex items-center justify-center gap-1.5 rounded-xl border border-border/50 py-2 text-xs font-medium text-foreground-secondary transition-colors hover:border-brand-primary/30 hover:text-brand-primary"
+                  >
+                    {browseLabel}
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                  </a>
+                )}
+              </div>
             )}
           </div>
         )}
