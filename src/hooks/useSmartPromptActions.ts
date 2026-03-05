@@ -1,8 +1,10 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAppState } from "@/state/AppState";
 import { useToast } from "@/context/ToastContext";
+import { useVariant } from "@/lib/variant/VariantContext";
 import { logger } from "@/lib/logger";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryActivity, ItineraryDay } from "@/types/itinerary";
@@ -87,6 +89,8 @@ export function useSmartPromptActions(
 ): SmartPromptActionsResult {
   const { addActivity } = useAppState();
   const { showToast } = useToast();
+  const router = useRouter();
+  const { basePath } = useVariant();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingGapId, setLoadingGapId] = useState<string | null>(null);
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
@@ -134,6 +138,15 @@ export function useSmartPromptActions(
 
   const acceptGap = useCallback(
     async (gap: DetectedGap): Promise<AcceptGapResult> => {
+      // Browse experts: navigate to local experts page
+      if (gap.action.type === "browse_experts") {
+        const params = new URLSearchParams();
+        params.set("type", gap.action.personType);
+        params.set("city", gap.action.city);
+        router.push(`${basePath}/local-experts?${params.toString()}`);
+        return { success: true };
+      }
+
       // Guidance/informational gaps: just acknowledge, no API call
       if (
         gap.action.type === "acknowledge_guidance" ||
@@ -228,7 +241,7 @@ export function useSmartPromptActions(
         setLoadingGapId(null);
       }
     },
-    [tripId, tripBuilderData, getDay, getUsedLocationIds, addActivity, showToast, fetchRecommendation]
+    [tripId, tripBuilderData, getDay, getUsedLocationIds, addActivity, showToast, fetchRecommendation, router, basePath]
   );
 
   /** Confirm the previewed recommendation — insert into itinerary */

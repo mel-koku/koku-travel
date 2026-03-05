@@ -77,6 +77,7 @@ export function SmartPromptCardB({
   const isOmiyage = gap.action.type === "acknowledge_omiyage";
   const isLateArrival = gap.action.type === "acknowledge_late_arrival";
   const isWeatherSwap = gap.action.type === "swap_for_weather";
+  const isBrowseExperts = gap.action.type === "browse_experts";
   const isAcknowledge = isGuidance || isReservation || isLunchRush || isLuggage || isCrowd || isFestivalAck || isOmiyage || isLateArrival;
 
   return (
@@ -145,7 +146,28 @@ export function SmartPromptCardB({
 
           {/* Actions */}
           <div className="mt-3 flex items-center gap-2">
-            {isAcknowledge ? (
+            {isBrowseExperts ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => onAccept(gap)}
+                  className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--card)] transition-all duration-200 active:scale-[0.98]"
+                  style={{
+                    backgroundColor: "var(--primary)",
+                    boxShadow: "var(--shadow-sm)",
+                  }}
+                >
+                  Browse experts
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onSkip(gap)}
+                  className="rounded-xl px-3.5 py-1.5 text-xs font-medium text-[var(--muted-foreground)] transition-colors duration-200 hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+                >
+                  Skip
+                </button>
+              </>
+            ) : isAcknowledge ? (
               <button
                 type="button"
                 onClick={() => onAccept(gap)}

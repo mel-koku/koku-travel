@@ -137,6 +137,11 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string; badge: string }> 
     text: "text-sage",
     badge: "bg-sage/15 text-sage",
   },
+  guide_suggestion: {
+    bg: "bg-sage/10",
+    text: "text-sage",
+    badge: "bg-sage/15 text-sage",
+  },
 };
 
 export type SmartPromptCardProps = {
@@ -205,7 +210,24 @@ export function SmartPromptCard({
 
         {/* Actions */}
         <div className="mt-2 flex gap-2">
-          {gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" || gap.action.type === "acknowledge_crowd" || gap.action.type === "acknowledge_festival" || gap.action.type === "acknowledge_omiyage" || gap.action.type === "acknowledge_late_arrival" ? (
+          {gap.action.type === "browse_experts" ? (
+            <>
+              <Button
+                variant="primary"
+                size="chip"
+                onClick={() => onAccept(gap)}
+              >
+                Browse experts
+              </Button>
+              <Button
+                variant="brand-ghost"
+                size="chip"
+                onClick={() => onSkip(gap)}
+              >
+                Skip
+              </Button>
+            </>
+          ) : gap.action.type === "acknowledge_reservation" || gap.action.type === "acknowledge_guidance" || gap.action.type === "acknowledge_lunch_rush" || gap.action.type === "acknowledge_luggage" || gap.action.type === "acknowledge_crowd" || gap.action.type === "acknowledge_festival" || gap.action.type === "acknowledge_omiyage" || gap.action.type === "acknowledge_late_arrival" ? (
             <Button
               variant="primary"
               size="chip"

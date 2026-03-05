@@ -27,6 +27,7 @@ export function LocalExpertsShellB() {
     setType,
     setPrefecture,
     setLanguage,
+    setCity,
     setSort,
     clearAll,
   } = usePeopleFilters(allPeople);
@@ -34,11 +35,15 @@ export function LocalExpertsShellB() {
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
 
-  // Auto-filter from ?type= URL param
+  // Auto-filter from ?type= and ?city= URL params
   useEffect(() => {
     const typeParam = searchParams.get("type");
     if (typeParam && ["artisan", "guide", "interpreter", "author"].includes(typeParam)) {
       setType(typeParam as Parameters<typeof setType>[0]);
+    }
+    const cityParam = searchParams.get("city");
+    if (cityParam) {
+      setCity(cityParam);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

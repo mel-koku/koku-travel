@@ -116,6 +116,10 @@ const TYPE_COLORS: Record<GapType, { bg: string; text: string }> = {
     bg: "bg-sage/10",
     text: "text-sage",
   },
+  guide_suggestion: {
+    bg: "bg-sage/10",
+    text: "text-sage",
+  },
 };
 
 export type DaySuggestionsProps = {
