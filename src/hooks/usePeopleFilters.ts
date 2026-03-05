@@ -23,6 +23,7 @@ type PeopleFiltersState = {
   type: PersonType | null;
   prefecture: string | null;
   language: string | null;
+  city: string | null;
   sort: PeopleSortOption;
 };
 
@@ -31,6 +32,7 @@ const INITIAL: PeopleFiltersState = {
   type: null,
   prefecture: null,
   language: null,
+  city: null,
   sort: "recommended",
 };
 
@@ -53,6 +55,10 @@ export function usePeopleFilters(people: Person[] | undefined) {
     (l: string | null) => setFilters((p) => ({ ...p, language: l })),
     [],
   );
+  const setCity = useCallback(
+    (c: string | null) => setFilters((p) => ({ ...p, city: c })),
+    [],
+  );
   const setSort = useCallback(
     (s: PeopleSortOption) => setFilters((p) => ({ ...p, sort: s })),
     [],
@@ -63,8 +69,9 @@ export function usePeopleFilters(people: Person[] | undefined) {
     let count = 0;
     if (filters.prefecture) count++;
     if (filters.language) count++;
+    if (filters.city) count++;
     return count;
-  }, [filters.prefecture, filters.language]);
+  }, [filters.prefecture, filters.language, filters.city]);
 
   // Build a person → prefecture lookup and unique prefectures list
   const { prefectures, personPrefectureMap } = useMemo(() => {
@@ -138,6 +145,12 @@ export function usePeopleFilters(people: Person[] | undefined) {
     if (filters.language) {
       result = result.filter((p) => p.languages.includes(filters.language!));
     }
+    if (filters.city) {
+      const cityLower = filters.city.toLowerCase();
+      result = result.filter(
+        (p) => p.city && p.city.toLowerCase() === cityLower,
+      );
+    }
 
     // Sort
     if (filters.sort === "experience") {
@@ -162,6 +175,7 @@ export function usePeopleFilters(people: Person[] | undefined) {
     setType,
     setPrefecture,
     setLanguage,
+    setCity,
     setSort,
     clearAll,
   };

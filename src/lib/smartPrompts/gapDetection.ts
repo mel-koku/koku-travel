@@ -36,7 +36,8 @@ export type GapType =
   | "festival_alert"
   | "evening_free"
   | "omiyage_reminder"
-  | "late_arrival";
+  | "late_arrival"
+  | "guide_suggestion";
 
 /**
  * A detected gap with contextual information for prompting.
@@ -178,6 +179,11 @@ export type GapAction =
       type: "acknowledge_late_arrival";
       suggestions: string[];
       city: string;
+    }
+  | {
+      type: "browse_experts";
+      city: string;
+      personType: "guide" | "artisan";
     };
 
 
@@ -1106,6 +1112,54 @@ function detectLateArrival(day: ItineraryDay, dayIndex: number): DetectedGap[] {
  * @param options - Options for gap detection
  * @returns Array of detected gaps with actionable suggestions
  */
+/**
+ * Detect days heavy in cultural/craft activities that would benefit from a local expert.
+ */
+const GUIDE_ELIGIBLE_CATEGORIES = new Set([
+  "craft", "culture", "shrine", "temple", "museum", "garden", "historic_site",
+]);
+
+function detectGuideSuggestions(day: ItineraryDay, dayIndex: number): DetectedGap[] {
+  const placeActivities = day.activities.filter(
+    (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
+  );
+
+  let eligibleCount = 0;
+  let craftCount = 0;
+
+  for (const a of placeActivities) {
+    const cat = resolveActivityCategory(a.tags ?? []);
+    const sub = cat?.sub;
+    if (sub && GUIDE_ELIGIBLE_CATEGORIES.has(sub)) {
+      eligibleCount++;
+      if (sub === "craft") craftCount++;
+    }
+  }
+
+  if (eligibleCount < 2) return [];
+
+  const isCraftMajority = craftCount > eligibleCount / 2;
+  const personType = isCraftMajority ? "artisan" : "guide";
+  const cityName = day.cityId ?? "this area";
+
+  return [
+    {
+      id: `guide-suggestion-${day.id}`,
+      type: "guide_suggestion",
+      dayIndex,
+      dayId: day.id,
+      title: isCraftMajority ? "Add a local artisan" : "Add a local guide",
+      description: `Day ${dayIndex + 1} in ${cityName} has ${eligibleCount} cultural sites. A local ${personType} could deepen the experience.`,
+      icon: "Users",
+      action: {
+        type: "browse_experts",
+        city: cityName,
+        personType,
+      },
+    },
+  ];
+}
+
 export function detectGaps(
   itinerary: Itinerary,
   options: {
@@ -1222,6 +1276,9 @@ export function detectGaps(
       dayGaps.push(...detectEveningFree(day, dayIndex));
     }
 
+    // Guide/artisan suggestions for cultural-heavy days
+    dayGaps.push(...detectGuideSuggestions(day, dayIndex));
+
     // Prioritize and limit gaps per day
     const prioritized = dayGaps.sort((a, b) => {
       const priority: Record<GapType, number> = {
@@ -1242,6 +1299,7 @@ export function detectGaps(
         guidance: 5.5,
         evening_free: 6.5,
         omiyage_reminder: 7,
+        guide_suggestion: 6.8,
       };
       return priority[a.type] - priority[b.type];
     });

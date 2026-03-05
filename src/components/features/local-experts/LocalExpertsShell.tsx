@@ -31,6 +31,7 @@ export function LocalExpertsShell() {
     typeCounts,
     setQuery,
     setType,
+    setCity,
   } = usePeopleFilters(allPeople);
 
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
@@ -60,11 +61,15 @@ export function LocalExpertsShell() {
     return () => observer.disconnect();
   }, [filteredPeople.length]);
 
-  // Auto-filter from ?type= URL param
+  // Auto-filter from ?type= and ?city= URL params
   useEffect(() => {
     const typeParam = searchParams.get("type") as PersonType | null;
     if (typeParam && TYPE_TABS.some((t) => t.value === typeParam)) {
       setType(typeParam);
+    }
+    const cityParam = searchParams.get("city");
+    if (cityParam) {
+      setCity(cityParam);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
