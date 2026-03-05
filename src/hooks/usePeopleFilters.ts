@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import type { Person, PersonType } from "@/types/person";
 import { getPrefectureForCity } from "@/data/prefectures";
+import { getSpecialtiesForCategory } from "@/lib/activityCategories";
 
 export type PeopleSortOption = "recommended" | "experience" | "name";
 
@@ -21,6 +22,7 @@ function resolvePrefecture(person: Person): string | undefined {
 type PeopleFiltersState = {
   query: string;
   type: PersonType | null;
+  activity: string | null;
   prefecture: string | null;
   language: string | null;
   city: string | null;
@@ -30,6 +32,7 @@ type PeopleFiltersState = {
 const INITIAL: PeopleFiltersState = {
   query: "",
   type: null,
+  activity: null,
   prefecture: null,
   language: null,
   city: null,
@@ -45,6 +48,10 @@ export function usePeopleFilters(people: Person[] | undefined) {
   );
   const setType = useCallback(
     (t: PersonType | null) => setFilters((p) => ({ ...p, type: t })),
+    [],
+  );
+  const setActivity = useCallback(
+    (a: string | null) => setFilters((p) => ({ ...p, activity: a })),
     [],
   );
   const setPrefecture = useCallback(
@@ -128,6 +135,12 @@ export function usePeopleFilters(people: Person[] | undefined) {
     if (filters.type) {
       result = result.filter((p) => p.type === filters.type);
     }
+    if (filters.activity) {
+      const validSpecialties = getSpecialtiesForCategory(filters.activity);
+      result = result.filter((p) =>
+        p.specialties.some((s) => validSpecialties.has(s.toLowerCase()))
+      );
+    }
     if (filters.query) {
       const q = filters.query.toLowerCase();
       result = result.filter(
@@ -173,6 +186,7 @@ export function usePeopleFilters(people: Person[] | undefined) {
     activeFilterCount,
     setQuery,
     setType,
+    setActivity,
     setPrefecture,
     setLanguage,
     setCity,

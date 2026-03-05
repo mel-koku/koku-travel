@@ -1,38 +1,30 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { easeReveal } from "@/lib/motion";
 import { useAllPeople } from "@/hooks/usePeopleQuery";
 import { usePeopleFilters } from "@/hooks/usePeopleFilters";
+import {
+  ACTIVITY_CATEGORIES,
+  ALL_EXPERTS_IMAGE,
+  getSpecialtiesForCategory,
+} from "@/lib/activityCategories";
 import { PersonCard } from "./PersonCard";
 import { PersonDetailPanel } from "./PersonDetailPanel";
-import type { Person, PersonType } from "@/types/person";
+import type { Person } from "@/types/person";
 
 const PAGE_SIZE = 40;
-
-const TYPE_TABS: { label: string; value: PersonType | null }[] = [
-  { label: "All", value: null },
-  { label: "Artisans", value: "artisan" },
-  { label: "Guides", value: "guide" },
-  { label: "Interpreters", value: "interpreter" },
-  { label: "Authors", value: "author" },
-];
 
 export function LocalExpertsShell() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: allPeople, isLoading } = useAllPeople();
 
-  const {
-    filters,
-    filteredPeople,
-    typeCounts,
-    setQuery,
-    setType,
-    setCity,
-  } = usePeopleFilters(allPeople);
+  const { filters, filteredPeople, setQuery, setActivity, setCity } =
+    usePeopleFilters(allPeople);
 
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -61,19 +53,15 @@ export function LocalExpertsShell() {
     return () => observer.disconnect();
   }, [filteredPeople.length]);
 
-  // Auto-filter from ?type= and ?city= URL params
+  // Auto-filter from URL params
   useEffect(() => {
-    const typeParam = searchParams.get("type") as PersonType | null;
-    if (typeParam && TYPE_TABS.some((t) => t.value === typeParam)) {
-      setType(typeParam);
-    }
+    const activityParam = searchParams.get("activity");
+    if (activityParam) setActivity(activityParam);
     const cityParam = searchParams.get("city");
-    if (cityParam) {
-      setCity(cityParam);
-    }
+    if (cityParam) setCity(cityParam);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Deep link
+  // Deep link to person
   useEffect(() => {
     const slug = searchParams.get("person");
     if (slug && allPeople) {
@@ -81,6 +69,33 @@ export function LocalExpertsShell() {
       if (person) setSelectedPerson(person);
     }
   }, [searchParams, allPeople]);
+
+  // Activity counts
+  const activityCounts = useMemo(() => {
+    if (!allPeople) return {} as Record<string, number>;
+    const counts: Record<string, number> = {};
+    for (const cat of ACTIVITY_CATEGORIES) {
+      const validSpecialties = getSpecialtiesForCategory(cat.id);
+      counts[cat.id] = allPeople.filter((p) =>
+        p.specialties.some((s) => validSpecialties.has(s.toLowerCase()))
+      ).length;
+    }
+    return counts;
+  }, [allPeople]);
+
+  const handleActivitySelect = useCallback(
+    (id: string | null) => {
+      setActivity(id);
+      const params = new URLSearchParams(searchParams.toString());
+      if (id) {
+        params.set("activity", id);
+      } else {
+        params.delete("activity");
+      }
+      router.replace(`?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router, setActivity]
+  );
 
   const handlePersonClick = useCallback(
     (person: Person) => {
@@ -104,10 +119,13 @@ export function LocalExpertsShell() {
 
   const total = allPeople?.length ?? 0;
   const visible = filteredPeople.slice(0, visibleCount);
+  const activeCategory = ACTIVITY_CATEGORIES.find(
+    (c) => c.id === filters.activity
+  );
 
   return (
     <>
-      {/* Intro */}
+      {/* Hero */}
       <section className="px-6 py-12 sm:py-20 lg:py-28">
         <div className="mx-auto max-w-4xl text-center">
           <motion.p
@@ -131,7 +149,7 @@ export function LocalExpertsShell() {
             }}
             className="mt-4 font-serif text-4xl italic text-foreground sm:text-5xl lg:text-6xl"
           >
-            Meet the people behind the experiences
+            Learn Japan from the people who live it
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -143,49 +161,117 @@ export function LocalExpertsShell() {
             }}
             className="mx-auto mt-4 max-w-2xl text-base text-foreground-secondary"
           >
-            Artisans and guides who bring Japan to life. Browse by specialty,
-            city, or craft — then request a booking directly.
+            Pick what you want to do. We&apos;ll show you the right person.
           </motion.p>
         </div>
       </section>
 
-      {/* Category bar + Search */}
-      <div className="sticky top-[var(--header-h,64px)] z-30 border-b border-border bg-background/95 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          {/* Type tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto">
-            {TYPE_TABS.map((tab) => {
-              const isActive = filters.type === tab.value;
-              const count =
-                tab.value === null ? total : typeCounts[tab.value] ?? 0;
+      {/* Activity category grid — editorial photo tiles */}
+      <section className="px-4 pb-12 sm:px-6 sm:pb-16 lg:px-8 lg:pb-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            {/* All experts tile — spans 2 cols for emphasis */}
+            <button
+              type="button"
+              onClick={() => handleActivitySelect(null)}
+              className="group relative col-span-2 overflow-hidden rounded-xl sm:col-span-1"
+            >
+              <div className="relative aspect-[3/2] w-full overflow-hidden rounded-xl">
+                <Image
+                  src={ALL_EXPERTS_IMAGE}
+                  alt="All experts"
+                  fill
+                  className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
+                  sizes="(min-width:1280px) 320px, (min-width:640px) 33vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/30 to-transparent" />
+                {!filters.activity && (
+                  <div className="absolute inset-0 rounded-xl ring-2 ring-inset ring-brand-primary" />
+                )}
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <h3 className="font-serif italic text-lg leading-tight text-white">
+                    All experts
+                  </h3>
+                  <p className="mt-0.5 font-mono text-xs text-white/60">
+                    {total} people
+                  </p>
+                </div>
+                {!filters.activity && (
+                  <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-xl bg-brand-primary" />
+                )}
+              </div>
+            </button>
+
+            {ACTIVITY_CATEGORIES.map((cat, i) => {
+              const isActive = filters.activity === cat.id;
+              const count = activityCounts[cat.id] ?? 0;
               return (
-                <button
-                  key={tab.label}
+                <motion.button
+                  key={cat.id}
                   type="button"
-                  onClick={() => setType(tab.value)}
-                  className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
-                    isActive
-                      ? "bg-foreground text-background"
-                      : "text-foreground-secondary hover:bg-surface hover:text-foreground"
-                  }`}
+                  onClick={() => handleActivitySelect(cat.id)}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-40px" }}
+                  transition={{
+                    duration: 0.5,
+                    delay: (i % 4) * 0.05,
+                    ease: [...easeReveal] as [number, number, number, number],
+                  }}
+                  className="group relative overflow-hidden rounded-xl"
                 >
-                  {tab.label}
-                  <span
-                    className={`text-xs ${
-                      isActive ? "opacity-70" : "text-stone"
-                    }`}
-                  >
-                    {count}
-                  </span>
-                </button>
+                  <div className="relative aspect-[3/2] w-full overflow-hidden rounded-xl">
+                    <Image
+                      src={cat.image}
+                      alt={cat.label}
+                      fill
+                      className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
+                      sizes="(min-width:1280px) 320px, (min-width:640px) 33vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/20 to-transparent" />
+                    {isActive && (
+                      <div className="absolute inset-0 rounded-xl ring-2 ring-inset ring-brand-primary" />
+                    )}
+                    <div className="absolute inset-x-0 bottom-0 p-4">
+                      <h3 className="font-serif italic text-lg leading-tight text-white transition-colors group-hover:text-brand-primary/90">
+                        {cat.label}
+                      </h3>
+                      <p className="mt-0.5 font-mono text-xs text-white/60">
+                        {count} {count === 1 ? "person" : "people"}
+                      </p>
+                    </div>
+                    {isActive && (
+                      <div className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-xl bg-brand-primary" />
+                    )}
+                  </div>
+                </motion.button>
               );
             })}
           </div>
+        </div>
+      </section>
 
-          <div className="flex-1" />
+      {/* Sticky filter bar */}
+      <div className="sticky top-[var(--header-h,64px)] z-30 border-b border-border bg-background/95 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:px-6 lg:px-8">
+          <div className="min-w-0 flex-1">
+            {activeCategory ? (
+              <p className="truncate text-sm text-foreground-secondary">
+                <span className="font-medium text-foreground">
+                  {activeCategory.label}
+                </span>
+                <span className="mx-1.5 text-border">·</span>
+                {activeCategory.description}
+              </p>
+            ) : (
+              <p className="text-sm text-foreground-secondary">
+                All {total} experts
+              </p>
+            )}
+          </div>
 
           {/* Search */}
-          <div className="relative">
+          <div className="relative flex-shrink-0">
             <svg
               className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone"
               fill="none"
@@ -203,21 +289,34 @@ export function LocalExpertsShell() {
               type="text"
               value={filters.query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name or specialty"
-              className="h-9 w-44 rounded-xl border border-border bg-surface pl-9 pr-3 text-sm text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30 sm:w-56"
+              placeholder="Search by name or city"
+              className="h-9 w-44 rounded-xl border border-border bg-surface pl-9 pr-3 text-sm text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30 sm:w-52"
             />
           </div>
         </div>
       </div>
 
-      {/* Grid */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      {/* Results count */}
+      {filters.activity && (
+        <div className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
+          <p className="text-sm text-foreground-secondary">
+            {filteredPeople.length}{" "}
+            {filteredPeople.length === 1 ? "expert" : "experts"} for{" "}
+            <span className="font-medium text-foreground">
+              {activeCategory?.label}
+            </span>
+          </p>
+        </div>
+      )}
+
+      {/* People grid */}
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
         {isLoading ? (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="h-64 animate-pulse rounded-xl bg-surface"
+                className="h-56 animate-pulse rounded-xl bg-surface"
               />
             ))}
           </div>
@@ -227,8 +326,17 @@ export function LocalExpertsShell() {
               No experts found
             </p>
             <p className="mt-2 text-sm text-foreground-secondary">
-              Try adjusting your search or filters.
+              Try a different activity or clear your search.
             </p>
+            {filters.activity && (
+              <button
+                type="button"
+                onClick={() => handleActivitySelect(null)}
+                className="mt-4 text-sm text-brand-primary hover:underline"
+              >
+                Show all experts
+              </button>
+            )}
           </div>
         ) : (
           <>
@@ -249,10 +357,7 @@ export function LocalExpertsShell() {
         )}
       </section>
 
-      <PersonDetailPanel
-        person={selectedPerson}
-        onClose={handleCloseDetail}
-      />
+      <PersonDetailPanel person={selectedPerson} onClose={handleCloseDetail} />
     </>
   );
 }
