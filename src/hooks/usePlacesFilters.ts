@@ -123,6 +123,7 @@ export function usePlacesFilters(
   const [wheelchairAccessible, setWheelchairAccessible] = useState(false);
   const [vegetarianFriendly, setVegetarianFriendly] = useState(false);
   const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [kokuIds, setKokuIds] = useState<string[]>([]);
 
   // Sort + pagination — auto-select "in_season" when the current month has notable events
   const [selectedSort, setSelectedSort] = useState<SortOptionId>(
@@ -143,6 +144,7 @@ export function usePlacesFilters(
     wheelchairAccessible,
     vegetarianFriendly,
     featuredOnly,
+    kokuIds,
     selectedSort,
   ]);
 
@@ -178,6 +180,12 @@ export function usePlacesFilters(
 
   // Apply all filters
   const filteredLocations = useMemo(() => {
+    // Koku filter overrides everything — show only the exact IDs Koku returned
+    if (kokuIds.length > 0) {
+      const idSet = new Set(kokuIds);
+      return enhancedLocations.filter((loc) => idSet.has(loc.id));
+    }
+
     const normalizedQuery = query.trim().toLowerCase();
     const durationFilter = selectedDuration
       ? DURATION_FILTERS.find((filter) => filter.id === selectedDuration) ?? null
@@ -250,7 +258,7 @@ export function usePlacesFilters(
         matchesFeatured
       );
     });
-  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly]);
+  }, [enhancedLocations, query, selectedPrefectures, selectedPriceLevel, selectedDuration, selectedVibes, openNow, wheelchairAccessible, vegetarianFriendly, featuredOnly, kokuIds]);
 
   // Sort
   const sortedLocations = useMemo(() => {
@@ -432,7 +440,12 @@ export function usePlacesFilters(
     setWheelchairAccessible(false);
     setVegetarianFriendly(false);
     setFeaturedOnly(false);
+    setKokuIds([]);
     setSelectedSort("recommended");
+  }, []);
+
+  const clearKokuFilter = useCallback(() => {
+    setKokuIds([]);
   }, []);
 
   return {
@@ -446,6 +459,7 @@ export function usePlacesFilters(
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
+    kokuIds, setKokuIds, clearKokuFilter,
     // Sort
     selectedSort, setSelectedSort,
     // Pagination

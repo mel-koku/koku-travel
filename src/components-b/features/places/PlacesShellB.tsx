@@ -92,6 +92,7 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
+    kokuIds, setKokuIds, clearKokuFilter,
     selectedSort, setSelectedSort,
     filteredLocations,
     sortedLocations,
@@ -239,6 +240,18 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
     window.history.replaceState(null, "", `/b/places${qs ? `?${qs}` : ""}`);
   }, [searchParams]);
 
+  // Read ?koku= param and apply Koku ID filter (runs once on mount)
+  const kokuParam = searchParams.get("koku");
+  const didApplyKokuRef = useRef(false);
+  useEffect(() => {
+    if (!kokuParam || didApplyKokuRef.current) return;
+    const ids = kokuParam.split(",").map((s) => s.trim()).filter(Boolean);
+    if (ids.length > 0) {
+      setKokuIds(ids);
+      didApplyKokuRef.current = true;
+    }
+  }, [kokuParam, setKokuIds]);
+
   // Deep link: ?location={slug} → auto-open panel
   const locationParam = searchParams.get("location");
 
@@ -313,6 +326,25 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
                   onFilterSeasonal={handleFilterSeasonal}
                 />
               </div>
+
+              {/* Koku filter banner */}
+              {kokuIds.length > 0 && (
+                <div className="mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:px-8">
+                  <div className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--primary)]/20 bg-[var(--primary)]/5 px-4 py-2.5 text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-[var(--primary)]">Koku suggested</span>
+                      <span className="text-[var(--muted-foreground)]">· Showing {kokuIds.length} place{kokuIds.length !== 1 ? "s" : ""}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={clearKokuFilter}
+                      className="shrink-0 text-xs font-medium text-[var(--muted-foreground)] underline-offset-2 hover:text-[var(--foreground)] hover:underline"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="h-4 sm:h-6" aria-hidden="true" />
 
