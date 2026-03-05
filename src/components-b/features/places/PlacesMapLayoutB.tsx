@@ -66,7 +66,7 @@ export function PlacesMapLayoutB({
     if (!mapBounds) return sortedLocations;
     const { north, south, east, west } = mapBounds;
     return sortedLocations.filter((loc) => {
-      if (!loc.coordinates) return false;
+      if (!loc.coordinates) return true; // no coords → show in list, no map pin
       const { lat, lng } = loc.coordinates;
       return lat >= south && lat <= north && lng >= west && lng <= east;
     });
@@ -99,7 +99,10 @@ export function PlacesMapLayoutB({
     if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [hoveredLocationId]);
 
-  const showResetButton = mapBounds !== null && boundsFilteredLocations.length === 0;
+  const mappedCount = mapBounds
+    ? boundsFilteredLocations.filter((loc) => loc.coordinates).length
+    : sortedLocations.filter((loc) => loc.coordinates).length;
+  const showResetButton = mapBounds !== null && mappedCount === 0 && sortedLocations.filter((loc) => loc.coordinates).length > 0;
 
   const setCardRef = useCallback(
     (locationId: string) => (el: HTMLDivElement | null) => {
@@ -160,7 +163,7 @@ export function PlacesMapLayoutB({
             <div className="mb-1.5 pointer-events-auto">
               <span className="inline-block rounded-lg bg-white px-2 py-1 text-[11px] font-medium text-[var(--muted-foreground)]" style={{ boxShadow: "var(--shadow-sm)" }}>
                 {boundsFilteredLocations.length.toLocaleString()} places
-                {mapBounds && boundsFilteredLocations.length <= 10 && boundsFilteredLocations.length < sortedLocations.length && (
+                {mapBounds && mappedCount <= 10 && mappedCount < sortedLocations.filter((l) => l.coordinates).length && (
                   <span className="font-normal"> · Zoom out for more</span>
                 )}
               </span>
