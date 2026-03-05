@@ -33,7 +33,7 @@ export function FeaturedExperiences({
             </h2>
             <p className="mt-4 max-w-md text-base text-foreground-secondary">
               {content?.featuredExperiencesDescription ??
-                "Workshops, cruises, and adventures where you're a participant — not a tourist."}
+                "Ceramics, sake brewing, and hands-on traditions. You're a participant, not a tourist."}
             </p>
           </div>
           <Link
