@@ -149,11 +149,16 @@ export const PlacesCardB = memo(function PlacesCardB({
             {summary}
           </p>
 
-          {/* Category + duration */}
-          <div className="flex items-center gap-2 pt-0.5">
+          {/* Category + duration + JTA badge */}
+          <div className="flex items-center gap-2 pt-0.5 flex-wrap">
             <span className="text-[11px] font-medium capitalize bg-[var(--surface)] text-[var(--muted-foreground)] px-2 py-0.5 rounded-lg">
               {location.category}
             </span>
+            {location.jtaApproved && (
+              <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-[var(--primary)] border border-[var(--primary)]/30 px-2 py-0.5 rounded-lg">
+                JTA Approved
+              </span>
+            )}
             {location.estimatedDuration && (
               <>
                 <span className="text-[var(--border)]">&middot;</span>

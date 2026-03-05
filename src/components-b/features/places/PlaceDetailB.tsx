@@ -293,6 +293,15 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
           <span className="text-[var(--muted-foreground)]">{location.city}, {location.region}</span>
         </motion.div>
 
+        {/* JTA Approved badge */}
+        {location.jtaApproved && (
+          <motion.div variants={fadeUp} className="mt-3">
+            <span className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--primary)]/30 px-3 py-1 text-xs font-medium uppercase tracking-[0.12em] text-[var(--primary)]">
+              JTA Approved
+            </span>
+          </motion.div>
+        )}
+
         {/* Save button */}
         <motion.div variants={fadeUp} className="mt-5">
           <button

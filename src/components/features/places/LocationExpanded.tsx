@@ -285,6 +285,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             <span className="rounded-xl bg-surface px-3 py-1 font-medium capitalize text-foreground-secondary">
               {location.category}
             </span>
+            {location.jtaApproved && (
+              <span className="flex items-center gap-1.5 rounded-xl border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
+                JTA Approved
+              </span>
+            )}
             {(details?.rating ?? location.rating) ? (
               <span className="flex items-center gap-1 text-foreground">
                 <svg className="h-4 w-4 text-warning" viewBox="0 0 24 24" fill="currentColor">
