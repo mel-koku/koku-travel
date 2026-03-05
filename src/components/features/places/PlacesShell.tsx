@@ -76,6 +76,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
     wheelchairAccessible, setWheelchairAccessible,
     vegetarianFriendly, setVegetarianFriendly,
     featuredOnly, setFeaturedOnly,
+    kokuIds, setKokuIds, clearKokuFilter,
     selectedSort, setSelectedSort,
     setPage, hasMore,
     filteredLocations,
@@ -118,6 +119,18 @@ export function PlacesShell({ content }: PlacesShellProps) {
   const searchParams = useSearchParams();
   const locationParam = searchParams.get("location");
   const didAutoExpandRef = useRef(false);
+
+  // Read ?koku= param and apply Koku ID filter (runs once on mount)
+  const kokuParam = searchParams.get("koku");
+  const didApplyKokuRef = useRef(false);
+  useEffect(() => {
+    if (!kokuParam || didApplyKokuRef.current) return;
+    const ids = kokuParam.split(",").map((s) => s.trim()).filter(Boolean);
+    if (ids.length > 0) {
+      setKokuIds(ids);
+      didApplyKokuRef.current = true;
+    }
+  }, [kokuParam, setKokuIds]);
   const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
 
   useEffect(() => {
@@ -226,6 +239,25 @@ export function PlacesShell({ content }: PlacesShellProps) {
           onFilterSeasonal={handleFilterSeasonal}
         />
       </div>
+
+      {/* Koku filter banner */}
+      {kokuIds.length > 0 && (
+        <div className="mx-auto mt-3 max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-brand-primary/30 bg-brand-primary/10 px-4 py-2.5 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-brand-primary">Koku suggested</span>
+              <span className="text-foreground-secondary">· Showing {kokuIds.length} place{kokuIds.length !== 1 ? "s" : ""}</span>
+            </div>
+            <button
+              type="button"
+              onClick={clearKokuFilter}
+              className="shrink-0 text-xs font-medium text-foreground-secondary underline-offset-2 hover:text-foreground hover:underline"
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Breathing room between search bar and content */}
       <div className="h-4 sm:h-6" aria-hidden="true" />
