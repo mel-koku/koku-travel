@@ -12,17 +12,17 @@ vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
 }));
 
-vi.mock("@/lib/api/middleware", () => ({
-  createRequestContext: vi.fn().mockReturnValue({
-    requestId: "test-request-id",
-    startTime: Date.now(),
-  }),
-  addRequestContextHeaders: vi.fn((response) => response),
-  getOptionalAuth: vi.fn().mockResolvedValue({
-    user: null,
-    context: { requestId: "test-request-id" },
-  }),
-}));
+vi.mock("@/lib/api/middleware", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/api/middleware")>();
+  return {
+    ...actual,
+    createRequestContext: vi.fn().mockReturnValue({
+      requestId: "test-request-id",
+      startTime: Date.now(),
+    }),
+    addRequestContextHeaders: vi.fn((response) => response),
+  };
+});
 
 // Mock Supabase client
 let mockSupabaseCountResponse: { count: number | null; error: unknown } = { count: 100, error: null };
@@ -62,15 +62,9 @@ vi.mock("@/lib/supabase/server", () => ({
     from: () => ({
       select: (_columns: string, options?: { count?: string; head?: boolean }) => {
         if (options?.head) {
-          const countBuilder = createCountQueryBuilder(() => mockSupabaseCountResponse);
-          return {
-            or: () => countBuilder,
-          };
+          return createCountQueryBuilder(() => mockSupabaseCountResponse);
         }
-        const dataBuilder = createDataQueryBuilder(() => mockSupabaseDataResponse);
-        return {
-          or: () => dataBuilder,
-        };
+        return createDataQueryBuilder(() => mockSupabaseDataResponse);
       },
     }),
   })),

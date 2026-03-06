@@ -3,74 +3,59 @@ import {
   isSlotAvailable,
   isPersonAvailableForSlot,
 } from "@/lib/bookings/bookingService";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 
 /**
  * GET /api/bookings/availability?personId=&date=&session=
  * Public — checks if a slot is bookable.
  */
-export async function GET(request: NextRequest) {
-  const context = createRequestContext(request);
-  const url = new URL(request.url);
+export const GET = withApiHandler(
+  async (request: NextRequest) => {
+    const url = new URL(request.url);
 
-  const personId = url.searchParams.get("personId");
-  const date = url.searchParams.get("date");
-  const session = url.searchParams.get("session") as
-    | "morning"
-    | "afternoon"
-    | null;
+    const personId = url.searchParams.get("personId");
+    const date = url.searchParams.get("date");
+    const session = url.searchParams.get("session") as
+      | "morning"
+      | "afternoon"
+      | null;
 
-  if (!personId || !date || !session) {
-    return addRequestContextHeaders(
-      NextResponse.json(
+    if (!personId || !date || !session) {
+      return NextResponse.json(
         { error: "Missing personId, date, or session" },
-        { status: 400 }
-      ),
-      context
-    );
-  }
+        { status: 400 },
+      );
+    }
 
-  if (session !== "morning" && session !== "afternoon") {
-    return addRequestContextHeaders(
-      NextResponse.json(
+    if (session !== "morning" && session !== "afternoon") {
+      return NextResponse.json(
         { error: "Session must be morning or afternoon" },
-        { status: 400 }
-      ),
-      context
-    );
-  }
+        { status: 400 },
+      );
+    }
 
-  const personAvailable = await isPersonAvailableForSlot(
-    personId,
-    date,
-    session
-  );
-  if (!personAvailable) {
-    return addRequestContextHeaders(
-      NextResponse.json({
+    const personAvailable = await isPersonAvailableForSlot(
+      personId,
+      date,
+      session,
+    );
+    if (!personAvailable) {
+      return NextResponse.json({
         available: false,
         reason: "Not available on this day/session",
-      }),
-      context
-    );
-  }
+      });
+    }
 
-  const slotFree = await isSlotAvailable(personId, date, session);
-  if (!slotFree) {
-    return addRequestContextHeaders(
-      NextResponse.json({
+    const slotFree = await isSlotAvailable(personId, date, session);
+    if (!slotFree) {
+      return NextResponse.json({
         available: false,
         reason: "Already booked",
-      }),
-      context
-    );
-  }
+      });
+    }
 
-  return addRequestContextHeaders(
-    NextResponse.json({ available: true }),
-    context
-  );
-}
+    return NextResponse.json({ available: true });
+  },
+  { rateLimit: RATE_LIMITS.BOOKINGS },
+);

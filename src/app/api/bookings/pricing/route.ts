@@ -1,34 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import { calculatePrice } from "@/lib/bookings/pricingService";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 
 /**
  * GET /api/bookings/pricing?personId=&groupSize=&experienceSlug=&date=
  * Public — returns price breakdown for display.
  */
-export async function GET(request: NextRequest) {
-  const context = createRequestContext(request);
-  const url = new URL(request.url);
+export const GET = withApiHandler(
+  async (request: NextRequest) => {
+    const url = new URL(request.url);
 
-  const personId = url.searchParams.get("personId");
-  const groupSize = parseInt(url.searchParams.get("groupSize") ?? "1", 10);
-  const experienceSlug = url.searchParams.get("experienceSlug") ?? undefined;
-  const date = url.searchParams.get("date") ?? undefined;
+    const personId = url.searchParams.get("personId");
+    const groupSize = parseInt(url.searchParams.get("groupSize") ?? "1", 10);
+    const experienceSlug = url.searchParams.get("experienceSlug") ?? undefined;
+    const date = url.searchParams.get("date") ?? undefined;
 
-  if (!personId) {
-    return addRequestContextHeaders(
-      NextResponse.json({ error: "Missing personId" }, { status: 400 }),
-      context
-    );
-  }
+    if (!personId) {
+      return NextResponse.json({ error: "Missing personId" }, { status: 400 });
+    }
 
-  const price = await calculatePrice(personId, groupSize, experienceSlug, date);
+    const price = await calculatePrice(personId, groupSize, experienceSlug, date);
 
-  return addRequestContextHeaders(
-    NextResponse.json({ price }),
-    context
-  );
-}
+    return NextResponse.json({ price });
+  },
+  { rateLimit: RATE_LIMITS.BOOKINGS },
+);

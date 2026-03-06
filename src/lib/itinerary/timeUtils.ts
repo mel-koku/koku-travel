@@ -1,3 +1,8 @@
+import { parseTimeToMinutes } from "@/lib/utils/timeUtils";
+
+// Re-export so existing imports from this module continue to work
+export { parseTimeToMinutes };
+
 /**
  * Check if a given day index is "today" relative to the trip start date.
  * Uses local-date constructor to avoid UTC midnight timezone bugs.
@@ -13,19 +18,6 @@ export function isToday(tripStartDate: string | undefined, dayIndex: number): bo
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   return dayDate.getTime() === today.getTime();
-}
-
-/**
- * Parse a time string (HH:MM) to minutes since midnight.
- */
-export function parseTimeToMinutes(timeStr: string | undefined | null): number | null {
-  if (!timeStr) return null;
-  const parts = timeStr.split(":");
-  if (parts.length < 2) return null;
-  const hours = parseInt(parts[0] ?? "", 10);
-  const minutes = parseInt(parts[1] ?? "", 10);
-  if (isNaN(hours) || isNaN(minutes)) return null;
-  return hours * 60 + minutes;
 }
 
 /**

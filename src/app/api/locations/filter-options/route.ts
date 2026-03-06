@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import { internalError } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import type { FilterOption, FilterMetadata } from "@/types/filters";
 import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
 
@@ -27,47 +24,32 @@ const _g = globalThis as typeof globalThis & { __filterOptionsCache?: FilterCach
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for database errors
  */
-export async function GET(request: NextRequest) {
-  // Create request context for tracing
-  const context = createRequestContext(request);
-
-  // Rate limiting: 100 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  // Tier 1: globalThis cache (fastest)
-  if (_g.__filterOptionsCache && Date.now() - _g.__filterOptionsCache.cachedAt < CACHE_TTL) {
-    return addRequestContextHeaders(
-      NextResponse.json(_g.__filterOptionsCache.data, {
+export const GET = withApiHandler(
+  async (_request, { context }) => {
+    // Tier 1: globalThis cache (fastest)
+    if (_g.__filterOptionsCache && Date.now() - _g.__filterOptionsCache.cachedAt < CACHE_TTL) {
+      return NextResponse.json(_g.__filterOptionsCache.data, {
         status: 200,
         headers: {
           "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=7200",
           "X-Cache": "HIT",
         },
-      }),
-      context,
-    );
-  }
+      });
+    }
 
-  // Tier 2: file cache (survives dev server restarts)
-  const fileCached = readFileCache<FilterMetadata>(FILE_CACHE_KEY, FILE_CACHE_TTL);
-  if (fileCached) {
-    _g.__filterOptionsCache = { data: fileCached, cachedAt: Date.now() };
-    return addRequestContextHeaders(
-      NextResponse.json(fileCached, {
+    // Tier 2: file cache (survives dev server restarts)
+    const fileCached = readFileCache<FilterMetadata>(FILE_CACHE_KEY, FILE_CACHE_TTL);
+    if (fileCached) {
+      _g.__filterOptionsCache = { data: fileCached, cachedAt: Date.now() };
+      return NextResponse.json(fileCached, {
         status: 200,
         headers: {
           "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=7200",
           "X-Cache": "HIT-FILE",
         },
-      }),
-      context,
-    );
-  }
+      });
+    }
 
-  try {
     const supabase = await createClient();
 
     // Supabase PostgREST caps at 1000 rows per request — paginate.
@@ -93,12 +75,9 @@ export async function GET(request: NextRequest) {
           page,
           requestId: context.requestId,
         });
-        return addRequestContextHeaders(
-          internalError("Failed to fetch filter metadata", { error: error.message }, {
-            requestId: context.requestId,
-          }),
-          context,
-        );
+        return internalError("Failed to fetch filter metadata", { error: error.message }, {
+          requestId: context.requestId,
+        });
       }
 
       data = data.concat(batch || []);
@@ -182,24 +161,13 @@ export async function GET(request: NextRequest) {
     _g.__filterOptionsCache = { data: response, cachedAt: Date.now() };
     writeFileCache(FILE_CACHE_KEY, response);
 
-    return addRequestContextHeaders(
-      NextResponse.json(response, {
-        status: 200,
-        headers: {
-          // Cache for 1 hour - filter options change infrequently
-          "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=7200",
-        },
-      }),
-      context,
-    );
-  } catch (error) {
-    logger.error("Unexpected error fetching filter metadata", error instanceof Error ? error : new Error(String(error)), {
-      requestId: context.requestId,
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        // Cache for 1 hour - filter options change infrequently
+        "Cache-Control": "public, max-age=3600, s-maxage=3600, stale-while-revalidate=7200",
+      },
     });
-    const message = error instanceof Error ? error.message : "Failed to load filter metadata.";
-    return addRequestContextHeaders(
-      internalError(message, undefined, { requestId: context.requestId }),
-      context,
-    );
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.LOCATIONS },
+);

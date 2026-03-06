@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
+import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import { INTEREST_CATEGORIES } from "@/data/interests";
 import type { InterestId } from "@/types/trip";
 
@@ -37,16 +38,17 @@ export function ItineraryPreview() {
       let dateLabel = `Day ${i + 1}`;
 
       if (startDate) {
-        const dayDate = new Date(startDate);
-        dayDate.setDate(dayDate.getDate() + i);
-        date = dayDate.toISOString().split("T")[0] ?? null;
+        const dayDate = parseLocalDateWithOffset(startDate, i);
+        if (dayDate) {
+          date = dayDate.toISOString().split("T")[0] ?? null;
 
-        const formatter = new Intl.DateTimeFormat(undefined, {
-          weekday: "short",
-          month: "short",
-          day: "numeric",
-        });
-        dateLabel = formatter.format(dayDate);
+          const formatter = new Intl.DateTimeFormat(undefined, {
+            weekday: "short",
+            month: "short",
+            day: "numeric",
+          });
+          dateLabel = formatter.format(dayDate);
+        }
       }
 
       // Distribute cities across days

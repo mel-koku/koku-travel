@@ -7,7 +7,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
-import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { getErrorMessage, isAuthSessionMissing } from "@/lib/utils/errorUtils";
 import type { SyncResult, SavedRow } from "./types";
 
 /**
@@ -187,19 +187,14 @@ export async function syncSavedToggle(
     } = await supabase.auth.getUser();
 
     if (authError) {
-      const errorMessage = extractErrorMessage(authError);
-
-      // Suppress "Auth session missing" errors (expected when not logged in)
-      if (errorMessage.includes("Auth session missing")) {
-        return { success: true }; // Local state is still valid
+      if (isAuthSessionMissing(authError)) {
+        return { success: true };
       }
-
       logger.error("Failed to read auth session when syncing saved place", authError);
-      return { success: false, error: errorMessage };
+      return { success: false, error: getErrorMessage(authError) };
     }
 
     if (!user) {
-      // No authenticated user - keep local state but skip remote sync
       return { success: true };
     }
 
@@ -209,21 +204,11 @@ export async function syncSavedToggle(
       return await addSaved(supabase, user.id, placeId);
     }
   } catch (error) {
-    const message = error instanceof Error ? error.message : JSON.stringify(error ?? {});
+    if (isAuthSessionMissing(error)) {
+      return { success: true };
+    }
+    const message = getErrorMessage(error);
     logger.error("Failed to sync saved place", new Error(message));
     return { success: false, error: message };
   }
-}
-
-/**
- * Helper to extract error message from various error types
- */
-function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === "object" && error && "message" in error) {
-    return String((error as { message?: unknown }).message);
-  }
-  return String(error);
 }

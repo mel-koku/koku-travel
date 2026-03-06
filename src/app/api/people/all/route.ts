@@ -1,12 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getPublishedPeople } from "@/lib/people/peopleService";
-import { logger } from "@/lib/logger";
-import { internalError } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { readFileCache, writeFileCache } from "@/lib/api/fileCache";
 import type { Person } from "@/types/person";
 
@@ -46,55 +41,34 @@ function setCache(data: Person[], total: number) {
  * Returns all published people.
  * Response: { data: Person[], total: number }
  */
-export async function GET(request: NextRequest) {
-  const context = createRequestContext(request);
-
-  const rateLimitResponse = await checkRateLimit(request, {
-    maxRequests: 100,
-    windowMs: 60 * 1000,
-  });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  const cached = getCached();
-  if (cached) {
-    return addRequestContextHeaders(
-      NextResponse.json(cached, {
+export const GET = withApiHandler(
+  async (_request) => {
+    const cached = getCached();
+    if (cached) {
+      return NextResponse.json(cached, {
         status: 200,
         headers: {
           "Cache-Control":
             "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
           "X-Cache": "HIT",
         },
-      }),
-      context
-    );
-  }
+      });
+    }
 
-  try {
     const people = await getPublishedPeople();
     setCache(people, people.length);
 
-    return addRequestContextHeaders(
-      NextResponse.json(
-        { data: people, total: people.length },
-        {
-          status: 200,
-          headers: {
-            "Cache-Control":
-              "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
-            "X-Cache": "MISS",
-          },
-        }
-      ),
-      context
+    return NextResponse.json(
+      { data: people, total: people.length },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control":
+            "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
+          "X-Cache": "MISS",
+        },
+      }
     );
-  } catch (err) {
-    logger.error(
-      "Failed to fetch all people",
-      err instanceof Error ? err : new Error(String(err))
-    );
-    return addRequestContextHeaders(internalError(context.requestId), context);
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.PEOPLE },
+);

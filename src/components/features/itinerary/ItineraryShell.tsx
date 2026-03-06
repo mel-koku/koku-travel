@@ -21,6 +21,7 @@ import { DayRefinementButtons } from "./DayRefinementButtons";
 import { ItineraryTimeline } from "./ItineraryTimeline";
 import { WhatsNextCard } from "./WhatsNextCard";
 import { ItineraryMapPanel } from "./ItineraryMapPanel";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { logger } from "@/lib/logger";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ActivityReplacementPicker } from "./ActivityReplacementPicker";
@@ -493,7 +494,7 @@ export const ItineraryShell = ({
     const start = tripBuilderData?.dates?.start;
     const end = tripBuilderData?.dates?.end;
     if (!start || !end) return undefined;
-    const fmt = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    const fmt = (iso: string) => parseLocalDate(iso)!.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
     return `${fmt(start)} – ${fmt(end)}`;
   }, [tripBuilderData?.dates]);
 

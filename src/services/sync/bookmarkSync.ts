@@ -7,7 +7,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
-import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { getErrorMessage, isAuthSessionMissing } from "@/lib/utils/errorUtils";
 import type { SyncResult, GuideBookmarkRow } from "./types";
 
 /**
@@ -107,12 +107,14 @@ export async function syncBookmarkToggle(
     } = await supabase.auth.getUser();
 
     if (authError) {
+      if (isAuthSessionMissing(authError)) {
+        return { success: true };
+      }
       logger.error("Failed to read auth session when syncing guide bookmark", authError);
-      return { success: false, error: extractErrorMessage(authError) };
+      return { success: false, error: getErrorMessage(authError) };
     }
 
     if (!user) {
-      // No authenticated user - keep local state but skip remote sync
       return { success: true };
     }
 
@@ -122,27 +124,11 @@ export async function syncBookmarkToggle(
       return await addGuideBookmark(supabase, user.id, guideId);
     }
   } catch (error) {
-    const message = extractErrorMessage(error);
-
-    // Suppress "Auth session missing" errors
-    if (message.includes("Auth session missing")) {
+    if (isAuthSessionMissing(error)) {
       return { success: true };
     }
-
+    const message = getErrorMessage(error);
     logger.error("Failed to sync guide bookmark", message || error);
     return { success: false, error: message, shouldRevert: true };
   }
-}
-
-/**
- * Helper to extract error message from various error types
- */
-function extractErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === "object" && error && "message" in error) {
-    return String((error as { message?: unknown }).message);
-  }
-  return String(error);
 }

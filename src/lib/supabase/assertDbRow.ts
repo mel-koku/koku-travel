@@ -3,7 +3,7 @@
  * Guards against schema drift or unexpected null data from PostgREST.
  */
 
-const REQUIRED_LOCATION_FIELDS = ["id", "name", "region", "city", "category", "image"] as const;
+const REQUIRED_LOCATION_FIELDS = ["id", "name", "region", "city", "category", "image", "coordinates", "planning_city"] as const;
 
 /**
  * Asserts that a single database result has the minimum required fields

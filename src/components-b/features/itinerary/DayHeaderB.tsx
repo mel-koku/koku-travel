@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import type { ItineraryDay } from "@/types/itinerary";
 import { REGIONS } from "@/data/regions";
+import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import { DayStartTimePickerB } from "./DayStartTimePickerB";
 
 function formatCityName(cityId: string): string {
@@ -33,30 +34,7 @@ type DayHeaderBProps = {
 export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange, refinementSlot, accommodationSlot, tipsSlot, suggestionsSlot, dayIntroSlot }: DayHeaderBProps) {
   const dayDate = useMemo(() => {
     if (tripStartDate) {
-      try {
-        const [year, month, d] = tripStartDate.split("-").map(Number);
-        if (
-          year &&
-          month &&
-          d &&
-          !Number.isNaN(year) &&
-          !Number.isNaN(month) &&
-          !Number.isNaN(d)
-        ) {
-          const startDate = new Date(year, month - 1, d);
-          const result = new Date(startDate);
-          result.setDate(startDate.getDate() + dayIndex);
-          return result;
-        }
-        const startDate = new Date(tripStartDate);
-        if (!Number.isNaN(startDate.getTime())) {
-          const result = new Date(startDate);
-          result.setDate(startDate.getDate() + dayIndex);
-          return result;
-        }
-      } catch {
-        // Invalid date
-      }
+      return parseLocalDateWithOffset(tripStartDate, dayIndex) ?? undefined;
     }
     return undefined;
   }, [tripStartDate, dayIndex]);

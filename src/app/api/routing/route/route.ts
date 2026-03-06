@@ -1,17 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { requestRoute } from "@/lib/routing";
 import type { RoutingRequest } from "@/lib/routing/types";
 import { toRoutingMode, VALID_ROUTING_MODES } from "@/lib/routing/types";
 import type { ItineraryTravelMode } from "@/types/itinerary";
 import { logger } from "@/lib/logger";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  getOptionalAuth,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
-import { badRequest, internalError } from "@/lib/api/errors";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { badRequest } from "@/lib/api/errors";
 
 /**
  * Valid internal travel modes that can be translated to routing modes.
@@ -24,105 +19,77 @@ const VALID_INTERNAL_MODES = new Set<string>([
 
 /**
  * POST /api/routing/route
- * 
+ *
  * Gets full route details including path, instructions, and timing.
  * Returns complete route information for display.
- * 
- * @param request - Next.js request object
- * @param request.body - RoutingRequest with origin, destination, mode, etc.
- * @returns JSON object with route details
+ *
  * @throws Returns 400 if required fields are missing
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for other errors
  */
-export async function POST(request: NextRequest) {
-  // Create request context for tracing
-  const context = createRequestContext(request);
-
-  // Rate limiting: 100 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  // Optional authentication (for future user-specific features)
-  const authResult = await getOptionalAuth(request, context);
-  const finalContext = authResult.context;
-
-  let body: RoutingRequest;
-  try {
-    body = await request.json() as RoutingRequest;
-  } catch {
-    return addRequestContextHeaders(
-      badRequest("Invalid JSON in request body.", undefined, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
-  
-  // Validate required fields
-  if (!body.origin || !body.destination || !body.mode) {
-    return addRequestContextHeaders(
-      badRequest("Missing required fields: origin, destination, mode", undefined, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
-
-  // Validate and translate internal travel mode to routing mode
-  if (!VALID_INTERNAL_MODES.has(body.mode)) {
-    return addRequestContextHeaders(
-      badRequest(`Invalid mode "${body.mode}". Must be one of: ${Array.from(VALID_INTERNAL_MODES).join(", ")}`, undefined, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
-
-  // Translate internal mode to routing API mode
-  const routingMode = VALID_ROUTING_MODES.has(body.mode as "driving" | "walking" | "transit" | "cycling")
-    ? body.mode as "driving" | "walking" | "transit" | "cycling"
-    : toRoutingMode(body.mode as ItineraryTravelMode);
-
-  try {
-    // Request the route with translated mode
-    const routingRequest: RoutingRequest = {
-      ...body,
-      mode: routingMode,
-    };
-    const result = await requestRoute(routingRequest);
-    
-    // Extract instructions from legs
-    const instructions: string[] = [];
-    result.legs.forEach((leg) => {
-      leg.steps?.forEach((step) => {
-        if (step.instruction) {
-          instructions.push(step.instruction);
-        }
+export const POST = withApiHandler(
+  async (request, { context }) => {
+    let body: RoutingRequest;
+    try {
+      body = await request.json() as RoutingRequest;
+    } catch {
+      return badRequest("Invalid JSON in request body.", undefined, {
+        requestId: context.requestId,
       });
-    });
-    
-    // Calculate arrival time if departure time is provided
-    let arrivalTime: string | undefined;
-    if (body.departureTime) {
-      const departure = parseTime(body.departureTime, body.timezone);
-      if (departure) {
-        const arrival = new Date(departure.getTime() + result.durationSeconds * 1000);
-        arrivalTime = formatTime(arrival, body.timezone);
-      }
     }
-    
-    // "mock" provider indicates heuristic estimate (not from real routing API)
-    const isEstimated = result.provider === "mock";
 
-    // Return full route response
-    return addRequestContextHeaders(
-      NextResponse.json({
+    // Validate required fields
+    if (!body.origin || !body.destination || !body.mode) {
+      return badRequest("Missing required fields: origin, destination, mode", undefined, {
+        requestId: context.requestId,
+      });
+    }
+
+    // Validate and translate internal travel mode to routing mode
+    if (!VALID_INTERNAL_MODES.has(body.mode)) {
+      return badRequest(`Invalid mode "${body.mode}". Must be one of: ${Array.from(VALID_INTERNAL_MODES).join(", ")}`, undefined, {
+        requestId: context.requestId,
+      });
+    }
+
+    // Translate internal mode to routing API mode
+    const routingMode = VALID_ROUTING_MODES.has(body.mode as "driving" | "walking" | "transit" | "cycling")
+      ? body.mode as "driving" | "walking" | "transit" | "cycling"
+      : toRoutingMode(body.mode as ItineraryTravelMode);
+
+    try {
+      // Request the route with translated mode
+      const routingRequest: RoutingRequest = {
+        ...body,
+        mode: routingMode,
+      };
+      const result = await requestRoute(routingRequest);
+
+      // Extract instructions from legs
+      const instructions: string[] = [];
+      result.legs.forEach((leg) => {
+        leg.steps?.forEach((step) => {
+          if (step.instruction) {
+            instructions.push(step.instruction);
+          }
+        });
+      });
+
+      // Calculate arrival time if departure time is provided
+      let arrivalTime: string | undefined;
+      if (body.departureTime) {
+        const departure = parseTime(body.departureTime, body.timezone);
+        if (departure) {
+          const arrival = new Date(departure.getTime() + result.durationSeconds * 1000);
+          arrivalTime = formatTime(arrival, body.timezone);
+        }
+      }
+
+      // "mock" provider indicates heuristic estimate (not from real routing API)
+      const isEstimated = result.provider === "mock";
+
+      // Return full route response
+      return NextResponse.json({
         mode: result.mode,
         durationMinutes: Math.round(result.durationSeconds / 60),
         distanceMeters: result.distanceMeters,
@@ -131,26 +98,19 @@ export async function POST(request: NextRequest) {
         arrivalTime,
         departureTime: body.departureTime,
         isEstimated,
-      }),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error("Routing route error", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      origin: body.origin,
-      destination: body.destination,
-      mode: body.mode,
-    });
-    return addRequestContextHeaders(
-      internalError(
-        error instanceof Error ? error.message : "Failed to get route",
-        undefined,
-        { requestId: finalContext.requestId },
-      ),
-      finalContext,
-    );
-  }
-}
+      });
+    } catch (error) {
+      logger.error("Routing route error", error instanceof Error ? error : new Error(String(error)), {
+        requestId: context.requestId,
+        origin: body.origin,
+        destination: body.destination,
+        mode: body.mode,
+      });
+      throw error;
+    }
+  },
+  { rateLimit: RATE_LIMITS.ROUTING, requireJson: true },
+);
 
 function parseTime(timeStr: string, timezone?: string): Date | null {
   try {

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useMemo } from "react";
 import { Calendar, Plane, Sparkles, MapPin } from "lucide-react";
 import { formatTime12h } from "@/lib/utils/timeUtils";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
@@ -64,8 +65,8 @@ export function TripSummaryEditorial({
   // Format dates
   const formattedDates = useMemo(() => {
     if (!data.dates.start || !data.dates.end) return null;
-    const start = new Date(data.dates.start);
-    const end = new Date(data.dates.end);
+    const start = parseLocalDate(data.dates.start)!;
+    const end = parseLocalDate(data.dates.end)!;
     const opts: Intl.DateTimeFormatOptions = { month: "short", day: "numeric" };
     const year = start.toLocaleDateString("en-US", { year: "numeric" });
     return `${start.toLocaleDateString("en-US", opts)} — ${end.toLocaleDateString("en-US", opts)}, ${year}`;

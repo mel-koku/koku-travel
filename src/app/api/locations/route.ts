@@ -1,13 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { Location } from "@/types/location";
 import { logger } from "@/lib/logger";
 import { internalError } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import {
   parsePaginationParams,
   createPaginatedResponse,
@@ -31,17 +28,8 @@ import { applySearchFilter } from "@/lib/supabase/searchFilters";
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for database errors
  */
-export async function GET(request: NextRequest) {
-  // Create request context for tracing
-  const context = createRequestContext(request);
-
-  // Rate limiting: 100 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  try {
+export const GET = withApiHandler(
+  async (request, { context }) => {
     const supabase = await createClient();
     const pagination = parsePaginationParams(request);
 
@@ -72,12 +60,9 @@ export async function GET(request: NextRequest) {
         error: countError,
         requestId: context.requestId,
       });
-      return addRequestContextHeaders(
-        internalError("Failed to fetch locations from database", { error: countError.message }, {
-          requestId: context.requestId,
-        }),
-        context,
-      );
+      return internalError("Failed to fetch locations from database", { error: countError.message }, {
+        requestId: context.requestId,
+      });
     }
 
     const total = count || 0;
@@ -104,12 +89,9 @@ export async function GET(request: NextRequest) {
         error,
         requestId: context.requestId,
       });
-      return addRequestContextHeaders(
-        internalError("Failed to fetch locations from database", { error: error.message }, {
-          requestId: context.requestId,
-        }),
-        context,
-      );
+      return internalError("Failed to fetch locations from database", { error: error.message }, {
+        requestId: context.requestId,
+      });
     }
 
     // Transform Supabase data to Location type
@@ -145,24 +127,13 @@ export async function GET(request: NextRequest) {
     // Create paginated response
     const response = createPaginatedResponse(locations, total, pagination);
 
-    return addRequestContextHeaders(
-      NextResponse.json(response, {
-        status: 200,
-        headers: {
-          "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
-        },
-      }),
-      context,
-    );
-  } catch (error) {
-    logger.error("Unexpected error fetching locations", error instanceof Error ? error : new Error(String(error)), {
-      requestId: context.requestId,
+    return NextResponse.json(response, {
+      status: 200,
+      headers: {
+        "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
+      },
     });
-    const message = error instanceof Error ? error.message : "Failed to load locations.";
-    return addRequestContextHeaders(
-      internalError(message, undefined, { requestId: context.requestId }),
-      context,
-    );
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.LOCATIONS },
+);
 

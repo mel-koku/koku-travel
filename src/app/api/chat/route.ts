@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { streamText, convertToModelMessages, stepCountIs } from "ai";
 import { google } from "@ai-sdk/google";
 import { z } from "zod";
@@ -6,12 +6,9 @@ import { env } from "@/lib/env";
 import { chatTools } from "@/lib/chat/tools";
 import { SYSTEM_PROMPT } from "@/lib/chat/systemPrompt";
 import { badRequest, serviceUnavailable, internalError } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
 import { checkBodySizeLimit } from "@/lib/api/bodySizeLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-} from "@/lib/api/middleware";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
+import { withApiHandler } from "@/lib/api/withApiHandler";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { formatTripContextBlock } from "@/lib/chat/serializeTripContext";
@@ -32,62 +29,39 @@ const chatRequestSchema = z.object({
   tripContext: z.string().max(10240).optional(),
 });
 
-export async function POST(request: NextRequest) {
-  const context = createRequestContext(request);
-
+export const POST = withApiHandler(async (request: NextRequest, { context }) => {
   // Feature flag check
   if (!env.isChatEnabled) {
-    return addRequestContextHeaders(
-      serviceUnavailable("Chat is currently disabled", {
-        route: "/api/chat",
-        requestId: context.requestId,
-      }),
-      context,
-    );
+    return serviceUnavailable("Chat is currently disabled", {
+      route: "/api/chat",
+      requestId: context.requestId,
+    });
   }
 
   // API key check
   if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-    return addRequestContextHeaders(
-      serviceUnavailable("Chat is not configured", {
-        route: "/api/chat",
-        requestId: context.requestId,
-      }),
-      context,
-    );
-  }
-
-  // Rate limit: 10 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, {
-    maxRequests: 10,
-    windowMs: 60 * 1000,
-  });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
+    return serviceUnavailable("Chat is not configured", {
+      route: "/api/chat",
+      requestId: context.requestId,
+    });
   }
 
   // Body size check
   const bodySizeResult = await checkBodySizeLimit(request, CHAT_MAX_BODY_SIZE);
   if (bodySizeResult) {
-    return addRequestContextHeaders(bodySizeResult, context);
+    return bodySizeResult;
   }
 
   let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
-    return addRequestContextHeaders(
-      badRequest("Invalid JSON in request body"),
-      context,
-    );
+    return badRequest("Invalid JSON in request body");
   }
 
   const parsed = chatRequestSchema.safeParse(rawBody);
   if (!parsed.success) {
-    return addRequestContextHeaders(
-      badRequest(parsed.error.issues[0]?.message ?? "Invalid request body"),
-      context,
-    );
+    return badRequest(parsed.error.issues[0]?.message ?? "Invalid request body");
   }
 
   try {
@@ -136,7 +110,7 @@ export async function POST(request: NextRequest) {
       stopWhen: stepCountIs(3),
     });
 
-    return result.toUIMessageStreamResponse();
+    return result.toUIMessageStreamResponse() as unknown as NextResponse;
   } catch (error) {
     const message = getErrorMessage(error);
     const isQuotaError =
@@ -146,10 +120,7 @@ export async function POST(request: NextRequest) {
 
     if (isQuotaError) {
       logger.warn("Gemini API quota exceeded", { route: "/api/chat" });
-      return addRequestContextHeaders(
-        serviceUnavailable("Chat is temporarily unavailable. Try again later.", { route: "/api/chat" }),
-        context,
-      );
+      return serviceUnavailable("Chat is temporarily unavailable. Try again later.", { route: "/api/chat" });
     }
 
     logger.error(
@@ -157,9 +128,6 @@ export async function POST(request: NextRequest) {
       error instanceof Error ? error : new Error(message),
       { route: "/api/chat", requestId: context.requestId },
     );
-    return addRequestContextHeaders(
-      internalError("Something went wrong. Try again.", undefined, { route: "/api/chat", requestId: context.requestId }),
-      context,
-    );
+    return internalError("Something went wrong. Try again.", undefined, { route: "/api/chat", requestId: context.requestId });
   }
-}
+}, { rateLimit: RATE_LIMITS.CHAT });

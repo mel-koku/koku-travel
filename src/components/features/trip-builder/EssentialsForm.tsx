@@ -6,6 +6,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { Calendar } from "lucide-react";
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import { EntryPointSelector } from "./EntryPointSelector";
 import type { EntryPoint } from "@/types/trip";
 
@@ -53,8 +54,9 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
     if (!startValue || !endValue) {
       return null;
     }
-    const startDate = new Date(startValue);
-    const endDate = new Date(endValue);
+    const startDate = parseLocalDate(startValue);
+    const endDate = parseLocalDate(endValue);
+    if (!startDate || !endDate) return null;
     const diffTime = endDate.getTime() - startDate.getTime();
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 for inclusive
     return diffDays;
@@ -69,9 +71,8 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   // Calculate maximum end date (14 days from start)
   const maxEndDate = useMemo(() => {
     if (!startValue) return undefined;
-    const startDate = new Date(startValue);
-    const maxDate = new Date(startDate);
-    maxDate.setDate(startDate.getDate() + MAX_DURATION - 1);
+    const maxDate = parseLocalDateWithOffset(startValue, MAX_DURATION - 1);
+    if (!maxDate) return undefined;
     return maxDate.toISOString().split("T")[0];
   }, [startValue]);
 
@@ -136,8 +137,9 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
             required: "End date is required",
             validate: (value) => {
               if (!value || !startValue) return true;
-              const start = new Date(startValue);
-              const end = new Date(value);
+              const start = parseLocalDate(startValue);
+              const end = parseLocalDate(value);
+              if (!start || !end) return true;
               if (end < start) {
                 return "End date must be after start date";
               }

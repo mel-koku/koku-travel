@@ -5,12 +5,7 @@ import { validateItinerary } from "@/lib/validation/itineraryValidator";
 import { logger } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  getOptionalAuth,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody, planRequestSchema } from "@/lib/api/schemas";
 import { badRequest, internalError, gatewayTimeout } from "@/lib/api/errors";
 import { getCachedItinerary, cacheItinerary } from "@/lib/cache/itineraryCache";
@@ -52,42 +47,23 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
 // Allow up to 60s for itinerary generation on Vercel
 export const maxDuration = 60;
 
-export async function POST(request: NextRequest) {
-  // Create request context for tracing
-  const context = createRequestContext(request);
-
-  // Rate limiting: 20 requests per minute per IP (expensive AI generation)
-  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.ITINERARY_PLAN);
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  // Optional authentication (for future user-specific features)
-  const authResult = await getOptionalAuth(request, context);
-  const finalContext = authResult.context;
-
+export const POST = withApiHandler(async (request: NextRequest, { context, user }) => {
   // Stricter rate limit for unauthenticated requests (5 req/min vs 20)
-  if (!authResult.user) {
+  if (!user) {
     const unauthRateLimitResponse = await checkRateLimit(request, RATE_LIMITS.ITINERARY_PLAN_UNAUTH);
     if (unauthRateLimitResponse) {
-      return addRequestContextHeaders(unauthRateLimitResponse, finalContext);
+      return unauthRateLimitResponse;
     }
   }
 
   // Validate request body with size limit (1MB)
   const validation = await validateRequestBody(request, planRequestSchema, 1024 * 1024);
   if (!validation.success) {
-    return addRequestContextHeaders(
-      badRequest("Invalid request body", {
-        errors: validation.error.issues,
-      }, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
+    return badRequest("Invalid request body", {
+      errors: validation.error.issues,
+    }, {
+      requestId: context.requestId,
+    });
   }
 
   const { builderData, tripId, savedIds } = validation.data;
@@ -101,33 +77,30 @@ export async function POST(request: NextRequest) {
       : null;
     if (cachedResult) {
       logger.info("Returning cached itinerary", {
-        requestId: finalContext.requestId,
+        requestId: context.requestId,
       });
 
       // Validate cached itinerary
       const itineraryValidation = validateItinerary(cachedResult.itinerary);
       const tripValidation = validateTripConstraints(cachedResult.trip);
 
-      return addRequestContextHeaders(
-        NextResponse.json({
-          trip: cachedResult.trip,
-          itinerary: cachedResult.itinerary,
-          dayIntros: cachedResult.dayIntros,
-          guideProse: cachedResult.guideProse,
-          validation: tripValidation,
-          itineraryValidation: {
-            valid: itineraryValidation.valid,
-            issues: itineraryValidation.issues,
-            summary: itineraryValidation.summary,
-          },
-        }, {
-          headers: {
-            "Cache-Control": "no-store, no-cache, must-revalidate",
-            "X-Cache": "HIT",
-          },
-        }),
-        finalContext,
-      );
+      return NextResponse.json({
+        trip: cachedResult.trip,
+        itinerary: cachedResult.itinerary,
+        dayIntros: cachedResult.dayIntros,
+        guideProse: cachedResult.guideProse,
+        validation: tripValidation,
+        itineraryValidation: {
+          valid: itineraryValidation.valid,
+          issues: itineraryValidation.issues,
+          summary: itineraryValidation.summary,
+        },
+      }, {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "X-Cache": "HIT",
+        },
+      });
     }
 
     // Generate trip ID if not provided
@@ -156,21 +129,18 @@ export async function POST(request: NextRequest) {
 
     if (generationResult === timeoutSentinel) {
       logger.error("Itinerary generation timed out", undefined, {
-        requestId: finalContext.requestId,
+        requestId: context.requestId,
         timeoutMs: GENERATION_TIMEOUT_MS,
         elapsedMs,
       });
-      return addRequestContextHeaders(
-        gatewayTimeout(
-          "Itinerary generation timed out. Try again or simplify your trip.",
-          { requestId: finalContext.requestId },
-        ),
-        finalContext,
+      return gatewayTimeout(
+        "Itinerary generation timed out. Try again or simplify your trip.",
+        { requestId: context.requestId },
       );
     }
 
     logger.info("Itinerary generation completed", {
-      requestId: finalContext.requestId,
+      requestId: context.requestId,
       elapsedMs,
     });
 
@@ -188,7 +158,7 @@ export async function POST(request: NextRequest) {
     // Log any validation issues for monitoring
     if (!itineraryValidation.valid || itineraryValidation.issues.length > 0) {
       logger.warn("Itinerary validation issues detected", {
-        requestId: finalContext.requestId,
+        requestId: context.requestId,
         valid: itineraryValidation.valid,
         errorCount: itineraryValidation.summary.errorCount,
         warningCount: itineraryValidation.summary.warningCount,
@@ -196,38 +166,32 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return addRequestContextHeaders(
-      NextResponse.json({
-        trip,
-        itinerary,
-        dayIntros,
-        guideProse,
-        validation: tripValidation,
-        itineraryValidation: {
-          valid: itineraryValidation.valid,
-          issues: itineraryValidation.issues,
-          summary: itineraryValidation.summary,
-        },
-      }, {
-        headers: {
-          "Cache-Control": "no-store, no-cache, must-revalidate",
-          "X-Cache": "MISS",
-        },
-      }),
-      finalContext,
-    );
+    return NextResponse.json({
+      trip,
+      itinerary,
+      dayIntros,
+      guideProse,
+      validation: tripValidation,
+      itineraryValidation: {
+        valid: itineraryValidation.valid,
+        issues: itineraryValidation.issues,
+        summary: itineraryValidation.summary,
+      },
+    }, {
+      headers: {
+        "Cache-Control": "no-store, no-cache, must-revalidate",
+        "X-Cache": "MISS",
+      },
+    });
   } catch (error) {
     logger.error("Failed to generate itinerary", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
+      requestId: context.requestId,
     });
-    return addRequestContextHeaders(
-      internalError(
-        "Failed to generate itinerary",
-        { message: getErrorMessage(error) },
-        { requestId: finalContext.requestId },
-      ),
-      finalContext,
+    return internalError(
+      "Failed to generate itinerary",
+      { message: getErrorMessage(error) },
+      { requestId: context.requestId },
     );
   }
-}
+}, { rateLimit: RATE_LIMITS.ITINERARY_PLAN, optionalAuth: true, requireJson: true });
 

@@ -1,6 +1,7 @@
 import type { WeatherForecast, WeatherCondition } from "@/types/weather";
 import type { CityId } from "@/types/trip";
 import { logger } from "@/lib/logger";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { fetchWithTimeout } from "@/lib/api/fetchWithTimeout";
 
 /** Weather API timeout — 4s is plenty; mock data is fine if it's slower */
@@ -203,8 +204,8 @@ function getMockWeatherForecast(
   logger.warn("Using mock weather data — no API key configured or API call failed");
 
   const forecasts = new Map<string, WeatherForecast>();
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const start = parseLocalDate(startDate)!;
+  const end = parseLocalDate(endDate)!;
 
   const current = new Date(start);
   while (current <= end) {

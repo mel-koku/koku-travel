@@ -1,15 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { refineDay, type RefinementType } from "@/lib/server/refinementEngine";
 import { convertItineraryToTrip } from "@/lib/server/itineraryEngine";
-import { badRequest, internalError } from "@/lib/api/errors";
+import { badRequest } from "@/lib/api/errors";
 import { logger } from "@/lib/logger";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  getOptionalAuth,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { z } from "zod";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
@@ -162,31 +157,15 @@ const mapTripDayToItineraryDay = (day: TripDay): ItineraryDay => ({
 
 /**
  * POST /api/itinerary/refine
- * 
+ *
  * Refines a specific day in an itinerary based on refinement type.
- * 
+ *
  * @throws Returns 400 if request body is invalid
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
  */
-export async function POST(request: NextRequest) {
-  // Create request context for tracing
-  const context = createRequestContext(request);
-
-  // Rate limiting: 30 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  // Optional authentication (for future user-specific features)
-  const authResult = await getOptionalAuth(request, context);
-  const finalContext = authResult.context;
-
-  try {
+export const POST = withApiHandler(
+  async (request, { context }) => {
     // Validate request body with size limit (2MB for trip data)
     // Note: refine endpoint accepts multiple formats (legacy and new), so we validate structure first
     // Using strip() to silently drop unknown fields for security
@@ -215,22 +194,19 @@ export async function POST(request: NextRequest) {
         days: z.array(z.object({}).passthrough()).min(1),
       }).passthrough().optional(), // Legacy format: full itinerary for refinement
     }).strip(); // Silently drop unknown fields for security
-    
+
     const bodyValidation = await validateRequestBody(
       request,
       refineSchema,
       2 * 1024 * 1024
     );
-    
+
     if (!bodyValidation.success) {
-      return addRequestContextHeaders(
-        badRequest("Invalid request body", {
-          errors: bodyValidation.error.issues,
-        }, {
-          requestId: finalContext.requestId,
-        }),
-        finalContext,
-      );
+      return badRequest("Invalid request body", {
+        errors: bodyValidation.error.issues,
+      }, {
+        requestId: context.requestId,
+      });
     }
 
     const body = bodyValidation.data;
@@ -240,33 +216,24 @@ export async function POST(request: NextRequest) {
       const { trip, refinementType, dayIndex } = body as RefineRequestBody;
 
       if (!trip || !refinementType) {
-        return addRequestContextHeaders(
-          badRequest("Missing trip or refinementType", undefined, {
-            requestId: finalContext.requestId,
-          }),
-          finalContext,
-        );
+        return badRequest("Missing trip or refinementType", undefined, {
+          requestId: context.requestId,
+        });
       }
 
       if (!VALID_REFINEMENT_TYPES.includes(refinementType)) {
-        return addRequestContextHeaders(
-          badRequest(`Invalid refinement type: ${refinementType}`, undefined, {
-            requestId: finalContext.requestId,
-          }),
-          finalContext,
-        );
+        return badRequest(`Invalid refinement type: ${refinementType}`, undefined, {
+          requestId: context.requestId,
+        });
       }
 
       // Default to day 0 if dayIndex not provided
       const targetDayIndex = dayIndex ?? 0;
 
       if (!trip.days[targetDayIndex]) {
-        return addRequestContextHeaders(
-          badRequest(`Day index ${targetDayIndex} not found in trip`, undefined, {
-            requestId: finalContext.requestId,
-          }),
-          finalContext,
-        );
+        return badRequest(`Day index ${targetDayIndex} not found in trip`, undefined, {
+          requestId: context.requestId,
+        });
       }
 
       // Perform actual refinement using refineDay function
@@ -287,17 +254,14 @@ export async function POST(request: NextRequest) {
         updatedAt: new Date().toISOString(),
       };
 
-      return addRequestContextHeaders(
-        NextResponse.json(
-          {
-            trip: refined,
-            refinementType,
-            dayIndex: targetDayIndex,
-            message: `Successfully refined day ${targetDayIndex + 1} with ${refinementType} refinement.`,
-          },
-          { status: 200 }
-        ),
-        finalContext,
+      return NextResponse.json(
+        {
+          trip: refined,
+          refinementType,
+          dayIndex: targetDayIndex,
+          message: `Successfully refined day ${targetDayIndex + 1} with ${refinementType} refinement.`,
+        },
+        { status: 200 }
       );
     }
 
@@ -305,28 +269,19 @@ export async function POST(request: NextRequest) {
     const { tripId, dayIndex, refinementType, builderData, itinerary } = body as RefinementRequest;
 
     if (!tripId || typeof dayIndex !== "number" || !refinementType) {
-      return addRequestContextHeaders(
-        badRequest("tripId, dayIndex, and refinementType are required", undefined, {
-          requestId: finalContext.requestId,
-        }),
-        finalContext,
-      );
+      return badRequest("tripId, dayIndex, and refinementType are required", undefined, {
+        requestId: context.requestId,
+      });
     }
     if (!VALID_REFINEMENT_TYPES.includes(refinementType)) {
-      return addRequestContextHeaders(
-        badRequest(`Invalid refinement type: ${refinementType}`, undefined, {
-          requestId: finalContext.requestId,
-        }),
-        finalContext,
-      );
+      return badRequest(`Invalid refinement type: ${refinementType}`, undefined, {
+        requestId: context.requestId,
+      });
     }
     if (!builderData || !itinerary || !Array.isArray(itinerary.days) || itinerary.days.length === 0) {
-      return addRequestContextHeaders(
-        badRequest("builderData and itinerary are required to refine a trip", undefined, {
-          requestId: finalContext.requestId,
-        }),
-        finalContext,
-      );
+      return badRequest("builderData and itinerary are required to refine a trip", undefined, {
+        requestId: context.requestId,
+      });
     }
 
     // Determine cities to filter by for optimized database queries
@@ -336,12 +291,9 @@ export async function POST(request: NextRequest) {
     const allLocations = await fetchAllLocations(selectedCities);
     const trip = convertItineraryToTrip(itinerary, builderData, tripId, allLocations);
     if (!trip.days[dayIndex]) {
-      return addRequestContextHeaders(
-        badRequest(`Day index ${dayIndex} not found for trip ${tripId}`, undefined, {
-          requestId: finalContext.requestId,
-        }),
-        finalContext,
-      );
+      return badRequest(`Day index ${dayIndex} not found for trip ${tripId}`, undefined, {
+        requestId: context.requestId,
+      });
     }
 
     const refinedDay = await refineDay({ trip, dayIndex, type: refinementType });
@@ -357,21 +309,7 @@ export async function POST(request: NextRequest) {
       updatedTrip,
     };
 
-    return addRequestContextHeaders(
-      NextResponse.json(responseBody),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error(
-      "Error refining itinerary day",
-      error instanceof Error ? error : new Error(String(error)),
-      { requestId: finalContext.requestId },
-    );
-    return addRequestContextHeaders(
-      internalError("Failed to refine day", undefined, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
-}
+    return NextResponse.json(responseBody);
+  },
+  { rateLimit: RATE_LIMITS.ITINERARY_REFINE, requireJson: true, optionalAuth: true },
+);

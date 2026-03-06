@@ -16,8 +16,3 @@ export type SavedRow = {
 export type GuideBookmarkRow = {
   guide_id: string;
 };
-
-export type SyncConfig = {
-  /** Whether to suppress "Auth session missing" errors */
-  suppressAuthErrors?: boolean;
-};
