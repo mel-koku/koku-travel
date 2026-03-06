@@ -106,6 +106,7 @@ export async function POST(request: NextRequest) {
       let q = supabase
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
+        .eq("is_active", true)
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
       if (cityId) q = q.ilike("city", cityId);

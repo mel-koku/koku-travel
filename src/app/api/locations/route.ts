@@ -57,6 +57,7 @@ export async function GET(request: NextRequest) {
     let countQuery = supabase
       .from("locations")
       .select("*", { count: "exact", head: true })
+      .eq("is_active", true)
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
     if (region) countQuery = countQuery.eq("region", region);
     if (category) countQuery = countQuery.eq("category", category);
@@ -86,6 +87,7 @@ export async function GET(request: NextRequest) {
     let dataQuery = supabase
       .from("locations")
       .select(LOCATION_LISTING_COLUMNS)
+      .eq("is_active", true)
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
     if (region) dataQuery = dataQuery.eq("region", region);
     if (category) dataQuery = dataQuery.eq("category", category);

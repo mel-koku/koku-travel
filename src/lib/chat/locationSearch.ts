@@ -73,6 +73,7 @@ export async function searchLocationsForChat(
     let query = supabase
       .from("locations")
       .select(LOCATION_CHAT_COLUMNS)
+      .eq("is_active", true)
       .neq("business_status", "PERMANENTLY_CLOSED")
       .limit(limit);
 
@@ -143,6 +144,7 @@ export async function searchNearbyLocations(
     let query = supabase
       .from("locations")
       .select(LOCATION_CHAT_COLUMNS)
+      .eq("is_active", true)
       .neq("business_status", "PERMANENTLY_CLOSED")
       .not("coordinates", "is", null)
       .gte("coordinates->lat", params.lat - latDelta)

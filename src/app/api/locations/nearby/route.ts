@@ -88,6 +88,7 @@ export async function GET(request: NextRequest) {
     let query = supabase
       .from("locations")
       .select(NEARBY_COLUMNS)
+      .eq("is_active", true)
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
       .gte("coordinates->lat", lat - latDelta)
       .lte("coordinates->lat", lat + latDelta)
