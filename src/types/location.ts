@@ -118,6 +118,8 @@ export type Location = {
   name: string;
   region: string;
   city: string;
+  /** KnownCityId assigned by coordinate snap — used by the itinerary planner. */
+  planningCity?: string;
   /**
    * Neighborhood or district within the city (e.g., "Gion", "Arashiyama", "Higashiyama").
    * Used for geographic diversity scoring in itinerary generation.

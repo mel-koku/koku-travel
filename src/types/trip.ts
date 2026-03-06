@@ -35,14 +35,14 @@ export type InterestId = (typeof INTEREST_CATEGORIES)[number]["id"];
  * may have additional IDs not in this union.
  */
 export type KnownCityId =
-  | "kyoto" | "osaka" | "nara" | "kobe"  // Kansai
+  | "kyoto" | "osaka" | "nara" | "kobe" | "otsu"  // Kansai
   | "tokyo" | "yokohama" | "kamakura" | "nikko" | "hakone"  // Kanto
-  | "nagoya" | "kanazawa" | "takayama" | "nagano"            // Chubu
-  | "fukuoka" | "nagasaki"                // Kyushu
+  | "nagoya" | "kanazawa" | "takayama" | "nagano" | "niigata"  // Chubu
+  | "fukuoka" | "nagasaki" | "kumamoto" | "kagoshima" | "oita"  // Kyushu
   | "sapporo" | "hakodate"                // Hokkaido
-  | "sendai"                              // Tohoku
-  | "hiroshima"                           // Chugoku
-  | "matsuyama" | "takamatsu"             // Shikoku
+  | "sendai" | "morioka" | "aomori" | "akita"  // Tohoku
+  | "hiroshima" | "okayama" | "matsue" | "tottori"  // Chugoku
+  | "matsuyama" | "takamatsu" | "tokushima" | "kochi"  // Shikoku
   | "naha";                               // Okinawa
 
 /**

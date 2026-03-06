@@ -9,30 +9,48 @@ import { calculateDistanceMeters } from "@/lib/utils/geoUtils";
  */
 const MATRIX: Record<CityId, Partial<Record<CityId, number>>> = {
   // Kansai cluster
-  kyoto: { osaka: 30, nara: 45, kobe: 50, tokyo: 135, nagoya: 35, hiroshima: 100, kanazawa: 130, fukuoka: 175 },
-  osaka: { nara: 40, kobe: 25, tokyo: 150, nagoya: 55, hiroshima: 90, fukuoka: 155, kanazawa: 155 },
-  nara: { kobe: 70 },
+  kyoto: { osaka: 30, nara: 45, kobe: 50, otsu: 10, tokyo: 135, nagoya: 35, hiroshima: 100, kanazawa: 130, fukuoka: 175 },
+  osaka: { nara: 40, kobe: 25, otsu: 40, tokyo: 150, nagoya: 55, hiroshima: 90, fukuoka: 155, kanazawa: 155, tokushima: 170 },
+  nara: { kobe: 70, otsu: 55 },
   kobe: { hiroshima: 70, fukuoka: 135 },
+  otsu: {},
   // Kanto cluster
-  tokyo: { yokohama: 25, nagoya: 100, sendai: 100, kanazawa: 155, sapporo: 250, hakodate: 240 },
-  yokohama: { nagoya: 80 },
+  tokyo: { yokohama: 25, kamakura: 55, nikko: 120, hakone: 80, nagoya: 100, sendai: 100, kanazawa: 155, sapporo: 250, hakodate: 240, niigata: 120, nagano: 100 },
+  yokohama: { kamakura: 25, hakone: 60, nagoya: 80 },
+  kamakura: { hakone: 90 },
+  nikko: {},
+  hakone: { nagoya: 120 },
   // Chubu
-  nagoya: { kanazawa: 180 },
+  nagoya: { kanazawa: 180, takayama: 140, nagano: 180 },
+  takayama: { kanazawa: 180, nagano: 180 },
+  nagano: { kanazawa: 120, niigata: 90 },
+  niigata: { sendai: 180 },
   // Kyushu
-  fukuoka: { nagasaki: 115, hiroshima: 65, matsuyama: 195 },
-  nagasaki: {},
+  fukuoka: { nagasaki: 115, kumamoto: 45, kagoshima: 80, oita: 85, hiroshima: 65, matsuyama: 195 },
+  nagasaki: { kumamoto: 120 },
+  kumamoto: { kagoshima: 50, oita: 120 },
+  kagoshima: {},
+  oita: {},
   // Hokkaido
   sapporo: { hakodate: 210 },
-  hakodate: {},
+  hakodate: { aomori: 65 },
   // Tohoku
-  sendai: { hakodate: 180, sapporo: 270 },
+  sendai: { hakodate: 180, sapporo: 270, morioka: 45, akita: 100 },
+  morioka: { aomori: 100, akita: 100, hakodate: 150 },
+  aomori: { akita: 140 },
+  akita: {},
   // Chugoku
-  hiroshima: { takamatsu: 180 },
+  hiroshima: { takamatsu: 180, okayama: 40, matsue: 210 },
+  okayama: { takamatsu: 55, matsue: 160, tottori: 120, osaka: 50 },
+  matsue: { tottori: 120 },
+  tottori: { osaka: 160 },
   // Shikoku
-  matsuyama: { hiroshima: 160, takamatsu: 155, osaka: 240 },
-  takamatsu: { osaka: 105, okayama: 55 },
+  matsuyama: { hiroshima: 160, takamatsu: 155, kochi: 150, osaka: 240 },
+  takamatsu: { osaka: 105, okayama: 55, tokushima: 70, kochi: 120 },
+  tokushima: { kochi: 120 },
+  kochi: {},
   // Okinawa (flight-only — all times are flight + transfer)
-  naha: { tokyo: 180, osaka: 165, fukuoka: 120, nagoya: 170, sapporo: 240, sendai: 200, nagasaki: 135 },
+  naha: { tokyo: 180, osaka: 165, fukuoka: 120, nagoya: 170, sapporo: 240, sendai: 200, nagasaki: 135, kagoshima: 90 },
   // Hokuriku
   kanazawa: { hiroshima: 210, fukuoka: 240, sendai: 230 },
 };

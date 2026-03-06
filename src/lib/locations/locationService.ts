@@ -50,6 +50,7 @@ export function transformDbRowToLocation(row: LocationDbRow | LocationListingDbR
     name: row.name,
     region: row.region,
     city: row.city,
+    planningCity: "planning_city" in row ? row.planning_city ?? undefined : undefined,
     prefecture: row.prefecture ?? undefined,
     category: row.category,
     image: row.image,
@@ -475,8 +476,11 @@ export async function fetchAllLocations(
     .order("name", { ascending: true });
 
   if (cities && cities.length > 0) {
+    // Use planning_city (coordinate-snapped KnownCityId) for planner queries,
+    // with fallback to city field for locations without planning_city
+    const planningFilters = cities.map((c) => `planning_city.eq.${c.toLowerCase()}`).join(",");
     const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
-    baseQuery = baseQuery.or(cityFilters);
+    baseQuery = baseQuery.or(`${planningFilters},${cityFilters}`);
   }
 
   const { data: firstPage, error: firstError } = await baseQuery.range(0, effectivePageSize - 1);
@@ -505,8 +509,9 @@ export async function fetchAllLocations(
             .order("name", { ascending: true });
 
           if (cities && cities.length > 0) {
+            const planningFilters = cities.map((c) => `planning_city.eq.${c.toLowerCase()}`).join(",");
             const cityFilters = cities.map((c) => `city.ilike.${c}`).join(",");
-            query = query.or(cityFilters);
+            query = query.or(`${planningFilters},${cityFilters}`);
           }
 
           const { data, error } = await query.range(

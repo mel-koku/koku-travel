@@ -9,22 +9,49 @@ import type { KnownCityId } from "@/types/trip";
  * These are rough estimates used only for UI warnings, not for generation.
  */
 const CITY_ACTIVITY_CAPACITY: Partial<Record<KnownCityId, number>> = {
+  // Kansai
   osaka: 42,
   kyoto: 340,
-  tokyo: 180,
   nara: 65,
   kobe: 45,
+  otsu: 15,
+  // Kanto
+  tokyo: 180,
   yokohama: 35,
+  kamakura: 30,
+  nikko: 20,
+  hakone: 20,
+  // Chubu
   nagoya: 50,
   kanazawa: 40,
+  takayama: 20,
+  nagano: 25,
+  niigata: 20,
+  // Kyushu
   fukuoka: 55,
   nagasaki: 30,
+  kumamoto: 25,
+  kagoshima: 20,
+  oita: 15,
+  // Hokkaido
   sapporo: 50,
   hakodate: 20,
+  // Tohoku
   sendai: 25,
+  morioka: 15,
+  aomori: 15,
+  akita: 15,
+  // Chugoku
   hiroshima: 40,
+  okayama: 25,
+  matsue: 15,
+  tottori: 15,
+  // Shikoku
   matsuyama: 20,
   takamatsu: 20,
+  tokushima: 15,
+  kochi: 15,
+  // Okinawa
   naha: 25,
 };
 
