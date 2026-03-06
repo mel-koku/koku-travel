@@ -1,3 +1,4 @@
+/** Bookable marketplace types: artisan, guide, interpreter. author = editorial only (not bookable). */
 export type PersonType = "artisan" | "guide" | "interpreter" | "author";
 export type PersonRole = "lead" | "assistant" | "interpreter";
 

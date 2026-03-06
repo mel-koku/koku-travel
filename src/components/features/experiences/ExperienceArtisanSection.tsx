@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { AvailabilityCalendar } from "@/components/features/local-experts/AvailabilityCalendar";
 import type { ExperiencePerson } from "@/types/person";
 
 const HEADING_BY_TYPE: Record<string, string> = {
@@ -21,9 +22,10 @@ function roleLabel(role: string): string {
 
 type Props = {
   people: ExperiencePerson[];
+  experienceSlug?: string;
 };
 
-export function ExperienceArtisanSection({ people }: Props) {
+export function ExperienceArtisanSection({ people, experienceSlug }: Props) {
   if (people.length === 0) return null;
 
   const primary = people.find((p) => p.is_primary) || people[0];
@@ -110,6 +112,16 @@ export function ExperienceArtisanSection({ people }: Props) {
             </ScrollReveal>
           ))}
         </div>
+
+        {/* Availability calendar for primary artisan/guide */}
+        <ScrollReveal>
+          <div className="mt-8">
+            <AvailabilityCalendar
+              person={primary!}
+              experienceSlug={experienceSlug}
+            />
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );

@@ -7,9 +7,10 @@ import type { Person } from "@/types/person";
 
 type Props = {
   person: Person;
+  prefilledDate?: string; // YYYY-MM-DD
 };
 
-export function InquiryForm({ person }: Props) {
+export function InquiryForm({ person, prefilledDate }: Props) {
   const [submitted, setSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
   const [showOptional, setShowOptional] = useState(false);
@@ -18,7 +19,7 @@ export function InquiryForm({ person }: Props) {
 
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [startDate, setStartDate] = useState("");
+  const [startDate, setStartDate] = useState(prefilledDate ?? "");
   const [endDate, setEndDate] = useState("");
   const [groupSize, setGroupSize] = useState("");
 

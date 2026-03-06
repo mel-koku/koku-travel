@@ -207,7 +207,11 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                 {/* Linked experiences */}
                 {detail?.experiences && detail.experiences.length > 0 && (
                   <div className="mt-6">
-                    <p className="eyebrow-editorial">Related experiences</p>
+                    <p className="eyebrow-editorial">
+                      {displayPerson.type === "interpreter"
+                        ? "Available to interpret at"
+                        : "Related experiences"}
+                    </p>
                     <ul className="mt-2 space-y-1.5">
                       {detail.experiences.map((exp) => (
                         <li key={exp.slug} className="text-sm text-foreground">
@@ -217,7 +221,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                           >
                             {exp.slug.replace(/-/g, " ")}
                           </a>
-                          {exp.is_primary && (
+                          {exp.is_primary && displayPerson.type !== "interpreter" && (
                             <span className="ml-1.5 text-xs text-brand-primary">
                               Primary
                             </span>
