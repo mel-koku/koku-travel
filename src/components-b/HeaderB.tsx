@@ -11,7 +11,6 @@ import { useAppState } from "@/state/AppState";
 
 const NAV_ITEMS = [
   { label: "Places", href: "/b/places" },
-  { label: "Cities", href: "/b/cities" },
   { label: "Guides", href: "/b/guides" },
   { label: "Local Experts", href: "/b/local-experts" },
 ];
