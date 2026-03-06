@@ -38,7 +38,7 @@ export function LocalExpertsShellB() {
   // Auto-filter from ?type= and ?city= URL params
   useEffect(() => {
     const typeParam = searchParams.get("type");
-    if (typeParam && ["artisan", "guide", "interpreter", "author"].includes(typeParam)) {
+    if (typeParam && ["artisan", "guide", "interpreter"].includes(typeParam)) {
       setType(typeParam as Parameters<typeof setType>[0]);
     }
     const cityParam = searchParams.get("city");

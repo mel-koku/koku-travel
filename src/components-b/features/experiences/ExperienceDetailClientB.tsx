@@ -217,7 +217,7 @@ export function ExperienceDetailClientB({
         </div>
       </motion.section>
 
-      <ExperienceArtisanSectionB people={people} />
+      <ExperienceArtisanSectionB people={people} experienceSlug={experience.slug} />
 
       {/* Body */}
       <section className="bg-white">

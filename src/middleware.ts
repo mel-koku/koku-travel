@@ -30,6 +30,7 @@ const PUBLIC_API_ROUTES = [
   "/api/experiences/workshops",
   "/api/experiences/all",
   "/api/people",
+  "/api/availability",
 ];
 
 /**

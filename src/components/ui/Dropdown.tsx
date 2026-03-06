@@ -349,6 +349,7 @@ export function Dropdown({
         ref={triggerRef}
         type="button"
         id={triggerId}
+        suppressHydrationWarning
         className={cn(
           "inline-flex items-center gap-2 rounded-xl bg-background px-4 py-2 text-sm font-semibold text-foreground transition duration-300 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2",
           triggerClassName
@@ -385,6 +386,7 @@ export function Dropdown({
           id={menuId}
           role="menu"
           aria-labelledby={triggerId}
+          suppressHydrationWarning
           onMouseEnter={clearHoverTimeout}
           onMouseLeave={startHoverTimeout}
           className={cn(

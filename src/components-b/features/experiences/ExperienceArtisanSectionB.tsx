@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { AvailabilityCalendarB } from "@b/features/local-experts/AvailabilityCalendarB";
 import type { ExperiencePerson } from "@/types/person";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
@@ -30,9 +31,10 @@ function roleLabel(role: string): string {
 
 type Props = {
   people: ExperiencePerson[];
+  experienceSlug?: string;
 };
 
-export function ExperienceArtisanSectionB({ people }: Props) {
+export function ExperienceArtisanSectionB({ people, experienceSlug }: Props) {
   if (people.length === 0) return null;
 
   const primary = people.find((p) => p.is_primary) || people[0];
@@ -136,6 +138,19 @@ export function ExperienceArtisanSectionB({ people }: Props) {
             </motion.div>
           ))}
         </div>
+        {/* Availability calendar for primary artisan/guide */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.2, ease: bEase }}
+          className="mt-8"
+        >
+          <AvailabilityCalendarB
+            person={primary!}
+            experienceSlug={experienceSlug}
+          />
+        </motion.div>
       </div>
     </motion.section>
   );
