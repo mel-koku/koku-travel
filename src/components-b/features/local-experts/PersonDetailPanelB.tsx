@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useLenis } from "@/providers/LenisProvider";
 import { usePersonDetail } from "@/hooks/usePeopleQuery";
 import { InquiryFormB } from "./InquiryFormB";
+import { AvailabilityCalendarB } from "./AvailabilityCalendarB";
+import { usePersonAvailability } from "@/hooks/useAvailability";
 import type { Person } from "@/types/person";
 
 const TYPE_LABELS: Record<string, string> = {
@@ -20,10 +22,22 @@ type Props = {
   onClose: () => void;
 };
 
+function currentMonthStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 export function PersonDetailPanelB({ person, onClose }: Props) {
   const { pause, resume } = useLenis();
   const { data: detail } = usePersonDetail(person?.slug ?? null);
   const displayPerson = detail ?? person;
+
+  // Check if person has availability rules (= bookable)
+  const { data: availData } = usePersonAvailability(
+    person?.slug ?? null,
+    person ? currentMonthStr() : null
+  );
+  const isBookable = (availData?.availableDates?.length ?? 0) > 0;
 
   // Scroll lock + Lenis pause
   useEffect(() => {
@@ -234,9 +248,13 @@ export function PersonDetailPanelB({ person, onClose }: Props) {
                   </div>
                 )}
 
-                {/* Inquiry Form */}
+                {/* Booking / Inquiry */}
                 <div className="mt-8">
-                  <InquiryFormB person={displayPerson} />
+                  {isBookable ? (
+                    <AvailabilityCalendarB person={displayPerson} />
+                  ) : (
+                    <InquiryFormB person={displayPerson} />
+                  )}
                 </div>
               </div>
             </div>

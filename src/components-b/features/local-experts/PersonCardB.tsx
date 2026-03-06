@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useBookingPrice } from "@/hooks/useBooking";
 import type { Person } from "@/types/person";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
@@ -19,6 +20,9 @@ type Props = {
 };
 
 export function PersonCardB({ person, index, onClick }: Props) {
+  const { data: priceData } = useBookingPrice(person.id, 1);
+  const startingPrice = priceData?.price;
+
   const initials = person.name
     .split(" ")
     .map((n) => n[0])
@@ -109,6 +113,19 @@ export function PersonCardB({ person, index, onClick }: Props) {
         <p className="mt-2 text-xs text-[var(--muted-foreground)]">
           {person.languages.join(" · ")}
         </p>
+      )}
+
+      {/* Price badge */}
+      {startingPrice && (
+        <span
+          className="mt-3 inline-block rounded-full px-3 py-1 text-xs font-semibold"
+          style={{
+            backgroundColor: "color-mix(in srgb, var(--primary) 10%, transparent)",
+            color: "var(--primary)",
+          }}
+        >
+          From {"\u00a5"}{startingPrice.basePrice.toLocaleString()}
+        </span>
       )}
     </motion.button>
   );

@@ -7,6 +7,7 @@ import {
   resolvePersonCategoryId,
   getCategoryById,
 } from "@/lib/activityCategories";
+import { useBookingPrice } from "@/hooks/useBooking";
 import type { Person } from "@/types/person";
 
 type Props = {
@@ -30,6 +31,9 @@ function getPrimarySpecialty(specialties: string[]): string | null {
 }
 
 export function PersonCard({ person, index, onClick }: Props) {
+  const { data: priceData } = useBookingPrice(person.id, 1);
+  const startingPrice = priceData?.price;
+
   const initials = person.name
     .split(" ")
     .map((n) => n[0])
@@ -141,11 +145,18 @@ export function PersonCard({ person, index, onClick }: Props) {
               </span>
             ))}
         </div>
-        {person.languages.length > 0 && (
-          <p className="flex-shrink-0 text-xs text-stone">
-            {person.languages.slice(0, 2).join(" · ")}
-          </p>
-        )}
+        <div className="flex flex-shrink-0 items-center gap-2">
+          {startingPrice && (
+            <span className="rounded-lg bg-brand-primary/10 px-2 py-0.5 text-xs font-semibold text-brand-primary">
+              From {"\u00a5"}{startingPrice.basePrice.toLocaleString()}
+            </span>
+          )}
+          {person.languages.length > 0 && (
+            <p className="text-xs text-stone">
+              {person.languages.slice(0, 2).join(" · ")}
+            </p>
+          )}
+        </div>
       </div>
     </motion.button>
   );
