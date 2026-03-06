@@ -112,7 +112,8 @@ function buildLocationMaps(locations: Location[]): {
   const locationsByRegionId = new Map<RegionId, Location[]>();
 
   locations.forEach((location) => {
-    const cityKey = normalizeKey(location.city);
+    // Use planning_city (coordinate-snapped KnownCityId) when available, fall back to city field
+    const cityKey = location.planningCity ?? normalizeKey(location.city);
     if (!cityKey) {
       return;
     }
@@ -121,7 +122,7 @@ function buildLocationMaps(locations: Location[]): {
     const info: CityInfo =
       existingInfo ??
       (() => {
-        const fallback: CityInfo = { key: cityKey, label: location.city, regionId: regionIdFromLabel };
+        const fallback: CityInfo = { key: cityKey, label: location.planningCity ?? location.city, regionId: regionIdFromLabel };
         CITY_INFO_BY_KEY.set(cityKey, fallback);
         return fallback;
       })();
@@ -324,7 +325,7 @@ export async function generateItinerary(
   if (savedIdSet.size > 0) {
     for (const loc of allLocations) {
       if (savedIdSet.has(loc.id)) {
-        const cityKey = normalizeKey(loc.city);
+        const cityKey = loc.planningCity ?? normalizeKey(loc.city);
         const list = savedByCity.get(cityKey) ?? [];
         list.push(loc);
         savedByCity.set(cityKey, list);
@@ -446,8 +447,8 @@ export async function generateItinerary(
       if (seenNamesInDay.has(normalizedName)) return false;
       seenNamesInDay.add(normalizedName);
 
-      // 4. Basic city name matching
-      const locationCityKey = normalizeKey(loc.city);
+      // 4. Basic city name matching (use planning_city when available)
+      const locationCityKey = loc.planningCity ?? normalizeKey(loc.city);
       if (locationCityKey !== cityInfo.key) {
         return false;
       }
@@ -580,7 +581,7 @@ export async function generateItinerary(
 
       // If no preferred day, add on the first day in the pinned location's city
       if (pinned.preferredDay === undefined) {
-        const pinnedCityKey = normalizeKey(pinned.location.city);
+        const pinnedCityKey = pinned.location.planningCity ?? normalizeKey(pinned.location.city);
         if (pinnedCityKey !== cityInfo.key) continue;
       }
 
@@ -803,7 +804,7 @@ export async function generateItinerary(
         if (timeNeeded <= remainingTime * 1.1 || activityIndex === 0) {
           // First activity in slot must fit, others can be slightly over
           if (timeNeeded <= remainingTime * 1.1) {
-            const locationKey = normalizeKey(location.city);
+            const locationKey = location.planningCity ?? normalizeKey(location.city);
             dayCityUsage.set(locationKey, (dayCityUsage.get(locationKey) ?? 0) + 1);
             // Build recommendation reason from scoring data
             const recommendationReason = scoringData?.breakdown

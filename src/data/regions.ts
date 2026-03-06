@@ -29,6 +29,7 @@ export const REGIONS: readonly Region[] = [
       { id: "osaka", name: "Osaka" },
       { id: "nara", name: "Nara" },
       { id: "kobe", name: "Kobe" },
+      { id: "otsu", name: "Otsu" },
     ],
   },
   {
@@ -37,6 +38,9 @@ export const REGIONS: readonly Region[] = [
     cities: [
       { id: "tokyo", name: "Tokyo" },
       { id: "yokohama", name: "Yokohama" },
+      { id: "kamakura", name: "Kamakura" },
+      { id: "nikko", name: "Nikkō" },
+      { id: "hakone", name: "Hakone" },
     ],
   },
   {
@@ -45,6 +49,9 @@ export const REGIONS: readonly Region[] = [
     cities: [
       { id: "nagoya", name: "Nagoya" },
       { id: "kanazawa", name: "Kanazawa" },
+      { id: "takayama", name: "Takayama" },
+      { id: "nagano", name: "Nagano" },
+      { id: "niigata", name: "Niigata" },
     ],
   },
   {
@@ -53,6 +60,9 @@ export const REGIONS: readonly Region[] = [
     cities: [
       { id: "fukuoka", name: "Fukuoka" },
       { id: "nagasaki", name: "Nagasaki" },
+      { id: "kumamoto", name: "Kumamoto" },
+      { id: "kagoshima", name: "Kagoshima" },
+      { id: "oita", name: "Ōita" },
     ],
   },
   {
@@ -68,6 +78,9 @@ export const REGIONS: readonly Region[] = [
     name: "Tohoku",
     cities: [
       { id: "sendai", name: "Sendai" },
+      { id: "morioka", name: "Morioka" },
+      { id: "aomori", name: "Aomori" },
+      { id: "akita", name: "Akita" },
     ],
   },
   {
@@ -75,6 +88,9 @@ export const REGIONS: readonly Region[] = [
     name: "Chugoku",
     cities: [
       { id: "hiroshima", name: "Hiroshima" },
+      { id: "okayama", name: "Okayama" },
+      { id: "matsue", name: "Matsue" },
+      { id: "tottori", name: "Tottori" },
     ],
   },
   {
@@ -83,6 +99,8 @@ export const REGIONS: readonly Region[] = [
     cities: [
       { id: "matsuyama", name: "Matsuyama" },
       { id: "takamatsu", name: "Takamatsu" },
+      { id: "tokushima", name: "Tokushima" },
+      { id: "kochi", name: "Kōchi" },
     ],
   },
   {

@@ -82,9 +82,24 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       minDaysBeforeSuggesting: 4,
       description: "Chinatown and waterfront attractions",
     },
-    // Future additions when these cities are added to the database:
-    // { cityId: "kamakura", travelMinutes: 60, minDaysBeforeSuggesting: 5, description: "Giant Buddha and seaside temples" },
-    // { cityId: "nikko", travelMinutes: 120, minDaysBeforeSuggesting: 6, description: "UNESCO World Heritage shrines" },
+    {
+      cityId: "kamakura",
+      travelMinutes: 55,
+      minDaysBeforeSuggesting: 5,
+      description: "Giant Buddha and seaside temples",
+    },
+    {
+      cityId: "hakone",
+      travelMinutes: 80,
+      minDaysBeforeSuggesting: 5,
+      description: "Hot springs with Mt. Fuji views",
+    },
+    {
+      cityId: "nikko",
+      travelMinutes: 120,
+      minDaysBeforeSuggesting: 6,
+      description: "UNESCO World Heritage shrines",
+    },
   ],
   yokohama: [
     {
@@ -119,6 +134,12 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
   ],
   // Kyushu
   fukuoka: [
+    {
+      cityId: "kumamoto",
+      travelMinutes: 45,
+      minDaysBeforeSuggesting: 3,
+      description: "Kumamoto Castle and Suizenji Garden",
+    },
     {
       cityId: "nagasaki",
       travelMinutes: 115,
