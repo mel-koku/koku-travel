@@ -425,6 +425,7 @@ export async function POST(request: NextRequest) {
       const { data: rows, error } = await supabase
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
+        .eq("is_active", true)
         .ilike("city", cityId)
         .eq("category", "restaurant")
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
@@ -500,6 +501,7 @@ export async function POST(request: NextRequest) {
       let query = supabase
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
+        .eq("is_active", true)
         .ilike("city", cityId)
         .neq("category", "restaurant")
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
@@ -590,6 +592,7 @@ export async function POST(request: NextRequest) {
       const { data: rows, error } = await supabase
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
+        .eq("is_active", true)
         .ilike("city", cityId)
         .not("category", "in", '("restaurant","cafe","bar")')
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
@@ -658,6 +661,7 @@ export async function POST(request: NextRequest) {
       const { data: rows, error } = await supabase
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
+        .eq("is_active", true)
         .ilike("city", cityId)
         .not("category", "in", '("restaurant")')
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
@@ -719,6 +723,7 @@ export async function POST(request: NextRequest) {
       const { data: rows, error } = await supabase
         .from("locations")
         .select(LOCATION_ITINERARY_COLUMNS)
+        .eq("is_active", true)
         .ilike("city", cityId)
         .in("category", categories)
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")

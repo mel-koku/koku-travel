@@ -67,6 +67,7 @@ async function fetchAllLocations(cities?: string[]): Promise<Location[]> {
     let query = supabase
       .from("locations")
       .select(LOCATION_ITINERARY_COLUMNS)
+      .eq("is_active", true)
       .order("name", { ascending: true });
 
     if (cities && cities.length > 0) {

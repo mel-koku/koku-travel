@@ -81,6 +81,7 @@ export async function GET(request: NextRequest) {
     const baseQuery = supabase
       .from("locations")
       .select("id, name, city, region, category, place_id, image, rating")
+      .eq("is_active", true)
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
     const { data, error } = await applySearchFilter(baseQuery, query)

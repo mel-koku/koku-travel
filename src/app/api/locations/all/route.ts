@@ -87,6 +87,7 @@ export async function GET(request: NextRequest) {
     const { count, error: countError } = await supabase
       .from("locations")
       .select("id", { count: "exact", head: true })
+      .eq("is_active", true)
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
     if (countError) {
@@ -112,6 +113,7 @@ export async function GET(request: NextRequest) {
       return supabase
         .from("locations")
         .select(LOCATION_EXPLORE_COLUMNS)
+        .eq("is_active", true)
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .order("name", { ascending: true })
         .range(from, to);

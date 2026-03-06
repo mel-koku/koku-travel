@@ -30,6 +30,7 @@ export async function getLocationCount(): Promise<number> {
   const { count, error } = await supabase
     .from("locations")
     .select("*", { count: "exact", head: true })
+    .eq("is_active", true)
     .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED");
 
   if (error || count === null) {
@@ -177,6 +178,7 @@ export async function fetchLocationByName(name: string): Promise<Location | null
   const { data, error } = await supabase
     .from("locations")
     .select(LOCATION_ITINERARY_COLUMNS)
+    .eq("is_active", true)
     .ilike("name", name)
     .limit(1)
     .single();
@@ -209,6 +211,7 @@ export async function fetchLocationsByNames(names: string[]): Promise<Location[]
   const { data, error } = await supabase
     .from("locations")
     .select(LOCATION_ITINERARY_COLUMNS)
+    .eq("is_active", true)
     .or(nameFilters);
 
   if (error || !data) {
@@ -250,6 +253,7 @@ export async function fetchLocationsByCity(
   let query = supabase
     .from("locations")
     .select(LOCATION_ITINERARY_COLUMNS)
+    .eq("is_active", true)
     .ilike("city", city);
 
   if (requirePlaceId) {
@@ -310,6 +314,7 @@ export async function fetchLocationsByCategories(
   let query = supabase
     .from("locations")
     .select(LOCATION_ITINERARY_COLUMNS)
+    .eq("is_active", true)
     .in("category", categories);
 
   if (city) {
@@ -393,6 +398,7 @@ export async function fetchTopRatedLocations(
   const { data, error } = await supabase
     .from("locations")
     .select(LOCATION_LISTING_COLUMNS)
+    .eq("is_active", true)
     .not("place_id", "is", null)
     .neq("place_id", "")
     .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
@@ -473,6 +479,7 @@ export async function fetchAllLocations(
   let baseQuery = supabase
     .from("locations")
     .select(LOCATION_ITINERARY_COLUMNS)
+    .eq("is_active", true)
     .order("name", { ascending: true });
 
   if (cities && cities.length > 0) {
@@ -506,6 +513,7 @@ export async function fetchAllLocations(
           let query = supabase
             .from("locations")
             .select(LOCATION_ITINERARY_COLUMNS)
+            .eq("is_active", true)
             .order("name", { ascending: true });
 
           if (cities && cities.length > 0) {
@@ -556,6 +564,7 @@ export async function fetchSeasonalLocations(
   const { data, error } = await supabase
     .from("locations")
     .select(LOCATION_LISTING_COLUMNS)
+    .eq("is_active", true)
     .overlaps("tags", tags)
     .gte("rating", 4.0)
     .order("rating", { ascending: false })
