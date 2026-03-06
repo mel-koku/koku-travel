@@ -56,6 +56,7 @@ export async function GET(request: NextRequest) {
     const { data: locations, error } = await supabase
       .from("locations")
       .select("id, city, region, place_id, image, rating")
+      .eq("is_active", true)
       .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
       .order("rating", { ascending: false, nullsFirst: false });
 

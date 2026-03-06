@@ -83,6 +83,7 @@ export async function GET(request: NextRequest) {
       const { data: batch, error } = await supabase
         .from("locations")
         .select("city, category, region, prefecture, neighborhood")
+        .eq("is_active", true)
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .range(from, to);
 

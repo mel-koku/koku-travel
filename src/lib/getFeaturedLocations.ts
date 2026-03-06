@@ -104,6 +104,7 @@ async function fetchFeaturedLocationsFromDb(): Promise<Location[]> {
   const { data, error } = await supabase
     .from("locations")
     .select(LOCATION_LISTING_COLUMNS)
+    .eq("is_active", true)
     .not("primary_photo_url", "is", null)
     .limit(500); // Fetch enough to get good variety after scoring
 

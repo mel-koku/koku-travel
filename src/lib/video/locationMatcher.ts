@@ -131,6 +131,7 @@ async function fuzzySearchByNameAndCity(name: string, city: string): Promise<Loc
   const { data, error } = await supabase
     .from("locations")
     .select("id, name, region, city, category, image, coordinates, place_id, rating, review_count, short_description, primary_photo_url")
+    .eq("is_active", true)
     .ilike("name", `%${name}%`)
     .ilike("city", normalizedCity)
     .limit(1)
@@ -163,6 +164,7 @@ async function findByPlaceId(placeId: string): Promise<Location | null> {
   const { data, error } = await supabase
     .from("locations")
     .select("id, name, region, city, category, image, coordinates, place_id, rating, review_count, short_description, primary_photo_url")
+    .eq("is_active", true)
     .eq("place_id", placeId)
     .limit(1)
     .maybeSingle();
