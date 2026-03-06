@@ -853,7 +853,7 @@ export const ItineraryShellB = ({
                         [
                           { key: "timeline", label: "Timeline" },
                           { key: "dashboard", label: "Overview" },
-                          ...(!isReadOnly ? [{ key: "discover", label: "Discover" }] : []),
+                          ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
                         ] as { key: ItineraryViewMode; label: string }[]
                       ).map((tab) => (
                         <button
