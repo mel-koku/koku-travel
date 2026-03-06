@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import { durationFast, easeReveal } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -52,8 +53,9 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
 
   const calculatedDuration = useMemo(() => {
     if (!startValue || !endValue) return null;
-    const startDate = new Date(startValue);
-    const endDate = new Date(endValue);
+    const startDate = parseLocalDate(startValue);
+    const endDate = parseLocalDate(endValue);
+    if (!startDate || !endDate) return null;
     const diffTime = endDate.getTime() - startDate.getTime();
     const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
     return diffDays;
@@ -71,9 +73,8 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
 
   const maxEndDate = useMemo(() => {
     if (!startValue) return undefined;
-    const startDate = new Date(startValue);
-    const maxDate = new Date(startDate);
-    maxDate.setDate(startDate.getDate() + MAX_DURATION - 1);
+    const maxDate = parseLocalDateWithOffset(startValue, MAX_DURATION - 1);
+    if (!maxDate) return undefined;
     return maxDate.toISOString().split("T")[0];
   }, [startValue]);
 
@@ -166,8 +167,9 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
                 required: "End date is required",
                 validate: (value) => {
                   if (!value || !startValue) return true;
-                  const start = new Date(startValue);
-                  const end = new Date(value);
+                  const start = parseLocalDate(startValue);
+                  const end = parseLocalDate(value);
+                  if (!start || !end) return true;
                   if (end < start) return "End date must be after start date";
                   const diffDays =
                     Math.round(

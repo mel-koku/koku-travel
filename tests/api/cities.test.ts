@@ -12,27 +12,33 @@ vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
 }));
 
-vi.mock("@/lib/api/middleware", () => ({
-  createRequestContext: vi.fn().mockReturnValue({
-    requestId: "test-request-id",
-    startTime: Date.now(),
-  }),
-  addRequestContextHeaders: vi.fn((response) => response),
-}));
+vi.mock("@/lib/api/middleware", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/api/middleware")>();
+  return {
+    ...actual,
+    createRequestContext: vi.fn().mockReturnValue({
+      requestId: "test-request-id",
+      startTime: Date.now(),
+    }),
+    addRequestContextHeaders: vi.fn((response) => response),
+  };
+});
 
 // Mock Supabase client
 let mockSupabaseResponse: { data: unknown[]; error: unknown } = { data: [], error: null };
 
 vi.mock("@/lib/supabase/server", () => ({
-  createClient: vi.fn().mockImplementation(async () => ({
-    from: () => ({
-      select: () => ({
-        or: () => ({
-          order: () => Promise.resolve(mockSupabaseResponse),
-        }),
-      }),
-    }),
-  })),
+  createClient: vi.fn().mockImplementation(async () => {
+    const terminal = () => Promise.resolve(mockSupabaseResponse);
+    const chain: Record<string, unknown> = {};
+    const self = () => chain;
+    chain.eq = self;
+    chain.neq = self;
+    chain.is = self;
+    chain.or = self;
+    chain.order = terminal;
+    return { from: () => ({ select: self }) };
+  }),
 }));
 
 // Helper to create mock location data for city aggregation

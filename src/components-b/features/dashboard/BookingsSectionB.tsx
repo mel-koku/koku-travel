@@ -4,12 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useUserBookings, useCancelBooking } from "@/hooks/useBooking";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import type { BookingWithPerson } from "@/types/person";
 
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
 
 function formatDate(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
+  const d = parseLocalDate(dateStr)!;
   return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 

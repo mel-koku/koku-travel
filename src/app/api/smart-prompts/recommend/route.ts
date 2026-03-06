@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { Location, LocationAvailability } from "@/types/location";
 import type { ItineraryActivity } from "@/types/itinerary";
@@ -8,13 +8,8 @@ import { findMealRecommendation } from "@/lib/mealPlanning";
 import { scoreLocation } from "@/lib/scoring/locationScoring";
 import { logger } from "@/lib/logger";
 import { internalError, badRequest } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody, recommendRequestSchema } from "@/lib/api/schemas";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import {
@@ -23,6 +18,7 @@ import {
   type LocationAvailabilityRow,
 } from "@/lib/availability/seasonalFilter";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
+import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import { filterByMealType } from "@/lib/mealFiltering";
 
 /**
@@ -356,32 +352,21 @@ function applyRefinementFilters(
  *
  * Fetches and scores recommendations for smart prompt suggestions.
  */
-export async function POST(request: NextRequest) {
-  const context = createRequestContext(request);
-
-  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.SMART_PROMPTS);
-  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
-
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  try {
+export const POST = withApiHandler(
+  async (request) => {
     const validation = await validateRequestBody(request, recommendRequestSchema);
     if (!validation.success) {
-      return addRequestContextHeaders(
-        badRequest("Invalid request body", { errors: validation.error.issues }),
-        context,
-      );
+      return badRequest("Invalid request body", { errors: validation.error.issues });
     }
     const body = validation.data as RecommendRequest;
     const { gap, dayActivities, cityId, tripBuilderData, usedLocationIds, excludeLocationIds, refinementFilters } = body;
 
     if (!gap || !gap.action) {
-      return addRequestContextHeaders(badRequest("Missing required gap action"), context);
+      return badRequest("Missing required gap action");
     }
 
     if (!cityId) {
-      return addRequestContextHeaders(badRequest("Missing cityId"), context);
+      return badRequest("Missing cityId");
     }
 
     const supabase = await createClient();
@@ -397,9 +382,8 @@ export async function POST(request: NextRequest) {
     // Compute the actual date for this day (for operating hours lookups)
     let tripDate: string | undefined;
     if (tripBuilderData?.dates?.start && typeof gap.dayIndex === "number") {
-      const d = new Date(tripBuilderData.dates.start);
-      d.setDate(d.getDate() + gap.dayIndex);
-      tripDate = d.toISOString().split("T")[0];
+      const d = parseLocalDateWithOffset(tripBuilderData.dates.start, gap.dayIndex);
+      tripDate = d ? d.toISOString().split("T")[0] : undefined;
     }
 
     // Pre-compute scoring criteria shared across all action branches
@@ -816,8 +800,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(response, { status: 200 });
 
-  } catch (error) {
-    logger.error("Smart prompts recommend error", error instanceof Error ? error : new Error(String(error)));
-    return internalError("Failed to generate recommendation");
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.SMART_PROMPTS, requireJson: true },
+);

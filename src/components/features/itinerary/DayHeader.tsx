@@ -17,6 +17,7 @@ import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
 import type { EntryPoint } from "@/types/trip";
+import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import { estimateDayCost, formatCostRange } from "@/lib/itinerary/costEstimator";
 
 type DayHeaderProps = {
@@ -83,25 +84,7 @@ export function DayHeader({
 // Calculate the date for this day
   const dayDate = useMemo(() => {
     if (tripStartDate) {
-      try {
-        // Parse ISO date string (yyyy-mm-dd) as local date to avoid timezone issues
-        const [year, month, day] = tripStartDate.split("-").map(Number);
-        if (year && month && day && !Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
-          const startDate = new Date(year, month - 1, day); // month is 0-indexed
-          const dayDate = new Date(startDate);
-          dayDate.setDate(startDate.getDate() + dayIndex);
-          return dayDate;
-        }
-        // Fallback to Date constructor if format doesn't match
-        const startDate = new Date(tripStartDate);
-        if (!Number.isNaN(startDate.getTime())) {
-          const dayDate = new Date(startDate);
-          dayDate.setDate(startDate.getDate() + dayIndex);
-          return dayDate;
-        }
-      } catch {
-        // Invalid date, fall back to undefined
-      }
+      return parseLocalDateWithOffset(tripStartDate, dayIndex) ?? undefined;
     }
     return undefined;
   }, [tripStartDate, dayIndex]);

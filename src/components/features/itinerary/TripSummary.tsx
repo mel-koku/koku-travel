@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { VIBES } from "@/data/vibes";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { cn } from "@/lib/cn";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import type { TripBuilderData } from "@/types/trip";
 
 export type TripSummaryProps = {
@@ -28,10 +29,10 @@ export function TripSummary({ tripData, className, defaultCollapsed = true, vari
       day: "numeric",
     });
 
-    const start = formatter.format(new Date(tripData.dates.start));
+    const start = formatter.format(parseLocalDate(tripData.dates.start)!);
     if (!tripData.dates.end) return start;
 
-    const end = formatter.format(new Date(tripData.dates.end));
+    const end = formatter.format(parseLocalDate(tripData.dates.end)!);
     return `${start} - ${end}`;
   }, [tripData.dates]);
 

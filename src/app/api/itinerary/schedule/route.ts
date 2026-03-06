@@ -1,13 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
-import { logger } from "@/lib/logger";
-import { badRequest, internalError } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
+import { NextResponse } from "next/server";
+import { badRequest } from "@/lib/api/errors";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody } from "@/lib/api/schemas";
 import { z } from "zod";
 import { planItinerary } from "@/lib/itineraryPlanner";
@@ -41,33 +35,17 @@ const scheduleRequestSchema = z.object({
  * - Arrival/departure times
  * - Operating window adjustments
  *
- * @param request - Next.js request object
- * @returns Scheduled itinerary with times, or error response
  * @throws Returns 400 if request body is invalid
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
  */
-export async function POST(request: NextRequest) {
-  // Create request context for tracing
-  const context = createRequestContext(request);
-
-  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.ITINERARY_SCHEDULE);
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  try {
+export const POST = withApiHandler(
+  async (request, { context }) => {
     const validation = await validateRequestBody(request, scheduleRequestSchema);
     if (!validation.success) {
-      return addRequestContextHeaders(
-        badRequest("Invalid request body", validation.error, {
-          requestId: context.requestId,
-        }),
-        context,
-      );
+      return badRequest("Invalid request body", validation.error, {
+        requestId: context.requestId,
+      });
     }
 
     const { itinerary, options, dayEntryPoints } = validation.data;
@@ -75,29 +53,15 @@ export async function POST(request: NextRequest) {
     // Schedule the itinerary
     const scheduled = await planItinerary(itinerary, options, dayEntryPoints);
 
-    return addRequestContextHeaders(
-      NextResponse.json(
-        { data: scheduled },
-        {
-          status: 200,
-          headers: {
-            "Cache-Control": "private, no-cache",
-          },
+    return NextResponse.json(
+      { data: scheduled },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "private, no-cache",
         },
-      ),
-      context,
+      },
     );
-  } catch (error) {
-    logger.error(
-      "Unexpected error scheduling itinerary",
-      error instanceof Error ? error : new Error(String(error)),
-      { requestId: context.requestId },
-    );
-    const message =
-      error instanceof Error ? error.message : "Failed to schedule itinerary.";
-    return addRequestContextHeaders(
-      internalError(message, undefined, { requestId: context.requestId }),
-      context,
-    );
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.ITINERARY_SCHEDULE, requireJson: true },
+);

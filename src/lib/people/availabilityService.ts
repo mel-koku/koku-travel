@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 export type AvailableDate = {
   date: string; // YYYY-MM-DD
@@ -113,7 +114,7 @@ export async function getExperienceInterpreters(
     .select("person_id, day_of_week, specific_date, morning_available, afternoon_available, is_available")
     .in("person_id", personIds);
 
-  const dateObj = new Date(date + "T00:00:00");
+  const dateObj = parseLocalDate(date)!;
   const dow = dateObj.getDay();
 
   const result: AvailableInterpreter[] = [];

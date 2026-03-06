@@ -1,20 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { requestRoute } from "@/lib/routing";
 import type { RoutingRequest } from "@/lib/routing/types";
 import { toRoutingMode, VALID_ROUTING_MODES } from "@/lib/routing/types";
 import type { ItineraryTravelMode } from "@/types/itinerary";
 import { logger } from "@/lib/logger";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  addRequestContextHeaders,
-  createRequestContext,
-  getOptionalAuth,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { readBodyWithSizeLimit } from "@/lib/api/bodySizeLimit";
-import { badRequest, internalError } from "@/lib/api/errors";
+import { badRequest } from "@/lib/api/errors";
 
-const ROUTING_RATE_LIMIT = { maxRequests: 100, windowMs: 60 * 1000 };
 const MAX_REQUEST_SIZE = 64 * 1024; // 64KB is generous for routing payloads
 
 /**
@@ -32,92 +26,64 @@ const VALID_INTERNAL_MODES = new Set<string>([
  * Estimates travel time and distance for a route.
  * Returns a lightweight response with just duration and distance.
  */
-export async function POST(request: NextRequest) {
-  const context = createRequestContext(request);
-
-  const rateLimitResponse = await checkRateLimit(request, ROUTING_RATE_LIMIT);
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  const authResult = await getOptionalAuth(request, context);
-  const finalContext = authResult.context;
-
-  const { body, response: sizeError } = await readBodyWithSizeLimit(request, MAX_REQUEST_SIZE);
-  if (sizeError) {
-    return addRequestContextHeaders(sizeError, finalContext);
-  }
-
-  if (!body) {
-    return addRequestContextHeaders(
-      badRequest("Request body is required.", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
-
-  let payload: RoutingRequest;
-  try {
-    payload = JSON.parse(body) as RoutingRequest;
-  } catch {
-    return addRequestContextHeaders(
-      badRequest("Invalid JSON in request body.", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
-
-  if (!payload.origin || !payload.destination || !payload.mode) {
-    return addRequestContextHeaders(
-      badRequest("Missing required fields: origin, destination, mode", undefined, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
-
-  // Validate coordinates are finite numbers within Japan bounds
-  const coords = [payload.origin, payload.destination];
-  for (const coord of coords) {
-    if (
-      !Number.isFinite(coord.lat) || !Number.isFinite(coord.lng) ||
-      coord.lat < 24 || coord.lat > 46 || coord.lng < 122 || coord.lng > 154
-    ) {
-      return addRequestContextHeaders(
-        badRequest("Coordinates must be finite numbers within Japan bounds (lat 24-46, lng 122-154)", undefined, {
-          requestId: finalContext.requestId,
-        }),
-        finalContext,
-      );
+export const POST = withApiHandler(
+  async (request, { context }) => {
+    const { body, response: sizeError } = await readBodyWithSizeLimit(request, MAX_REQUEST_SIZE);
+    if (sizeError) {
+      return sizeError;
     }
-  }
 
-  // Validate and translate internal travel mode to routing mode
-  if (!VALID_INTERNAL_MODES.has(payload.mode)) {
-    return addRequestContextHeaders(
-      badRequest(`Invalid mode "${payload.mode}". Must be one of: ${Array.from(VALID_INTERNAL_MODES).join(", ")}`, undefined, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
+    if (!body) {
+      return badRequest("Request body is required.", undefined, { requestId: context.requestId });
+    }
 
-  // Translate internal mode to routing API mode
-  const routingMode = VALID_ROUTING_MODES.has(payload.mode as "driving" | "walking" | "transit" | "cycling")
-    ? payload.mode as "driving" | "walking" | "transit" | "cycling"
-    : toRoutingMode(payload.mode as ItineraryTravelMode);
+    let payload: RoutingRequest;
+    try {
+      payload = JSON.parse(body) as RoutingRequest;
+    } catch {
+      return badRequest("Invalid JSON in request body.", undefined, { requestId: context.requestId });
+    }
 
-  try {
-    const routingRequest: RoutingRequest = {
-      ...payload,
-      mode: routingMode,
-    };
-    const result = await requestRoute(routingRequest);
-    // "mock" provider indicates heuristic estimate (not from real routing API)
-    const isEstimated = result.provider === "mock";
-    return addRequestContextHeaders(
-      NextResponse.json(
+    if (!payload.origin || !payload.destination || !payload.mode) {
+      return badRequest("Missing required fields: origin, destination, mode", undefined, {
+        requestId: context.requestId,
+      });
+    }
+
+    // Validate coordinates are finite numbers within Japan bounds
+    const coords = [payload.origin, payload.destination];
+    for (const coord of coords) {
+      if (
+        !Number.isFinite(coord.lat) || !Number.isFinite(coord.lng) ||
+        coord.lat < 24 || coord.lat > 46 || coord.lng < 122 || coord.lng > 154
+      ) {
+        return badRequest("Coordinates must be finite numbers within Japan bounds (lat 24-46, lng 122-154)", undefined, {
+          requestId: context.requestId,
+        });
+      }
+    }
+
+    // Validate and translate internal travel mode to routing mode
+    if (!VALID_INTERNAL_MODES.has(payload.mode)) {
+      return badRequest(`Invalid mode "${payload.mode}". Must be one of: ${Array.from(VALID_INTERNAL_MODES).join(", ")}`, undefined, {
+        requestId: context.requestId,
+      });
+    }
+
+    // Translate internal mode to routing API mode
+    const routingMode = VALID_ROUTING_MODES.has(payload.mode as "driving" | "walking" | "transit" | "cycling")
+      ? payload.mode as "driving" | "walking" | "transit" | "cycling"
+      : toRoutingMode(payload.mode as ItineraryTravelMode);
+
+    try {
+      const routingRequest: RoutingRequest = {
+        ...payload,
+        mode: routingMode,
+      };
+      const result = await requestRoute(routingRequest);
+      // "mock" provider indicates heuristic estimate (not from real routing API)
+      const isEstimated = result.provider === "mock";
+      return NextResponse.json(
         {
           mode: result.mode,
           durationMinutes: Math.round(result.durationSeconds / 60),
@@ -129,22 +95,15 @@ export async function POST(request: NextRequest) {
             "Cache-Control": "private, max-age=30",
           },
         },
-      ),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error("Routing estimate error", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      mode: payload.mode,
-    });
-    return addRequestContextHeaders(
-      internalError(
-        error instanceof Error ? error.message : "Failed to estimate route",
-        undefined,
-        { requestId: finalContext.requestId },
-      ),
-      finalContext,
-    );
-  }
-}
+      );
+    } catch (error) {
+      logger.error("Routing estimate error", error instanceof Error ? error : new Error(String(error)), {
+        requestId: context.requestId,
+        mode: payload.mode,
+      });
+      throw error;
+    }
+  },
+  { rateLimit: RATE_LIMITS.ROUTING, requireJson: true, requireAuth: true },
+);
 

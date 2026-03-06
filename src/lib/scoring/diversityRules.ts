@@ -35,10 +35,10 @@ export function applyDiversityFilter(
     }
 
     // Count consecutive occurrences of this category
-    const streakCount = countCategoryStreak(context.recentCategories, category);
+    const streakCount = countTrailingStreak(context.recentCategories, category);
 
     // Allow up to 2 consecutive occurrences
-    return streakCount < 2;
+    return streakCount < MAX_CONSECUTIVE_SAME;
   });
 
   // If filtering removed all candidates, return original (better than nothing)
@@ -53,7 +53,7 @@ export function applyDiversityFilter(
       return candidate;
     }
 
-    const streakCount = countCategoryStreak(context.recentCategories, category);
+    const streakCount = countTrailingStreak(context.recentCategories, category);
     if (streakCount > 0) {
       // Penalize repeat categories (-5 per consecutive repeat)
       return {
@@ -66,20 +66,45 @@ export function applyDiversityFilter(
   });
 }
 
+const MAX_CONSECUTIVE_SAME = 2;
+
 /**
- * Count how many times a category appears consecutively at the end of recent categories.
+ * Count consecutive occurrences of a value at the end of an array.
  */
-function countCategoryStreak(recentCategories: string[], category: string): number {
+function countTrailingStreak(items: string[], target: string): number {
   let count = 0;
-  // Count from the end backwards
-  for (let i = recentCategories.length - 1; i >= 0; i--) {
-    if (recentCategories[i] === category) {
-      count++;
-    } else {
-      break; // Stop at first non-matching category
-    }
+  for (let i = items.length - 1; i >= 0; i--) {
+    if (items[i] === target) count++;
+    else break;
   }
   return count;
+}
+
+/**
+ * Find the longest consecutive streak in an array.
+ */
+function findLongestStreak(items: string[]): { value: string; count: number } {
+  if (items.length === 0) return { value: "", count: 0 };
+
+  let maxStreak = 1;
+  let maxValue = items[0] ?? "";
+  let currentStreak = 1;
+  let currentValue = items[0] ?? "";
+
+  for (let i = 1; i < items.length; i++) {
+    if (items[i] === currentValue) {
+      currentStreak++;
+      if (currentStreak > maxStreak) {
+        maxStreak = currentStreak;
+        maxValue = currentValue;
+      }
+    } else {
+      currentStreak = 1;
+      currentValue = items[i] ?? "";
+    }
+  }
+
+  return { value: maxValue, count: maxStreak };
 }
 
 /**
@@ -103,7 +128,7 @@ export function calculateDiversityScore(
 
   // Penalty for streaks
   const maxStreak = detectCategoryStreak(activities.map((a) => a.category)).count;
-  const streakPenalty = Math.max(0, (maxStreak - 2) * 10); // Penalty for streaks > 2
+  const streakPenalty = Math.max(0, (maxStreak - MAX_CONSECUTIVE_SAME) * 10);
 
   // Bonus for good variety
   let varietyBonus = 0;
@@ -125,30 +150,8 @@ export function calculateDiversityScore(
 export function detectCategoryStreak(
   categories: string[],
 ): { category: string; count: number } {
-  if (categories.length === 0) {
-    return { category: "", count: 0 };
-  }
-
-  let maxStreak = 1;
-  let maxCategory = categories[0] ?? "";
-  let currentStreak = 1;
-  let currentCategory = categories[0] ?? "";
-
-  for (let i = 1; i < categories.length; i++) {
-    const category = categories[i];
-    if (category === currentCategory) {
-      currentStreak++;
-      if (currentStreak > maxStreak) {
-        maxStreak = currentStreak;
-        maxCategory = currentCategory;
-      }
-    } else {
-      currentStreak = 1;
-      currentCategory = category ?? "";
-    }
-  }
-
-  return { category: maxCategory, count: maxStreak };
+  const { value, count } = findLongestStreak(categories);
+  return { category: value, count };
 }
 
 /**
@@ -161,8 +164,8 @@ export function wouldViolateDiversityRules(
 ): boolean {
   const category = location.category;
   if (category) {
-    const categoryStreak = countCategoryStreak(recentCategories, category);
-    if (categoryStreak >= 2) {
+    const categoryStreak = countTrailingStreak(recentCategories, category);
+    if (categoryStreak >= MAX_CONSECUTIVE_SAME) {
       return true; // Adding this would create a streak of 3 (existing 2 + 1)
     }
   }
@@ -171,8 +174,8 @@ export function wouldViolateDiversityRules(
   if (recentNeighborhoods && recentNeighborhoods.length > 0) {
     const neighborhood = location.neighborhood ?? location.city;
     if (neighborhood) {
-      const neighborhoodStreak = countNeighborhoodStreak(recentNeighborhoods, neighborhood);
-      if (neighborhoodStreak >= 2) {
+      const neighborhoodStreak = countTrailingStreak(recentNeighborhoods, neighborhood);
+      if (neighborhoodStreak >= MAX_CONSECUTIVE_SAME) {
         return true; // Violates if would create neighborhood streak of 3+
       }
     }
@@ -182,50 +185,13 @@ export function wouldViolateDiversityRules(
 }
 
 /**
- * Count consecutive occurrences of a neighborhood at the end of recent neighborhoods.
- */
-function countNeighborhoodStreak(recentNeighborhoods: string[], neighborhood: string): number {
-  let count = 0;
-  for (let i = recentNeighborhoods.length - 1; i >= 0; i--) {
-    if (recentNeighborhoods[i] === neighborhood) {
-      count++;
-    } else {
-      break;
-    }
-  }
-  return count;
-}
-
-/**
  * Detect the longest neighborhood streak in a list.
  */
 export function detectNeighborhoodStreak(
   neighborhoods: string[],
 ): { neighborhood: string; count: number } {
-  if (neighborhoods.length === 0) {
-    return { neighborhood: "", count: 0 };
-  }
-
-  let maxStreak = 1;
-  let maxNeighborhood = neighborhoods[0] ?? "";
-  let currentStreak = 1;
-  let currentNeighborhood = neighborhoods[0] ?? "";
-
-  for (let i = 1; i < neighborhoods.length; i++) {
-    const neighborhood = neighborhoods[i];
-    if (neighborhood === currentNeighborhood) {
-      currentStreak++;
-      if (currentStreak > maxStreak) {
-        maxStreak = currentStreak;
-        maxNeighborhood = currentNeighborhood;
-      }
-    } else {
-      currentStreak = 1;
-      currentNeighborhood = neighborhood ?? "";
-    }
-  }
-
-  return { neighborhood: maxNeighborhood, count: maxStreak };
+  const { value, count } = findLongestStreak(neighborhoods);
+  return { neighborhood: value, count };
 }
 
 /**

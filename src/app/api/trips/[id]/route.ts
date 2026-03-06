@@ -2,12 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  requireAuth,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { badRequest, notFound, internalError } from "@/lib/api/errors";
 import { fetchTripById, saveTrip, deleteTrip } from "@/services/sync/tripSync";
@@ -163,10 +159,6 @@ const updateTripSchema = z.object({
   updatedAt: z.string().optional(),
 }).strip();
 
-type RouteParams = {
-  params: Promise<{ id: string }>;
-};
-
 /**
  * GET /api/trips/[id]
  *
@@ -183,71 +175,39 @@ type RouteParams = {
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
  */
-export async function GET(request: NextRequest, { params }: RouteParams) {
-  const context = createRequestContext(request);
-  const { id: tripId } = await params;
+export async function GET(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const { id: tripId } = await props.params;
+  return withApiHandler(
+    async (_req, { context, user }) => {
+      // Validate trip ID format
+      const idValidation = uuidSchema.safeParse(tripId);
+      if (!idValidation.success) {
+        return badRequest("Invalid trip ID format", undefined, { requestId: context.requestId });
+      }
 
-  // Rate limiting: 100 requests per minute
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
+      const supabase = await createClient();
+      const result = await fetchTripById(supabase, user!.id, tripId);
 
-  // Validate trip ID format
-  const idValidation = uuidSchema.safeParse(tripId);
-  if (!idValidation.success) {
-    return addRequestContextHeaders(
-      badRequest("Invalid trip ID format", undefined, { requestId: context.requestId }),
-      context,
-    );
-  }
+      if (!result.success) {
+        logger.error("Failed to fetch trip", new Error(result.error), {
+          requestId: context.requestId,
+          userId: user!.id,
+          tripId,
+        });
+        return internalError("Failed to fetch trip", undefined, { requestId: context.requestId });
+      }
 
-  // Require authentication
-  const authResult = await requireAuth(request, context);
-  if (authResult instanceof NextResponse) {
-    return addRequestContextHeaders(authResult, context);
-  }
+      if (!result.data) {
+        return notFound("Trip not found", { requestId: context.requestId });
+      }
 
-  const { user, context: finalContext } = authResult;
-
-  try {
-    const supabase = await createClient();
-    const result = await fetchTripById(supabase, user.id, tripId);
-
-    if (!result.success) {
-      logger.error("Failed to fetch trip", new Error(result.error), {
-        requestId: finalContext.requestId,
-        userId: user.id,
-        tripId,
-      });
-      return addRequestContextHeaders(
-        internalError("Failed to fetch trip", undefined, { requestId: finalContext.requestId }),
-        finalContext,
-      );
-    }
-
-    if (!result.data) {
-      return addRequestContextHeaders(
-        notFound("Trip not found", { requestId: finalContext.requestId }),
-        finalContext,
-      );
-    }
-
-    return addRequestContextHeaders(
-      NextResponse.json({ trip: result.data }),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error("Error fetching trip", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      userId: user.id,
-      tripId,
-    });
-    return addRequestContextHeaders(
-      internalError("Failed to fetch trip", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
+      return NextResponse.json({ trip: result.data });
+    },
+    { rateLimit: RATE_LIMITS.TRIPS, requireAuth: true },
+  )(request);
 }
 
 /**
@@ -273,159 +233,112 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
  */
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
-  const context = createRequestContext(request);
-  const { id: tripId } = await params;
+export async function PATCH(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const { id: tripId } = await props.params;
+  return withApiHandler(
+    async (req, { context, user }) => {
+      // Validate trip ID format
+      const idValidation = uuidSchema.safeParse(tripId);
+      if (!idValidation.success) {
+        return badRequest("Invalid trip ID format", undefined, { requestId: context.requestId });
+      }
 
-  // Rate limiting: 60 requests per minute
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 60, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
+      // Validate request body (2MB max)
+      const validation = await validateRequestBody(req, updateTripSchema, 2 * 1024 * 1024);
+      if (!validation.success) {
+        return badRequest("Invalid request body", {
+          errors: validation.error.issues,
+        }, {
+          requestId: context.requestId,
+        });
+      }
 
-  // Validate trip ID format
-  const idValidation = uuidSchema.safeParse(tripId);
-  if (!idValidation.success) {
-    return addRequestContextHeaders(
-      badRequest("Invalid trip ID format", undefined, { requestId: context.requestId }),
-      context,
-    );
-  }
+      const updates = validation.data;
 
-  // Require authentication
-  const authResult = await requireAuth(request, context);
-  if (authResult instanceof NextResponse) {
-    return addRequestContextHeaders(authResult, context);
-  }
+      // Check if there are any updates
+      if (!updates.name && !updates.itinerary && !updates.builderData) {
+        return badRequest("No updates provided", undefined, { requestId: context.requestId });
+      }
 
-  const { user, context: finalContext } = authResult;
+      const supabase = await createClient();
 
-  // Validate request body (2MB max)
-  const validation = await validateRequestBody(request, updateTripSchema, 2 * 1024 * 1024);
-  if (!validation.success) {
-    return addRequestContextHeaders(
-      badRequest("Invalid request body", {
-        errors: validation.error.issues,
-      }, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
+      // First fetch the existing trip
+      const existingResult = await fetchTripById(supabase, user!.id, tripId);
 
-  const updates = validation.data;
+      if (!existingResult.success) {
+        logger.error("Failed to fetch trip for update", new Error(existingResult.error), {
+          requestId: context.requestId,
+          userId: user!.id,
+          tripId,
+        });
+        return internalError("Failed to update trip", undefined, { requestId: context.requestId });
+      }
 
-  // Check if there are any updates
-  if (!updates.name && !updates.itinerary && !updates.builderData) {
-    return addRequestContextHeaders(
-      badRequest("No updates provided", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
+      if (!existingResult.data) {
+        return notFound("Trip not found", { requestId: context.requestId });
+      }
 
-  try {
-    const supabase = await createClient();
-
-    // First fetch the existing trip
-    const existingResult = await fetchTripById(supabase, user.id, tripId);
-
-    if (!existingResult.success) {
-      logger.error("Failed to fetch trip for update", new Error(existingResult.error), {
-        requestId: finalContext.requestId,
-        userId: user.id,
-        tripId,
-      });
-      return addRequestContextHeaders(
-        internalError("Failed to update trip", undefined, { requestId: finalContext.requestId }),
-        finalContext,
-      );
-    }
-
-    if (!existingResult.data) {
-      return addRequestContextHeaders(
-        notFound("Trip not found", { requestId: finalContext.requestId }),
-        finalContext,
-      );
-    }
-
-    // Optimistic locking: reject if client's snapshot is stale
-    if (updates.updatedAt && existingResult.data.updatedAt !== updates.updatedAt) {
-      return addRequestContextHeaders(
-        NextResponse.json(
+      // Optimistic locking: reject if client's snapshot is stale
+      if (updates.updatedAt && existingResult.data.updatedAt !== updates.updatedAt) {
+        return NextResponse.json(
           { error: "Trip modified since last load", code: "CONFLICT" },
           { status: 409 },
-        ),
-        finalContext,
-      );
-    }
-
-    // Merge updates with existing trip
-    const updatedTrip: StoredTrip = {
-      ...existingResult.data,
-      name: updates.name ?? existingResult.data.name,
-      itinerary: updates.itinerary ?? existingResult.data.itinerary,
-      builderData: updates.builderData ?? existingResult.data.builderData,
-      updatedAt: new Date().toISOString(),
-    };
-
-    // Validate itinerary data integrity — block on errors, allow warnings through
-    if (updatedTrip.itinerary) {
-      const validationResult = await validateItineraryWithDatabase(supabase, updatedTrip.itinerary);
-      if (validationResult.summary.errorCount > 0) {
-        const errors = validationResult.issues.filter((i) => i.severity === "error");
-        logger.warn("Itinerary validation errors — blocking save", {
-          requestId: finalContext.requestId,
-          tripId,
-          errorCount: validationResult.summary.errorCount,
-          errors,
-        });
-        return addRequestContextHeaders(
-          badRequest("Itinerary has validation errors", {
-            errors,
-            errorCount: validationResult.summary.errorCount,
-          }, { requestId: finalContext.requestId }),
-          finalContext,
         );
       }
-      if (validationResult.summary.warningCount > 0) {
-        logger.info("Itinerary validation warnings", {
-          requestId: finalContext.requestId,
-          tripId,
-          warningCount: validationResult.summary.warningCount,
-          warnings: validationResult.issues.filter((i) => i.severity === "warning").slice(0, 5),
-        });
+
+      // Merge updates with existing trip
+      const updatedTrip: StoredTrip = {
+        ...existingResult.data,
+        name: updates.name ?? existingResult.data.name,
+        itinerary: updates.itinerary ?? existingResult.data.itinerary,
+        builderData: updates.builderData ?? existingResult.data.builderData,
+        updatedAt: new Date().toISOString(),
+      };
+
+      // Validate itinerary data integrity — block on errors, allow warnings through
+      if (updatedTrip.itinerary) {
+        const validationResult = await validateItineraryWithDatabase(supabase, updatedTrip.itinerary);
+        if (validationResult.summary.errorCount > 0) {
+          const errors = validationResult.issues.filter((i) => i.severity === "error");
+          logger.warn("Itinerary validation errors — blocking save", {
+            requestId: context.requestId,
+            tripId,
+            errorCount: validationResult.summary.errorCount,
+            errors,
+          });
+          return badRequest("Itinerary has validation errors", {
+            errors,
+            errorCount: validationResult.summary.errorCount,
+          }, { requestId: context.requestId });
+        }
+        if (validationResult.summary.warningCount > 0) {
+          logger.info("Itinerary validation warnings", {
+            requestId: context.requestId,
+            tripId,
+            warningCount: validationResult.summary.warningCount,
+            warnings: validationResult.issues.filter((i) => i.severity === "warning").slice(0, 5),
+          });
+        }
       }
-    }
 
-    const saveResult = await saveTrip(supabase, user.id, updatedTrip);
+      const saveResult = await saveTrip(supabase, user!.id, updatedTrip);
 
-    if (!saveResult.success) {
-      logger.error("Failed to save trip update", new Error(saveResult.error), {
-        requestId: finalContext.requestId,
-        userId: user.id,
-        tripId,
-      });
-      return addRequestContextHeaders(
-        internalError("Failed to update trip", undefined, { requestId: finalContext.requestId }),
-        finalContext,
-      );
-    }
+      if (!saveResult.success) {
+        logger.error("Failed to save trip update", new Error(saveResult.error), {
+          requestId: context.requestId,
+          userId: user!.id,
+          tripId,
+        });
+        return internalError("Failed to update trip", undefined, { requestId: context.requestId });
+      }
 
-    return addRequestContextHeaders(
-      NextResponse.json({ trip: saveResult.data }),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error("Error updating trip", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      userId: user.id,
-      tripId,
-    });
-    return addRequestContextHeaders(
-      internalError("Failed to update trip", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
+      return NextResponse.json({ trip: saveResult.data });
+    },
+    { rateLimit: RATE_LIMITS.TRIPS, requireAuth: true },
+  )(request);
 }
 
 /**
@@ -444,62 +357,33 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
  */
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
-  const context = createRequestContext(request);
-  const { id: tripId } = await params;
+export async function DELETE(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const { id: tripId } = await props.params;
+  return withApiHandler(
+    async (_req, { context, user }) => {
+      // Validate trip ID format
+      const idValidation = uuidSchema.safeParse(tripId);
+      if (!idValidation.success) {
+        return badRequest("Invalid trip ID format", undefined, { requestId: context.requestId });
+      }
 
-  // Rate limiting: 30 requests per minute
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
+      const supabase = await createClient();
+      const result = await deleteTrip(supabase, user!.id, tripId);
 
-  // Validate trip ID format
-  const idValidation = uuidSchema.safeParse(tripId);
-  if (!idValidation.success) {
-    return addRequestContextHeaders(
-      badRequest("Invalid trip ID format", undefined, { requestId: context.requestId }),
-      context,
-    );
-  }
+      if (!result.success) {
+        logger.error("Failed to delete trip", new Error(result.error), {
+          requestId: context.requestId,
+          userId: user!.id,
+          tripId,
+        });
+        return internalError("Failed to delete trip", undefined, { requestId: context.requestId });
+      }
 
-  // Require authentication
-  const authResult = await requireAuth(request, context);
-  if (authResult instanceof NextResponse) {
-    return addRequestContextHeaders(authResult, context);
-  }
-
-  const { user, context: finalContext } = authResult;
-
-  try {
-    const supabase = await createClient();
-    const result = await deleteTrip(supabase, user.id, tripId);
-
-    if (!result.success) {
-      logger.error("Failed to delete trip", new Error(result.error), {
-        requestId: finalContext.requestId,
-        userId: user.id,
-        tripId,
-      });
-      return addRequestContextHeaders(
-        internalError("Failed to delete trip", undefined, { requestId: finalContext.requestId }),
-        finalContext,
-      );
-    }
-
-    return addRequestContextHeaders(
-      NextResponse.json({ success: true }),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error("Error deleting trip", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      userId: user.id,
-      tripId,
-    });
-    return addRequestContextHeaders(
-      internalError("Failed to delete trip", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
+      return NextResponse.json({ success: true });
+    },
+    { rateLimit: RATE_LIMITS.TRIPS, requireAuth: true },
+  )(request);
 }

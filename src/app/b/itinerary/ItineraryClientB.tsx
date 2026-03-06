@@ -16,6 +16,7 @@ import { env } from "@/lib/env";
 import { detectGaps, detectGuidanceGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
 import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
+import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 type ItineraryClientBProps = {
@@ -24,9 +25,7 @@ type ItineraryClientBProps = {
 
 /** Parse YYYY-MM-DD safely to avoid UTC midnight timezone bug */
 function parseTripDate(dateStr: string): Date {
-  const [y, m, d] = dateStr.split("-").map(Number);
-  if (y && m && d) return new Date(y, m - 1, d);
-  return new Date();
+  return parseLocalDate(dateStr) ?? new Date();
 }
 
 const formatDateLabel = (iso: string | undefined) => {
@@ -119,8 +118,9 @@ function ItineraryPageContent({ content }: { content?: PagesContent }) {
 
     Promise.all(
       activeItinerary.days.map((day, dayIndex) => {
-        const dayDate = new Date(startDate);
-        dayDate.setDate(startDate.getDate() + dayIndex);
+        const dayDate = tripStartDate
+          ? parseLocalDateWithOffset(tripStartDate, dayIndex) ?? new Date()
+          : new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + dayIndex);
         return detectGuidanceGaps(day, dayIndex, {
           fetchDayGuidance,
           season: getCurrentSeason(dayDate),

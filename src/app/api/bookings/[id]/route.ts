@@ -3,10 +3,8 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { cancelBooking } from "@/lib/bookings/bookingService";
 import { sendBookingCancellation } from "@/lib/email/bookingEmails";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { logger } from "@/lib/logger";
 
 const cancelSchema = z.object({
@@ -18,64 +16,50 @@ const cancelSchema = z.object({
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  props: { params: Promise<{ id: string }> },
 ) {
-  const context = createRequestContext(request);
-  const { id } = await params;
+  const { id } = await props.params;
+  return withApiHandler(
+    async (req, { user }) => {
+      let body: z.infer<typeof cancelSchema> = {};
+      try {
+        const raw = await req.json();
+        body = cancelSchema.parse(raw);
+      } catch {
+        // Empty body is fine for cancellation
+      }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+      const result = await cancelBooking(id, user!.id, body.reason);
 
-  if (!user) {
-    return addRequestContextHeaders(
-      NextResponse.json({ error: "Authentication required" }, { status: 401 }),
-      context
-    );
-  }
+      if ("error" in result) {
+        const status = result.error === "Not authorized" ? 403 : 400;
+        return NextResponse.json({ error: result.error }, { status });
+      }
 
-  let body: z.infer<typeof cancelSchema> = {};
-  try {
-    const raw = await request.json();
-    body = cancelSchema.parse(raw);
-  } catch {
-    // Empty body is fine for cancellation
-  }
+      // Send cancellation email async
+      const supabase = await createClient();
+      const { data: personRow } = await supabase
+        .from("people")
+        .select("name, type, slug")
+        .eq("id", result.booking.person_id)
+        .single();
 
-  const result = await cancelBooking(id, user.id, body.reason);
+      if (personRow) {
+        sendBookingCancellation({
+          bookingId: result.booking.id,
+          personName: personRow.name,
+          personType: personRow.type,
+          userEmail: user!.email ?? "",
+          bookingDate: result.booking.booking_date,
+          session: result.booking.session,
+          groupSize: result.booking.group_size,
+        }).catch((err) =>
+          logger.error("Booking cancellation email failed", err)
+        );
+      }
 
-  if ("error" in result) {
-    const status = result.error === "Not authorized" ? 403 : 400;
-    return addRequestContextHeaders(
-      NextResponse.json({ error: result.error }, { status }),
-      context
-    );
-  }
-
-  // Send cancellation email async
-  const { data: personRow } = await supabase
-    .from("people")
-    .select("name, type, slug")
-    .eq("id", result.booking.person_id)
-    .single();
-
-  if (personRow) {
-    sendBookingCancellation({
-      bookingId: result.booking.id,
-      personName: personRow.name,
-      personType: personRow.type,
-      userEmail: user.email ?? "",
-      bookingDate: result.booking.booking_date,
-      session: result.booking.session,
-      groupSize: result.booking.group_size,
-    }).catch((err) =>
-      logger.error("Booking cancellation email failed", err)
-    );
-  }
-
-  return addRequestContextHeaders(
-    NextResponse.json({ booking: result.booking }),
-    context
-  );
+      return NextResponse.json({ booking: result.booking });
+    },
+    { rateLimit: RATE_LIMITS.BOOKINGS, requireAuth: true },
+  )(request);
 }

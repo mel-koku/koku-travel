@@ -1,4 +1,5 @@
 import { logger } from "@/lib/logger";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { env } from "@/lib/env";
 
 type BookingEmailData = {
@@ -19,7 +20,7 @@ function formatPrice(amount: number | undefined, currency = "JPY"): string {
 }
 
 function formatDate(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
+  const d = parseLocalDate(dateStr)!;
   return d.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",

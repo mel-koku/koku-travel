@@ -10,6 +10,7 @@ import type { TripBuilderData, RegionId } from "@/types/trip";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { calculateDistance } from "@/lib/utils/geoUtils";
 import { getFestivalsForTrip } from "@/data/festivalCalendar";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { travelTimeFromEntryPoint, getNearestCityToEntryPoint } from "@/lib/travelTime";
 
 /**
@@ -247,8 +248,8 @@ function detectHolidayWarnings(data: TripBuilderData): PlanningWarning[] {
 
   if (!data.dates.start || !data.dates.end) return warnings;
 
-  const startDate = new Date(data.dates.start);
-  const endDate = new Date(data.dates.end);
+  const startDate = parseLocalDate(data.dates.start)!;
+  const endDate = parseLocalDate(data.dates.end)!;
 
   for (const holiday of HOLIDAY_PERIODS) {
     if (
@@ -283,8 +284,8 @@ function detectSeasonalWarnings(data: TripBuilderData): PlanningWarning[] {
 
   if (!data.dates.start || !data.dates.end) return warnings;
 
-  const startDate = new Date(data.dates.start);
-  const endDate = new Date(data.dates.end);
+  const startDate = parseLocalDate(data.dates.start)!;
+  const endDate = parseLocalDate(data.dates.end)!;
 
   // Check rainy season
   if (

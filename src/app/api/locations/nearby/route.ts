@@ -1,13 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { Location, LocationOperatingHours } from "@/types/location";
 import { logger } from "@/lib/logger";
 import { internalError } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 
 const NEARBY_COLUMNS = `
   id,
@@ -49,36 +46,23 @@ const WEEKDAYS = [
  * Returns locations near a point, optionally filtered to only those open now.
  * Sorted by: hidden gems first, then rating descending.
  */
-export async function GET(request: NextRequest) {
-  const context = createRequestContext(request);
+export const GET = withApiHandler(
+  async (request, { context }) => {
+    const { searchParams } = new URL(request.url);
+    const lat = parseFloat(searchParams.get("lat") ?? "");
+    const lng = parseFloat(searchParams.get("lng") ?? "");
+    const radiusKm = parseFloat(searchParams.get("radius") ?? "1.5");
+    const category = searchParams.get("category");
+    const openNow = searchParams.get("openNow") === "true";
+    const limit = Math.min(parseInt(searchParams.get("limit") ?? "20", 10), 50);
 
-  const rateLimitResponse = await checkRateLimit(request, {
-    maxRequests: 100,
-    windowMs: 60 * 1000,
-  });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  const { searchParams } = new URL(request.url);
-  const lat = parseFloat(searchParams.get("lat") ?? "");
-  const lng = parseFloat(searchParams.get("lng") ?? "");
-  const radiusKm = parseFloat(searchParams.get("radius") ?? "1.5");
-  const category = searchParams.get("category");
-  const openNow = searchParams.get("openNow") === "true";
-  const limit = Math.min(parseInt(searchParams.get("limit") ?? "20", 10), 50);
-
-  if (Number.isNaN(lat) || Number.isNaN(lng)) {
-    return addRequestContextHeaders(
-      NextResponse.json(
+    if (Number.isNaN(lat) || Number.isNaN(lng)) {
+      return NextResponse.json(
         { error: "lat and lng query parameters are required" },
         { status: 400 },
-      ),
-      context,
-    );
-  }
+      );
+    }
 
-  try {
     const supabase = await createClient();
 
     // Bounding box for initial filter (cheaper than haversine for all rows)
@@ -103,12 +87,9 @@ export async function GET(request: NextRequest) {
 
     if (error) {
       logger.error("Nearby query failed", { error, requestId: context.requestId });
-      return addRequestContextHeaders(
-        internalError("Failed to fetch nearby locations", { error: error.message }, {
-          requestId: context.requestId,
-        }),
-        context,
-      );
+      return internalError("Failed to fetch nearby locations", { error: error.message }, {
+        requestId: context.requestId,
+      });
     }
 
     const now = new Date();
@@ -203,32 +184,18 @@ export async function GET(request: NextRequest) {
         distance: Math.round(distance * 1000), // meters
       }));
 
-    return addRequestContextHeaders(
-      NextResponse.json(
-        { data: locations, total: locations.length },
-        {
-          status: 200,
-          headers: {
-            "Cache-Control": "no-store",
-          },
+    return NextResponse.json(
+      { data: locations, total: locations.length },
+      {
+        status: 200,
+        headers: {
+          "Cache-Control": "no-store",
         },
-      ),
-      context,
+      },
     );
-  } catch (error) {
-    logger.error(
-      "Unexpected error in nearby endpoint",
-      error instanceof Error ? error : new Error(String(error)),
-      { requestId: context.requestId },
-    );
-    const message =
-      error instanceof Error ? error.message : "Failed to load nearby locations.";
-    return addRequestContextHeaders(
-      internalError(message, undefined, { requestId: context.requestId }),
-      context,
-    );
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.LOCATIONS },
+);
 
 function haversineKm(
   lat1: number,

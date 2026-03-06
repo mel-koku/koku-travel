@@ -11,6 +11,7 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { normalizeKey } from "@/lib/utils/stringUtils";
 import type { IntentExtractionResult } from "@/types/llmConstraints";
+import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 
 // Import from extracted modules
 import { isLocationValidForCity } from "@/lib/geo/validation";
@@ -632,9 +633,8 @@ export async function generateItinerary(
     // Compute day-level date and weekend flag (constant across all time slots)
     const dayDate = data.dates.start
       ? (() => {
-          const startDate = new Date(data.dates.start);
-          startDate.setDate(startDate.getDate() + dayIndex);
-          return startDate.toISOString().split("T")[0];
+          const d = parseLocalDateWithOffset(data.dates.start, dayIndex);
+          return d ? d.toISOString().split("T")[0] : undefined;
         })()
       : undefined;
     const isWeekend = dayDate

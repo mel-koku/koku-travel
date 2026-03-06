@@ -12,6 +12,7 @@ import { getPublishedExperiences } from "@/lib/experiences/experienceService";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { ALL_CITY_IDS, REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import { VIBES } from "@/data/vibes";
 import { VALID_VIBE_IDS } from "@/types/trip";
@@ -426,12 +427,14 @@ export const chatTools = {
       // Calculate duration from dates if both provided
       let duration = params.duration;
       if (params.startDate && params.endDate) {
-        const start = new Date(params.startDate);
-        const end = new Date(params.endDate);
-        const diffMs = end.getTime() - start.getTime();
-        const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-        if (diffDays > 0 && diffDays <= 14) {
-          duration = diffDays;
+        const start = parseLocalDate(params.startDate);
+        const end = parseLocalDate(params.endDate);
+        if (start && end) {
+          const diffMs = end.getTime() - start.getTime();
+          const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+          if (diffDays > 0 && diffDays <= 14) {
+            duration = diffDays;
+          }
         }
       }
 

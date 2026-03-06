@@ -3,9 +3,8 @@ import { revalidatePath } from "next/cache";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServiceRoleClient } from "@/lib/supabase/serviceRole";
 import { logger } from "@/lib/logger";
-import { checkRateLimit } from "@/lib/api/rateLimit";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
 import { unauthorized, badRequest, internalError } from "@/lib/api/errors";
 
 const WEBHOOK_SECRET = process.env.SANITY_REVALIDATE_SECRET;
@@ -33,19 +32,11 @@ type SanityWebhookBody = {
   operation?: "create" | "update" | "delete";
 };
 
-export async function POST(request: NextRequest) {
-  const context = createRequestContext(request);
-
-  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.WEBHOOK);
-  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
-
+export const POST = withApiHandler(async (request: NextRequest) => {
   // Reject if webhook secret is not configured (prevents bypass in misconfigured environments)
   if (!WEBHOOK_SECRET) {
     logger.error("SANITY_REVALIDATE_SECRET not configured");
-    return addRequestContextHeaders(
-      internalError("Webhook not configured"),
-      context,
-    );
+    return internalError("Webhook not configured");
   }
 
   // Validate webhook secret using timing-safe comparison to prevent timing attacks
@@ -53,33 +44,28 @@ export async function POST(request: NextRequest) {
   const secretBuf = Buffer.from(secret ?? "", "utf8");
   const expectedBuf = Buffer.from(WEBHOOK_SECRET ?? "", "utf8");
   if (secretBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(secretBuf, expectedBuf)) {
-    return addRequestContextHeaders(unauthorized(), context);
+    return unauthorized();
   }
 
   let body: SanityWebhookBody;
   try {
     body = (await request.json()) as SanityWebhookBody;
   } catch {
-    return addRequestContextHeaders(badRequest("Invalid JSON body"), context);
+    return badRequest("Invalid JSON body");
   }
 
-  let response: NextResponse;
   switch (body._type) {
     case "guide":
-      response = await handleGuide(body);
-      break;
+      return await handleGuide(body);
     case "experience":
-      response = await handleExperience(body);
-      break;
+      return await handleExperience(body);
     case "landingPage":
     case "siteSettings":
-      response = await handleSingletonRevalidation(body._type, ["/"]);
-      break;
+      return await handleSingletonRevalidation(body._type, ["/"]);
     case "tripBuilderConfig":
-      response = await handleSingletonRevalidation(body._type, ["/trip-builder"]);
-      break;
+      return await handleSingletonRevalidation(body._type, ["/trip-builder"]);
     case "pagesContent":
-      response = await handleSingletonRevalidation(body._type, [
+      return await handleSingletonRevalidation(body._type, [
         "/places",
         "/guides",
         "/local-experts",
@@ -88,13 +74,10 @@ export async function POST(request: NextRequest) {
         "/account",
         "/itinerary",
       ]);
-      break;
     default:
-      response = NextResponse.json({ skipped: true, reason: `Unknown type: ${body._type}` });
+      return NextResponse.json({ skipped: true, reason: `Unknown type: ${body._type}` });
   }
-
-  return addRequestContextHeaders(response, context);
-}
+}, { rateLimit: RATE_LIMITS.WEBHOOK });
 
 // ── Guide handler (unchanged logic) ────────────────────────
 

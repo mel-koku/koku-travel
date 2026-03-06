@@ -4,10 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useUserBookings, useCancelBooking } from "@/hooks/useBooking";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import type { BookingWithPerson } from "@/types/person";
 
 function formatDate(dateStr: string): string {
-  const d = new Date(dateStr + "T00:00:00");
+  const d = parseLocalDate(dateStr)!;
   return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
 }
 

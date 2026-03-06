@@ -6,6 +6,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { ItineraryPreview } from "./ItineraryPreview";
 import { RegionMap } from "./RegionMap";
 import { cn } from "@/lib/cn";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 export type LivePreviewProps = {
   className?: string;
@@ -32,7 +33,7 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
     }
 
     if (data.dates.start) {
-      const startDate = new Date(data.dates.start);
+      const startDate = parseLocalDate(data.dates.start)!;
       const formatter = new Intl.DateTimeFormat(undefined, {
         month: "short",
         day: "numeric",
