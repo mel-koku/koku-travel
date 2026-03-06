@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getPersonBySlug } from "@/lib/people/peopleService";
 import { getPersonAvailability } from "@/lib/people/availabilityService";
+import { getPersonBookedSlots } from "@/lib/bookings/bookingService";
 import { checkRateLimit } from "@/lib/api/rateLimit";
 import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
 
 /**
- * GET /api/people/[slug]/availability?month=YYYY-MM
+ * GET /api/people/[slug]/availability?month=YYYY-MM&includeBooked=true
  * Returns available dates for a person in the given month.
+ * When includeBooked=true, also returns already-booked slots so the calendar
+ * can grey them out.
  * Public — no auth required.
  */
 export async function GET(
@@ -20,6 +23,7 @@ export async function GET(
 
   const { slug } = await params;
   const monthParam = request.nextUrl.searchParams.get("month");
+  const includeBooked = request.nextUrl.searchParams.get("includeBooked") === "true";
 
   if (!monthParam || !/^\d{4}-\d{2}$/.test(monthParam)) {
     return addRequestContextHeaders(
@@ -42,14 +46,26 @@ export async function GET(
 
   const available = await getPersonAvailability(person.id, year, month);
 
+  const response: Record<string, unknown> = {
+    slug,
+    month: monthParam,
+    availableDates: available,
+  };
+
+  if (includeBooked) {
+    const bookedSet = await getPersonBookedSlots(person.id, year, month);
+    response.bookedSlots = Array.from(bookedSet);
+  }
+
   return addRequestContextHeaders(
-    NextResponse.json(
-      { slug, month: monthParam, availableDates: available },
-      {
-        status: 200,
-        headers: { "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=600" },
-      }
-    ),
+    NextResponse.json(response, {
+      status: 200,
+      headers: {
+        "Cache-Control": includeBooked
+          ? "public, max-age=30, s-maxage=30, stale-while-revalidate=60"
+          : "public, max-age=300, s-maxage=300, stale-while-revalidate=600",
+      },
+    }),
     context
   );
 }

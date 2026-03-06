@@ -58,6 +58,7 @@ import { TodayIndicatorB } from "./TodayIndicatorB";
 import { AccommodationPickerB } from "./AccommodationPickerB";
 import { LateArrivalCardB } from "./LateArrivalCardB";
 import { AvailabilityAlertB } from "./AvailabilityAlertB";
+import { DayBookingCardsB } from "./DayBookingCardsB";
 import { useDayAvailability } from "@/hooks/useDayAvailability";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
@@ -911,6 +912,15 @@ export const ItineraryTimelineB = ({
                   </div>
                 );
               })()}
+
+              {/* Confirmed bookings for this day */}
+              <div className="pl-8">
+                <DayBookingCardsB
+                  tripStartDate={tripStartDate}
+                  dayIndex={dayIndex}
+                  totalDays={_model.days.length}
+                />
+              </div>
 
               <ul className="space-y-3 pl-8">
                 {extendedActivities.map((activity, index) => {

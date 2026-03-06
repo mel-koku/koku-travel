@@ -11,6 +11,8 @@ import {
   getCategoryById,
 } from "@/lib/activityCategories";
 import { InquiryForm } from "./InquiryForm";
+import { AvailabilityCalendar } from "./AvailabilityCalendar";
+import { usePersonAvailability } from "@/hooks/useAvailability";
 import type { Person } from "@/types/person";
 
 type Props = {
@@ -24,10 +26,22 @@ const GENERIC_SPECIALTIES = new Set([
   "cultural immersion",
 ]);
 
+function currentMonthStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 export function PersonDetailPanel({ person, onClose }: Props) {
   const { pause, resume } = useLenis();
   const { data: detail } = usePersonDetail(person?.slug ?? null);
   const displayPerson = detail ?? person;
+
+  // Check if person has availability rules (= bookable)
+  const { data: availData } = usePersonAvailability(
+    person?.slug ?? null,
+    person ? currentMonthStr() : null
+  );
+  const isBookable = (availData?.availableDates?.length ?? 0) > 0;
 
   const categoryId = displayPerson
     ? resolvePersonCategoryId(displayPerson.specialties)
@@ -247,9 +261,13 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                   </div>
                 )}
 
-                {/* Booking inquiry */}
+                {/* Booking / Inquiry */}
                 <div className="mt-8">
-                  <InquiryForm person={displayPerson} />
+                  {isBookable ? (
+                    <AvailabilityCalendar person={displayPerson} />
+                  ) : (
+                    <InquiryForm person={displayPerson} />
+                  )}
                 </div>
               </div>
             </div>

@@ -31,6 +31,8 @@ const PUBLIC_API_ROUTES = [
   "/api/experiences/all",
   "/api/people",
   "/api/availability",
+  "/api/bookings/availability",
+  "/api/bookings/pricing",
 ];
 
 /**

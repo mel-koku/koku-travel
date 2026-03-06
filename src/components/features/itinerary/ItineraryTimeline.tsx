@@ -41,6 +41,7 @@ import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActi
 import { getActivityConflicts } from "@/lib/validation/itineraryConflicts";
 import type { DayGuide } from "@/types/itineraryGuide";
 import { GuideSegmentCard } from "./GuideSegmentCard";
+import { DayBookingCards } from "./DayBookingCards";
 import { SortableActivity } from "./SortableActivity";
 import { TravelSegment } from "./TravelSegment";
 import { DayHeader } from "./DayHeader";
@@ -818,6 +819,13 @@ export const ItineraryTimeline = ({
             {guide?.intro && !activeId && (
               <GuideSegmentCard segment={guide.intro} className="mb-3" />
             )}
+
+            {/* Confirmed bookings for this day */}
+            <DayBookingCards
+              tripStartDate={tripStartDate}
+              dayIndex={dayIndex}
+              totalDays={model.days.length}
+            />
 
             <ul className="space-y-3">
               {extendedActivities.map((activity, index) => {

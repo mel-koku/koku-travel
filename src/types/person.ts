@@ -69,3 +69,79 @@ export type BookingInquiryInput = {
   groupSize?: number;
   message?: string;
 };
+
+/** Booking session type */
+export type BookingSession = "morning" | "afternoon";
+
+/** Booking status */
+export type BookingStatus = "confirmed" | "completed" | "cancelled" | "no_show";
+
+/** Booking DB row */
+export type Booking = {
+  id: string;
+  inquiry_id: string | null;
+  person_id: string;
+  experience_slug: string | null;
+  location_id: string | null;
+  user_id: string;
+  booking_date: string; // YYYY-MM-DD
+  session: BookingSession;
+  start_time: string; // HH:MM
+  end_time: string; // HH:MM
+  group_size: number;
+  interpreter_id: string | null;
+  notes: string | null;
+  total_price: number | null;
+  currency: string;
+  pricing_rule_id: string | null;
+  status: BookingStatus;
+  cancellation_reason: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+/** Booking with joined person data for display */
+export type BookingWithPerson = Booking & {
+  person: Pick<Person, "name" | "type" | "slug" | "photo_url" | "city">;
+  interpreter?: Pick<Person, "name" | "slug"> | null;
+};
+
+/** Form submission payload for creating a booking */
+export type CreateBookingInput = {
+  personId: string;
+  personSlug: string;
+  experienceSlug?: string;
+  locationId?: string;
+  bookingDate: string; // YYYY-MM-DD
+  session: BookingSession;
+  groupSize: number;
+  interpreterId?: string;
+  notes?: string;
+};
+
+/** Pricing rule DB row */
+export type PricingRule = {
+  id: string;
+  person_id: string;
+  experience_slug: string | null;
+  base_price: number;
+  currency: string;
+  per_person_price: number | null;
+  min_group: number;
+  max_group: number;
+  duration_minutes: number | null;
+  valid_from: string | null;
+  valid_until: string | null;
+  created_at: string;
+};
+
+/** Computed price breakdown for display */
+export type PriceBreakdown = {
+  basePrice: number;
+  perPersonPrice: number;
+  extraGuests: number;
+  totalPrice: number;
+  currency: string;
+  durationMinutes: number | null;
+  maxGroup: number;
+};

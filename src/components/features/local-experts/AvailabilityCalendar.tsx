@@ -2,8 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { usePersonAvailability, useExperienceInterpreters } from "@/hooks/useAvailability";
-import { InquiryForm } from "./InquiryForm";
-import type { Person } from "@/types/person";
+import { usePersonBookedSlots, useCreateBooking, useBookingPrice } from "@/hooks/useBooking";
+import { useAuthState } from "@/components/ui/IdentityBadge";
+import type { Person, BookingSession } from "@/types/person";
 
 const DAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
@@ -25,22 +26,42 @@ function todayStr() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function formatPrice(amount: number, currency = "JPY"): string {
+  return `${currency === "JPY" ? "¥" : currency + " "}${amount.toLocaleString()}`;
+}
+
 export function AvailabilityCalendar({ person, experienceSlug }: Props) {
   const today = todayStr();
   const todayDate = new Date(today + "T00:00:00");
+  const { isSignedIn } = useAuthState();
 
   const [viewYear, setViewYear] = useState(todayDate.getFullYear());
-  const [viewMonth, setViewMonth] = useState(todayDate.getMonth() + 1); // 1-based
+  const [viewMonth, setViewMonth] = useState(todayDate.getMonth() + 1);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedSession, setSelectedSession] = useState<BookingSession | null>(null);
   const [selectedInterpreter, setSelectedInterpreter] = useState<string | null>(null);
-  const [showInquiry, setShowInquiry] = useState(false);
+  const [groupSize, setGroupSize] = useState(1);
+  const [notes, setNotes] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const monthStr = toMonthStr(viewYear, viewMonth);
   const { data: availData, isLoading } = usePersonAvailability(person.slug, monthStr);
+  const { data: bookedData } = usePersonBookedSlots(person.slug, monthStr);
   const { data: interpData, isLoading: interpLoading } = useExperienceInterpreters(
     experienceSlug ?? null,
     selectedDate
   );
+  const { data: priceData } = useBookingPrice(
+    person.id,
+    groupSize,
+    experienceSlug,
+    selectedDate ?? undefined
+  );
+  const createBooking = useCreateBooking();
+
+  const bookedSlots = useMemo(() => {
+    return new Set(bookedData?.bookedSlots ?? []);
+  }, [bookedData]);
 
   const availableSet = useMemo(() => {
     const map = new Map<string, { morning: boolean; afternoon: boolean }>();
@@ -50,57 +71,69 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
     return map;
   }, [availData]);
 
-  // Build calendar grid
   const firstDow = new Date(viewYear, viewMonth - 1, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth, 0).getDate();
 
   function prevMonth() {
     if (viewMonth === 1) { setViewMonth(12); setViewYear(y => y - 1); }
     else setViewMonth(m => m - 1);
-    setSelectedDate(null);
-    setSelectedInterpreter(null);
-    setShowInquiry(false);
+    resetSelection();
   }
   function nextMonth() {
     if (viewMonth === 12) { setViewMonth(1); setViewYear(y => y + 1); }
     else setViewMonth(m => m + 1);
+    resetSelection();
+  }
+
+  function resetSelection() {
     setSelectedDate(null);
+    setSelectedSession(null);
     setSelectedInterpreter(null);
-    setShowInquiry(false);
+    setShowConfirm(false);
+    setGroupSize(1);
+    setNotes("");
   }
 
   function handleDateClick(dateStr: string) {
     if (!availableSet.has(dateStr)) return;
     if (selectedDate === dateStr) {
-      setSelectedDate(null);
-      setSelectedInterpreter(null);
-      setShowInquiry(false);
+      resetSelection();
     } else {
       setSelectedDate(dateStr);
+      setSelectedSession(null);
       setSelectedInterpreter(null);
-      setShowInquiry(false);
+      setShowConfirm(false);
     }
+  }
+
+  function handleBook() {
+    if (!selectedDate || !selectedSession) return;
+    createBooking.mutate(
+      {
+        personId: person.id,
+        personSlug: person.slug,
+        experienceSlug,
+        bookingDate: selectedDate,
+        session: selectedSession,
+        groupSize,
+        interpreterId: selectedInterpreter ?? undefined,
+        notes: notes || undefined,
+      },
+      { onSuccess: () => resetSelection() }
+    );
   }
 
   const selectedSlots = selectedDate ? availableSet.get(selectedDate) : null;
   const interpreters = interpData?.interpreters ?? [];
+  const price = priceData?.price;
 
-  // Pre-fill message for inquiry
-  const selectedInterpreterPerson = interpreters.find(i => i.id === selectedInterpreter);
-  const inquiryPerson: Person | null = selectedInterpreter && selectedInterpreterPerson
-    ? {
-        id: selectedInterpreterPerson.id,
-        name: selectedInterpreterPerson.name,
-        type: "interpreter",
-        slug: "",
-        languages: selectedInterpreterPerson.languages,
-        specialties: [],
-        is_published: true,
-        city: selectedInterpreterPerson.city ?? undefined,
-        created_at: "",
-        updated_at: "",
-      }
-    : null;
+  const selectedDateLabel = selectedDate
+    ? new Date(selectedDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    : "";
+
+  function isSessionBooked(dateStr: string, session: BookingSession): boolean {
+    return bookedSlots.has(`${dateStr}:${session}`);
+  }
 
   return (
     <div className="rounded-xl border border-border bg-surface p-5">
@@ -201,18 +234,49 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
       {/* Expanded date panel */}
       {selectedDate && selectedSlots && (
         <div className="mt-5 space-y-4 border-t border-border pt-5">
+          {/* Session selection */}
           <div>
-            <p className="eyebrow-editorial mb-2">Session times</p>
+            <p className="eyebrow-editorial mb-2">Pick a session</p>
             <div className="flex gap-2">
               {selectedSlots.morning && (
-                <span className="rounded-xl border border-border bg-canvas px-3 py-1.5 text-xs font-medium text-foreground">
+                <button
+                  type="button"
+                  onClick={() => setSelectedSession(selectedSession === "morning" ? null : "morning")}
+                  disabled={isSessionBooked(selectedDate, "morning")}
+                  className={[
+                    "rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                    isSessionBooked(selectedDate, "morning")
+                      ? "cursor-not-allowed border-border bg-canvas text-stone/50 line-through"
+                      : selectedSession === "morning"
+                      ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                      : "border-border bg-canvas text-foreground hover:border-brand-primary/40",
+                  ].join(" ")}
+                >
                   Morning · 10:00–12:00
-                </span>
+                  {isSessionBooked(selectedDate, "morning") && (
+                    <span className="ml-1 text-[10px] no-underline">(booked)</span>
+                  )}
+                </button>
               )}
               {selectedSlots.afternoon && (
-                <span className="rounded-xl border border-border bg-canvas px-3 py-1.5 text-xs font-medium text-foreground">
+                <button
+                  type="button"
+                  onClick={() => setSelectedSession(selectedSession === "afternoon" ? null : "afternoon")}
+                  disabled={isSessionBooked(selectedDate, "afternoon")}
+                  className={[
+                    "rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                    isSessionBooked(selectedDate, "afternoon")
+                      ? "cursor-not-allowed border-border bg-canvas text-stone/50 line-through"
+                      : selectedSession === "afternoon"
+                      ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
+                      : "border-border bg-canvas text-foreground hover:border-brand-primary/40",
+                  ].join(" ")}
+                >
                   Afternoon · 14:00–16:00
-                </span>
+                  {isSessionBooked(selectedDate, "afternoon") && (
+                    <span className="ml-1 text-[10px] no-underline">(booked)</span>
+                  )}
+                </button>
               )}
             </div>
           </div>
@@ -262,25 +326,141 @@ export function AvailabilityCalendar({ person, experienceSlug }: Props) {
             </div>
           )}
 
+          {/* Group size + notes (shown when session selected) */}
+          {selectedSession && (
+            <div className="space-y-3">
+              <div>
+                <label className="eyebrow-editorial block">Group size</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={price?.maxGroup ?? 10}
+                  value={groupSize}
+                  onChange={(e) => setGroupSize(Math.max(1, parseInt(e.target.value) || 1))}
+                  className="mt-1 h-12 w-24 rounded-xl border border-border bg-background px-4 text-base text-foreground focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                />
+              </div>
+
+              {/* Price display */}
+              {price && (
+                <div className="rounded-xl bg-canvas px-4 py-3">
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-xs text-foreground-secondary">Base</span>
+                    <span className="text-sm text-foreground">{formatPrice(price.basePrice, price.currency)}</span>
+                  </div>
+                  {price.extraGuests > 0 && price.perPersonPrice > 0 && (
+                    <div className="mt-1 flex items-baseline justify-between">
+                      <span className="text-xs text-foreground-secondary">
+                        +{price.extraGuests} guest{price.extraGuests > 1 ? "s" : ""} × {formatPrice(price.perPersonPrice, price.currency)}
+                      </span>
+                      <span className="text-sm text-foreground">
+                        {formatPrice(price.extraGuests * price.perPersonPrice, price.currency)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="mt-2 flex items-baseline justify-between border-t border-border pt-2">
+                    <span className="text-xs font-semibold text-foreground">Total</span>
+                    <span className="text-sm font-semibold text-foreground">
+                      {formatPrice(price.totalPrice, price.currency)}
+                    </span>
+                  </div>
+                  {price.durationMinutes && (
+                    <p className="mt-1 text-[10px] text-stone">
+                      {price.durationMinutes} min session
+                    </p>
+                  )}
+                </div>
+              )}
+              {!price && (
+                <p className="text-xs text-foreground-secondary">Free</p>
+              )}
+
+              <div>
+                <label className="eyebrow-editorial block">Notes (optional)</label>
+                <textarea
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder={`Anything ${person.name.split(" ")[0]} should know`}
+                  rows={2}
+                  maxLength={2000}
+                  className="mt-1 w-full rounded-xl border border-border bg-background px-4 py-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-2 focus:ring-brand-primary/30"
+                />
+              </div>
+            </div>
+          )}
+
           {/* CTA */}
-          {!showInquiry ? (
-            <button
-              type="button"
-              onClick={() => setShowInquiry(true)}
-              className="h-11 w-full rounded-xl bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
-            >
-              Request {new Date(selectedDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-              {selectedInterpreterPerson ? ` + interpreter` : ""}
-            </button>
-          ) : (
-            <div className="space-y-2">
-              <p className="eyebrow-editorial">
-                {inquiryPerson ? `Book with interpreter: ${inquiryPerson.name}` : `Book ${person.name.split(" ")[0]}`}
+          {selectedSession && !showConfirm && (
+            <div>
+              {!isSignedIn ? (
+                <div className="text-center">
+                  <p className="text-sm text-foreground-secondary">Sign in to book.</p>
+                  <a
+                    href="/signin"
+                    className="mt-2 inline-flex h-11 items-center rounded-xl bg-brand-primary px-6 text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
+                  >
+                    Sign in
+                  </a>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(true)}
+                  className="h-11 w-full rounded-xl bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98]"
+                >
+                  Book {selectedDateLabel} · {selectedSession === "morning" ? "Morning" : "Afternoon"}
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Confirmation step */}
+          {showConfirm && (
+            <div className="space-y-3 rounded-xl border border-success/30 bg-success/5 p-4">
+              <p className="text-sm font-semibold text-foreground">Confirm your booking</p>
+              <div className="space-y-1 text-xs text-foreground-secondary">
+                <p>{person.name} — {person.type}</p>
+                <p>{selectedDateLabel}, {selectedSession === "morning" ? "10:00–12:00" : "14:00–16:00"}</p>
+                <p>{groupSize} guest{groupSize > 1 ? "s" : ""}</p>
+                {price && <p className="font-medium text-foreground">{formatPrice(price.totalPrice, price.currency)}</p>}
+                {!price && <p className="font-medium text-foreground">Free</p>}
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(false)}
+                  className="h-11 flex-1 rounded-xl border border-border text-sm font-medium text-foreground-secondary hover:text-foreground"
+                >
+                  Back
+                </button>
+                <button
+                  type="button"
+                  onClick={handleBook}
+                  disabled={createBooking.isPending}
+                  className="h-11 flex-1 rounded-xl bg-brand-primary text-sm font-semibold text-white transition-colors hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+                >
+                  {createBooking.isPending ? "Booking…" : "Confirm Booking"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Success */}
+          {createBooking.isSuccess && (
+            <div className="rounded-xl border border-success/30 bg-success/10 p-5 text-center">
+              <svg
+                className="mx-auto h-8 w-8 text-success"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p className="mt-3 text-sm font-medium text-foreground">Booking confirmed</p>
+              <p className="mt-1 text-xs text-foreground-secondary">
+                Check your email for details. View all bookings on your dashboard.
               </p>
-              <InquiryForm
-                person={inquiryPerson ?? person}
-                prefilledDate={selectedDate}
-              />
             </div>
           )}
         </div>
