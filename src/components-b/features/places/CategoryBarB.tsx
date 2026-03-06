@@ -115,7 +115,7 @@ export function CategoryBarB({
               <button
                 type="submit"
                 title="Search"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary)] text-white hover:bg-[var(--brand-secondary)] active:scale-[0.98] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
+                className="absolute -right-px -top-px -bottom-px flex w-12 items-center justify-center rounded-l-none rounded-r-xl bg-[var(--primary)] text-white hover:opacity-90 active:scale-[0.98] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
                 aria-label="Search"
               >
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
