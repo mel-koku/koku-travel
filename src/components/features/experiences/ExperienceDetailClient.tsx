@@ -74,7 +74,7 @@ export function ExperienceDetailClient({
         onToggleBookmark={() => toggleBookmark(bookmarkId)}
       />
 
-      <ExperienceArtisanSection people={people} />
+      <ExperienceArtisanSection people={people} experienceSlug={experience.slug} />
 
       {/* Article body + sidebar grid (2fr / 1fr on xl+) */}
       <div className="xl:mx-auto xl:grid xl:max-w-[1400px] xl:grid-cols-[2fr_1fr] xl:gap-10 xl:px-8 xl:pb-16">

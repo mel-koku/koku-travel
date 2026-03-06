@@ -10,7 +10,6 @@ const TYPE_TABS: { label: string; value: PersonType | null }[] = [
   { label: "Artisans", value: "artisan" },
   { label: "Guides", value: "guide" },
   { label: "Interpreters", value: "interpreter" },
-  { label: "Authors", value: "author" },
 ];
 
 type Props = {

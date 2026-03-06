@@ -112,16 +112,11 @@ export function usePeopleFilters(people: Person[] | undefined) {
     return [...set].sort();
   }, [people]);
 
-  // Type counts for tabs
+  // Type counts for tabs (bookable types only — authors excluded from marketplace)
   const typeCounts = useMemo(() => {
     if (!people)
-      return { artisan: 0, guide: 0, interpreter: 0, author: 0 };
-    const counts: Record<string, number> = {
-      artisan: 0,
-      guide: 0,
-      interpreter: 0,
-      author: 0,
-    };
+      return { artisan: 0, guide: 0, interpreter: 0 };
+    const counts: Record<string, number> = { artisan: 0, guide: 0, interpreter: 0 };
     for (const p of people) {
       if (p.type in counts) counts[p.type] = (counts[p.type] ?? 0) + 1;
     }
@@ -130,7 +125,8 @@ export function usePeopleFilters(people: Person[] | undefined) {
 
   const filteredPeople = useMemo(() => {
     if (!people) return [];
-    let result = people;
+    // Authors are editorial-only — never shown in the marketplace browse
+    let result = people.filter((p) => p.type !== "author");
 
     if (filters.type) {
       result = result.filter((p) => p.type === filters.type);

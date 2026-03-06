@@ -190,7 +190,9 @@ export function PersonDetailPanelB({ person, onClose }: Props) {
                 {detail?.experiences && detail.experiences.length > 0 && (
                   <div className="mt-6">
                     <p className="text-xs font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
-                      Experiences
+                      {displayPerson.type === "interpreter"
+                        ? "Available to interpret at"
+                        : "Experiences"}
                     </p>
                     <ul className="mt-2 space-y-1.5">
                       {detail.experiences.map((exp) => (
@@ -204,7 +206,7 @@ export function PersonDetailPanelB({ person, onClose }: Props) {
                           >
                             {exp.slug.replace(/-/g, " ")}
                           </a>
-                          {exp.is_primary && (
+                          {exp.is_primary && displayPerson.type !== "interpreter" && (
                             <span className="ml-1.5 text-xs text-[var(--primary)]">
                               Primary
                             </span>
