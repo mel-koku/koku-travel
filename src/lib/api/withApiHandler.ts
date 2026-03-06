@@ -45,12 +45,24 @@ type HandlerFn = (
  *
  * Usage:
  * ```ts
+ * // Simple route
  * export const GET = withApiHandler(
  *   async (request, { context, user }) => {
  *     return NextResponse.json({ ok: true });
  *   },
- *   { rateLimit: { maxRequests: 200, windowMs: 60_000 } },
+ *   { rateLimit: RATE_LIMITS.LOCATIONS },
  * );
+ *
+ * // Route with dynamic params
+ * export async function GET(request: NextRequest, props: { params: Promise<{ id: string }> }) {
+ *   const { id } = await props.params;
+ *   return withApiHandler(
+ *     async (req, { context, user }) => {
+ *       return NextResponse.json({ id });
+ *     },
+ *     { rateLimit: RATE_LIMITS.LOCATIONS },
+ *   )(request);
+ * }
  * ```
  */
 export function withApiHandler(handler: HandlerFn, options: HandlerOptions = {}) {

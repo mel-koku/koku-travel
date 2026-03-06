@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import type {
   Booking,
   BookingSession,
@@ -49,7 +50,7 @@ export async function isPersonAvailableForSlot(
 ): Promise<boolean> {
   const supabase = await createClient();
 
-  const dateObj = new Date(bookingDate + "T00:00:00");
+  const dateObj = parseLocalDate(bookingDate)!;
   const dow = dateObj.getDay();
 
   const { data: rules } = await supabase

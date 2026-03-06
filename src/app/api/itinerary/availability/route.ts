@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { checkAvailability } from "@/lib/availability/availabilityService";
 import { findLocationsForActivities } from "@/lib/itineraryLocations";
 import type { ItineraryActivity } from "@/types/itinerary";
-import { badRequest, internalError } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
+import { badRequest } from "@/lib/api/errors";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import { createRequestContext, addRequestContextHeaders, requireJsonContentType } from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody, availabilityRequestSchema } from "@/lib/api/schemas";
 import { logger } from "@/lib/logger";
 import { getErrorMessage } from "@/lib/utils/errorUtils";
@@ -14,22 +13,11 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
  * POST /api/itinerary/availability
  * Check availability for one or more itinerary activities
  */
-export async function POST(request: NextRequest) {
-  const context = createRequestContext(request);
-
-  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.ITINERARY_AVAILABILITY);
-  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
-
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  try {
+export const POST = withApiHandler(
+  async (request) => {
     const validation = await validateRequestBody(request, availabilityRequestSchema);
     if (!validation.success) {
-      return addRequestContextHeaders(
-        badRequest("Invalid request body", { errors: validation.error.issues }),
-        context,
-      );
+      return badRequest("Invalid request body", { errors: validation.error.issues });
     }
     const { activities } = validation.data as { activities: ItineraryActivity[] };
 
@@ -84,13 +72,8 @@ export async function POST(request: NextRequest) {
       }),
     );
 
-    return addRequestContextHeaders(
-      NextResponse.json({ results: availabilityResults }),
-      context,
-    );
-  } catch (error) {
-    logger.error("Error checking availability", error instanceof Error ? error : new Error(String(error)));
-    return addRequestContextHeaders(internalError("Failed to check availability"), context);
-  }
-}
+    return NextResponse.json({ results: availabilityResults });
+  },
+  { rateLimit: RATE_LIMITS.ITINERARY_AVAILABILITY, requireJson: true },
+);
 

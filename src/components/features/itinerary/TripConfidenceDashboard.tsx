@@ -18,6 +18,7 @@ import {
   type ChecklistItem,
 } from "@/lib/itinerary/tripHealth";
 import { easeReveal, durationFast, durationBase } from "@/lib/motion";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import dynamic from "next/dynamic";
 
@@ -215,7 +216,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
         cities={tripBuilderData?.cities}
         month={
           tripStartDate
-            ? new Date(tripStartDate + "T12:00:00").getMonth() + 1
+            ? parseLocalDate(tripStartDate)!.getMonth() + 1
             : undefined
         }
         groupType={tripBuilderData?.group?.type}

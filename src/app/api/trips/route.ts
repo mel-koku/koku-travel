@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  requireAuth,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { validateRequestBody, tripBuilderDataSchema } from "@/lib/api/schemas";
 import { badRequest, internalError } from "@/lib/api/errors";
 import { fetchTrips, saveTrip } from "@/services/sync/tripSync";
@@ -75,56 +70,26 @@ const createTripSchema = z.object({
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
  */
-export async function GET(request: NextRequest) {
-  const context = createRequestContext(request);
-
-  // Rate limiting: 100 requests per minute
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  // Require authentication
-  const authResult = await requireAuth(request, context);
-  if (authResult instanceof NextResponse) {
-    return addRequestContextHeaders(authResult, context);
-  }
-
-  const { user, context: finalContext } = authResult;
-
-  try {
+export const GET = withApiHandler(
+  async (_request: NextRequest, { context, user }) => {
     const supabase = await createClient();
-    const result = await fetchTrips(supabase, user.id);
+    const result = await fetchTrips(supabase, user!.id);
 
     if (!result.success) {
       logger.error("Failed to fetch trips", new Error(result.error), {
-        requestId: finalContext.requestId,
-        userId: user.id,
+        requestId: context.requestId,
+        userId: user!.id,
       });
-      return addRequestContextHeaders(
-        internalError("Failed to fetch trips", undefined, { requestId: finalContext.requestId }),
-        finalContext,
-      );
+      return internalError("Failed to fetch trips", undefined, { requestId: context.requestId });
     }
 
-    return addRequestContextHeaders(
-      NextResponse.json({
-        trips: result.data,
-        count: result.data?.length ?? 0,
-      }),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error("Error fetching trips", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      userId: user.id,
+    return NextResponse.json({
+      trips: result.data,
+      count: result.data?.length ?? 0,
     });
-    return addRequestContextHeaders(
-      internalError("Failed to fetch trips", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.TRIPS, requireAuth: true },
+);
 
 /**
  * POST /api/trips
@@ -149,42 +114,20 @@ export async function GET(request: NextRequest) {
  * @throws Returns 429 if rate limit exceeded
  * @throws Returns 500 for server errors
  */
-export async function POST(request: NextRequest) {
-  const context = createRequestContext(request);
-
-  // Rate limiting: 30 requests per minute (creating trips is more expensive)
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 30, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
-
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  // Require authentication
-  const authResult = await requireAuth(request, context);
-  if (authResult instanceof NextResponse) {
-    return addRequestContextHeaders(authResult, context);
-  }
-
-  const { user, context: finalContext } = authResult;
-
-  // Validate request body (2MB max for itinerary data)
-  const validation = await validateRequestBody(request, createTripSchema, 2 * 1024 * 1024);
-  if (!validation.success) {
-    return addRequestContextHeaders(
-      badRequest("Invalid request body", {
+export const POST = withApiHandler(
+  async (request: NextRequest, { context, user }) => {
+    // Validate request body (2MB max for itinerary data)
+    const validation = await validateRequestBody(request, createTripSchema, 2 * 1024 * 1024);
+    if (!validation.success) {
+      return badRequest("Invalid request body", {
         errors: validation.error.issues,
       }, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
+        requestId: context.requestId,
+      });
+    }
 
-  const { id, name, itinerary, builderData } = validation.data;
+    const { id, name, itinerary, builderData } = validation.data;
 
-  try {
     const supabase = await createClient();
     const now = new Date().toISOString();
 
@@ -198,31 +141,17 @@ export async function POST(request: NextRequest) {
       builderData,
     };
 
-    const result = await saveTrip(supabase, user.id, trip);
+    const result = await saveTrip(supabase, user!.id, trip);
 
     if (!result.success) {
       logger.error("Failed to create trip", new Error(result.error), {
-        requestId: finalContext.requestId,
-        userId: user.id,
+        requestId: context.requestId,
+        userId: user!.id,
       });
-      return addRequestContextHeaders(
-        internalError("Failed to create trip", undefined, { requestId: finalContext.requestId }),
-        finalContext,
-      );
+      return internalError("Failed to create trip", undefined, { requestId: context.requestId });
     }
 
-    return addRequestContextHeaders(
-      NextResponse.json({ trip: result.data }, { status: 201 }),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error("Error creating trip", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      userId: user.id,
-    });
-    return addRequestContextHeaders(
-      internalError("Failed to create trip", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
-}
+    return NextResponse.json({ trip: result.data }, { status: 201 });
+  },
+  { rateLimit: RATE_LIMITS.TRIPS, requireAuth: true, requireJson: true },
+);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 
 export type TodayIndicatorBProps = {
   tripStartDate: string;
@@ -9,21 +10,14 @@ export type TodayIndicatorBProps = {
 };
 
 function isToday(tripStartDate: string, dayIndex: number): boolean {
-  try {
-    const [year, month, day] = tripStartDate.split("-").map(Number);
-    if (!year || !month || !day || isNaN(year) || isNaN(month) || isNaN(day)) return false;
-    const startDate = new Date(year, month - 1, day);
-    const dayDate = new Date(startDate);
-    dayDate.setDate(startDate.getDate() + dayIndex);
-    const today = new Date();
-    return (
-      dayDate.getFullYear() === today.getFullYear() &&
-      dayDate.getMonth() === today.getMonth() &&
-      dayDate.getDate() === today.getDate()
-    );
-  } catch {
-    return false;
-  }
+  const dayDate = parseLocalDateWithOffset(tripStartDate, dayIndex);
+  if (!dayDate) return false;
+  const today = new Date();
+  return (
+    dayDate.getFullYear() === today.getFullYear() &&
+    dayDate.getMonth() === today.getMonth() &&
+    dayDate.getDate() === today.getDate()
+  );
 }
 
 function formatTime(date: Date): string {

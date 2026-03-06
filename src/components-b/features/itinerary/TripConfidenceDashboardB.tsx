@@ -27,6 +27,7 @@ import {
 } from "@/lib/itinerary/tripHealth";
 import { useActivityLocations } from "@/hooks/useActivityLocations";
 import { cn } from "@/lib/cn";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { RouteOverviewB } from "./RouteOverviewB";
 import { estimateTripCost, formatCostRange, formatYen } from "@/lib/itinerary/costEstimator";
@@ -288,7 +289,7 @@ export const TripConfidenceDashboardB = memo(function TripConfidenceDashboardB({
         cities={tripBuilderData?.cities}
         month={
           tripStartDate
-            ? new Date(tripStartDate + "T12:00:00").getMonth() + 1
+            ? parseLocalDate(tripStartDate)!.getMonth() + 1
             : undefined
         }
         groupType={tripBuilderData?.group?.type}

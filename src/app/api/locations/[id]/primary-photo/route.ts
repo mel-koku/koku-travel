@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { isValidLocationId } from "@/lib/api/validation";
 import { locationIdSchema } from "@/lib/api/schemas";
 import { badRequest, notFound } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import { createRequestContext, addRequestContextHeaders } from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -29,19 +29,13 @@ type LocationPrimaryPhotoRow = {
   short_description: string | null;
 };
 
-type RouteContext = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
 /**
  * GET /api/locations/[id]/primary-photo
  * Fetches the primary photo reference for a location from Google Places API.
  *
  * @param request - Next.js request object
- * @param context - Route context containing the location ID parameter
- * @param context.params.id - Location ID (must be a valid identifier)
+ * @param props - Route props containing the location ID parameter
+ * @param props.params.id - Location ID (must be a valid identifier)
  * @returns Photo reference object with placeId and photo data, or error response
  * @throws Returns 400 if location ID format is invalid
  * @throws Returns 404 if location is not found
@@ -49,69 +43,60 @@ type RouteContext = {
  * @throws Returns 503 if Google Places API is not configured
  * @throws Returns 500 for other errors
  */
-export async function GET(request: NextRequest, routeContext: RouteContext) {
-  const context = createRequestContext(request);
+export async function GET(
+  request: NextRequest,
+  props: { params: Promise<{ id: string }> },
+) {
+  const { id } = await props.params;
+  return withApiHandler(
+    async (_req) => {
+      // Validate using both existing function and Zod schema for defense in depth
+      const idValidation = locationIdSchema.safeParse(id);
+      if (!idValidation.success || !isValidLocationId(id)) {
+        return badRequest("Invalid location ID format", {
+          errors: idValidation.success ? undefined : idValidation.error.issues,
+        });
+      }
 
-  // Rate limiting: 100 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 100, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
+      const validatedId = idValidation.data;
 
-  const { id } = await routeContext.params;
+      // Fetch location from database with pre-enriched primary_photo_url
+      const supabase = await createClient();
+      const { data: locationData, error: dbError } = await supabase
+        .from("locations")
+        .select(LOCATION_PRIMARY_PHOTO_COLUMNS)
+        .eq("id", validatedId)
+        .single();
 
-  // Validate using both existing function and Zod schema for defense in depth
-  const idValidation = locationIdSchema.safeParse(id);
-  if (!idValidation.success || !isValidLocationId(id)) {
-    return addRequestContextHeaders(
-      badRequest("Invalid location ID format", {
-        errors: idValidation.success ? undefined : idValidation.error.issues,
-      }),
-      context,
-    );
-  }
+      if (dbError || !locationData) {
+        return notFound("Location not found");
+      }
 
-  const validatedId = idValidation.data;
+      const row = locationData as unknown as LocationPrimaryPhotoRow;
 
-  // Fetch location from database with pre-enriched primary_photo_url
-  const supabase = await createClient();
-  const { data: locationData, error: dbError } = await supabase
-    .from("locations")
-    .select(LOCATION_PRIMARY_PHOTO_COLUMNS)
-    .eq("id", validatedId)
-    .single();
+      // Use pre-enriched primary_photo_url from database (no Google API call)
+      // Falls back to location.image if no primary_photo_url exists
+      const photoUrl = row.primary_photo_url ?? row.image;
 
-  if (dbError || !locationData) {
-    return addRequestContextHeaders(notFound("Location not found"), context);
-  }
-
-  const row = locationData as unknown as LocationPrimaryPhotoRow;
-
-  // Use pre-enriched primary_photo_url from database (no Google API call)
-  // Falls back to location.image if no primary_photo_url exists
-  const photoUrl = row.primary_photo_url ?? row.image;
-
-  return addRequestContextHeaders(
-    NextResponse.json(
-      {
-        placeId: row.place_id ?? row.id,
-        fetchedAt: new Date().toISOString(),
-        photo: photoUrl
-          ? { name: "primary", proxyUrl: photoUrl, attributions: [] }
-          : null,
-        displayName: row.name,
-        editorialSummary: row.short_description ?? null,
-      },
-      {
-        status: 200,
-        headers: {
-          // 30-day cache since data is from DB (photos don't change frequently)
-          "Cache-Control": "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800",
+      return NextResponse.json(
+        {
+          placeId: row.place_id ?? row.id,
+          fetchedAt: new Date().toISOString(),
+          photo: photoUrl
+            ? { name: "primary", proxyUrl: photoUrl, attributions: [] }
+            : null,
+          displayName: row.name,
+          editorialSummary: row.short_description ?? null,
         },
-      },
-    ),
-    context,
-  );
+        {
+          status: 200,
+          headers: {
+            // 30-day cache since data is from DB (photos don't change frequently)
+            "Cache-Control": "public, max-age=2592000, s-maxage=2592000, stale-while-revalidate=604800",
+          },
+        },
+      );
+    },
+    { rateLimit: RATE_LIMITS.LOCATIONS },
+  )(request);
 }
-
-

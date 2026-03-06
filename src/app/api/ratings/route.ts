@@ -2,13 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  requireAuth,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { validateRequestBody } from "@/lib/api/schemas";
 import { badRequest, internalError } from "@/lib/api/errors";
 
@@ -25,40 +20,22 @@ const upsertRatingSchema = z.object({
  * POST /api/ratings
  * Upsert an activity rating (auth required).
  */
-export async function POST(request: NextRequest) {
-  const context = createRequestContext(request);
+export const POST = withApiHandler(
+  async (request: NextRequest, { context, user }) => {
+    const validation = await validateRequestBody(request, upsertRatingSchema);
+    if (!validation.success) {
+      return badRequest("Invalid request body", { errors: validation.error.issues }, {
+        requestId: context.requestId,
+      });
+    }
 
-  const rateLimitResponse = await checkRateLimit(request, {
-    maxRequests: 60,
-    windowMs: 60 * 1000,
-  });
-  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
+    const { tripId, dayId, activityId, locationId, rating, comment } = validation.data;
 
-  const contentTypeError = requireJsonContentType(request, context);
-  if (contentTypeError) return contentTypeError;
-
-  const authResult = await requireAuth(request, context);
-  if (authResult instanceof NextResponse) return addRequestContextHeaders(authResult, context);
-  const { user, context: finalContext } = authResult;
-
-  const validation = await validateRequestBody(request, upsertRatingSchema);
-  if (!validation.success) {
-    return addRequestContextHeaders(
-      badRequest("Invalid request body", { errors: validation.error.issues }, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
-
-  const { tripId, dayId, activityId, locationId, rating, comment } = validation.data;
-
-  try {
     const supabase = await createClient();
 
     const { error } = await supabase.from("activity_ratings").upsert(
       {
-        user_id: user.id,
+        user_id: user!.id,
         trip_id: tripId,
         day_id: dayId,
         activity_id: activityId,
@@ -72,85 +49,45 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       logger.error("Failed to upsert rating", new Error(error.message), {
-        requestId: finalContext.requestId,
-        userId: user.id,
+        requestId: context.requestId,
+        userId: user!.id,
       });
-      return addRequestContextHeaders(
-        internalError("Failed to save rating", undefined, { requestId: finalContext.requestId }),
-        finalContext,
-      );
+      return internalError("Failed to save rating", undefined, { requestId: context.requestId });
     }
 
-    return addRequestContextHeaders(NextResponse.json({ ok: true }), finalContext);
-  } catch (error) {
-    logger.error("Error saving rating", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      userId: user.id,
-    });
-    return addRequestContextHeaders(
-      internalError("Failed to save rating", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
-}
+    return NextResponse.json({ ok: true });
+  },
+  { rateLimit: RATE_LIMITS.RATINGS, requireAuth: true, requireJson: true },
+);
 
 /**
  * GET /api/ratings?trip_id=X
  * Fetch all ratings for a trip (auth required, scoped to user).
  */
-export async function GET(request: NextRequest) {
-  const context = createRequestContext(request);
+export const GET = withApiHandler(
+  async (request: NextRequest, { context, user }) => {
+    const tripId = request.nextUrl.searchParams.get("trip_id");
+    if (!tripId) {
+      return badRequest("trip_id query parameter is required", undefined, { requestId: context.requestId });
+    }
 
-  const rateLimitResponse = await checkRateLimit(request, {
-    maxRequests: 100,
-    windowMs: 60 * 1000,
-  });
-  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, context);
-
-  const authResult = await requireAuth(request, context);
-  if (authResult instanceof NextResponse) return addRequestContextHeaders(authResult, context);
-  const { user, context: finalContext } = authResult;
-
-  const tripId = request.nextUrl.searchParams.get("trip_id");
-  if (!tripId) {
-    return addRequestContextHeaders(
-      badRequest("trip_id query parameter is required", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
-
-  try {
     const supabase = await createClient();
 
     const { data, error } = await supabase
       .from("activity_ratings")
       .select("activity_id, location_id, rating, comment")
-      .eq("user_id", user.id)
+      .eq("user_id", user!.id)
       .eq("trip_id", tripId);
 
     if (error) {
       logger.error("Failed to fetch ratings", new Error(error.message), {
-        requestId: finalContext.requestId,
-        userId: user.id,
+        requestId: context.requestId,
+        userId: user!.id,
       });
-      return addRequestContextHeaders(
-        internalError("Failed to fetch ratings", undefined, { requestId: finalContext.requestId }),
-        finalContext,
-      );
+      return internalError("Failed to fetch ratings", undefined, { requestId: context.requestId });
     }
 
-    return addRequestContextHeaders(
-      NextResponse.json({ ratings: data ?? [] }),
-      finalContext,
-    );
-  } catch (error) {
-    logger.error("Error fetching ratings", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      userId: user.id,
-    });
-    return addRequestContextHeaders(
-      internalError("Failed to fetch ratings", undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
-}
+    return NextResponse.json({ ratings: data ?? [] });
+  },
+  { rateLimit: RATE_LIMITS.RATINGS, requireAuth: true },
+);

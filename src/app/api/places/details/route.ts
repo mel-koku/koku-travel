@@ -1,12 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { fetchPlaceDetailsByPlaceId } from "@/lib/googlePlaces";
-import { badRequest, internalError, serviceUnavailable } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  getOptionalAuth,
-} from "@/lib/api/middleware";
+import { badRequest, serviceUnavailable } from "@/lib/api/errors";
+import { withApiHandler } from "@/lib/api/withApiHandler";
+import { RATE_LIMITS } from "@/lib/api/rateLimits";
 import { logger } from "@/lib/logger";
 import { locationIdSchema } from "@/lib/api/schemas";
 import { googlePlacesLimiter } from "@/lib/cost/googlePlacesLimiter";
@@ -15,139 +11,82 @@ import { featureFlags } from "@/lib/env/featureFlags";
 /**
  * GET /api/places/details?placeId=...&name=...
  * Fetch place details by Google Place ID and return as Location object.
- *
- * Note: This endpoint is public but rate-limited. Authentication is optional
- * and may be used for user-specific features in the future.
- *
- * @param request - Next.js request object
- * @param request.url - Must contain query parameter 'placeId', optional 'name'
- * @returns JSON object with Location details
- * @throws Returns 400 if placeId is missing or invalid
- * @throws Returns 429 if rate limit exceeded
- * @throws Returns 503 if Google Places API is not configured
- * @throws Returns 500 for other errors
  */
-export async function GET(request: NextRequest) {
-  // Create request context for tracing
-  const context = createRequestContext(request);
+export const GET = withApiHandler(
+  async (request, { context }) => {
+    const { searchParams } = new URL(request.url);
+    const placeId = searchParams.get("placeId");
+    const name = searchParams.get("name");
 
-  // Rate limiting: 60 requests per minute per IP
-  const rateLimitResponse = await checkRateLimit(request, { maxRequests: 60, windowMs: 60 * 1000 });
-  if (rateLimitResponse) {
-    return addRequestContextHeaders(rateLimitResponse, context);
-  }
+    if (!placeId || placeId.trim().length === 0) {
+      return badRequest("Missing required query parameter 'placeId'.", undefined, {
+        requestId: context.requestId,
+      });
+    }
 
-  // Optional authentication (for future user-specific features)
-  const authResult = await getOptionalAuth(request, context);
-  const finalContext = authResult.context;
-
-  const { searchParams } = new URL(request.url);
-  const placeId = searchParams.get("placeId");
-  const name = searchParams.get("name");
-
-  // Validate placeId parameter
-  if (!placeId || placeId.trim().length === 0) {
-    return addRequestContextHeaders(
-      badRequest("Missing required query parameter 'placeId'.", undefined, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
-
-  // Validate placeId format using schema
-  const placeIdValidation = locationIdSchema.safeParse(placeId.trim());
-  if (!placeIdValidation.success) {
-    return addRequestContextHeaders(
-      badRequest("Invalid placeId format.", {
+    const placeIdValidation = locationIdSchema.safeParse(placeId.trim());
+    if (!placeIdValidation.success) {
+      return badRequest("Invalid placeId format.", {
         errors: placeIdValidation.error.issues,
       }, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
+        requestId: context.requestId,
+      });
+    }
 
-  const validatedPlaceId = placeIdValidation.data;
+    const validatedPlaceId = placeIdValidation.data;
 
-  // Validate name parameter if provided
-  if (name && name.length > 500) {
-    return addRequestContextHeaders(
-      badRequest("Name parameter too long (max 500 characters).", undefined, {
-        requestId: finalContext.requestId,
-      }),
-      finalContext,
-    );
-  }
+    if (name && name.length > 500) {
+      return badRequest("Name parameter too long (max 500 characters).", undefined, {
+        requestId: context.requestId,
+      });
+    }
 
-  try {
-    // Check cost limits before fetching from Google Places API
     const tripId = request.headers.get("x-trip-id") ?? "unknown";
 
     if (!featureFlags.enableGooglePlaces || !googlePlacesLimiter.canMakeCall(tripId)) {
-      return addRequestContextHeaders(
-        serviceUnavailable(
-          "Google Places API calls are disabled or rate limit exceeded for this trip.",
-          {
-            requestId: finalContext.requestId,
-            callCount: googlePlacesLimiter.getCallCount(tripId),
-          },
-        ),
-        finalContext,
+      return serviceUnavailable(
+        "Google Places API calls are disabled or rate limit exceeded for this trip.",
+        {
+          requestId: context.requestId,
+          callCount: googlePlacesLimiter.getCallCount(tripId),
+        },
       );
     }
 
-    // Fetch full place details including category, description, photos, etc.
-    const result = await fetchPlaceDetailsByPlaceId(validatedPlaceId, name ?? undefined);
+    try {
+      const result = await fetchPlaceDetailsByPlaceId(validatedPlaceId, name ?? undefined);
+      googlePlacesLimiter.recordCall(tripId);
 
-    // Record the API call
-    googlePlacesLimiter.recordCall(tripId);
+      if (!result) {
+        return badRequest(`Place not found for placeId: ${validatedPlaceId}`, undefined, {
+          requestId: context.requestId,
+        });
+      }
 
-    if (!result) {
-      return addRequestContextHeaders(
-        badRequest(`Place not found for placeId: ${validatedPlaceId}`, undefined, {
-          requestId: finalContext.requestId,
-        }),
-        finalContext,
-      );
-    }
-
-    // Return in format expected by useEntryPointLocation: { location, details }
-    return addRequestContextHeaders(
-      NextResponse.json({
+      return NextResponse.json({
         location: result.location,
         details: result.details,
-        meta: {
-          requestId: finalContext.requestId,
-        },
+        meta: { requestId: context.requestId },
       }, {
         headers: {
-          "Cache-Control": "public, max-age=86400, s-maxage=86400", // Cache for 24 hours
+          "Cache-Control": "public, max-age=86400, s-maxage=86400",
         },
-      }),
-      finalContext,
-    );
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to fetch place details.";
-    const errorMessage = error instanceof Error ? error.message : "";
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "";
+      logger.error("Error fetching place details", error instanceof Error ? error : new Error(String(error)), {
+        requestId: context.requestId,
+        placeId: validatedPlaceId,
+      });
 
-    logger.error("Error fetching place details", error instanceof Error ? error : new Error(String(error)), {
-      requestId: finalContext.requestId,
-      placeId: validatedPlaceId,
-    });
+      if (errorMessage.includes("Missing Google Places API key")) {
+        return serviceUnavailable("Google Places API is not configured.", {
+          requestId: context.requestId,
+        });
+      }
 
-    if (errorMessage.includes("Missing Google Places API key")) {
-      return addRequestContextHeaders(
-        serviceUnavailable("Google Places API is not configured.", {
-          requestId: finalContext.requestId,
-        }),
-        finalContext,
-      );
+      throw error;
     }
-
-    return addRequestContextHeaders(
-      internalError(message, undefined, { requestId: finalContext.requestId }),
-      finalContext,
-    );
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.PLACES, optionalAuth: true },
+);

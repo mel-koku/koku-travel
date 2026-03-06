@@ -6,6 +6,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { VIBES } from "@/data/vibes";
 import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
 import { cn } from "@/lib/cn";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 export type SelectionReviewProps = {
   onEdit?: () => void;
@@ -23,10 +24,10 @@ export function SelectionReview({ onEdit }: SelectionReviewProps) {
       year: "numeric",
     });
 
-    const start = formatter.format(new Date(data.dates.start));
+    const start = formatter.format(parseLocalDate(data.dates.start)!);
     if (!data.dates.end) return start;
 
-    const end = formatter.format(new Date(data.dates.end));
+    const end = formatter.format(parseLocalDate(data.dates.end)!);
     return `${start} - ${end}`;
   }, [data.dates.start, data.dates.end]);
 

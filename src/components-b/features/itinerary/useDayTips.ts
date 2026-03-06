@@ -12,6 +12,7 @@ import { getActiveHolidays } from "@/data/crowdPatterns";
 import { getFestivalsForDay } from "@/data/festivalCalendar";
 import { getEkibenForCity } from "@/data/ekibenGuide";
 import { getOmiyageForCity } from "@/data/omiyageGuide";
+import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 
 export type DisplayTip = {
   id: string;
@@ -86,17 +87,7 @@ export function useDayTips(
 
   const dayDate = useMemo(() => {
     if (tripStartDate) {
-      try {
-        const [year, month, dayNum] = tripStartDate.split("-").map(Number);
-        if (year && month && dayNum) {
-          const startDate = new Date(year, month - 1, dayNum);
-          const date = new Date(startDate);
-          date.setDate(startDate.getDate() + dayIndex);
-          return date;
-        }
-      } catch {
-        // Invalid date
-      }
+      return parseLocalDateWithOffset(tripStartDate, dayIndex) ?? new Date();
     }
     return new Date();
   }, [tripStartDate, dayIndex]);

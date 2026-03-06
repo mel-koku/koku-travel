@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePersonAvailability, useExperienceInterpreters } from "@/hooks/useAvailability";
 import { usePersonBookedSlots, useCreateBooking, useBookingPrice } from "@/hooks/useBooking";
 import { useAuthState } from "@/components/ui/IdentityBadge";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import type { Person, BookingSession } from "@/types/person";
 
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
@@ -34,7 +35,7 @@ function formatPrice(amount: number, currency = "JPY"): string {
 
 export function AvailabilityCalendarB({ person, experienceSlug }: Props) {
   const today = todayStr();
-  const todayDate = new Date(today + "T00:00:00");
+  const todayDate = parseLocalDate(today)!;
   const { isSignedIn } = useAuthState();
 
   const [viewYear, setViewYear] = useState(todayDate.getFullYear());
@@ -130,7 +131,7 @@ export function AvailabilityCalendarB({ person, experienceSlug }: Props) {
   const price = priceData?.price;
 
   const selectedDateLabel = selectedDate
-    ? new Date(selectedDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    ? parseLocalDate(selectedDate)!.toLocaleDateString("en-US", { month: "short", day: "numeric" })
     : "";
 
   function isSessionBooked(dateStr: string, session: BookingSession): boolean {

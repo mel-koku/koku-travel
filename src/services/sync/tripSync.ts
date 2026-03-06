@@ -7,11 +7,13 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger";
-import { getErrorMessage } from "@/lib/utils/errorUtils";
+import { getErrorMessage, isAuthSessionMissing } from "@/lib/utils/errorUtils";
 import type { SyncResult } from "./types";
 import type { StoredTrip } from "@/services/trip/types";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
+
+const TRIP_SELECT_COLUMNS = "id, user_id, name, itinerary, builder_data, created_at, updated_at, deleted_at, version" as const;
 
 /**
  * Database row type for trips table
@@ -52,7 +54,7 @@ export async function fetchTrips(
   try {
     const { data, error } = await supabase
       .from("trips")
-      .select("id, user_id, name, itinerary, builder_data, created_at, updated_at, deleted_at, version")
+      .select(TRIP_SELECT_COLUMNS)
       .eq("user_id", userId)
       .is("deleted_at", null)
       .order("updated_at", { ascending: false });
@@ -82,7 +84,7 @@ export async function fetchTripById(
   try {
     const { data, error } = await supabase
       .from("trips")
-      .select("id, user_id, name, itinerary, builder_data, created_at, updated_at, deleted_at, version")
+      .select(TRIP_SELECT_COLUMNS)
       .eq("id", tripId)
       .eq("user_id", userId)
       .is("deleted_at", null)
@@ -128,7 +130,7 @@ export async function saveTrip(
         },
         { onConflict: "id" },
       )
-      .select("id, user_id, name, itinerary, builder_data, created_at, updated_at, deleted_at, version")
+      .select(TRIP_SELECT_COLUMNS)
       .single();
 
     if (error) {
@@ -185,25 +187,23 @@ export async function syncTripSave(
     } = await supabase.auth.getUser();
 
     if (authError) {
-      const errorMessage = getErrorMessage(authError);
-
-      // Suppress "Auth session missing" errors (expected when not logged in)
-      if (errorMessage.includes("Auth session missing")) {
-        return { success: true, data: trip }; // Return local trip
+      if (isAuthSessionMissing(authError)) {
+        return { success: true, data: trip };
       }
-
       logger.error("Failed to read auth session when syncing trip", authError);
-      return { success: false, error: errorMessage };
+      return { success: false, error: getErrorMessage(authError) };
     }
 
     if (!user) {
-      // No authenticated user - keep local state but skip remote sync
       return { success: true, data: trip };
     }
 
     return await saveTrip(supabase, user.id, trip);
   } catch (error) {
-    const message = error instanceof Error ? error.message : JSON.stringify(error ?? {});
+    if (isAuthSessionMissing(error)) {
+      return { success: true, data: trip };
+    }
+    const message = getErrorMessage(error);
     logger.error("Failed to sync trip save", new Error(message));
     return { success: false, error: message };
   }
@@ -224,25 +224,23 @@ export async function syncTripDelete(
     } = await supabase.auth.getUser();
 
     if (authError) {
-      const errorMessage = getErrorMessage(authError);
-
-      // Suppress "Auth session missing" errors (expected when not logged in)
-      if (errorMessage.includes("Auth session missing")) {
-        return { success: true }; // Local state is still valid
+      if (isAuthSessionMissing(authError)) {
+        return { success: true };
       }
-
       logger.error("Failed to read auth session when deleting trip", authError);
-      return { success: false, error: errorMessage };
+      return { success: false, error: getErrorMessage(authError) };
     }
 
     if (!user) {
-      // No authenticated user - keep local state but skip remote sync
       return { success: true };
     }
 
     return await deleteTrip(supabase, user.id, tripId);
   } catch (error) {
-    const message = error instanceof Error ? error.message : JSON.stringify(error ?? {});
+    if (isAuthSessionMissing(error)) {
+      return { success: true };
+    }
+    const message = getErrorMessage(error);
     logger.error("Failed to sync trip delete", new Error(message));
     return { success: false, error: message };
   }

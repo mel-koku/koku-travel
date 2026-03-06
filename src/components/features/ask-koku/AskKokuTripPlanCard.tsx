@@ -6,6 +6,7 @@ import { Calendar, MapPin, Sparkles, Zap } from "lucide-react";
 import { setLocal } from "@/lib/storageHelpers";
 import { TRIP_BUILDER_STORAGE_KEY } from "@/lib/constants/storage";
 import { vibesToInterests } from "@/data/vibes";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 import type { TripBuilderData, VibeId, TripStyle } from "@/types/trip";
 
 export type TripPlanData = {
@@ -31,22 +32,25 @@ type AskKokuTripPlanCardProps = {
 
 function formatDateRange(startDate?: string, endDate?: string): string | null {
   if (!startDate) return null;
-  const start = new Date(startDate + "T00:00:00");
+  const start = parseLocalDate(startDate);
+  if (!start) return null;
   const fmt = (d: Date) =>
     d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   if (!endDate) return fmt(start);
-  const end = new Date(endDate + "T00:00:00");
+  const end = parseLocalDate(endDate);
+  if (!end) return null;
   return `${fmt(start)} – ${fmt(end)}`;
 }
 
 function formatDuration(duration?: number, startDate?: string, endDate?: string): string {
   if (duration) return `${duration} day${duration !== 1 ? "s" : ""}`;
   if (startDate && endDate) {
-    const diff = Math.round(
-      (new Date(endDate).getTime() - new Date(startDate).getTime()) /
-        (1000 * 60 * 60 * 24),
-    );
-    if (diff > 0) return `${diff} day${diff !== 1 ? "s" : ""}`;
+    const s = parseLocalDate(startDate);
+    const e = parseLocalDate(endDate);
+    if (s && e) {
+      const diff = Math.round((e.getTime() - s.getTime()) / (1000 * 60 * 60 * 24));
+      if (diff > 0) return `${diff} day${diff !== 1 ? "s" : ""}`;
+    }
   }
   return "";
 }

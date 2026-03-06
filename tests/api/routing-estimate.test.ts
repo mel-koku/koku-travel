@@ -8,18 +8,22 @@ vi.mock("@/lib/api/rateLimit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
 }));
 
-vi.mock("@/lib/api/middleware", () => ({
-  createRequestContext: vi.fn().mockReturnValue({
-    requestId: "test-request-id",
-    startTime: Date.now(),
-  }),
-  addRequestContextHeaders: vi.fn((response) => response),
-  getOptionalAuth: vi.fn().mockResolvedValue({
-    user: null,
-    context: { requestId: "test-request-id" },
-  }),
-  requireJsonContentType: vi.fn().mockReturnValue(null),
-}));
+vi.mock("@/lib/api/middleware", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/api/middleware")>();
+  return {
+    ...actual,
+    createRequestContext: vi.fn().mockReturnValue({
+      requestId: "test-request-id",
+      startTime: Date.now(),
+    }),
+    addRequestContextHeaders: vi.fn((response) => response),
+    requireJsonContentType: vi.fn().mockReturnValue(null),
+    requireAuth: vi.fn().mockResolvedValue({
+      user: { id: "test-user-id", email: "test@example.com" },
+      context: { requestId: "test-request-id", ip: "127.0.0.1" },
+    }),
+  };
+});
 
 vi.mock("@/lib/api/bodySizeLimit", () => ({
   readBodyWithSizeLimit: vi.fn().mockImplementation(async (request) => {

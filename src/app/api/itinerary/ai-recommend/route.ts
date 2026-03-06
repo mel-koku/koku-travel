@@ -1,15 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { scoreLocation } from "@/lib/scoring/locationScoring";
 import { logger } from "@/lib/logger";
 import { internalError, badRequest } from "@/lib/api/errors";
-import { checkRateLimit } from "@/lib/api/rateLimit";
 import { RATE_LIMITS } from "@/lib/api/rateLimits";
-import {
-  createRequestContext,
-  addRequestContextHeaders,
-  requireJsonContentType,
-} from "@/lib/api/middleware";
+import { withApiHandler } from "@/lib/api/withApiHandler";
 import { validateRequestBody, aiRecommendRequestSchema } from "@/lib/api/schemas";
 import { LOCATION_ITINERARY_COLUMNS, type LocationDbRow } from "@/lib/supabase/projections";
 import { transformDbRowToLocation } from "@/lib/locations/locationService";
@@ -36,35 +31,25 @@ interface AiRecommendation {
  * AI-powered place recommendations based on natural language queries.
  * Uses Gemini to extract intent, then queries + scores locations.
  */
-export async function POST(request: NextRequest) {
-  const ctx = createRequestContext(request);
+export const POST = withApiHandler(
+  async (request, { context }) => {
+    // Validate body
+    const validation = await validateRequestBody(request, aiRecommendRequestSchema);
+    if (!validation.success) {
+      return badRequest("Invalid request body", validation.error, {
+        requestId: context.requestId,
+      });
+    }
 
-  // Rate limit
-  const rateLimitResponse = await checkRateLimit(request, RATE_LIMITS.AI_RECOMMEND);
-  if (rateLimitResponse) return addRequestContextHeaders(rateLimitResponse, ctx, request);
+    const {
+      query,
+      cityId,
+      dayActivities,
+      dayDate,
+      tripBuilderData,
+      usedLocationIds,
+    } = validation.data;
 
-  // Content-type check
-  const ctCheck = requireJsonContentType(request, ctx);
-  if (ctCheck) return ctCheck;
-
-  // Validate body
-  const validation = await validateRequestBody(request, aiRecommendRequestSchema);
-  if (!validation.success) {
-    return badRequest("Invalid request body", validation.error, {
-      requestId: ctx.requestId,
-    });
-  }
-
-  const {
-    query,
-    cityId,
-    dayActivities,
-    dayDate,
-    tripBuilderData,
-    usedLocationIds,
-  } = validation.data;
-
-  try {
     const supabase = await createClient();
 
     // Extract intent via Gemini (5s timeout, returns null on failure)
@@ -86,12 +71,11 @@ export async function POST(request: NextRequest) {
     if (intent && intent.commandType && intent.commandType !== "search") {
       const command = resolveCommand(intent, dayActivities);
       if (command) {
-        const response = NextResponse.json({
+        return NextResponse.json({
           recommendations: [],
           fallback: false,
           command,
         });
-        return addRequestContextHeaders(response, ctx, request);
       }
       // Resolution failed — fall through to search
     }
@@ -122,7 +106,7 @@ export async function POST(request: NextRequest) {
       if (error) {
         logger.error("Supabase query failed in ai-recommend", undefined, {
           error: error.message,
-          requestId: ctx.requestId,
+          requestId: context.requestId,
         });
         return null;
       }
@@ -163,16 +147,15 @@ export async function POST(request: NextRequest) {
 
     if (rows === null) {
       return internalError("Failed to search locations", undefined, {
-        requestId: ctx.requestId,
+        requestId: context.requestId,
       });
     }
 
     if (rows.length === 0) {
-      const response = NextResponse.json({
+      return NextResponse.json({
         recommendations: [],
         fallback: isFallback,
       });
-      return addRequestContextHeaders(response, ctx, request);
     }
 
     // Transform and filter out already-used locations
@@ -182,11 +165,10 @@ export async function POST(request: NextRequest) {
       .filter((loc) => !usedSet.has(loc.id));
 
     if (locations.length === 0) {
-      const response = NextResponse.json({
+      return NextResponse.json({
         recommendations: [],
         fallback: isFallback,
       });
-      return addRequestContextHeaders(response, ctx, request);
     }
 
     // Score locations
@@ -244,22 +226,13 @@ export async function POST(request: NextRequest) {
       };
     });
 
-    const response = NextResponse.json({
+    return NextResponse.json({
       recommendations,
       fallback: isFallback,
     });
-    return addRequestContextHeaders(response, ctx, request);
-  } catch (error) {
-    logger.error(
-      "AI recommend failed",
-      error instanceof Error ? error : new Error(String(error)),
-      { requestId: ctx.requestId },
-    );
-    return internalError("Failed to generate recommendations", undefined, {
-      requestId: ctx.requestId,
-    });
-  }
-}
+  },
+  { rateLimit: RATE_LIMITS.AI_RECOMMEND, requireJson: true },
+);
 
 /**
  * Extracts meaningful keywords from a raw natural language query.
