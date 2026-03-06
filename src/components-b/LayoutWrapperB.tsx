@@ -18,15 +18,13 @@ const AskKokuButtonB = dynamic(
 export function LayoutWrapperB({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isTripBuilder = pathname.startsWith("/b/trip-builder");
-  const isDiscover = pathname.startsWith("/b/discover");
-
   return (
     <SharedProviders>
       <LenisProvider>
         <div className="flex min-h-[100dvh] flex-col">
           <HeaderB />
           <main className="flex-1">{children}</main>
-          {!isTripBuilder && !isDiscover && <FooterB />}
+          {!isTripBuilder && <FooterB />}
         </div>
         <AskKokuButtonB />
       </LenisProvider>
