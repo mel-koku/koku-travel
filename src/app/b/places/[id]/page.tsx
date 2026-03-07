@@ -12,7 +12,7 @@ const DETAIL_COLUMNS = `
   operating_hours, recommended_visit, coordinates, timezone, place_id,
   preferred_transit_modes, primary_photo_url, editorial_summary, website_uri,
   phone_number, google_maps_uri, tags, nearest_station, cash_only,
-  reservation_info, is_hidden_gem
+  reservation_info, is_hidden_gem, jta_approved
 `.replace(/\s+/g, "");
 
 type RouteProps = {
@@ -61,6 +61,7 @@ async function fetchLocation(id: string): Promise<Location | null> {
     cashOnly: row.cash_only ?? undefined,
     reservationInfo: row.reservation_info ?? undefined,
     isHiddenGem: row.is_hidden_gem ?? undefined,
+    jtaApproved: row.jta_approved ?? undefined,
   } as Location;
 }
 
