@@ -80,12 +80,12 @@ export function FeaturedLocationsB({
                 y: -4,
                 transition: { type: "spring", stiffness: 300, damping: 25 },
               }}
-              className="transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]"
+              className="h-full transition-shadow duration-300 hover:shadow-[var(--shadow-elevated)]"
               style={{ borderRadius: "1rem" }}
             >
               <Link
                 href={`/b/places?location=${loc.id}`}
-                className="group block overflow-hidden rounded-2xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
+                className="group flex h-full flex-col overflow-hidden rounded-2xl bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30"
               >
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image

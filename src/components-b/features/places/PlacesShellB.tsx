@@ -324,8 +324,6 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             mapAvailable={mapAvailable}
-            featuredOnly={featuredOnly}
-            onFeaturedToggle={() => setFeaturedOnly((prev: boolean) => !prev)}
           />
 
           {/* Main content — grid or map based on viewMode */}
@@ -418,6 +416,8 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
             onWheelchairAccessibleChange={setWheelchairAccessible}
             vegetarianFriendly={vegetarianFriendly}
             onVegetarianFriendlyChange={setVegetarianFriendly}
+            featuredOnly={featuredOnly}
+            onFeaturedOnlyChange={setFeaturedOnly}
             resultsCount={activeFilters.length === 0 ? total : filteredLocations.length}
             onClearAll={clearAllFilters}
             sortOptions={SORT_OPTIONS}
