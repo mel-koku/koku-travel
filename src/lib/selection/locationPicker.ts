@@ -14,8 +14,6 @@ import { checkOpeningHoursFit } from "@/lib/scoring/timeOptimization";
 import { isLocationAvailableOnDate } from "@/lib/scoring/seasonalAvailability";
 import { logger } from "@/lib/logger";
 
-type LocationCategory = Location["category"];
-
 /**
  * Extended location type with scoring metadata.
  */
@@ -93,6 +91,7 @@ export function pickLocationForTimeSlot(
   hasPhotographyVibe?: boolean,
   isWeekend?: boolean,
   accommodationStyle?: "hotel" | "ryokan" | "hostel" | "mix",
+  preferredTags?: string[],
 ): ScoredLocation | undefined {
   // Filter by both ID and name to prevent duplicates (including same-name different branches)
   const unused = list.filter((loc) => {
@@ -181,6 +180,7 @@ export function pickLocationForTimeSlot(
     hasPhotographyVibe,
     isWeekend,
     accommodationStyle,
+    preferredTags,
   };
 
   const scored = candidates
@@ -241,47 +241,3 @@ export function pickLocationForTimeSlot(
   return undefined;
 }
 
-/**
- * Category mapping for interest-based location filtering.
- */
-const CATEGORY_MAP: Record<InterestId, LocationCategory[]> = {
-  culture: ["shrine", "temple", "landmark", "historic", "craft"],
-  food: ["restaurant", "market"],
-  nature: ["park", "garden"],
-  nightlife: ["bar", "entertainment"],
-  shopping: ["shopping", "market"],
-  photography: ["landmark", "viewpoint", "park"],
-  wellness: ["park", "garden"],
-  history: ["shrine", "temple", "historic", "museum", "craft"],
-  craft: ["craft", "museum", "shopping"],
-};
-
-/**
- * Simple location picker for basic use cases.
- * Picks a random location from preferred categories.
- *
- * @param list - List of available locations
- * @param interest - Interest to match
- * @param usedLocations - Set of already used location IDs
- * @returns Selected location or undefined
- */
-export function pickFromList(
-  list: Location[],
-  interest: InterestId,
-  usedLocations: Set<string>,
-): Location | undefined {
-  const preferredCategories = CATEGORY_MAP[interest] ?? [];
-  const unused = list.filter((loc) => !usedLocations.has(loc.id));
-
-  // CRITICAL: Return undefined when all locations are exhausted
-  if (unused.length === 0) {
-    return undefined;
-  }
-
-  const preferred = unused.filter((loc) => preferredCategories.includes(loc.category));
-  if (preferred.length > 0) {
-    return preferred[Math.floor(Math.random() * preferred.length)];
-  }
-
-  return unused[Math.floor(Math.random() * unused.length)];
-}

@@ -28,6 +28,8 @@ type SortableActivityBProps = {
   isReadOnly?: boolean;
   activeDragId?: string | null;
   onViewDetails?: (location: Location) => void;
+  tripStartDate?: string;
+  dayIndex?: number;
 };
 
 export const SortableActivityB = memo(function SortableActivityB({
@@ -48,6 +50,8 @@ export const SortableActivityB = memo(function SortableActivityB({
   isReadOnly,
   activeDragId,
   onViewDetails,
+  tripStartDate,
+  dayIndex,
 }: SortableActivityBProps) {
   const {
     attributes,
@@ -166,6 +170,8 @@ export const SortableActivityB = memo(function SortableActivityB({
             isReadOnly={isReadOnly}
             activeDragId={activeDragId}
             onViewDetails={onViewDetails}
+            tripStartDate={tripStartDate}
+            dayIndex={dayIndex}
           />
         </div>
       )}

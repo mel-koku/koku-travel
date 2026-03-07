@@ -56,6 +56,22 @@ export const VIBE_FILTER_MAP: Record<
   },
 };
 
+/**
+ * Convert selected vibes to category weight multipliers for scoring.
+ * Used as fallback when LLM intent extraction fails.
+ */
+export function vibesToCategoryWeights(vibes: VibeId[]): Record<string, number> {
+  const weights: Record<string, number> = {};
+  for (const vibeId of vibes) {
+    const mapping = VIBE_FILTER_MAP[vibeId];
+    if (!mapping.dbCategories.length) continue; // skip cross-category vibes
+    for (const cat of mapping.dbCategories) {
+      weights[cat] = Math.min(2.0, Math.max(0.5, (weights[cat] ?? 1.0) + 0.3));
+    }
+  }
+  return Object.keys(weights).length > 0 ? weights : {};
+}
+
 export function locationMatchesVibes(
   location: { category: string; isHiddenGem?: boolean; tags?: string[] },
   selectedVibes: VibeId[]

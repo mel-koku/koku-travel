@@ -34,6 +34,7 @@ export const intentExtractionSchema = z.object({
     .enum(["very_relaxed", "relaxed", "balanced", "active", "intense"])
     .optional(),
   categoryWeights: z.record(z.string(), z.number()),
+  preferredTags: z.array(z.string()).optional(),
   timePreference: z
     .enum(["morning_person", "night_owl", "no_preference"])
     .optional(),
@@ -78,13 +79,13 @@ export const dayRefinementSchema = z.object({
  * This ensures Gemini returns prose keyed to real day IDs.
  */
 export function buildGuideProseSchema(
-  _dayIds: string[],
+  dayIds: string[],
 ) {
   return z.object({
     tripOverview: z.string(),
     days: z.array(
       z.object({
-        dayId: z.string(),
+        dayId: dayIds.length > 0 ? z.enum(dayIds as [string, ...string[]]) : z.string(),
         intro: z.string(),
         transitions: z.array(z.string()).max(5),
         culturalMoment: z.string().optional(),
