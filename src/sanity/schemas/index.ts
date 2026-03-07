@@ -10,14 +10,11 @@ import { landingPage } from "./landingPage";
 import { tripBuilderConfig } from "./tripBuilderConfig";
 import { pagesContent } from "./pagesContent";
 import { person } from "./person";
-import { blogPost } from "./blogPost";
-
 export const schemaTypes = [
   guide,
   experience,
   author,
   person,
-  blogPost,
   locationRef,
   tipCallout,
   experienceHighlight,

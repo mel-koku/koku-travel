@@ -130,52 +130,6 @@ export const deskStructure = (S: StructureBuilder) =>
             ])
         ),
 
-      // ── Blog ──────────────────────────────────
-      S.listItem()
-        .title("Blog")
-        .child(
-          S.list()
-            .title("Blog Posts")
-            .items([
-              S.listItem()
-                .title("Drafts")
-                .child(
-                  S.documentList()
-                    .title("Drafts")
-                    .filter('_type == "blogPost" && editorialStatus == "draft"')
-                ),
-              S.listItem()
-                .title("In Review")
-                .child(
-                  S.documentList()
-                    .title("In Review")
-                    .filter('_type == "blogPost" && editorialStatus == "in_review"')
-                ),
-              S.listItem()
-                .title("Published")
-                .child(
-                  S.documentList()
-                    .title("Published")
-                    .filter('_type == "blogPost" && editorialStatus == "published"')
-                ),
-              S.listItem()
-                .title("Archived")
-                .child(
-                  S.documentList()
-                    .title("Archived")
-                    .filter('_type == "blogPost" && editorialStatus == "archived"')
-                ),
-              S.divider(),
-              S.listItem()
-                .title("All Posts")
-                .child(
-                  S.documentList()
-                    .title("All Posts")
-                    .filter('_type == "blogPost"')
-                ),
-            ])
-        ),
-
       // ── Authors ────────────────────────────────
       S.listItem()
         .title("Authors")

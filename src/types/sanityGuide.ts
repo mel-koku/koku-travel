@@ -35,6 +35,7 @@ export type SanityGuide = {
   thumbnailImage?: SanityImageAsset & { url?: string };
   author: SanityAuthor;
   guideType: GuideType;
+  category?: string;
   tags?: string[];
   city?: string;
   region?: string;
