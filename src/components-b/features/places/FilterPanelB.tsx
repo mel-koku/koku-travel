@@ -43,6 +43,8 @@ type FilterPanelBProps = {
   sortOptions: readonly SortOption[];
   selectedSort: SortOptionId;
   onSortChange: (sort: SortOptionId) => void;
+  featuredOnly: boolean;
+  onFeaturedOnlyChange: (value: boolean) => void;
   activeFilters?: ActiveFilter[];
   onRemoveFilter?: (filter: ActiveFilter) => void;
   categoryTabs?: { id: string | null; label: string; count: number }[];
@@ -89,6 +91,8 @@ export function FilterPanelB({
   sortOptions,
   selectedSort,
   onSortChange,
+  featuredOnly,
+  onFeaturedOnlyChange,
   activeFilters = [],
   onRemoveFilter,
   categoryTabs,
@@ -120,7 +124,7 @@ export function FilterPanelB({
   const whatActiveCount = selectedVibes.length;
   const durationActiveCount = selectedDuration ? 1 : 0;
   const priceActiveCount = selectedPriceLevel !== null ? 1 : 0;
-  const togglesActiveCount = (openNow ? 1 : 0) + (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
+  const togglesActiveCount = (featuredOnly ? 1 : 0) + (openNow ? 1 : 0) + (wheelchairAccessible ? 1 : 0) + (vegetarianFriendly ? 1 : 0);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -161,6 +165,7 @@ export function FilterPanelB({
     selectedVibes.length > 0 ||
     selectedPriceLevel !== null ||
     selectedDuration ||
+    featuredOnly ||
     openNow ||
     wheelchairAccessible ||
     vegetarianFriendly ||
@@ -345,8 +350,9 @@ export function FilterPanelB({
               </FilterSectionB>
 
               {/* Toggles */}
-              <FilterSectionB label="Accessibility" activeCount={togglesActiveCount} isExpanded={expandedSections.toggles} onToggle={() => toggleSection("toggles")}>
+              <FilterSectionB label="More options" activeCount={togglesActiveCount} isExpanded={expandedSections.toggles} onToggle={() => toggleSection("toggles")}>
                 <div className="space-y-4">
+                  <ToggleB label="Featured only" description="Hidden gems and JTA-approved places" checked={featuredOnly} onChange={onFeaturedOnlyChange} />
                   <ToggleB label="Open now" description="Only show places currently open" checked={openNow} onChange={onOpenNowChange} />
                   <ToggleB label="Wheelchair accessible" description="Places with a wheelchair-accessible entrance" checked={wheelchairAccessible} onChange={onWheelchairAccessibleChange} />
                   {isFoodVibeSelected && (
