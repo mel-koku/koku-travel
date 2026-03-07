@@ -74,6 +74,7 @@ export const FormField = ({
       id: existingId ?? controlId,
       "aria-describedby": [existingDescribedBy, ariaDescribedBy].filter(Boolean).join(" ") || undefined,
       "aria-invalid": error ? true : (props?.["aria-invalid"] as boolean | undefined),
+      ...(required ? { "aria-required": true } : {}),
     } as Record<string, unknown>);
   }
 
