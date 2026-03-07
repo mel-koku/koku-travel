@@ -12,6 +12,7 @@ const GUIDE_TYPE_LABELS: Record<GuideType, string> = {
   deep_dive: "Deep Dive",
   seasonal: "Seasonal",
   activity: "Activity",
+  blog: "Blog",
 };
 
 type AuthorProfileProps = {

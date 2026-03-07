@@ -38,6 +38,7 @@ export const guideBySlugQuery = groq`
       socialLinks
     },
     guideType,
+    category,
     tags,
     city,
     region,
@@ -411,84 +412,6 @@ export const allPublishedExperiencesQuery = groq`
     tags,
     publishedAt
   }
-`;
-
-/** Full blog post with expanded author and resolved images */
-export const blogPostBySlugQuery = groq`
-  *[_type == "blogPost" && slug.current == $slug && editorialStatus == "published"][0] {
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    body[] {
-      ...,
-      _type == "image" => {
-        ...,
-        "url": asset->url,
-        "dimensions": asset->metadata.dimensions
-      }
-    },
-    "featuredImage": featuredImage {
-      ...,
-      "url": asset->url,
-      "dimensions": asset->metadata.dimensions
-    },
-    author-> {
-      name,
-      "slug": slug.current,
-      "photo": photo {
-        ...,
-        "url": asset->url
-      },
-      bio,
-      city,
-      socialLinks
-    },
-    category,
-    tags,
-    city,
-    region,
-    readingTimeMinutes,
-    editorialStatus,
-    featured,
-    publishedAt,
-    _createdAt,
-    _updatedAt
-  }
-`;
-
-/** All published blog posts for listing page */
-export const allPublishedBlogPostsQuery = groq`
-  *[_type == "blogPost" && editorialStatus == "published"] | order(publishedAt desc) {
-    _id,
-    title,
-    "slug": slug.current,
-    excerpt,
-    "featuredImage": featuredImage {
-      ...,
-      "url": asset->url
-    },
-    author-> {
-      name,
-      "slug": slug.current,
-      "photo": photo {
-        ...,
-        "url": asset->url
-      }
-    },
-    category,
-    tags,
-    city,
-    region,
-    readingTimeMinutes,
-    featured,
-    publishedAt
-  }
-`;
-
-/** All blog post slugs for static generation */
-export const allBlogPostSlugsQuery = groq`
-  *[_type == "blogPost" && editorialStatus == "published"].slug.current
 `;
 
 /** Pages content singleton */

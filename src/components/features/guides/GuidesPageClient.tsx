@@ -21,6 +21,7 @@ const GUIDE_TYPE_OPTIONS: { value: GuideType; label: string }[] = [
   { value: "deep_dive", label: "Deep Dive" },
   { value: "seasonal", label: "Seasonal" },
   { value: "activity", label: "Activities" },
+  { value: "blog", label: "Blog" },
 ];
 
 const SEASON_OPTIONS: { value: string; label: string }[] = [
