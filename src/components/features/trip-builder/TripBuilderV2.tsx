@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { IntroStep } from "./IntroStep";
@@ -90,6 +91,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
+              disabledHint="Set your travel dates to continue"
               currentStep={currentStep}
               totalSteps={stepCount}
               completedSteps={completedSteps}
@@ -124,6 +126,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
+              disabledHint="Select at least one vibe to continue"
               fullBleed
               currentStep={currentStep}
               totalSteps={stepCount}
@@ -142,6 +145,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               nextLabel={getNextLabel()}
               backLabel={sanityConfig?.navBackLabel}
               nextDisabled={isNextDisabled}
+              disabledHint="Pick at least one region to continue"
               fullBleed
               currentStep={currentStep}
               totalSteps={stepCount}
@@ -191,6 +195,8 @@ type StepShellProps = {
   nextLabel: string;
   backLabel?: string;
   nextDisabled?: boolean;
+  /** Hint shown when user taps a disabled Continue button */
+  disabledHint?: string;
   fullBleed?: boolean;
   currentStep: number;
   totalSteps: number;
@@ -261,6 +267,7 @@ function StepShell({
   nextLabel,
   backLabel,
   nextDisabled = false,
+  disabledHint,
   fullBleed = false,
   currentStep,
   totalSteps,
@@ -268,6 +275,18 @@ function StepShell({
   onStepClick,
 }: StepShellProps) {
   const resolvedBackLabel = backLabel ?? "Back";
+  const [showHint, setShowHint] = useState(false);
+
+  const handleDisabledClick = useCallback(() => {
+    if (nextDisabled && disabledHint) {
+      setShowHint(true);
+      setTimeout(() => setShowHint(false), 3000);
+    }
+  }, [nextDisabled, disabledHint]);
+
+  // Reset hint when button becomes enabled
+  const prevDisabled = nextDisabled;
+  if (!prevDisabled && showHint) setShowHint(false);
 
   return (
     <div className="flex min-h-[calc(100dvh-5rem)] flex-col pb-20">
@@ -293,18 +312,27 @@ function StepShell({
             {resolvedBackLabel}
           </button>
 
-          <StepDots
-            currentStep={currentStep}
-            totalSteps={totalSteps}
-            completedSteps={completedSteps}
-            onStepClick={onStepClick}
-          />
+          <div className="flex flex-col items-center gap-1">
+            <StepDots
+              currentStep={currentStep}
+              totalSteps={totalSteps}
+              completedSteps={completedSteps}
+              onStepClick={onStepClick}
+            />
+            {showHint && disabledHint && (
+              <p className="text-xs text-warning animate-in fade-in duration-200" role="alert">
+                {disabledHint}
+              </p>
+            )}
+          </div>
 
-          <ArrowLineCTA
-            label={nextLabel}
-            onClick={onNext}
-            disabled={nextDisabled}
-          />
+          <div onClick={handleDisabledClick}>
+            <ArrowLineCTA
+              label={nextLabel}
+              onClick={onNext}
+              disabled={nextDisabled}
+            />
+          </div>
         </div>
       </div>
 
@@ -318,6 +346,11 @@ function StepShell({
             onStepClick={onStepClick}
           />
         </div>
+        {showHint && disabledHint && (
+          <p className="mb-1.5 text-center text-xs text-warning animate-in fade-in duration-200" role="alert">
+            {disabledHint}
+          </p>
+        )}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -330,12 +363,11 @@ function StepShell({
 
           <button
             type="button"
-            onClick={onNext}
-            disabled={nextDisabled}
+            onClick={nextDisabled ? handleDisabledClick : onNext}
             className={cn(
               "h-12 flex-1 rounded-xl text-sm font-medium uppercase tracking-wider transition",
               nextDisabled
-                ? "cursor-not-allowed bg-surface text-stone"
+                ? "bg-surface text-stone"
                 : "cursor-pointer bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.98]"
             )}
           >

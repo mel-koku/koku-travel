@@ -33,13 +33,7 @@ export function AccountSection({
     <div className="rounded-xl border border-border bg-surface p-6 space-y-6">
       {supabaseUnavailable && (
         <div className="rounded-xl border border-brand-secondary/20 bg-brand-secondary/5 px-4 py-3 text-sm text-foreground">
-          Cloud sync is disabled because Supabase credentials are not configured. Set
-          <code className="mx-1 rounded bg-brand-secondary/10 px-1 py-0.5">NEXT_PUBLIC_SUPABASE_URL</code>
-          and
-          <code className="mx-1 rounded bg-brand-secondary/10 px-1 py-0.5">
-            NEXT_PUBLIC_SUPABASE_ANON_KEY
-          </code>
-          to enable account features.
+          Cloud sync is unavailable. Your data is saved locally on this device.
         </div>
       )}
       <div className="flex items-center justify-between flex-wrap gap-2">
@@ -52,6 +46,7 @@ export function AccountSection({
               } catch {
                 // Sign-out failure is non-critical — session will expire naturally
               }
+              onClearLocalData();
             }}
             className="h-10 rounded-xl border border-border bg-background px-4 text-sm text-foreground-secondary hover:bg-surface"
           >

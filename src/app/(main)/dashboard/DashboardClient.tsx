@@ -260,6 +260,24 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
         imageUrl="https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?w=1920&q=80"
       />
 
+      {/* Guest sign-in prompt */}
+      {!isAuthenticated && (
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mt-6 flex items-center gap-4 rounded-xl border border-brand-primary/20 bg-brand-primary/5 px-5 py-4">
+            <svg className="h-5 w-5 shrink-0 text-brand-primary" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" /></svg>
+            <p className="flex-1 text-sm text-foreground-secondary">
+              Sign in to save your trips across devices.
+            </p>
+            <Link
+              href="/signin"
+              className="shrink-0 rounded-xl bg-brand-primary px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-brand-primary/90"
+            >
+              Sign in
+            </Link>
+          </div>
+        </div>
+      )}
+
       {/* Stats Section — standalone atmospheric band */}
       <StatsSection
         savedCount={saved.length}
@@ -493,20 +511,33 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
 
       {pendingUndo ? (
         <div className="pointer-events-none fixed bottom-6 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 px-4 pb-[env(safe-area-inset-bottom)]">
-          <div className="pointer-events-auto flex flex-col gap-3 rounded-xl border border-border bg-background p-4 shadow-lg shadow-[0_0_20px_rgba(196,80,79,0.15)] ring-1 ring-brand-primary/20">
+          <div className="pointer-events-auto flex flex-col gap-3 rounded-xl border border-border bg-background p-4 shadow-lg shadow-[0_0_20px_rgba(196,80,79,0.15)] ring-1 ring-brand-primary/20" role="alert">
             <div>
-              <p className="text-sm font-semibold text-foreground">{content?.dashboardDeleteToastTitle ?? "Itinerary deleted"}</p>
+              <p className="text-sm font-semibold text-foreground">{content?.dashboardDeleteToastTitle ?? "Trip removed"}</p>
               <p className="text-xs text-foreground-secondary">
-                {pendingUndo.trip.name} was removed. Undo within 8 seconds to restore.
+                {pendingUndo.trip.name} was removed.
               </p>
             </div>
-            <button
-              type="button"
-              onClick={handleUndo}
-              className="self-start rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
-            >
-              {content?.dashboardUndoButton ?? "Undo"}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleUndo}
+                className="rounded-xl bg-brand-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white shadow-sm transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+              >
+                {content?.dashboardUndoButton ?? "Undo"}
+              </button>
+              <span className="text-xs text-stone">Tap to restore</span>
+            </div>
+            {/* Countdown bar */}
+            <div className="h-0.5 w-full overflow-hidden rounded-full bg-border">
+              <div
+                className="h-full bg-brand-primary rounded-full"
+                style={{
+                  animation: `shrink ${TOAST_DURATION_MS}ms linear forwards`,
+                }}
+              />
+            </div>
+            <style>{`@keyframes shrink { from { width: 100%; } to { width: 0%; } }`}</style>
           </div>
         </div>
       ) : null}

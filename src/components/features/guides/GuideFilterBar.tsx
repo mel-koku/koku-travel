@@ -48,6 +48,7 @@ export function GuideFilterBar({
           <div className="flex justify-center gap-1 sm:gap-2 min-w-max">
             <button
               onClick={() => onTypeChange(null)}
+              aria-pressed={selectedType === null}
               className={cn(
                 "snap-start px-4 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
                 selectedType === null
@@ -65,6 +66,7 @@ export function GuideFilterBar({
                 onClick={() =>
                   onTypeChange(selectedType === type.value ? null : type.value)
                 }
+                aria-pressed={selectedType === type.value}
                 className={cn(
                   "snap-start px-4 py-2.5 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
                   selectedType === type.value
@@ -87,6 +89,7 @@ export function GuideFilterBar({
                     onClick={() =>
                       onSeasonChange?.(selectedSeason === season.value ? null : season.value)
                     }
+                    aria-pressed={selectedSeason === season.value}
                     className={cn(
                       "snap-start px-3.5 py-2 min-h-[44px] text-sm font-medium tracking-wide whitespace-nowrap border-b-2 transition-all",
                       selectedSeason === season.value
