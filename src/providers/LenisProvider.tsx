@@ -53,7 +53,7 @@ export function LenisProvider({ children }: { children: ReactNode }) {
     const lenis = new Lenis({
       duration: prefersReducedMotion ? 0 : 0.6,
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 1.5,
+      touchMultiplier: 1.2,
     });
 
     setLenisInstance(lenis);

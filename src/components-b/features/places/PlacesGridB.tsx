@@ -46,7 +46,7 @@ export function PlacesGridB({ locations, isLoading, onClearFilters, onSelectLoca
   if (isLoading) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
           {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="rounded-2xl bg-[var(--surface)] animate-pulse">
               <div className="aspect-[4/3]" />
@@ -85,7 +85,7 @@ export function PlacesGridB({ locations, isLoading, onClearFilters, onSelectLoca
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
         {visibleLocations.map((location, i) => (
           <motion.div
             key={location.id}
