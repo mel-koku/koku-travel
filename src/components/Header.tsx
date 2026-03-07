@@ -22,6 +22,7 @@ import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context.
 const navItems = [
   { label: "Places", href: "/places" },
   { label: "Guides", href: "/guides" },
+  { label: "Blog", href: "/blog" },
   { label: "Local Experts", href: "/local-experts" },
 ];
 
