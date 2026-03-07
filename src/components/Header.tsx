@@ -314,7 +314,7 @@ export default function Header() {
       />
 
       {/* Spacer for fixed header on non-landing pages */}
-      {!isLandingPage && <div className="h-20" aria-hidden="true" />}
+      {!isLandingPage && <div className="h-[var(--header-h)]" aria-hidden="true" />}
     </>
   );
 }

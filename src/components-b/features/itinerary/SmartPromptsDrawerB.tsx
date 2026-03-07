@@ -70,7 +70,7 @@ export function SmartPromptsDrawerB({
         }}
       >
         <div
-          className="rounded-t-2xl border-t border-x pb-[env(safe-area-inset-bottom)]"
+          className="rounded-t-2xl border-t border-x pb-[env(safe-area-inset-bottom)] px-[env(safe-area-inset-left,0px)]"
           style={{
             borderColor: "var(--border)",
             backgroundColor: "var(--card)",

@@ -116,7 +116,7 @@ export function PlacesMapLayoutB({
     <div
       data-lenis-prevent
       className="fixed inset-x-0 bottom-0 z-20"
-      style={{ top: "calc(var(--header-h) + 52px)" }}
+      style={{ top: "calc(var(--header-h) + var(--category-bar-h, 56px))" }}
     >
       <div className="relative h-full">
         {/* Full-width map */}
@@ -156,7 +156,7 @@ export function PlacesMapLayoutB({
 
         {/* Desktop: Floating pill column — left side, vertical scroll */}
         <div
-          className="absolute top-3 left-3 bottom-3 z-10 hidden w-56 flex-col pointer-events-none md:flex"
+          className="absolute top-3 left-3 bottom-3 z-10 hidden w-44 lg:w-56 flex-col pointer-events-none md:flex"
         >
           {/* Count + zoom hint */}
           {boundsFilteredLocations.length > 0 && (

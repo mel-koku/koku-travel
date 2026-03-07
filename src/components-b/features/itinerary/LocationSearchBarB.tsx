@@ -293,7 +293,7 @@ export function LocationSearchBarB({
               <button
                 type="button"
                 onClick={collapse}
-                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg transition-colors"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors"
                 style={{ color: "var(--muted-foreground)" }}
                 aria-label="Close search"
               >
@@ -309,7 +309,7 @@ export function LocationSearchBarB({
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -4 }}
                   transition={{ duration: 0.12, ease: bEase }}
-                  className="absolute inset-x-0 top-full z-30 mt-1 max-h-80 overflow-y-auto rounded-xl border"
+                  className="absolute inset-x-0 top-full z-30 mt-1 max-h-[50vh] sm:max-h-80 overflow-y-auto rounded-xl border"
                   style={{
                     borderColor: "var(--border)",
                     background: "var(--card)",

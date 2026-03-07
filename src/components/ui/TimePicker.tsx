@@ -161,7 +161,7 @@ export function TimePicker({
             {/* Hours column */}
             <div
               ref={hoursRef}
-              className="flex h-[280px] w-16 flex-col overflow-y-auto overscroll-contain border-r border-border/20 pb-1"
+              className="flex h-[280px] w-14 sm:w-16 flex-col overflow-y-auto overscroll-contain border-r border-border/20 pb-1"
             >
               <span className="sticky top-0 z-[1] rounded-tl-xl bg-surface px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-stone">
                 Hr
@@ -191,7 +191,7 @@ export function TimePicker({
             {/* Minutes column */}
             <div
               ref={minutesRef}
-              className="flex h-[280px] w-16 flex-col overflow-y-auto overscroll-contain pb-1"
+              className="flex h-[280px] w-14 sm:w-16 flex-col overflow-y-auto overscroll-contain pb-1"
             >
               <span className="sticky top-0 z-[1] rounded-tr-xl bg-surface px-2 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-stone">
                 Min

@@ -50,7 +50,7 @@ export function FooterB() {
           </div>
 
           {/* Nav columns */}
-          <div className="flex gap-16">
+          <div className="flex flex-wrap gap-8 sm:gap-12 lg:gap-16">
             {COLUMNS.map((col) => (
               <div key={col.title}>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--primary)]">

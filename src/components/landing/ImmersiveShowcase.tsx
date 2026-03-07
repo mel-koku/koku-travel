@@ -69,7 +69,7 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
 
   return (
     <section aria-label="Immersive showcase" className="bg-background py-12 sm:py-20 lg:py-28">
-      <div className="mx-auto max-w-7xl px-6 space-y-16 lg:space-y-24">
+      <div className="mx-auto max-w-7xl px-6 space-y-16 sm:space-y-20 lg:space-y-24">
         {acts.map((act, i) => {
           const imageLeft = i % 2 === 0;
           const isLast = i === acts.length - 1;
