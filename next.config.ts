@@ -163,6 +163,26 @@ const nextConfig: NextConfig = {
         destination: "/saved",
         permanent: true,
       },
+      {
+        source: "/blog",
+        destination: "/guides?type=blog",
+        permanent: true,
+      },
+      {
+        source: "/blog/:slug",
+        destination: "/guides/:slug",
+        permanent: true,
+      },
+      {
+        source: "/b/blog",
+        destination: "/b/guides?type=blog",
+        permanent: true,
+      },
+      {
+        source: "/b/blog/:slug",
+        destination: "/b/guides/:slug",
+        permanent: true,
+      },
     ];
   },
   async headers() {

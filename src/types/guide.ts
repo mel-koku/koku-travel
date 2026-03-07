@@ -5,7 +5,7 @@
  * - deep_dive: In-depth coverage of a topic
  * - seasonal: Time-specific content (cherry blossoms, autumn leaves)
  */
-export type GuideType = "itinerary" | "listicle" | "deep_dive" | "seasonal" | "activity";
+export type GuideType = "itinerary" | "listicle" | "deep_dive" | "seasonal" | "activity" | "blog";
 
 /**
  * Guide publication status.

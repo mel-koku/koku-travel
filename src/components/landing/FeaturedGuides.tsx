@@ -20,6 +20,7 @@ const GUIDE_TYPE_LABELS: Record<GuideSummary["guideType"], string> = {
   deep_dive: "Deep Dive",
   seasonal: "Seasonal",
   activity: "Activity",
+  blog: "Blog",
 };
 
 export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
