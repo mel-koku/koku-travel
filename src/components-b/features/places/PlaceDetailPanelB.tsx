@@ -175,7 +175,7 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
       {/* Panel */}
       <motion.div
         data-lenis-prevent
-        className="fixed inset-0 z-50 sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[560px] sm:max-w-[90vw] bg-white border-l border-[var(--border)] flex flex-col overflow-y-auto overscroll-contain"
+        className="fixed inset-0 z-50 bg-white flex flex-col overflow-y-auto overscroll-contain sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[560px] sm:max-w-[90vw] sm:border-l sm:border-[var(--border)]"
         style={{ boxShadow: "var(--shadow-depth)" }}
         initial={{ x: "100%" }}
         animate={{ x: 0 }}

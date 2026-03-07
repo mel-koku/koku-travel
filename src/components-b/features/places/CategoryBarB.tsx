@@ -41,7 +41,25 @@ export function CategoryBarB({
 }: CategoryBarBProps) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   const [isStuck, setIsStuck] = useState(false);
+
+  // Publish actual height as CSS variable for PlacesMapLayoutB
+  useEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const ro = new ResizeObserver(([entry]) => {
+      document.documentElement.style.setProperty(
+        "--category-bar-h",
+        `${entry!.contentRect.height}px`,
+      );
+    });
+    ro.observe(bar);
+    return () => {
+      ro.disconnect();
+      document.documentElement.style.removeProperty("--category-bar-h");
+    };
+  }, []);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -63,6 +81,7 @@ export function CategoryBarB({
       <div ref={sentinelRef} className="h-0 w-full" aria-hidden="true" />
 
       <div
+        ref={barRef}
         className={cn(
           "sticky transition-[background-color,box-shadow] duration-300",
           isStuck || viewMode === "map" ? "z-50" : "z-40",
@@ -76,7 +95,7 @@ export function CategoryBarB({
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Search row */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 py-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 py-2">
             {/* Compact location count */}
             {tabs && tabs.length > 0 && (() => {
               const activeTabData = tabs.find((t) => t.id === activeTab) ?? tabs[0];

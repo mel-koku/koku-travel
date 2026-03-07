@@ -30,7 +30,7 @@ export const PlacesMapCardB = memo(
         <Link
           href={`/b/places/${location.id}`}
           onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
-          className={`flex items-center gap-2 rounded-xl bg-white pl-2 pr-3 py-1.5 transition ${
+          className={`flex items-center gap-2 rounded-xl bg-white pl-2 pr-3 py-2.5 min-h-[44px] transition ${
             isHighlighted
               ? "ring-1 ring-[var(--primary)]/40 bg-white"
               : "hover:bg-[var(--surface)] hover:shadow-[var(--shadow-card)]"

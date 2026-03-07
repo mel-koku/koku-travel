@@ -58,7 +58,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
           </ScrollReveal>
 
           {/* Grid */}
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4">
+          <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
             {locations.slice(0, 8).map((location, i) => (
               <ScrollReveal key={location.id} delay={0.05 * (i % 4)}>
                 <LocationCard
