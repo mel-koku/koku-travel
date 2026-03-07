@@ -139,6 +139,8 @@ export interface ScoreBreakdown {
   crowdFit: number;
   photoFit: number;
   tagMatch: number;
+  goshuinFit: number;
+  accommodationBonus: number;
 }
 
 /**
@@ -1151,6 +1153,8 @@ export function scoreLocation(
     crowdFit: crowdResult.score,
     photoFit: photoResult.score,
     tagMatch: tagMatchResult.score,
+    goshuinFit: goshuinResult.score,
+    accommodationBonus,
   };
 
   const totalScore =

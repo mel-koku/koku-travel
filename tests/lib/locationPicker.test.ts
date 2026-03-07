@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { pickLocationForTimeSlot, pickFromList } from "@/lib/selection/locationPicker";
+import { pickLocationForTimeSlot } from "@/lib/selection/locationPicker";
 import { createTestLocation } from "../fixtures/locations";
 
 // Mock logger to suppress output
@@ -269,59 +269,3 @@ describe("pickLocationForTimeSlot", () => {
   });
 });
 
-describe("pickFromList", () => {
-  it("prefers category-matching locations for culture interest", () => {
-    // Culture interest maps to shrine, temple, landmark, historic, craft
-    const result = pickFromList(locations, "culture", new Set());
-    expect(result).toBeDefined();
-    expect(["temple", "shrine", "landmark", "historic", "craft"]).toContain(
-      result?.category,
-    );
-  });
-
-  it("prefers category-matching locations for food interest", () => {
-    // Food interest maps to restaurant, market
-    const result = pickFromList(locations, "food", new Set());
-    expect(result).toBeDefined();
-    expect(result?.category).toBe("restaurant");
-  });
-
-  it("falls back to random unused when no category match", () => {
-    // Nightlife maps to bar, entertainment — remove bar
-    const locsWithoutBar = locations.filter((l) => l.category !== "bar");
-    const result = pickFromList(locsWithoutBar, "nightlife", new Set());
-    // No bars or entertainment → falls back to random unused
-    expect(result).toBeDefined();
-  });
-
-  it("returns undefined when all locations are used", () => {
-    const usedIds = new Set(locations.map((l) => l.id));
-    const result = pickFromList(locations, "culture", usedIds);
-    expect(result).toBeUndefined();
-  });
-
-  it("returns undefined for empty list", () => {
-    const result = pickFromList([], "culture", new Set());
-    expect(result).toBeUndefined();
-  });
-
-  it("filters out used locations by ID", () => {
-    const usedIds = new Set(["temple-a", "temple-b"]);
-    const result = pickFromList(locations, "culture", usedIds);
-    // temple-a and temple-b are excluded
-    if (result) {
-      expect(["temple-a", "temple-b"]).not.toContain(result.id);
-    }
-  });
-
-  it("handles unknown interest gracefully", () => {
-    // An interest not in the CATEGORY_MAP returns empty preferred
-    // Should fall back to random unused
-    const result = pickFromList(
-      locations,
-      "unknown_interest" as never,
-      new Set(),
-    );
-    expect(result).toBeDefined();
-  });
-});

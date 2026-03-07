@@ -27,6 +27,7 @@ import { useActivityRatingsContext } from "@/components/features/itinerary/Activ
 import { getSeasonalFoodsForActivity, formatSeasonalFoodTip } from "@/data/seasonalFoods";
 import { getPhotoTiming, formatPhotoTiming } from "@/data/photoSpotTiming";
 import { hasGoshuin, getGoshuinInfo } from "@/data/goshuinData";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 // B motion tokens
 const bEase: [number, number, number, number] = [0.25, 0.1, 0.25, 1];
@@ -96,6 +97,8 @@ type PlaceActivityRowBProps = {
   onViewDetails?: (location: Location) => void;
   tripMonth?: number;
   dayCityId?: string;
+  tripStartDate?: string;
+  dayIndex?: number;
 };
 
 export const PlaceActivityRowB = memo(
@@ -126,6 +129,8 @@ export const PlaceActivityRowB = memo(
         onViewDetails,
         tripMonth,
         dayCityId,
+        tripStartDate,
+        dayIndex,
       },
       ref,
     ) => {
@@ -187,7 +192,15 @@ export const PlaceActivityRowB = memo(
 
       useEffect(() => {
         if (placeLocation && activity.kind === "place") {
-          generateActivityTipsAsync(activity, placeLocation).then(setTips).catch(() => {
+          const activityDate = tripStartDate ? (() => {
+            const d = parseLocalDate(tripStartDate);
+            if (!d) return undefined;
+            if (dayIndex !== undefined) d.setDate(d.getDate() + dayIndex);
+            return d;
+          })() : undefined;
+          generateActivityTipsAsync(activity, placeLocation, {
+            activityDate,
+          }).then(setTips).catch(() => {
             // Silently fail — tips are optional
           });
         }

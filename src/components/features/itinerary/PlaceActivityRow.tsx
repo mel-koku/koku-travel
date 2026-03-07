@@ -32,6 +32,7 @@ import { useActivityRatingsContext } from "./ActivityRatingsContext";
 import { getSeasonalFoodsForActivity, formatSeasonalFoodTip } from "@/data/seasonalFoods";
 import { getPhotoTiming, formatPhotoTiming } from "@/data/photoSpotTiming";
 import { hasGoshuin, getGoshuinInfo } from "@/data/goshuinData";
+import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 const FALLBACK_IMAGES: Record<string, string> = {
   culture:
@@ -210,6 +211,10 @@ type PlaceActivityRowProps = {
   tripMonth?: number;
   /** City ID for this day */
   dayCityId?: string;
+  /** Trip start date (ISO) for computing activity date */
+  tripStartDate?: string;
+  /** Day index for computing activity date */
+  dayIndex?: number;
 };
 
 export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRowProps>(
@@ -239,6 +244,8 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       onViewDetails,
       tripMonth,
       dayCityId,
+      tripStartDate,
+      dayIndex,
     },
     ref,
   ) => {
@@ -398,8 +405,15 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     useEffect(() => {
       if (placeLocation && activity.kind === "place") {
         // Use async tip generation to include etiquette tips from database
+        const activityDate = tripStartDate ? (() => {
+          const d = parseLocalDate(tripStartDate);
+          if (!d) return undefined;
+          if (dayIndex !== undefined) d.setDate(d.getDate() + dayIndex);
+          return d;
+        })() : undefined;
         generateActivityTipsAsync(activity, placeLocation, {
           allActivities,
+          activityDate,
         }).then(setTips).catch(() => {
           // Silently fail - tips are optional
         });

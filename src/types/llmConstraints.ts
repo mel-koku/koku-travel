@@ -42,6 +42,7 @@ export type IntentExtractionResult = {
   dayConstraints: DayConstraint[];
   pacingHint?: PacingHint;
   categoryWeights: Record<string, number>;
+  preferredTags?: string[];
   timePreference?: TimePreference;
   additionalInsights: string[];
 };

@@ -34,6 +34,8 @@ type ActivityRowProps = {
   activeDragId?: string | null;
   /** Open the LocationExpanded slide-in panel for this location */
   onViewDetails?: (location: Location) => void;
+  tripStartDate?: string;
+  dayIndex?: number;
 };
 
 export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
@@ -57,6 +59,8 @@ export const ActivityRow = memo(forwardRef<HTMLDivElement, ActivityRowProps>(
         isReadOnly={props.isReadOnly}
         activeDragId={props.activeDragId}
         onViewDetails={props.onViewDetails}
+        tripStartDate={props.tripStartDate}
+        dayIndex={props.dayIndex}
       />
     );
   },
