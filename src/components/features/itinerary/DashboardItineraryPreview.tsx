@@ -131,14 +131,8 @@ export const DashboardItineraryPreview = ({
     if (!onDeleteTrip) {
       return;
     }
-    const confirmed = window.confirm(
-      `Delete "${trip.name}"? This can't be undone.`,
-    );
-    if (!confirmed) {
-      return;
-    }
     onDeleteTrip(trip.id);
-  }, [onDeleteTrip, trip.id, trip.name]);
+  }, [onDeleteTrip, trip.id]);
 
   const showTripSelector = availableTrips.length > 0 && !!onSelectTrip;
 

@@ -19,6 +19,9 @@ export function AskKokuPanel({ onClose, context, tripData }: AskKokuPanelProps) 
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 20, scale: 0.95 }}
       transition={{ duration: 0.3, ease: easeReveal }}
+      id="ask-koku-panel"
+      role="dialog"
+      aria-label="Ask Koku chat"
       className="fixed inset-0 z-50 flex flex-col bg-background lg:inset-auto lg:bottom-24 lg:right-6 lg:h-[600px] lg:w-[400px] lg:rounded-xl lg:border lg:border-border lg:shadow-2xl"
       data-lenis-prevent
     >
