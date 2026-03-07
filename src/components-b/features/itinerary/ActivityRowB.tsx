@@ -31,6 +31,8 @@ type ActivityRowBProps = {
   isReadOnly?: boolean;
   activeDragId?: string | null;
   onViewDetails?: (location: Location) => void;
+  tripStartDate?: string;
+  dayIndex?: number;
 };
 
 export const ActivityRowB = memo(
@@ -62,6 +64,8 @@ export const ActivityRowB = memo(
         isReadOnly={props.isReadOnly}
         activeDragId={props.activeDragId}
         onViewDetails={props.onViewDetails}
+        tripStartDate={props.tripStartDate}
+        dayIndex={props.dayIndex}
       />
     );
   }),

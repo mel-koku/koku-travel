@@ -276,7 +276,7 @@ export const ItineraryTimelineB = ({
         return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
       };
 
-      setModel((current) => {
+      const computeNextItinerary = (current: Itinerary): Itinerary => {
         const currentDay = current.days[dayIndex];
         if (!currentDay) return current;
 
@@ -334,9 +334,20 @@ export const ItineraryTimelineB = ({
         const nextDays = [...current.days];
         nextDays[dayIndex] = { ...currentDay, activities: nextActivities };
         return { ...current, days: nextDays };
+      };
+
+      let nextItinerary: Itinerary | null = null;
+      setModel((current) => {
+        nextItinerary = computeNextItinerary(current);
+        return nextItinerary;
       });
+
+      // Trigger replanning (recalculate travel segments and re-detect conflicts)
+      if (nextItinerary) {
+        onAfterDragReorder?.(nextItinerary);
+      }
     },
-    [dayIndex, setModel],
+    [dayIndex, setModel, onAfterDragReorder],
   );
 
   // ── Travel recalculation ──
@@ -1058,6 +1069,8 @@ export const ItineraryTimelineB = ({
                         isReadOnly={isReadOnly}
                         activeDragId={activeId}
                         onViewDetails={onViewDetails}
+                        tripStartDate={tripStartDate}
+                        dayIndex={dayIndex}
                       />
                       {/* Hotel bookend after arrival anchor: airport → hotel → first activity */}
                       {activity.kind === "place" &&

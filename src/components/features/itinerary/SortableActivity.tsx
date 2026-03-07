@@ -27,6 +27,8 @@ type SortableActivityProps = {
   activeDragId?: string | null;
   /** Open the LocationExpanded slide-in panel for this location */
   onViewDetails?: (location: Location) => void;
+  tripStartDate?: string;
+  dayIndex?: number;
 };
 
 export const SortableActivity = memo(function SortableActivity({
@@ -47,6 +49,8 @@ export const SortableActivity = memo(function SortableActivity({
   isReadOnly,
   activeDragId,
   onViewDetails,
+  tripStartDate,
+  dayIndex,
 }: SortableActivityProps) {
   const {
     attributes,
@@ -120,6 +124,8 @@ export const SortableActivity = memo(function SortableActivity({
           isReadOnly={isReadOnly}
           activeDragId={activeDragId}
           onViewDetails={onViewDetails}
+          tripStartDate={tripStartDate}
+          dayIndex={dayIndex}
         />
       )}
     </li>

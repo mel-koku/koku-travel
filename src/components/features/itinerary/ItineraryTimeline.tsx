@@ -51,6 +51,8 @@ import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
 import { REGIONS } from "@/data/regions";
 import { useToast } from "@/context/ToastContext";
+import { useDayAvailability } from "@/hooks/useDayAvailability";
+import { AvailabilityAlert } from "./AvailabilityAlert";
 import { easeCinematicCSS } from "@/lib/motion";
 import { logger } from "@/lib/logger";
 import type { RoutingRequest, Coordinate } from "@/lib/routing/types";
@@ -149,6 +151,7 @@ export const ItineraryTimeline = ({
   const [lateArrivalDismissed, setLateArrivalDismissed] = useState(false);
   const isMountedRef = useRef(true);
   const { showToast } = useToast();
+  const availabilityIssues = useDayAvailability(day, dayIndex, tripStartDate);
 
   useEffect(() => {
     return () => {
@@ -575,7 +578,8 @@ export const ItineraryTimeline = ({
         return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
       };
 
-      setModel((current) => {
+      // Compute the next itinerary outside setModel so we can pass it to onAfterDragReorder
+      const computeNextItinerary = (current: Itinerary): Itinerary => {
         const currentDay = current.days[dayIndex];
         if (!currentDay) return current;
 
@@ -639,7 +643,18 @@ export const ItineraryTimeline = ({
         const nextDays = [...current.days];
         nextDays[dayIndex] = { ...currentDay, activities: nextActivities };
         return { ...current, days: nextDays };
+      };
+
+      let nextItinerary: Itinerary | null = null;
+      setModel((current) => {
+        nextItinerary = computeNextItinerary(current);
+        return nextItinerary;
       });
+
+      // Trigger replanning (recalculate travel segments and re-detect conflicts)
+      if (nextItinerary) {
+        onAfterDragReorder?.(nextItinerary);
+      }
 
       // Show toast after state update (count computed inline)
       const activities = day.activities ?? [];
@@ -649,7 +664,7 @@ export const ItineraryTimeline = ({
         : `${delayMinutes}m`;
       showToast(`Shifted ${placeActs.length} activities by ${label}`, { variant: "info" });
     },
-    [dayIndex, setModel, day.activities, showToast],
+    [dayIndex, setModel, day.activities, showToast, onAfterDragReorder],
   );
 
   // ── Accommodation bookend travel estimates ──
@@ -947,6 +962,8 @@ export const ItineraryTimeline = ({
                       isReadOnly={isReadOnly}
                       activeDragId={activeId}
                       onViewDetails={onViewDetails}
+                      tripStartDate={tripStartDate}
+                      dayIndex={dayIndex}
                     />
                     {/* Guide segments after this activity */}
                     {!activeId && guideSegmentsAfter.map((seg) => (
@@ -989,6 +1006,19 @@ export const ItineraryTimeline = ({
               <GuideSegmentCard segment={guide.summary} className="mt-3" />
             )}
           </SortableContext>
+
+          {/* Availability Alert */}
+          {!activeId && availabilityIssues && availabilityIssues.summary.total > 0 && (
+            <AvailabilityAlert
+              issues={availabilityIssues}
+              onFindAlternative={
+                !isReadOnly && onReplace
+                  ? (activityId) => onReplace(activityId)
+                  : undefined
+              }
+              className="mt-3"
+            />
+          )}
 
           {/* Accommodation: End bookend — skip if day ends with a departure anchor */}
           {endLocation && !activeId && (() => {

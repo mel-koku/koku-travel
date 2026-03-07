@@ -9,7 +9,6 @@ export interface DiversityContext {
   recentNeighborhoods?: string[];
   recentCuisineTypes?: string[];
   recentAtmospheres?: string[];
-  dayPaceTags?: string[]; // pace tags for activities already scheduled today
   visitedLocationIds: Set<string>;
   currentDay: number;
   energyLevel: number; // 0-100, decreases as day progresses
@@ -41,9 +40,18 @@ export function applyDiversityFilter(
     return streakCount < MAX_CONSECUTIVE_SAME;
   });
 
-  // If filtering removed all candidates, return original (better than nothing)
+  // If filtering removed all candidates, return the single best candidate
+  // (lowest streak penalty) rather than all of them
   if (filtered.length === 0) {
-    return candidates;
+    let best = candidates[0]!;
+    for (const c of candidates) {
+      const cStreak = countTrailingStreak(context.recentCategories, c.location.category ?? "");
+      const bestStreak = countTrailingStreak(context.recentCategories, best.location.category ?? "");
+      if (cStreak < bestStreak || (cStreak === bestStreak && c.score > best.score)) {
+        best = c;
+      }
+    }
+    return [best];
   }
 
   // Apply streak penalty: reduce score for categories that appeared recently
@@ -216,33 +224,6 @@ export function scoreCuisineDiversity(
   }
 
   return { scoreAdjustment: 0, reasoning: "Different cuisine type" };
-}
-
-/**
- * Check if adding a location would exceed pace limits for the day.
- * Max 2 half-day, max 1 full-day per day.
- */
-export function wouldExceedPaceLimit(
-  location: Location,
-  dayPaceTags: string[],
-): boolean {
-  const locationPace = location.tags?.find((t) =>
-    ["quick-stop", "half-day", "full-day"].includes(t)
-  );
-
-  if (!locationPace) return false;
-
-  if (locationPace === "full-day") {
-    const fullDayCount = dayPaceTags.filter((t) => t === "full-day").length;
-    return fullDayCount >= 1;
-  }
-
-  if (locationPace === "half-day") {
-    const halfDayCount = dayPaceTags.filter((t) => t === "half-day").length;
-    return halfDayCount >= 2;
-  }
-
-  return false;
 }
 
 /**

@@ -11,6 +11,7 @@ import { getErrorMessage } from "@/lib/utils/errorUtils";
 import { fetchAllLocations } from "@/lib/locations/locationService";
 import { normalizeKey } from "@/lib/utils/stringUtils";
 import type { IntentExtractionResult } from "@/types/llmConstraints";
+import { vibesToCategoryWeights } from "@/data/vibeFilterMapping";
 import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 
 // Import from extracted modules
@@ -227,7 +228,9 @@ export async function generateItinerary(
   const excludedCategories = intent?.excludedCategories?.length
     ? new Set(intent.excludedCategories.map(c => c.toLowerCase()))
     : undefined;
-  const categoryWeights = intent?.categoryWeights ?? undefined;
+  const categoryWeights = intent?.categoryWeights
+    ?? (data.vibes?.length ? vibesToCategoryWeights(data.vibes) : undefined);
+  const preferredTags = intent?.preferredTags ?? undefined;
 
   // Resolve pinned locations by fuzzy-matching names against allLocations
   const pinnedLocationMap = new Map<string, { location: Location; preferredDay?: number; preferredTimeSlot?: "morning" | "afternoon" | "evening" }>();
@@ -675,6 +678,15 @@ export async function generateItinerary(
         if (!interest) {
           break;
         }
+        // Day constraint mealType overrides to food interest for the first activity
+        if (dayConstraint?.mealType && activityIndex === 0) {
+          const mealTimeSlots: Record<string, string> = {
+            breakfast: "morning", lunch: "afternoon", dinner: "evening",
+          };
+          if (!dayConstraint.timeSlot || mealTimeSlots[dayConstraint.mealType] === timeSlot) {
+            interest = "food" as InterestId;
+          }
+        }
         // Day constraint category emphasis overrides the rotation interest
         if (dayConstraint?.categoryEmphasis && activityIndex === 0) {
           // Map category emphasis to an interest (e.g., "restaurant" → "food")
@@ -727,7 +739,7 @@ export async function generateItinerary(
         const dietaryRestrictions = data.accessibility?.dietary;
 
         let locationResult = isZoneClustered && zoneFilteredLocations
-          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle)
+          ? pickLocationForTimeSlot(zoneFilteredLocations, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags)
           : null;
 
         // Tier 2: Expand to neighboring zones
@@ -735,13 +747,13 @@ export async function generateItinerary(
           const expandedIds = getExpandedZoneLocationIds(cityZoneMap, selectedZoneId);
           const expandedLocs = availableLocations.filter((loc) => expandedIds.has(loc.id));
           if (expandedLocs.length >= 3) {
-            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle);
+            locationResult = pickLocationForTimeSlot(expandedLocs, ...pickArgs, true, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags);
           }
         }
 
         // Tier 3: Fall back to full city pool (original behavior)
         if (!locationResult) {
-          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle);
+          locationResult = pickLocationForTimeSlot(availableLocations, ...pickArgs, false, communityRatings, categoryWeights, dietaryRestrictions, collectGoshuin, hasPhotographyVibe, isWeekend, accommodationStyle, preferredTags);
         }
 
         const location = locationResult && "_scoringReasoning" in locationResult
