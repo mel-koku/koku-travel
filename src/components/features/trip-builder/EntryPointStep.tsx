@@ -28,28 +28,32 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   const { data, setData } = useTripBuilder();
   const [airports, setAirports] = useState<Airport[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [exitSearchQuery, setExitSearchQuery] = useState("");
   const [showFlightPaste, setShowFlightPaste] = useState(false);
   const [flightPasteText, setFlightPasteText] = useState("");
   const [flightParseMessage, setFlightParseMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
-  useEffect(() => {
-    async function fetchAirports() {
-      try {
-        setIsLoading(true);
-        const response = await fetch("/api/airports");
-        if (!response.ok) throw new Error("Failed to fetch airports");
-        const result = await response.json();
-        setAirports(result.data || []);
-      } catch (error) {
-        logger.error("Error fetching airports", error instanceof Error ? error : new Error(String(error)));
-      } finally {
-        setIsLoading(false);
-      }
+  const fetchAirports = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setFetchError(false);
+      const response = await fetch("/api/airports");
+      if (!response.ok) throw new Error("Failed to fetch airports");
+      const result = await response.json();
+      setAirports(result.data || []);
+    } catch (error) {
+      logger.error("Error fetching airports", error instanceof Error ? error : new Error(String(error)));
+      setFetchError(true);
+    } finally {
+      setIsLoading(false);
     }
-    fetchAirports();
   }, []);
+
+  useEffect(() => {
+    fetchAirports();
+  }, [fetchAirports]);
 
   const handleSelectAirport = useCallback(
     (airport: Airport) => {
@@ -712,6 +716,19 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
             <div className="mt-8 flex items-center gap-2 text-stone">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
               <span className="text-sm">Loading airports...</span>
+            </div>
+          )}
+
+          {fetchError && !isLoading && airports.length === 0 && (
+            <div className="mt-8 flex items-center gap-2">
+              <span className="text-sm text-error">Couldn&apos;t load airports.</span>
+              <button
+                type="button"
+                onClick={fetchAirports}
+                className="text-sm font-medium text-brand-primary hover:underline"
+              >
+                Retry
+              </button>
             </div>
           )}
         </div>
