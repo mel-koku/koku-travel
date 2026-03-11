@@ -83,6 +83,15 @@ export function RegionStepB({
     [data.cities],
   );
 
+  // All city IDs that belong to any known region (used to exclude them from dynamic checks)
+  const allKnownCityIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const r of REGIONS) {
+      for (const c of r.cities) ids.add(c.id);
+    }
+    return ids;
+  }, []);
+
   const allCitiesByRegion = useMemo(() => {
     const cities = getAllCities();
     const byRegion = new Map<string, number>();
@@ -178,7 +187,8 @@ export function RegionStepB({
 
       const regionName = regionDef.name.toLowerCase();
       const hasDynamicSelected = Array.from(selectedCities).some((cityId) => {
-        if (knownCityIds.includes(cityId)) return false;
+        // Skip cities that belong to ANY known region — they're already counted in their own region
+        if (allKnownCityIds.has(cityId)) return false;
         const cityData = allCitiesData.find(
           (c) => c.city.toLowerCase() === cityId,
         );
@@ -191,7 +201,7 @@ export function RegionStepB({
         return "full";
       return "partial";
     },
-    [selectedCities, allCitiesData],
+    [selectedCities, allCitiesData, allKnownCityIds],
   );
 
   const getCityCounts = useCallback(
