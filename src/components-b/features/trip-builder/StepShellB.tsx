@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback, useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
 
 const STEP_LABELS = [
@@ -90,6 +91,8 @@ export type StepNavBarBProps = {
   onNext: () => void;
   nextLabel: string;
   nextDisabled?: boolean;
+  /** Hint shown when user taps a disabled Continue button */
+  disabledHint?: string;
   currentStep: number;
   totalSteps: number;
   completedSteps: Set<number>;
@@ -101,11 +104,26 @@ export function StepNavBarB({
   onNext,
   nextLabel,
   nextDisabled = false,
+  disabledHint,
   currentStep,
   totalSteps,
   completedSteps,
   onStepClick,
 }: StepNavBarBProps) {
+  const [showHint, setShowHint] = useState(false);
+
+  const handleDisabledClick = useCallback(() => {
+    if (nextDisabled && disabledHint) {
+      setShowHint(true);
+      setTimeout(() => setShowHint(false), 3000);
+    }
+  }, [nextDisabled, disabledHint]);
+
+  // Reset hint when button becomes enabled
+  useEffect(() => {
+    if (!nextDisabled) setShowHint(false);
+  }, [nextDisabled]);
+
   return (
     <>
       {/* Desktop Navigation */}
@@ -129,18 +147,26 @@ export function StepNavBarB({
               Back
             </button>
 
-            <button
-              type="button"
-              onClick={onNext}
-              disabled={nextDisabled}
-              className={`inline-flex h-11 items-center justify-center rounded-xl px-8 text-sm font-medium transition-all active:scale-[0.98] ${
-                nextDisabled
-                  ? "cursor-not-allowed bg-[var(--surface)] text-[var(--muted-foreground)]"
-                  : "cursor-pointer bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)] hover:brightness-110"
-              }`}
-            >
-              {nextLabel}
-            </button>
+            <div className="flex flex-col items-end gap-1">
+              {showHint && disabledHint && (
+                <p className="text-xs text-[var(--error)] animate-in fade-in duration-200" role="alert">
+                  {disabledHint}
+                </p>
+              )}
+              <div onClick={handleDisabledClick}>
+                <button
+                  type="button"
+                  onClick={nextDisabled ? undefined : onNext}
+                  className={`inline-flex h-11 items-center justify-center rounded-xl px-8 text-sm font-medium transition-all active:scale-[0.98] ${
+                    nextDisabled
+                      ? "cursor-not-allowed bg-[var(--surface)] text-[var(--muted-foreground)]"
+                      : "cursor-pointer bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)] hover:brightness-110"
+                  }`}
+                >
+                  {nextLabel}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -155,6 +181,11 @@ export function StepNavBarB({
             onStepClick={onStepClick}
           />
         </div>
+        {showHint && disabledHint && (
+          <p className="mb-1.5 text-center text-xs text-[var(--error)] animate-in fade-in duration-200" role="alert">
+            {disabledHint}
+          </p>
+        )}
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -167,11 +198,10 @@ export function StepNavBarB({
 
           <button
             type="button"
-            onClick={onNext}
-            disabled={nextDisabled}
+            onClick={nextDisabled ? handleDisabledClick : onNext}
             className={`h-12 flex-1 rounded-xl text-sm font-medium transition-all active:scale-[0.98] ${
               nextDisabled
-                ? "cursor-not-allowed bg-[var(--surface)] text-[var(--muted-foreground)]"
+                ? "bg-[var(--surface)] text-[var(--muted-foreground)]"
                 : "cursor-pointer bg-[var(--primary)] text-white shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-elevated)] hover:brightness-110"
             }`}
           >

@@ -142,6 +142,13 @@ export function TripBuilderB({ onComplete, sanityConfig }: TripBuilderBProps) {
           onNext={handleNext}
           nextLabel={getNextLabel()}
           nextDisabled={isNextDisabled}
+          disabledHint={
+            currentStep === 3
+              ? "Select at least one vibe to continue"
+              : currentStep === 4
+                ? "Pick at least one region to continue"
+                : undefined
+          }
           currentStep={currentStep}
           totalSteps={stepCount}
           completedSteps={completedSteps}

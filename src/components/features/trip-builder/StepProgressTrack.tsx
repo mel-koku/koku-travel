@@ -1,7 +1,7 @@
 export const STEP_LABELS = [
   "Intro",
   "Dates",
-  "Airport",
+  "Entry Point",
   "Vibes",
   "Regions",
   "Review",

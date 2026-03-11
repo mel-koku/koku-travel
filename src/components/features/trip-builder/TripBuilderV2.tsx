@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { AnimatePresence, motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { IntroStep } from "./IntroStep";
@@ -285,8 +285,9 @@ function StepShell({
   }, [nextDisabled, disabledHint]);
 
   // Reset hint when button becomes enabled
-  const prevDisabled = nextDisabled;
-  if (!prevDisabled && showHint) setShowHint(false);
+  useEffect(() => {
+    if (!nextDisabled) setShowHint(false);
+  }, [nextDisabled]);
 
   return (
     <div className="flex min-h-[calc(100dvh-5rem)] flex-col pb-20">

@@ -106,6 +106,8 @@ export function TravelSegment({
   };
 
   const openGoogleMapsDirections = () => {
+    if (origin.lat == null || origin.lng == null || destination.lat == null || destination.lng == null) return;
+
     const params = new URLSearchParams({
       api: "1",
     });
