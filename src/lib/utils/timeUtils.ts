@@ -5,7 +5,7 @@
 
 /** Parse "HH:MM" or "H:MM" to minutes since midnight. Returns null on invalid input. */
 export function parseTimeToMinutes(timeStr: string | undefined | null): number | null {
-  if (!timeStr) return null;
+  if (!timeStr || typeof timeStr !== "string") return null;
   const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
   if (!match) return null;
   const hours = Number(match[1]);
