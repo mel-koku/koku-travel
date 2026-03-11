@@ -48,6 +48,12 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
   ],
   osaka: [
     {
+      cityId: "kobe",
+      travelMinutes: 25,
+      minDaysBeforeSuggesting: 2,
+      description: "Port city with Chinatown, beef, and mountain views",
+    },
+    {
       cityId: "kyoto",
       travelMinutes: 30,
       minDaysBeforeSuggesting: 3,
@@ -108,6 +114,12 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       minDaysBeforeSuggesting: 3,
       description: "Japan's bustling capital",
     },
+    {
+      cityId: "kamakura",
+      travelMinutes: 25,
+      minDaysBeforeSuggesting: 2,
+      description: "Great Buddha and seaside temple town",
+    },
   ],
   // Chubu
   nagoya: [
@@ -118,9 +130,15 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
       description: "Ancient temples and tea culture",
     },
     {
+      cityId: "takayama",
+      travelMinutes: 140,
+      minDaysBeforeSuggesting: 3,
+      description: "Preserved Edo-era merchant town in the mountains",
+    },
+    {
       cityId: "kanazawa",
       travelMinutes: 180,
-      minDaysBeforeSuggesting: 4,
+      minDaysBeforeSuggesting: 5,
       description: "Samurai districts and Kenrokuen Garden",
     },
   ],
@@ -128,7 +146,7 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
     {
       cityId: "nagoya",
       travelMinutes: 180,
-      minDaysBeforeSuggesting: 3,
+      minDaysBeforeSuggesting: 5,
       description: "Castle town and Nagoya cuisine",
     },
   ],
@@ -158,6 +176,12 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
   // Chugoku
   hiroshima: [
     {
+      cityId: "okayama",
+      travelMinutes: 40,
+      minDaysBeforeSuggesting: 2,
+      description: "Korakuen Garden and castle town",
+    },
+    {
       cityId: "kobe",
       travelMinutes: 70,
       minDaysBeforeSuggesting: 3,
@@ -185,31 +209,10 @@ export const DAY_TRIP_MAPPINGS: Record<CityId, DayTripConfig[]> = {
     },
   ],
   // Hokkaido
-  sapporo: [
-    {
-      cityId: "hakodate",
-      travelMinutes: 210,
-      minDaysBeforeSuggesting: 4,
-      description: "Million-dollar night view and morning market",
-    },
-  ],
-  hakodate: [
-    {
-      cityId: "sapporo",
-      travelMinutes: 210,
-      minDaysBeforeSuggesting: 3,
-      description: "Miso ramen and Hokkaido's capital",
-    },
-  ],
+  sapporo: [],
+  hakodate: [],
   // Tohoku
-  sendai: [
-    {
-      cityId: "tokyo",
-      travelMinutes: 100,
-      minDaysBeforeSuggesting: 3,
-      description: "Japan's capital — endless things to do",
-    },
-  ],
+  sendai: [],
   // Shikoku
   matsuyama: [
     {

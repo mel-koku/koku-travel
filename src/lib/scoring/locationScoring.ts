@@ -10,6 +10,7 @@ import { MONTH_TO_SEASON_TAGS } from "@/lib/utils/seasonUtils";
 import { getCrowdLevel } from "@/data/crowdPatterns";
 import { getPhotoTiming, isPhotoOptimalTime } from "@/data/photoSpotTiming";
 import { hasGoshuin, isNotableGoshuin } from "@/data/goshuinData";
+import { DIETARY_CATEGORIES as DIETARY_CATEGORIES_LIST } from "@/data/mealCategories";
 
 /**
  * Criteria for scoring a location.
@@ -880,7 +881,7 @@ function scoreContentFit(
 /**
  * Food-related categories where dietary preferences apply.
  */
-const DIETARY_CATEGORIES = new Set(["restaurant", "cafe", "bar", "market"]);
+const DIETARY_CATEGORIES = new Set<string>(DIETARY_CATEGORIES_LIST);
 
 /**
  * Score dietary fit for food locations.

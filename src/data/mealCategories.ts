@@ -5,6 +5,18 @@
 export type MealType = "breakfast" | "lunch" | "dinner" | "snack";
 
 /**
+ * Categories that indicate dining establishments (seated meals).
+ * Shared across meal filtering, gap detection, itinerary generation, and smart prompts.
+ */
+export const DINING_CATEGORIES = ["restaurant", "cafe", "bar"] as const;
+
+/**
+ * Broader food categories where dietary preferences apply.
+ * Includes markets for dietary scoring but they aren't treated as seated meals.
+ */
+export const DIETARY_CATEGORIES = ["restaurant", "cafe", "bar", "market"] as const;
+
+/**
  * Meal timing windows in 24-hour format (HH:MM)
  */
 export const MEAL_TIMING_WINDOWS: Record<MealType, { start: string; end: string }> = {
