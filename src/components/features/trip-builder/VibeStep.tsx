@@ -149,49 +149,55 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
         </div>
       </div>
 
-      {/* Desktop: Expanding columns */}
-      <div className="relative z-10 mt-8 hidden flex-1 px-8 pb-8 lg:flex lg:mt-10 lg:pl-12 lg:pr-20">
-        <div className="flex w-full gap-[3px]">
-          {TRIP_BUILDER_VIBES.map((vibe, i) => {
-            const isSelected = selectedVibes.includes(vibe.id);
-            const isDisabled = isMaxSelected && !isSelected;
-            const sanityVibe = sanityVibeMap?.get(vibe.id);
-            const Icon = VIBE_ICONS[sanityVibe?.icon ?? vibe.icon] ?? Mountain;
-            const isHovered = hoveredId === vibe.id;
+      {/* Desktop: Two rows of expanding columns */}
+      <div className="relative z-10 mt-8 hidden flex-1 flex-col gap-2 px-8 pb-8 lg:flex lg:mt-10 lg:px-12">
+        {[TRIP_BUILDER_VIBES.slice(0, 5), TRIP_BUILDER_VIBES.slice(5)].map((row, rowIdx) => (
+          <div key={rowIdx} className="flex w-full flex-1 gap-2">
+            {row.map((vibe, colIdx) => {
+              const i = rowIdx * 5 + colIdx;
+              const isSelected = selectedVibes.includes(vibe.id);
+              const isDisabled = isMaxSelected && !isSelected;
+              const sanityVibe = sanityVibeMap?.get(vibe.id);
+              const Icon = VIBE_ICONS[sanityVibe?.icon ?? vibe.icon] ?? Mountain;
+              const isHovered = hoveredId === vibe.id;
 
-            // Dynamic flex: hovered expands to 2, siblings contract to 0.75, default is 1
-            let flexValue = 1;
-            if (hoveredId !== null) {
-              flexValue = isHovered ? 2.0 : 0.75;
-            }
+              // Dynamic flex: hovered expands to 2, siblings in same row contract to 0.75
+              let flexValue = 1;
+              if (hoveredId !== null) {
+                const hoveredRow = TRIP_BUILDER_VIBES.findIndex((v) => v.id === hoveredId);
+                const hoveredRowIdx = hoveredRow < 5 ? 0 : 1;
+                if (hoveredRowIdx === rowIdx) {
+                  flexValue = isHovered ? 2.0 : 0.75;
+                }
+              }
 
-            return (
-              <div
-                key={vibe.id}
-                className="min-w-0 overflow-hidden rounded-xl"
-                style={{
-                  flex: flexValue,
-                  transition:
-                    `flex 0.7s ${easeCinematicCSS}`,
-                }}
-              >
-                <VibeCard
-                  name={sanityVibe?.name ?? vibe.name}
-                  description={sanityVibe?.description ?? vibe.description}
-                  image={sanityVibe?.image?.url ?? VIBE_IMAGES[vibe.id]}
-                  icon={Icon}
-                  index={i}
-                  isSelected={isSelected}
-                  isDisabled={isDisabled}
-                  isHovered={isHovered}
-                  onToggle={() => toggleVibe(vibe.id)}
-                  onHover={() => setHoveredId(vibe.id)}
-                  onLeave={() => setHoveredId(null)}
-                />
-              </div>
-            );
-          })}
-        </div>
+              return (
+                <div
+                  key={vibe.id}
+                  className="min-w-0 overflow-hidden rounded-xl"
+                  style={{
+                    flex: flexValue,
+                    transition: `flex 0.7s ${easeCinematicCSS}`,
+                  }}
+                >
+                  <VibeCard
+                    name={sanityVibe?.name ?? vibe.name}
+                    description={sanityVibe?.description ?? vibe.description}
+                    image={sanityVibe?.image?.url ?? VIBE_IMAGES[vibe.id]}
+                    icon={Icon}
+                    index={i}
+                    isSelected={isSelected}
+                    isDisabled={isDisabled}
+                    isHovered={isHovered}
+                    onToggle={() => toggleVibe(vibe.id)}
+                    onHover={() => setHoveredId(vibe.id)}
+                    onLeave={() => setHoveredId(null)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
 
       {/* Mobile: Horizontal scroll with snap */}
