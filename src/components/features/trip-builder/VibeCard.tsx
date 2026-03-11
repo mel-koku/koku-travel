@@ -25,7 +25,7 @@ export function VibeCard({
   name,
   description,
   image,
-  icon: Icon,
+  icon: _Icon,
   index,
   isSelected,
   isDisabled,
