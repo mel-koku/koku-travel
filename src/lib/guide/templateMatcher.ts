@@ -75,7 +75,7 @@ const TAG_TO_PARENT: Record<string, string> = {
   nature: "nature",
   shopping: "shopping",
   scenic: "view",
-  nightlife: "food",
+  nightlife: "entertainment",
   wellness: "nature",
   adventure: "nature",
   spiritual: "culture",

@@ -411,7 +411,7 @@ export const POST = withApiHandler(
         .select(LOCATION_ITINERARY_COLUMNS)
         .eq("is_active", true)
         .ilike("city", cityId)
-        .eq("category", "restaurant")
+        .in("category", ["restaurant", "cafe", "bar"])
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .limit(100);
 
@@ -647,7 +647,7 @@ export const POST = withApiHandler(
         .select(LOCATION_ITINERARY_COLUMNS)
         .eq("is_active", true)
         .ilike("city", cityId)
-        .not("category", "in", '("restaurant")')
+        .not("category", "in", '("restaurant","cafe","bar")')
         .or("business_status.is.null,business_status.neq.PERMANENTLY_CLOSED")
         .limit(100);
 

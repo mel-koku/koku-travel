@@ -7,6 +7,7 @@ const CATEGORY_DESCRIPTORS: Record<string, string> = {
   nature: "Outdoor escape with scenic views",
   shopping: "Bustling shopping stop",
   view: "Panoramic viewpoint worth the stop",
+  entertainment: "Fun activities and family outings",
 };
 
 export function getShortOverview(location: Location, cachedSummary: string | null): string {

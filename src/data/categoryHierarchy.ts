@@ -162,6 +162,31 @@ export const CATEGORY_HIERARCHY: CategoryHierarchy[] = [
       },
     ],
   },
+  {
+    id: "entertainment",
+    label: "Entertainment",
+    icon: "entertainment",
+    subTypes: [
+      {
+        id: "entertainment",
+        label: "Entertainment",
+        patterns: [/theme park|amusement|arcade|karaoke|escape room/i],
+        googleTypes: ["amusement_park", "amusement_center", "bowling_alley"],
+      },
+      {
+        id: "aquarium",
+        label: "Aquarium",
+        patterns: [/aquarium|sea life/i],
+        googleTypes: ["aquarium"],
+      },
+      {
+        id: "zoo",
+        label: "Zoo",
+        patterns: [/zoo|animal park|safari/i],
+        googleTypes: ["zoo"],
+      },
+    ],
+  },
 ];
 
 /**
