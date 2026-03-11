@@ -681,7 +681,7 @@ function detectLunchRush(day: ItineraryDay, dayIndex: number): DetectedGap[] {
     (a): a is Extract<ItineraryActivity, { kind: "place" }> => a.kind === "place"
   );
 
-  const DINING_CATEGORIES = new Set(["restaurant", "cafe"]);
+  const LUNCH_RUSH_CATEGORIES = new Set(["restaurant", "cafe", "bar"]);
 
   for (const activity of placeActivities) {
     const arrivalMinutes = parseTimeToMinutes(activity.schedule?.arrivalTime);
@@ -692,7 +692,7 @@ function detectLunchRush(day: ItineraryDay, dayIndex: number): DetectedGap[] {
 
     // Check if it's a dining activity
     const category = resolveActivityCategory(activity.tags)?.sub?.toLowerCase();
-    const isDining = (category && DINING_CATEGORIES.has(category)) || !!activity.mealType;
+    const isDining = (category && LUNCH_RUSH_CATEGORIES.has(category)) || !!activity.mealType;
     if (!isDining) continue;
 
     return [{

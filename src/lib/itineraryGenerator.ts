@@ -37,10 +37,12 @@ import {
 import { pickLocationForTimeSlot } from "@/lib/selection/locationPicker";
 import { formatRecommendationReason } from "@/lib/scoring/reasonFormatter";
 
+import { DINING_CATEGORIES } from "@/data/mealCategories";
+
 /**
  * Food-related location categories for meal detection.
  */
-const FOOD_CATEGORIES = new Set(["restaurant", "cafe", "bar"]);
+const FOOD_CATEGORIES = new Set<string>(DINING_CATEGORIES);
 
 /**
  * Check if a location category indicates a food/dining establishment.

@@ -75,6 +75,7 @@ const PARENT_CATEGORIES = [
   { id: "nature", label: "Nature" },
   { id: "shopping", label: "Shopping" },
   { id: "view", label: "View" },
+  { id: "entertainment", label: "Entertainment" },
 ] as const;
 
 export function PlacesShellB({ content }: PlacesShellBProps) {

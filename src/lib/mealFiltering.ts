@@ -9,6 +9,7 @@
  */
 
 import type { Location } from "@/types/location";
+import { DINING_CATEGORIES } from "@/data/mealCategories";
 
 /**
  * Parse a "YYYY-MM-DD" trip date string into a weekday index (0=Sun..6=Sat)
@@ -83,10 +84,8 @@ export const DESSERT_KEYWORDS = [
   "patisserie",
 ];
 
-/**
- * Categories that indicate dining establishments
- */
-export const DINING_CATEGORIES = ["restaurant", "bar"];
+// DINING_CATEGORIES imported from @/data/mealCategories and re-exported for consumers.
+export { DINING_CATEGORIES };
 
 /**
  * Google Places types that indicate dining establishments
@@ -289,7 +288,7 @@ export function isDiningLocation(location: Location): boolean {
 
   // Fallback to category-based filtering
   // Must be in a dining category
-  const isDiningCategory = DINING_CATEGORIES.includes(location.category || "");
+  const isDiningCategory = (DINING_CATEGORIES as readonly string[]).includes(location.category || "");
 
   // Must NOT match landmark name patterns (safety check for miscategorized locations)
   const isLandmark = LANDMARK_PATTERNS.test(location.name);

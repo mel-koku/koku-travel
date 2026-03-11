@@ -18,7 +18,7 @@ const INTERNATIONAL_IATA = new Set(["NRT", "KIX", "CTS", "FUK", "NGO", "OKA", "H
  * Based on standard express train / subway / monorail durations.
  */
 const AIRPORT_TRANSIT_MINUTES: Record<string, number> = {
-  NRT: 75,  // Narita Express → Tokyo Station
+  NRT: 60,  // Narita Express → Tokyo Station (~55-60 min)
   HND: 25,  // Monorail → Hamamatsucho / Keikyu → Shinagawa
   KIX: 50,  // Haruka Express → Osaka (Tennoji)
   CTS: 40,  // JR Rapid Airport → Sapporo

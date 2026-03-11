@@ -176,6 +176,51 @@ const COLOR_SCHEMES = {
     badge: "bg-[#6366f1]",
     badgeText: "text-white",
   },
+  // Nature sub-types — jade teal (same as nature)
+  wellness: {
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
+    badgeText: "text-white",
+  },
+  onsen: {
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
+    badgeText: "text-white",
+  },
+  mountain: {
+    border: "border-l-sage",
+    background: "bg-sage/10",
+    badge: "bg-sage",
+    badgeText: "text-white",
+  },
+  // Shopping sub-types — gold (same as shopping)
+  mall: {
+    border: "border-l-warning",
+    background: "bg-warning/10",
+    badge: "bg-warning",
+    badgeText: "text-white",
+  },
+  street: {
+    border: "border-l-warning",
+    background: "bg-warning/10",
+    badge: "bg-warning",
+    badgeText: "text-white",
+  },
+  specialty: {
+    border: "border-l-warning",
+    background: "bg-warning/10",
+    badge: "bg-warning",
+    badgeText: "text-white",
+  },
+  // Culture sub-types — crimson (same as culture)
+  performing_arts: {
+    border: "border-l-brand-primary",
+    background: "bg-brand-primary/10",
+    badge: "bg-brand-primary",
+    badgeText: "text-white",
+  },
 } as const satisfies Record<string, ActivityColorScheme>;
 
 type ColorSchemeKey = keyof typeof COLOR_SCHEMES;
@@ -328,6 +373,14 @@ const HEX_COLORS: Record<string, string> = {
   historic_site: "#8c2f2f",
   // Craft workshops — muted indigo
   craft: "#5b5fc7",
+  // Nature sub-types
+  mountain: "#2d7a6f",
+  // Shopping sub-types
+  mall: "#d4a017",
+  street: "#d4a017",
+  specialty: "#d4a017",
+  // Culture sub-types
+  performing_arts: "#8c2f2f",
   // Default — crimson
   default: "#8c2f2f",
 };

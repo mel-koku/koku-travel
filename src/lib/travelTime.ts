@@ -15,13 +15,13 @@ const MATRIX: Record<CityId, Partial<Record<CityId, number>>> = {
   kobe: { hiroshima: 70, fukuoka: 135 },
   otsu: {},
   // Kanto cluster
-  tokyo: { yokohama: 25, kamakura: 55, nikko: 120, hakone: 80, nagoya: 100, sendai: 100, kanazawa: 155, sapporo: 250, hakodate: 240, niigata: 120, nagano: 100 },
+  tokyo: { yokohama: 25, kamakura: 55, nikko: 120, hakone: 80, nagoya: 100, sendai: 100, kanazawa: 155, sapporo: 250 /* flight + transfer */, hakodate: 240, niigata: 120, nagano: 85, hiroshima: 240, fukuoka: 300, morioka: 130, aomori: 195 },
   yokohama: { kamakura: 25, hakone: 60, nagoya: 80 },
   kamakura: { hakone: 90 },
   nikko: {},
   hakone: { nagoya: 120 },
   // Chubu
-  nagoya: { kanazawa: 180, takayama: 140, nagano: 180 },
+  nagoya: { kanazawa: 180, takayama: 140, nagano: 180, hiroshima: 150 },
   takayama: { kanazawa: 180, nagano: 180 },
   nagano: { kanazawa: 120, niigata: 90 },
   niigata: { sendai: 180 },
@@ -35,7 +35,7 @@ const MATRIX: Record<CityId, Partial<Record<CityId, number>>> = {
   sapporo: { hakodate: 210 },
   hakodate: { aomori: 65 },
   // Tohoku
-  sendai: { hakodate: 180, sapporo: 270, morioka: 45, akita: 100 },
+  sendai: { hakodate: 180, sapporo: 270 /* flight + transfer */, morioka: 45, akita: 100 },
   morioka: { aomori: 100, akita: 100, hakodate: 150 },
   aomori: { akita: 140 },
   akita: {},
