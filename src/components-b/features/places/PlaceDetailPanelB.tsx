@@ -58,16 +58,21 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
     [loc, details],
   );
 
-  const description = useMemo(() => {
-    const candidates = [
-      loc.description,
-      loc.shortDescription,
-      details?.editorialSummary,
-    ].filter((d): d is string => Boolean(d?.trim()));
-    if (candidates.length === 0) return undefined;
-    const complete = candidates.filter((d) => /[.!?]$/.test(d.trim()));
-    if (complete.length > 0) return complete.reduce((a, b) => (a.length > b.length ? a : b));
-    return candidates.reduce((a, b) => (a.length > b.length ? a : b));
+  const { summary, description } = useMemo(() => {
+    const short = loc.shortDescription?.trim() || undefined;
+    const full =
+      loc.description?.trim() ||
+      details?.editorialSummary?.trim() ||
+      undefined;
+
+    if (!full && !short) return { summary: undefined, description: undefined };
+    if (!full) return { summary: undefined, description: short };
+    if (!short) return { summary: undefined, description: full };
+
+    const isDifferent = !full.toLowerCase().startsWith(short.toLowerCase().slice(0, 60));
+    return isDifferent
+      ? { summary: short, description: full }
+      : { summary: undefined, description: full };
   }, [loc, details]);
 
   // Meal / service labels
@@ -318,12 +323,17 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
           </button>
 
           {/* Description */}
-          {description && (
+          {(summary || description) && (
             <section className="space-y-1.5">
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
                 Overview
               </h3>
-              <p className="text-sm leading-relaxed text-[var(--foreground-body)]">{description}</p>
+              {summary && (
+                <p className="text-sm font-medium leading-relaxed text-[var(--foreground)]">{summary}</p>
+              )}
+              {description && (
+                <p className="text-sm leading-relaxed text-[var(--foreground-body)]">{description}</p>
+              )}
             </section>
           )}
 
