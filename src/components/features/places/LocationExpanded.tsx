@@ -4,7 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useCallback, useState, useRef, useMemo } from "react";
 import { easeReveal, durationFast } from "@/lib/motion";
-import type { Location, LocationDetails } from "@/types/location";
+import type { Location } from "@/types/location";
 import { useLenis } from "@/providers/LenisProvider";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import { useSaved } from "@/context/SavedContext";
@@ -22,22 +22,6 @@ type LocationExpandedProps = {
   onClose: () => void;
 };
 
-function getBestDescription(location: Location, details: LocationDetails | null): string | undefined {
-  const candidates = [
-    location.description,
-    location.shortDescription,
-    details?.editorialSummary,
-  ].filter((d): d is string => Boolean(d?.trim()));
-
-  if (candidates.length === 0) return undefined;
-
-  const complete = candidates.filter((d) => /[.!?]$/.test(d.trim()));
-  if (complete.length > 0) {
-    return complete.reduce((a, b) => (a.length > b.length ? a : b));
-  }
-
-  return candidates.reduce((a, b) => (a.length > b.length ? a : b));
-}
 
 export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
   const { pause, resume } = useLenis();
@@ -81,8 +65,22 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
     return getLocationDisplayName(details?.displayName, location);
   }, [location, details]);
 
-  const description = useMemo(() => {
-    return getBestDescription(locationWithDetails, details);
+  const { summary, description } = useMemo(() => {
+    const short = locationWithDetails.shortDescription?.trim() || undefined;
+    const full =
+      locationWithDetails.description?.trim() ||
+      details?.editorialSummary?.trim() ||
+      undefined;
+
+    if (!full && !short) return { summary: undefined, description: undefined };
+    if (!full) return { summary: undefined, description: short };
+    if (!short) return { summary: undefined, description: full };
+
+    // Show both only when the short text isn't just a substring of the full
+    const isDifferent = !full.toLowerCase().startsWith(short.toLowerCase().slice(0, 60));
+    return isDifferent
+      ? { summary: short, description: full }
+      : { summary: undefined, description: full };
   }, [locationWithDetails, details]);
 
   const mealLabels = useMemo(() => {
@@ -320,12 +318,17 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
           </div>
 
           {/* Description */}
-          {description && (
+          {(summary || description) && (
             <section className="space-y-2">
               <h3 className="eyebrow-editorial">
                 Overview
               </h3>
-              <p className="text-base leading-relaxed text-foreground-secondary">{description}</p>
+              {summary && (
+                <p className="text-sm font-medium leading-relaxed text-foreground">{summary}</p>
+              )}
+              {description && (
+                <p className="text-base leading-relaxed text-foreground-secondary">{description}</p>
+              )}
             </section>
           )}
 

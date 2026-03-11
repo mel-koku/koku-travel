@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useCallback, useState, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
-import type { Location, LocationDetails } from "@/types/location";
+import type { Location } from "@/types/location";
 import { useLocationDetailsQuery } from "@/hooks/useLocationDetailsQuery";
 import { useNearbyLocationsQuery } from "@/hooks/useLocationsQuery";
 import { useSaved } from "@/context/SavedContext";
@@ -40,18 +40,6 @@ const sectionReveal = {
   transition: { duration: 0.5, ease: bEase },
 };
 
-function getBestDescription(location: Location, details: LocationDetails | null): string | undefined {
-  const candidates = [
-    location.description,
-    location.shortDescription,
-    details?.editorialSummary,
-  ].filter((d): d is string => Boolean(d?.trim()));
-
-  if (candidates.length === 0) return undefined;
-  const complete = candidates.filter((d) => /[.!?]$/.test(d.trim()));
-  if (complete.length > 0) return complete.reduce((a, b) => (a.length > b.length ? a : b));
-  return candidates.reduce((a, b) => (a.length > b.length ? a : b));
-}
 
 type PlaceDetailBProps = {
   initialLocation: Location;
@@ -104,10 +92,22 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
     () => getLocationDisplayName(details?.displayName, location),
     [location, details],
   );
-  const description = useMemo(
-    () => getBestDescription(location, details),
-    [location, details],
-  );
+  const { summary, description } = useMemo(() => {
+    const short = location.shortDescription?.trim() || undefined;
+    const full =
+      location.description?.trim() ||
+      details?.editorialSummary?.trim() ||
+      undefined;
+
+    if (!full && !short) return { summary: undefined, description: undefined };
+    if (!full) return { summary: undefined, description: short };
+    if (!short) return { summary: undefined, description: full };
+
+    const isDifferent = !full.toLowerCase().startsWith(short.toLowerCase().slice(0, 60));
+    return isDifferent
+      ? { summary: short, description: full }
+      : { summary: undefined, description: full };
+  }, [location, details]);
 
   // Meal / service labels
   const mealLabels = useMemo(() => {
@@ -363,12 +363,17 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
       {/* Content sections */}
       <div className="mx-auto max-w-3xl px-6 space-y-10 pb-8">
         {/* Description */}
-        {description && (
+        {(summary || description) && (
           <motion.section {...sectionReveal} className="space-y-2">
             <h2 className="text-[11px] font-semibold uppercase tracking-[0.15em] text-[var(--muted-foreground)]">
               Overview
             </h2>
-            <p className="text-base leading-relaxed text-[var(--foreground-body)]">{description}</p>
+            {summary && (
+              <p className="text-sm font-medium leading-relaxed text-[var(--foreground)]">{summary}</p>
+            )}
+            {description && (
+              <p className="text-base leading-relaxed text-[var(--foreground-body)]">{description}</p>
+            )}
           </motion.section>
         )}
 
