@@ -221,11 +221,11 @@ export function RegionStepB({
       if (!regionDef) return;
 
       const knownCityIds = regionDef.cities.map((c) => c.id as CityId);
-      const allSelected = knownCityIds.every((id) => selectedCities.has(id));
+      const anySelected = knownCityIds.some((id) => selectedCities.has(id));
 
       setData((prev) => {
         const current = new Set<CityId>(prev.cities ?? []);
-        if (allSelected) {
+        if (anySelected) {
           for (const id of knownCityIds) current.delete(id);
         } else {
           for (const id of knownCityIds) current.add(id);
