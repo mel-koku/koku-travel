@@ -9,6 +9,7 @@ import {
   getSanityGuideWithLocations,
 } from "@/lib/guides/guideService";
 import { GuideDetailClient } from "@/components/features/guides/GuideDetailClient";
+import { buildGuideJsonLd } from "@/lib/guides/guideJsonLd";
 import { urlFor } from "@/sanity/image";
 
 // Request-scoped cache: deduplicates fetches between generateMetadata() and page component
@@ -32,11 +33,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: `${guide.title} | Koku Travel`,
       description: guide.summary,
+      alternates: {
+        canonical: `/guides/${slug}`,
+      },
       openGraph: {
         title: guide.title,
         description: guide.summary,
         images: [imageUrl],
         type: "article",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: guide.title,
+        description: guide.summary,
       },
     };
   }
@@ -51,11 +60,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${guide.title} | Koku Travel`,
     description: guide.summary,
+    alternates: {
+      canonical: `/guides/${slug}`,
+    },
     openGraph: {
       title: guide.title,
       description: guide.summary,
       images: [guide.featuredImage],
       type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: guide.title,
+      description: guide.summary,
     },
   };
 }
@@ -80,13 +97,31 @@ export default async function GuideDetailPage({ params }: Props) {
     }
     const relatedGuide = relatedGuides[0] ?? null;
 
+    const imageUrl =
+      guide.featuredImage?.url ||
+      urlFor(guide.featuredImage).width(1200).url();
+    const jsonLd = buildGuideJsonLd({
+      slug: guide.slug,
+      title: guide.title,
+      summary: guide.summary,
+      imageUrl,
+      publishedAt: guide.publishedAt,
+      updatedAt: guide._updatedAt,
+    });
+
     return (
-      <GuideDetailClient
-        sanityGuide={guide}
-        locations={locations}
-        relatedGuide={relatedGuide}
-        source="sanity"
-      />
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <GuideDetailClient
+          sanityGuide={guide}
+          locations={locations}
+          relatedGuide={relatedGuide}
+          source="sanity"
+        />
+      </>
     );
   }
 
@@ -106,12 +141,27 @@ export default async function GuideDetailPage({ params }: Props) {
   }
   const relatedGuide = relatedGuides[0] ?? null;
 
+  const jsonLd = buildGuideJsonLd({
+    slug,
+    title: guide.title,
+    summary: guide.summary,
+    imageUrl: guide.featuredImage,
+    publishedAt: guide.publishedAt,
+    updatedAt: guide.updatedAt,
+  });
+
   return (
-    <GuideDetailClient
-      guide={guide}
-      locations={locations}
-      relatedGuide={relatedGuide}
-      source="supabase"
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <GuideDetailClient
+        guide={guide}
+        locations={locations}
+        relatedGuide={relatedGuide}
+        source="supabase"
+      />
+    </>
   );
 }

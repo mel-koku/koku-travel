@@ -22,6 +22,9 @@ import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/l
 export const metadata: Metadata = {
   title: "Koku Travel \u2014 Japan, the way locals know it",
   description: "3,900+ places locals actually go. Build a trip to Japan \u2014 day by day, with real recommendations.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Koku Travel \u2014 Japan, the way locals know it",
     description: "3,900+ places locals actually go. Build a trip to Japan \u2014 day by day, with real recommendations.",

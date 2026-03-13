@@ -1,3 +1,14 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About | Koku Travel",
+  description:
+    "Koku is a Japan trip planning tool built for curious travelers. We combine local knowledge with smart planning to help you experience Japan beyond the guidebook.",
+  alternates: {
+    canonical: "/about",
+  },
+};
+
 export default function AboutPage() {
   return (
     <main className="min-h-[100dvh] bg-background px-6 py-24">
