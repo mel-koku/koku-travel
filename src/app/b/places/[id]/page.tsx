@@ -81,6 +81,9 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
   return {
     title: `${location.name} — ${location.city} | Koku Travel`,
     description,
+    alternates: {
+      canonical: `/places/${id}`,
+    },
     openGraph: {
       title: `${location.name} — ${location.city}`,
       description,

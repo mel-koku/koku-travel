@@ -8,7 +8,10 @@ export const viewport: Viewport = {
   userScalable: true,
 };
 
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://kokutravel.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(BASE_URL),
   title: "Koku Travel - Discover Japan with Local Experts",
   description:
     "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
