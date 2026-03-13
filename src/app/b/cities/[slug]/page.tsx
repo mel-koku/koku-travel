@@ -36,6 +36,9 @@ export async function generateMetadata({
   return {
     title: `${city.name}, Japan — Travel Guide | Koku Travel`,
     description: city.ogDescription,
+    alternates: {
+      canonical: `/cities/${slug}`,
+    },
     openGraph: {
       title: `${city.name}, Japan — Travel Guide`,
       description: city.ogDescription,

@@ -617,6 +617,24 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         )}
       </div>
 
+      {/* Trip Builder CTA */}
+      <section className="py-12 sm:py-16 text-center">
+        <div className="mx-auto max-w-xl px-4 sm:px-6">
+          <p className="text-foreground-secondary text-sm mb-4">
+            Want to visit {location.name}?
+          </p>
+          <a
+            href={`/trip-builder?city=${encodeURIComponent(location.city)}`}
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-primary px-6 h-11 text-sm font-medium text-white transition hover:brightness-110 active:scale-[0.98]"
+          >
+            Build a trip to {location.city}
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </section>
+
       {/* Explore Nearby */}
       {nearbyLocations.length > 0 && (
         <section className="bg-canvas py-12 sm:py-20">

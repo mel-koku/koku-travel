@@ -30,6 +30,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     return {
       title: `${guide.title} | Koku Travel`,
       description: guide.summary,
+      alternates: {
+        canonical: `/guides/${slug}`,
+      },
       openGraph: {
         title: guide.title,
         description: guide.summary,
@@ -48,6 +51,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${guide.title} | Koku Travel`,
     description: guide.summary,
+    alternates: {
+      canonical: `/guides/${slug}`,
+    },
     openGraph: {
       title: guide.title,
       description: guide.summary,

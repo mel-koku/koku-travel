@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: "Koku Travel - Discover Japan with Local Experts",
   description:
     "Discover curated travel guides, itineraries, and inspiration from local experts. Plan your perfect trip to Japan with personalized recommendations.",
+  alternates: {
+    canonical: "/",
+  },
 };
 
 export const revalidate = 3600;

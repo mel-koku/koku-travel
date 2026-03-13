@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createClient } from "@/lib/supabase/server";
 import { PlaceDetail } from "@/components/features/places/PlaceDetail";
+import { buildPlaceJsonLd } from "@/lib/places/placeJsonLd";
 import type { Location } from "@/types/location";
 
 export const revalidate = 3600;
@@ -81,12 +82,20 @@ export async function generateMetadata({ params }: RouteProps): Promise<Metadata
   return {
     title: `${location.name} — ${location.city} | Koku Travel`,
     description,
+    alternates: {
+      canonical: `/places/${id}`,
+    },
     openGraph: {
       title: `${location.name} — ${location.city}`,
       description,
       images: location.primaryPhotoUrl
         ? [{ url: location.primaryPhotoUrl, width: 1200, height: 630 }]
         : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${location.name} — ${location.city}`,
+      description,
     },
   };
 }
@@ -97,5 +106,15 @@ export default async function PlaceDetailPage({ params }: RouteProps) {
 
   if (!location) notFound();
 
-  return <PlaceDetail initialLocation={location} />;
+  const jsonLd = buildPlaceJsonLd(location);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <PlaceDetail initialLocation={location} />
+    </>
+  );
 }
