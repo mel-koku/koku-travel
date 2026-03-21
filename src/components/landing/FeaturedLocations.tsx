@@ -44,7 +44,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                   {content?.featuredLocationsHeading ?? "Places that stay with you"}
                 </h2>
                 <p className="mt-3 max-w-md text-base text-foreground-secondary">
-                  {content?.featuredLocationsDescription ?? "Hidden shrines. Neighborhood favorites. The places guidebooks don\u2019t know about."}
+                  {content?.featuredLocationsDescription ?? "Backstreet temples. Neighborhood staples. Places worth the detour."}
                 </p>
               </div>
               <Link

@@ -34,10 +34,10 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
     content?.heroHeadline ?? "Travel Japan like the people who live here";
   const description = (
     content?.heroDescription ??
-    "{locationCount}+ places we'd actually recommend, with days planned around how you travel."
+    "Days planned around how you actually travel. {locationCount}+ places we'd stake our name on."
   ).replace("{locationCount}", locationCount.toLocaleString());
   const primaryCta = content?.heroPrimaryCtaText ?? "Build My Trip";
-  const secondaryCta = content?.heroSecondaryCtaText ?? "Explore Places";
+  const secondaryCta = content?.heroSecondaryCtaText ?? "Start Browsing";
 
   // Sanity image with hotspot support
   const heroImage = content?.heroImage;
@@ -106,7 +106,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             <div className="mt-8 flex flex-wrap gap-4">
               <a
                 href="/trip-builder"
-                className="inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98]"
+                className="btn-koku inline-flex h-14 items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg hover:bg-brand-primary/90 active:scale-[0.98]"
               >
                 {primaryCta}
               </a>
@@ -212,7 +212,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           >
             <a
               href="/trip-builder"
-              className="inline-flex h-14 w-full items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:bg-brand-primary/90 hover:shadow-xl active:scale-[0.98] sm:w-auto"
+              className="btn-koku inline-flex h-14 w-full items-center justify-center rounded-xl bg-brand-primary px-10 text-sm font-semibold uppercase tracking-wider text-white shadow-lg hover:bg-brand-primary/90 active:scale-[0.98] sm:w-auto"
             >
               {primaryCta}
             </a>
