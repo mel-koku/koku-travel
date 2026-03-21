@@ -56,7 +56,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
       transition={{ duration: durationBase, ease: easeReveal }}
     >
       {/* Unified Card Container */}
-      <div className={`overflow-hidden rounded-xl border border-border/50 bg-surface shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_8px_32px_rgba(196,80,79,0.1)] ${variant === "tall" ? "h-full" : ""}`}>
+      <div className={`overflow-hidden rounded-xl border border-border/50 bg-surface shadow-[var(--shadow-card)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] ${variant === "tall" ? "h-full" : ""}`}>
         {/* Image Area */}
         <div className="relative">
           {/* Clickable image area */}
