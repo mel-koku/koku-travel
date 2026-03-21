@@ -38,7 +38,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             transition={{ duration: durationBase, delay: 0.5, ease: [...easeReveal] as [number, number, number, number] }}
             className="mx-auto mt-8 max-w-md text-base text-white/90"
           >
-            {content?.finalCtaDescription ?? "Tell us when you're going. We'll handle everything else."}
+            {content?.finalCtaDescription ?? "Tell us your dates. We'll build the days, route the trains, and find the right places along the way."}
           </motion.p>
 
           <motion.div
@@ -50,7 +50,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
           >
             <a
               href="/trip-builder"
-              className="relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg transition-all hover:bg-white/90 hover:shadow-xl active:scale-[0.98]"
+              className="btn-koku relative inline-flex h-14 items-center justify-center rounded-xl bg-white px-10 text-sm font-semibold uppercase tracking-wider text-brand-primary shadow-lg hover:bg-white/90 active:scale-[0.98]"
             >
               <span className="relative">{content?.finalCtaPrimaryText ?? "Build My Trip"}</span>
             </a>
@@ -58,7 +58,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
               href="/places"
               className="link-reveal mt-6 py-3 text-sm font-medium uppercase tracking-wider text-white/70 transition-colors hover:text-white/90"
             >
-              {content?.finalCtaSecondaryText ?? "Browse Locations"}
+              {content?.finalCtaSecondaryText ?? "See What\u2019s Out There"}
             </a>
           </motion.div>
 

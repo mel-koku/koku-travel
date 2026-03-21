@@ -42,7 +42,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
               </span>
             </div>
             <p className="eyebrow-mono mt-3">
-              {stats?.[0]?.label ?? "Places"}
+              {stats?.[0]?.label ?? "Places we\u2019ve spent time in"}
             </p>
           </div>
 
@@ -59,7 +59,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
               className="text-[clamp(2.5rem,5vw,4rem)] font-mono font-light text-foreground leading-none"
             />
             <p className="eyebrow-mono mt-3">
-              {stats?.[1]?.label ?? "Local experts & artisans"}
+              {stats?.[1]?.label ?? "People who know the ground"}
             </p>
           </div>
 
@@ -73,7 +73,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
               {stats?.[2]?.suffix ?? "+"}
             </span>
             <p className="eyebrow-mono mt-3">
-              {stats?.[2]?.label ?? "Travel guides"}
+              {stats?.[2]?.label ?? "Guides written on the ground"}
             </p>
           </div>
         </div>
