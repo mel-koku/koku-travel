@@ -1,0 +1,159 @@
+"use client";
+
+import Image from "next/image";
+import { motion, useReducedMotion } from "framer-motion";
+import { Check, ChevronDown, MapPin, Star } from "lucide-react";
+
+import { cEase } from "@c/ui/motionC";
+
+export type RegionSelectionState = "none" | "partial" | "full";
+
+type RegionRowCProps = {
+  index: number;
+  regionName: string;
+  heroImage: string;
+  tagline: string;
+  cityNames: string[];
+  additionalCityCount: number;
+  selectedCityCount: number;
+  totalCityCount: number;
+  isExpanded: boolean;
+  isFaded: boolean;
+  isRecommended: boolean;
+  isEntryPointRegion: boolean;
+  regionSelectionState: RegionSelectionState;
+  onClick: () => void;
+  onToggleSelect: () => void;
+};
+
+export function RegionRowC({
+  index,
+  regionName,
+  heroImage,
+  tagline,
+  cityNames,
+  additionalCityCount,
+  selectedCityCount,
+  totalCityCount,
+  isExpanded,
+  isFaded,
+  isRecommended,
+  isEntryPointRegion,
+  regionSelectionState,
+  onClick,
+  onToggleSelect,
+}: RegionRowCProps) {
+  const prefersReducedMotion = useReducedMotion();
+  const hasSelection = regionSelectionState !== "none";
+
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      initial={prefersReducedMotion ? undefined : { opacity: 0, y: 16 }}
+      animate={{
+        opacity: isFaded ? 0.45 : 1,
+        y: 0,
+        scale: isFaded ? 0.97 : 1,
+      }}
+      transition={{ duration: 0.5, delay: 0.05 + index * 0.04, ease: cEase }}
+      className={`group relative flex w-full cursor-pointer flex-col overflow-hidden border bg-[var(--background)] text-left transition-colors ${
+        isExpanded
+          ? "border-[var(--primary)]"
+          : hasSelection
+            ? "border-[var(--primary)]"
+            : "border-[var(--border)] hover:border-[var(--primary)]/40"
+      }`}
+    >
+      {/* Hero image */}
+      <div className="relative aspect-[3/2] w-full overflow-hidden">
+        <Image
+          src={heroImage}
+          alt={regionName}
+          fill
+          className={`object-cover transition-all duration-500 group-hover:scale-[1.04] ${
+            isFaded ? "grayscale" : "grayscale-0"
+          }`}
+          sizes="(max-width: 640px) 100vw, 50vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
+
+        {/* Select pill */}
+        <motion.div
+          initial={prefersReducedMotion ? undefined : { scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20, delay: 0.1 + index * 0.04 }}
+          className="absolute right-0 top-0 z-10"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelect();
+          }}
+          role="checkbox"
+          aria-checked={hasSelection}
+          aria-label={`Select ${regionName}`}
+        >
+          <div
+            className={`flex h-8 items-center gap-1.5 px-3 text-xs font-bold uppercase tracking-[0.1em] transition-colors ${
+              hasSelection
+                ? "bg-[var(--primary)] text-white"
+                : "bg-white/90 text-[var(--muted-foreground)] hover:bg-white hover:text-[var(--primary)]"
+            }`}
+          >
+            <Check className="h-3.5 w-3.5" strokeWidth={3} />
+            {hasSelection ? "Remove" : "Add"}
+          </div>
+        </motion.div>
+
+        {/* Match / Entry badges */}
+        <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
+          {isRecommended && (
+            <span className="flex items-center gap-1 bg-white/90 px-2.5 py-1 text-xs font-bold text-[var(--primary)]">
+              <Star className="h-3 w-3" />
+              Match
+            </span>
+          )}
+          {isEntryPointRegion && (
+            <span className="flex items-center gap-1 bg-white/90 px-2.5 py-1 text-xs font-bold text-[var(--success)]">
+              <MapPin className="h-3 w-3" />
+              Entry
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col px-4 py-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold text-[var(--foreground)] transition-colors group-hover:text-[var(--primary)]">
+            {regionName}
+          </h3>
+          <div className="flex items-center gap-1.5">
+            {hasSelection && (
+              <span className="text-xs font-bold text-[var(--primary)]">
+                {selectedCityCount}/{totalCityCount}
+              </span>
+            )}
+            <ChevronDown
+              className={`h-4 w-4 text-[var(--muted-foreground)] transition-transform ${
+                isExpanded ? "rotate-180" : ""
+              }`}
+            />
+          </div>
+        </div>
+        <p className="mt-0.5 line-clamp-1 text-xs leading-relaxed text-[var(--muted-foreground)]">
+          {tagline}
+        </p>
+        {cityNames.length > 0 && (
+          <p className="mt-1 text-[11px] font-medium text-[var(--foreground)]/70">
+            {cityNames.join(", ")}
+          </p>
+        )}
+        {additionalCityCount > 0 && (
+          <p className="mt-0.5 text-[11px] text-[var(--muted-foreground)]/60">
+            +{additionalCityCount} more {additionalCityCount === 1 ? "city" : "cities"} inside
+          </p>
+        )}
+      </div>
+    </motion.button>
+  );
+}
