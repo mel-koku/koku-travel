@@ -77,8 +77,8 @@ export const VIBES: readonly VibeDefinition[] = [
   },
   {
     id: "local_secrets",
-    name: "Local Secrets",
-    description: "Hidden gems and neighborhood favorites",
+    name: "Neighborhood Life",
+    description: "Local favorites and everyday spots",
     icon: "Camera",
     interests: ["photography"],
   },
