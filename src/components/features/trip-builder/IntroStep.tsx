@@ -169,7 +169,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                 onClick={() => setShowQuickPlan((v) => !v)}
                 className="h-14 w-full cursor-pointer rounded-xl border border-border bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-foreground transition-all hover:border-foreground-secondary hover:bg-surface active:scale-[0.98] sm:w-auto"
               >
-                Quick Plan
+                Skip the Details
               </button>
             )}
           </motion.div>
@@ -191,7 +191,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
                   <div className="rounded-xl border border-border bg-surface p-5 max-w-sm space-y-4">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-foreground">
-                        Pick a duration and destination
+                        Pick a length and go
                       </p>
                       <button
                         type="button"

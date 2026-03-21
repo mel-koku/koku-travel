@@ -32,8 +32,8 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
   return (
     <>
       <section aria-label="Featured locations" className="bg-canvas py-12 sm:py-20 lg:py-28">
+        {/* Header (contained) */}
         <div className="mx-auto max-w-7xl px-6">
-          {/* Header */}
           <ScrollReveal>
             <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
               <div>
@@ -56,18 +56,20 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
               </Link>
             </div>
           </ScrollReveal>
+        </div>
 
-          {/* Grid */}
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
-            {locations.slice(0, 8).map((location, i) => (
-              <ScrollReveal key={location.id} delay={0.05 * (i % 4)}>
+        {/* Full-bleed horizontal scroll */}
+        <div className="mt-10 flex gap-5 overflow-x-auto overscroll-contain px-6 pb-4 scrollbar-hide snap-x snap-mandatory lg:px-[max(1.5rem,calc((100vw-80rem)/2+1.5rem))]">
+          {locations.slice(0, 8).map((location, i) => (
+            <ScrollReveal key={location.id} delay={0.05 * (i % 4)}>
+              <div className="w-[260px] shrink-0 snap-start sm:w-[300px]">
                 <LocationCard
                   location={location}
                   onSelect={setSelectedLocation}
                 />
-              </ScrollReveal>
-            ))}
-          </div>
+              </div>
+            </ScrollReveal>
+          ))}
         </div>
       </section>
 

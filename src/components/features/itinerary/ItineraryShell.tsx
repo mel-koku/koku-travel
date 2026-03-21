@@ -138,6 +138,7 @@ export const ItineraryShell = ({
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
 
@@ -352,11 +353,14 @@ export const ItineraryShell = ({
     return detectItineraryConflicts(model);
   }, [model]);
 
-  // Compute per-day health levels for DaySelector dots
-  const dayHealthLevels = useMemo(() => {
-    const health = calculateTripHealth(model, conflictsResult.conflicts);
-    return health.days.map((d) => getHealthLevel(d.score));
+  // Compute trip health and per-day levels for DaySelector dots
+  const tripHealth = useMemo(() => {
+    return calculateTripHealth(model, conflictsResult.conflicts);
   }, [model, conflictsResult]);
+
+  const dayHealthLevels = useMemo(() => {
+    return tripHealth.days.map((d) => getHealthLevel(d.score));
+  }, [tripHealth]);
 
   // Guide hook — lazy-loads ~90KB of template data
   const { currentDayGuide } = useItineraryGuide(model, tripBuilderData, dayIntros, currentDay?.id);
@@ -648,6 +652,25 @@ export const ItineraryShell = ({
                 {!isReadOnly && tripId && !isUsingMock && (
                   <ShareButton tripId={tripId} />
                 )}
+                {!isReadOnly && suggestions && suggestions.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setShowSuggestions((v) => !v)}
+                    className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
+                      showSuggestions
+                        ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
+                        : tripHealth.overall >= 80
+                          ? "border-success/30 bg-success/10 text-success"
+                          : tripHealth.overall >= 60
+                            ? "border-warning/30 bg-warning/10 text-warning"
+                            : "border-error/30 bg-error/10 text-error"
+                    }`}
+                    title={showSuggestions ? "Hide suggestions" : `${suggestions.length} suggestions to improve your trip`}
+                  >
+                    <span className="font-mono">{Math.round(tripHealth.overall)}</span>
+                    <span>/100</span>
+                  </button>
+                )}
               </div>
             </div>
             {!isReadOnly && viewMode === "timeline" && (
@@ -786,7 +809,7 @@ export const ItineraryShell = ({
                   onReorder={isReadOnly ? undefined : handleReorder}
                   onReplace={!isReadOnly && tripId && !isUsingMock ? handleReplace : undefined}
                   tripBuilderData={tripBuilderData}
-                  suggestions={isReadOnly ? undefined : currentDaySuggestions}
+                  suggestions={isReadOnly || !showSuggestions ? undefined : currentDaySuggestions}
                   onAcceptSuggestion={isReadOnly ? undefined : handleAcceptSuggestion}
                   onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
                   loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}

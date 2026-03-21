@@ -39,7 +39,7 @@ export const landingPage = defineType({
       type: "text",
       rows: 2,
       fieldset: "hero",
-      initialValue: "{locationCount}+ places and experiences we'd actually send our friends to.",
+      initialValue: "Days planned around how you actually travel. {locationCount}+ places we'd stake our name on.",
       description: "Use {locationCount} as a placeholder for the dynamic count",
     }),
     defineField({
@@ -54,7 +54,7 @@ export const landingPage = defineType({
       title: "Secondary CTA Text",
       type: "string",
       fieldset: "hero",
-      initialValue: "Browse Locations",
+      initialValue: "Start Browsing",
     }),
     defineField({
       name: "heroImage",
@@ -213,7 +213,7 @@ export const landingPage = defineType({
       rows: 2,
       fieldset: "featuredLocations",
       initialValue:
-        "Handpicked locations that represent the best of Japan — from hidden shrines to neighborhood favorites.",
+        "Backstreet temples. Neighborhood staples. Places worth the detour.",
     }),
 
     defineField({
@@ -359,7 +359,7 @@ export const landingPage = defineType({
       title: "Description",
       type: "string",
       fieldset: "finalCta",
-      initialValue: "Every trip starts with a single place. Find yours.",
+      initialValue: "Tell us your dates. We'll build the days, route the trains, and find the right places along the way.",
     }),
     defineField({
       name: "finalCtaPrimaryText",
@@ -373,7 +373,7 @@ export const landingPage = defineType({
       title: "Secondary CTA Text",
       type: "string",
       fieldset: "finalCta",
-      initialValue: "Browse Locations",
+      initialValue: "See What\u2019s Out There",
     }),
     defineField({
       name: "finalCtaSubtext",
