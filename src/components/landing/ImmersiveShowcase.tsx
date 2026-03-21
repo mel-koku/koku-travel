@@ -8,9 +8,9 @@ const defaultActs = [
   {
     number: "01",
     eyebrow: "DISCOVER",
-    title: "The places locals keep to themselves",
+    title: "Places worth knowing by name",
     description:
-      "Found the same way you'd find them if you lived here: word of mouth, wandering, and knowing where to look.",
+      "Found the same way you\u2019d find them if you lived here: word of mouth, wandering, and years on the ground.",
     image:
       "https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1920&q=80",
     alt: "Traditional Japanese alley",

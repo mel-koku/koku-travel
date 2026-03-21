@@ -20,14 +20,14 @@ import { urlFor } from "@/sanity/image";
 import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/lib/utils/seasonUtils";
 
 export const metadata: Metadata = {
-  title: "Koku Travel \u2014 Japan, the way locals know it",
-  description: "3,900+ places locals actually go. Build a trip to Japan \u2014 day by day, with real recommendations.",
+  title: "Koku Travel | Plan Your Trip to Japan",
+  description: "6,000+ places we'd actually recommend. Build a trip to Japan, day by day, with routing and timing handled for you.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Koku Travel \u2014 Japan, the way locals know it",
-    description: "3,900+ places locals actually go. Build a trip to Japan \u2014 day by day, with real recommendations.",
+    title: "Koku Travel | Plan Your Trip to Japan",
+    description: "6,000+ places we'd actually recommend. Build a trip to Japan, day by day, with routing and timing handled for you.",
     siteName: "Koku Travel",
   },
 };
