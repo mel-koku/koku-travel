@@ -26,6 +26,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
   const { createTrip, saved, setCityAccommodation } = useAppState();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successData, setSuccessData] = useState<{ tripName: string; tripId: string } | null>(null);
 
   const handleComplete = useCallback(async () => {
     setIsGenerating(true);
@@ -97,7 +98,7 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
       localStorage.removeItem("koku:content-context");
 
       reset();
-      router.push(`/itinerary?trip=${tripId}`);
+      setSuccessData({ tripName, tripId });
     } catch (err) {
       setError(err instanceof Error ? err.message : "An unexpected error occurred");
       setIsGenerating(false);
@@ -108,9 +109,19 @@ function TripBuilderV2Content({ sanityConfig }: { sanityConfig?: TripBuilderConf
     <>
       <TripBuilderV2 onComplete={handleComplete} sanityConfig={sanityConfig} />
 
-      {/* Cinematic generating overlay */}
+      {/* Cinematic generating overlay with success moment */}
       <AnimatePresence>
-        {isGenerating && <GeneratingOverlay sanityConfig={sanityConfig} />}
+        {isGenerating && (
+          <GeneratingOverlay
+            sanityConfig={sanityConfig}
+            successData={successData}
+            onSuccessComplete={() => {
+              if (successData) {
+                router.push(`/itinerary?trip=${successData.tripId}`);
+              }
+            }}
+          />
+        )}
       </AnimatePresence>
 
       {/* Error toast */}
