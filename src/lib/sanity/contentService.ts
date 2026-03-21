@@ -30,19 +30,25 @@ async function fetchWithCache<T>(
   key: string,
   query: string,
 ): Promise<T | null> {
-  // Try globalThis cache first (fastest)
+  // In development, skip caches to always fetch fresh Sanity content.
+  // In production, ISR + webhook revalidation handles freshness.
+  const isDev = process.env.NODE_ENV === "development";
+
+  // Try globalThis cache first (fastest, production only)
   const memKey = `__sanity_${key}` as const;
   const _g = globalThis as Record<string, unknown>;
   const memCached = _g[memKey] as { data: T; at: number } | undefined;
-  if (memCached && Date.now() - memCached.at < SANITY_CACHE_TTL) {
+  if (!isDev && memCached && Date.now() - memCached.at < SANITY_CACHE_TTL) {
     return memCached.data;
   }
 
-  // Try file cache (survives dev server restarts)
-  const fileCached = readFileCache<T>(`sanity-${key}`, SANITY_CACHE_TTL);
-  if (fileCached) {
-    _g[memKey] = { data: fileCached, at: Date.now() };
-    return fileCached;
+  // Try file cache (survives dev server restarts, production only)
+  if (!isDev) {
+    const fileCached = readFileCache<T>(`sanity-${key}`, SANITY_CACHE_TTL);
+    if (fileCached) {
+      _g[memKey] = { data: fileCached, at: Date.now() };
+      return fileCached;
+    }
   }
 
   // Fetch from Sanity with timeout
