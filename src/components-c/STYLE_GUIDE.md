@@ -23,7 +23,7 @@ Loaded in `src/app/c/layout.tsx`. Weight 200-800 available.
 | Section H2       | `clamp(1.75rem, 3.5vw, 3rem)` | 700    | `-0.03em` |
 | Philosophy H2    | `clamp(2rem, 4.5vw, 4rem)`    | 700    | `-0.03em` |
 | Showcase H2      | `clamp(2rem, 4vw, 3.5rem)`    | 700    | `-0.03em` |
-| H3 (card titles) | `text-base lg:text-lg`        | 700    | `-0.01em` |
+| H3 (card titles) | `text-base lg:text-lg`        | 500    | `-0.01em` |
 | Body             | `text-sm lg:text-[15px]`      | 400    | `0`       |
 | Eyebrow          | `text-[10px]`                 | 700    | `0.2em`   |
 | Button/Nav label | `text-[11px]`                 | 700    | `0.15em`  |
@@ -237,7 +237,9 @@ h-11 px-7 text-[11px] font-bold uppercase tracking-[0.15em]
 - `gap-px` grid with `bg-[var(--border)]` parent
 - Image `aspect-[4/3]` (locations, experiences) or `aspect-[3/2]` (guides)
 - Content padding `p-5 lg:p-6`
+- Card title weight: `500` (medium), not bold
 - Hover: image scale + title color shift
+- **Overlays flush**: Badges and action buttons on card images use `top-0 left-0` / `top-0 right-0` (no inset). Flush edges reinforce the zero-radius grid aesthetic.
 
 ### Header
 

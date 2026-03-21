@@ -102,6 +102,9 @@ export default async function HomeCPage() {
           />
         </ErrorBoundary>
         <ErrorBoundary fallback={null}>
+          <TestimonialsC content={landingContent ?? undefined} />
+        </ErrorBoundary>
+        <ErrorBoundary fallback={null}>
           <SeasonalSpotlightC
             season={currentSeason}
             guides={seasonalGuides}
@@ -117,16 +120,13 @@ export default async function HomeCPage() {
           />
         </ErrorBoundary>
         <ErrorBoundary fallback={null}>
-          <TestimonialsC content={landingContent ?? undefined} />
+          <AskKokuPreviewC />
         </ErrorBoundary>
         <ErrorBoundary fallback={null}>
           <FeaturedGuidesC
             guides={featuredGuides}
             content={landingContent ?? undefined}
           />
-        </ErrorBoundary>
-        <ErrorBoundary fallback={null}>
-          <AskKokuPreviewC />
         </ErrorBoundary>
 
         <TypographicBreakC />

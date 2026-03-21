@@ -1,0 +1,198 @@
+"use client";
+
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { PlacesMapC, type MapBounds } from "./PlacesMapC";
+import { PlacesMapCardC } from "./PlacesMapCardC";
+import type { Location } from "@/types/location";
+
+const PAGE_SIZE = 40;
+
+type PlacesMapLayoutCProps = {
+  filteredLocations: Location[];
+  sortedLocations: Location[];
+  totalCount: number;
+  isLoading?: boolean;
+  hasActiveChips?: boolean;
+  onSelectLocation?: (location: Location) => void;
+  useCraftTypeColors?: boolean;
+};
+
+export function PlacesMapLayoutC({
+  filteredLocations,
+  sortedLocations,
+  onSelectLocation,
+  useCraftTypeColors,
+}: PlacesMapLayoutCProps) {
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
+  const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
+  const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
+  const [page, setPage] = useState(1);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const cardRefsMap = useRef<Map<string, HTMLDivElement>>(new Map());
+  const hoverSourceRef = useRef<"card" | "map" | null>(null);
+
+  const handleBoundsChange = useCallback((bounds: MapBounds) => {
+    setMapBounds(bounds);
+    setPage(1);
+  }, []);
+
+  const handleCardHoverChange = useCallback((locationId: string | null) => {
+    hoverSourceRef.current = locationId ? "card" : null;
+    setHoveredLocationId(locationId);
+  }, []);
+
+  const handleMapHoverChange = useCallback((locationId: string | null) => {
+    hoverSourceRef.current = locationId ? "map" : null;
+    setHoveredLocationId(locationId);
+  }, []);
+
+  const handleLocationClick = useCallback(
+    (location: Location) => {
+      onSelectLocation?.(location);
+    },
+    [onSelectLocation],
+  );
+
+  const handleCardSelect = useCallback(
+    (location: Location) => {
+      setFlyToLocation(location);
+      onSelectLocation?.(location);
+    },
+    [onSelectLocation],
+  );
+
+  const boundsFilteredLocations = useMemo(() => {
+    if (!mapBounds) return sortedLocations;
+    const { north, south, east, west } = mapBounds;
+    return sortedLocations.filter((loc) => {
+      if (!loc.coordinates) return true;
+      const { lat, lng } = loc.coordinates;
+      return lat >= south && lat <= north && lng >= west && lng <= east;
+    });
+  }, [sortedLocations, mapBounds]);
+
+  const visibleLocations = useMemo(
+    () => boundsFilteredLocations.slice(0, page * PAGE_SIZE),
+    [boundsFilteredLocations, page],
+  );
+  const hasMore = visibleLocations.length < boundsFilteredLocations.length;
+
+  // Infinite scroll inside the pill column
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setPage((prev) => prev + 1);
+      },
+      { rootMargin: "0px 0px 200% 0px" },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, visibleLocations.length]);
+
+  // Auto-scroll to highlighted pill when map pin hovered
+  useEffect(() => {
+    if (!hoveredLocationId || hoverSourceRef.current !== "map") return;
+    const el = cardRefsMap.current.get(hoveredLocationId);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [hoveredLocationId]);
+
+  const mappedCount = mapBounds
+    ? boundsFilteredLocations.filter((loc) => loc.coordinates).length
+    : sortedLocations.filter((loc) => loc.coordinates).length;
+  const showResetButton = mapBounds !== null && mappedCount === 0 && sortedLocations.filter((loc) => loc.coordinates).length > 0;
+
+  const setCardRef = useCallback(
+    (locationId: string) => (el: HTMLDivElement | null) => {
+      if (el) cardRefsMap.current.set(locationId, el);
+      else cardRefsMap.current.delete(locationId);
+    },
+    [],
+  );
+
+  return (
+    <div
+      data-lenis-prevent
+      className="fixed inset-x-0 bottom-0 z-20"
+      style={{ top: "calc(var(--header-h) + var(--category-bar-h, 56px))" }}
+    >
+      <div className="relative h-full">
+        {/* Full-width map */}
+        <ErrorBoundary
+          fallback={
+            <div className="flex h-full items-center justify-center text-sm text-[var(--muted-foreground)]">
+              Map unavailable
+            </div>
+          }
+        >
+          <PlacesMapC
+            locations={filteredLocations}
+            onBoundsChange={handleBoundsChange}
+            onLocationClick={handleLocationClick}
+            highlightedLocationId={hoveredLocationId}
+            onHoverChange={handleMapHoverChange}
+            showResetButton={showResetButton}
+            flyToLocation={flyToLocation}
+            useCraftTypeColors={useCraftTypeColors}
+          />
+        </ErrorBoundary>
+
+        {/* Mobile: horizontal snap-scroll strip at bottom */}
+        <div className="absolute bottom-3 left-0 right-0 z-10 flex md:hidden pointer-events-auto overflow-x-auto overscroll-contain snap-x snap-mandatory gap-2 px-3 scrollbar-hide">
+          {visibleLocations.map((location) => (
+            <div key={location.id} className="w-48 shrink-0 snap-start">
+              <PlacesMapCardC
+                ref={setCardRef(location.id)}
+                location={location}
+                isHighlighted={hoveredLocationId === location.id}
+                onHover={handleCardHoverChange}
+                onSelect={handleCardSelect}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: Floating pill column */}
+        <div
+          className="absolute top-3 left-3 bottom-3 z-10 hidden w-44 lg:w-56 flex-col pointer-events-none md:flex"
+        >
+          {/* Count + zoom hint */}
+          {boundsFilteredLocations.length > 0 && (
+            <div className="mb-1.5 pointer-events-auto">
+              <span
+                className="inline-block bg-[var(--foreground)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[var(--background)]"
+              >
+                {boundsFilteredLocations.length.toLocaleString()} places
+                {mapBounds && mappedCount <= 10 && mappedCount < sortedLocations.filter((l) => l.coordinates).length && (
+                  <span className="font-normal ml-1">Zoom out for more</span>
+                )}
+              </span>
+            </div>
+          )}
+
+          {/* Scrollable pills */}
+          <div className="flex-1 overflow-y-auto overscroll-contain scrollbar-hide space-y-1 pointer-events-auto">
+            {visibleLocations.map((location) => (
+              <PlacesMapCardC
+                key={location.id}
+                ref={setCardRef(location.id)}
+                location={location}
+                isHighlighted={hoveredLocationId === location.id}
+                onHover={handleCardHoverChange}
+                onSelect={handleCardSelect}
+              />
+            ))}
+
+            {hasMore && (
+              <div ref={sentinelRef} className="py-2 flex justify-center">
+                <div className="h-[2px] w-12 bg-[var(--border)]" />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

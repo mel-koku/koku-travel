@@ -19,7 +19,13 @@ export function computeDefaultCityDays(
 ): number[] {
   if (cities.length === 0 || totalDays <= 0) return [];
 
-  const base = Math.max(1, Math.floor(totalDays / cities.length));
+  // When more cities than days, give 1 day each up to totalDays,
+  // then 0 for the rest (auto-return city gets squeezed)
+  if (cities.length > totalDays) {
+    return cities.map((_, i) => (i < totalDays ? 1 : 0));
+  }
+
+  const base = Math.floor(totalDays / cities.length);
   let remainder = totalDays - base * cities.length;
 
   return cities.map(() => {

@@ -1,0 +1,281 @@
+"use client";
+
+import { Suspense } from "react";
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
+import { ItineraryShellC } from "@c/features/itinerary/ItineraryShellC";
+import { ItinerarySkeletonC } from "@c/features/itinerary/ItinerarySkeletonC";
+import { useSmartPrompts } from "@/components/features/itinerary/SmartPromptsDrawer";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { useAppState } from "@/state/AppState";
+import { MOCK_ITINERARY } from "@/data/mocks/mockItinerary";
+import type { Itinerary } from "@/types/itinerary";
+import { env } from "@/lib/env";
+import { detectGaps, detectGuidanceGaps, type DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import { useSmartPromptActions } from "@/hooks/useSmartPromptActions";
+import { fetchDayGuidance, getCurrentSeason } from "@/lib/tips/guidanceService";
+import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
+import type { PagesContent } from "@/types/sanitySiteContent";
+
+type ItineraryClientCProps = {
+  content?: PagesContent;
+};
+
+/** Parse YYYY-MM-DD safely to avoid UTC midnight timezone bug */
+function parseTripDate(dateStr: string): Date {
+  return parseLocalDate(dateStr) ?? new Date();
+}
+
+const formatDateLabel = (iso: string | undefined) => {
+  if (!iso) {
+    return "";
+  }
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  return new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }).format(date);
+};
+
+function ItineraryPageContent({ content }: { content?: PagesContent }) {
+  const searchParams = useSearchParams();
+  const requestedTripId = searchParams.get("trip");
+  const { trips, updateTripItinerary } = useAppState();
+  const [isMounted, setIsMounted] = useState(false);
+  const [guidanceGaps, setGuidanceGaps] = useState<DetectedGap[]>([]);
+
+  // Track mount state to prevent hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const selectedTripId = useMemo(() => {
+    if (!trips.length) {
+      return null;
+    }
+    if (
+      requestedTripId &&
+      trips.some((trip) => trip.id === requestedTripId)
+    ) {
+      return requestedTripId;
+    }
+    return trips[0]?.id ?? null;
+  }, [requestedTripId, trips]);
+
+  const isUsingMock = trips.length === 0 && env.useMockItinerary;
+
+  const handleItineraryChange = useCallback(
+    (next: Itinerary) => {
+      if (!selectedTripId) {
+        return;
+      }
+      updateTripItinerary(selectedTripId, next);
+    },
+    [selectedTripId, updateTripItinerary],
+  );
+
+  const selectedTrip = selectedTripId
+    ? trips.find((trip) => trip.id === selectedTripId)
+    : null;
+
+  const activeItinerary: Itinerary | null = selectedTrip
+    ? selectedTrip.itinerary
+    : isUsingMock
+      ? MOCK_ITINERARY
+      : null;
+
+  const createdLabel =
+    selectedTrip?.createdAt ? formatDateLabel(selectedTrip.createdAt) : null;
+  const updatedLabel =
+    selectedTrip?.updatedAt && selectedTrip.updatedAt !== selectedTrip?.createdAt
+      ? formatDateLabel(selectedTrip.updatedAt)
+      : null;
+
+  // Detect gaps for smart prompts (sync)
+  const syncGaps = useMemo(() => {
+    if (!activeItinerary) return [];
+    return detectGaps(activeItinerary, {
+      includeMeals: true,
+      includeTransport: false,
+      includeExperiences: true,
+      maxGapsPerDay: 2,
+    });
+  }, [activeItinerary]);
+
+  // Fetch guidance gaps asynchronously per day
+  const tripStartDate = selectedTrip?.builderData?.dates?.start;
+  useEffect(() => {
+    if (!activeItinerary) {
+      setGuidanceGaps([]);
+      return;
+    }
+
+    let cancelled = false;
+    const startDate = tripStartDate ? parseTripDate(tripStartDate) : new Date();
+
+    Promise.all(
+      activeItinerary.days.map((day, dayIndex) => {
+        const dayDate = tripStartDate
+          ? parseLocalDateWithOffset(tripStartDate, dayIndex) ?? new Date()
+          : new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + dayIndex);
+        return detectGuidanceGaps(day, dayIndex, {
+          fetchDayGuidance,
+          season: getCurrentSeason(dayDate),
+          month: dayDate.getMonth() + 1,
+          maxPerDay: 2,
+        });
+      })
+    ).then((results) => {
+      if (!cancelled) {
+        const seen = new Set<string>();
+        const deduped = results.flat().filter((gap) => {
+          const gId = gap.action && "guidanceId" in gap.action ? gap.action.guidanceId : gap.id;
+          if (seen.has(gId)) return false;
+          seen.add(gId);
+          return true;
+        });
+        setGuidanceGaps(deduped);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeItinerary, tripStartDate]);
+
+  // Merge sync gaps + async guidance gaps
+  const initialGaps = useMemo(() => {
+    return [...syncGaps, ...guidanceGaps];
+  }, [syncGaps, guidanceGaps]);
+
+  const smartPrompts = useSmartPrompts(initialGaps, selectedTripId ?? undefined);
+
+  // Reset prompts when trip changes
+  useEffect(() => {
+    if (activeItinerary) {
+      const newSyncGaps = detectGaps(activeItinerary, {
+        includeMeals: true,
+        includeTransport: false,
+        includeExperiences: true,
+        maxGapsPerDay: 2,
+      });
+      smartPrompts.resetPrompts([...newSyncGaps, ...guidanceGaps]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTripId]);
+
+  // Helper functions for smart prompt actions
+  const getDay = useCallback((dayId: string) => {
+    return activeItinerary?.days.find((d) => d.id === dayId);
+  }, [activeItinerary]);
+
+  const getUsedLocationIds = useCallback(() => {
+    if (!activeItinerary) return [];
+    return activeItinerary.days.flatMap((day) =>
+      day.activities
+        .filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place")
+        .map((a) => a.locationId)
+        .filter((id): id is string => Boolean(id))
+    );
+  }, [activeItinerary]);
+
+  // Smart prompt actions hook
+  const smartPromptActions = useSmartPromptActions(
+    selectedTrip?.id ?? null,
+    selectedTrip?.builderData,
+    getDay,
+    getUsedLocationIds
+  );
+
+  const handleSmartPromptAccept = useCallback(async (gap: DetectedGap) => {
+    const result = await smartPromptActions.acceptGap(gap);
+    if (result.success) {
+      smartPrompts.handleAccept(gap);
+    }
+    return result;
+  }, [smartPromptActions, smartPrompts]);
+
+  const handleSmartPromptSkip = useCallback((gap: DetectedGap) => {
+    smartPrompts.handleSkip(gap);
+  }, [smartPrompts]);
+
+  // Wrap confirmPreview to also dismiss the gap from smart prompts
+  const handleConfirmPreview = useCallback(() => {
+    if (smartPromptActions.previewState) {
+      smartPrompts.handleAccept(smartPromptActions.previewState.gap);
+    }
+    smartPromptActions.confirmPreview();
+  }, [smartPromptActions, smartPrompts]);
+
+  // Wait for mount to prevent hydration mismatch
+  if (!isMounted) {
+    return (
+      <div
+        className="p-16 text-center"
+        style={{ color: "var(--muted-foreground)" }}
+      >
+        <p>{content?.itineraryLoadingText ?? "Loading..."}</p>
+      </div>
+    );
+  }
+
+  if (!activeItinerary) {
+    return (
+      <div
+        className="p-16 text-center"
+        style={{ color: "var(--muted-foreground)" }}
+      >
+        <p>{content?.itineraryEmptyState ?? "No itineraries yet. Build a trip and it will show up here."}</p>
+        <Link
+          href="/c/trip-builder"
+          className="mt-4 inline-block transition-colors hover:opacity-80"
+          style={{ color: "var(--primary)" }}
+        >
+          {content?.itineraryBuilderLink ?? "Go to Trip Builder"}
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="pt-[var(--header-h)] pb-6 sm:pb-8 md:pb-10"
+      style={{ backgroundColor: "var(--background)" }}
+    >
+      <ErrorBoundary>
+        <ItineraryShellC
+          key={selectedTrip?.id ?? "mock-itinerary"}
+          itinerary={activeItinerary}
+          tripId={selectedTrip?.id ?? "mock"}
+          onItineraryChange={selectedTrip ? handleItineraryChange : undefined}
+          createdLabel={createdLabel}
+          updatedLabel={updatedLabel}
+          isUsingMock={isUsingMock}
+          tripStartDate={selectedTrip?.builderData?.dates?.start}
+          tripBuilderData={selectedTrip?.builderData}
+          dayIntros={selectedTrip?.dayIntros}
+          suggestions={smartPrompts.gaps}
+          onAcceptSuggestion={handleSmartPromptAccept}
+          onSkipSuggestion={handleSmartPromptSkip}
+          loadingSuggestionId={smartPromptActions.loadingGapId}
+          previewState={smartPromptActions.previewState}
+          onConfirmPreview={handleConfirmPreview}
+          onShowAnother={smartPromptActions.showAnother}
+          onCancelPreview={smartPromptActions.cancelPreview}
+          onFilterChange={smartPromptActions.setRefinementFilter}
+          isPreviewLoading={smartPromptActions.isLoading}
+        />
+      </ErrorBoundary>
+    </div>
+  );
+}
+
+export function ItineraryClientC({ content }: ItineraryClientCProps) {
+  return (
+    <Suspense fallback={<ItinerarySkeletonC />}>
+      <ItineraryPageContent content={content} />
+    </Suspense>
+  );
+}

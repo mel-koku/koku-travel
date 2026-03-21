@@ -121,21 +121,22 @@ export function HeaderC() {
           <div className="flex items-center gap-3">
             <VariantToggle />
 
-            {/* CTA: sharp corners, vermillion, uppercase */}
-            <Link
-              href="/c/trip-builder"
-              className="hidden h-10 items-center justify-center bg-[var(--primary)] px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition-opacity duration-200 hover:opacity-90 active:scale-[0.98] sm:inline-flex"
-            >
-              Plan a Trip
-            </Link>
+            <div className="hidden items-center sm:flex">
+              {/* CTA: sharp corners, vermillion, uppercase */}
+              <Link
+                href="/c/trip-builder"
+                className="flex h-10 items-center justify-center bg-[var(--primary)] px-6 text-[11px] font-bold uppercase tracking-[0.15em] text-white transition-opacity duration-200 hover:opacity-90 active:scale-[0.98]"
+              >
+                Plan a Trip
+              </Link>
 
-            {/* Desktop user menu */}
-            {!authLoading && (
-              <div ref={userMenuRef} className="relative hidden md:block">
-                <button
-                  type="button"
-                  onClick={() => setUserMenuOpen((v) => !v)}
-                  className="flex h-8 w-8 items-center justify-center border border-[var(--border)] text-xs font-bold text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
+              {/* Desktop user menu */}
+              {!authLoading && (
+                <div ref={userMenuRef} className="relative hidden md:block">
+                  <button
+                    type="button"
+                    onClick={() => setUserMenuOpen((v) => !v)}
+                    className="flex h-10 w-10 items-center justify-center border border-[var(--border)] border-l-0 text-xs font-bold text-[var(--foreground)] transition-colors hover:bg-[var(--muted)]"
                   aria-label="User menu"
                 >
                   {userInitial ?? (
@@ -197,6 +198,7 @@ export function HeaderC() {
                 )}
               </div>
             )}
+            </div>
 
             {/* Mobile hamburger */}
             <button
