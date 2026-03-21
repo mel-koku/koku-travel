@@ -426,18 +426,36 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
 
                     <ScrollReveal delay={0.3} distance={15}>
                       <p className="mt-3 max-w-sm text-sm text-white/70">
-                        {content?.dashboardEmptyDescription ?? "Head to the trip builder to plan your first adventure. It'll appear here once it's ready."}
+                        {content?.dashboardEmptyDescription ?? "Tell us your dates and what you're into. We'll build the days, route the trains, and handle the timing."}
                       </p>
                     </ScrollReveal>
 
                     <ScrollReveal delay={0.5} distance={10}>
                       <Link
                         href="/trip-builder"
-                        className="relative mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
+                        className="btn-koku relative mt-6 inline-flex items-center justify-center rounded-xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-brand-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-2"
                       >
                         <span className="absolute inset-0 rounded-xl bg-brand-primary/20 blur-xl" />
-                        <span className="relative">{content?.dashboardPlanButton ?? "Start planning"}</span>
+                        <span className="relative">{content?.dashboardPlanButton ?? "Build My First Trip"}</span>
                       </Link>
+                    </ScrollReveal>
+
+                    {/* Value props: what the dashboard becomes */}
+                    <ScrollReveal delay={0.7} distance={10}>
+                      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6">
+                        <div className="text-center">
+                          <p className="font-mono text-lg text-white/80">01</p>
+                          <p className="mt-1 text-xs uppercase tracking-wider text-white/50">Day-by-day timeline</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-mono text-lg text-white/80">02</p>
+                          <p className="mt-1 text-xs uppercase tracking-wider text-white/50">Routes and travel times</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="font-mono text-lg text-white/80">03</p>
+                          <p className="mt-1 text-xs uppercase tracking-wider text-white/50">Share with a link</p>
+                        </div>
+                      </div>
                     </ScrollReveal>
                   </div>
                 </div>
