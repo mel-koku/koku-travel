@@ -2,11 +2,11 @@
 
 import { createContext, useContext, useEffect } from "react";
 
-type Variant = "a" | "b";
+type Variant = "a" | "b" | "c";
 
 type VariantContextValue = {
   variant: Variant;
-  basePath: "" | "/b";
+  basePath: "" | "/b" | "/c";
 };
 
 const VariantContext = createContext<VariantContextValue>({
@@ -21,7 +21,7 @@ export function VariantProvider({
   variant: Variant;
   children: React.ReactNode;
 }) {
-  const basePath = variant === "b" ? "/b" : "";
+  const basePath = variant === "c" ? "/c" : variant === "b" ? "/b" : "";
 
   // Sync data-variant to <html> so Radix portals (rendered at body level)
   // inherit the correct CSS custom properties for each variant.
