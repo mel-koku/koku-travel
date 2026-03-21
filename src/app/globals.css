@@ -247,6 +247,103 @@
   --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h) + 10px);
 }
 
+/* ── Variant C: Structural Minimalism (Somoza/BONT) ── */
+/* Black + white + Japanese vermillion. Grid-driven. Type-forward. Zero decoration. */
+[data-variant="c"] {
+  color-scheme: light;
+
+  /* Core — high contrast, no warmth */
+  --background: #fafafa;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+
+  /* Accent: Japanese vermillion (torii gate red) */
+  --primary: #e63312;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f2f2;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f5f5f5;
+  --muted-foreground: #6b6b6b;
+  --accent: #f5f5f5;
+  --accent-foreground: #e63312;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e0e0e0;
+  --input: #e0e0e0;
+  --ring: #e63312;
+  --radius: 0px;
+
+  /* Charts */
+  --chart-1: #e63312;
+  --chart-2: #0a0a0a;
+  --chart-3: #6b6b6b;
+  --chart-4: #b0b0b0;
+  --chart-5: #e0e0e0;
+
+  /* Sidebar */
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #e63312;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #e0e0e0;
+  --sidebar-ring: #e63312;
+
+  /* Extended palette — mapped to A/B token names for Tailwind compat */
+  --foreground-secondary: #6b6b6b;
+  --foreground-body: #2a2a2a;
+  --surface: #f2f2f2;
+  --brand-primary: #e63312;
+  --brand-secondary: #0a0a0a;
+  --success: #16a34a;
+  --warning: #ca8a04;
+  --error: #dc2626;
+  --stone: #a3a3a3;
+  --cream: #f5f5f5;
+  --sage: #16a34a;
+  --terracotta: #e63312;
+  --charcoal: #0a0a0a;
+  --sand: #e0e0e0;
+  --warm-gray: #6b6b6b;
+  --canvas: #f2f2f2;
+
+  /* Shadows — near zero. Borders do the work. */
+  --shadow-sm: none;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-depth: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-glow: none;
+
+  /* Layout */
+  --header-h: 72px;
+  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h) + 10px);
+}
+
+/* Variant C dark inversion (for color-block sections) */
+[data-variant="c"] [data-section-dark] {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card: #141414;
+  --card-foreground: #fafafa;
+  --border: #2a2a2a;
+  --muted-foreground: #a3a3a3;
+  --foreground-secondary: #a3a3a3;
+  --surface: #141414;
+}
+
+/* Variant C vermillion block (for accent sections) */
+[data-variant="c"] [data-section-accent] {
+  --background: #e63312;
+  --foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.2);
+  --muted-foreground: rgba(255, 255, 255, 0.7);
+  --foreground-secondary: rgba(255, 255, 255, 0.7);
+}
+
 @theme inline {
   /* shadcn/ui color tokens */
   --color-background: var(--background);
@@ -305,9 +402,13 @@
   --font-mono: var(--font-geist-mono), "ui-monospace", "monospace";
   --font-serif: var(--font-instrument-serif), "Georgia", "serif";
 
+  /* Display font (Plus Jakarta Sans — used by Variant C) */
+  --font-display: var(--font-plus-jakarta), "system-ui", "sans-serif";
+
   /* Letter-spacing (tracking) tokens */
   --tracking-display: -0.04em;
   --tracking-heading: -0.02em;
+  --tracking-tight: -0.06em;
   --tracking-ultra: 0.3em;
 
   /* Radius tokens */

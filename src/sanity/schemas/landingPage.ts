@@ -171,13 +171,11 @@ export const landingPage = defineType({
               title: "Image",
               type: "image",
               options: { hotspot: true },
-              validation: (rule) => rule.required(),
             }),
             defineField({
               name: "alt",
               title: "Image Alt Text",
               type: "string",
-              validation: (rule) => rule.required(),
             }),
           ],
           preview: {
@@ -293,13 +291,11 @@ export const landingPage = defineType({
               title: "Image",
               type: "image",
               options: { hotspot: true },
-              validation: (rule) => rule.required(),
             }),
             defineField({
               name: "alt",
               title: "Image Alt Text",
               type: "string",
-              validation: (rule) => rule.required(),
             }),
           ],
           preview: {

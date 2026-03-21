@@ -3,8 +3,16 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useVariant } from "@/lib/variant/VariantContext";
 
+const VARIANT_COLORS = {
+  a: "#c4504f",
+  b: "#2D4B8E",
+  c: "#e63312",
+} as const;
+
+const VARIANT_ORDER = ["a", "b", "c"] as const;
+
 /**
- * Temporary A/B variant toggle for testing.
+ * Temporary A/B/C variant toggle for testing.
  * Remove before going public.
  */
 export function VariantToggle() {
@@ -12,64 +20,47 @@ export function VariantToggle() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const handleToggle = () => {
-    let targetPath: string;
+  const handleCycle = () => {
+    const currentIdx = VARIANT_ORDER.indexOf(variant);
+    const nextVariant = VARIANT_ORDER[(currentIdx + 1) % VARIANT_ORDER.length]!;
 
-    if (variant === "a") {
-      // A → B: prepend /b
-      const path = pathname === "/" ? "/" : pathname;
-      targetPath = `/b${path}`;
+    // Strip current variant prefix
+    let basePath = pathname;
+    if (variant === "b") basePath = pathname.replace(/^\/b/, "") || "/";
+    if (variant === "c") basePath = pathname.replace(/^\/c/, "") || "/";
+
+    // Add next variant prefix
+    let targetPath: string;
+    if (nextVariant === "a") {
+      targetPath = basePath;
     } else {
-      // B → A: strip /b prefix
-      const stripped = pathname.replace(/^\/b/, "");
-      targetPath = stripped || "/";
+      targetPath = `/${nextVariant}${basePath}`;
     }
 
     router.push(targetPath);
   };
 
-  if (process.env.NODE_ENV !== "development" && !process.env.NEXT_PUBLIC_SHOW_VARIANT_TOGGLE) return null;
+  if (
+    process.env.NODE_ENV !== "development" &&
+    !process.env.NEXT_PUBLIC_SHOW_VARIANT_TOGGLE
+  )
+    return null;
 
   return (
     <button
       type="button"
-      onClick={handleToggle}
-      className="relative flex h-7 items-center rounded-full p-0.5 text-xs font-semibold transition-colors"
+      onClick={handleCycle}
+      className="flex h-7 items-center justify-center gap-0.5 px-2 text-xs font-bold uppercase tracking-wide transition-colors"
       style={{
-        width: "3.25rem",
-        backgroundColor:
-          variant === "a"
-            ? "rgba(196, 80, 79, 0.15)"
-            : "rgba(45, 75, 142, 0.12)",
+        backgroundColor: `${VARIANT_COLORS[variant]}15`,
+        color: VARIANT_COLORS[variant],
+        borderRadius: variant === "c" ? "0px" : "9999px",
+        minWidth: "2.5rem",
       }}
-      aria-label={`Switch to variant ${variant === "a" ? "B" : "A"}`}
-      title={`Switch to variant ${variant === "a" ? "B" : "A"}`}
+      aria-label={`Current variant: ${variant.toUpperCase()}. Click to cycle.`}
+      title={`Variant ${variant.toUpperCase()} — click to switch`}
     >
-      {/* Sliding pill */}
-      <span
-        className="absolute top-0.5 h-6 w-6 rounded-full shadow-sm transition-all duration-200 ease-out"
-        style={{
-          left: variant === "a" ? "2px" : "calc(100% - 26px)",
-          backgroundColor: variant === "a" ? "#c4504f" : "#2D4B8E",
-        }}
-      />
-      {/* Labels */}
-      <span
-        className="relative z-10 flex h-6 w-6 items-center justify-center transition-colors duration-200"
-        style={{
-          color: variant === "a" ? "#fff" : variant === "b" ? "#2D4B8E" : undefined,
-        }}
-      >
-        A
-      </span>
-      <span
-        className="relative z-10 flex h-6 w-6 items-center justify-center transition-colors duration-200"
-        style={{
-          color: variant === "b" ? "#fff" : variant === "a" ? "#c4504f" : undefined,
-        }}
-      >
-        B
-      </span>
+      {variant.toUpperCase()}
     </button>
   );
 }
