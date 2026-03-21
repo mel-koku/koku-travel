@@ -97,7 +97,10 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
         {/* Content — bottom-left editorial */}
         <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-[calc(4rem+env(safe-area-inset-bottom))] text-left sm:px-8 lg:px-12">
           <div className="max-w-2xl">
-            <h1 className="font-serif text-3xl italic leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl">
+            <p className="font-mono text-sm uppercase tracking-wider text-white/50">
+              {locationCount.toLocaleString()}+ places
+            </p>
+            <h1 className="mt-3 font-serif text-3xl italic leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl">
               {headline}
             </h1>
             <p className="mt-5 max-w-lg text-base text-white/70 sm:text-lg">
@@ -180,10 +183,19 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
         }}
       >
         <div className="max-w-2xl">
+          {/* Mono data callout */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, ease: easeReveal }}
+            className="font-mono text-sm uppercase tracking-wider text-white/50"
+          >
+            {locationCount.toLocaleString()}+ places
+          </motion.p>
           {/* Statement headline — word-by-word clip reveal */}
           <SplitText
             as="h1"
-            className="font-serif text-3xl italic leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl"
+            className="mt-3 font-serif text-3xl italic leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl"
             splitBy="word"
             trigger="load"
             animation="clipY"
