@@ -250,7 +250,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
       {/* Left (60%) — Japan map area with selected airport display */}
-      <div className="relative flex items-center justify-center overflow-hidden bg-surface/30 px-8 py-8 lg:w-[60%]">
+      <div className="relative flex items-center justify-center overflow-hidden bg-surface/30 px-8 py-4 lg:w-[60%] lg:py-0">
         <div className="relative w-full max-w-lg">
           {/* SVG Japan Map with airport markers */}
           <JapanSilhouette
@@ -265,7 +265,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
       </div>
 
       {/* Right (40%) — Airport selection */}
-      <div className="flex flex-1 flex-col px-6 py-8 lg:w-[40%] lg:justify-center lg:px-12">
+      <div className="flex flex-1 flex-col px-6 py-8 lg:w-[40%] lg:items-center lg:justify-center lg:px-12">
         <div className="mx-auto w-full max-w-md">
           <p className="eyebrow-editorial text-brand-primary">
             STEP 02
