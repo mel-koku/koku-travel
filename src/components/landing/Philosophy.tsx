@@ -22,7 +22,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
 
         {/* Heading */}
         <ScrollReveal delay={0.1}>
-          <h2 className="mx-auto mt-6 max-w-2xl font-serif text-xl leading-snug tracking-heading text-foreground sm:text-2xl lg:text-3xl">
+          <h2 className="mx-auto mt-6 max-w-2xl font-serif text-2xl leading-snug tracking-heading text-foreground sm:text-3xl">
             {content?.philosophyHeading ??
               "From years of living here. Not a desk."}
           </h2>
@@ -35,9 +35,9 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
             <div className="flex items-baseline justify-center gap-1">
               <AnimatedNumber
                 value={locationCount}
-                className="text-[clamp(2.5rem,5vw,4rem)] font-mono font-light text-foreground leading-none"
+                className="text-3xl sm:text-4xl font-mono font-light text-foreground leading-none"
               />
-              <span className="text-[clamp(1.25rem,2.5vw,2rem)] font-mono font-light text-foreground">
+              <span className="text-xl sm:text-2xl font-mono font-light text-foreground">
                 +
               </span>
             </div>
@@ -56,7 +56,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
                 const parsed = stats?.[1]?.value ? parseInt(stats[1].value, 10) : 629;
                 return isNaN(parsed) ? 629 : parsed;
               })()}
-              className="text-[clamp(2.5rem,5vw,4rem)] font-mono font-light text-foreground leading-none"
+              className="text-3xl sm:text-4xl font-mono font-light text-foreground leading-none"
             />
             <p className="eyebrow-mono mt-3">
               {stats?.[1]?.label ?? "People who know the ground"}
@@ -68,7 +68,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
 
           {/* Stat 3 — Local */}
           <div className="text-center">
-            <span className="text-[clamp(2.5rem,5vw,4rem)] font-mono font-light text-foreground leading-none">
+            <span className="text-3xl sm:text-4xl font-mono font-light text-foreground leading-none">
               {stats?.[2]?.value ?? "90"}
               {stats?.[2]?.suffix ?? "+"}
             </span>
