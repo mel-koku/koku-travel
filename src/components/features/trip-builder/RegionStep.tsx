@@ -408,7 +408,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         {/* Region rows */}
         <div className="mt-8 px-4 pb-32 lg:max-w-[45%] lg:px-8">
           {scoredRegions.map((scored, i) => {
-            const { selected, total } = getCityCounts(scored.region.id);
+            const { selected } = getCityCounts(scored.region.id);
             const regionDef = REGIONS.find((r) => r.id === scored.region.id);
             const allCityNames = regionDef?.cities.map((c) => c.name) ?? [];
             const regionName = scored.region.name;
@@ -428,7 +428,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     additionalCityCount={additionalCityCount}
                     matchScore={scored.totalScore}
                     selectedCityCount={selected}
-                    totalCityCount={total}
+
                     isHovered={hoveredRegion === scored.region.id}
                     isRecommended={scored.isRecommended}
                     isEntryPointRegion={scored.isEntryPointRegion}
@@ -449,7 +449,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
                     additionalCityCount={additionalCityCount}
                     matchScore={scored.totalScore}
                     selectedCityCount={selected}
-                    totalCityCount={total}
+
                     isHovered={expandedRegion === scored.region.id}
                     isRecommended={scored.isRecommended}
                     isEntryPointRegion={scored.isEntryPointRegion}
