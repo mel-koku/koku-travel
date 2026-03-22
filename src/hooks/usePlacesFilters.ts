@@ -7,7 +7,7 @@ import { locationMatchesVibes } from "@/data/vibeFilterMapping";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { getOpenStatus } from "@/lib/availability/isOpenNow";
 import { useLocationSearchQuery } from "@/hooks/useLocationsQuery";
-import { locationHasSeasonalTag, isSeasonalMonth, getCurrentMonth } from "@/lib/utils/seasonUtils";
+import { locationHasSeasonalTag, getCurrentMonth } from "@/lib/utils/seasonUtils";
 
 // ── Constants ──────────────────────────────────────────────
 
@@ -34,11 +34,10 @@ export { DURATION_FILTERS };
 
 const PAGE_SIZE = 24;
 
-export type SortOptionId = "recommended" | "in_season" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
+export type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
 export const SORT_OPTIONS = [
   { id: "recommended" as const, label: "Recommended" },
-  { id: "in_season" as const, label: "In Season" },
   { id: "highest_rated" as const, label: "Highest Rated" },
   { id: "most_reviews" as const, label: "Most Reviews" },
   { id: "price_low" as const, label: "Price (Low to High)" },
@@ -129,10 +128,8 @@ export function usePlacesFilters(
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [jtaApprovedOnly, setJtaApprovedOnly] = useState(false);
 
-  // Sort + pagination — auto-select "in_season" when the current month has notable events
-  const [selectedSort, setSelectedSort] = useState<SortOptionId>(
-    isSeasonalMonth(getCurrentMonth()) ? "in_season" : "recommended"
-  );
+  // Sort + pagination
+  const [selectedSort, setSelectedSort] = useState<SortOptionId>("recommended");
   const [page, setPage] = useState(1);
 
   // Reset page on filter/sort change
@@ -259,7 +256,9 @@ export function usePlacesFilters(
 
       const matchesCategory = !selectedCategory
         ? true
-        : location.category === selectedCategory;
+        : selectedCategory === "in_season"
+          ? locationHasSeasonalTag(location.tags, getCurrentMonth())
+          : location.category === selectedCategory;
 
       const matchesJta = !jtaApprovedOnly
         ? true
@@ -285,22 +284,12 @@ export function usePlacesFilters(
   // Sort
   const sortedLocations = useMemo(() => {
     const sorted = [...filteredLocations];
-    const currentMonth = getCurrentMonth();
     switch (selectedSort) {
       case "recommended":
         return sorted.sort((a, b) => {
           const scoreA = calculatePopularityScore(a.ratingValue, a.reviewCount);
           const scoreB = calculatePopularityScore(b.ratingValue, b.reviewCount);
           if (scoreA === scoreB) return a.name.localeCompare(b.name);
-          return scoreB - scoreA;
-        });
-      case "in_season":
-        return sorted.sort((a, b) => {
-          const aSeasonal = locationHasSeasonalTag(a.tags, currentMonth) ? 1 : 0;
-          const bSeasonal = locationHasSeasonalTag(b.tags, currentMonth) ? 1 : 0;
-          if (aSeasonal !== bSeasonal) return bSeasonal - aSeasonal;
-          const scoreA = calculatePopularityScore(a.ratingValue, a.reviewCount);
-          const scoreB = calculatePopularityScore(b.ratingValue, b.reviewCount);
           return scoreB - scoreA;
         });
       case "highest_rated":
@@ -410,7 +399,9 @@ export function usePlacesFilters(
     }
 
     if (selectedCategory) {
-      const label = selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
+      const label = selectedCategory === "in_season"
+        ? "In Season"
+        : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
       filters.push({ type: "category", value: selectedCategory, label });
     }
 
