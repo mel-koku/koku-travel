@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
-import { MessageCircle } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { ActiveFilter } from "@/types/filters";
 
@@ -14,8 +13,7 @@ type CategoryBarProps = {
   inputValue: string;
   onInputChange: (value: string) => void;
   onInputSubmit: () => void;
-  onAskKokuClick?: () => void;
-  isChatOpen?: boolean;
+  totalCount?: number;
   viewMode?: "grid" | "map";
   onViewModeChange?: (mode: "grid" | "map") => void;
   mapAvailable?: boolean;
@@ -30,8 +28,7 @@ export function CategoryBar({
   inputValue,
   onInputChange,
   onInputSubmit,
-  onAskKokuClick,
-  isChatOpen = false,
+  totalCount,
   viewMode,
   onViewModeChange,
   mapAvailable = false,
@@ -90,6 +87,13 @@ export function CategoryBar({
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center gap-2 sm:gap-3 py-3">
+            {/* Count */}
+            {totalCount != null && (
+              <span className="hidden sm:inline shrink-0 text-sm text-stone">
+                {totalCount.toLocaleString()} places
+              </span>
+            )}
+
             {/* Search input */}
             <form
               className="relative w-full max-w-sm min-w-0"
@@ -146,23 +150,6 @@ export function CategoryBar({
                 </span>
               )}
             </button>
-
-            {/* Ask Koku button */}
-            {onAskKokuClick && (
-              <button
-                onClick={onAskKokuClick}
-                aria-label="Ask Koku"
-                className={cn(
-                  "flex items-center gap-1.5 rounded-xl border px-3 py-2.5 text-sm font-medium transition shrink-0",
-                  isChatOpen
-                    ? "border-brand-primary bg-brand-primary/10 text-brand-primary"
-                    : "border-brand-primary/60 text-brand-primary hover:border-brand-primary hover:bg-brand-primary/5 active:scale-[0.98]"
-                )}
-              >
-                <MessageCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">Ask Koku</span>
-              </button>
-            )}
 
             {/* Grid / Map toggle */}
             {mapAvailable && onViewModeChange && (
