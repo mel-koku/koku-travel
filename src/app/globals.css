@@ -5,10 +5,98 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ── Warm light palette (default) ── */
 :root,
 [data-variant="a"] {
+  color-scheme: light;
+
+  /* Core */
+  --background: #faf5ef;
+  --foreground: #1f1a14;
+  --card: #ffffff;
+  --card-foreground: #1f1a14;
+  --popover: #ffffff;
+  --popover-foreground: #1f1a14;
+  --primary: #c4504f;
+  --primary-foreground: #ffffff;
+  --secondary: #f2ebe0;
+  --secondary-foreground: #1f1a14;
+  --muted: #f2ebe0;
+  --muted-foreground: #9a8d7e;
+  --accent: #3da193;
+  --accent-foreground: #ffffff;
+  --destructive: #b33025;
+  --destructive-foreground: #ffffff;
+  --border: #e3d5c3;
+  --input: #e3d5c3;
+  --ring: #c4504f;
+  --radius: 0.75rem;
+
+  /* Chart colors */
+  --chart-1: #c4504f;
+  --chart-2: #3da193;
+  --chart-3: #daa54e;
+  --chart-4: #d4b83d;
+  --chart-5: #9a8d7e;
+
+  /* Sidebar */
+  --sidebar: #f2ebe0;
+  --sidebar-foreground: #1f1a14;
+  --sidebar-primary: #c4504f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #faf5ef;
+  --sidebar-accent-foreground: #1f1a14;
+  --sidebar-border: #e3d5c3;
+  --sidebar-ring: #c4504f;
+
+  /* Extended palette */
+  --foreground-secondary: #5a4f44;
+  --surface: #f2ebe0;
+  --brand-primary: #c4504f;
+  --brand-secondary: #daa54e;
+  --success: #3da193;
+  --warning: #d4a017;
+  --error: #b33025;
+  --stone: #7a6f62;
+  --cream: #f2ebe0;
+  --sage: #3da193;
+  --terracotta: #daa54e;
+  --charcoal: #1f1a14;
+  --sand: #e3d5c3;
+  --warm-gray: #5a4f44;
+  --canvas: #f2ebe0;
+  --foreground-body: color-mix(in srgb, #1f1a14 85%, transparent);
+
+  /* Shadows (earth-tinted for light backgrounds) */
+  --shadow-sm: 0 1px 2px rgba(60, 50, 38, 0.05);
+  --shadow-card:
+    0 1px 2px rgba(60, 50, 38, 0.04), 0 4px 8px -2px rgba(60, 50, 38, 0.06),
+    0 12px 24px -4px rgba(60, 50, 38, 0.04);
+  --shadow-elevated:
+    0 2px 4px rgba(60, 50, 38, 0.05), 0 8px 16px -4px rgba(60, 50, 38, 0.08),
+    0 20px 40px -8px rgba(60, 50, 38, 0.06);
+  --shadow-glow: 0 0 20px rgba(196, 80, 79, 0.15);
+
+  /* Type scale (augmented fourth, ratio 1.414) */
+  --text-caption: 0.5rem;
+  --text-small: 0.707rem;
+  --text-base: 1rem;
+  --text-lg: 1.414rem;
+  --text-xl: 2rem;
+  --text-2xl: 2.828rem;
+  --text-3xl: 4rem;
+  --text-4xl: 5.657rem;
+  --text-display: 8rem;
+
+  /* Layout */
+  --header-h: 80px;
+  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h) + 10px);
+}
+
+/* Dark theme (opt-in via data-theme="dark") */
+[data-theme="dark"],
+[data-theme="dark"] [data-variant="a"] {
   color-scheme: dark;
-  /* Dark-dominant palette */
   --background: #1a1714;
   --foreground: #f0e8dc;
   --card: #242019;
@@ -28,7 +116,6 @@
   --border: #3a332a;
   --input: #3a332a;
   --ring: #c4504f;
-  --radius: 0.75rem;
 
   /* Chart colors */
   --chart-1: #c4504f;
@@ -47,7 +134,7 @@
   --sidebar-border: #3a332a;
   --sidebar-ring: #c4504f;
 
-  /* Extended palette (for custom components) */
+  /* Extended palette */
   --foreground-secondary: #b8ad9e;
   --surface: #242019;
   --brand-primary: #c4504f;
@@ -65,105 +152,27 @@
   --canvas: #2e2720;
   --foreground-body: color-mix(in srgb, #f0e8dc 85%, transparent);
 
-  /* Shadows (warm crimson-tinted for dark theme) */
+  /* Shadows (crimson-tinted for dark backgrounds) */
+  --shadow-sm: 0 1px 2px rgba(196, 80, 79, 0.04);
   --shadow-card:
     0 1px 3px rgba(196, 80, 79, 0.04), 0 4px 12px -2px rgba(26, 23, 20, 0.4);
   --shadow-elevated:
     0 2px 6px rgba(196, 80, 79, 0.06), 0 8px 24px -4px rgba(26, 23, 20, 0.5);
   --shadow-glow: 0 0 20px rgba(196, 80, 79, 0.25);
-
-  /* Type scale (augmented fourth, ratio 1.414) */
-  --text-caption: 0.5rem;
-  --text-small: 0.707rem;
-  --text-base: 1rem;
-  --text-lg: 1.414rem;
-  --text-xl: 2rem;
-  --text-2xl: 2.828rem;
-  --text-3xl: 4rem;
-  --text-4xl: 5.657rem;
-  --text-display: 8rem;
-
-  /* Layout */
-  --header-h: 80px;
-  --sticky-offset: calc(env(safe-area-inset-top, 0px) + var(--header-h) + 10px);
 }
 
-[data-variant="a"] .dark,
-.dark [data-variant="a"] {
-  /* Deeper dark (for contrast sections) — only overrides that differ from :root */
-  --background: #131110;
-  --card: #1c1915;
-  --popover: #1c1915;
-  --secondary: #1c1915;
-  --muted: #1c1915;
-  --border: #2e2820;
-  --input: #2e2820;
-
-  --sidebar: #131110;
-  --sidebar-accent: #1c1915;
-  --sidebar-border: #2e2820;
-
-  --foreground-secondary: #9a8d7e;
-  --surface: #1c1915;
-}
-
-/* Light theme option (original warm palette) */
-[data-theme="light"] [data-variant="a"],
-[data-variant="a"][data-theme="light"] {
-  color-scheme: light;
-  --background: #faf5ef;
-  --foreground: #1f1a14;
-  --card: #faf5ef;
-  --card-foreground: #1f1a14;
-  --popover: #faf5ef;
-  --popover-foreground: #1f1a14;
-  --primary: #8c2f2f;
-  --primary-foreground: #ffffff;
-  --secondary: #f2ebe0;
-  --secondary-foreground: #1f1a14;
-  --muted: #f2ebe0;
+/* Dark sections within light pages (hero, accent blocks) */
+[data-section-dark] {
+  color-scheme: dark;
+  --background: #1a1714;
+  --foreground: #f0e8dc;
+  --card: #242019;
+  --card-foreground: #f0e8dc;
+  --border: #3a332a;
   --muted-foreground: #9a8d7e;
-  --accent: #2d7a6f;
-  --accent-foreground: #ffffff;
-  --destructive: #b33025;
-  --destructive-foreground: #ffffff;
-  --border: #e3d5c3;
-  --input: #e3d5c3;
-  --ring: #8c2f2f;
-
-  --foreground-secondary: #5a4f44;
-  --surface: #f2ebe0;
-  --brand-primary: #8c2f2f;
-  --brand-secondary: #c6923a;
-  --success: #2d7a6f;
-  --warning: #d4a017;
-  --error: #b33025;
-  --stone: #7a6f62;
-  --charcoal: #1f1a14;
-  --cream: #f2ebe0;
-  --sage: #2d7a6f;
-  --terracotta: #c6923a;
-  --sand: #e3d5c3;
-  --warm-gray: #5a4f44;
-  --canvas: #f2ebe0;
-  --foreground-body: color-mix(in srgb, #1f1a14 85%, transparent);
-
-  /* Chart colors (light) */
-  --chart-1: #8c2f2f;
-  --chart-2: #2d7a6f;
-  --chart-3: #c6923a;
-  --chart-4: #d4a017;
-  --chart-5: #7a6f62;
-
-  /* Sidebar (light) */
-  --sidebar: #f2ebe0;
-  --sidebar-foreground: #1f1a14;
-  --sidebar-primary: #8c2f2f;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #faf5ef;
-  --sidebar-accent-foreground: #1f1a14;
-  --sidebar-border: #e3d5c3;
-  --sidebar-ring: #8c2f2f;
+  --foreground-secondary: #b8ad9e;
+  --surface: #242019;
+  --canvas: #2e2720;
 }
 
 /* ── Variant B: Soft Minimalism (light, monochromatic, Ai-iro accent) ── */
