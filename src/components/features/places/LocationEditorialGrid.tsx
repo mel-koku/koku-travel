@@ -2,13 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, type ReactNode } from "react";
-import type { Location } from "@/types/location";
+import { memo, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { useSaved } from "@/context/SavedContext";
+import { useFirstSaveToast } from "@/hooks/useFirstSaveToast";
 import { resizePhotoUrl } from "@/lib/google/transformations";
-import { FeatureRow } from "./FeatureRow";
-import { ThreeUpRow } from "./ThreeUpRow";
-import { TwoUpRow } from "./TwoUpRow";
-import { TextInterstitial } from "./TextInterstitial";
+import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
+import type { Location } from "@/types/location";
+
+const FALLBACK_IMAGE =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
 
 type LocationEditorialGridProps = {
   locations: Location[];
@@ -17,166 +20,20 @@ type LocationEditorialGridProps = {
   activeCategory?: string | null;
 };
 
-const INTERSTITIAL_MESSAGES: Record<string, string> = {
-  culture: "Temples, castles, and the stories they hold.",
-  food: "From street-side yakitori to multi-course kaiseki.",
-  nature: "Mountains, coastlines, and gardens that slow time.",
-  shopping: "Covered arcades, department stores, and the boutiques in between.",
-  view: "The vantage points worth the climb.",
-};
+function getSummary(location: Location): string {
+  const editorial = LOCATION_EDITORIAL_SUMMARIES[location.id]?.trim();
+  if (editorial) return editorial;
+  if (location.shortDescription?.trim()) return location.shortDescription.trim();
+  if (location.description?.trim()) return location.description.trim();
 
-const DEFAULT_INTERSTITIALS = [
-  "Keep going. There's more worth finding.",
-  "Neon-lit streets. Moss-covered paths. Same country.",
-  "Some of these places don't even have English signage. That's the point.",
-];
-
-const FALLBACK_IMAGE =
-  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==";
-
-function FullBleedRow({ location }: { location: Location }) {
-  const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 1600);
-
-  return (
-    <Link
-      href={`/places?location=${location.id}`}
-      className="group relative block w-full overflow-hidden rounded-xl aspect-[21/9]"
-    >
-      <Image
-        src={imageSrc || FALLBACK_IMAGE}
-        alt={location.name}
-        fill
-        className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
-        sizes="(min-width: 1280px) 1200px, 100vw"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-charcoal/70 via-charcoal/20 to-transparent" />
-      <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-10">
-        <p className="text-xs uppercase tracking-wide text-white/60">
-          {location.city}
-        </p>
-        <h3 className="text-2xl font-serif text-white sm:text-3xl">
-          {location.name}
-        </h3>
-      </div>
-    </Link>
-  );
+  const city = location.city ? ` in ${location.city}` : "";
+  return `Notable ${location.category}${city}.`;
 }
 
-/**
- * Chunks locations into repeating editorial row modules:
- * Module pattern per 6 items: FeatureRow(1) + ThreeUpRow(3) + TwoUpRow(2)
- * Inserts TextInterstitial every ~18 items (3 modules).
- * After every 3 modules, a FullBleedRow showcases a single location at full width.
- */
 export function LocationEditorialGrid({
   locations,
   onSelect,
-  activeCategory,
 }: LocationEditorialGridProps) {
-  const rows = useMemo(() => {
-    const result: ReactNode[] = [];
-    const INTERSTITIAL_INTERVAL = 3; // every 3 modules (18 items)
-
-    let moduleCount = 0;
-    let interstitialIndex = 0;
-
-    // Pre-reserve locations for full-bleed rows so they aren't shown in regular modules.
-    // Every 3 modules consumes 18 items, then 1 item for the full-bleed row = 19 per cycle.
-    const fullBleedLocations: Location[] = [];
-    const gridLocations: Location[] = [];
-
-    let cursor = 0;
-    while (cursor < locations.length) {
-      // Take up to 18 items for 3 regular modules
-      const chunkEnd = Math.min(cursor + 18, locations.length);
-      for (let j = cursor; j < chunkEnd; j++) {
-        gridLocations.push(locations[j]!);
-      }
-      cursor = chunkEnd;
-
-      // Reserve the next item for a full-bleed row (if available)
-      if (cursor < locations.length) {
-        fullBleedLocations.push(locations[cursor]!);
-        cursor += 1;
-      }
-    }
-
-    let fullBleedIndex = 0;
-
-    for (let i = 0; i < gridLocations.length; ) {
-      const remaining = gridLocations.length - i;
-
-      // Feature Row (1 item)
-      if (remaining >= 1) {
-        result.push(
-          <FeatureRow
-            key={`feature-${i}`}
-            location={gridLocations[i]!}
-            onSelect={onSelect}
-          />
-        );
-        i += 1;
-      }
-
-      // ThreeUp Row (3 items)
-      if (i < gridLocations.length) {
-        const threeItems = gridLocations.slice(i, Math.min(i + 3, gridLocations.length));
-        if (threeItems.length > 0) {
-          result.push(
-            <ThreeUpRow
-              key={`three-${i}`}
-              locations={threeItems}
-              onSelect={onSelect}
-            />
-          );
-          i += threeItems.length;
-        }
-      }
-
-      // TwoUp Row (2 items)
-      if (i < gridLocations.length) {
-        const twoItems = gridLocations.slice(i, Math.min(i + 2, gridLocations.length));
-        if (twoItems.length > 0) {
-          result.push(
-            <TwoUpRow
-              key={`two-${i}`}
-              locations={twoItems}
-              onSelect={onSelect}
-            />
-          );
-          i += twoItems.length;
-        }
-      }
-
-      moduleCount += 1;
-
-      // Insert text interstitial + full-bleed row every 3 modules
-      if (moduleCount % INTERSTITIAL_INTERVAL === 0 && i < gridLocations.length) {
-        const text = activeCategory
-          ? INTERSTITIAL_MESSAGES[activeCategory] || DEFAULT_INTERSTITIALS[interstitialIndex % DEFAULT_INTERSTITIALS.length]!
-          : DEFAULT_INTERSTITIALS[interstitialIndex % DEFAULT_INTERSTITIALS.length]!;
-
-        result.push(
-          <TextInterstitial key={`interstitial-${moduleCount}`} text={text} />
-        );
-        interstitialIndex += 1;
-
-        // Insert full-bleed row after the interstitial
-        if (fullBleedIndex < fullBleedLocations.length) {
-          result.push(
-            <FullBleedRow
-              key={`fullbleed-${fullBleedIndex}`}
-              location={fullBleedLocations[fullBleedIndex]!}
-            />
-          );
-          fullBleedIndex += 1;
-        }
-      }
-    }
-
-    return result;
-  }, [locations, onSelect, activeCategory]);
-
   if (locations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
@@ -194,8 +51,171 @@ export function LocationEditorialGrid({
   }
 
   return (
-    <div className="flex flex-col gap-y-10">
-      {rows}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+      {locations.map((location, i) => (
+        <motion.div
+          key={location.id}
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5, delay: (i % 4) * 0.04, ease: [0.25, 0.1, 0.25, 1] }}
+        >
+          <PlacesCard
+            location={location}
+            onSelect={onSelect}
+            eager={i < 8}
+          />
+        </motion.div>
+      ))}
     </div>
+  );
+}
+
+const PlacesCard = memo(function PlacesCard({
+  location,
+  onSelect,
+  eager = false,
+}: {
+  location: Location;
+  onSelect?: (location: Location) => void;
+  eager?: boolean;
+}) {
+  const { isInSaved, toggleSave } = useSaved();
+  const active = isInSaved(location.id);
+  const showFirstSaveToast = useFirstSaveToast();
+  const imageSrc = resizePhotoUrl(location.primaryPhotoUrl ?? location.image, 600);
+  const summary = getSummary(location);
+
+  const [heartAnimating, setHeartAnimating] = useState(false);
+  const wasSaved = useRef(active);
+
+  useEffect(() => {
+    if (active && !wasSaved.current) {
+      setHeartAnimating(true);
+      const timer = setTimeout(() => setHeartAnimating(false), 500);
+      return () => clearTimeout(timer);
+    }
+    wasSaved.current = active;
+  }, [active]);
+
+  return (
+    <article
+      className="group relative"
+      data-location-id={location.id}
+    >
+      <Link
+        href={`/places/${location.id}`}
+        onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
+        className="block w-full overflow-hidden rounded-xl bg-card transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-elevated)]"
+      >
+        {/* Image */}
+        <div className="relative w-full overflow-hidden aspect-[4/3]">
+          <Image
+            src={imageSrc || FALLBACK_IMAGE}
+            alt={location.name}
+            fill
+            priority={eager}
+            className="object-cover transition-transform duration-300 ease-out group-hover:scale-[1.04]"
+            sizes="(min-width:1280px) 25vw, (min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
+          />
+
+          {/* Save button */}
+          <div className={`absolute top-3 right-3 z-10 sm:transition-opacity sm:duration-300 ${
+            active ? "sm:opacity-100" : "sm:opacity-0 sm:group-hover:opacity-100"
+          }`}>
+            <button
+              type="button"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                if (!active) showFirstSaveToast();
+                toggleSave(location.id);
+              }}
+              aria-label={active ? "Unsave" : "Save for trip"}
+              className={`flex items-center gap-1.5 rounded-full px-3 py-2 min-h-[44px] text-xs font-medium transition-transform hover:scale-105 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30 ${
+                active
+                  ? "bg-brand-primary text-white"
+                  : "bg-white/80 text-foreground"
+              }`}
+              style={{ boxShadow: "var(--shadow-sm)" }}
+            >
+              <HeartIcon active={active} animating={heartAnimating} />
+              {active ? "Saved" : "Save for trip"}
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="p-3.5 space-y-1.5">
+          {/* Name + rating */}
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-brand-primary transition-colors">
+              {location.name}
+            </h3>
+            {location.rating ? (
+              <span className="flex shrink-0 items-center gap-0.5 text-xs text-foreground">
+                <svg className="h-3 w-3 text-warning" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="m12 17.27 5.18 3.11-1.64-5.81L20.9 9.9l-6-0.52L12 4 9.1 9.38l-6 .52 5.36 4.67L6.82 20.38 12 17.27z" />
+                </svg>
+                {location.rating.toFixed(1)}
+                {location.reviewCount ? (
+                  <span className="text-stone">
+                    ({location.reviewCount >= 1000
+                      ? `${(location.reviewCount / 1000).toFixed(1)}k`
+                      : location.reviewCount})
+                  </span>
+                ) : null}
+              </span>
+            ) : null}
+          </div>
+
+          {/* City */}
+          <p className="text-xs text-stone">
+            {location.city}, {location.region}
+          </p>
+
+          {/* Summary */}
+          <p className="text-xs text-foreground-secondary line-clamp-2 leading-relaxed">
+            {summary}
+          </p>
+
+          {/* Category + duration */}
+          <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+            <span className="text-[11px] font-medium capitalize bg-surface text-stone px-2 py-0.5 rounded-lg">
+              {location.category}
+            </span>
+            {location.estimatedDuration && (
+              <>
+                <span className="text-border">&middot;</span>
+                <span className="flex items-center gap-1 text-[11px] text-stone">
+                  <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <circle cx="12" cy="12" r="10" />
+                    <path strokeLinecap="round" d="M12 6v6l4 2" />
+                  </svg>
+                  {location.estimatedDuration}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+      </Link>
+    </article>
+  );
+});
+
+function HeartIcon({ active, animating }: { active: boolean; animating: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={`h-3.5 w-3.5 transition-colors ${
+        active ? "fill-white stroke-white" : "fill-none stroke-current"
+      } ${animating ? "animate-heart-pulse" : ""}`}
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19.5 13.572a24.064 24.064 0 0 1-7.5 7.178 24.064 24.064 0 0 1-7.5-7.178C3.862 12.334 3 10.478 3 8.52 3 5.989 5.014 4 7.5 4c1.54 0 2.994.757 4 1.955C12.506 4.757 13.96 4 15.5 4 17.986 4 20 5.989 20 8.52c0 1.958-.862 3.813-2.5 5.052Z" />
+    </svg>
   );
 }
