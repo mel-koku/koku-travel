@@ -35,7 +35,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
     <section aria-label="Featured guides" className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
-        <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-10 sm:mb-16">
           <div>
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredGuidesEyebrow ?? "Travel Guides"}
@@ -47,13 +47,6 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
               {content?.featuredGuidesDescription ?? "Local insights, seasonal tips, and itineraries — written by people who live there."}
             </p>
           </div>
-          <Link
-            href="/guides"
-            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
-          >
-            {content?.featuredGuidesCtaText ?? "Browse guides"}
-            <ArrowRightIcon />
-          </Link>
         </div>
 
         {/* Asymmetric Grid */}
@@ -69,6 +62,17 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
               <GuideCard guide={guide} index={idx + 1} />
             </ScrollReveal>
           ))}
+        </div>
+
+        {/* Section CTA */}
+        <div className="mt-10">
+          <Link
+            href="/guides"
+            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
+          >
+            {content?.featuredGuidesCtaText ?? "Browse guides"}
+            <ArrowRightIcon />
+          </Link>
         </div>
       </div>
     </section>

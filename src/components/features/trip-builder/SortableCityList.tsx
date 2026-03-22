@@ -312,6 +312,8 @@ export type SortableCityListProps = {
   onDaysChange?: (index: number, days: number) => void;
   totalDays?: number;
   onDuplicate?: (index: number) => void;
+  /** Render additional content below each city row (e.g., accommodation input) */
+  renderAfterCity?: (cityId: CityId, index: number) => React.ReactNode;
 };
 
 export function SortableCityList({
@@ -323,6 +325,7 @@ export function SortableCityList({
   onDaysChange,
   totalDays,
   onDuplicate,
+  renderAfterCity,
 }: SortableCityListProps) {
   const pointerSensor = useSensor(PointerSensor, {
     activationConstraint: { distance: 6 },
@@ -516,6 +519,7 @@ export function SortableCityList({
                           : undefined
                       }
                     />
+                    {renderAfterCity?.(city.id, city.index)}
                   </motion.div>
                 );
               })}
