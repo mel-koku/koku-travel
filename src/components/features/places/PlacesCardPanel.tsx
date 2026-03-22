@@ -81,7 +81,7 @@ export function PlacesCardPanel({
         </div>
       ) : locations.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 px-4">
-          <p className="font-serif italic text-lg text-stone text-center">
+          <p className="font-serif text-lg text-stone text-center">
             Pan the map to find places
           </p>
         </div>

@@ -65,7 +65,7 @@ export const CityCard = memo(function CityCard({
         {/* Content */}
         <div className="p-4 space-y-2">
           <div className="flex items-baseline gap-2">
-            <h3 className="font-serif italic text-base text-foreground group-hover:text-brand-primary transition-colors">
+            <h3 className="font-serif text-base text-foreground group-hover:text-brand-primary transition-colors">
               {name}
             </h3>
             <span className="text-xs text-stone">

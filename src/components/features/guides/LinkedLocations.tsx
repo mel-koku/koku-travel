@@ -28,7 +28,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
           <p className="mb-2 eyebrow-editorial">
             Featured in this guide
           </p>
-          <h2 className="font-serif text-2xl italic text-foreground sm:text-3xl">
+          <h2 className="font-serif text-2xl text-foreground sm:text-3xl">
             Places to Visit
           </h2>
         </ScrollReveal>
@@ -84,7 +84,7 @@ export function LinkedLocations({ locations }: LinkedLocationsProps) {
 
                   {/* Overlay text */}
                   <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-5">
-                    <h3 className="font-serif text-lg italic text-white transition-colors duration-500 group-hover:text-brand-primary sm:text-xl">
+                    <h3 className="font-serif text-lg text-white transition-colors duration-500 group-hover:text-brand-primary sm:text-xl">
                       {location.name}
                     </h3>
                     <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-white/70">

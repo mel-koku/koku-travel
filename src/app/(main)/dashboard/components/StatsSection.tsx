@@ -71,7 +71,7 @@ export function StatsSection({
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-white sm:text-3xl">
+          <h2 className="mt-4 font-serif text-2xl tracking-heading text-white sm:text-3xl">
             {content?.dashboardActivityHeading ?? "At a Glance"}
           </h2>
         </ScrollReveal>

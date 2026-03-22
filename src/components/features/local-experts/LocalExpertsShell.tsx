@@ -147,7 +147,7 @@ export function LocalExpertsShell() {
               delay: 0.1,
               ease: [...easeReveal] as [number, number, number, number],
             }}
-            className="mt-4 font-serif text-4xl italic text-foreground sm:text-5xl lg:text-6xl"
+            className="mt-4 font-serif text-4xl text-foreground sm:text-5xl lg:text-6xl"
           >
             Learn Japan from the people who live it
           </motion.h1>
@@ -189,7 +189,7 @@ export function LocalExpertsShell() {
                   <div className="absolute inset-0 rounded-xl ring-2 ring-inset ring-brand-primary" />
                 )}
                 <div className="absolute inset-x-0 bottom-0 p-4">
-                  <h3 className="font-serif italic text-lg leading-tight text-white">
+                  <h3 className="font-serif text-lg leading-tight text-white">
                     All experts
                   </h3>
                   <p className="mt-0.5 font-mono text-xs text-white/60">
@@ -233,7 +233,7 @@ export function LocalExpertsShell() {
                       <div className="absolute inset-0 rounded-xl ring-2 ring-inset ring-brand-primary" />
                     )}
                     <div className="absolute inset-x-0 bottom-0 p-4">
-                      <h3 className="font-serif italic text-lg leading-tight text-white transition-colors group-hover:text-brand-primary/90">
+                      <h3 className="font-serif text-lg leading-tight text-white transition-colors group-hover:text-brand-primary/90">
                         {cat.label}
                       </h3>
                       <p className="mt-0.5 font-mono text-xs text-white/60">

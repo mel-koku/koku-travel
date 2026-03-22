@@ -36,7 +36,7 @@ export function PreferenceCard({
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h4 className="font-serif text-lg italic text-foreground">{title}</h4>
+            <h4 className="font-serif text-lg text-foreground">{title}</h4>
             {optional && (
               <span className="text-xs text-stone">(optional)</span>
             )}

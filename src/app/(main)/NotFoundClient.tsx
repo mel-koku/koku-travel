@@ -56,7 +56,7 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
         aria-hidden
         className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center"
       >
-        <span className="font-serif italic text-[clamp(8rem,20vw,14rem)] text-white/[0.06]">
+        <span className="font-serif text-[clamp(8rem,20vw,14rem)] text-white/[0.06]">
           404
         </span>
       </div>
@@ -72,7 +72,7 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
 
           <SplitText
             as="h1"
-            className="mt-6 justify-center font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
+            className="mt-6 justify-center font-serif text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
             splitBy="word"
             animation="clipY"
             staggerDelay={staggerWord}

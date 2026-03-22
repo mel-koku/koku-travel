@@ -113,7 +113,7 @@ export const PlacesCompactCard = memo(function PlacesCompactCard({
             <p className="text-[10px] uppercase tracking-[0.25em] text-white/60 mb-0.5 font-mono">
               {location.city}
             </p>
-            <p className="font-serif italic text-white text-base line-clamp-1">
+            <p className="font-serif text-white text-base line-clamp-1">
               {location.name}
             </p>
             <div className="mt-1">

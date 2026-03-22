@@ -47,7 +47,7 @@ export default function DesignSystemHub() {
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
           Design System
         </span>
-        <h1 className="font-serif text-4xl italic leading-tight text-foreground">
+        <h1 className="font-serif text-4xl leading-tight text-foreground">
           Koku Design System
         </h1>
         <p className="max-w-2xl text-lg text-foreground-secondary">

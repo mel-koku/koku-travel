@@ -29,7 +29,7 @@ export default function UILayout({ children }: { children: React.ReactNode }) {
         <div className="flex h-full flex-col">
           <div className="border-b border-border px-5 py-5">
             <Link href="/" className="flex items-baseline gap-1.5">
-              <span className="font-serif text-lg italic text-foreground">
+              <span className="font-serif text-lg text-foreground">
                 Koku
               </span>
               <span className="text-[10px] font-light uppercase tracking-[0.3em] text-foreground-secondary">
@@ -63,7 +63,7 @@ export default function UILayout({ children }: { children: React.ReactNode }) {
       <div className="fixed inset-x-0 top-0 z-40 border-b border-border bg-surface/95 backdrop-blur-sm lg:hidden">
         <div className="flex items-center justify-between px-4 py-3">
           <Link href="/" className="flex items-baseline gap-1.5">
-            <span className="font-serif text-lg italic text-foreground">
+            <span className="font-serif text-lg text-foreground">
               Koku
             </span>
             <span className="text-[10px] font-light uppercase tracking-[0.3em] text-foreground-secondary">

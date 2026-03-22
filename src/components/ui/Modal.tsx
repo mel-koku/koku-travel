@@ -200,7 +200,7 @@ export function Modal(props: ModalProps) {
 
           {title ? (
             <div className="flex flex-col gap-2">
-              <h2 id={titleId} className="font-serif italic text-2xl text-foreground">
+              <h2 id={titleId} className="font-serif text-2xl text-foreground">
                 {title}
               </h2>
               {description ? (

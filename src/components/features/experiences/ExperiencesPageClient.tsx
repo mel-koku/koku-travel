@@ -52,7 +52,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
   if (experiences.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4">
-        <p className="font-serif italic text-lg text-foreground">
+        <p className="font-serif text-lg text-foreground">
           {content?.experiencesEmptyHeading ?? "Experiences are in the works"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
@@ -77,7 +77,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
         </p>
 
         <ScrollReveal delay={0.1} distance={20} duration={0.5}>
-          <h1 className="mt-4 font-serif italic text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
+          <h1 className="mt-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
             {content?.experiencesHeading ?? "Workshops, cruises, and the moments guidebooks can\u2019t sell you."}
           </h1>
         </ScrollReveal>
@@ -153,7 +153,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
-            <p className="font-serif italic text-lg text-foreground">
+            <p className="font-serif text-lg text-foreground">
               {content?.experiencesFilteredEmptyHeading ?? "No experiences of this type"}
             </p>
             <p className="mt-2 text-sm text-stone">

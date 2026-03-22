@@ -118,7 +118,7 @@ export const EditorialCard = memo(function EditorialCard({
                   {location.city}{location.region ? `, ${location.region}` : ""}
                 </p>
                 <h3
-                  className={`font-serif italic text-white line-clamp-2 ${
+                  className={`font-serif text-white line-clamp-2 ${
                     isFeature ? "text-2xl sm:text-3xl" : "text-lg"
                   }`}
                 >

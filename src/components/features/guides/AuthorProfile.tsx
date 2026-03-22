@@ -41,14 +41,14 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
                 </div>
               ) : (
                 <div className="mb-6 flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary sm:mb-0">
-                  <span className="font-serif text-4xl italic">
+                  <span className="font-serif text-4xl">
                     {author.name.charAt(0)}
                   </span>
                 </div>
               )}
 
               <div>
-                <h1 className="font-serif text-3xl italic text-foreground sm:text-4xl">
+                <h1 className="font-serif text-3xl text-foreground sm:text-4xl">
                   {author.name}
                 </h1>
                 {author.city && (
@@ -108,7 +108,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
         <section className="pb-12 sm:pb-20 lg:pb-28">
           <div className="mx-auto max-w-5xl px-6">
             <ScrollReveal distance={20}>
-              <h2 className="font-serif text-2xl italic text-foreground mb-8">
+              <h2 className="font-serif text-2xl text-foreground mb-8">
                 Published Guides
               </h2>
             </ScrollReveal>
@@ -138,7 +138,7 @@ export function AuthorProfile({ author }: AuthorProfileProps) {
                         {guide.readingTimeMinutes &&
                           ` · ${guide.readingTimeMinutes} min`}
                       </p>
-                      <h3 className="font-serif text-lg italic text-foreground group-hover:text-brand-primary transition-colors">
+                      <h3 className="font-serif text-lg text-foreground group-hover:text-brand-primary transition-colors">
                         {guide.title}
                       </h3>
                       {guide.summary && (

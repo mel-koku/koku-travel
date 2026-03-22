@@ -118,7 +118,7 @@ export function VibeCard({
         />
 
         {/* Name */}
-        <h3 className="mt-2 font-serif text-lg italic text-white lg:text-xl">
+        <h3 className="mt-2 font-serif text-lg text-white lg:text-xl">
           {name}
         </h3>
 

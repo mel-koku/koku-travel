@@ -203,7 +203,7 @@ export function FilterPanel({
             {/* Header */}
             <div className="flex items-start justify-between border-b border-border px-6 py-4 shrink-0">
               <div>
-                <h2 id="filter-panel-title" className="font-serif text-xl italic text-foreground">
+                <h2 id="filter-panel-title" className="font-serif text-xl text-foreground">
                   Refine
                 </h2>
                 <p className="mt-0.5 text-xs text-foreground-secondary">

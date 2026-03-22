@@ -37,7 +37,7 @@ export function AccountSection({
         </div>
       )}
       <div className="flex items-center justify-between flex-wrap gap-2">
-        <h2 className="font-serif text-lg italic text-foreground">Account</h2>
+        <h2 className="font-serif text-lg text-foreground">Account</h2>
         {isAuthenticated && supabase && (
           <button
             onClick={async () => {

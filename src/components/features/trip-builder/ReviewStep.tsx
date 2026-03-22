@@ -328,7 +328,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
       {/* Preferences — Horizontal scroll row */}
       <div>
         <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Optional</p>
-        <h3 className="mt-1 font-serif text-lg italic text-foreground">
+        <h3 className="mt-1 font-serif text-lg text-foreground">
           {sanityConfig?.reviewHeading ?? "One last look"}
         </h3>
         <p className="text-sm text-stone">

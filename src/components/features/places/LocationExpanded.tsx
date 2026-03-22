@@ -228,7 +228,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             <p className="text-[10px] uppercase tracking-[0.25em] text-white/60 mb-1">
               {location.city}, {location.region}
             </p>
-            <h2 className="line-clamp-2 font-serif italic text-xl text-white sm:text-2xl">
+            <h2 className="line-clamp-2 font-serif text-xl text-white sm:text-2xl">
               {displayName}
             </h2>
           </div>

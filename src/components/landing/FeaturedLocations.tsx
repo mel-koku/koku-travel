@@ -40,7 +40,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                 <p className="eyebrow-editorial text-brand-primary">
                   {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
                 </p>
-                <h2 className="mt-4 font-serif italic text-3xl tracking-heading text-foreground sm:text-4xl">
+                <h2 className="mt-4 font-serif text-3xl tracking-heading text-foreground sm:text-4xl">
                   {content?.featuredLocationsHeading ?? "Places that stay with you"}
                 </h2>
                 <p className="mt-3 max-w-md text-base text-foreground-secondary">
@@ -113,7 +113,7 @@ function LocationCard({
           <p className="text-xs font-medium uppercase tracking-wider text-white/70 group-hover:text-brand-secondary transition-colors duration-300">
             {location.city}
           </p>
-          <h3 className="mt-1 font-serif italic text-lg text-white sm:text-xl">
+          <h3 className="mt-1 font-serif text-lg text-white sm:text-xl">
             {location.name}
           </h3>
           {location.rating && (

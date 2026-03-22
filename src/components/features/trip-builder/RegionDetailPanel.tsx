@@ -63,7 +63,7 @@ export function RegionDetailPanel({
 
               {/* Region name overlay */}
               <div className="absolute inset-x-0 bottom-0 p-6">
-                <h3 className="font-serif text-3xl italic text-white">
+                <h3 className="font-serif text-3xl text-white">
                   {region.name}
                 </h3>
                 <p className="mt-1 text-sm text-white/70">{region.tagline}</p>

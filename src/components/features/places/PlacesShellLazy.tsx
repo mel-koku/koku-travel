@@ -11,7 +11,7 @@ const PlacesShell = dynamic(
     loading: () => (
       <div className="min-h-[100dvh] bg-background">
         <div className="flex flex-col items-center justify-center py-24 px-6">
-          <p className="font-serif italic text-2xl sm:text-3xl text-foreground text-center">
+          <p className="font-serif text-2xl sm:text-3xl text-foreground text-center">
             Places in Japan
           </p>
           <p className="mt-3 text-sm text-stone">Finding places\u2026</p>

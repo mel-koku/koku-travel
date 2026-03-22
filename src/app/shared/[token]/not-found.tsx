@@ -4,10 +4,10 @@ export default function SharedNotFound() {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4">
       <div className="text-center">
-        <Link href="/" className="font-serif italic text-2xl text-foreground hover:text-brand-primary transition">
+        <Link href="/" className="font-serif text-2xl text-foreground hover:text-brand-primary transition">
           KOKU
         </Link>
-        <h1 className="mt-8 font-serif italic text-3xl text-foreground sm:text-4xl">
+        <h1 className="mt-8 font-serif text-3xl text-foreground sm:text-4xl">
           Link no longer active
         </h1>
         <p className="mt-3 max-w-sm text-sm text-foreground-secondary">

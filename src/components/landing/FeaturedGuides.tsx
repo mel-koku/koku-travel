@@ -40,7 +40,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredGuidesEyebrow ?? "Travel Guides"}
             </p>
-            <h2 className="mt-4 font-serif italic text-3xl tracking-heading text-foreground sm:text-4xl">
+            <h2 className="mt-4 font-serif text-3xl tracking-heading text-foreground sm:text-4xl">
               {content?.featuredGuidesHeading ?? "The guides the locals wrote"}
             </h2>
             <p className="mt-4 max-w-md text-base text-foreground-secondary">
@@ -121,7 +121,7 @@ function GuideCard({
 
         {/* Type badge */}
         <div className="absolute left-4 top-4">
-          <span className="inline-flex items-center rounded-xl bg-surface/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
+          <span className="inline-flex items-center rounded-xl bg-charcoal/70 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
             {typeLabel}
           </span>
         </div>
@@ -135,7 +135,7 @@ function GuideCard({
           )}
           <p
             className={cn(
-              "mt-1 font-serif italic text-white",
+              "mt-1 font-serif text-white",
               featured ? "text-xl sm:text-2xl lg:text-3xl" : "text-xl sm:text-2xl"
             )}
           >

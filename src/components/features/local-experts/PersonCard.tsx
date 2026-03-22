@@ -87,7 +87,7 @@ export function PersonCard({ person, index, onClick }: Props) {
           <p className="eyebrow-mono text-stone">
             {category?.label ?? primarySpecialty ?? "Local Expert"}
           </p>
-          <p className="mt-2 font-serif italic text-xl leading-tight text-foreground">
+          <p className="mt-2 font-serif text-xl leading-tight text-foreground">
             {primarySpecialty ?? category?.label ?? "Japan specialist"}
           </p>
           {person.city && (

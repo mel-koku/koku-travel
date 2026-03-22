@@ -91,7 +91,7 @@ export function GuideCard({ guide, index, eager = false }: GuideCardProps) {
         </p>
 
         {/* Title */}
-        <p className="mt-1.5 font-serif text-lg italic text-foreground transition-colors group-hover:text-brand-primary sm:text-xl">
+        <p className="mt-1.5 font-serif text-lg text-foreground transition-colors group-hover:text-brand-primary sm:text-xl">
           {guide.title}
         </p>
 

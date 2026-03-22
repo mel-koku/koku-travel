@@ -27,14 +27,14 @@ export function AuthorCard({ author }: AuthorCardProps) {
         </div>
       ) : (
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand-primary/10 text-brand-primary">
-          <span className="font-serif text-xl italic">
+          <span className="font-serif text-xl">
             {author.name.charAt(0)}
           </span>
         </div>
       )}
 
       <div className="min-w-0">
-        <p className="font-serif text-lg italic text-foreground group-hover:text-brand-primary transition-colors">
+        <p className="font-serif text-lg text-foreground group-hover:text-brand-primary transition-colors">
           {author.name}
         </p>
         <p className="font-mono text-xs text-stone">

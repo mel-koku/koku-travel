@@ -27,7 +27,7 @@ export function AskKokuPanel({ onClose, context, tripData }: AskKokuPanelProps) 
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:pt-3">
-        <h2 className="font-serif text-lg italic text-foreground">Ask Koku</h2>
+        <h2 className="font-serif text-lg text-foreground">Ask Koku</h2>
         <button
           onClick={onClose}
           className="flex h-11 w-11 items-center justify-center rounded-xl text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"
