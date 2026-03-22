@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
@@ -38,6 +38,7 @@ type IntroStepProps = {
 export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProps) {
   const prefersReducedMotion = useReducedMotion();
   const [showQuickPlan, setShowQuickPlan] = useState(false);
+  const quickPlanRef = useRef<HTMLDivElement>(null);
   const [quickDuration, setQuickDuration] = useState<number>(5);
   const [quickPreset, setQuickPreset] = useState("tokyo-kyoto");
 
@@ -166,7 +167,16 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
             {onQuickStart && (
               <button
                 type="button"
-                onClick={() => setShowQuickPlan((v) => !v)}
+                onClick={() => {
+                  setShowQuickPlan((v) => {
+                    if (!v) {
+                      setTimeout(() => {
+                        quickPlanRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      }, 350);
+                    }
+                    return !v;
+                  });
+                }}
                 className="h-14 w-full cursor-pointer rounded-xl border border-border bg-transparent px-10 text-sm font-semibold uppercase tracking-wider text-foreground transition-all hover:border-foreground-secondary hover:bg-surface active:scale-[0.98] sm:w-auto"
               >
                 Skip the Details
@@ -177,6 +187,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
           {/* Quick Plan — express mode (expanded) */}
           {onQuickStart && showQuickPlan && (
             <motion.div
+              ref={quickPlanRef}
               className="mt-6"
               {...fade(0.1)}
             >
