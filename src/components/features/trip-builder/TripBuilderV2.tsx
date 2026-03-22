@@ -113,6 +113,7 @@ export function TripBuilderV2({ onComplete, sanityConfig }: TripBuilderV2Props) 
               totalSteps={stepCount}
               completedSteps={completedSteps}
               onStepClick={handleStepClick}
+              fullBleed
             >
               <EntryPointStep sanityConfig={sanityConfig} />
             </StepShell>
