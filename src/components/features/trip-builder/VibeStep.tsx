@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   BookOpen,
   Camera,
@@ -17,11 +17,9 @@ import {
 import { motion } from "framer-motion";
 import { VibeCard } from "./VibeCard";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { easeCinematicMut, easeCinematicCSS } from "@/lib/motion";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
-// Custom Torii icon since Lucide doesn't have one
 function ToriiIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -56,22 +54,6 @@ const VIBE_ICONS: Record<string, LucideIcon | typeof ToriiIcon> = {
   Palette: Palette,
 };
 
-// Vibe images — using existing region hero images as placeholders
-const VIBE_IMAGES: Record<VibeId, string> = {
-  temples_tradition: "/images/regions/kansai-hero.jpg",
-  foodie_paradise: "/images/regions/kyushu-hero.jpg",
-  nature_adventure: "/images/regions/hokkaido-hero.jpg",
-  zen_wellness: "/images/regions/chubu-hero.jpg",
-  neon_nightlife: "/images/regions/kanto-hero.jpg",
-  pop_culture: "/images/regions/kanto-hero.jpg",
-  local_secrets: "/images/regions/shikoku-hero.jpg",
-  family_fun: "/images/regions/okinawa-hero.jpg",
-  history_buff: "/images/regions/chugoku-hero.jpg",
-  artisan_craft: "/images/regions/chubu-hero.jpg",
-  in_season: "", // Not used in trip builder
-};
-
-// Filter out "in_season" — it's a Places-only filter, not a trip builder vibe
 const TRIP_BUILDER_VIBES = VIBES.filter((v) => v.id !== "in_season");
 
 export type VibeStepProps = {
@@ -81,9 +63,7 @@ export type VibeStepProps = {
 
 export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
   const { data, setData } = useTripBuilder();
-  const [hoveredId, setHoveredId] = useState<VibeId | null>(null);
 
-  // Build Sanity override lookup by vibeId
   const sanityVibes = sanityConfig?.vibes;
   const sanityVibeMap = useMemo(() => {
     if (!sanityVibes?.length) return null;
@@ -115,31 +95,28 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
         return { ...prev, vibes: Array.from(current) };
       });
     },
-    [setData]
+    [setData],
   );
 
   return (
     <div className="flex flex-1 flex-col bg-background">
-      {/* Grain texture */}
-      <div className="texture-grain pointer-events-none absolute inset-0" />
-
-      {/* Typography — centered near top */}
-      <div className="relative z-10 px-6 pt-28 text-center lg:pt-32">
+      {/* Header */}
+      <div className="px-6 pt-20 text-center sm:pt-28 lg:pt-32">
         <p className="eyebrow-editorial text-brand-primary">
           STEP 03
         </p>
 
         <motion.h2
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: easeCinematicMut, delay: 0.15 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
           className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
         >
           {sanityConfig?.vibeStepHeading ?? "What moves you?"}
         </motion.h2>
 
         <p className="mt-2 text-sm text-stone">
-          {sanityConfig?.vibeStepDescription ?? "Choose up to 5. These shape the places we suggest."}
+          {sanityConfig?.vibeStepDescription ?? "Pick what excites you. We'll find places that match."}
         </p>
 
         <div aria-live="polite">
@@ -149,60 +126,9 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
         </div>
       </div>
 
-      {/* Desktop: Two rows of expanding columns */}
-      <div className="relative z-10 mt-8 hidden flex-1 flex-col gap-2 px-8 pb-8 lg:flex lg:mt-10 lg:px-12">
-        {[TRIP_BUILDER_VIBES.slice(0, 5), TRIP_BUILDER_VIBES.slice(5)].map((row, rowIdx) => (
-          <div key={rowIdx} className="flex w-full flex-1 gap-2">
-            {row.map((vibe, colIdx) => {
-              const i = rowIdx * 5 + colIdx;
-              const isSelected = selectedVibes.includes(vibe.id);
-              const isDisabled = isMaxSelected && !isSelected;
-              const sanityVibe = sanityVibeMap?.get(vibe.id);
-              const Icon = VIBE_ICONS[sanityVibe?.icon ?? vibe.icon] ?? Mountain;
-              const isHovered = hoveredId === vibe.id;
-
-              // Dynamic flex: hovered expands to 2, siblings in same row contract to 0.75
-              let flexValue = 1;
-              if (hoveredId !== null) {
-                const hoveredRow = TRIP_BUILDER_VIBES.findIndex((v) => v.id === hoveredId);
-                const hoveredRowIdx = hoveredRow < 5 ? 0 : 1;
-                if (hoveredRowIdx === rowIdx) {
-                  flexValue = isHovered ? 2.0 : 0.75;
-                }
-              }
-
-              return (
-                <div
-                  key={vibe.id}
-                  className="min-w-0 overflow-hidden rounded-xl"
-                  style={{
-                    flex: flexValue,
-                    transition: `flex 0.7s ${easeCinematicCSS}`,
-                  }}
-                >
-                  <VibeCard
-                    name={sanityVibe?.name ?? vibe.name}
-                    description={sanityVibe?.description ?? vibe.description}
-                    image={sanityVibe?.image?.url ?? VIBE_IMAGES[vibe.id]}
-                    icon={Icon}
-                    index={i}
-                    isSelected={isSelected}
-                    isDisabled={isDisabled}
-                    isHovered={isHovered}
-                    onToggle={() => toggleVibe(vibe.id)}
-                    onHover={() => setHoveredId(vibe.id)}
-                    onLeave={() => setHoveredId(null)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-
-      {/* Mobile: Horizontal scroll with snap */}
-      <div className="relative z-10 mt-8 pb-20 lg:hidden">
-        <div className="scrollbar-hide flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-contain px-6">
+      {/* Card grid */}
+      <div className="mx-auto mt-8 w-full max-w-4xl px-4 pb-24 sm:px-6 lg:mt-10">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 lg:grid-cols-5">
           {TRIP_BUILDER_VIBES.map((vibe, i) => {
             const isSelected = selectedVibes.includes(vibe.id);
             const isDisabled = isMaxSelected && !isSelected;
@@ -210,35 +136,27 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
             const Icon = VIBE_ICONS[sanityVibe?.icon ?? vibe.icon] ?? Mountain;
 
             return (
-              <div
+              <VibeCard
                 key={vibe.id}
-                className="h-[55vh] w-[72vw] flex-shrink-0 snap-center overflow-hidden rounded-xl"
-              >
-                <VibeCard
-                  name={sanityVibe?.name ?? vibe.name}
-                  description={sanityVibe?.description ?? vibe.description}
-                  image={sanityVibe?.image?.url ?? VIBE_IMAGES[vibe.id]}
-                  icon={Icon}
-                  index={i}
-                  isSelected={isSelected}
-                  isDisabled={isDisabled}
-                  isHovered={false}
-                  onToggle={() => toggleVibe(vibe.id)}
-                  onHover={() => {}}
-                  onLeave={() => {}}
-                />
-              </div>
+                name={sanityVibe?.name ?? vibe.name}
+                description={sanityVibe?.description ?? vibe.description}
+                icon={Icon}
+                index={i}
+                isSelected={isSelected}
+                isDisabled={isDisabled}
+                onToggle={() => toggleVibe(vibe.id)}
+              />
             );
           })}
         </div>
-      </div>
 
-      {/* Warning when max reached */}
-      {isMaxSelected && (
-        <p className="relative z-10 pb-8 text-center text-sm text-warning lg:pb-4">
-          {(sanityConfig?.vibeStepMaxWarning ?? "That\u2019s all {max}. Tap one to swap it out.").replace("{max}", String(MAX_VIBE_SELECTION))}
-        </p>
-      )}
+        {/* Warning when max reached */}
+        {isMaxSelected && (
+          <p className="mt-6 text-center text-sm text-warning">
+            {(sanityConfig?.vibeStepMaxWarning ?? "That\u2019s all {max}. Tap one to swap it out.").replace("{max}", String(MAX_VIBE_SELECTION))}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
