@@ -258,8 +258,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
         inputValue={inputValue}
         onInputChange={handleInputChange}
         onInputSubmit={handleInputSubmit}
-        onAskKokuClick={() => setIsChatOpen(true)}
-        isChatOpen={isChatOpen}
+        totalCount={total}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         mapAvailable={mapAvailable}
@@ -267,7 +266,7 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
       {/* Seasonal banner (grid mode only) */}
       {viewMode === "grid" && (
-        <div className="mt-3">
+        <div className="mx-auto mt-2 max-w-7xl px-4 sm:px-6 lg:px-8">
           <SeasonalBanner
             locations={locations}
             onFilterSeasonal={handleFilterSeasonal}
@@ -294,11 +293,6 @@ export function PlacesShell({ content }: PlacesShellProps) {
         </div>
       )}
 
-      {/* Breathing room between search bar and content (grid mode only) */}
-      {viewMode === "grid" && (
-        <div className="h-4 sm:h-6" aria-hidden="true" />
-      )}
-
       {/* Main Content */}
       {viewMode === "map" && mapAvailable ? (
         <PlacesMapLayout
@@ -313,18 +307,22 @@ export function PlacesShell({ content }: PlacesShellProps) {
           flyToLocation={flyToLocation}
         />
       ) : isLoading ? (
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          <div className="space-y-10">
-            <div className="aspect-[16/9] rounded-xl shimmer" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 3 }).map((_, index) => (
-                <div key={index} className="aspect-[3/4] rounded-xl shimmer" />
-              ))}
-            </div>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-12 sm:pt-8 sm:pb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <div key={index} className="rounded-xl bg-surface animate-pulse">
+                <div className="aspect-[4/3]" />
+                <div className="p-3.5 space-y-2">
+                  <div className="h-4 w-3/4 rounded bg-border" />
+                  <div className="h-3 w-1/2 rounded bg-border" />
+                  <div className="h-3 w-full rounded bg-border" />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       ) : (
-        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-6 pb-12 sm:pt-8 sm:pb-16">
           <LocationEditorialGrid
             locations={visibleLocations}
             onSelect={handleSelectLocation}
