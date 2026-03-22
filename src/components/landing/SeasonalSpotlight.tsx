@@ -82,7 +82,7 @@ export function SeasonalSpotlight({
               </p>
             </div>
             <Link
-              href="/places?sort=in_season"
+              href="/places?category=in_season"
               className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-secondary"
             >
               {content?.seasonalSpotlightCtaText ?? "See all seasonal picks"}

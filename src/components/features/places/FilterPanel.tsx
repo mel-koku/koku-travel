@@ -8,7 +8,7 @@ import { easeReveal, durationFast } from "@/lib/motion";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { REGION_ORDER, getRegionForPrefecture } from "@/data/prefectures";
 
-type SortOptionId = "recommended" | "in_season" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
+type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
 type SortOption = {
   id: SortOptionId;
@@ -304,7 +304,7 @@ export function FilterPanel({
                 onToggle={() => toggleSection("what")}
               >
                 <div className="flex flex-wrap gap-2">
-                  {VIBES.map((vibe) => (
+                  {VIBES.filter((v) => v.id !== "in_season").map((vibe) => (
                     <PanelChip
                       key={vibe.id}
                       label={vibe.name}

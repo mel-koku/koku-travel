@@ -10,7 +10,7 @@ import type { ActiveFilter } from "@/types/filters";
 const bEase = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
 const DURATION_FAST = 0.25;
 
-type SortOptionId = "recommended" | "in_season" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
+type SortOptionId = "recommended" | "highest_rated" | "most_reviews" | "price_low" | "duration_short";
 
 type SortOption = {
   id: SortOptionId;
@@ -323,7 +323,7 @@ export function FilterPanelB({
               {/* Vibe */}
               <FilterSectionB label="Vibe" activeCount={whatActiveCount} isExpanded={expandedSections.what} onToggle={() => toggleSection("what")}>
                 <div className="flex flex-wrap gap-2">
-                  {VIBES.map((vibe) => (
+                  {VIBES.filter((v) => v.id !== "in_season").map((vibe) => (
                     <ChipB key={vibe.id} label={vibe.name} isSelected={selectedVibes.includes(vibe.id)} onClick={() => toggleVibe(vibe.id)} />
                   ))}
                 </div>

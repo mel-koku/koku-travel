@@ -139,7 +139,7 @@ export function SeasonalSpotlightC({
               </h2>
             </div>
             <Link
-              href="/c/places?sort=in_season"
+              href="/c/places?category=in_season"
               className="hidden text-[11px] font-bold uppercase tracking-[0.15em] text-[var(--primary)] transition-opacity hover:opacity-70 sm:block"
             >
               All Seasonal
