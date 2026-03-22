@@ -177,7 +177,7 @@ export function TestimonialTheater({ content }: TestimonialTheaterProps) {
           <blockquote className="-mt-12 sm:-mt-16">
             <SplitText
               as="p"
-              className="font-serif text-2xl leading-relaxed text-white sm:text-3xl lg:text-4xl"
+              className="font-serif text-xl leading-relaxed text-white sm:text-2xl lg:text-3xl"
               splitBy="word"
               animation="fadeUp"
               staggerDelay={staggerWord}
