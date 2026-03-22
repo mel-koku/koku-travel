@@ -2,9 +2,8 @@
 
 import { useMemo, useEffect, useRef, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { durationFast, easeReveal } from "@/lib/motion";
 
 type DayHealthLevel = "good" | "fair" | "poor";
 
@@ -17,7 +16,7 @@ type DaySelectorProps = {
   tripStartDate?: string;
   /** Auto-scroll to today on mount */
   autoScrollToToday?: boolean;
-  /** Visual variant — "default" for light bg, "dark" for charcoal banner */
+  /** Visual variant (kept for backward compat, unused) */
   variant?: "default" | "dark";
   /** Per-day health levels for indicator dots (optional) */
   dayHealthLevels?: DayHealthLevel[];
@@ -63,10 +62,8 @@ export const DaySelector = ({
   dayHealthLevels,
 }: DaySelectorProps) => {
   const hasAutoScrolled = useRef(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [canScrollDown, setCanScrollDown] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const pillRefs = useRef<Map<number, HTMLButtonElement>>(new Map());
 
   const todayIndex = useMemo(
     () => getTodayIndex(tripStartDate, totalDays),
@@ -78,12 +75,9 @@ export const DaySelector = ({
       month: "short",
       day: "numeric",
     });
-    const weekdayFormatter = new Intl.DateTimeFormat(undefined, {
-      weekday: "short",
-    });
 
     return Array.from({ length: totalDays }).map((_, index) => {
-      let dateLabel = `Day ${index + 1}`;
+      let dateStr = `Day ${index + 1}`;
 
       if (tripStartDate) {
         try {
@@ -91,21 +85,20 @@ export const DaySelector = ({
           if (year && month && day) {
             const date = new Date(year, month - 1, day);
             date.setDate(date.getDate() + index);
-            const monthDay = monthDayFormatter.format(date);
-            const weekday = weekdayFormatter.format(date);
-            dateLabel = `${monthDay}, ${weekday}`;
+            dateStr = monthDayFormatter.format(date);
           }
         } catch {
           // Fall back to Day X format
         }
       }
 
+      // Extract city from label format "... (City)"
       const cityMatch = labels[index]?.match(/\(([^)]+)\)/);
       const city = cityMatch ? cityMatch[1] : null;
 
       return {
         index,
-        label: city ? `${dateLabel} · ${city}` : dateLabel,
+        label: city ? `${dateStr} (${city})` : dateStr,
         isToday: index === todayIndex,
       };
     });
@@ -124,53 +117,125 @@ export const DaySelector = ({
     }
   }, [autoScrollToToday, todayIndex, selected, onChange]);
 
-  // Close on outside click
+  // Scroll active pill into view
   useEffect(() => {
-    if (!isOpen) return;
-    const handleClick = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, [isOpen]);
-
-  // Close on Escape
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsOpen(false);
-    };
-    document.addEventListener("keydown", handleKey);
-    return () => document.removeEventListener("keydown", handleKey);
-  }, [isOpen]);
-
-  // Scroll selected item into view when opening + check if scrollable
-  useEffect(() => {
-    if (isOpen && listRef.current) {
-      const selectedEl = listRef.current.querySelector("[data-selected]");
-      selectedEl?.scrollIntoView({ block: "nearest" });
-      const el = listRef.current;
-      setCanScrollDown(el.scrollHeight > el.clientHeight + el.scrollTop + 4);
+    const pill = pillRefs.current.get(selected);
+    if (pill) {
+      pill.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+        inline: "center",
+      });
     }
-  }, [isOpen]);
+  }, [selected]);
 
-  const handleListScroll = useCallback(() => {
-    if (!listRef.current) return;
-    const el = listRef.current;
-    setCanScrollDown(el.scrollHeight > el.clientHeight + el.scrollTop + 4);
-  }, []);
-
-  const handleSelect = useCallback(
-    (index: number) => {
-      onChange(index);
-      setIsOpen(false);
+  const setPillRef = useCallback(
+    (index: number, el: HTMLButtonElement | null) => {
+      if (el) {
+        pillRefs.current.set(index, el);
+      } else {
+        pillRefs.current.delete(index);
+      }
     },
-    [onChange]
+    []
   );
 
-  const selectedDay = days[selected];
+  // Scroll indicator state
+  const [scrollInfo, setScrollInfo] = useState({ ratio: 0, thumbRatio: 1 });
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const updateScrollInfo = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    const overflowWidth = scrollWidth - clientWidth;
+    if (overflowWidth <= 0) {
+      setScrollInfo({ ratio: 0, thumbRatio: 1 });
+      setCanScrollRight(false);
+    } else {
+      setScrollInfo({
+        ratio: scrollLeft / overflowWidth,
+        thumbRatio: clientWidth / scrollWidth,
+      });
+      setCanScrollRight(scrollLeft < overflowWidth - 2);
+    }
+  }, []);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    updateScrollInfo();
+    el.addEventListener("scroll", updateScrollInfo, { passive: true });
+    const ro = new ResizeObserver(updateScrollInfo);
+    ro.observe(el);
+    return () => {
+      el.removeEventListener("scroll", updateScrollInfo);
+      ro.disconnect();
+    };
+  }, [updateScrollInfo, days.length]);
+
+  // Wheel to horizontal scroll
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+      const { scrollLeft, scrollWidth, clientWidth } = el;
+      const atStart = scrollLeft <= 0 && e.deltaY < 0;
+      const atEnd = scrollLeft >= scrollWidth - clientWidth - 1 && e.deltaY > 0;
+      if (atStart || atEnd) return;
+      e.preventDefault();
+      el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
+
+  // Drag-to-scroll
+  const isDragging = useRef(false);
+  const isPending = useRef(false);
+  const dragStart = useRef({ x: 0, scrollLeft: 0, pointerId: 0 });
+  const DRAG_THRESHOLD = 5;
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    const el = scrollContainerRef.current;
+    if (!el || el.scrollWidth <= el.clientWidth) return;
+    isPending.current = true;
+    isDragging.current = false;
+    dragStart.current = { x: e.clientX, scrollLeft: el.scrollLeft, pointerId: e.pointerId };
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    if (isPending.current && !isDragging.current) {
+      const dx = Math.abs(e.clientX - dragStart.current.x);
+      if (dx >= DRAG_THRESHOLD) {
+        isDragging.current = true;
+        isPending.current = false;
+        el.setPointerCapture(dragStart.current.pointerId);
+        el.style.cursor = "grabbing";
+        el.style.userSelect = "none";
+      }
+    }
+
+    if (isDragging.current) {
+      const dx = e.clientX - dragStart.current.x;
+      el.scrollLeft = dragStart.current.scrollLeft - dx;
+    }
+  }, []);
+
+  const onPointerUp = useCallback((e: React.PointerEvent) => {
+    isPending.current = false;
+    if (!isDragging.current) return;
+    isDragging.current = false;
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    el.releasePointerCapture(e.pointerId);
+    el.style.cursor = "";
+    el.style.userSelect = "";
+  }, []);
 
   if (days.length === 0) {
     return (
@@ -180,97 +245,106 @@ export const DaySelector = ({
     );
   }
 
-  return (
-    <div className="relative" ref={containerRef}>
-      {/* Trigger */}
-      <button
-        type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="flex w-full items-center justify-between rounded-xl border border-border bg-background px-3 py-2.5 text-base font-medium text-foreground shadow-sm transition focus:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20"
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        aria-label="Select day"
-      >
-        <span>
-          {selectedDay?.label}
-          {selectedDay?.isToday && (
-            <span className="ml-2 text-xs text-sage">(Today)</span>
-          )}
-        </span>
-        <ChevronDown
-          className={cn(
-            "h-4 w-4 text-stone transition-transform",
-            isOpen && "rotate-180"
-          )}
-        />
-      </button>
+  const showScrollBar = scrollInfo.thumbRatio < 1;
 
-      {/* Dropdown */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: durationFast, ease: easeReveal }}
-            className="absolute left-0 top-full z-50 mt-1 min-w-full rounded-xl border border-border bg-popover shadow-lg"
-          >
-            <div
-              ref={listRef}
-              role="listbox"
-              data-lenis-prevent
-              onScroll={handleListScroll}
-              className="max-h-72 overflow-auto overscroll-contain scrollbar-hide"
-            >
-              {days.map(({ index, label, isToday }) => {
-                const isSelected = index === selected;
-                const healthLevel = dayHealthLevels?.[index];
-                return (
-                  <button
-                    key={index}
-                    type="button"
-                    role="option"
-                    aria-selected={isSelected}
-                    data-selected={isSelected ? "" : undefined}
-                    onClick={() => handleSelect(index)}
-                    className={cn(
-                      "flex w-full items-center gap-2 px-3 py-3 text-left text-sm min-h-[44px] transition-colors",
-                      isSelected
-                        ? "bg-brand-primary/10 text-brand-primary font-medium"
-                        : "text-popover-foreground hover:bg-surface"
-                    )}
-                  >
-                    {isSelected && <Check className="h-3.5 w-3.5 shrink-0" />}
-                    <span className={cn("whitespace-nowrap", !isSelected && "pl-5.5")}>
-                      {label}
-                      {isToday && (
-                        <span className="ml-2 text-xs text-sage">(Today)</span>
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="relative">
+        <div
+          ref={scrollContainerRef}
+          data-lenis-prevent
+          className="flex gap-1.5 overflow-x-auto overscroll-contain snap-x snap-mandatory scrollbar-hide py-0.5 px-1 cursor-grab"
+          role="tablist"
+          aria-label="Day selector"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+        >
+          {days.map(({ index, label, isToday }) => {
+            const isActive = index === selected;
+            const healthLevel = dayHealthLevels?.[index];
+            return (
+              <button
+                key={index}
+                ref={(el) => setPillRef(index, el)}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-label={`${label}${isToday ? " (Today)" : ""}`}
+                onClick={() => onChange(index)}
+                className={cn(
+                  "relative flex-shrink-0 snap-start rounded-xl px-2.5 text-xs font-medium whitespace-nowrap transition-colors duration-200",
+                  "min-h-[36px] flex items-center justify-center",
+                  "active:scale-[0.98]",
+                  isActive
+                    ? "bg-brand-primary text-white"
+                    : "bg-surface/60 border border-border/50 text-foreground hover:bg-surface"
+                )}
+              >
+                <span className="flex items-center gap-1.5">
+                  {label}
+                  {isToday && (
+                    <span
+                      className={cn(
+                        "text-[10px] font-semibold",
+                        isActive ? "text-white/80" : "text-sage"
                       )}
+                    >
+                      (Today)
                     </span>
-                    {healthLevel && healthLevel !== "good" && (
-                      <span
-                        className={cn(
-                          "ml-auto h-2 w-2 shrink-0 rounded-full",
-                          healthLevel === "fair" ? "bg-warning" : "bg-error"
-                        )}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-            {/* Scroll-down indicator */}
-            <div
-              className={cn(
-                "pointer-events-none flex justify-center py-1 transition-opacity",
-                canScrollDown ? "opacity-100" : "opacity-0"
-              )}
+                  )}
+                  {healthLevel && healthLevel !== "good" && (
+                    <span
+                      className={cn(
+                        "h-2 w-2 shrink-0 rounded-full",
+                        healthLevel === "fair" ? "bg-warning" : "bg-error"
+                      )}
+                    />
+                  )}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Right-edge scroll indicator */}
+        <AnimatePresence>
+          {canScrollRight && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="pointer-events-none absolute top-0 right-0 bottom-0 flex items-center"
+              aria-hidden
             >
-              <ChevronDown className="h-3.5 w-3.5 text-stone" />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              <div
+                className="flex h-full items-center pl-6 pr-1"
+                style={{
+                  background: "linear-gradient(to right, transparent, var(--background, #1a1714) 60%)",
+                }}
+              >
+                <ChevronRight className="h-4 w-4 animate-pulse text-stone" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Horizontal scroll indicator bar */}
+      {showScrollBar && (
+        <div className="mx-1 h-1 rounded-full bg-border" aria-hidden>
+          <motion.div
+            className="h-full rounded-full bg-brand-primary/40"
+            style={{
+              width: `${scrollInfo.thumbRatio * 100}%`,
+              marginLeft: `${scrollInfo.ratio * (1 - scrollInfo.thumbRatio) * 100}%`,
+            }}
+            transition={{ duration: 0.1, ease: "linear" }}
+          />
+        </div>
+      )}
     </div>
   );
 };

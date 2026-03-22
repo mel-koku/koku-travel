@@ -1,20 +1,20 @@
 "use client";
 
-import Image from "next/image";
-import { useCallback, useMemo } from "react";
-import { Calendar, Plane, Sparkles, MapPin } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import { Calendar, Plane, Sparkles, MapPin, Search, X, Check } from "lucide-react";
 import { formatTime12h } from "@/lib/utils/timeUtils";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 
-import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
 import { getVibeById } from "@/data/vibes";
-import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
-import { REGION_DESCRIPTIONS } from "@/data/regionDescriptions";
+import { deriveRegionsFromCities } from "@/data/regions";
 import { computeDefaultCityDays, redistributeOnRemove } from "@/lib/tripBuilder/cityDayAllocation";
+import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 import { SortableCityList } from "./SortableCityList";
-import type { CityId, KnownCityId } from "@/types/trip";
+import type { CityId, TripBuilderData } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
+
+type AccommodationValue = NonNullable<TripBuilderData["accommodations"]>[string];
 
 type TripSummaryEditorialProps = {
   onEditDates?: () => void;
@@ -22,6 +22,8 @@ type TripSummaryEditorialProps = {
   onEditVibes?: () => void;
   onEditRegions?: () => void;
   sanityConfig?: TripBuilderConfig;
+  accommodations?: TripBuilderData["accommodations"];
+  onAccommodationChange?: (cityId: string, accom: AccommodationValue | undefined) => void;
 };
 
 export function TripSummaryEditorial({
@@ -30,37 +32,10 @@ export function TripSummaryEditorial({
   onEditVibes,
   onEditRegions,
   sanityConfig: _sanityConfig,
+  accommodations,
+  onAccommodationChange,
 }: TripSummaryEditorialProps) {
   const { data, setData } = useTripBuilder();
-
-  // Derive region names from cities (primary), fallback to data.regions for backward compat
-  const derivedRegionNames = useMemo(() => {
-    const cities = (data.cities ?? []) as KnownCityId[];
-    if (cities.length > 0) {
-      const regionIds = deriveRegionsFromCities(cities);
-      return regionIds
-        .map((id) => REGIONS.find((r) => r.id === id)?.name)
-        .filter(Boolean) as string[];
-    }
-    // Fallback to data.regions for backward compat
-    return (data.regions ?? [])
-      .map((id) => REGIONS.find((r) => r.id === id)?.name)
-      .filter(Boolean) as string[];
-  }, [data.cities, data.regions]);
-
-  // Dynamic headline
-  const headline = useMemo(() => {
-    const duration = data.duration;
-    const regionStr =
-      derivedRegionNames.length > 2
-        ? `${derivedRegionNames.slice(0, 2).join(", ")} & more`
-        : derivedRegionNames.join(" & ");
-
-    if (duration && regionStr) return `${duration} days in ${regionStr}`;
-    if (duration) return `${duration} days in Japan`;
-    if (regionStr) return `Your trip to ${regionStr}`;
-    return "Here\u2019s what you\u2019ve got so far";
-  }, [derivedRegionNames, data.duration]);
 
   // Format dates
   const formattedDates = useMemo(() => {
@@ -195,207 +170,134 @@ export function TripSummaryEditorial({
     [setData],
   );
 
-  // Get images from derived regions for composite — always 3.
-  // Uses gallery images from Sanity when available, falls back to hero images.
-  const regionImages = useMemo(() => {
-    const cities = (data.cities ?? []) as KnownCityId[];
-    const regionIds = cities.length > 0
-      ? deriveRegionsFromCities(cities)
-      : (data.regions ?? []);
-
-    const images: string[] = [];
-    const usedSet = new Set<string>();
-
-    // Collect hero + gallery images from selected regions
-    for (const id of regionIds) {
-      if (images.length >= 3) break;
-      const desc = REGION_DESCRIPTIONS.find((r) => r.id === id);
-      if (!desc) continue;
-
-      if (!usedSet.has(desc.heroImage)) {
-        images.push(desc.heroImage);
-        usedSet.add(desc.heroImage);
-      }
-      for (const g of desc.galleryImages ?? []) {
-        if (images.length >= 3) break;
-        if (!usedSet.has(g)) {
-          images.push(g);
-          usedSet.add(g);
-        }
-      }
-    }
-
-    // Pad to 3 with hero images from other regions
-    if (images.length < 3) {
-      for (const desc of REGION_DESCRIPTIONS) {
-        if (images.length >= 3) break;
-        if (!usedSet.has(desc.heroImage)) {
-          images.push(desc.heroImage);
-          usedSet.add(desc.heroImage);
-        }
-      }
-    }
-
-    return images;
-  }, [data.cities, data.regions]);
-
   return (
-    <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
-      {/* Left — Trip details */}
-      <div className="flex-1">
-        <p className="eyebrow-editorial text-brand-primary">
-          STEP 05
-        </p>
+    <div>
+      <div className="flex flex-col gap-4">
+        {/* Dates */}
+        <SummaryItem
+          icon={<Calendar className="h-4 w-4" />}
+          label="Dates"
+          value={
+            formattedDates ? (
+              <span>
+                {formattedDates}
+                {data.duration && (
+                  <span className="ml-2 text-stone">
+                    ({data.duration - 1} night{data.duration - 1 !== 1 ? "s" : ""})
+                  </span>
+                )}
+              </span>
+            ) : (
+              <span className="text-stone">Not set</span>
+            )
+          }
+          onEdit={onEditDates}
+        />
 
-        <motion.h2
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
-        >
-          {headline}
-        </motion.h2>
-
-        <div className="mt-8 flex flex-col gap-4">
-          {/* Dates */}
-          <SummaryItem
-            icon={<Calendar className="h-4 w-4" />}
-            label="Dates"
-            value={
-              formattedDates ? (
+        {/* Flights */}
+        <SummaryItem
+          icon={<Plane className="h-4 w-4" />}
+          label="Flights"
+          value={
+            data.entryPoint ? (
+              <div className="flex flex-col gap-0.5">
                 <span>
-                  {formattedDates}
-                  {data.duration && (
-                    <span className="ml-2 text-stone">
-                      ({data.duration - 1} night{data.duration - 1 !== 1 ? "s" : ""})
+                  <span className="text-stone">In:</span>{" "}
+                  {data.entryPoint.name}
+                  <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
+                    {data.entryPoint.iataCode}
+                  </span>
+                  {data.arrivalTime && (
+                    <span className="ml-2 text-xs text-stone">
+                      Landing {formatTime12h(data.arrivalTime)}
                     </span>
                   )}
                 </span>
-              ) : (
-                <span className="text-stone">Not set</span>
-              )
-            }
-            onEdit={onEditDates}
-          />
-
-          {/* Flights */}
-          <SummaryItem
-            icon={<Plane className="h-4 w-4" />}
-            label="Flights"
-            value={
-              data.entryPoint ? (
-                <div className="flex flex-col gap-0.5">
-                  <span>
-                    <span className="text-stone">In:</span>{" "}
-                    {data.entryPoint.name}
-                    <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
-                      {data.entryPoint.iataCode}
-                    </span>
-                    {data.arrivalTime && (
-                      <span className="ml-2 text-xs text-stone">
-                        Landing {formatTime12h(data.arrivalTime)}
+                <span>
+                  <span className="text-stone">Out:</span>{" "}
+                  {data.sameAsEntry !== false ? (
+                    "Same airport"
+                  ) : data.exitPoint ? (
+                    <>
+                      {data.exitPoint.name}
+                      <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
+                        {data.exitPoint.iataCode}
                       </span>
-                    )}
-                  </span>
-                  <span>
-                    <span className="text-stone">Out:</span>{" "}
-                    {data.sameAsEntry !== false ? (
-                      "Same airport"
-                    ) : data.exitPoint ? (
-                      <>
-                        {data.exitPoint.name}
-                        <span className="ml-2 rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-stone">
-                          {data.exitPoint.iataCode}
-                        </span>
-                      </>
-                    ) : (
-                      "Same airport"
-                    )}
-                    {data.departureTime && (
-                      <span className="ml-2 text-xs text-stone">
-                        Departing {formatTime12h(data.departureTime)}
-                      </span>
-                    )}
-                  </span>
-                </div>
-              ) : (
-                <span className="text-stone">Not set</span>
-              )
-            }
-            onEdit={onEditEntryPoint}
-          />
-
-          {/* Vibes */}
-          <SummaryItem
-            icon={<Sparkles className="h-4 w-4" />}
-            label="Travel Style"
-            value={
-              vibeNames.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5">
-                  {vibeNames.map((name) => (
-                    <span
-                      key={name}
-                      className="rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-sm font-medium text-brand-primary"
-                    >
-                      {name}
+                    </>
+                  ) : (
+                    "Same airport"
+                  )}
+                  {data.departureTime && (
+                    <span className="ml-2 text-xs text-stone">
+                      Departing {formatTime12h(data.departureTime)}
                     </span>
-                  ))}
-                </div>
-              ) : (
-                <span className="text-stone">Not set</span>
-              )
-            }
-            onEdit={onEditVibes}
-          />
-
-          {/* Destinations — reorderable inline */}
-          <SummaryItem
-            icon={<MapPin className="h-4 w-4" />}
-            label="Route Order"
-            value={
-              (data.cities ?? []).length > 0 ? (
-                <SortableCityList
-                  cities={data.cities ?? []}
-                  onReorder={handleCityReorder}
-                  onRemove={handleCityRemove}
-                  variant="a"
-                  cityDays={effectiveCityDays}
-                  onDaysChange={handleDaysChange}
-                  totalDays={data.duration}
-                  onDuplicate={handleDuplicateCity}
-                />
-              ) : (
-                <span className="text-stone">Not set</span>
-              )
-            }
-            onEdit={onEditRegions}
-          />
-        </div>
-      </div>
-
-      {/* Right — Composite image grid of selected regions */}
-      {regionImages.length > 0 && (
-        <div className="hidden w-80 shrink-0 lg:block">
-          <div className="grid grid-cols-2 gap-2">
-            {regionImages.map((img, i) => (
-              <div
-                key={img}
-                className={`relative overflow-hidden rounded-xl ${
-                  i === 0 ? "col-span-2 aspect-[16/10]" : "aspect-square"
-                }`}
-              >
-                <Image
-                  src={img}
-                  alt=""
-                  fill
-                  className="object-cover"
-                  sizes="160px"
-                />
+                  )}
+                </span>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
+            ) : (
+              <span className="text-stone">Not set</span>
+            )
+          }
+          onEdit={onEditEntryPoint}
+        />
+
+        {/* Vibes */}
+        <SummaryItem
+          icon={<Sparkles className="h-4 w-4" />}
+          label="Travel Style"
+          value={
+            vibeNames.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {vibeNames.map((name) => (
+                  <span
+                    key={name}
+                    className="rounded-full bg-brand-primary/10 px-2.5 py-0.5 text-sm font-medium text-brand-primary"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <span className="text-stone">Not set</span>
+            )
+          }
+          onEdit={onEditVibes}
+        />
+
+        {/* Destinations — reorderable inline with accommodation */}
+        <SummaryItem
+          icon={<MapPin className="h-4 w-4" />}
+          label="Route & Stays"
+          value={
+            (data.cities ?? []).length > 0 ? (
+              <SortableCityList
+                cities={data.cities ?? []}
+                onReorder={handleCityReorder}
+                onRemove={handleCityRemove}
+                variant="a"
+                cityDays={effectiveCityDays}
+                onDaysChange={handleDaysChange}
+                totalDays={data.duration}
+                onDuplicate={handleDuplicateCity}
+                renderAfterCity={
+                  onAccommodationChange
+                    ? (cityId) => (
+                        <InlineAccommodationInput
+                          cityId={cityId}
+                          value={accommodations?.[cityId]}
+                          onChange={(accom) => onAccommodationChange(cityId, accom)}
+                        />
+                      )
+                    : undefined
+                }
+              />
+            ) : (
+              <span className="text-stone">Not set</span>
+            )
+          }
+          onEdit={onEditRegions}
+        />
+      </div>
     </div>
   );
 }
@@ -429,6 +331,91 @@ function SummaryItem({ icon, label, value, onEdit }: SummaryItemProps) {
         >
           Edit
         </button>
+      )}
+    </div>
+  );
+}
+
+// --- Inline accommodation input for each city row ---
+
+function InlineAccommodationInput({
+  cityId,
+  value,
+  onChange,
+}: {
+  cityId: string;
+  value?: AccommodationValue;
+  onChange: (accom: AccommodationValue | undefined) => void;
+}) {
+  const [searchInput, setSearchInput] = useState("");
+  const { suggestions, isLoading } = useMapboxSearch(
+    searchInput ? `${searchInput} ${cityId} Japan` : ""
+  );
+
+  const handleSelect = useCallback(
+    (suggestion: MapboxSuggestion) => {
+      if (!suggestion.coordinates) return;
+      onChange({
+        name: suggestion.name,
+        coordinates: suggestion.coordinates,
+        placeId: suggestion.mapbox_id,
+      });
+      setSearchInput("");
+    },
+    [onChange]
+  );
+
+  // Filled state: compact pill
+  if (value) {
+    return (
+      <div className="ml-6 mt-1 flex items-center gap-1.5">
+        <Check className="h-3 w-3 shrink-0 text-sage" />
+        <span className="truncate text-xs text-stone">{value.name}</span>
+        <button
+          type="button"
+          onClick={() => onChange(undefined)}
+          className="shrink-0 rounded p-0.5 text-stone transition-colors hover:text-foreground-secondary"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      </div>
+    );
+  }
+
+  // Empty state: compact search
+  return (
+    <div className="ml-6 mt-1">
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-stone" />
+        <input
+          type="text"
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          placeholder="Hotel or address"
+          className="h-8 w-full rounded-lg border-0 bg-transparent pl-7 pr-3 text-xs text-foreground placeholder:text-stone/60 focus:bg-surface focus:outline-none focus:ring-1 focus:ring-brand-primary/30"
+        />
+        {isLoading && searchInput.length >= 3 && (
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <div className="h-3 w-3 animate-spin rounded-full border-[1.5px] border-brand-primary border-t-transparent" />
+          </div>
+        )}
+      </div>
+      {suggestions.length > 0 && (
+        <div className="mt-1 max-h-32 overflow-auto rounded-lg border border-border bg-background shadow-sm">
+          {suggestions.map((s) => (
+            <button
+              key={s.mapbox_id}
+              type="button"
+              onClick={() => handleSelect(s)}
+              className="flex w-full cursor-pointer flex-col px-3 py-1.5 text-left hover:bg-surface"
+            >
+              <p className="text-xs font-medium text-foreground">{s.name}</p>
+              {s.place_formatted && (
+                <p className="text-[10px] text-stone">{s.place_formatted}</p>
+              )}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );

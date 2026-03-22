@@ -32,7 +32,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <ScrollReveal>
-          <div className="max-w-2xl">
+          <div>
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
             </p>
@@ -127,13 +127,26 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
           ))}
         </div>
 
-        {/* View all */}
-        <div className="mt-10 text-center">
+        {/* Section CTA */}
+        <div className="mt-10">
           <Link
             href="/places"
-            className="inline-flex h-11 items-center justify-center rounded-xl border border-border px-6 text-sm font-medium text-foreground transition-all duration-200 hover:border-brand-primary hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary/30"
+            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
           >
-            {content?.featuredLocationsCtaText ?? "View All Places"}
+            {content?.featuredLocationsCtaText ?? "View all places"}
+            <svg
+              className="h-4 w-4 transition-transform group-hover:translate-x-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+              />
+            </svg>
           </Link>
         </div>
       </div>
