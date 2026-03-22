@@ -16,6 +16,9 @@ type CategoryBarProps = {
   onInputSubmit: () => void;
   onAskKokuClick?: () => void;
   isChatOpen?: boolean;
+  viewMode?: "grid" | "map";
+  onViewModeChange?: (mode: "grid" | "map") => void;
+  mapAvailable?: boolean;
 };
 
 export function CategoryBar({
@@ -29,8 +32,12 @@ export function CategoryBar({
   onInputSubmit,
   onAskKokuClick,
   isChatOpen = false,
+  viewMode,
+  onViewModeChange,
+  mapAvailable = false,
 }: CategoryBarProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const barRef = useRef<HTMLDivElement>(null);
   const [isStuck, setIsStuck] = useState(false);
 
   useEffect(() => {
@@ -48,6 +55,23 @@ export function CategoryBar({
     return () => observer.disconnect();
   }, []);
 
+  // Publish bar height as CSS variable for map layout positioning
+  useEffect(() => {
+    const bar = barRef.current;
+    if (!bar) return;
+    const ro = new ResizeObserver(([entry]) => {
+      document.documentElement.style.setProperty(
+        "--category-bar-h",
+        `${entry!.contentRect.height}px`,
+      );
+    });
+    ro.observe(bar);
+    return () => {
+      ro.disconnect();
+      document.documentElement.style.removeProperty("--category-bar-h");
+    };
+  }, []);
+
   const chipFilters = activeFilters.filter((f) => f.type !== "search");
   const hasChips = chipFilters.length > 0;
 
@@ -56,9 +80,10 @@ export function CategoryBar({
       <div ref={sentinelRef} className="h-0 w-full" aria-hidden="true" />
 
       <div
+        ref={barRef}
         className={cn(
           "sticky top-20 z-40",
-          isStuck
+          isStuck || viewMode === "map"
             ? "bg-background/95 backdrop-blur-xl border-b border-border/50"
             : "bg-transparent border-b border-transparent"
         )}
@@ -137,6 +162,46 @@ export function CategoryBar({
                 <MessageCircle className="h-4 w-4" />
                 <span className="hidden sm:inline">Ask Koku</span>
               </button>
+            )}
+
+            {/* Grid / Map toggle */}
+            {mapAvailable && onViewModeChange && (
+              <div className="flex shrink-0 overflow-hidden rounded-xl border border-border">
+                <button
+                  type="button"
+                  onClick={() => onViewModeChange("grid")}
+                  className={cn(
+                    "flex items-center gap-1 px-3 py-2.5 text-sm font-medium transition",
+                    viewMode === "grid"
+                      ? "bg-brand-primary text-white"
+                      : "text-stone hover:text-foreground"
+                  )}
+                  aria-label="Grid view"
+                  aria-pressed={viewMode === "grid"}
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                  </svg>
+                  <span className="hidden sm:inline">Grid</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onViewModeChange("map")}
+                  className={cn(
+                    "flex items-center gap-1 px-3 py-2.5 text-sm font-medium transition",
+                    viewMode === "map"
+                      ? "bg-brand-primary text-white"
+                      : "text-stone hover:text-foreground"
+                  )}
+                  aria-label="Map view"
+                  aria-pressed={viewMode === "map"}
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                  <span className="hidden sm:inline">Map</span>
+                </button>
+              </div>
             )}
           </div>
 

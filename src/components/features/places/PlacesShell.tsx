@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Location } from "@/types/location";
 import { featureFlags } from "@/lib/env/featureFlags";
 import { CategoryBar } from "./CategoryBar";
@@ -57,6 +57,7 @@ type PlacesShellProps = {
 };
 
 export function PlacesShell({ content }: PlacesShellProps) {
+  const router = useRouter();
   const {
     locations,
     total,
@@ -200,9 +201,30 @@ export function PlacesShell({ content }: PlacesShellProps) {
     [],
   );
 
+  // Grid/Map toggle synced to URL param
+  const viewParam = searchParams.get("view");
+  const [viewMode, setViewModeState] = useState<"grid" | "map">(
+    viewParam === "map" && mapAvailable ? "map" : "grid",
+  );
+
+  const setViewMode = useCallback(
+    (mode: "grid" | "map") => {
+      setViewModeState(mode);
+      const params = new URLSearchParams(searchParams.toString());
+      if (mode === "map") {
+        params.set("view", "map");
+      } else {
+        params.delete("view");
+      }
+      const qs = params.toString();
+      router.replace(`/places${qs ? `?${qs}` : ""}`, { scroll: false });
+    },
+    [router, searchParams],
+  );
+
   return (
     <div className="min-h-[100dvh] bg-background">
-      <PlacesIntro totalCount={total} content={content} />
+      {viewMode === "grid" && <PlacesIntro totalCount={total} content={content} />}
 
       {/* Error state */}
       {error ? (
@@ -238,15 +260,20 @@ export function PlacesShell({ content }: PlacesShellProps) {
         onInputSubmit={handleInputSubmit}
         onAskKokuClick={() => setIsChatOpen(true)}
         isChatOpen={isChatOpen}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
+        mapAvailable={mapAvailable}
       />
 
-      {/* Seasonal banner */}
-      <div className="mt-3">
-        <SeasonalBanner
-          locations={locations}
-          onFilterSeasonal={handleFilterSeasonal}
-        />
-      </div>
+      {/* Seasonal banner (grid mode only) */}
+      {viewMode === "grid" && (
+        <div className="mt-3">
+          <SeasonalBanner
+            locations={locations}
+            onFilterSeasonal={handleFilterSeasonal}
+          />
+        </div>
+      )}
 
       {/* Koku filter banner */}
       {kokuIds.length > 0 && (
@@ -267,11 +294,13 @@ export function PlacesShell({ content }: PlacesShellProps) {
         </div>
       )}
 
-      {/* Breathing room between search bar and content */}
-      <div className="h-4 sm:h-6" aria-hidden="true" />
+      {/* Breathing room between search bar and content (grid mode only) */}
+      {viewMode === "grid" && (
+        <div className="h-4 sm:h-6" aria-hidden="true" />
+      )}
 
       {/* Main Content */}
-      {mapAvailable ? (
+      {viewMode === "map" && mapAvailable ? (
         <PlacesMapLayout
           filteredLocations={filteredLocations}
           sortedLocations={sortedLocations}
