@@ -128,13 +128,15 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     [data.cities]
   );
 
-  // All 640 cities grouped by region (lazy-loaded, cached)
+  // All cities grouped by region (case-insensitive keys, title-cased)
   const allCitiesByRegion = useMemo(() => {
     const cities = getAllCities();
     const byRegion = new Map<string, number>();
     for (const c of cities) {
       if (c.region) {
-        byRegion.set(c.region, (byRegion.get(c.region) ?? 0) + 1);
+        // Normalize to title case so "kanto" and "Kanto" merge
+        const key = c.region.charAt(0).toUpperCase() + c.region.slice(1).toLowerCase();
+        byRegion.set(key, (byRegion.get(key) ?? 0) + 1);
       }
     }
     return byRegion;
@@ -326,15 +328,6 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     [selectedCities]
   );
 
-  // Compute additional city count per region (total DB cities minus known cities)
-  const getAdditionalCityCount = useCallback(
-    (regionName: string, knownCityCount: number) => {
-      const totalInRegion = allCitiesByRegion.get(regionName) ?? 0;
-      return Math.max(0, totalInRegion - knownCityCount);
-    },
-    [allCitiesByRegion]
-  );
-
   return (
     <div className="relative min-h-[calc(100dvh-5rem)] bg-background">
       {/* Layer 0: Map canvas — fixed to viewport so it never scrolls */}
@@ -417,9 +410,12 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
           {scoredRegions.map((scored, i) => {
             const { selected, total } = getCityCounts(scored.region.id);
             const regionDef = REGIONS.find((r) => r.id === scored.region.id);
-            const cityNames = regionDef?.cities.map((c) => c.name) ?? [];
+            const allCityNames = regionDef?.cities.map((c) => c.name) ?? [];
             const regionName = scored.region.name;
-            const additionalCityCount = getAdditionalCityCount(regionName, cityNames.length);
+            const MAX_VISIBLE_CITIES = 3;
+            const cityNames = allCityNames.slice(0, MAX_VISIBLE_CITIES);
+            const dbTotal = allCitiesByRegion.get(regionName) ?? allCityNames.length;
+            const additionalCityCount = Math.max(0, dbTotal - MAX_VISIBLE_CITIES);
             return (
               <div key={scored.region.id}>
                 {/* Desktop: hover-driven */}

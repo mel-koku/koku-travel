@@ -399,7 +399,7 @@ export function CityList({ onCitySelect }: CityListProps) {
                           d="M9 5l7 7-7 7"
                         />
                       </svg>
-                      <span className="text-sm font-semibold text-foreground-secondary">
+                      <span className="text-sm font-medium text-foreground-secondary">
                         {region}
                       </span>
                       <span className="text-xs text-stone">
