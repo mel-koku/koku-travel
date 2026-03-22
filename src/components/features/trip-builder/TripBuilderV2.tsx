@@ -296,7 +296,7 @@ function StepShell({
       <div
         className={cn(
           "flex flex-1 flex-col",
-          !fullBleed && "mx-auto w-full max-w-7xl px-4 pt-24 sm:px-6 lg:px-8 lg:pr-24"
+          !fullBleed && "mx-auto w-full max-w-7xl px-4 pt-24 sm:px-6 lg:px-8"
         )}
       >
         {children}
@@ -304,7 +304,7 @@ function StepShell({
 
       {/* Desktop Navigation — fixed to viewport bottom */}
       <div className="fixed inset-x-0 bottom-0 z-50 hidden border-t border-border/10 bg-background lg:block">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8 lg:pr-24">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <button
             type="button"
             onClick={onBack}
