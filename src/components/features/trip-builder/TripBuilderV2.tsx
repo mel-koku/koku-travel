@@ -304,7 +304,7 @@ function StepShell({
 
       {/* Desktop Navigation — fixed to viewport bottom */}
       <div className="fixed inset-x-0 bottom-0 z-50 hidden border-t border-border/10 bg-background lg:block">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
           <button
             type="button"
             onClick={onBack}
@@ -314,15 +314,18 @@ function StepShell({
             {resolvedBackLabel}
           </button>
 
-          <div className="flex flex-col items-center gap-1">
-            <StepDots
-              currentStep={currentStep}
-              totalSteps={totalSteps}
-              completedSteps={completedSteps}
-              onStepClick={onStepClick}
-            />
+          {/* Dots — absolutely centered to viewport */}
+          <div className="absolute inset-x-0 flex flex-col items-center gap-1 pointer-events-none">
+            <div className="pointer-events-auto">
+              <StepDots
+                currentStep={currentStep}
+                totalSteps={totalSteps}
+                completedSteps={completedSteps}
+                onStepClick={onStepClick}
+              />
+            </div>
             {showHint && disabledHint && (
-              <p className="text-xs text-warning animate-in fade-in duration-200" role="alert">
+              <p className="text-xs text-warning animate-in fade-in duration-200 pointer-events-auto" role="alert">
                 {disabledHint}
               </p>
             )}
