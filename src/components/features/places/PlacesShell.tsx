@@ -266,12 +266,10 @@ export function PlacesShell({ content }: PlacesShellProps) {
 
       {/* Seasonal banner (grid mode only) */}
       {viewMode === "grid" && (
-        <div className="mx-auto mt-2 max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SeasonalBanner
-            locations={locations}
-            onFilterSeasonal={handleFilterSeasonal}
-          />
-        </div>
+        <SeasonalBanner
+          locations={locations}
+          onFilterSeasonal={handleFilterSeasonal}
+        />
       )}
 
       {/* Koku filter banner */}
