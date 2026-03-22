@@ -69,7 +69,7 @@ export function SeasonalSpotlight({
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <ScrollReveal direction="up" distance={20} duration={0.6}>
-          <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">
+          <div className="mb-10 sm:mb-16">
             <div>
               <p className="eyebrow-editorial text-brand-secondary">
                 {content?.seasonalSpotlightEyebrow ?? "What's in season"}
@@ -81,25 +81,6 @@ export function SeasonalSpotlight({
                 {content?.seasonalSpotlightDescription ?? "Places, guides, and experiences at their best right now."}
               </p>
             </div>
-            <Link
-              href="/places?category=in_season"
-              className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-secondary"
-            >
-              {content?.seasonalSpotlightCtaText ?? "See all seasonal picks"}
-              <svg
-                className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
-                />
-              </svg>
-            </Link>
           </div>
         </ScrollReveal>
 
@@ -116,6 +97,29 @@ export function SeasonalSpotlight({
               <SpotlightCard card={card} idx={idx} />
             </ScrollReveal>
           ))}
+        </div>
+
+        {/* Section CTA */}
+        <div className="mt-10">
+          <Link
+            href="/places?category=in_season"
+            className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-secondary"
+          >
+            {content?.seasonalSpotlightCtaText ?? "See all seasonal picks"}
+            <svg
+              className="h-4 w-4 transition-transform group-hover:translate-x-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"
+              />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>

@@ -8,30 +8,23 @@ import {
   Users,
   Accessibility,
   StickyNote,
-  Building2,
-  Search,
-  X,
-  Check,
 } from "lucide-react";
 
 import { TripSummaryEditorial } from "./TripSummaryEditorial";
 import { PreferenceCard } from "./PreferenceCard";
 import { JRPassCard } from "./JRPassCard";
 
-import { PlanningWarningsList } from "./PlanningWarning";
+
 import { BudgetInput, type BudgetMode, type BudgetValue } from "./BudgetInput";
-import { SavedInTripPreview } from "./SavedInTripPreview";
+
+import { motion } from "framer-motion";
 import { useTripBuilder } from "@/context/TripBuilderContext";
-import { detectPlanningWarnings, type PlanningWarning } from "@/lib/planning/tripWarnings";
-import { FormField } from "@/components/ui/FormField";
-import { Select } from "@/components/ui/Select";
+import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
-import type { TripStyle, TripBuilderData } from "@/types/trip";
+import type { TripStyle, KnownCityId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
-import { computeDefaultCityDays } from "@/lib/tripBuilder/cityDayAllocation";
-import { useMapboxSearch, type MapboxSuggestion } from "@/hooks/useMapboxSearch";
 
 type PreferenceFormValues = {
   groupSize?: number;
@@ -54,18 +47,18 @@ const DIETARY_OPTIONS = [
   { id: "other", label: "Other" },
 ];
 
-const GROUP_TYPE_OPTIONS = [
-  { label: "Solo", value: "solo" },
-  { label: "Couple", value: "couple" },
-  { label: "Family", value: "family" },
-  { label: "Friends", value: "friends" },
-  { label: "Business", value: "business" },
-];
 
 const PACE_OPTIONS = [
   { label: "Relaxed", value: "relaxed", description: "Slow mornings, long lunches" },
   { label: "Balanced", value: "balanced", description: "Mix of sightseeing and downtime" },
   { label: "Full", value: "fast", description: "Packed days, lots of ground covered" },
+];
+
+const GROUP_TYPE_SEGMENTS = [
+  { label: "Solo", value: "solo" },
+  { label: "Couple", value: "couple" },
+  { label: "Family", value: "family" },
+  { label: "Friends", value: "friends" },
 ];
 
 
@@ -152,7 +145,28 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
     onValidityChange?.(true);
   }, [syncToContext, onValidityChange]);
 
-  const warnings = useMemo(() => detectPlanningWarnings(data), [data]);
+  // Headline for the step
+  const headline = useMemo(() => {
+    const cities = (data.cities ?? []) as KnownCityId[];
+    const regionNames = cities.length > 0
+      ? deriveRegionsFromCities(cities)
+          .map((id) => REGIONS.find((r) => r.id === id)?.name)
+          .filter(Boolean) as string[]
+      : (data.regions ?? [])
+          .map((id) => REGIONS.find((r) => r.id === id)?.name)
+          .filter(Boolean) as string[];
+
+    const regionStr =
+      regionNames.length > 2
+        ? `${regionNames.slice(0, 2).join(", ")} & more`
+        : regionNames.join(" & ");
+
+    const duration = data.duration;
+    if (duration && regionStr) return `${duration} days in ${regionStr}`;
+    if (duration) return `${duration} days in Japan`;
+    if (regionStr) return `Your trip to ${regionStr}`;
+    return "Here\u2019s what you\u2019ve got so far";
+  }, [data.cities, data.regions, data.duration]);
 
   const durationWarning = useMemo(
     () => validateDurationRegionFit(data.duration ?? 0, data.regions ?? [], data.cities ?? []),
@@ -165,304 +179,231 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
   const handleEditVibes = useCallback(() => onGoToStep?.(3), [onGoToStep]);
   const handleEditRegions = useCallback(() => onGoToStep?.(4), [onGoToStep]);
 
-  const handleWarningAction = useCallback(
-    (warning: PlanningWarning) => {
-      if (warning.type !== "return_to_airport") return;
-      const returnCityId = warning.actionData?.returnCityId as string | undefined;
-      if (!returnCityId) return;
-
-      setData((prev) => {
-        const cities = prev.cities ?? [];
-        if (cities.length === 0) return prev;
-
-        const duration = prev.duration ?? cities.length;
-        const currentDays = prev.cityDays ?? computeDefaultCityDays(cities, duration);
-        const lastDays = currentDays[currentDays.length - 1] ?? 1;
-
-        // Can't steal from a 1-day city
-        if (lastDays < 2) return prev;
-
-        const newCities = [...cities, returnCityId];
-        const newDays = [...currentDays];
-        newDays[newDays.length - 1] = lastDays - 1;
-        newDays.push(1);
-
-        return {
-          ...prev,
-          cities: newCities,
-          cityDays: newDays,
-          customCityOrder: true,
-        };
-      });
-    },
-    [setData],
-  );
-
   return (
     <div className="flex flex-col gap-8 pb-32 lg:pb-8">
-      {/* Trip Summary — Editorial */}
-      <TripSummaryEditorial
-        onEditDates={handleEditDates}
-        onEditEntryPoint={handleEditEntryPoint}
-        onEditVibes={handleEditVibes}
-        onEditRegions={handleEditRegions}
-        sanityConfig={sanityConfig}
-      />
-
-      {/* Planning Warnings */}
-      {warnings.length > 0 && <PlanningWarningsList warnings={warnings} onAction={handleWarningAction} />}
-
-      {/* Duration-to-Region Warning */}
-      {durationWarning && (
-        <div
-          className={cn(
-            "flex items-start gap-3 rounded-xl border px-4 py-3",
-            durationWarning.severity === "warning"
-              ? "border-warning/30 bg-warning/5"
-              : "border-sage/30 bg-sage/5"
-          )}
+      {/* Step heading — centered, spans both columns */}
+      <div className="text-center">
+        <p className="eyebrow-editorial text-brand-primary">STEP 05</p>
+        <motion.h2
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
         >
-          <span className="mt-0.5 shrink-0 text-sm">
-            {durationWarning.severity === "warning" ? "\u26A0\uFE0F" : "\u2139\uFE0F"}
-          </span>
-          <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
-        </div>
-      )}
+          {headline}
+        </motion.h2>
+      </div>
 
-      {/* Accommodation — per-city hotel search */}
-      {data.cities && data.cities.length > 0 && (
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-4 w-4 text-brand-primary" />
-            <p className="text-sm font-medium text-foreground">Where are you staying?</p>
-            <span className="text-xs text-stone">Optional</span>
-          </div>
-          <p className="mt-1 text-xs text-stone">
-            We&apos;ll route your days from your hotel.
-          </p>
-          <div className="mt-4 flex flex-col gap-3">
-            {data.cities.map((cityId) => (
-              <AccommodationCityField
-                key={cityId}
-                cityId={cityId}
-                value={data.accommodations?.[cityId]}
-                onChange={(accom) => {
-                  setData((prev) => {
-                    const next = { ...prev.accommodations };
-                    if (accom) {
-                      next[cityId] = accom;
-                    } else {
-                      delete next[cityId];
-                    }
-                    return { ...prev, accommodations: Object.keys(next).length > 0 ? next : undefined };
-                  });
-                }}
+      {/* Two-column layout */}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+        {/* Left — Trip Summary (accommodation inline in Route & Stays) */}
+        <TripSummaryEditorial
+          onEditDates={handleEditDates}
+          onEditEntryPoint={handleEditEntryPoint}
+          onEditVibes={handleEditVibes}
+          onEditRegions={handleEditRegions}
+          sanityConfig={sanityConfig}
+          accommodations={data.accommodations}
+          onAccommodationChange={(cityId, accom) => {
+            setData((prev) => {
+              const next = { ...prev.accommodations };
+              if (accom) {
+                next[cityId] = accom;
+              } else {
+                delete next[cityId];
+              }
+              return { ...prev, accommodations: Object.keys(next).length > 0 ? next : undefined };
+            });
+          }}
+        />
+
+        {/* Right — Settings, preferences, warnings */}
+        <div className="flex flex-col gap-4 lg:sticky lg:top-8 lg:self-start">
+          {/* Toggles */}
+          <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-foreground">First time in Japan?</p>
+              <p className="text-xs text-stone">We&apos;ll add orientation tips and pace Day 1 gently.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                setData((prev) => ({
+                  ...prev,
+                  isFirstTimeVisitor: !prev.isFirstTimeVisitor,
+                }))
+              }
+              className={cn(
+                "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+                data.isFirstTimeVisitor ? "bg-brand-primary" : "bg-border"
+              )}
+            >
+              <span
+                className={cn(
+                  "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
+                  data.isFirstTimeVisitor && "translate-x-5"
+                )}
               />
-            ))}
+            </button>
           </div>
-        </div>
-      )}
 
-      {/* First-Time Visitor Toggle */}
-      <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
-        <div>
-          <p className="text-sm font-medium text-foreground">First time in Japan?</p>
-          <p className="text-xs text-stone">We&apos;ll add orientation tips and pace Day 1 gently.</p>
-        </div>
-        <button
-          type="button"
-          onClick={() =>
-            setData((prev) => ({
-              ...prev,
-              isFirstTimeVisitor: !prev.isFirstTimeVisitor,
-            }))
-          }
-          className={cn(
-            "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-            data.isFirstTimeVisitor ? "bg-brand-primary" : "bg-border"
-          )}
-        >
-          <span
-            className={cn(
-              "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
-              data.isFirstTimeVisitor && "translate-x-5"
-            )}
-          />
-        </button>
-      </div>
+          <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
+            <div>
+              <p className="text-sm font-medium text-foreground">Collect goshuin?</p>
+              <p className="text-xs text-stone">Prioritize temples and shrines with stamp books.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                setData((prev) => ({
+                  ...prev,
+                  collectGoshuin: !prev.collectGoshuin,
+                }))
+              }
+              className={cn(
+                "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+                data.collectGoshuin ? "bg-brand-primary" : "bg-border"
+              )}
+            >
+              <span
+                className={cn(
+                  "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
+                  data.collectGoshuin && "translate-x-5"
+                )}
+              />
+            </button>
+          </div>
 
-      {/* Goshuin Collection Toggle */}
-      <div className="flex items-center justify-between rounded-xl border border-border bg-surface px-4 py-3">
-        <div>
-          <p className="text-sm font-medium text-foreground">Collect goshuin?</p>
-          <p className="text-xs text-stone">Prioritize temples and shrines with stamp books.</p>
-        </div>
-        <button
-          type="button"
-          onClick={() =>
-            setData((prev) => ({
-              ...prev,
-              collectGoshuin: !prev.collectGoshuin,
-            }))
-          }
-          className={cn(
-            "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-            data.collectGoshuin ? "bg-brand-primary" : "bg-border"
-          )}
-        >
-          <span
-            className={cn(
-              "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
-              data.collectGoshuin && "translate-x-5"
-            )}
-          />
-        </button>
-      </div>
-
-      {/* JR Pass Calculator */}
-      <JRPassCard duration={data.duration} cities={data.cities} />
-
-      {/* Saved places that match selected cities */}
-      <SavedInTripPreview selectedCities={data.cities} />
-
-      {/* Preferences — Horizontal scroll row */}
-      <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-brand-primary">Optional</p>
-        <h3 className="mt-1 font-serif text-lg text-foreground">
-          {sanityConfig?.reviewHeading ?? "One last look"}
-        </h3>
-        <p className="text-sm text-stone">
-          {sanityConfig?.reviewDescription ?? "None of this is required, but it helps."}
-        </p>
-
-        {/* Responsive grid */}
-        <div className="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {/* Budget */}
-          <PreferenceCard icon={<Wallet className="h-5 w-5" />} title={sanityConfig?.reviewBudgetTitle ?? "Budget"} optional info={sanityConfig?.reviewBudgetTooltip ?? "Rough range for food and activities."}>
-            <BudgetInput
-              id="budget-input"
-              duration={data.duration}
-              value={budgetValue}
-              onChange={handleBudgetChange}
-              onModeChange={setBudgetMode}
-            />
-          </PreferenceCard>
-
-          {/* Travel Pace */}
-          <PreferenceCard icon={<Gauge className="h-5 w-5" />} title={sanityConfig?.reviewPaceTitle ?? "Pace"} optional info={sanityConfig?.reviewPaceTooltip ?? "How packed should each day be?"}>
+          {/* Pace — segmented control */}
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <Gauge className="h-4 w-4 text-stone" />
+                <p className="text-sm font-medium text-foreground">Pace</p>
+              </div>
+              <Controller
+                control={control}
+                name="travelStyle"
+                render={({ field }) => (
+                  <div className="flex rounded-lg border border-border bg-background p-0.5">
+                    {PACE_OPTIONS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => field.onChange(field.value === option.value ? "" : option.value)}
+                        className={cn(
+                          "rounded-md px-3 py-1.5 text-xs font-medium transition-all",
+                          field.value === option.value
+                            ? "bg-brand-primary text-white shadow-sm"
+                            : "text-stone hover:text-foreground"
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              />
+            </div>
             <Controller
               control={control}
               name="travelStyle"
-              render={({ field }) => (
-                <div className="flex flex-col gap-2">
-                  {PACE_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => field.onChange(option.value)}
-                      className={cn(
-                        "flex items-start gap-3 rounded-xl border p-3 text-left transition",
-                        field.value === option.value
-                          ? "border-sage/20 bg-sage/10 ring-1 ring-brand-primary"
-                          : "border-border hover:bg-background"
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 transition",
-                          field.value === option.value
-                            ? "border-brand-primary bg-brand-primary"
-                            : "border-border"
-                        )}
-                      />
-                      <div className="min-w-0">
-                        <span className="text-sm font-medium text-foreground">
-                          {option.label}
-                        </span>
-                        <span className="ml-2 text-xs text-stone">
-                          {option.description}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
+              render={({ field }) => {
+                const selected = PACE_OPTIONS.find((o) => o.value === field.value);
+                return selected ? (
+                  <p className="mt-1.5 text-xs text-stone">{selected.description}</p>
+                ) : <></>;
+              }}
             />
-          </PreferenceCard>
+          </div>
 
-          {/* Group */}
-          <PreferenceCard icon={<Users className="h-5 w-5" />} title={sanityConfig?.reviewGroupTitle ?? "Group"} optional info={sanityConfig?.reviewGroupTooltip ?? "So we suggest the right kind of places."}>
-            <div className="grid grid-cols-2 gap-3">
-              <FormField id="group-type" label="Type">
-                <Controller
-                  control={control}
-                  name="groupType"
-                  render={({ field }) => (
-                    <Select
-                      id="group-type"
-                      placeholder="Select"
-                      options={GROUP_TYPE_OPTIONS}
-                      value={field.value ?? ""}
-                      onChange={(e) => field.onChange(e.target.value || "")}
+          {/* Group — segmented type + inline size */}
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-stone" />
+                <p className="text-sm font-medium text-foreground">Group</p>
+              </div>
+              <Controller
+                control={control}
+                name="groupType"
+                render={({ field }) => (
+                  <div className="flex rounded-lg border border-border bg-background p-0.5">
+                    {GROUP_TYPE_SEGMENTS.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => field.onChange(field.value === option.value ? "" : option.value)}
+                        className={cn(
+                          "rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
+                          field.value === option.value
+                            ? "bg-brand-primary text-white shadow-sm"
+                            : "text-stone hover:text-foreground"
+                        )}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              />
+            </div>
+            {formValues.groupType && formValues.groupType !== "solo" && (
+              <div className="mt-2 flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <label htmlFor="group-size-inline" className="text-xs text-stone">Size</label>
+                  <Input
+                    id="group-size-inline"
+                    type="number"
+                    min={1}
+                    max={20}
+                    placeholder="2"
+                    className="h-8 w-16 min-h-0 text-center text-xs"
+                    {...register("groupSize", { valueAsNumber: true })}
+                  />
+                </div>
+                {formValues.groupType === "family" && (
+                  <div className="flex items-center gap-2">
+                    <label htmlFor="children-ages-inline" className="text-xs text-stone">Kids</label>
+                    <Input
+                      id="children-ages-inline"
+                      placeholder="5, 8"
+                      className="h-8 w-24 min-h-0 text-xs"
+                      {...register("childrenAges")}
                     />
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Access — mobility toggle + dietary pills */}
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Accessibility className="h-4 w-4 text-stone" />
+                <p className="text-sm font-medium text-foreground">Mobility assistance</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setValue("mobilityAssistance", !formValues.mobilityAssistance)}
+                className={cn(
+                  "relative h-6 w-11 shrink-0 rounded-full transition-colors",
+                  formValues.mobilityAssistance ? "bg-brand-primary" : "bg-border"
+                )}
+              >
+                <span
+                  className={cn(
+                    "absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white transition-transform shadow-sm",
+                    formValues.mobilityAssistance && "translate-x-5"
                   )}
                 />
-              </FormField>
-              <FormField id="group-size" label="Size">
-                <Input
-                  id="group-size"
-                  type="number"
-                  min={1}
-                  max={20}
-                  placeholder="Travelers"
-                  className="min-h-[40px]"
-                  {...register("groupSize", { valueAsNumber: true })}
-                />
-              </FormField>
+              </button>
             </div>
-            <FormField
-              id="children-ages"
-              label="Children Ages"
-              help="Comma-separated"
-            >
-              <Input
-                id="children-ages"
-                placeholder="e.g., 5, 8, 12"
-                className="min-h-[40px]"
-                {...register("childrenAges")}
-              />
-            </FormField>
-          </PreferenceCard>
-
-          {/* Accessibility */}
-          <PreferenceCard
-            icon={<Accessibility className="h-5 w-5" />}
-            title={sanityConfig?.reviewAccessTitle ?? "Access"}
-            optional
-            info={sanityConfig?.reviewAccessTooltip ?? "We\u2019ll filter for places that work for you."}
-          >
-            <button
-              type="button"
-              onClick={() => setValue("mobilityAssistance", !formValues.mobilityAssistance)}
-              className={cn(
-                "flex min-h-[44px] items-center gap-2 rounded-xl border px-3 py-2 text-sm transition-colors",
-                formValues.mobilityAssistance
-                  ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
-                  : "border-border text-foreground-secondary hover:bg-surface"
-              )}
-            >
-              {formValues.mobilityAssistance && (
-                <svg className="h-3.5 w-3.5 shrink-0" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/></svg>
-              )}
-              Mobility assistance
-            </button>
-
-            <div>
-              <p className="mb-2 text-xs font-medium text-foreground-secondary">
-                {sanityConfig?.reviewDietaryLabel ?? "Dietary"}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {DIETARY_OPTIONS.map((option) => {
+            <div className="mt-2.5">
+              <p className="mb-1.5 text-xs text-stone">Dietary</p>
+              <div className="flex flex-wrap gap-1.5">
+                {DIETARY_OPTIONS.filter((o) => o.id !== "other").map((option) => {
                   const isSelected = formValues.dietary?.includes(option.id);
                   return (
                     <button
@@ -476,133 +417,100 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
                         setValue("dietary", next);
                       }}
                       className={cn(
-                        "min-h-[44px] rounded-xl border px-3 py-2 text-xs font-medium transition-colors",
+                        "rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors",
                         isSelected
                           ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
-                          : "border-border text-foreground-secondary hover:bg-surface"
+                          : "border-border text-stone hover:text-foreground-secondary"
                       )}
                     >
                       {option.label}
                     </button>
                   );
                 })}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const current = formValues.dietary ?? [];
+                    const has = current.includes("other");
+                    setValue("dietary", has ? current.filter((id) => id !== "other") : [...current, "other"]);
+                  }}
+                  className={cn(
+                    "rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors",
+                    formValues.dietary?.includes("other")
+                      ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
+                      : "border-border text-stone hover:text-foreground-secondary"
+                  )}
+                >
+                  Other
+                </button>
               </div>
-            </div>
-
-            {formValues.dietary?.includes("other") && (
-              <FormField id="dietary-other" label="Other">
+              {formValues.dietary?.includes("other") && (
                 <Input
-                  id="dietary-other"
+                  id="dietary-other-inline"
                   placeholder="Please specify..."
-                  className="min-h-[40px]"
+                  className="mt-2 h-8 min-h-0 text-xs"
                   {...register("dietaryOther")}
                 />
-              </FormField>
-            )}
-          </PreferenceCard>
-
-          {/* Notes */}
-          <PreferenceCard icon={<StickyNote className="h-5 w-5" />} title={sanityConfig?.reviewNotesTitle ?? "Notes"} optional info={sanityConfig?.reviewNotesTooltip ?? "Koku reads these and builds them into your itinerary."}>
-            <textarea
-              id="additional-notes"
-              placeholder={sanityConfig?.reviewNotesPlaceholder ?? "A birthday dinner in Kyoto, must see Fushimi Inari, anything we should know..."}
-              className="w-full rounded-xl border border-border bg-background px-3 py-2 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-              rows={4}
-              {...register("additionalNotes")}
-            />
-          </PreferenceCard>
-        </div>
-      </div>
-
-    </div>
-  );
-}
-
-/**
- * Per-city accommodation search field using Nominatim geocoding.
- */
-function AccommodationCityField({
-  cityId,
-  value,
-  onChange,
-}: {
-  cityId: string;
-  value?: NonNullable<TripBuilderData["accommodations"]>[string];
-  onChange: (accom: NonNullable<TripBuilderData["accommodations"]>[string] | undefined) => void;
-}) {
-  const [searchInput, setSearchInput] = useState("");
-  const { suggestions, isLoading } = useMapboxSearch(searchInput ? `${searchInput} ${cityId} Japan` : "");
-
-  const handleSelect = useCallback((suggestion: MapboxSuggestion) => {
-    if (!suggestion.coordinates) return;
-    onChange({
-      name: suggestion.name,
-      coordinates: suggestion.coordinates,
-      placeId: suggestion.mapbox_id,
-    });
-    setSearchInput("");
-  }, [onChange]);
-
-  const cityLabel = cityId.charAt(0).toUpperCase() + cityId.slice(1);
-
-  if (value) {
-    return (
-      <div className="flex items-center justify-between rounded-xl border border-sage/20 bg-sage/5 px-4 py-3">
-        <div className="flex items-center gap-2 min-w-0">
-          <Check className="h-4 w-4 shrink-0 text-sage" />
-          <div className="min-w-0">
-            <p className="text-xs font-medium uppercase tracking-wide text-stone">{cityLabel}</p>
-            <p className="truncate text-sm text-foreground">{value.name}</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => onChange(undefined)}
-          className="shrink-0 rounded-lg p-1 text-stone transition-colors hover:bg-surface hover:text-foreground-secondary"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <p className="mb-1.5 text-xs font-medium uppercase tracking-wide text-stone">{cityLabel}</p>
-      <div className="relative">
-        <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone">
-          <Search className="h-4 w-4" />
-        </div>
-        <input
-          type="text"
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
-          placeholder="Search hotel, Airbnb, address..."
-          className="h-11 w-full rounded-xl border border-border bg-background pl-10 pr-4 text-base text-foreground placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-        />
-        {isLoading && searchInput.length >= 3 && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand-primary border-t-transparent" />
-          </div>
-        )}
-      </div>
-      {suggestions.length > 0 && (
-        <div className="mt-1.5 max-h-40 overflow-auto rounded-xl border border-border bg-background">
-          {suggestions.map((s) => (
-            <button
-              key={s.mapbox_id}
-              type="button"
-              onClick={() => handleSelect(s)}
-              className="flex w-full cursor-pointer flex-col px-4 py-2 text-left hover:bg-surface"
-            >
-              <p className="text-sm font-medium text-foreground">{s.name}</p>
-              {s.place_formatted && (
-                <p className="text-xs text-stone">{s.place_formatted}</p>
               )}
-            </button>
-          ))}
+            </div>
+          </div>
+
+          {/* JR Pass */}
+          <JRPassCard duration={data.duration} cities={data.cities} />
+
+          {/* Duration Warning */}
+          {durationWarning && (
+            <div
+              className={cn(
+                "flex items-start gap-3 rounded-xl border px-4 py-3",
+                durationWarning.severity === "warning"
+                  ? "border-warning/30 bg-warning/5"
+                  : "border-sage/30 bg-sage/5"
+              )}
+            >
+              <span className="mt-0.5 shrink-0 text-sm">
+                {durationWarning.severity === "warning" ? "\u26A0\uFE0F" : "\u2139\uFE0F"}
+              </span>
+              <p className="text-sm text-foreground-secondary">{durationWarning.message}</p>
+            </div>
+          )}
+
+          {/* Budget & Notes */}
+          <PreferenceCard
+              icon={<Wallet className="h-5 w-5" />}
+              title={sanityConfig?.reviewBudgetTitle ?? "Budget"}
+              optional
+              hasValue={budgetValue !== undefined}
+              summary={budgetValue ? `¥${budgetValue.amount.toLocaleString()}/${budgetValue.mode === "perDay" ? "day" : "total"}` : undefined}
+            >
+              <BudgetInput
+                id="budget-input"
+                duration={data.duration}
+                value={budgetValue}
+                onChange={handleBudgetChange}
+                onModeChange={setBudgetMode}
+              />
+            </PreferenceCard>
+
+            <PreferenceCard
+              icon={<StickyNote className="h-5 w-5" />}
+              title={sanityConfig?.reviewNotesTitle ?? "Notes"}
+              optional
+              hasValue={!!formValues.additionalNotes?.trim()}
+              summary={formValues.additionalNotes?.trim() ? `${formValues.additionalNotes.trim().slice(0, 30)}${formValues.additionalNotes.trim().length > 30 ? "..." : ""}` : undefined}
+            >
+              <textarea
+                id="additional-notes"
+                placeholder={sanityConfig?.reviewNotesPlaceholder ?? "A birthday dinner in Kyoto, must see Fushimi Inari, anything we should know..."}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2 text-base placeholder:text-stone focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                rows={4}
+                {...register("additionalNotes")}
+              />
+            </PreferenceCard>
         </div>
-      )}
+      </div>
+
     </div>
   );
 }
+

@@ -3,9 +3,7 @@
 import { useMemo, useState, useCallback } from "react";
 import type { Itinerary, ItineraryDay } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
-import { useActivityLocations } from "@/hooks/useActivityLocations";
-import { getCategoryDefaultDuration } from "@/lib/durationExtractor";
-import { logger } from "@/lib/logger";
+import { REGIONS } from "@/data/regions";
 import { DayRefinementButtons } from "./DayRefinementButtons";
 import { DaySuggestions } from "./DaySuggestions";
 import { DayTips } from "./DayTips";
@@ -18,7 +16,6 @@ import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
 import type { EntryPoint } from "@/types/trip";
 import { parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
-import { estimateDayCost, formatCostRange } from "@/lib/itinerary/costEstimator";
 
 type DayHeaderProps = {
   day: ItineraryDay;
@@ -118,195 +115,67 @@ export function DayHeader({
     [day.activities],
   );
 
-  // Fetch location data from database
-  const { locationsMap } = useActivityLocations(placeActivities);
 
   // Calculate total duration (time at locations only, excluding travel)
-  // Uses durationMin (displayed as "Plan for X hours")
-  // Falls back to calculating from schedule times if durationMin is not set
-  const totalDuration = useMemo(() => {
-    if (placeActivities.length === 0) {
-      return 0;
-    }
-
-    // Helper to parse time string (HH:MM) to minutes since midnight
-    const parseTimeToMinutes = (timeStr: string): number | null => {
-      const match = timeStr.match(/^(\d{1,2}):(\d{2})$/);
-      if (!match) return null;
-      const hours = Number.parseInt(match[1] || "0", 10);
-      const minutes = Number.parseInt(match[2] || "0", 10);
-      if (Number.isNaN(hours) || Number.isNaN(minutes)) return null;
-      return hours * 60 + minutes;
-    };
-
-    let visitDurations = 0;
-    let travelTimes = 0;
-
-    // Sum all visit durations
-    for (const activity of placeActivities) {
-      let activityDuration: number | null = null;
-
-      // Priority 1: Use durationMin if available (what's shown as "Plan for X hours")
-      if (activity.durationMin) {
-        activityDuration = activity.durationMin;
-      }
-      // Priority 2: Calculate from schedule times if available
-      else if (activity.schedule?.arrivalTime && activity.schedule?.departureTime) {
-        const arrival = parseTimeToMinutes(activity.schedule.arrivalTime);
-        const departure = parseTimeToMinutes(activity.schedule.departureTime);
-        if (arrival !== null && departure !== null) {
-          const duration = departure >= arrival ? departure - arrival : (24 * 60) - arrival + departure;
-          if (duration > 0) {
-            activityDuration = duration;
-          }
-        }
-      }
-      // Priority 3: Get duration from location data
-      else {
-        const location = locationsMap.get(activity.id);
-        if (location) {
-          // Check location's recommended visit duration
-          if (location.recommendedVisit?.typicalMinutes) {
-            activityDuration = location.recommendedVisit.typicalMinutes;
-          } else if (location.recommendedVisit?.minMinutes) {
-            activityDuration = location.recommendedVisit.minMinutes;
-          }
-          // Fallback to category default
-          else if (location.category) {
-            activityDuration = getCategoryDefaultDuration(location.category);
-          }
-        }
-      }
-
-      if (activityDuration !== null && activityDuration > 0) {
-        visitDurations += activityDuration;
-      }
-    }
-
-    // Debug logging (travel times tracked but not added to total)
-    for (const activity of placeActivities) {
-      if (activity.travelFromPrevious?.durationMinutes) {
-        travelTimes += activity.travelFromPrevious.durationMinutes;
-      }
-    }
-
-    logger.debug("[DayHeader] Duration calculation", {
-      placeActivitiesCount: placeActivities.length,
-      visitDurations,
-      travelTimes, // Logged but not included in total
-      cityTransition: day.cityTransition?.durationMinutes ?? 0,
-      activities: placeActivities.map((a) => ({
-        title: a.title,
-        durationMin: a.durationMin,
-        hasSchedule: Boolean(a.schedule?.arrivalTime && a.schedule?.departureTime),
-        travelTime: a.travelFromPrevious?.durationMinutes ?? 0,
-      })),
-    });
-
-    // Return only visit durations (travel time excluded - varies by transport mode)
-    return visitDurations;
-  }, [placeActivities, locationsMap, day.cityTransition?.durationMinutes]);
-
-  // Format duration
-  const durationLabel = useMemo(() => {
-    if (totalDuration === 0) {
-      return "Your day is wide open";
-    }
-
-    const hours = Math.floor(totalDuration / 60);
-    const minutes = totalDuration % 60;
-
-    if (hours === 0) {
-      return `${minutes} min`;
-    } else if (minutes === 0) {
-      return `${hours} ${hours === 1 ? "hour" : "hours"}`;
-    } else {
-      return `${hours} ${hours === 1 ? "hour" : "hours"} ${minutes} min`;
-    }
-  }, [totalDuration]);
-
-  const costEstimate = useMemo(() => {
-    const range = estimateDayCost(day.activities, locationsMap);
-    if (!range) return null;
-    return formatCostRange(range);
-  }, [day.activities, locationsMap]);
-
   const hasScheduledActivities = useMemo(
     () => placeActivities.some((a) => a.schedule?.arrivalTime || a.manualStartTime),
     [placeActivities],
   );
 
+  const cityName = useMemo(() => {
+    if (!day.cityId) return null;
+    for (const region of REGIONS) {
+      const city = region.cities.find((c) => c.id === day.cityId);
+      if (city) return city.name;
+    }
+    return day.cityId.charAt(0).toUpperCase() + day.cityId.slice(1);
+  }, [day.cityId]);
+
   return (
-    <div className="mb-6 rounded-xl border border-border bg-surface p-4 sm:p-5">
+    <div className="mb-2">
       <div className="flex flex-col gap-3">
-        <div>
-          <h2 className="font-serif text-xl text-foreground tracking-[-0.02em] sm:text-2xl">
-            {dateLabel.dayName ? (
-              <>
-                {dateLabel.date}
-                <span className="ml-2 text-base font-normal text-foreground-secondary sm:text-lg">
-                  {dateLabel.dayName}
-                </span>
-              </>
-            ) : (
-              dateLabel.date
+        {/* Compact date/city/pace line */}
+        <div className="flex items-center justify-between border-b border-border pb-2">
+          <h2 className="text-xs font-medium uppercase tracking-[0.15em] text-foreground-secondary">
+            {dateLabel.date}
+            {dateLabel.dayName && (
+              <span>, {dateLabel.dayName}</span>
+            )}
+            {cityName && (
+              <span> &middot; {cityName}</span>
+            )}
+            {day.paceLabel && (
+              <span
+                className={
+                  day.paceLabel === "light"
+                    ? "text-success"
+                    : day.paceLabel === "packed"
+                      ? "text-error"
+                      : "text-warning"
+                }
+              >
+                {" \u00B7 "}
+                {day.paceLabel === "light"
+                  ? "Light"
+                  : day.paceLabel === "packed"
+                    ? "Packed"
+                    : "Moderate"}
+              </span>
             )}
           </h2>
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-foreground-secondary">
-            {day.cityId && (
-              <span className="font-medium capitalize">{day.cityId}</span>
-            )}
-            {day.cityId && <span className="text-stone">·</span>}
-            <span className="font-mono font-semibold text-sage">{durationLabel}</span>
-            {day.paceLabel && (
-              <>
-                <span className="text-stone">·</span>
-                <span
-                  className={`text-xs font-medium ${
-                    day.paceLabel === "light"
-                      ? "text-success"
-                      : day.paceLabel === "packed"
-                        ? "text-error"
-                        : "text-warning"
-                  }`}
-                >
-                  {day.paceLabel === "light"
-                    ? "Light day"
-                    : day.paceLabel === "packed"
-                      ? "Packed day"
-                      : "Moderate"}
-                </span>
-              </>
-            )}
-            {costEstimate && (
-              <>
-                <span className="text-stone">·</span>
-                <span
-                  className="font-mono text-stone"
-                  title="Rough estimate based on typical prices"
-                >
-                  {costEstimate}
-                </span>
-              </>
-            )}
+          <div className="flex items-center gap-2">
             {onDayStartTimeChange && (
-              <>
-                <span className="text-stone">·</span>
-                <DayStartTimePicker
-                  currentTime={day.bounds?.startTime ?? "09:00"}
-                  onChange={onDayStartTimeChange}
-                />
-              </>
+              <DayStartTimePicker
+                currentTime={day.bounds?.startTime ?? "09:00"}
+                onChange={onDayStartTimeChange}
+              />
             )}
             {onDelayRemaining && hasScheduledActivities && (
-              <>
-                <span className="text-stone">·</span>
-                <RunningLatePopover onApplyDelay={onDelayRemaining} />
-              </>
+              <RunningLatePopover onApplyDelay={onDelayRemaining} />
             )}
           </div>
         </div>
-        {/* Start/End Location Picker — own row */}
+        {/* Accommodation */}
         {(onStartLocationChange || startLocation || endLocation) && (
           <AccommodationPicker
             startLocation={startLocation}
@@ -320,7 +189,7 @@ export function DayHeader({
         )}
         {/* Conflict Summary */}
         {conflicts && conflicts.length > 0 && (
-          <DayConflictSummary dayConflicts={conflicts} className="mt-3" />
+          <DayConflictSummary dayConflicts={conflicts} className="mt-1" />
         )}
       </div>
       {tripId && (

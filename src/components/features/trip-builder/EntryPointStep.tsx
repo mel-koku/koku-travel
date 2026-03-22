@@ -275,12 +275,12 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeReveal, delay: 0.15 }}
-            className="mt-2 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
+            className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
           >
             {sanityConfig?.entryPointHeading ?? "Where will you land?"}
           </motion.h2>
 
-          <p className="mt-1 text-sm text-stone">
+          <p className="mt-2 text-sm text-stone">
             {sanityConfig?.entryPointDescription ?? "Optional. Know your airport? We\u2019ll plan around it."}
           </p>
 

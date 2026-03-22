@@ -135,10 +135,13 @@ export const ItineraryShell = ({
   const [selectedDay, setSelectedDay] = useState(0);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [viewMode, setViewMode] = useState<ItineraryViewMode>("timeline");
+  const [headerCollapsed, setHeaderCollapsed] = useState(false);
+  const lastScrollTopRef = useRef(0);
+  const headerCooldownRef = useRef(false);
   const [replacementActivityId, setReplacementActivityId] = useState<string | null>(null);
   const [replacementCandidates, setReplacementCandidates] = useState<ReplacementCandidate[]>([]);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);
-  const [showSuggestions, setShowSuggestions] = useState(false);
+
   const internalHeadingRef = useRef<HTMLHeadingElement>(null);
   const finalHeadingRef = headingRef ?? internalHeadingRef;
 
@@ -262,6 +265,47 @@ export const ItineraryShell = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [tripId, isUsingMock, isReadOnly, undo, redo, canUndo, canRedo]);
+
+  // Header collapse on scroll (scroll down → collapse title, scroll up → expand)
+  useEffect(() => {
+    const el = document.querySelector("[data-itinerary-activities]");
+    if (!el) return;
+
+    const THRESHOLD = 30;
+    const COOLDOWN_MS = 300;
+    const handleScroll = () => {
+      if (headerCooldownRef.current) return;
+      const top = el.scrollTop;
+      const delta = top - lastScrollTopRef.current;
+
+      if (top < 10) {
+        setHeaderCollapsed(false);
+        lastScrollTopRef.current = top;
+        return;
+      }
+
+      const nearBottom = el.scrollHeight - top - el.clientHeight < 50;
+      if (nearBottom) {
+        lastScrollTopRef.current = top;
+        return;
+      }
+
+      if (delta > THRESHOLD) {
+        setHeaderCollapsed(true);
+        lastScrollTopRef.current = top;
+        headerCooldownRef.current = true;
+        setTimeout(() => { headerCooldownRef.current = false; }, COOLDOWN_MS);
+      } else if (delta < -THRESHOLD) {
+        setHeaderCollapsed(false);
+        lastScrollTopRef.current = top;
+        headerCooldownRef.current = true;
+        setTimeout(() => { headerCooldownRef.current = false; }, COOLDOWN_MS);
+      }
+    };
+
+    el.addEventListener("scroll", handleScroll, { passive: true });
+    return () => el.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const days = model.days ?? [];
   const safeSelectedDay =
@@ -507,7 +551,10 @@ export const ItineraryShell = ({
     return stored?.name ?? "My Japan Trip";
   }, [getTripById, tripId]);
 
-
+  const totalActivities = useMemo(
+    () => days.reduce((sum, d) => sum + d.activities.filter((a) => a.kind === "place").length, 0),
+    [days]
+  );
 
   return (
     <ActivityRatingsProvider value={!isReadOnly ? ratingsContextValue : null}>
@@ -590,129 +637,115 @@ export const ItineraryShell = ({
       <div className="flex flex-col lg:flex-row lg:gap-4 lg:p-4">
         {/* Left: Cards Panel (50%) */}
         <div className="flex flex-col lg:w-1/2">
-          {/* Header + Day Selector */}
-          <div className="px-4 pt-4 pb-3 lg:px-4 space-y-2">
-            {/* Row 1: Title + Date */}
-            <div className="flex items-baseline gap-3 flex-wrap">
-              <h1
-                ref={finalHeadingRef}
-                tabIndex={-1}
-                className="font-serif text-2xl text-foreground tracking-[-0.02em] focus:outline-none sm:text-3xl"
-              >
-                Your Itinerary
-              </h1>
+          {/* Header bar */}
+          <div
+            className="sticky top-0 z-30 border-b border-border bg-background px-4 pb-3 lg:px-6"
+            style={{
+              paddingTop: headerCollapsed ? "0.5rem" : "1rem",
+              transition: "padding-top 0.25s ease",
+            }}
+          >
+            {/* Collapsible: Trip name + stats (hidden on scroll down) */}
+            <div
+              style={{
+                maxHeight: headerCollapsed ? 0 : 200,
+                opacity: headerCollapsed ? 0 : 1,
+                overflow: "hidden",
+                transition: "max-height 0.25s ease, opacity 0.2s ease",
+              }}
+            >
+              {/* Row 1: Trip name + view mode tabs + share */}
+              <div className="flex items-start justify-between gap-3">
+                <h1
+                  ref={finalHeadingRef}
+                  tabIndex={-1}
+                  className="min-w-0 font-serif text-lg text-foreground tracking-[-0.02em] leading-snug focus:outline-none sm:text-xl"
+                >
+                  {tripName}
+                </h1>
+                <div className="flex shrink-0 items-center gap-2">
+                  {!isReadOnly && (
+                    <div className="flex h-[42px] shrink-0 items-center rounded-xl border border-border bg-surface p-0.5">
+                      {(
+                        [
+                          { key: "timeline", label: "Timeline" },
+                          { key: "dashboard", label: "Overview" },
+                          ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
+                        ] as { key: ItineraryViewMode; label: string }[]
+                      ).map((tab) => (
+                        <button
+                          key={tab.key}
+                          type="button"
+                          onClick={() => setViewMode(tab.key)}
+                          className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                            viewMode === tab.key
+                              ? "bg-brand-primary text-white"
+                              : "text-stone hover:text-foreground"
+                          }`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {!isReadOnly && tripId && !isUsingMock && (
+                    <ShareButton tripId={tripId} />
+                  )}
+                </div>
+              </div>
+
+              {/* Row 2: Stats line */}
+              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] text-stone">
+              {days.length > 0 && <span>{days.length} {days.length === 1 ? "day" : "days"}</span>}
+              {totalActivities > 0 && <span aria-hidden="true">&middot;</span>}
+              {totalActivities > 0 && <span>{totalActivities} {totalActivities === 1 ? "stop" : "stops"}</span>}
+              {updatedLabel && <span aria-hidden="true">&middot;</span>}
+              {updatedLabel && <span>Upd {updatedLabel}</span>}
+              {!updatedLabel && createdLabel && <span aria-hidden="true">&middot;</span>}
+              {!updatedLabel && createdLabel && <span>Saved {createdLabel}</span>}
               {isUsingMock && (
                 <span className="rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
                   Mock
                 </span>
               )}
-              {createdLabel && (
-                <p className="font-mono text-[11px] text-stone">
-                  Saved {createdLabel}
-                  {updatedLabel ? ` · Updated ${updatedLabel}` : ""}
-                </p>
-              )}
             </div>
-            {/* Row 2: Controls */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <div className="flex items-center gap-2">
-                <DaySelector
-                  totalDays={days.length}
-                  selected={safeSelectedDay}
-                  onChange={handleSelectDayChange}
-                  labels={days.map((day) => day.dateLabel ?? "")}
-                  tripStartDate={tripStartDate}
-                  variant="default"
-                  dayHealthLevels={dayHealthLevels}
-                />
-                {!isReadOnly && (
-                  <div className="flex h-[42px] shrink-0 items-center rounded-xl border border-border bg-surface p-0.5">
-                    {(
-                      [
-                        { key: "timeline", label: "Timeline" },
-                        { key: "dashboard", label: "Overview" },
-                        ...(!isReadOnly ? [{ key: "discover", label: "Near Me" }] : []),
-                      ] as { key: ItineraryViewMode; label: string }[]
-                    ).map((tab) => (
-                      <button
-                        key={tab.key}
-                        type="button"
-                        onClick={() => setViewMode(tab.key)}
-                        className={`rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors ${
-                          viewMode === tab.key
-                            ? "bg-brand-primary text-white"
-                            : "text-stone hover:text-foreground"
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {!isReadOnly && tripId && !isUsingMock && (
-                  <ShareButton tripId={tripId} />
-                )}
-                {!isReadOnly && suggestions && suggestions.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setShowSuggestions((v) => !v)}
-                    className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors ${
-                      showSuggestions
-                        ? "border-brand-primary/30 bg-brand-primary/10 text-brand-primary"
-                        : tripHealth.overall >= 80
-                          ? "border-success/30 bg-success/10 text-success"
-                          : tripHealth.overall >= 60
-                            ? "border-warning/30 bg-warning/10 text-warning"
-                            : "border-error/30 bg-error/10 text-error"
-                    }`}
-                    title={showSuggestions ? "Hide suggestions" : `${suggestions.length} suggestions to improve your trip`}
-                  >
-                    <span className="font-mono">{Math.round(tripHealth.overall)}</span>
-                    <span>/100</span>
-                  </button>
-                )}
-              </div>
             </div>
-            {!isReadOnly && viewMode === "timeline" && (
-              <p className="text-xs text-foreground-secondary">
-                * Check <button type="button" onClick={() => setViewMode("dashboard")} className="underline hover:text-foreground transition-colors">Overview</button> for reservations and pre-trip to-dos.
-              </p>
-            )}
-            {/* Location search bar + Adjust */}
+
+            {/* Always visible: Day pills + toolbar */}
+            <div style={{ marginTop: headerCollapsed ? 0 : "0.5rem", transition: "margin-top 0.25s ease" }}>
+            <DaySelector
+              totalDays={days.length}
+              selected={safeSelectedDay}
+              onChange={handleSelectDayChange}
+              labels={days.map((day) => day.dateLabel ?? "")}
+              tripStartDate={tripStartDate}
+              dayHealthLevels={dayHealthLevels}
+            />
+
+            {/* Row 4: Search + score badge + adjust */}
             {!isReadOnly && !isUsingMock && currentDay && viewMode === "timeline" && (
-              <div className="mt-2 flex items-start gap-2">
+              <div className="flex items-start gap-2">
                 <div className="min-w-0 flex-1">
                   <LocationSearchBar
                     dayActivities={currentDay.activities}
                     onAddActivity={handleAddSearchedActivity}
                   />
                 </div>
-                {tripId && (
-                  <DayRefinementButtons
-                    dayIndex={safeSelectedDay}
-                    tripId={tripId}
-                    builderData={tripBuilderData}
-                    itinerary={model}
-                    onRefine={handleRefineDay}
-                  />
-                )}
+                <div className="flex shrink-0 items-center gap-1.5">
+                  {tripId && (
+                    <DayRefinementButtons
+                      dayIndex={safeSelectedDay}
+                      tripId={tripId}
+                      builderData={tripBuilderData}
+                      itinerary={model}
+                      onRefine={handleRefineDay}
+                    />
+                  )}
+                </div>
               </div>
             )}
+            </div>
           </div>
-
-          {/* Seasonal Banner */}
-          {model.seasonalHighlight && (
-            <SeasonalBanner highlight={model.seasonalHighlight} />
-          )}
-
-          {/* Conflict summary banner */}
-          <ConflictSummaryBanner
-            conflicts={conflictsResult}
-            onSelectDay={(dayIndex) => {
-              handleSelectDayChange(dayIndex);
-              setViewMode("timeline");
-            }}
-          />
 
           {/* Trip Confidence Dashboard */}
           <AnimatePresence>
@@ -738,7 +771,6 @@ export const ItineraryShell = ({
             )}
           </AnimatePresence>
 
-          {/* Activities List */}
           {/* Discover Panel */}
           {viewMode === "discover" && (
             <div className="flex-1 overflow-hidden lg:rounded-xl lg:border lg:border-border">
@@ -763,6 +795,20 @@ export const ItineraryShell = ({
               />
             </div>
           )}
+
+          {/* Seasonal Banner */}
+          {model.seasonalHighlight && (
+            <SeasonalBanner highlight={model.seasonalHighlight} />
+          )}
+
+          {/* Conflict summary banner */}
+          <ConflictSummaryBanner
+            conflicts={conflictsResult}
+            onSelectDay={(dayIndex) => {
+              handleSelectDayChange(dayIndex);
+              setViewMode("timeline");
+            }}
+          />
 
           {/* Activities List */}
           <div data-itinerary-activities className={`relative flex-1 overflow-y-auto overscroll-contain border-border bg-background p-3 pb-[env(safe-area-inset-bottom)] lg:rounded-xl lg:border ${viewMode !== "timeline" ? "hidden" : ""}`}>
@@ -809,7 +855,7 @@ export const ItineraryShell = ({
                   onReorder={isReadOnly ? undefined : handleReorder}
                   onReplace={!isReadOnly && tripId && !isUsingMock ? handleReplace : undefined}
                   tripBuilderData={tripBuilderData}
-                  suggestions={isReadOnly || !showSuggestions ? undefined : currentDaySuggestions}
+                  suggestions={isReadOnly ? undefined : currentDaySuggestions}
                   onAcceptSuggestion={isReadOnly ? undefined : handleAcceptSuggestion}
                   onSkipSuggestion={isReadOnly ? undefined : onSkipSuggestion}
                   loadingSuggestionId={isReadOnly ? undefined : loadingSuggestionId}

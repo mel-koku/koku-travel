@@ -25,13 +25,6 @@ import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
 import { getActivityColorScheme } from "@/lib/itinerary/activityColors";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { PlaceActivityHeader } from "./PlaceActivityHeader";
-import { PlaceActivityReasoning } from "./PlaceActivityReasoning";
-import { PocketPhrases } from "./PocketPhrases";
-import { ActivityRating } from "./ActivityRating";
-import { useActivityRatingsContext } from "./ActivityRatingsContext";
-import { getSeasonalFoodsForActivity, formatSeasonalFoodTip } from "@/data/seasonalFoods";
-import { getPhotoTiming, formatPhotoTiming } from "@/data/photoSpotTiming";
-import { hasGoshuin, getGoshuinInfo } from "@/data/goshuinData";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 const FALLBACK_IMAGES: Record<string, string> = {
@@ -242,8 +235,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       isReadOnly,
       activeDragId,
       onViewDetails,
-      tripMonth,
-      dayCityId,
       tripStartDate,
       dayIndex,
     },
@@ -259,7 +250,6 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
     } | null>(null);
     const [tips, setTips] = useState<ActivityTip[]>([]);
     const prefersReducedMotion = useReducedMotion();
-    const ratingsCtx = useActivityRatingsContext();
     const timePickerRef = useReactRef<HTMLDivElement>(null);
 
     // Close time picker on click-outside or Escape
@@ -721,34 +711,14 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
             onMouseEnter={handleHover}
             onFocus={handleHover}
           >
-            {/* Image Section */}
-            <motion.div
-              layout={!prefersReducedMotion && !isDragging}
-              className="relative w-full overflow-hidden aspect-video"
-            >
-              {!imageLoaded && !imageError && (
-                <div className="absolute inset-0 animate-pulse bg-surface" />
-              )}
-              <Image
-                src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
-                alt={activity.title}
-                fill
-                sizes="(max-width: 640px) 100vw, 600px"
-                className={`object-cover transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-                onLoad={() => setImageLoaded(true)}
-                onError={() => {
-                  setImageError(true);
-                  setImageLoaded(true);
-                }}
-              />
-              {/* Gradient overlay for better text readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-charcoal/20 to-transparent" />
-
-              {/* Top overlay: Drag handle left, badges right */}
-              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
-                {/* Drag Handle — hidden by default, revealed on card hover */}
-                {!hideDragHandle && !isReadOnly && (
-                  <div className={`transition-opacity duration-200 ${isDragging ? "opacity-100" : "opacity-0 group-hover:opacity-100"}`}>
+            {/* Horizontal layout: content left, thumbnail right */}
+            <div className="flex">
+              {/* Content */}
+              <div className="flex-1 p-3">
+                {/* Top row: drag handle + title + actions */}
+                <div className="flex items-start gap-2">
+                  {/* Drag handle — always visible */}
+                  {!hideDragHandle && !isReadOnly && (
                     <DragHandle
                       variant="place"
                       label={dragHandleLabel}
@@ -756,236 +726,122 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
                       attributes={attributes}
                       listeners={listeners}
                     />
+                  )}
+                  {/* Title + meta */}
+                  <div className="min-w-0 flex-1">
+                    <PlaceActivityHeader
+                      activity={activity}
+                      placeLocation={placeLocation}
+                      rating={rating}
+                      reviewCount={reviewCount}
+                      durationLabel={durationLabel}
+                      summary={summary}
+                      availabilityStatus={availabilityStatus}
+                      schedule={schedule}
+                      isOutOfHours={isOutOfHours}
+                      waitLabel={waitLabel}
+                      conflicts={conflicts}
+                    />
                   </div>
-                )}
-                {(hideDragHandle || isReadOnly) && <div />}
-
-                {/* Right badges: Number */}
-                <div className="flex items-center gap-1.5">
-                  {/* Number badge - sage green when selected */}
-                  {placeNumber !== undefined && (
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold shadow-md transition-colors ${
-                        isSelected
-                          ? "text-white"
-                          : `${colorScheme.badge} ${colorScheme.badgeText}`
-                      }`}
-                      style={isSelected ? { backgroundColor: "var(--color-sage)" } : undefined}
-                      title={isStartEntryPoint ? "Starting point" : isEndEntryPoint ? "Ending point" : `Stop ${placeNumber}`}
-                    >
-                      {displayLabel}
+                  {/* Action icons */}
+                  {!isReadOnly && (
+                    <div className="flex shrink-0 items-center gap-0.5">
+                      <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleNotes(); }}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-stone transition hover:bg-sage/10 hover:text-sage"
+                        title={notesOpen ? "Hide note" : "Add note"}
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      {tripId && dayId && onReplace && (
+                        <button
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onReplace(); }}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg text-stone transition hover:bg-sage/10 hover:text-sage"
+                          title="Find alternatives"
+                        >
+                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                          </svg>
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(); }}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-stone transition hover:bg-error/10 hover:text-error"
+                        aria-label={`Delete ${activity.title}`}
+                        title="Remove this activity"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
                     </div>
                   )}
                 </div>
-              </div>
-            </motion.div>
 
-            {/* Info Section */}
-            <div className="p-3 sm:p-4">
-              <PlaceActivityHeader
-                activity={activity}
-                placeLocation={placeLocation}
-                rating={rating}
-                reviewCount={reviewCount}
-                durationLabel={durationLabel}
-                summary={summary}
-                availabilityStatus={availabilityStatus}
-                schedule={schedule}
-                isOutOfHours={isOutOfHours}
-                waitLabel={waitLabel}
-                conflicts={conflicts}
-              />
-
-              {/* Getting there — nearest station + Japanese name */}
-              {(placeLocation?.nearestStation || placeLocation?.nameJapanese) && (
-                <div className="mt-2 flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-foreground-secondary">
-                  {placeLocation.nearestStation && (
-                    <span className="flex items-center gap-1">
-                      <span>{"📍"}</span>
-                      {placeLocation.nearestStation}
-                    </span>
-                  )}
-                  {placeLocation.nameJapanese && (
-                    <span className="flex items-center gap-1">
-                      <span>{"🇯🇵"}</span>
+                {/* Getting there — nearest station + Japanese name */}
+                {(placeLocation?.nearestStation || placeLocation?.nameJapanese) && (
+                  <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-stone">
+                    {placeLocation.nearestStation && (
+                      <span className="flex items-center gap-1">
+                        <span>{"🚉"}</span>
+                        {placeLocation.nearestStation}
+                      </span>
+                    )}
+                    {placeLocation.nameJapanese && (
                       <span lang="ja">{placeLocation.nameJapanese}</span>
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Tips Section */}
-              {tips.length > 0 && (
-                <div className="mt-3 rounded-xl bg-sage/5 p-2.5">
-                  <p className="mb-1.5 text-xs font-semibold text-foreground">Tips</p>
-                  <div className="space-y-1">
-                    {tips.slice(0, 2).map((tip, index) => (
-                      <div key={index} className="flex items-start gap-1.5 text-xs text-foreground-secondary">
-                        <span className="shrink-0">{tip.icon ?? "💡"}</span>
-                        <span>
-                          <span className="font-medium">{tip.title}:</span> {tip.message}
-                        </span>
-                      </div>
-                    ))}
+                    )}
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Tattoo Policy Warning */}
-              {placeLocation?.tattooPolicy && placeLocation.tattooPolicy !== "accepted" &&
-                (placeLocation.category === "onsen" || placeLocation.category === "wellness") && (
-                <div className="mt-3 flex items-start gap-2 rounded-xl bg-warning/5 p-2.5">
-                  <span className="mt-0.5 shrink-0 text-sm text-warning">⚠</span>
-                  <p className="text-xs leading-relaxed text-warning">
-                    {placeLocation.tattooPolicy === "prohibited"
-                      ? "Tattoos are not permitted at this facility."
-                      : "Tattoos must be covered (stickers or bandages) at this facility."}
-                  </p>
-                </div>
-              )}
-
-              {/* Insider Tip */}
-              {placeLocation?.insiderTip && (
-                <div className="mt-3 rounded-xl bg-brand-secondary/5 p-2.5">
-                  <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.15em] text-brand-secondary">
-                    {"✨ "}Insider Tip
-                  </p>
-                  <p className="text-xs leading-relaxed text-foreground-secondary">
-                    {placeLocation.insiderTip}
-                  </p>
-                </div>
-              )}
-
-              {/* Seasonal Food Badge */}
-              {tripMonth && dayCityId && placeLocation?.category && (() => {
-                const foods = getSeasonalFoodsForActivity(tripMonth, dayCityId, placeLocation.category);
-                if (foods.length === 0) return null;
-                return (
-                  <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-sage/5 px-2.5 py-1.5">
-                    <span className="shrink-0 text-sm">🍽️</span>
-                    <span className="text-xs text-sage">
-                      In season: {formatSeasonalFoodTip(foods)}
+                {/* Compact tips count */}
+                {tips.length > 0 && (
+                  <div className="mt-1.5">
+                    <span className="text-[11px] text-sage">
+                      {"💡 "}{tips.length} {tips.length === 1 ? "tip" : "tips"}
                     </span>
                   </div>
-                );
-              })()}
+                )}
+              </div>
 
-              {/* Photo Timing Badge */}
-              {placeLocation && (() => {
-                const timing = getPhotoTiming(placeLocation.id, placeLocation.category);
-                if (!timing) return null;
-                return (
-                  <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-brand-secondary/5 px-2.5 py-1.5">
-                    <span className="shrink-0 text-sm">📸</span>
-                    <span className="text-xs text-brand-secondary">
-                      Best light: {formatPhotoTiming(timing.bestTimes)}
-                    </span>
-                  </div>
-                );
-              })()}
-
-              {/* Goshuin Badge */}
-              {placeLocation && hasGoshuin(placeLocation.id) && (() => {
-                const info = getGoshuinInfo(placeLocation.id);
-                if (!info) return null;
-                return (
-                  <div className="mt-3 flex items-center gap-1.5 rounded-xl bg-brand-primary/5 px-2.5 py-1.5">
-                    <span className="shrink-0 text-sm">⛩️</span>
-                    <span className="text-xs text-brand-primary">
-                      Goshuin available (¥{info.cost}){info.notable ? " — Notable" : ""}
-                    </span>
-                  </div>
-                );
-              })()}
-
-              {/* Pocket Phrases */}
-              <PocketPhrases
-                locationCategory={placeLocation?.category}
-                tags={activity.tags}
-                seed={activity.id}
-              />
-
-              {/* Activity Rating */}
-              {ratingsCtx && dayId && (
-                <ActivityRating
-                  activityId={activity.id}
-                  dayId={dayId}
-                  locationId={activity.locationId}
-                  currentRating={ratingsCtx.ratings.get(activity.id)?.rating}
-                  isReadOnly={isReadOnly}
-                  onRate={ratingsCtx.submitRating}
+              {/* Thumbnail */}
+              <div className="relative w-20 shrink-0 sm:w-24">
+                {!imageLoaded && !imageError && (
+                  <div className="absolute inset-0 animate-pulse bg-surface" />
+                )}
+                <Image
+                  src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
+                  alt={activity.title}
+                  fill
+                  sizes="96px"
+                  className={`object-cover transition-opacity duration-200 rounded-r-xl ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                  onLoad={() => setImageLoaded(true)}
+                  onError={() => {
+                    setImageError(true);
+                    setImageLoaded(true);
+                  }}
                 />
-              )}
-
-              {activity.recommendationReason && (
-                <PlaceActivityReasoning
-                  recommendationReason={activity.recommendationReason}
-                  onReplace={onReplace}
-                />
-              )}
+                {/* Number badge */}
+                {placeNumber !== undefined && (
+                  <div
+                    className={`absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shadow-sm transition-colors ${
+                      isSelected
+                        ? "bg-sage text-white"
+                        : `${colorScheme.badge} ${colorScheme.badgeText}`
+                    }`}
+                    title={isStartEntryPoint ? "Starting point" : isEndEntryPoint ? "Ending point" : `Stop ${placeNumber}`}
+                  >
+                    {displayLabel}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Actions Footer — hidden in read-only mode */}
-            {!isReadOnly && (
-              <div className="flex items-center justify-between border-t border-border/30 bg-surface/30 px-3 py-2 sm:px-4">
-                {/* Left: Notes */}
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      handleToggleNotes();
-                    }}
-                    className="flex min-h-[44px] items-center gap-1 rounded-xl px-2.5 py-2.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
-                  >
-                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    <span className="hidden sm:inline">{notesOpen ? "Hide note" : "Add note"}</span>
-                  </button>
-                </div>
-
-                {/* Right: Edit Actions */}
-                <div className="flex items-center gap-1">
-                  {tripId && dayId && onReplace && (
-                    <button
-                      type="button"
-                      className="flex min-h-[44px] items-center gap-1 rounded-xl px-2.5 py-2.5 text-xs font-medium text-foreground-secondary transition hover:bg-sage/10 hover:text-sage"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        onReplace();
-                      }}
-                      title="Find alternatives"
-                    >
-                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                      </svg>
-                      <span className="hidden sm:inline">Replace</span>
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="flex min-h-[44px] items-center gap-1 rounded-xl px-2.5 py-2.5 text-xs font-medium text-foreground-secondary transition hover:bg-error/10 hover:text-error"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      handleDelete();
-                    }}
-                    aria-label={`Delete ${activity.title}`}
-                    title="Remove this activity"
-                  >
-                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    <span className="hidden sm:inline">Delete</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Notes Section (collapsible) — read-only shows as plain text */}
+            {/* Notes Section (collapsible) */}
             {notesOpen && !isReadOnly && (
               <div className="border-t border-border/30 bg-background/50 p-3">
                 <label htmlFor={notesId} className="sr-only">

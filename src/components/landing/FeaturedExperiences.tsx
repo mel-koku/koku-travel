@@ -23,7 +23,7 @@ export function FeaturedExperiences({
     <section aria-label="Featured experiences" className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
-        <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mb-10 sm:mb-16">
           <div>
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredExperiencesEyebrow ?? "Experiences"}
@@ -36,6 +36,25 @@ export function FeaturedExperiences({
                 "Ceramics, sake brewing, and hands-on traditions. You're a participant, not a tourist."}
             </p>
           </div>
+        </div>
+
+        {/* Grid — show 2 on mobile, full set on sm+ */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {experiences.map((experience, idx) => (
+            <div
+              key={experience._id}
+              className={idx >= 2 ? "hidden sm:block" : undefined}
+            >
+              <ExperienceCard
+                experience={experience}
+                index={idx}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Section CTA */}
+        <div className="mt-10">
           <Link
             href="/guides?type=activity"
             className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
@@ -55,21 +74,6 @@ export function FeaturedExperiences({
               />
             </svg>
           </Link>
-        </div>
-
-        {/* Grid — show 2 on mobile, full set on sm+ */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {experiences.map((experience, idx) => (
-            <div
-              key={experience._id}
-              className={idx >= 2 ? "hidden sm:block" : undefined}
-            >
-              <ExperienceCard
-                experience={experience}
-                index={idx}
-              />
-            </div>
-          ))}
         </div>
       </div>
     </section>
