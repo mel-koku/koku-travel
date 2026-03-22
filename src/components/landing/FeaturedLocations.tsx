@@ -5,9 +5,19 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { resizePhotoUrl } from "@/lib/google/transformations";
+import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
 
 import type { Location } from "@/types/location";
 import type { LandingPageContent } from "@/types/sanitySiteContent";
+
+function getSummary(location: Location): string {
+  const editorial = LOCATION_EDITORIAL_SUMMARIES[location.id]?.trim();
+  if (editorial) return editorial;
+  if (location.shortDescription?.trim()) return location.shortDescription.trim();
+  if (location.description?.trim()) return location.description.trim();
+  const city = location.city ? ` in ${location.city}` : "";
+  return `Notable ${location.category}${city}.`;
+}
 
 type FeaturedLocationsProps = {
   locations: Location[];
@@ -67,14 +77,50 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                 </div>
-                <div className="p-4">
-                  <h3 className="text-sm font-semibold text-foreground transition-colors duration-200 group-hover:text-brand-primary">
-                    {location.name}
-                  </h3>
-                  <p className="mt-1 text-xs text-stone">
-                    {location.city}
-                    {location.rating ? ` \u00b7 ${location.rating.toFixed(1)}` : ""}
+                <div className="p-3.5 space-y-1.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-brand-primary transition-colors">
+                      {location.name}
+                    </h3>
+                    {location.rating ? (
+                      <span className="flex shrink-0 items-center gap-0.5 text-xs text-foreground">
+                        <svg className="h-3 w-3 text-warning" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="m12 17.27 5.18 3.11-1.64-5.81L20.9 9.9l-6-0.52L12 4 9.1 9.38l-6 .52 5.36 4.67L6.82 20.38 12 17.27z" />
+                        </svg>
+                        {location.rating.toFixed(1)}
+                        {location.reviewCount ? (
+                          <span className="text-stone">
+                            ({location.reviewCount >= 1000
+                              ? `${(location.reviewCount / 1000).toFixed(1)}k`
+                              : location.reviewCount})
+                          </span>
+                        ) : null}
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="text-xs text-stone">
+                    {location.city}, {location.region}
                   </p>
+                  <p className="text-xs text-foreground-secondary line-clamp-2 leading-relaxed">
+                    {getSummary(location)}
+                  </p>
+                  <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+                    <span className="text-[11px] font-medium capitalize bg-surface text-stone px-2 py-0.5 rounded-lg">
+                      {location.category}
+                    </span>
+                    {location.estimatedDuration && (
+                      <>
+                        <span className="text-border">&middot;</span>
+                        <span className="flex items-center gap-1 text-[11px] text-stone">
+                          <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <circle cx="12" cy="12" r="10" />
+                            <path strokeLinecap="round" d="M12 6v6l4 2" />
+                          </svg>
+                          {location.estimatedDuration}
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </Link>
             </motion.div>
