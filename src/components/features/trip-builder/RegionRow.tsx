@@ -109,7 +109,7 @@ export function RegionRow({
           {regionName} Region
         </span>
         <span className={cn(
-          "block font-serif text-xl tracking-tight transition-colors duration-300 sm:text-2xl",
+          "block font-serif text-base tracking-tight transition-colors duration-300 sm:text-lg",
           hasSelection || isHovered ? "text-foreground" : "text-foreground-secondary",
         )}>
           {cityNames.length > 0 ? cityNames.join(" · ") : region.name}
