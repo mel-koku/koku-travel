@@ -39,7 +39,7 @@ export function GuidePlanCTA({
   return (
     <section className="bg-canvas py-12 px-6 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-2xl text-center">
-        <h2 className="font-serif italic text-2xl sm:text-3xl text-foreground">
+        <h2 className="font-serif text-2xl sm:text-3xl text-foreground">
           Turn this guide into a trip
         </h2>
         <p className="mt-3 text-foreground-secondary">

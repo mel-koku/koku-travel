@@ -49,7 +49,7 @@ function LocationCard({ location, eager }: { location: Location; eager?: boolean
       </div>
       <div className="p-3.5 space-y-1.5">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-sm font-serif italic text-foreground line-clamp-1 group-hover:text-brand-primary transition-colors">
+          <h3 className="text-sm font-serif text-foreground line-clamp-1 group-hover:text-brand-primary transition-colors">
             {location.name}
           </h3>
           {location.rating ? (
@@ -120,7 +120,7 @@ export function CityDetail({
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 }}
-                className="font-serif italic text-4xl sm:text-5xl lg:text-6xl text-white"
+                className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white"
               >
                 {city.name}
               </motion.h1>
@@ -178,7 +178,7 @@ export function CityDetail({
       {categories.length > 0 && (
         <section className="py-12 sm:py-16 bg-canvas px-6">
           <div className="mx-auto max-w-7xl">
-            <h2 className="font-serif italic text-xl sm:text-2xl text-foreground">
+            <h2 className="font-serif text-xl sm:text-2xl text-foreground">
               What {city.name} is known for
             </h2>
             <div className="mt-8 space-y-3 max-w-2xl">
@@ -221,7 +221,7 @@ export function CityDetail({
       {topLocations.length > 0 && (
         <section className="py-12 sm:py-16 px-6">
           <div className="mx-auto max-w-7xl">
-            <h2 className="font-serif italic text-xl sm:text-2xl text-foreground">
+            <h2 className="font-serif text-xl sm:text-2xl text-foreground">
               Top-rated in {city.name}
             </h2>
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -238,7 +238,7 @@ export function CityDetail({
         <section className="py-12 sm:py-16 bg-canvas px-6">
           <div className="mx-auto max-w-7xl">
             <p className="eyebrow-editorial text-brand-primary">Off the beaten path</p>
-            <h2 className="mt-2 font-serif italic text-xl sm:text-2xl text-foreground">
+            <h2 className="mt-2 font-serif text-xl sm:text-2xl text-foreground">
               Hidden gems in {city.name}
             </h2>
             <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -254,7 +254,7 @@ export function CityDetail({
       {nearbyCities.length > 0 && (
         <section className="py-12 sm:py-16 px-6">
           <div className="mx-auto max-w-7xl">
-            <h2 className="font-serif italic text-xl sm:text-2xl text-foreground">
+            <h2 className="font-serif text-xl sm:text-2xl text-foreground">
               Nearby in {regionName}
             </h2>
             <div className="mt-6 flex flex-wrap gap-3">
@@ -276,7 +276,7 @@ export function CityDetail({
       {/* CTA */}
       <section className="py-20 sm:py-28 px-6">
         <div className="mx-auto max-w-7xl text-center">
-          <h2 className="font-serif italic text-2xl sm:text-3xl text-foreground">
+          <h2 className="font-serif text-2xl sm:text-3xl text-foreground">
             Plan a trip to {city.name}
           </h2>
           <p className="mt-3 text-foreground-secondary">

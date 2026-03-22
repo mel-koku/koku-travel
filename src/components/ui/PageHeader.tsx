@@ -79,7 +79,7 @@ export function PageHeader({
         )}
 
         <ScrollReveal delay={0.15}>
-          <h1 className="mt-4 font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-foreground">
+          <h1 className="mt-4 font-serif text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-foreground">
             {title}
           </h1>
         </ScrollReveal>

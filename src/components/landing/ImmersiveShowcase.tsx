@@ -91,7 +91,7 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
                   <div className="absolute inset-0 flex items-center px-10 lg:px-16">
                     <div className="max-w-lg">
                       <p className="eyebrow-editorial text-brand-primary">{act.eyebrow}</p>
-                      <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl">
+                      <h2 className="mt-4 font-serif text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl">
                         {act.title}
                       </h2>
                       <p className="mt-5 text-base leading-relaxed text-white/80">
@@ -119,7 +119,7 @@ export function ImmersiveShowcase({ content }: ImmersiveShowcaseProps) {
                   </div>
                   <div className={`max-w-md ${!imageLeft ? "lg:order-1" : ""}`}>
                     <p className="eyebrow-editorial text-brand-primary">{act.eyebrow}</p>
-                    <h2 className="mt-4 font-serif italic text-2xl tracking-heading text-foreground sm:text-3xl">
+                    <h2 className="mt-4 font-serif text-2xl tracking-heading text-foreground sm:text-3xl">
                       {act.title}
                     </h2>
                     <p className="mt-5 text-base leading-relaxed text-foreground-secondary">

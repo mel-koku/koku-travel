@@ -22,7 +22,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
 
         {/* Heading */}
         <ScrollReveal delay={0.1}>
-          <h2 className="mx-auto mt-6 max-w-2xl font-serif italic text-xl leading-snug tracking-heading text-foreground sm:text-2xl lg:text-3xl">
+          <h2 className="mx-auto mt-6 max-w-2xl font-serif text-xl leading-snug tracking-heading text-foreground sm:text-2xl lg:text-3xl">
             {content?.philosophyHeading ??
               "From years of living here. Not a desk."}
           </h2>

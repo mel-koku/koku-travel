@@ -39,7 +39,7 @@ export function TripReviewMap({ tripId }: { tripId: string }) {
 
   return (
     <div>
-      <h2 className="font-serif italic text-xl text-foreground">Your Route</h2>
+      <h2 className="font-serif text-xl text-foreground">Your Route</h2>
       <div
         ref={mapContainer}
         className="mt-4 h-[300px] w-full overflow-hidden rounded-xl border border-border sm:h-[400px]"

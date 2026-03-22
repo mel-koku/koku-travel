@@ -20,7 +20,7 @@ const ExperiencesIntro = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex flex-col items-center justify-center py-24 px-6">
-        <p className="font-serif italic text-2xl sm:text-3xl text-foreground text-center">
+        <p className="font-serif text-2xl sm:text-3xl text-foreground text-center">
           Experiences
         </p>
       </div>
@@ -316,7 +316,7 @@ export function ExperiencesShell() {
 
               {!hasMore && visibleExperiences.length > 0 && (
                 <div className="py-16 text-center">
-                  <p className="font-serif italic text-lg text-stone">
+                  <p className="font-serif text-lg text-stone">
                     That&apos;s all {sortedExperiences.length.toLocaleString()} experiences.
                   </p>
                 </div>

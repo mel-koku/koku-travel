@@ -294,7 +294,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardTripsEyebrow ?? "Recent"}</p>
-            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">{content?.dashboardTripsHeading ?? "Your Trips"}</h2>
+            <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">{content?.dashboardTripsHeading ?? "Your Trips"}</h2>
           </ScrollReveal>
 
           <div className="mt-8">
@@ -420,7 +420,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
                       </svg>
                     </div>
 
-                    <h3 className="mt-6 font-serif italic text-xl text-white sm:text-2xl">
+                    <h3 className="mt-6 font-serif text-xl text-white sm:text-2xl">
                       {content?.dashboardEmptyHeading ?? "No trips yet"}
                     </h3>
 
@@ -471,7 +471,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ScrollReveal>
               <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">Bookings</p>
-              <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">Your Bookings</h2>
+              <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">Your Bookings</h2>
             </ScrollReveal>
             <div className="mt-8 max-w-3xl">
               <BookingsSection />
@@ -485,7 +485,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <ScrollReveal>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-secondary">Discover</p>
-            <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">
+            <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">
               Import from Link
             </h2>
             <p className="mt-2 max-w-lg text-sm text-foreground-secondary">
@@ -506,7 +506,7 @@ export function DashboardClient({ initialAuthUser, content }: DashboardClientPro
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <ScrollReveal>
               <p className="text-xs uppercase tracking-[0.3em] text-brand-primary">{content?.dashboardAccountEyebrow ?? "Account"}</p>
-              <h2 className="mt-2 font-serif italic text-xl text-foreground sm:text-2xl">{content?.dashboardAccountHeading ?? "Profile & Sync"}</h2>
+              <h2 className="mt-2 font-serif text-xl text-foreground sm:text-2xl">{content?.dashboardAccountHeading ?? "Profile & Sync"}</h2>
             </ScrollReveal>
             <div className="mt-8 max-w-2xl">
               <ScrollReveal delay={0.1} distance={20}>

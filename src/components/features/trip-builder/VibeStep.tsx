@@ -133,7 +133,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: easeCinematicMut, delay: 0.15 }}
-          className="mt-3 font-serif text-4xl italic tracking-tight text-foreground sm:text-5xl"
+          className="mt-3 font-serif text-4xl tracking-tight text-foreground sm:text-5xl"
         >
           {sanityConfig?.vibeStepHeading ?? "What moves you?"}
         </motion.h2>

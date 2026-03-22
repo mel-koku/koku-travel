@@ -100,7 +100,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
             <p className="font-mono text-sm uppercase tracking-wider text-white/50">
               {locationCount.toLocaleString()}+ places
             </p>
-            <h1 className="mt-3 font-serif text-3xl italic leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl">
+            <h1 className="mt-3 font-serif text-3xl leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl">
               {headline}
             </h1>
             <p className="mt-5 max-w-lg text-base text-white/70 sm:text-lg">
@@ -195,7 +195,7 @@ export function HeroOpening({ locationCount, content }: HeroOpeningProps) {
           {/* Statement headline — word-by-word clip reveal */}
           <SplitText
             as="h1"
-            className="mt-3 font-serif text-3xl italic leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl"
+            className="mt-3 font-serif text-3xl leading-[1.1] text-white sm:text-4xl lg:text-5xl xl:text-6xl"
             splitBy="word"
             trigger="load"
             animation="clipY"

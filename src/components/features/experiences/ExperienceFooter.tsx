@@ -79,7 +79,7 @@ export function ExperienceFooter({
                     {related.city && ` \u00b7 ${related.city}`}
                     {related.duration && ` \u00b7 ${related.duration}`}
                   </p>
-                  <h3 className="font-serif text-lg italic text-white sm:text-xl transition-colors group-hover:text-brand-primary">
+                  <h3 className="font-serif text-lg text-white sm:text-xl transition-colors group-hover:text-brand-primary">
                     {related.title}
                   </h3>
                 </div>

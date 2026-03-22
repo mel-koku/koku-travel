@@ -597,7 +597,7 @@ export const ItineraryShell = ({
               <h1
                 ref={finalHeadingRef}
                 tabIndex={-1}
-                className="font-serif italic text-2xl text-foreground tracking-[-0.02em] focus:outline-none sm:text-3xl"
+                className="font-serif text-2xl text-foreground tracking-[-0.02em] focus:outline-none sm:text-3xl"
               >
                 Your Itinerary
               </h1>
@@ -776,7 +776,7 @@ export const ItineraryShell = ({
                   transition={{ duration: durationFast, ease: easeReveal }}
                   className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm"
                 >
-                  <h2 className="font-serif italic text-3xl text-foreground sm:text-4xl">
+                  <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
                     {dayTransitionLabel}
                   </h2>
                 </motion.div>

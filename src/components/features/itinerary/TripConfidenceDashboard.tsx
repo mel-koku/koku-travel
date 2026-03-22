@@ -179,7 +179,7 @@ export const TripConfidenceDashboard = memo(function TripConfidenceDashboard({
     >
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="font-serif italic text-xl text-foreground">Trip Overview</h2>
+        <h2 className="font-serif text-xl text-foreground">Trip Overview</h2>
         <button
           onClick={onClose}
           className="rounded-xl p-1.5 text-stone hover:text-foreground hover:bg-surface transition"

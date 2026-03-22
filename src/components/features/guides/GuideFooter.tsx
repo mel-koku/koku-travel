@@ -73,7 +73,7 @@ export function GuideFooter({ authorName, publishedAt, relatedGuide }: GuideFoot
                 {relatedGuide.readingTimeMinutes &&
                   ` \u00b7 ${relatedGuide.readingTimeMinutes} min`}
               </p>
-              <p className="font-serif text-2xl italic text-white transition-colors duration-500 group-hover:text-brand-primary sm:text-3xl">
+              <p className="font-serif text-2xl text-white transition-colors duration-500 group-hover:text-brand-primary sm:text-3xl">
                 {relatedGuide.title}
               </p>
             </div>

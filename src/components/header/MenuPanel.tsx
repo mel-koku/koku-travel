@@ -62,7 +62,7 @@ export function MenuPanel() {
 
       {/* Bottom-left content */}
       <div className="absolute bottom-12 left-8 right-8">
-        <p className="font-serif text-xl italic text-white/90">
+        <p className="font-serif text-xl text-white/90">
           {tagline}
         </p>
         <p className="mt-2 text-sm text-white/50">

@@ -558,7 +558,7 @@ export const ItineraryMapPanel = memo(function ItineraryMapPanel({
     <>
       <aside className="flex h-full flex-col p-4">
       <header className="mb-4">
-        <h2 className={isB ? "text-xs font-medium uppercase tracking-[0.15em]" : "font-serif text-lg italic text-foreground"} style={isB ? { color: "var(--muted-foreground)" } : undefined}>{dayDateLabel}</h2>
+        <h2 className={isB ? "text-xs font-medium uppercase tracking-[0.15em]" : "font-serif text-lg text-foreground"} style={isB ? { color: "var(--muted-foreground)" } : undefined}>{dayDateLabel}</h2>
         <p className={isB ? "mt-0.5 text-xs" : "text-sm text-stone"} style={isB ? { color: "var(--muted-foreground)", opacity: 0.6 } : undefined}>
           Your stops for the day, mapped out.
         </p>

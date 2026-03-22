@@ -74,7 +74,7 @@ export function SeasonalSpotlight({
               <p className="eyebrow-editorial text-brand-secondary">
                 {content?.seasonalSpotlightEyebrow ?? "What's in season"}
               </p>
-              <h2 className="mt-4 font-serif italic text-3xl tracking-heading text-foreground sm:text-4xl">
+              <h2 className="mt-4 font-serif text-3xl tracking-heading text-foreground sm:text-4xl">
                 {heading}
               </h2>
               <p className="mt-4 max-w-md text-base text-foreground-secondary">
@@ -171,7 +171,7 @@ function SpotlightCard({ card, idx }: { card: CardData; idx: number }) {
           <p className="text-[10px] uppercase tracking-[0.25em] text-white/60 mb-0.5 font-mono">
             {card.subtitle}
           </p>
-          <p className="font-serif italic text-white text-base line-clamp-1">
+          <p className="font-serif text-white text-base line-clamp-1">
             {card.title}
           </p>
         </div>

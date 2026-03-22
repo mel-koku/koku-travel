@@ -107,7 +107,7 @@ export function EssentialsForm({ onValidityChange }: EssentialsFormProps) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h3 className="font-serif text-lg italic text-foreground">Trip Essentials</h3>
+        <h3 className="font-serif text-lg text-foreground">Trip Essentials</h3>
         <p className="mt-1 text-sm text-foreground-secondary">
           Set the basics for your Japan adventure.
         </p>

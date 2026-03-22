@@ -91,7 +91,7 @@ export default function SavedShell() {
                 </svg>
               </div>
 
-              <h2 className="mt-8 font-serif italic text-2xl text-white sm:text-3xl">
+              <h2 className="mt-8 font-serif text-2xl text-white sm:text-3xl">
                 No saved places
               </h2>
 
