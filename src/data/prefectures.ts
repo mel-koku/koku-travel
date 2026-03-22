@@ -94,8 +94,8 @@ const PREFECTURE_DATA: Record<string, Record<string, string[]>> = {
       "Nanto", "Nakaniikawa",
     ],
     Ishikawa: [
-      "Ishikawa", "Nanao", "Kaga", "Suzu", "Hakui", "Shika", "Komatsu",
-      "Hakusan", "Noto", "Ishikawa-ken",
+      "Kanazawa", "Ishikawa", "Nanao", "Kaga", "Suzu", "Hakui", "Shika",
+      "Komatsu", "Hakusan", "Noto", "Ishikawa-ken",
     ],
     Fukui: [
       "Fukui", "Tsuruga", "Obama", "Katsuyama", "Awara", "Echizen",
