@@ -35,9 +35,9 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
         initial={{ opacity: 0, height: 0 }}
         animate={{ opacity: 1, height: "auto" }}
         transition={{ duration: 0.3 }}
-        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-1"
       >
-        <div className="flex items-center gap-3 rounded-xl border border-brand-secondary/20 bg-brand-secondary/10 px-4 py-3">
+        <div className="flex items-center gap-3 rounded-xl bg-brand-primary/[0.06] px-4 py-3">
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground">
               {highlight.label}
