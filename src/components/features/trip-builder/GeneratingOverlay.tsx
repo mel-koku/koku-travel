@@ -88,7 +88,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2, ease: easeReveal }}
-                className="font-serif text-3xl italic text-foreground sm:text-4xl"
+                className="font-serif text-3xl text-foreground sm:text-4xl"
               >
                 Your trip is ready
               </motion.h2>
@@ -113,7 +113,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
-                className="font-serif text-3xl italic text-foreground sm:text-4xl"
+                className="font-serif text-3xl text-foreground sm:text-4xl"
               >
                 {sanityConfig?.generatingHeading ?? "Building your itinerary"}
               </motion.h2>

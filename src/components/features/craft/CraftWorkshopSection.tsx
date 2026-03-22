@@ -26,7 +26,7 @@ export function CraftWorkshopSection({ selectedCraftType }: CraftWorkshopSection
         transition={{ duration: 0.5, ease: easeReveal }}
       >
         <div className="flex items-baseline justify-between mb-5">
-          <h2 className="font-serif italic text-xl text-foreground">
+          <h2 className="font-serif text-xl text-foreground">
             Book a Workshop
           </h2>
           <span className="font-mono text-xs text-stone">

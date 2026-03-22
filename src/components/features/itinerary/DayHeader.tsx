@@ -240,7 +240,7 @@ export function DayHeader({
     <div className="mb-6 rounded-xl border border-border bg-surface p-4 sm:p-5">
       <div className="flex flex-col gap-3">
         <div>
-          <h2 className="font-serif italic text-xl text-foreground tracking-[-0.02em] sm:text-2xl">
+          <h2 className="font-serif text-xl text-foreground tracking-[-0.02em] sm:text-2xl">
             {dateLabel.dayName ? (
               <>
                 {dateLabel.date}

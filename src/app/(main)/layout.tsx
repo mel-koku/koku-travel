@@ -1,4 +1,4 @@
-import { Geist_Mono, DM_Sans, Instrument_Serif } from "next/font/google";
+import { Geist_Mono, DM_Sans, Playfair_Display } from "next/font/google";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
 import { WebVitals } from "@/components/WebVitals";
 import { VariantProvider } from "@/lib/variant/VariantContext";
@@ -16,10 +16,9 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
+const playfairDisplay = Playfair_Display({
+  variable: "--font-playfair-display",
   subsets: ["latin"],
-  weight: "400",
   display: "swap",
 });
 
@@ -34,7 +33,7 @@ export default async function VariantALayout({
     <VariantProvider variant="a">
       <div
         data-variant="a"
-        className={`${dmSans.variable} ${geistMono.variable} ${instrumentSerif.variable} min-h-[100dvh] bg-background font-sans text-foreground`}
+        className={`${dmSans.variable} ${geistMono.variable} ${playfairDisplay.variable} min-h-[100dvh] bg-background font-sans text-foreground`}
       >
         <WebVitals />
         <LayoutWrapper siteSettings={siteSettings ?? undefined}>

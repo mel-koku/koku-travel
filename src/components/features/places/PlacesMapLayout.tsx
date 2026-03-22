@@ -281,7 +281,7 @@ export function PlacesMapLayout({
               style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
             >
               <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
-                <h2 className="font-serif italic text-lg text-foreground">Ask Koku</h2>
+                <h2 className="font-serif text-lg text-foreground">Ask Koku</h2>
                 <button
                   onClick={onChatClose}
                   className="flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-md backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"

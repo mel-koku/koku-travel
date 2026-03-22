@@ -110,7 +110,7 @@ function AuthErrorContent() {
         aria-hidden
         className="pointer-events-none absolute inset-0 z-[1] flex items-center justify-center"
       >
-        <span className="font-serif italic text-[clamp(6rem,18vw,12rem)] text-white/[0.06]">
+        <span className="font-serif text-[clamp(6rem,18vw,12rem)] text-white/[0.06]">
           !
         </span>
       </div>
@@ -126,7 +126,7 @@ function AuthErrorContent() {
 
           <SplitText
             as="h1"
-            className="mt-6 justify-center font-serif italic text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
+            className="mt-6 justify-center font-serif text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
             splitBy="word"
             animation="clipY"
             staggerDelay={0.04}

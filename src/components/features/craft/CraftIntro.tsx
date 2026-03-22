@@ -24,7 +24,7 @@ export function CraftIntro({ totalCount }: CraftIntroProps) {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: easeReveal, delay: 0.1 }}
-        className="mt-4 font-serif italic text-[clamp(2rem,4vw,3.5rem)] leading-[1.1] text-foreground max-w-3xl mx-auto"
+        className="mt-4 font-serif text-[clamp(2rem,4vw,3.5rem)] leading-[1.1] text-foreground max-w-3xl mx-auto"
       >
         Hands-on with Japan&apos;s living traditions.
       </motion.h1>

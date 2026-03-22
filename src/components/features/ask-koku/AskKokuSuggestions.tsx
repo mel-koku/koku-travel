@@ -85,7 +85,7 @@ export function AskKokuSuggestions({
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4">
-      <p className="font-serif text-lg italic text-foreground">
+      <p className="font-serif text-lg text-foreground">
         What do you want to know?
       </p>
       <p className="mt-1 text-sm text-foreground-secondary">

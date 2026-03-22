@@ -312,7 +312,7 @@
   /* Fonts */
   --font-sans: var(--font-dm-sans), "system-ui", "sans-serif";
   --font-mono: var(--font-geist-mono), "ui-monospace", "monospace";
-  --font-serif: var(--font-instrument-serif), "Georgia", "serif";
+  --font-serif: var(--font-playfair-display), "Georgia", "serif";
 
   /* Letter-spacing (tracking) tokens */
   --tracking-display: -0.04em;
@@ -344,7 +344,7 @@ body {
 }
 
 .serif-body {
-  @apply font-serif italic;
+  @apply font-serif;
 }
 
 /* Hide scrollbar but maintain scroll functionality */

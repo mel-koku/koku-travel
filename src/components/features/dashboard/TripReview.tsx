@@ -152,7 +152,7 @@ export function TripReview({ tripId }: { tripId: string }) {
         <p className="font-mono text-xs font-semibold uppercase tracking-wide text-brand-primary">
           Your Japan Journey
         </p>
-        <h1 className="mt-2 font-serif italic text-3xl text-foreground sm:text-4xl">
+        <h1 className="mt-2 font-serif text-3xl text-foreground sm:text-4xl">
           {data.tripName}
         </h1>
         {cityNames.length > 0 && (
@@ -189,7 +189,7 @@ export function TripReview({ tripId }: { tripId: string }) {
           transition={{ duration: 0.6, delay: 0.3, ease }}
           className="mt-10"
         >
-          <h2 className="font-serif italic text-xl text-foreground">Highlights</h2>
+          <h2 className="font-serif text-xl text-foreground">Highlights</h2>
           <p className="mt-1 text-sm text-foreground-secondary">Your top-rated experiences</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-3">
             {data.topRated.map((item, i) => (
@@ -219,7 +219,7 @@ export function TripReview({ tripId }: { tripId: string }) {
           transition={{ duration: 0.6, delay: 0.45, ease }}
           className="mt-10"
         >
-          <h2 className="font-serif italic text-xl text-foreground">By City</h2>
+          <h2 className="font-serif text-xl text-foreground">By City</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.perCity.map((city) => (
               <div

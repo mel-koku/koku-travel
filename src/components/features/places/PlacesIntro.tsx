@@ -16,7 +16,7 @@ export function PlacesIntro({ totalCount, content }: PlacesIntroProps) {
       </p>
 
       <ScrollReveal delay={0.1} distance={20} duration={0.5}>
-        <h1 className="mt-4 font-serif italic text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
+        <h1 className="mt-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
           {content?.placesHeading ?? "Temples, backstreets, and the restaurants your guidebook missed."}
         </h1>
       </ScrollReveal>

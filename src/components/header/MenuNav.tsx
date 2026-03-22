@@ -112,7 +112,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
           className="flex items-center gap-2"
         >
           <span className="flex items-baseline gap-1.5">
-            <span className="font-serif text-2xl italic text-foreground sm:text-3xl">
+            <span className="font-serif text-2xl text-foreground sm:text-3xl">
               Koku
             </span>
             <span className="text-sm font-light uppercase tracking-wide text-foreground-secondary">
@@ -138,7 +138,7 @@ export function MenuNav({ onClose }: MenuNavProps) {
                   </span>
                   <span className="relative">
                     <span
-                      className={`font-serif italic text-3xl sm:text-5xl tracking-tight transition-colors md:text-6xl lg:text-7xl ${
+                      className={`font-serif text-3xl sm:text-5xl tracking-tight transition-colors md:text-6xl lg:text-7xl ${
                         isActive ? "text-brand-primary" : "text-foreground group-hover:text-foreground/80"
                       }`}
                     >

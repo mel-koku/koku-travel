@@ -108,7 +108,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
   if (guides.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-32 px-4">
-        <p className="font-serif italic text-lg text-foreground">
+        <p className="font-serif text-lg text-foreground">
           {content?.guidesEmptyHeading ?? "Guides are in the works"}
         </p>
         <p className="mt-2 text-sm text-stone text-center max-w-sm">
@@ -133,7 +133,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
         </p>
 
         <ScrollReveal delay={0.1} distance={20} duration={0.5}>
-          <h1 className="mt-4 font-serif italic text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
+          <h1 className="mt-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
             {content?.guidesHeading ?? "What the locals know, written down for the first time."}
           </h1>
         </ScrollReveal>
@@ -173,7 +173,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-16">
-            <p className="font-serif italic text-lg text-foreground">
+            <p className="font-serif text-lg text-foreground">
               {content?.guidesFilteredEmptyHeading ?? "No guides in this category"}
             </p>
             <p className="mt-2 text-sm text-stone">

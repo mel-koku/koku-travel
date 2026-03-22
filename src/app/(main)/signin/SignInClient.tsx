@@ -94,7 +94,7 @@ export function SignInClient({ content }: SignInClientProps) {
         <div className="relative z-10 flex h-full min-h-[40vh] lg:min-h-[100dvh] items-end p-8 sm:p-12 lg:p-16">
           <div>
             <ScrollReveal>
-              <h1 className="font-serif italic text-[clamp(2rem,6vw,4rem)] leading-[1.1] text-white">
+              <h1 className="font-serif text-[clamp(2rem,6vw,4rem)] leading-[1.1] text-white">
                 {content?.signInHeading ?? "Sign in"}
               </h1>
             </ScrollReveal>
@@ -117,7 +117,7 @@ export function SignInClient({ content }: SignInClientProps) {
           </ScrollReveal>
 
           <ScrollReveal delay={0.1}>
-            <h2 className="mt-4 font-serif italic text-2xl text-foreground sm:text-3xl">
+            <h2 className="mt-4 font-serif text-2xl text-foreground sm:text-3xl">
               {content?.signInFormHeading ?? "Sign in with email"}
             </h2>
           </ScrollReveal>

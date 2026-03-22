@@ -56,7 +56,7 @@ export default function Footer({ settings }: FooterProps) {
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12">
           {/* Brand Column */}
           <div className="lg:col-span-5">
-            <p className="font-serif italic text-3xl sm:text-4xl">Koku Travel</p>
+            <p className="font-serif text-3xl sm:text-4xl">Koku Travel</p>
             <p className="mt-4 max-w-md text-base text-white/60">
               {brandDescription}
             </p>

@@ -49,7 +49,7 @@ export const LocationCard = ({
       <div className="absolute inset-x-0 bottom-4 flex items-center justify-between px-6">
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.3em] text-white/70">Explore</p>
-          <h3 className="font-serif italic text-xl text-white">{title}</h3>
+          <h3 className="font-serif text-xl text-white">{title}</h3>
           <p className="text-sm text-white/80">{prefecture}</p>
         </div>
         {season && (

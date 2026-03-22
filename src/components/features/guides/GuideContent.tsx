@@ -13,21 +13,21 @@ type GuideContentProps = {
 const markdownComponents = {
   h1: ({ children }: { children?: React.ReactNode }) => (
     <ScrollReveal className="mx-auto max-w-3xl px-6" distance={30}>
-      <h1 className="font-serif text-2xl italic text-foreground mt-20 mb-6 first:mt-0 sm:text-3xl">
+      <h1 className="font-serif text-2xl text-foreground mt-20 mb-6 first:mt-0 sm:text-3xl">
         {children}
       </h1>
     </ScrollReveal>
   ),
   h2: ({ children }: { children?: React.ReactNode }) => (
     <ScrollReveal className="mx-auto max-w-3xl px-6" distance={30}>
-      <h2 className="font-serif text-2xl italic text-foreground mt-20 mb-6 sm:text-3xl">
+      <h2 className="font-serif text-2xl text-foreground mt-20 mb-6 sm:text-3xl">
         {children}
       </h2>
     </ScrollReveal>
   ),
   h3: ({ children }: { children?: React.ReactNode }) => (
     <div className="mx-auto max-w-2xl px-6">
-      <h3 className="font-serif text-xl italic text-foreground mt-12 mb-4">
+      <h3 className="font-serif text-xl text-foreground mt-12 mb-4">
         {children}
       </h3>
     </div>

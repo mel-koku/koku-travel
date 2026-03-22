@@ -10,7 +10,7 @@ const DiscoverShell = dynamic(
     loading: () => (
       <div className="flex h-[calc(100dvh-5rem)] items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-3">
-          <p className="font-serif italic text-2xl text-foreground">
+          <p className="font-serif text-2xl text-foreground">
             Discover Nearby
           </p>
           <div className="h-6 w-6 rounded-full border-2 border-sage border-t-transparent animate-spin" />

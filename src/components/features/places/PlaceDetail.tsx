@@ -235,7 +235,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
 
         <motion.h1
           variants={fadeUp}
-          className="mt-3 font-serif italic leading-tight text-foreground"
+          className="mt-3 font-serif leading-tight text-foreground"
           style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.75rem)" }}
         >
           {displayName}
@@ -644,7 +644,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
-              className="font-serif italic text-2xl text-foreground text-center mb-10"
+              className="font-serif text-2xl text-foreground text-center mb-10"
             >
               Explore Nearby
             </motion.h2>

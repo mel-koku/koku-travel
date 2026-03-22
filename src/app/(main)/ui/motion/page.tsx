@@ -65,7 +65,7 @@ function EasingDemo() {
     <section className="space-y-6">
       <div className="flex items-end justify-between gap-4">
         <div className="space-y-2">
-          <h2 className="font-serif text-2xl italic text-foreground">
+          <h2 className="font-serif text-2xl text-foreground">
             Easing Curves
           </h2>
           <p className="text-sm text-foreground-secondary">
@@ -152,7 +152,7 @@ function DurationDemo() {
     <section className="space-y-6">
       <div className="flex items-end justify-between gap-4">
         <div className="space-y-2">
-          <h2 className="font-serif text-2xl italic text-foreground">
+          <h2 className="font-serif text-2xl text-foreground">
             Duration Scale
           </h2>
           <p className="text-sm text-foreground-secondary">
@@ -221,7 +221,7 @@ function StaggerDemo() {
     <section className="space-y-6">
       <div className="flex items-end justify-between gap-4">
         <div className="space-y-2">
-          <h2 className="font-serif text-2xl italic text-foreground">
+          <h2 className="font-serif text-2xl text-foreground">
             Stagger Delays
           </h2>
           <p className="text-sm text-foreground-secondary">
@@ -297,7 +297,7 @@ function HoverScaleDemo() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="font-serif text-2xl italic text-foreground">
+        <h2 className="font-serif text-2xl text-foreground">
           Hover Scales
         </h2>
         <p className="text-sm text-foreground-secondary">
@@ -341,7 +341,7 @@ function SpringDemo() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="font-serif text-2xl italic text-foreground">
+        <h2 className="font-serif text-2xl text-foreground">
           Spring Presets
         </h2>
         <p className="text-sm text-foreground-secondary">
@@ -472,7 +472,7 @@ function ParallaxReference() {
   return (
     <section className="space-y-6">
       <div className="space-y-2">
-        <h2 className="font-serif text-2xl italic text-foreground">
+        <h2 className="font-serif text-2xl text-foreground">
           Parallax Presets
         </h2>
         <p className="text-sm text-foreground-secondary">
@@ -538,7 +538,7 @@ export default function MotionPage() {
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
           Design System
         </span>
-        <h1 className="font-serif text-4xl italic leading-tight text-foreground">
+        <h1 className="font-serif text-4xl leading-tight text-foreground">
           Motion
         </h1>
         <p className="max-w-2xl text-lg text-foreground-secondary">

@@ -54,7 +54,7 @@ function FullBleedRow({ location }: { location: Location }) {
         <p className="text-xs uppercase tracking-wide text-white/60">
           {location.city}
         </p>
-        <h3 className="text-2xl font-serif italic text-white sm:text-3xl">
+        <h3 className="text-2xl font-serif text-white sm:text-3xl">
           {location.name}
         </h3>
       </div>

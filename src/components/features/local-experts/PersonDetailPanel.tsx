@@ -152,7 +152,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <h2 className="font-serif text-2xl italic text-foreground">
+                    <h2 className="font-serif text-2xl text-foreground">
                       {displayPerson.name}
                     </h2>
                     {displayPerson.name_japanese && (

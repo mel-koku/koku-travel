@@ -95,7 +95,7 @@ const usagePatterns = [
   {
     name: "Page headers",
     font: "Instrument Serif",
-    fontClass: "font-serif italic",
+    fontClass: "font-serif",
     size: "text-4xl",
     tracking: "—",
     sample: "Discover Hidden Kyoto",
@@ -112,7 +112,7 @@ const usagePatterns = [
   {
     name: "Section headings",
     font: "Instrument Serif",
-    fontClass: "font-serif italic",
+    fontClass: "font-serif",
     size: "text-2xl",
     tracking: "—",
     sample: "Where to Begin",
@@ -143,7 +143,7 @@ export default function TypographyPage() {
         <span className="text-xs font-semibold uppercase tracking-[0.3em] text-brand-primary">
           Design System
         </span>
-        <h1 className="font-serif text-4xl italic leading-tight text-foreground">
+        <h1 className="font-serif text-4xl leading-tight text-foreground">
           Typography
         </h1>
         <p className="max-w-2xl text-lg text-foreground-secondary">
@@ -156,7 +156,7 @@ export default function TypographyPage() {
       {/* Font Families */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="font-serif text-2xl italic text-foreground">
+          <h2 className="font-serif text-2xl text-foreground">
             Font Families
           </h2>
           <p className="text-sm text-foreground-secondary">
@@ -174,7 +174,7 @@ export default function TypographyPage() {
                 Instrument Serif — italic only, 400
               </p>
             </div>
-            <p className="font-serif text-3xl italic leading-tight text-foreground">
+            <p className="font-serif text-3xl leading-tight text-foreground">
               The quick brown fox jumps over the lazy dog
             </p>
           </div>
@@ -217,7 +217,7 @@ export default function TypographyPage() {
       {/* Type Scale */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="font-serif text-2xl italic text-foreground">
+          <h2 className="font-serif text-2xl text-foreground">
             Type Scale
           </h2>
           <p className="text-sm text-foreground-secondary">
@@ -245,7 +245,7 @@ export default function TypographyPage() {
                 </span>
               </div>
               <p
-                className={`font-serif italic text-foreground ${className} truncate`}
+                className={`font-serif text-foreground ${className} truncate`}
               >
                 Koku
               </p>
@@ -257,7 +257,7 @@ export default function TypographyPage() {
       {/* Letter Spacing */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="font-serif text-2xl italic text-foreground">
+          <h2 className="font-serif text-2xl text-foreground">
             Letter Spacing
           </h2>
           <p className="text-sm text-foreground-secondary">
@@ -296,7 +296,7 @@ export default function TypographyPage() {
       {/* Usage Patterns */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h2 className="font-serif text-2xl italic text-foreground">
+          <h2 className="font-serif text-2xl text-foreground">
             Usage Patterns
           </h2>
           <p className="text-sm text-foreground-secondary">
