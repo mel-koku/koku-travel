@@ -369,7 +369,7 @@
   "metadata": {
     "naha": {
       "locationCount": 311,
-      "region": "okinawa",
+      "region": "Okinawa",
       "coordinates": {
         "lat": 26.1705094,
         "lng": 127.34499210000001
@@ -377,7 +377,7 @@
     },
     "nikko": {
       "locationCount": 185,
-      "region": "kyushu",
+      "region": "Kanto",
       "coordinates": {
         "lat": 36.3169465,
         "lng": 139.3778298
@@ -409,7 +409,7 @@
     },
     "takamatsu": {
       "locationCount": 163,
-      "region": "shikoku",
+      "region": "Shikoku",
       "coordinates": {
         "lat": 34.3417724,
         "lng": 134.0946893
@@ -417,7 +417,7 @@
     },
     "kumamoto": {
       "locationCount": 167,
-      "region": "kyushu",
+      "region": "Kyushu",
       "coordinates": {
         "lat": 32.798072999999995,
         "lng": 130.691562
@@ -433,7 +433,7 @@
     },
     "kanazawa": {
       "locationCount": 175,
-      "region": "chubu",
+      "region": "Chubu",
       "coordinates": {
         "lat": 36.4253237,
         "lng": 136.9348441
@@ -441,7 +441,7 @@
     },
     "nagasaki": {
       "locationCount": 207,
-      "region": "kyushu",
+      "region": "Kyushu",
       "coordinates": {
         "lat": 34.2089405,
         "lng": 129.2838435
@@ -457,7 +457,7 @@
     },
     "morioka": {
       "locationCount": 144,
-      "region": "tohoku",
+      "region": "Tohoku",
       "coordinates": {
         "lat": 39.8526209,
         "lng": 141.0010175
@@ -465,7 +465,7 @@
     },
     "hakone": {
       "locationCount": 203,
-      "region": "chubu",
+      "region": "Chubu",
       "coordinates": {
         "lat": 35.5499805,
         "lng": 138.90795839999998
@@ -481,7 +481,7 @@
     },
     "kamakura": {
       "locationCount": 70,
-      "region": "kanto",
+      "region": "Kanto",
       "coordinates": {
         "lat": 35.366917,
         "lng": 139.597183
@@ -489,7 +489,7 @@
     },
     "matsue": {
       "locationCount": 176,
-      "region": "chugoku",
+      "region": "Chugoku",
       "coordinates": {
         "lat": 35.4714083,
         "lng": 133.055273
@@ -497,7 +497,7 @@
     },
     "kobe": {
       "locationCount": 143,
-      "region": "kansai",
+      "region": "Kansai",
       "coordinates": {
         "lat": 34.6710883,
         "lng": 135.1715232
@@ -521,7 +521,7 @@
     },
     "sapporo": {
       "locationCount": 346,
-      "region": "hokkaido",
+      "region": "Hokkaido",
       "coordinates": {
         "lat": 43.2311098,
         "lng": 143.5434443
@@ -529,7 +529,7 @@
     },
     "nagano": {
       "locationCount": 197,
-      "region": "Kanto",
+      "region": "Chubu",
       "coordinates": {
         "lat": 36.2582502,
         "lng": 138.8997642
@@ -593,7 +593,7 @@
     },
     "sendai": {
       "locationCount": 238,
-      "region": "tohoku",
+      "region": "Tohoku",
       "coordinates": {
         "lat": 38.827205299999996,
         "lng": 141.6028582
@@ -641,7 +641,7 @@
     },
     "oita": {
       "locationCount": 111,
-      "region": "kyushu",
+      "region": "Kyushu",
       "coordinates": {
         "lat": 33.0962341,
         "lng": 131.2085357
@@ -649,7 +649,7 @@
     },
     "wakayama": {
       "locationCount": 8,
-      "region": "kansai",
+      "region": "Kansai",
       "coordinates": {
         "lat": 33.7322225,
         "lng": 135.9835101
@@ -657,43 +657,43 @@
     },
     "saitama": {
       "locationCount": 5,
-      "region": "kanto"
+      "region": "Kanto"
     },
     "fukushima": {
       "locationCount": 1,
-      "region": "tohoku"
+      "region": "Tohoku"
     },
     "mie": {
       "locationCount": 2,
-      "region": "kansai"
+      "region": "Kansai"
     },
     "yamagata": {
       "locationCount": 6,
-      "region": "tohoku"
+      "region": "Tohoku"
     },
     "shimonoseki": {
       "locationCount": 2,
-      "region": "chugoku"
+      "region": "Chugoku"
     },
     "yamanashi": {
       "locationCount": 1,
-      "region": "chubu"
+      "region": "Chubu"
     },
     "toyama": {
       "locationCount": 4,
-      "region": "chubu"
+      "region": "Chubu"
     },
     "kusatsu": {
       "locationCount": 3,
-      "region": "kanto"
+      "region": "Kanto"
     },
     "chiba": {
       "locationCount": 1,
-      "region": "kanto"
+      "region": "Kanto"
     },
     "fukui": {
       "locationCount": 4,
-      "region": "chubu"
+      "region": "Chubu"
     }
   }
 }

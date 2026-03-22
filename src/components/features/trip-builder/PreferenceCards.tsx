@@ -330,7 +330,7 @@ function PreferenceCard({ title, description, className, children }: PreferenceC
   return (
     <div className={cn("rounded-xl border border-border bg-background p-4", className)}>
       <div className="mb-3">
-        <h4 className="text-sm font-semibold text-foreground">{title}</h4>
+        <h4 className="text-sm font-medium text-foreground">{title}</h4>
         {description && (
           <p className="mt-0.5 text-xs text-stone">{description}</p>
         )}

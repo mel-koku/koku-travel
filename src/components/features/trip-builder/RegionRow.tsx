@@ -109,14 +109,14 @@ export function RegionRow({
           {regionName} Region
         </span>
         <span className={cn(
-          "block text-sm font-medium transition-colors duration-300 sm:text-base",
+          "block text-sm transition-colors duration-300 sm:text-base",
           hasSelection || isHovered ? "text-foreground" : "text-foreground-secondary",
         )}>
           {cityNames.length > 0 ? cityNames.join(" · ") : region.name}
         </span>
         {additionalCityCount > 0 && (
           <span className="block text-xs text-stone transition-colors duration-300 mt-0.5">
-            +{additionalCityCount} more cities
+            +{additionalCityCount} more — select in details
           </span>
         )}
       </div>

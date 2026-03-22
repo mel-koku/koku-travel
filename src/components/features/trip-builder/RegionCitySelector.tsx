@@ -4,11 +4,6 @@ import { useMemo, useState } from "react";
 import { Check, Search } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
-import {
-  getPrefectureForCity,
-  getPrefecturesForRegion,
-  regionHasMultiplePrefectures,
-} from "@/data/prefectures";
 import type { CityId } from "@/types/trip";
 
 type CityEntry = {
@@ -18,11 +13,6 @@ type CityEntry = {
   region?: string;
 };
 
-type PrefectureGroup = {
-  prefecture: string;
-  cities: CityEntry[];
-};
-
 type RegionCitySelectorProps = {
   regionName: string;
   selectedCities: Set<CityId>;
@@ -30,6 +20,11 @@ type RegionCitySelectorProps = {
   /** "desktop" uses taller max-height, "mobile" uses shorter */
   variant?: "desktop" | "mobile";
 };
+
+/** Capitalize first letter of each word */
+function titleCase(s: string): string {
+  return s.replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
 export function RegionCitySelector({
   regionName,
@@ -53,43 +48,6 @@ export function RegionCitySelector({
     if (!q) return regionCities;
     return regionCities.filter((c) => c.city.toLowerCase().includes(q));
   }, [regionCities, search]);
-
-  const showPrefectureHeaders = regionHasMultiplePrefectures(regionName);
-
-  // Group cities by prefecture (preserving prefecture order from data)
-  const prefectureGroups = useMemo((): PrefectureGroup[] => {
-    if (!showPrefectureHeaders) {
-      return [{ prefecture: "", cities: filteredCities }];
-    }
-
-    const prefectureOrder = getPrefecturesForRegion(regionName) ?? [];
-    const grouped = new Map<string, CityEntry[]>();
-
-    // Initialize in order
-    for (const p of prefectureOrder) {
-      grouped.set(p, []);
-    }
-    grouped.set("Other", []);
-
-    for (const city of filteredCities) {
-      const pref = getPrefectureForCity(city.city) ?? "Other";
-      const list = grouped.get(pref);
-      if (list) {
-        list.push(city);
-      } else {
-        grouped.get("Other")!.push(city);
-      }
-    }
-
-    // Build result, skipping empty groups
-    const result: PrefectureGroup[] = [];
-    for (const [prefecture, cities] of grouped) {
-      if (cities.length > 0) {
-        result.push({ prefecture, cities });
-      }
-    }
-    return result;
-  }, [filteredCities, regionName, showPrefectureHeaders]);
 
   const selectedCount = useMemo(() => {
     return regionCities.filter((c) =>
@@ -136,63 +94,50 @@ export function RegionCitySelector({
         {filteredCities.length === 0 ? (
           <p className="py-3 text-center text-xs text-stone">No cities found</p>
         ) : (
-          prefectureGroups.map((group) => (
-            <div key={group.prefecture || "all"}>
-              {/* Prefecture header */}
-              {showPrefectureHeaders && group.prefecture && (
-                <div className="sticky top-0 z-10 bg-surface/95 backdrop-blur-sm px-2.5 pb-1 pt-2.5 first:pt-0">
-                  <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-foreground-secondary">
-                    {group.prefecture} Prefecture
-                  </span>
-                </div>
-              )}
+          filteredCities.map((city) => {
+            const cityId = city.city.toLowerCase() as CityId;
+            const isSelected = selectedCities.has(cityId);
+            return (
+              <button
+                key={city.city}
+                type="button"
+                onClick={() => onToggleCity(cityId)}
+                className={cn(
+                  "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm transition-colors",
+                  isSelected
+                    ? "bg-brand-primary/5"
+                    : "hover:bg-foreground/[0.02]"
+                )}
+              >
+                {/* Checkbox */}
+                <span
+                  className={cn(
+                    "flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
+                    isSelected
+                      ? "border-brand-primary bg-brand-primary"
+                      : "border-border"
+                  )}
+                >
+                  {isSelected && <Check className="h-2.5 w-2.5 text-white" />}
+                </span>
 
-              {group.cities.map((city) => {
-                const cityId = city.city.toLowerCase() as CityId;
-                const isSelected = selectedCities.has(cityId);
-                return (
-                  <button
-                    key={city.city}
-                    type="button"
-                    onClick={() => onToggleCity(cityId)}
+                {/* City name + count */}
+                <span className="flex-1 min-w-0 flex items-baseline gap-1.5">
+                  <span
                     className={cn(
-                      "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-2 text-left text-sm transition-colors",
-                      isSelected
-                        ? "bg-brand-primary/5"
-                        : "hover:bg-foreground/[0.02]"
+                      "text-sm",
+                      isSelected ? "text-foreground" : "text-foreground-secondary"
                     )}
                   >
-                    {/* Checkbox */}
-                    <span
-                      className={cn(
-                        "flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
-                        isSelected
-                          ? "border-brand-primary bg-brand-primary"
-                          : "border-border"
-                      )}
-                    >
-                      {isSelected && <Check className="h-2.5 w-2.5 text-white" />}
-                    </span>
-
-                    {/* City name + count */}
-                    <span className="flex-1 min-w-0 flex items-baseline gap-1.5">
-                      <span
-                        className={cn(
-                          "text-sm",
-                          isSelected ? "text-foreground" : "text-foreground-secondary"
-                        )}
-                      >
-                        {city.city}
-                      </span>
-                      <span className="text-[11px] tabular-nums text-stone">
-                        {city.locationCount} {city.locationCount === 1 ? "place" : "places"}
-                      </span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          ))
+                    {titleCase(city.city)}
+                  </span>
+                  <span className="text-[11px] tabular-nums text-stone">
+                    {city.locationCount} {city.locationCount === 1 ? "place" : "places"}
+                  </span>
+                </span>
+              </button>
+            );
+          })
         )}
       </div>
     </div>
