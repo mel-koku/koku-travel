@@ -243,7 +243,7 @@ export function TripSummaryEditorial({
     <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
       {/* Left — Trip details */}
       <div className="flex-1">
-        <p className="text-xs font-medium uppercase tracking-[0.25em] text-brand-primary">
+        <p className="eyebrow-editorial text-brand-primary">
           STEP 05
         </p>
 

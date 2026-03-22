@@ -124,7 +124,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
       {/* Right half — Form */}
       <div className="flex flex-1 flex-col justify-center px-6 py-8 lg:w-1/2 lg:px-12">
         <div className="mx-auto w-full max-w-md">
-          <p className="text-xs font-medium uppercase tracking-[0.25em] text-brand-primary">
+          <p className="eyebrow-editorial text-brand-primary">
             STEP 01
           </p>
 
@@ -132,7 +132,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeReveal, delay: 0.15 }}
-            className="mt-3 font-serif text-3xl tracking-tight text-foreground"
+            className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
           >
             {sanityConfig?.dateStepHeading ?? "When are you going?"}
           </motion.h2>

@@ -267,7 +267,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
       {/* Right (40%) — Airport selection */}
       <div className="flex flex-1 flex-col px-6 py-8 lg:w-[40%] lg:justify-center lg:px-12">
         <div className="mx-auto w-full max-w-md">
-          <p className="text-xs font-medium uppercase tracking-[0.25em] text-brand-primary">
+          <p className="eyebrow-editorial text-brand-primary">
             STEP 02
           </p>
 
@@ -275,7 +275,7 @@ export function EntryPointStep({ sanityConfig }: EntryPointStepProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeReveal, delay: 0.15 }}
-            className="mt-2 font-serif text-2xl tracking-tight text-foreground lg:text-3xl"
+            className="mt-2 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
           >
             {sanityConfig?.entryPointHeading ?? "Where will you land?"}
           </motion.h2>
