@@ -8,16 +8,9 @@ import Header from "@/components/Header";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { SharedProviders } from "@/components/SharedProviders";
 import { LenisProvider } from "@/providers/LenisProvider";
-import { CursorProvider } from "@/providers/CursorProvider";
 import { PageTransition } from "@/components/PageTransition";
 import { ScrollProgressBar } from "@/components/ui/ScrollProgressBar";
 import type { SiteSettings } from "@/types/sanitySiteContent";
-
-// Lazy-load CustomCursor (~40KB) — only needed on desktop, not critical path
-const CustomCursor = dynamic(
-  () => import("@/components/ui/CustomCursor").then((m) => m.CustomCursor),
-  { ssr: false },
-);
 
 // Lazy-load Ask Koku chat FAB — not critical path
 const AskKokuButton = dynamic(
@@ -39,8 +32,7 @@ export function LayoutWrapper({
   const isStudio = pathname.startsWith("/studio");
   const isTripBuilder = pathname.startsWith("/trip-builder");
 
-  // Sanity Studio manages its own scroll, layout, and UI chrome —
-  // skip Lenis, Header, Footer, PageTransition, and cursor overlay
+  // Sanity Studio manages its own scroll, layout, and UI chrome
   if (isStudio) {
     return <>{children}</>;
   }
@@ -49,26 +41,23 @@ export function LayoutWrapper({
     <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={false}>
       <SharedProviders>
         <LenisProvider>
-          <CursorProvider>
-            <ScrollProgressBar />
-            <div className="flex min-h-[100dvh] flex-col">
+          <ScrollProgressBar />
+          <div className="flex min-h-[100dvh] flex-col">
+            <ErrorBoundary fallback={<></>}>
+              <Header />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <main id="main-content" className="flex-1">
+                <PageTransition>{children}</PageTransition>
+              </main>
+            </ErrorBoundary>
+            {!isTripBuilder && (
               <ErrorBoundary fallback={<></>}>
-                <Header />
+                <Footer settings={siteSettings} />
               </ErrorBoundary>
-              <ErrorBoundary>
-                <main id="main-content" className="flex-1">
-                  <PageTransition>{children}</PageTransition>
-                </main>
-              </ErrorBoundary>
-              {!isTripBuilder && (
-                <ErrorBoundary fallback={<></>}>
-                  <Footer settings={siteSettings} />
-                </ErrorBoundary>
-              )}
-            </div>
-            <CustomCursor />
-            <AskKokuButton />
-          </CursorProvider>
+            )}
+          </div>
+          <AskKokuButton />
         </LenisProvider>
       </SharedProviders>
     </ThemeProvider>
