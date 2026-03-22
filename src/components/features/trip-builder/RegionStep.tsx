@@ -82,7 +82,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
         setHoveredRegion(null);
       }
       hoverClearTimer.current = null;
-    }, 275);
+    }, 600);
   }, []);
 
   // Detail panel hover keeps the panel alive
@@ -99,7 +99,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
     hoverClearTimer.current = setTimeout(() => {
       setHoveredRegion(null);
       hoverClearTimer.current = null;
-    }, 275);
+    }, 600);
   }, []);
 
   // Cleanup timer on unmount
