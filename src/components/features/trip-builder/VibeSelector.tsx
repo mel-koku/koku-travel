@@ -91,7 +91,7 @@ export function VibeSelector({ onSelectionChange }: VibeSelectorProps) {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="text-base font-semibold text-foreground">
+          <h4 className="text-base font-medium text-foreground">
             Travel Style
           </h4>
           <p className="text-sm text-stone">

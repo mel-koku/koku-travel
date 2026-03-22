@@ -70,7 +70,7 @@ export function VibeCard({
 
       {/* Name */}
       <h3
-        className={`mt-2.5 text-sm font-semibold leading-tight transition-colors ${
+        className={`mt-2.5 text-sm font-medium leading-tight transition-colors ${
           isSelected
             ? "text-brand-primary"
             : "text-foreground group-hover:text-brand-primary"

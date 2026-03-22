@@ -190,7 +190,7 @@ export function MobileBottomSheet({
                 d="M5 15l7-7 7 7"
               />
             </svg>
-            <span className="text-sm font-semibold text-foreground">
+            <span className="text-sm font-medium text-foreground">
               {isOpen ? "Preview" : "Show Preview"}
             </span>
           </div>

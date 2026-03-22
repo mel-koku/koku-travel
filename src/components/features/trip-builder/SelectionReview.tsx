@@ -70,7 +70,7 @@ export function SelectionReview({ onEdit }: SelectionReviewProps) {
   return (
     <div className="rounded-xl border border-border bg-background">
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
-        <h3 className="text-sm font-semibold text-foreground">Your Trip Summary</h3>
+        <h3 className="text-sm font-medium text-foreground">Your Trip Summary</h3>
         {onEdit && (
           <button
             type="button"

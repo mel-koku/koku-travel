@@ -85,7 +85,7 @@ export function LivePreview({ className, showMap = true }: LivePreviewProps) {
     <div className={cn("flex h-full flex-col", className)}>
       {/* Summary Header */}
       <div className="border-b border-border bg-background px-4 py-3">
-        <h3 className="text-sm font-semibold text-foreground">Trip Preview</h3>
+        <h3 className="text-sm font-medium text-foreground">Trip Preview</h3>
         {tripSummary && (
           <p className="mt-0.5 text-xs text-stone">{tripSummary}</p>
         )}

@@ -81,13 +81,13 @@ export function RegionCard({
         {/* Badges - Top Left */}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5">
           {isEntryPointRegion && (
-            <div className="flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-white shadow-md">
+            <div className="flex items-center gap-1 rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-white shadow-md">
               <Plane className="h-3 w-3" />
               <span>Nearest to arrival</span>
             </div>
           )}
           {isRecommended && (
-            <div className="flex items-center gap-1 rounded-full bg-brand-primary px-2.5 py-1 text-xs font-semibold text-white shadow-md">
+            <div className="flex items-center gap-1 rounded-full bg-brand-primary px-2.5 py-1 text-xs font-medium text-white shadow-md">
               <Star className="h-3 w-3 fill-current" />
               <span>Top Pick</span>
             </div>
