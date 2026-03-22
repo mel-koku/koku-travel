@@ -21,13 +21,13 @@ import { getCurrentSeason, getCurrentMonth, seasonToSanityBestSeason } from "@/l
 
 export const metadata: Metadata = {
   title: "Koku Travel | Plan Your Trip to Japan",
-  description: "6,000+ places we'd actually recommend. Build a trip to Japan, day by day, with routing and timing handled for you.",
+  description: "6,000+ curated places across Japan. Build a trip, day by day, with routing and timing handled for you.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
     title: "Koku Travel | Plan Your Trip to Japan",
-    description: "6,000+ places we'd actually recommend. Build a trip to Japan, day by day, with routing and timing handled for you.",
+    description: "6,000+ curated places across Japan. Build a trip, day by day, with routing and timing handled for you.",
     siteName: "Koku Travel",
   },
 };

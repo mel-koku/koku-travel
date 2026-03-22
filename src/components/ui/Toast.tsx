@@ -20,9 +20,9 @@ type ToastProps = {
 };
 
 const VARIANT_STYLES: Record<ToastVariant, string> = {
-  success: "bg-success text-white",
-  info: "bg-charcoal text-white",
-  error: "bg-error text-white",
+  success: "bg-success text-white ring-1 ring-white/10",
+  info: "bg-[#2e2720] text-white ring-1 ring-white/10",
+  error: "bg-error text-white ring-1 ring-white/10",
 };
 
 export function Toast({ toast, onDismiss }: ToastProps) {
@@ -56,7 +56,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
     <div
       role="alert"
       className={cn(
-        "flex items-center gap-3 rounded-xl px-4 py-3 shadow-lg transition-all duration-300",
+        "flex items-center gap-2 rounded-xl px-4 py-2 font-sans shadow-[var(--shadow-elevated)] transition-all duration-300",
         VARIANT_STYLES[toast.variant],
         isVisible
           ? "translate-y-0 opacity-100"
@@ -77,7 +77,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       <button
         type="button"
         onClick={handleDismiss}
-        className="flex h-11 w-11 items-center justify-center rounded hover:bg-white/20 transition"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded hover:bg-white/20 transition"
         aria-label="Dismiss"
       >
         <svg
