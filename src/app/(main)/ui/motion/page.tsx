@@ -1,7 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
-import { useCallback, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 
 import {
   durationBase,
@@ -20,12 +20,10 @@ import {
   parallaxSection,
   parallaxSubtle,
   parallaxZoomIn,
-  springCursor,
   springInteraction,
   springNavigation,
   easeRevealMut,
   easeCinematicMut,
-  staggerChar,
   staggerItem,
   staggerSection,
   staggerWord,
@@ -205,7 +203,6 @@ function DurationDemo() {
 // ── Stagger Delays ─────────────────────────────────────
 
 const staggers = [
-  { name: "char", value: staggerChar, usage: "Character-level reveals" },
   { name: "word", value: staggerWord, usage: "Word-level reveals" },
   { name: "item", value: staggerItem, usage: "List items, grid entries" },
   { name: "section", value: staggerSection, usage: "Section-level staggers" },
@@ -341,21 +338,6 @@ function HoverScaleDemo() {
 function SpringDemo() {
   const [clicked, setClicked] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
-  const cursorX = useMotionValue(0);
-  const cursorY = useMotionValue(0);
-  const springX = useSpring(cursorX, springCursor);
-  const springY = useSpring(cursorY, springCursor);
-  const cursorRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      cursorX.set(e.clientX - rect.left - 8);
-      cursorY.set(e.clientY - rect.top - 8);
-    },
-    [cursorX, cursorY],
-  );
-
   return (
     <section className="space-y-6">
       <div className="space-y-2">
@@ -448,34 +430,6 @@ function SpringDemo() {
           </div>
         </div>
 
-        {/* Cursor spring */}
-        <div className="flex flex-col gap-3 rounded-xl border border-border bg-surface p-5">
-          <div className="flex items-baseline gap-3">
-            <span className="font-mono text-sm text-brand-primary">
-              springCursor
-            </span>
-          </div>
-          <p className="font-mono text-xs text-stone">
-            stiffness: {springCursor.stiffness}, damping: {springCursor.damping}
-            , mass: {springCursor.mass}
-          </p>
-          <p className="mb-2 text-xs text-foreground-secondary">
-            Custom cursor follow
-          </p>
-          <div
-            ref={cursorRef}
-            className="relative h-20 cursor-none overflow-hidden rounded-lg bg-background"
-            onMouseMove={handleMouseMove}
-          >
-            <motion.div
-              className="pointer-events-none absolute h-4 w-4 rounded-full bg-brand-primary"
-              style={{ x: springX, y: springY }}
-            />
-            <span className="absolute inset-0 flex items-center justify-center text-xs text-stone">
-              Move mouse here
-            </span>
-          </div>
-        </div>
       </div>
     </section>
   );

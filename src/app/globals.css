@@ -462,14 +462,6 @@ html.lenis-stopped {
   overflow: hidden;
 }
 
-/* Custom cursor — hide native cursor on pointer-fine devices */
-@media (pointer: fine) {
-  html.custom-cursor,
-  html.custom-cursor * {
-    cursor: none !important;
-  }
-}
-
 /* Link underline reveal animation */
 .link-reveal {
   position: relative;

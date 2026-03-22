@@ -52,9 +52,6 @@ export const durationEpic = 2.0;
 
 // ── Stagger Delays ───────────────────────────────────────
 
-/** Character-level reveals (FinalCTA, IntroStep subtitle) */
-export const staggerChar = 0.02;
-
 /** Word-level reveals (SplitText default, TextReveal, overlay text) */
 export const staggerWord = 0.04;
 
@@ -105,13 +102,3 @@ export const springInteraction = { stiffness: 300, damping: 20 } as const;
 /** Header show/hide transitions */
 export const springNavigation = { stiffness: 300, damping: 30 } as const;
 
-/** Custom cursor follow */
-export const springCursor = { stiffness: 10000, damping: 500, mass: 0.1 } as const;
-
-// ── Magnetic Presets ──────────────────────────────────────
-
-/** Primary CTAs (IntroStep, ArrowLineCTA, FinalCTA) */
-export const magneticCTA = { strength: 0.3, maxDisplacement: 20, threshold: 120 } as const;
-
-/** Subtle chrome elements (header nav, menu items) */
-export const magneticSubtle = { strength: 0.12, maxDisplacement: 8, threshold: 80 } as const;

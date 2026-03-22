@@ -565,7 +565,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         >
           <div className="flex gap-3">
             {/* Left: Time Column */}
-            <div className="flex w-16 shrink-0 flex-col items-center pt-3" data-cursor="default">
+            <div className="flex w-16 shrink-0 flex-col items-center pt-3">
               <span className="font-mono text-sm font-bold text-foreground">
                 {displayArrivalTime ?? activity.timeOfDay ?? "—"}
               </span>
@@ -612,7 +612,7 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
       >
         <div className="flex gap-3">
           {/* Left: Time Column */}
-          <div className="relative flex w-16 shrink-0 flex-col items-center pt-2" data-cursor="default">
+          <div className="relative flex w-16 shrink-0 flex-col items-center pt-2">
             {displayArrivalTime ? (
               <>
                 {isReadOnly ? (
