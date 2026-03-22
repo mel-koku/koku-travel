@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef } from "react";
 import { SplitText } from "@/components/ui/SplitText";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { parallaxZoomIn, durationBase, staggerChar } from "@/lib/motion";
+import { durationBase, staggerWord } from "@/lib/motion";
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 type NotFoundClientProps = {
@@ -24,7 +24,7 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
   const imageScale = useTransform(
     scrollYProgress,
     [0, 1],
-    [parallaxZoomIn.from, parallaxZoomIn.to],
+    [1, 1.08],
   );
 
   return (
@@ -73,9 +73,9 @@ export function NotFoundClient({ content }: NotFoundClientProps) {
           <SplitText
             as="h1"
             className="mt-6 justify-center font-serif italic text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-white"
-            splitBy="char"
+            splitBy="word"
             animation="clipY"
-            staggerDelay={staggerChar}
+            staggerDelay={staggerWord}
           >
             {content?.notFoundHeading ?? "Lost in Translation"}
           </SplitText>

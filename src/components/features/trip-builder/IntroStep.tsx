@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { motion, useReducedMotion, AnimatePresence } from "framer-motion";
 import { SplitText } from "@/components/ui/SplitText";
 import { IntroImagePanel } from "@/components/features/trip-builder/IntroImagePanel";
-import { easeReveal, staggerChar, durationBase } from "@/lib/motion";
+import { easeReveal, staggerWord, durationBase } from "@/lib/motion";
 import { cn } from "@/lib/cn";
 import { deriveRegionsFromCities } from "@/data/regions";
 import { vibesToInterests } from "@/data/vibes";
@@ -112,9 +112,9 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
           <SplitText
             as="p"
             className="mt-4 font-serif text-[clamp(1.5rem,5vw,3.5rem)] italic leading-[1.1] text-foreground-secondary"
-            splitBy="char"
+            splitBy="word"
             animation="fadeUp"
-            staggerDelay={staggerChar}
+            staggerDelay={staggerWord}
             delay={0.05}
           >
             {heading}
