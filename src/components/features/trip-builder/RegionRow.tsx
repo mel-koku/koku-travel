@@ -16,7 +16,6 @@ type RegionRowProps = {
   additionalCityCount: number;
   matchScore: number;
   selectedCityCount: number;
-  totalCityCount: number;
   isHovered: boolean;
   isRecommended: boolean;
   isEntryPointRegion: boolean;
@@ -35,7 +34,6 @@ export function RegionRow({
   additionalCityCount,
   matchScore,
   selectedCityCount,
-  totalCityCount,
   isHovered,
   isRecommended,
   isEntryPointRegion,
@@ -145,34 +143,6 @@ export function RegionRow({
         {matchScore}%
       </span>
 
-      {/* City dots */}
-      <div className="flex shrink-0 items-center gap-[3px]">
-        {Array.from({ length: totalCityCount }).map((_, i) => {
-          const isFilled = i < selectedCityCount;
-          return prefersReducedMotion ? (
-            <div
-              key={i}
-              className={cn(
-                "h-[6px] w-[6px] rounded-full",
-                isFilled ? "bg-brand-primary" : "border border-border",
-              )}
-            />
-          ) : (
-            <motion.div
-              key={i}
-              initial={false}
-              animate={{
-                scale: isFilled ? 1 : 0.85,
-                backgroundColor: isFilled ? "var(--color-brand-primary)" : "transparent",
-                borderColor: isFilled ? "var(--color-brand-primary)" : "var(--color-border)",
-              }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="h-[6px] w-[6px] rounded-full border"
-              style={{ borderWidth: isFilled ? 0 : 1 }}
-            />
-          );
-        })}
-      </div>
     </motion.button>
   );
 }
