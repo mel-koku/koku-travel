@@ -263,7 +263,7 @@ export function IntroStep({ onStart, onQuickStart, sanityConfig }: IntroStepProp
         </div>
 
         {/* ── RIGHT COLUMN — Image Panel ── */}
-        <div className="flex w-full items-center">
+        <div className="flex w-full items-start lg:sticky lg:top-24 lg:self-start">
           <IntroImagePanel
             src={accentImage}
             caption={imageCaption}
