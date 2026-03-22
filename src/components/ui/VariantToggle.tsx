@@ -6,10 +6,9 @@ import { useVariant } from "@/lib/variant/VariantContext";
 const VARIANT_COLORS = {
   a: "#c4504f",
   b: "#2D4B8E",
-  c: "#e63312",
 } as const;
 
-const VARIANT_ORDER = ["a", "b", "c"] as const;
+const VARIANT_ORDER = ["a", "b"] as const;
 
 /**
  * Temporary A/B/C variant toggle for testing.
@@ -27,7 +26,6 @@ export function VariantToggle() {
     // Strip current variant prefix
     let basePath = pathname;
     if (variant === "b") basePath = pathname.replace(/^\/b/, "") || "/";
-    if (variant === "c") basePath = pathname.replace(/^\/c/, "") || "/";
 
     // Add next variant prefix
     let targetPath: string;
@@ -54,7 +52,7 @@ export function VariantToggle() {
       style={{
         backgroundColor: `${VARIANT_COLORS[variant]}15`,
         color: VARIANT_COLORS[variant],
-        borderRadius: variant === "c" ? "0px" : "9999px",
+        borderRadius: "9999px",
         minWidth: "2.5rem",
       }}
       aria-label={`Current variant: ${variant.toUpperCase()}. Click to cycle.`}
