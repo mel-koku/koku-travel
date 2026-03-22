@@ -6,13 +6,6 @@ import { cn } from "@/lib/cn";
 import { getAllCities } from "@/lib/tripBuilder/cityRelevance";
 import type { CityId } from "@/types/trip";
 
-type CityEntry = {
-  city: string;
-  locationCount: number;
-  coordinates?: { lat: number; lng: number };
-  region?: string;
-};
-
 type RegionCitySelectorProps = {
   regionName: string;
   selectedCities: Set<CityId>;
