@@ -11,7 +11,6 @@ import { usePlacesFilters, SORT_OPTIONS, DURATION_FILTERS } from "@/hooks/usePla
 import type { PagesContent } from "@/types/sanitySiteContent";
 
 import { SeasonalBanner } from "./SeasonalBanner";
-import type { VibeId } from "@/data/vibes";
 
 /* ── Dynamic imports ─────────────────────────────────────────────────
  * Heavy components are code-split so Turbopack compiles them in
@@ -93,11 +92,8 @@ export function PlacesShell({ content }: PlacesShellProps) {
   } = usePlacesFilters(locations, filterMetadata);
 
   const handleFilterSeasonal = useCallback(() => {
-    setSelectedSort("in_season");
-    setSelectedVibes((prev: VibeId[]) =>
-      prev.includes("in_season") ? prev : [...prev, "in_season" as VibeId]
-    );
-  }, [setSelectedSort, setSelectedVibes]);
+    setSelectedCategory("in_season");
+  }, [setSelectedCategory]);
 
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const [expandedLocation, setExpandedLocation] = useState<Location | null>(null);

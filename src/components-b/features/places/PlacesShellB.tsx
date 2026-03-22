@@ -14,7 +14,7 @@ import type { Location } from "@/types/location";
 import { SeasonalBannerB } from "./SeasonalBannerB";
 
 import { getParentCategoryForDatabaseCategory } from "@/data/categoryHierarchy";
-import type { VibeId } from "@/data/vibes";
+import { isSeasonalMonth, getCurrentMonth, locationHasSeasonalTag } from "@/lib/utils/seasonUtils";
 
 /* ── Dynamic imports — B components ────────────────────────────── */
 
@@ -108,11 +108,8 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
   } = usePlacesFilters(locations, filterMetadata);
 
   const handleFilterSeasonal = useCallback(() => {
-    setSelectedSort("in_season");
-    setSelectedVibes((prev: VibeId[]) =>
-      prev.includes("in_season") ? prev : [...prev, "in_season" as VibeId],
-    );
-  }, [setSelectedSort, setSelectedVibes]);
+    setSelectedCategory("in_season");
+  }, []);
 
   const [isFilterPanelOpen, setIsFilterPanelOpen] = useState(false);
   const searchParams = useSearchParams();
@@ -156,6 +153,14 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
   const categoryTabs = useMemo(() => {
     const allCount = sortedLocations?.length ?? 0;
     const tabs = [{ id: null as string | null, label: "All", count: allCount }];
+    // Add "In Season" tab during seasonal months
+    const month = getCurrentMonth();
+    if (isSeasonalMonth(month)) {
+      const seasonalCount = sortedLocations?.filter((loc) => locationHasSeasonalTag(loc.tags, month)).length ?? 0;
+      if (seasonalCount > 0) {
+        tabs.push({ id: "in_season", label: "In Season", count: seasonalCount });
+      }
+    }
     for (const cat of PARENT_CATEGORIES) {
       const count = categoryCounts.get(cat.id) ?? 0;
       if (count > 0) {
@@ -168,6 +173,10 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
   // ── Category-filtered locations ──
   const categoryFilteredLocations = useMemo(() => {
     if (!selectedCategory) return sortedLocations;
+    if (selectedCategory === "in_season") {
+      const month = getCurrentMonth();
+      return sortedLocations.filter((loc) => locationHasSeasonalTag(loc.tags, month));
+    }
     return sortedLocations.filter((loc) => {
       const parent = getParentCategoryForDatabaseCategory(loc.category);
       return parent === selectedCategory;
@@ -259,7 +268,11 @@ export function PlacesShellB({ content }: PlacesShellBProps) {
       if (ids.length > 0) setKokuIds(ids);
     }
     if (cityParam) setSelectedCity(cityParam);
-    if (categoryParam) applyKokuCategory(categoryParam);
+    if (categoryParam === "in_season") {
+      setSelectedCategory("in_season");
+    } else if (categoryParam) {
+      applyKokuCategory(categoryParam);
+    }
     if (qParam) setInputValue(qParam);
     if (jtaParam === "true") setJtaApprovedOnly(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
