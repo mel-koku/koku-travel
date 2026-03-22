@@ -324,46 +324,6 @@
       "food": 4,
       "shopping": 1,
       "nightlife": 1
-    },
-    "wakayama": {
-      "culture": 4,
-      "nature": 3,
-      "wellness": 1
-    },
-    "saitama": {
-      "culture": 1,
-      "nature": 2,
-      "history": 2
-    },
-    "fukushima": {
-      "nature": 1
-    },
-    "mie": {
-      "nature": 1,
-      "culture": 1
-    },
-    "yamagata": {
-      "nature": 6
-    },
-    "shimonoseki": {
-      "nature": 1,
-      "history": 1
-    },
-    "yamanashi": {
-      "nature": 1
-    },
-    "toyama": {
-      "culture": 4
-    },
-    "kusatsu": {
-      "history": 2,
-      "nature": 1
-    },
-    "chiba": {
-      "culture": 1
-    },
-    "fukui": {
-      "culture": 4
     }
   },
   "metadata": {
@@ -465,7 +425,7 @@
     },
     "hakone": {
       "locationCount": 203,
-      "region": "Chubu",
+      "region": "Kanto",
       "coordinates": {
         "lat": 35.5499805,
         "lng": 138.90795839999998
@@ -646,54 +606,6 @@
         "lat": 33.0962341,
         "lng": 131.2085357
       }
-    },
-    "wakayama": {
-      "locationCount": 8,
-      "region": "Kansai",
-      "coordinates": {
-        "lat": 33.7322225,
-        "lng": 135.9835101
-      }
-    },
-    "saitama": {
-      "locationCount": 5,
-      "region": "Kanto"
-    },
-    "fukushima": {
-      "locationCount": 1,
-      "region": "Tohoku"
-    },
-    "mie": {
-      "locationCount": 2,
-      "region": "Kansai"
-    },
-    "yamagata": {
-      "locationCount": 6,
-      "region": "Tohoku"
-    },
-    "shimonoseki": {
-      "locationCount": 2,
-      "region": "Chugoku"
-    },
-    "yamanashi": {
-      "locationCount": 1,
-      "region": "Chubu"
-    },
-    "toyama": {
-      "locationCount": 4,
-      "region": "Chubu"
-    },
-    "kusatsu": {
-      "locationCount": 3,
-      "region": "Kanto"
-    },
-    "chiba": {
-      "locationCount": 1,
-      "region": "Kanto"
-    },
-    "fukui": {
-      "locationCount": 4,
-      "region": "Chubu"
     }
   }
 }
