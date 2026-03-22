@@ -26,7 +26,7 @@ export function FinalCTA({ content }: FinalCTAProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
-            className="font-serif text-2xl tracking-heading text-white sm:text-3xl lg:text-4xl"
+            className="font-serif text-2xl tracking-heading text-white sm:text-3xl"
           >
             {content?.finalCtaHeading ?? "Your Japan starts with one place"}
           </motion.h2>

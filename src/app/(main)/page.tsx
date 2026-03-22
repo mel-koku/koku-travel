@@ -97,7 +97,7 @@ export default async function Home() {
         <section aria-label="Statement" className="relative bg-background">
           <div className="texture-grain pointer-events-none absolute inset-0" />
           <div className="relative flex min-h-[50vh] items-center justify-center px-6 py-24 text-center sm:min-h-[60vh] sm:py-32">
-            <p className="mx-auto max-w-3xl font-serif text-2xl leading-snug tracking-heading text-foreground sm:text-3xl lg:text-4xl">
+            <p className="mx-auto max-w-3xl font-serif text-2xl leading-snug tracking-heading text-foreground sm:text-3xl">
               Every trip starts somewhere you didn&apos;t expect.
             </p>
           </div>
@@ -116,7 +116,7 @@ export default async function Home() {
           <div className="mx-auto max-w-7xl px-6">
             <div className="text-center">
               <p className="eyebrow-mono">Ask Koku</p>
-              <h2 className="mx-auto mt-4 max-w-xl font-serif text-xl leading-snug tracking-heading text-foreground sm:text-2xl lg:text-3xl">
+              <h2 className="mx-auto mt-4 max-w-xl font-serif text-2xl leading-snug tracking-heading text-foreground sm:text-3xl">
                 Questions? We know the answer. Or we&apos;ll find it.
               </h2>
             </div>

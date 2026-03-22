@@ -40,7 +40,7 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredGuidesEyebrow ?? "Travel Guides"}
             </p>
-            <h2 className="mt-4 font-serif text-3xl tracking-heading text-foreground sm:text-4xl">
+            <h2 className="mt-4 font-serif text-2xl tracking-heading text-foreground sm:text-3xl">
               {content?.featuredGuidesHeading ?? "The guides the locals wrote"}
             </h2>
             <p className="mt-4 max-w-md text-base text-foreground-secondary">

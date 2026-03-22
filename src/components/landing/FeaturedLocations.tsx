@@ -26,7 +26,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
             </p>
-            <h2 className="mt-4 font-serif text-3xl tracking-heading text-foreground sm:text-4xl">
+            <h2 className="mt-4 font-serif text-2xl tracking-heading text-foreground sm:text-3xl">
               {content?.featuredLocationsHeading ?? "Places that stay with you"}
             </h2>
             <p className="mt-3 max-w-md text-base text-foreground-secondary">
