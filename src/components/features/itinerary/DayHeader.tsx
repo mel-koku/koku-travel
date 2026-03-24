@@ -9,7 +9,6 @@ import { DaySuggestions } from "./DaySuggestions";
 import { DayTips } from "./DayTips";
 import { DayConflictSummary } from "./ConflictBadge";
 import { DayStartTimePicker } from "./DayStartTimePicker";
-import { RunningLatePopover } from "./RunningLatePopover";
 import { AccommodationPicker } from "./AccommodationPicker";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
 import type { ItineraryConflict } from "@/lib/validation/itineraryConflicts";
@@ -40,8 +39,6 @@ type DayHeaderProps = {
   conflicts?: ItineraryConflict[];
   // Day start time callback
   onDayStartTimeChange?: (startTime: string) => void;
-  // Running late delay callback
-  onDelayRemaining?: (delayMinutes: number) => void;
   // Preview props
   previewState?: PreviewState | null;
   onConfirmPreview?: () => void;
@@ -65,7 +62,6 @@ export function DayHeader({
   loadingSuggestionId,
   conflicts,
   onDayStartTimeChange,
-  onDelayRemaining,
   previewState,
   onConfirmPreview,
   onShowAnother,
@@ -109,19 +105,6 @@ export function DayHeader({
     };
   }, [dayDate, day.dateLabel, dayIndex]);
 
-  // Filter to place activities for location fetching
-  const placeActivities = useMemo(
-    () => (day.activities ?? []).filter((a): a is Extract<typeof a, { kind: "place" }> => a.kind === "place"),
-    [day.activities],
-  );
-
-
-  // Calculate total duration (time at locations only, excluding travel)
-  const hasScheduledActivities = useMemo(
-    () => placeActivities.some((a) => a.schedule?.arrivalTime || a.manualStartTime),
-    [placeActivities],
-  );
-
   const cityName = useMemo(() => {
     if (!day.cityId) return null;
     for (const region of REGIONS) {
@@ -144,24 +127,15 @@ export function DayHeader({
             {cityName && (
               <span> &middot; {cityName}</span>
             )}
-            {day.paceLabel && (
-              <span
-                className={
-                  day.paceLabel === "light"
-                    ? "text-success"
-                    : day.paceLabel === "packed"
-                      ? "text-error"
-                      : "text-warning"
-                }
-              >
-                {" \u00B7 "}
-                {day.paceLabel === "light"
-                  ? "Light"
-                  : day.paceLabel === "packed"
-                    ? "Packed"
-                    : "Moderate"}
-              </span>
-            )}
+            {(() => {
+              const placeCount = (day.activities ?? []).filter(a => a.kind === "place").length;
+              return placeCount > 0 ? (
+                <span>
+                  {" \u00B7 "}
+                  {placeCount} {placeCount === 1 ? "stop" : "stops"}
+                </span>
+              ) : null;
+            })()}
           </h2>
           <div className="flex items-center gap-2">
             {onDayStartTimeChange && (
@@ -170,23 +144,8 @@ export function DayHeader({
                 onChange={onDayStartTimeChange}
               />
             )}
-            {onDelayRemaining && hasScheduledActivities && (
-              <RunningLatePopover onApplyDelay={onDelayRemaining} />
-            )}
           </div>
         </div>
-        {/* Accommodation */}
-        {(onStartLocationChange || startLocation || endLocation) && (
-          <AccommodationPicker
-            startLocation={startLocation}
-            endLocation={endLocation}
-            cityId={day.cityId}
-            onStartChange={onStartLocationChange ?? (() => {})}
-            onEndChange={onEndLocationChange ?? (() => {})}
-            onSetCityAccommodation={onCityAccommodationChange}
-            isReadOnly={!onStartLocationChange}
-          />
-        )}
         {/* Conflict Summary */}
         {conflicts && conflicts.length > 0 && (
           <DayConflictSummary dayConflicts={conflicts} className="mt-1" />
@@ -212,6 +171,20 @@ export function DayHeader({
           onFilterChange={onFilterChange}
           isPreviewLoading={isPreviewLoading}
         />
+      )}
+      {/* Accommodation */}
+      {(onStartLocationChange || startLocation || endLocation) && (
+        <div className="mt-2">
+          <AccommodationPicker
+            startLocation={startLocation}
+            endLocation={endLocation}
+            cityId={day.cityId}
+            onStartChange={onStartLocationChange ?? (() => {})}
+            onEndChange={onEndLocationChange ?? (() => {})}
+            onSetCityAccommodation={onCityAccommodationChange}
+            isReadOnly={!onStartLocationChange}
+          />
+        </div>
       )}
     </div>
   );

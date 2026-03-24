@@ -729,7 +729,7 @@ export const ItineraryShell = ({
 
             {/* Row 4: Search + score badge + adjust */}
             {!isReadOnly && !isUsingMock && currentDay && viewMode === "timeline" && (
-              <div className="flex items-start gap-2">
+              <div className="mt-2 flex items-start gap-2">
                 <div className="min-w-0 flex-1">
                   <LocationSearchBar
                     dayActivities={currentDay.activities}

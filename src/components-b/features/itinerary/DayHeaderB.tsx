@@ -27,11 +27,9 @@ type DayHeaderBProps = {
   tipsSlot?: React.ReactNode;
   /** Slot for the suggestions popover pill */
   suggestionsSlot?: React.ReactNode;
-  /** Slot for day intro text */
-  dayIntroSlot?: React.ReactNode;
 };
 
-export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange, refinementSlot, accommodationSlot, tipsSlot, suggestionsSlot, dayIntroSlot }: DayHeaderBProps) {
+export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange, refinementSlot, accommodationSlot, tipsSlot, suggestionsSlot }: DayHeaderBProps) {
   const dayDate = useMemo(() => {
     if (tripStartDate) {
       return parseLocalDateWithOffset(tripStartDate, dayIndex) ?? undefined;
@@ -66,26 +64,15 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
           {cityLabel && (
             <span className="ml-1"> · {cityLabel}</span>
           )}
-          {day.paceLabel && (
-            <span
-              className="ml-1"
-              style={{
-                color:
-                  day.paceLabel === "light"
-                    ? "var(--success)"
-                    : day.paceLabel === "packed"
-                      ? "var(--error)"
-                      : "var(--warning)",
-              }}
-            >
-              {" · "}
-              {day.paceLabel === "light"
-                ? "Light day"
-                : day.paceLabel === "packed"
-                  ? "Packed day"
-                  : "Moderate"}
-            </span>
-          )}
+          {(() => {
+            const placeCount = (day.activities ?? []).filter(a => a.kind === "place").length;
+            return placeCount > 0 ? (
+              <span className="ml-1">
+                {" · "}
+                {placeCount} {placeCount === 1 ? "stop" : "stops"}
+              </span>
+            ) : null;
+          })()}
         </h2>
         <div className="flex items-center gap-1.5">
           {tipsSlot}
@@ -99,7 +86,6 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
           )}
         </div>
       </div>
-      {dayIntroSlot}
       {accommodationSlot && <div className="mt-1">{accommodationSlot}</div>}
     </div>
   );
