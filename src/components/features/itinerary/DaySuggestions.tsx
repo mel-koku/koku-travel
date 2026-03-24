@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/Button";
 import { SmartPromptPreview } from "./SmartPromptPreview";
 import type { DetectedGap, GapType } from "@/lib/smartPrompts/gapDetection";
 import type { PreviewState, RefinementFilters } from "@/hooks/useSmartPromptActions";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
@@ -204,7 +205,7 @@ export function DaySuggestions({
           {/* Content */}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-foreground">{gap.title}</p>
-            <p className="text-xs text-stone truncate">{gap.description}</p>
+            <ExpandableText text={gap.description} className="text-xs text-stone" />
           </div>
 
           {/* Actions */}

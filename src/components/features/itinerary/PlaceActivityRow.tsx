@@ -471,12 +471,9 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
 
     // Get the activity image
     const activityImage = useMemo(() => {
-      // Try location's primary photo first
       const primaryPhoto = (placeLocation as Location & { primaryPhotoUrl?: string })?.primaryPhotoUrl;
       if (primaryPhoto) return resizePhotoUrl(primaryPhoto, 800) ?? primaryPhoto;
-      // Then fall back to location image
       if (placeLocation?.image) return resizePhotoUrl(placeLocation.image, 800) ?? placeLocation.image;
-      // Finally use category fallback
       const category = placeLocation?.category ?? activity.tags?.[0] ?? "culture";
       return FALLBACK_IMAGES[category] ?? DEFAULT_FALLBACK_IMAGE;
     }, [placeLocation, activity.tags]);
@@ -600,271 +597,253 @@ export const PlaceActivityRow = memo(forwardRef<HTMLDivElement, PlaceActivityRow
         data-selected={isSelected || undefined}
         data-activity-id={activity.id}
       >
-        <div className="flex gap-3">
-          {/* Left: Time Column */}
-          <div className="relative flex w-16 shrink-0 flex-col items-center pt-2">
-            {displayArrivalTime ? (
-              <>
-                {isReadOnly ? (
-                  <span className={`font-mono text-sm font-bold ${hasManualTime ? "text-sage" : "text-foreground"}`}>
-                    {displayArrivalTime}
-                  </span>
-                ) : (
+        <motion.div
+          layout={!prefersReducedMotion && !isDragging}
+          transition={prefersReducedMotion ? { duration: 0 } : { layout: { duration: 0.3, ease: easeReveal } }}
+          className={`group relative cursor-pointer rounded-lg bg-background transition-all duration-200 ${
+            isDragging
+              ? "ring-2 ring-sage/30 shadow-[var(--shadow-elevated)] rotate-1 scale-[1.02]"
+              : isSelected
+                ? "shadow-[var(--shadow-elevated)]"
+                : "shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)] hover:-translate-y-0.5"
+          }`}
+          style={isSelected && !isDragging ? { outline: "2px solid var(--color-sage)", outlineOffset: "-2px" } : undefined}
+          tabIndex={0}
+          onClick={handleSelect}
+          onKeyDown={(event) => {
+            const target = event.target as HTMLElement;
+            if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              handleSelect();
+            }
+          }}
+          onMouseEnter={handleHover}
+          onFocus={handleHover}
+        >
+          <div className="flex items-start gap-3 p-3">
+            {/* Left column: stop number + time */}
+            <div className="flex w-10 shrink-0 flex-col items-center pt-0.5">
+              {!hideDragHandle && !isReadOnly ? (
+                <DragHandle
+                  variant="place"
+                  label={dragHandleLabel}
+                  isDragging={isDragging}
+                  attributes={attributes}
+                  listeners={listeners}
+                  displayLabel={displayLabel}
+                  colorScheme={colorScheme}
+                  isSelected={isSelected}
+                />
+              ) : (
+                displayLabel !== undefined && (
                   <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      setShowTimePicker(!showTimePicker);
-                      setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
-                    }}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        event.stopPropagation();
-                        setShowTimePicker(!showTimePicker);
-                        setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
-                      }
-                    }}
-                    className={`cursor-pointer font-mono text-sm font-bold transition hover:text-brand-primary ${
-                      hasManualTime ? "text-sage" : "text-foreground"
+                    className={`font-mono text-xl font-bold ${
+                      isSelected ? "text-sage" : "text-foreground/20"
                     }`}
-                    title={hasManualTime ? "Manual time - click to edit" : "Click to set time"}
                   >
-                    {displayArrivalTime}
+                    {String(displayLabel).padStart(2, "0")}
                   </span>
-                )}
-                {schedule?.departureTime && (
+                )
+              )}
+              {/* Time below number */}
+              <div className="relative mt-1 flex flex-col items-center">
+                {displayArrivalTime ? (
                   <>
-                    <div className="my-0.5 h-4 w-px bg-border/50" />
-                    <span className="font-mono text-[11px] text-stone">
-                      {schedule.departureTime}
-                    </span>
-                  </>
-                )}
-                {hasManualTime && (
-                  <span className="mt-0.5 text-[9px] font-medium uppercase text-sage">manual</span>
-                )}
-              </>
-            ) : (
-              <span className="text-[11px] text-stone capitalize">{activity.timeOfDay || "—"}</span>
-            )}
-            {/* Time picker popover */}
-            {showTimePicker && (
-              <div
-                ref={timePickerRef}
-                className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-3 shadow-[var(--shadow-elevated)]"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <p className="mb-2 text-xs font-medium text-foreground-secondary">Set time</p>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="time"
-                    value={tempManualTime}
-                    onChange={(e) => setTempManualTime(e.target.value)}
-                    className="h-12 rounded border border-border px-2 py-1 text-base focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleSetManualTime}
-                    className="rounded bg-brand-primary px-2 py-1 text-xs font-medium text-white hover:bg-brand-primary/90"
-                  >
-                    Set
-                  </button>
-                </div>
-                {hasManualTime && (
-                  <button
-                    type="button"
-                    onClick={handleClearManualTime}
-                    className="mt-2 text-xs text-stone hover:text-error"
-                  >
-                    Reset to auto
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Right: Main Card */}
-          <motion.div
-            layout={!prefersReducedMotion && !isDragging}
-            transition={prefersReducedMotion ? { duration: 0 } : { layout: { duration: 0.3, ease: easeReveal } }}
-            className={`group relative flex-1 overflow-hidden rounded-lg bg-background transition-shadow duration-200 cursor-pointer ${
-              isDragging
-                ? "ring-2 ring-sage/30 shadow-[var(--shadow-elevated)] rotate-1 scale-[1.02]"
-                : isSelected
-                  ? "shadow-[var(--shadow-elevated)]"
-                  : "shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)] hover:-translate-y-0.5"
-            }`}
-            style={isSelected && !isDragging ? { outline: "2px solid var(--color-sage)", outlineOffset: "-2px" } : undefined}
-            tabIndex={0}
-            onClick={handleSelect}
-            onKeyDown={(event) => {
-              const target = event.target as HTMLElement;
-              if (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable) return;
-              if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                handleSelect();
-              }
-            }}
-            onMouseEnter={handleHover}
-            onFocus={handleHover}
-          >
-            {/* Horizontal layout: content left, thumbnail right */}
-            <div className="flex">
-              {/* Content */}
-              <div className="flex-1 p-3">
-                {/* Top row: drag handle + title + actions */}
-                <div className="flex items-start gap-2">
-                  {/* Drag handle — always visible */}
-                  {!hideDragHandle && !isReadOnly && (
-                    <DragHandle
-                      variant="place"
-                      label={dragHandleLabel}
-                      isDragging={isDragging}
-                      attributes={attributes}
-                      listeners={listeners}
-                    />
-                  )}
-                  {/* Title + meta */}
-                  <div className="min-w-0 flex-1">
-                    <PlaceActivityHeader
-                      activity={activity}
-                      placeLocation={placeLocation}
-                      rating={rating}
-                      reviewCount={reviewCount}
-                      durationLabel={durationLabel}
-                      summary={summary}
-                      availabilityStatus={availabilityStatus}
-                      schedule={schedule}
-                      isOutOfHours={isOutOfHours}
-                      waitLabel={waitLabel}
-                      conflicts={conflicts}
-                    />
-                  </div>
-                  {/* Action icons */}
-                  {!isReadOnly && (
-                    <div className="flex shrink-0 items-center gap-0.5">
-                      <button
-                        type="button"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleNotes(); }}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-stone transition hover:bg-sage/10 hover:text-sage"
-                        title={notesOpen ? "Hide note" : "Add note"}
+                    {isReadOnly ? (
+                      <span className={`font-mono text-[11px] font-semibold ${hasManualTime ? "text-sage" : "text-foreground-secondary"}`}>
+                        {displayArrivalTime}
+                      </span>
+                    ) : (
+                      <span
+                        role="button"
+                        tabIndex={0}
+                        onClick={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                          setShowTimePicker(!showTimePicker);
+                          setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            setShowTimePicker(!showTimePicker);
+                            setTempManualTime(activity.manualStartTime ?? schedule?.arrivalTime ?? "09:00");
+                          }
+                        }}
+                        className={`cursor-pointer font-mono text-[11px] font-semibold transition hover:text-brand-primary ${
+                          hasManualTime ? "text-sage" : "text-foreground-secondary"
+                        }`}
+                        title={hasManualTime ? "Manual time - click to edit" : "Click to set time"}
                       >
-                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                      </button>
-                      {tripId && dayId && onReplace && (
-                        <button
-                          type="button"
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); onReplace(); }}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-stone transition hover:bg-sage/10 hover:text-sage"
-                          title="Find alternatives"
-                        >
-                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                          </svg>
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(); }}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-stone transition hover:bg-error/10 hover:text-error"
-                        aria-label={`Delete ${activity.title}`}
-                        title="Remove this activity"
-                      >
-                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {/* Getting there — nearest station + Japanese name */}
-                {(placeLocation?.nearestStation || placeLocation?.nameJapanese) && (
-                  <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-stone">
-                    {placeLocation.nearestStation && (
-                      <span className="flex items-center gap-1">
-                        <span>{"🚉"}</span>
-                        {placeLocation.nearestStation}
+                        {displayArrivalTime}
                       </span>
                     )}
-                    {placeLocation.nameJapanese && (
-                      <span lang="ja">{placeLocation.nameJapanese}</span>
+                    {schedule?.departureTime && (
+                      <span className="font-mono text-[10px] text-stone">
+                        {schedule.departureTime}
+                      </span>
                     )}
-                  </div>
+                    {hasManualTime && (
+                      <span className="text-[8px] font-medium uppercase text-sage">pin</span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-[10px] text-stone capitalize">{activity.timeOfDay || ""}</span>
                 )}
-
-                {/* Compact tips count */}
-                {tips.length > 0 && (
-                  <div className="mt-1.5">
-                    <span className="text-[11px] text-sage">
-                      {"💡 "}{tips.length} {tips.length === 1 ? "tip" : "tips"}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Thumbnail */}
-              <div className="relative w-20 shrink-0 sm:w-24">
-                {!imageLoaded && !imageError && (
-                  <div className="absolute inset-0 animate-pulse bg-surface" />
-                )}
-                <Image
-                  src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
-                  alt={activity.title}
-                  fill
-                  sizes="96px"
-                  className={`object-cover transition-opacity duration-200 rounded-r-lg ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-                  onLoad={() => setImageLoaded(true)}
-                  onError={() => {
-                    setImageError(true);
-                    setImageLoaded(true);
-                  }}
-                />
-                {/* Number badge */}
-                {placeNumber !== undefined && (
+                {/* Time picker popover */}
+                {showTimePicker && (
                   <div
-                    className={`absolute top-1.5 right-1.5 flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold shadow-[var(--shadow-card)] transition-colors ${
-                      isSelected
-                        ? "bg-sage text-white"
-                        : `${colorScheme.badge} ${colorScheme.badgeText}`
-                    }`}
-                    title={isStartEntryPoint ? "Starting point" : isEndEntryPoint ? "Ending point" : `Stop ${placeNumber}`}
+                    ref={timePickerRef}
+                    className="absolute left-0 top-full z-50 mt-1 rounded-lg border border-border bg-background p-3 shadow-[var(--shadow-elevated)]"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    {displayLabel}
+                    <p className="mb-2 text-xs font-medium text-foreground-secondary">Set time</p>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="time"
+                        value={tempManualTime}
+                        onChange={(e) => setTempManualTime(e.target.value)}
+                        className="h-12 rounded border border-border px-2 py-1 text-base focus:border-brand-primary focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSetManualTime}
+                        className="rounded bg-brand-primary px-2 py-1 text-xs font-medium text-white hover:bg-brand-primary/90"
+                      >
+                        Set
+                      </button>
+                    </div>
+                    {hasManualTime && (
+                      <button
+                        type="button"
+                        onClick={handleClearManualTime}
+                        className="mt-2 text-xs text-stone hover:text-error"
+                      >
+                        Reset to auto
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Notes Section (collapsible) */}
-            {notesOpen && !isReadOnly && (
-              <div className="border-t border-border/30 bg-background/50 p-3">
-                <label htmlFor={notesId} className="sr-only">
-                  {noteLabel}
-                </label>
-                <textarea
-                  id={notesId}
-                  className="w-full rounded-md border border-border bg-background px-2.5 py-1.5 text-base text-foreground-secondary shadow-[var(--shadow-card)] placeholder:text-stone focus:border-brand-primary focus:ring-2 focus:ring-brand-primary"
-                  rows={2}
-                  value={notesValue}
-                  onChange={handleNotesChange}
-                  placeholder="Add helpful details, reminders, or context..."
-                  onClick={(e) => e.stopPropagation()}
-                />
+            {/* Thumbnail — fills card height */}
+            <div className="relative w-28 shrink-0 self-stretch overflow-hidden rounded-md sm:w-32">
+              {!imageLoaded && !imageError && (
+                <div className="absolute inset-0 animate-pulse bg-surface" />
+              )}
+              <Image
+                src={imageError ? (FALLBACK_IMAGES[placeLocation?.category ?? "culture"] ?? DEFAULT_FALLBACK_IMAGE) : activityImage}
+                alt={activity.title}
+                fill
+                sizes="128px"
+                className={`object-cover transition-opacity duration-200 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                onLoad={() => setImageLoaded(true)}
+                onError={() => {
+                  setImageError(true);
+                  setImageLoaded(true);
+                }}
+              />
+            </div>
+
+            {/* Main content */}
+            <div className="min-w-0 flex-1">
+              <PlaceActivityHeader
+                activity={activity}
+                placeLocation={placeLocation}
+                rating={rating}
+                reviewCount={reviewCount}
+                durationLabel={durationLabel}
+                summary={summary}
+                availabilityStatus={availabilityStatus}
+                schedule={schedule}
+                isOutOfHours={isOutOfHours}
+                waitLabel={waitLabel}
+                conflicts={conflicts}
+                tipCount={tips.length}
+              />
+
+              {/* Getting there */}
+              {(placeLocation?.nearestStation || placeLocation?.nameJapanese) && (
+                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] text-stone">
+                  {placeLocation?.nearestStation && (
+                    <span className="flex items-center gap-1">
+                      <span>{"🚉"}</span>
+                      {placeLocation.nearestStation}
+                    </span>
+                  )}
+                  {placeLocation?.nameJapanese && (
+                    <span lang="ja">{placeLocation.nameJapanese}</span>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Action icons — vertical stack on right */}
+            {!isReadOnly && (
+              <div className="flex shrink-0 flex-col items-center gap-0.5 self-center">
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleToggleNotes(); }}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-stone/40 transition hover:bg-sage/10 hover:text-sage"
+                  title={notesOpen ? "Hide note" : "Add note"}
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                {tripId && dayId && onReplace && (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onReplace(); }}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg text-stone/40 transition hover:bg-sage/10 hover:text-sage"
+                    title="Find alternatives"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(); }}
+                  className="flex h-9 w-9 items-center justify-center rounded-lg text-stone/40 transition hover:bg-error/10 hover:text-error"
+                  aria-label={`Delete ${activity.title}`}
+                  title="Remove this activity"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
               </div>
             )}
-            {activity.notes && isReadOnly && (
-              <div className="border-t border-border/30 bg-background/50 p-3">
-                <p className="text-sm text-foreground-secondary">{activity.notes}</p>
-              </div>
-            )}
-          </motion.div>
-        </div>
+          </div>
+
+          {/* Notes Section (collapsible) */}
+          {notesOpen && !isReadOnly && (
+            <div className="border-t border-border/30 px-3 py-2.5">
+              <label htmlFor={notesId} className="sr-only">
+                {noteLabel}
+              </label>
+              <textarea
+                id={notesId}
+                className="w-full rounded-md border border-border bg-background px-2.5 py-1.5 text-base text-foreground-secondary placeholder:text-stone focus:border-border focus:outline-none focus:ring-1 focus:ring-brand-primary/30"
+                rows={2}
+                value={notesValue}
+                onChange={handleNotesChange}
+                placeholder="Add helpful details, reminders, or context..."
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          )}
+          {activity.notes && isReadOnly && (
+            <div className="border-t border-border/30 px-3 py-2">
+              <p className="text-sm text-foreground-secondary">{activity.notes}</p>
+            </div>
+          )}
+        </motion.div>
       </div>
     );
   },

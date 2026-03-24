@@ -27,6 +27,7 @@ import { useActivityRatingsContext } from "@/components/features/itinerary/Activ
 import { getSeasonalFoodsForActivity, formatSeasonalFoodTip } from "@/data/seasonalFoods";
 import { getPhotoTiming, formatPhotoTiming } from "@/data/photoSpotTiming";
 import { hasGoshuin, getGoshuinInfo } from "@/data/goshuinData";
+import { ExpandableTextB } from "@b/ui/ExpandableTextB";
 import { parseLocalDate } from "@/lib/utils/dateUtils";
 
 // B motion tokens
@@ -744,12 +745,13 @@ export const PlaceActivityRowB = memo(
 
                 {/* Short description */}
                 {summary && (
-                  <p
-                    className="mt-2 line-clamp-2 text-sm leading-relaxed"
-                    style={{ color: "var(--foreground-body, var(--muted-foreground))" }}
-                  >
-                    {summary}
-                  </p>
+                  <div className="mt-2">
+                    <ExpandableTextB
+                      text={summary}
+                      className="text-sm leading-relaxed"
+                      style={{ color: "var(--foreground-body, var(--muted-foreground))" }}
+                    />
+                  </div>
                 )}
 
                 {/* Conflict warning */}

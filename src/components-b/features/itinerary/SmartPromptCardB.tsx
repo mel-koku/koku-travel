@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { DetectedGap } from "@/lib/smartPrompts/gapDetection";
+import { ExpandableTextB } from "@b/ui/ExpandableTextB";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
@@ -123,12 +124,11 @@ export function SmartPromptCardB({
             </span>
           </div>
 
-          <p
-            className="mt-1 text-xs leading-relaxed line-clamp-2"
+          <ExpandableTextB
+            text={gap.description}
+            className="mt-1 text-xs leading-relaxed"
             style={{ color: "var(--muted-foreground)" }}
-          >
-            {gap.description}
-          </p>
+          />
 
           {/* Reservation alert: location list */}
           {isReservation && gap.action.type === "acknowledge_reservation" && (

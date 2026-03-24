@@ -47,21 +47,19 @@ export function AccommodationPicker({
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-3">
+    <div className="space-y-1.5">
+      <div className="flex items-start gap-2">
         <LocationField
-          label="Starting location"
           icon={<StartIcon className="h-3.5 w-3.5" />}
           value={startLocation}
           onChange={onStartChange}
-          placeholder="Search hotel, address..."
+          placeholder="Start: hotel, address..."
         />
         <LocationField
-          label="Ending location"
           icon={<EndIcon className="h-3.5 w-3.5" />}
           value={endLocation}
           onChange={onEndChange}
-          placeholder={startLocation ? "Same as start" : "Search hotel, address..."}
+          placeholder={startLocation ? "End: same as start" : "End: hotel, address..."}
           linkedValue={startLocation}
         />
       </div>
@@ -82,17 +80,15 @@ export function AccommodationPicker({
 // ─── Individual search field ─────────────────────────────────────────────────
 
 type LocationFieldProps = {
-  label: string;
   icon: React.ReactNode;
   value?: EntryPoint;
   onChange: (location: EntryPoint | undefined) => void;
   placeholder: string;
-  /** If set and value is empty, displays "Same as <linkedValue>" */
+  /** If set and value is empty, displays "Same as start" */
   linkedValue?: EntryPoint;
 };
 
 function LocationField({
-  label,
   icon,
   value,
   onChange,
@@ -151,19 +147,14 @@ function LocationField({
 
   return (
     <div ref={ref} className="relative flex-1 min-w-0">
-      <label className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.2em] text-foreground-secondary">
-        {icon}
-        {label}
-      </label>
-
       {value ? (
-        // Set state: show the selected location as a chip
-        <div className="flex h-9 items-center gap-2 rounded-lg border border-border bg-background px-3">
+        <div className="flex h-9 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5">
+          <span className="shrink-0 text-foreground-secondary">{icon}</span>
           <span className="flex-1 truncate text-sm text-foreground">{value.name}</span>
           <button
             type="button"
             onClick={handleClear}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-stone transition-colors hover:bg-error/10 hover:text-error"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-stone transition-colors hover:bg-error/10 hover:text-error"
             aria-label="Clear"
           >
             <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -172,16 +163,18 @@ function LocationField({
           </button>
         </div>
       ) : (
-        // Empty state: show the search input
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => setFocused(true)}
-          placeholder={isSameAsLinked ? `Same as start · ${linkedValue.name}` : placeholder}
-          className="h-11 w-full rounded-lg border border-border bg-background px-3 text-base text-foreground placeholder:text-stone focus:outline-none focus:ring-1 focus:ring-brand-primary"
-        />
+        <div className="flex h-9 items-center gap-1.5 rounded-lg border border-border bg-background px-2.5">
+          <span className="shrink-0 text-foreground-secondary">{icon}</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setFocused(true)}
+            placeholder={isSameAsLinked ? "Same as start" : placeholder}
+            className="h-full min-w-0 flex-1 bg-transparent text-sm text-foreground placeholder:text-stone focus:outline-none"
+          />
+        </div>
       )}
 
       {/* Suggestions dropdown */}

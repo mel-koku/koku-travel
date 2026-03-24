@@ -100,7 +100,7 @@ export function DayHeaderB({ day, dayIndex, tripStartDate, onDayStartTimeChange,
         </div>
       </div>
       {dayIntroSlot}
-      {accommodationSlot && <div className="mt-2 pl-8">{accommodationSlot}</div>}
+      {accommodationSlot && <div className="mt-1">{accommodationSlot}</div>}
     </div>
   );
 }
