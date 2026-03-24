@@ -49,7 +49,7 @@ export function SeasonalBanner({ locations, onFilterSeasonal }: SeasonalBannerPr
           <button
             type="button"
             onClick={onFilterSeasonal}
-            className="shrink-0 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:border-brand-primary hover:text-brand-primary transition-colors"
+            className="shrink-0 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:border-brand-primary hover:text-brand-primary active:scale-[0.98] transition-colors"
           >
             View
           </button>

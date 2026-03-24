@@ -68,7 +68,7 @@ export const PlacesCompactCard = memo(function PlacesCompactCard({
         }}
       >
         {/* Image container */}
-        <div className="relative w-full overflow-hidden rounded-lg aspect-[4/3]">
+        <div className="relative w-full overflow-hidden rounded-lg border border-border shadow-[var(--shadow-card)] aspect-[4/3]">
           <Image
             src={imageSrc || FALLBACK_IMAGE}
             alt={location.name}
@@ -99,7 +99,7 @@ export const PlacesCompactCard = memo(function PlacesCompactCard({
                 toggleSave(location.id);
               }}
               aria-label={active ? "Unsave" : "Save for trip"}
-              className="pointer-events-auto flex h-8 items-center gap-1 rounded-full bg-surface/90 px-2.5 backdrop-blur-md shadow-[var(--shadow-elevated)] transition-all hover:bg-surface hover:scale-105 active:scale-[0.98]"
+              className="pointer-events-auto flex h-10 min-h-[44px] items-center gap-1 rounded-full bg-surface/90 px-2.5 backdrop-blur-md shadow-[var(--shadow-elevated)] transition-all hover:bg-surface hover:scale-105 active:scale-[0.98]"
             >
               <HeartIcon active={active} animating={heartAnimating} variant="overlay" />
               <span className="text-[11px] font-medium text-foreground">

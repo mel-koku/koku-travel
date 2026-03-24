@@ -280,11 +280,11 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
         <div className="space-y-6 p-6">
           {/* Category, rating, duration */}
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <span className="rounded-lg bg-surface px-3 py-1 font-medium capitalize text-foreground-secondary">
+            <span className="rounded-md bg-surface px-3 py-1 font-medium capitalize text-foreground-secondary">
               {location.category}
             </span>
             {location.jtaApproved && (
-              <span className="flex items-center gap-1.5 rounded-lg border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
+              <span className="flex items-center gap-1.5 rounded-md border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
                 JTA Approved
               </span>
             )}
@@ -589,7 +589,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
               <h3 className="eyebrow-editorial">
                 Links
               </h3>
-              <ul className="space-y-1 text-sm text-sage">
+              <ul className="space-y-1 text-sm text-brand-primary">
                 {details?.websiteUri && (
                   <li>
                     <a
