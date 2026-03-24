@@ -10,6 +10,8 @@ import type { VibeId } from "@/data/vibes";
 import { REGION_DESCRIPTIONS, type RegionDescription } from "@/data/regionDescriptions";
 import { REGIONS } from "@/data/regions";
 import { calculateDistance } from "@/lib/utils/geoUtils";
+import { getCityLimits } from "@/lib/tripBuilder/cityDayValidation";
+import { getCityMetadata } from "@/lib/tripBuilder/cityRelevance";
 
 /**
  * Result of scoring a region for a trip.
@@ -171,16 +173,20 @@ export function getRegionsByScore(
 }
 
 /**
- * Auto-select cities from exactly 2 regions:
- * 1. The entry point's region (closest to arrival)
- * 2. The highest-scoring region by vibe match (if different from #1)
+ * Auto-select cities from exactly 2 regions, capped at the recommended
+ * city count for the trip duration.
  *
- * Falls back to the top 2 scored regions when no entry point is set.
+ * Regions: entry point region + highest-scoring vibe region.
+ * Cities within those regions are ranked by: entry point city first,
+ * then by content density (location count). Only the top N cities are
+ * returned, where N = getCityLimits(duration).recommended.
+ *
+ * When no duration is provided, all cities from both regions are returned.
  */
 export function autoSelectCities(
   vibes: VibeId[],
   entryPoint?: EntryPoint,
-  _duration?: number
+  duration?: number
 ): KnownCityId[] {
   const scored = scoreRegionsForTrip(vibes, entryPoint);
   const picked = new Set<KnownRegionId>();
@@ -209,10 +215,32 @@ export function autoSelectCities(
     }
   }
 
-  const cities: KnownCityId[] = [];
+  // Gather all candidate cities from picked regions
+  const candidates: KnownCityId[] = [];
   for (const regionId of picked) {
     const region = REGIONS.find((r) => r.id === regionId);
-    region?.cities.forEach((c) => cities.push(c.id));
+    region?.cities.forEach((c) => candidates.push(c.id));
   }
-  return cities;
+
+  // Cap at the recommended city count for this trip duration
+  if (!duration || duration <= 0 || candidates.length <= getCityLimits(duration).recommended) {
+    return candidates;
+  }
+
+  const { recommended } = getCityLimits(duration);
+  const entryPointCityId = entryPoint?.cityId;
+
+  // Rank: entry point city first, then by content density (location count)
+  const ranked = candidates
+    .map((cityId) => ({
+      cityId,
+      isEntryCity: cityId === entryPointCityId,
+      locationCount: getCityMetadata(cityId)?.locationCount ?? 0,
+    }))
+    .sort((a, b) => {
+      if (a.isEntryCity !== b.isEntryCity) return a.isEntryCity ? -1 : 1;
+      return b.locationCount - a.locationCount;
+    });
+
+  return ranked.slice(0, recommended).map((c) => c.cityId);
 }
