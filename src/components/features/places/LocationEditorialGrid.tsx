@@ -55,6 +55,7 @@ export function LocationEditorialGrid({
       {locations.map((location, i) => (
         <motion.div
           key={location.id}
+          className="h-full"
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-40px" }}
@@ -100,13 +101,13 @@ const PlacesCard = memo(function PlacesCard({
 
   return (
     <article
-      className="group relative"
+      className="group relative h-full"
       data-location-id={location.id}
     >
       <Link
         href={`/places/${location.id}`}
         onClick={onSelect ? (e) => { e.preventDefault(); onSelect(location); } : undefined}
-        className="block w-full overflow-hidden rounded-lg border border-border bg-white transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
+        className="flex h-full w-full flex-col overflow-hidden rounded-lg border border-border bg-white transition-all duration-300 shadow-[var(--shadow-card)] hover:-translate-y-1 hover:shadow-[var(--shadow-elevated)]"
       >
         {/* Image */}
         <div className="relative w-full overflow-hidden aspect-[4/3]">
@@ -146,7 +147,7 @@ const PlacesCard = memo(function PlacesCard({
         </div>
 
         {/* Content */}
-        <div className="p-3.5 space-y-1.5">
+        <div className="flex flex-1 flex-col p-3.5 space-y-1.5">
           {/* Name + rating */}
           <div className="flex items-start justify-between gap-2">
             <h3 className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-brand-primary transition-colors">
@@ -180,7 +181,7 @@ const PlacesCard = memo(function PlacesCard({
           </p>
 
           {/* Category + duration */}
-          <div className="flex items-center gap-2 pt-0.5 flex-wrap">
+          <div className="flex items-center gap-2 pt-0.5 mt-auto flex-wrap">
             <span className="text-[11px] font-medium capitalize bg-surface text-stone px-2 py-0.5 rounded-md">
               {location.category}
             </span>
