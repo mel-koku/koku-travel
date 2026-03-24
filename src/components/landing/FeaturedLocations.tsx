@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { LOCATION_EDITORIAL_SUMMARIES } from "@/data/locationEditorialSummaries";
@@ -33,7 +32,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
     <section aria-label="Featured locations" className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Header */}
-        <ScrollReveal direction="left" distance={30}>
+        <ScrollReveal direction="left">
           <div>
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredLocationsEyebrow ?? "Editor\u2019s Picks"}
@@ -52,16 +51,9 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
           {locations.slice(0, 5).map((location, i) => {
             const isHero = i === 0;
             return (
-              <motion.div
+              <ScrollReveal
                 key={location.id}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-30px" }}
-                transition={{
-                  duration: 0.6,
-                  delay: 0.1 + i * 0.08,
-                  ease: [0.25, 0.1, 0.25, 1],
-                }}
+                delay={0.1 + i * 0.08}
                 className={cn(
                   "h-full rounded-lg border border-border bg-white shadow-[var(--shadow-card)] transition-all duration-300 hover:border-foreground/30 hover:shadow-[var(--shadow-elevated)]",
                   isHero && "sm:col-span-2 lg:col-span-2 lg:row-span-2"
@@ -104,7 +96,7 @@ export function FeaturedLocations({ locations, content }: FeaturedLocationsProps
                     )}
                   </div>
                 </Link>
-              </motion.div>
+              </ScrollReveal>
             );
           })}
         </div>
