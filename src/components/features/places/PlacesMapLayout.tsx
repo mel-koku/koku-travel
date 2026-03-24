@@ -1,16 +1,18 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { typography } from "@/lib/typography-system";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { durationSlow, durationFast, easePageTransitionMut, easeReveal } from "@/lib/motion";
+import { durationFast, easeReveal } from "@/lib/motion";
 import { PlacesMap, type MapBounds } from "./PlacesMap";
-import { PlacesCardPanel } from "./PlacesCardPanel";
+import { PlacesMapCard } from "./PlacesMapCard";
 import { AskKokuChat } from "@/components/features/ask-koku/AskKokuChat";
 import type { Location } from "@/types/location";
+
+const PAGE_SIZE = 40;
 
 type PlacesMapLayoutProps = {
   filteredLocations: Location[];
@@ -29,78 +31,116 @@ type PlacesMapLayoutProps = {
 export function PlacesMapLayout({
   filteredLocations,
   sortedLocations,
-  totalCount,
   onSelectLocation,
-  isLoading,
   isChatOpen = false,
   onChatClose,
-  hasActiveChips = false,
-  flyToLocation,
+  flyToLocation: externalFlyTo,
   useCraftTypeColors,
 }: PlacesMapLayoutProps) {
   const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [hoveredLocationId, setHoveredLocationId] = useState<string | null>(null);
-  const [mapExpanded, setMapExpanded] = useState(false);
-  const mobileMapRef = useRef<HTMLDivElement>(null);
+  const [flyToLocation, setFlyToLocation] = useState<Location | null>(null);
+  const [page, setPage] = useState(1);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const cardRefsMap = useRef<Map<string, HTMLDivElement>>(new Map());
+  const hoverSourceRef = useRef<"card" | "map" | null>(null);
+
+  // Forward external fly-to (e.g. from URL deep-link)
+  useEffect(() => {
+    if (externalFlyTo) setFlyToLocation(externalFlyTo);
+  }, [externalFlyTo]);
 
   const handleBoundsChange = useCallback((bounds: MapBounds) => {
     setMapBounds(bounds);
+    setPage(1);
   }, []);
 
-  const handleHoverChange = useCallback((locationId: string | null) => {
+  const handleCardHoverChange = useCallback((locationId: string | null) => {
+    hoverSourceRef.current = locationId ? "card" : null;
     setHoveredLocationId(locationId);
   }, []);
+
+  const handleMapHoverChange = useCallback((locationId: string | null) => {
+    hoverSourceRef.current = locationId ? "map" : null;
+    setHoveredLocationId(locationId);
+  }, []);
+
+  const handleLocationClick = useCallback(
+    (location: Location) => {
+      onSelectLocation(location);
+    },
+    [onSelectLocation],
+  );
+
+  const handleCardSelect = useCallback(
+    (location: Location) => {
+      setFlyToLocation(location);
+      onSelectLocation(location);
+    },
+    [onSelectLocation],
+  );
 
   // Filter locations to those within map bounds
   const boundsFilteredLocations = useMemo(() => {
     if (!mapBounds) return sortedLocations;
-
     const { north, south, east, west } = mapBounds;
     return sortedLocations.filter((loc) => {
-      if (!loc.coordinates) return true; // no coords → show in list, no map pin
+      if (!loc.coordinates) return true;
       const { lat, lng } = loc.coordinates;
       return lat >= south && lat <= north && lng >= west && lng <= east;
     });
   }, [sortedLocations, mapBounds]);
 
-  // Locations that actually have map pins (coords within bounds)
+  const visibleLocations = useMemo(
+    () => boundsFilteredLocations.slice(0, page * PAGE_SIZE),
+    [boundsFilteredLocations, page],
+  );
+  const hasMore = visibleLocations.length < boundsFilteredLocations.length;
+
+  // Infinite scroll inside the pill column
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || !hasMore) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) setPage((prev) => prev + 1);
+      },
+      { rootMargin: "0px 0px 200% 0px" },
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, visibleLocations.length]);
+
+  // Auto-scroll to highlighted pill when map pin hovered
+  useEffect(() => {
+    if (!hoveredLocationId || hoverSourceRef.current !== "map") return;
+    const el = cardRefsMap.current.get(hoveredLocationId);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [hoveredLocationId]);
+
   const mappedCount = mapBounds
     ? boundsFilteredLocations.filter((loc) => loc.coordinates).length
     : sortedLocations.filter((loc) => loc.coordinates).length;
-
-  const showZoomHint = mapBounds !== null && mappedCount <= 10 && mappedCount < totalCount;
-
-  const countLabel = mapBounds
-    ? `${boundsFilteredLocations.length.toLocaleString()} of ${totalCount.toLocaleString()} places in view${showZoomHint ? " — Zoom out to see more" : ""}`
-    : `${totalCount.toLocaleString()} places`;
-
-  // Show reset button when the map has bounds but no pinned places are visible
   const showResetButton = mapBounds !== null && mappedCount === 0 && sortedLocations.filter((loc) => loc.coordinates).length > 0;
 
-  // Trigger map resize after mobile expand/collapse animation
-  const handleAnimationComplete = useCallback(() => {
-    const container = mobileMapRef.current?.querySelector<
-      HTMLDivElement & { __resizeMap?: () => void }
-    >("[aria-label]");
-    if (container?.__resizeMap) {
-      container.__resizeMap();
-    }
-  }, []);
+  const setCardRef = useCallback(
+    (locationId: string) => (el: HTMLDivElement | null) => {
+      if (el) cardRefsMap.current.set(locationId, el);
+      else cardRefsMap.current.delete(locationId);
+    },
+    [],
+  );
 
   return (
     <>
-      {/* Mobile layout (<lg) */}
-      <div className="relative lg:hidden">
-        <motion.div
-          ref={mobileMapRef}
-          animate={{ height: mapExpanded ? "70dvh" : "30vh" }}
-          transition={{
-            duration: durationSlow,
-            ease: easePageTransitionMut,
-          }}
-          onAnimationComplete={handleAnimationComplete}
-          className={mapExpanded ? "relative overflow-hidden pt-[env(safe-area-inset-top)]" : "relative overflow-hidden"}
-        >
+      {/* Full-viewport map with floating pills */}
+      <div
+        data-lenis-prevent
+        className="fixed inset-x-0 bottom-0 z-20"
+        style={{ top: "calc(var(--header-h) + var(--category-bar-h, 56px))" }}
+      >
+        <div className="relative h-full">
+          {/* Full-width map */}
           <ErrorBoundary
             fallback={
               <div className="flex h-full items-center justify-center text-sm text-stone">
@@ -111,155 +151,68 @@ export function PlacesMapLayout({
             <PlacesMap
               locations={filteredLocations}
               onBoundsChange={handleBoundsChange}
-              onLocationClick={onSelectLocation}
+              onLocationClick={handleLocationClick}
               highlightedLocationId={hoveredLocationId}
-              onHoverChange={handleHoverChange}
+              onHoverChange={handleMapHoverChange}
               showResetButton={showResetButton}
               flyToLocation={flyToLocation}
               useCraftTypeColors={useCraftTypeColors}
             />
           </ErrorBoundary>
 
-          {/* Count badge */}
-          <div className="pointer-events-none absolute top-3 left-3 z-10">
-            <span className="rounded-lg bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-[var(--shadow-sm)]">
-              {countLabel}
-            </span>
+          {/* Mobile: horizontal snap-scroll strip at bottom */}
+          <div className="absolute bottom-3 left-0 right-0 z-10 flex md:hidden pointer-events-auto overflow-x-auto overscroll-contain snap-x snap-mandatory gap-2 px-3 scrollbar-hide">
+            {visibleLocations.map((location) => (
+              <div key={location.id} className="w-48 shrink-0 snap-start">
+                <PlacesMapCard
+                  ref={setCardRef(location.id)}
+                  location={location}
+                  isHighlighted={hoveredLocationId === location.id}
+                  onHover={handleCardHoverChange}
+                  onSelect={handleCardSelect}
+                />
+              </div>
+            ))}
           </div>
 
-          {/* Tap-to-expand overlay (when collapsed) */}
-          {!mapExpanded && (
-            <button
-              type="button"
-              onClick={() => setMapExpanded(true)}
-              className="absolute inset-0 z-10"
-              aria-label="Expand map"
-            >
-              <div className="absolute inset-x-0 bottom-0 flex items-end justify-center bg-gradient-to-t from-charcoal/60 to-transparent pb-2.5 pt-8">
-                <span className="rounded-full bg-charcoal/80 px-3 py-1 text-[11px] font-medium text-white/90 backdrop-blur-sm">
-                  Tap to expand map
+          {/* Desktop: Floating pill column on left */}
+          <div className="absolute top-3 left-3 bottom-3 z-10 hidden w-44 lg:w-56 flex-col pointer-events-none md:flex">
+            {/* Count + zoom hint */}
+            {boundsFilteredLocations.length > 0 && (
+              <div className="mb-1.5 pointer-events-auto">
+                <span className="inline-block rounded-lg bg-background/90 px-2.5 py-1 text-[11px] font-medium text-foreground-secondary backdrop-blur-sm shadow-[var(--shadow-sm)]">
+                  {boundsFilteredLocations.length.toLocaleString()} places
+                  {mapBounds && mappedCount <= 10 && mappedCount < sortedLocations.filter((l) => l.coordinates).length && (
+                    <span className="font-normal"> · Zoom out for more</span>
+                  )}
                 </span>
               </div>
-            </button>
-          )}
-
-          {/* Collapse button (when expanded) */}
-          <AnimatePresence>
-            {mapExpanded && (
-              <motion.button
-                type="button"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: durationFast, ease: easeReveal }}
-                onClick={() => setMapExpanded(false)}
-                className="absolute top-3 right-3 z-20 flex h-11 w-11 items-center justify-center rounded-lg bg-charcoal/80 text-white/90 backdrop-blur-sm transition-colors hover:bg-charcoal"
-                aria-label="Collapse map"
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M4 6L8 10L12 6"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </motion.button>
             )}
-          </AnimatePresence>
-        </motion.div>
 
-        {/* Card panel below mobile map */}
-        <PlacesCardPanel
-          locations={boundsFilteredLocations}
-          totalCount={totalCount}
-          hasBoundsFilter={mapBounds !== null}
-          onSelectLocation={onSelectLocation}
-          highlightedLocationId={hoveredLocationId}
-          onHoverChange={handleHoverChange}
-          isLoading={isLoading}
-        />
+            {/* Scrollable pills */}
+            <div className="flex-1 overflow-y-auto overscroll-contain scrollbar-hide space-y-1.5 pointer-events-auto">
+              {visibleLocations.map((location) => (
+                <PlacesMapCard
+                  key={location.id}
+                  ref={setCardRef(location.id)}
+                  location={location}
+                  isHighlighted={hoveredLocationId === location.id}
+                  onHover={handleCardHoverChange}
+                  onSelect={handleCardSelect}
+                />
+              ))}
 
-      </div>
-
-      {/* Desktop layout (lg+) — cards in normal flow, map sticky */}
-      <div className="hidden lg:flex lg:flex-row lg:gap-4 lg:px-4">
-        {/* Left: Cards flow with the page */}
-        <div className="lg:w-1/2">
-          <PlacesCardPanel
-            locations={boundsFilteredLocations}
-            totalCount={totalCount}
-            hasBoundsFilter={mapBounds !== null}
-            onSelectLocation={onSelectLocation}
-            highlightedLocationId={hoveredLocationId}
-            onHoverChange={handleHoverChange}
-            isLoading={isLoading}
-          />
-        </div>
-
-        {/* Right: Sticky map pins to viewport while cards scroll */}
-        <div className={cn(
-          "lg:sticky lg:w-1/2 lg:self-start transition-all duration-300",
-          hasActiveChips
-            ? "lg:top-[196px] lg:h-[calc(100dvh-212px)]"
-            : "lg:top-[160px] lg:h-[calc(100dvh-176px)]"
-        )}>
-          <div data-lenis-prevent className="relative h-full rounded-lg overflow-hidden border border-border">
-            <ErrorBoundary
-              fallback={
-                <div className="flex h-full items-center justify-center text-sm text-stone">
-                  Map unavailable
+              {hasMore && (
+                <div ref={sentinelRef} className="py-2 flex justify-center">
+                  <div className="h-[2px] w-12 bg-charcoal/20 rounded-full" />
                 </div>
-              }
-            >
-              <PlacesMap
-                locations={filteredLocations}
-                onBoundsChange={handleBoundsChange}
-                onLocationClick={onSelectLocation}
-                highlightedLocationId={hoveredLocationId}
-                onHoverChange={handleHoverChange}
-                showResetButton={showResetButton}
-                flyToLocation={flyToLocation}
-              />
-            </ErrorBoundary>
-            <div className="pointer-events-none absolute top-3 left-3 z-10">
-              <span className="rounded-lg bg-background/80 px-3 py-1.5 text-xs text-foreground-secondary backdrop-blur-sm shadow-[var(--shadow-sm)]">
-                {countLabel}
-              </span>
+              )}
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* Sticky "Open map" pill — visible on mobile when map is collapsed and scrolled past */}
-      {!mapExpanded && (
-        <div className="pointer-events-none fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] inset-x-0 z-40 flex justify-center lg:hidden">
-          <button
-            type="button"
-            onClick={() => {
-              setMapExpanded(true);
-              mobileMapRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-            className="pointer-events-auto flex items-center gap-2 rounded-full bg-charcoal/90 px-4 py-2.5 text-sm font-medium text-white shadow-[var(--shadow-elevated)] backdrop-blur-sm active:scale-[0.98]"
-            aria-label="Open map"
-          >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-            </svg>
-            Open map
-          </button>
-        </div>
-      )}
-
-      {/* Chat panel — right slide (matches LocationExpanded) */}
+      {/* Chat panel */}
       <AnimatePresence>
         {isChatOpen && (
           <>
