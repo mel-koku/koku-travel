@@ -53,13 +53,13 @@ export function FeaturedGuides({ guides, content }: FeaturedGuidesProps) {
         {/* Asymmetric Grid */}
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-[2fr_1fr] lg:grid-rows-2">
           {/* Featured guide: spans 2 rows */}
-          <ScrollReveal delay={0.15} distance={50} className="lg:row-span-2">
+          <ScrollReveal delay={0.15} className="lg:row-span-2">
             <GuideCard guide={featured} index={0} featured />
           </ScrollReveal>
 
           {/* Stacked guides */}
           {rest.map((guide, idx) => (
-            <ScrollReveal key={guide.id} delay={0.25 + idx * staggerItem} distance={50}>
+            <ScrollReveal key={guide.id} delay={0.25 + idx * staggerItem}>
               <GuideCard guide={guide} index={idx + 1} />
             </ScrollReveal>
           ))}

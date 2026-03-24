@@ -111,7 +111,7 @@ export function AskKokuPreview() {
           className="text-center"
         >
           <p className="eyebrow-mono">Ask Koku</p>
-          <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto mt-4 max-w-xl leading-snug")}>
+          <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto mt-4 max-w-xl")}>
             Questions? We know the answer. Or we&apos;ll find it.
           </h2>
         </motion.div>

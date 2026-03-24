@@ -19,7 +19,7 @@ export function Philosophy({ locationCount, content }: PhilosophyProps) {
       <div className="flex min-h-[50vh] flex-col items-center justify-center px-6 py-12 sm:py-20 lg:py-28 text-center">
         {/* Heading — single clear statement */}
         <ScrollReveal direction="none">
-          <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto max-w-2xl leading-snug")}>
+          <h2 className={cn(typography({ intent: "editorial-h2" }), "mx-auto max-w-2xl")}>
             {content?.philosophyHeading ??
               "From years of living here. Not a desk."}
           </h2>

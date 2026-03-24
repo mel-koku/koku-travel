@@ -18,16 +18,16 @@ export const typography = cva("", {
       // ── Editorial (Serif - Cormorant) ──────────────────────
       /** Massive hero headlines */
       "editorial-hero":
-        "font-serif text-5xl md:text-7xl font-semibold leading-[1.05] tracking-normal text-foreground",
+        "font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-semibold leading-[1.05] tracking-normal text-foreground",
       /** Page-level headings */
       "editorial-h1":
-        "font-serif text-3xl md:text-5xl font-semibold leading-[1.1] tracking-normal text-foreground",
+        "font-serif text-3xl sm:text-4xl md:text-5xl font-semibold leading-[1.1] tracking-normal text-foreground",
       /** Section headings */
       "editorial-h2":
-        "font-serif text-2xl md:text-3xl font-semibold leading-snug text-foreground",
+        "font-serif text-2xl md:text-3xl font-semibold leading-[1.2] text-foreground",
       /** Sub-section headings */
       "editorial-h3":
-        "font-serif text-xl md:text-2xl font-semibold leading-snug text-foreground",
+        "font-serif text-xl md:text-2xl font-semibold leading-[1.25] text-foreground",
       /** Long-form reading text */
       "editorial-prose":
         "font-serif text-lg leading-relaxed text-foreground",

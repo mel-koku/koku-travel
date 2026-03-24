@@ -26,7 +26,7 @@ export function FeaturedExperiences({
     <section aria-label="Featured experiences" className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
-        <ScrollReveal direction="right" distance={30}>
+        <ScrollReveal direction="right">
           <div>
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredExperiencesEyebrow ?? "Experiences"}
