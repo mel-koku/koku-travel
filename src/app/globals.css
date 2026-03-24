@@ -365,6 +365,13 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Prevent widows/orphans on headings */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
 /* Typography tiers */
 .eyebrow-editorial {
   @apply text-[11px] font-medium uppercase tracking-[0.2em] text-foreground-secondary;

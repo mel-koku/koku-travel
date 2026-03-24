@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 
 import { Container } from "./Container";
 
@@ -49,7 +50,7 @@ export function Section({
         {(title || description) && (
           <div className={headingBlockSpacing}>
             {title && (
-              <h2 className="font-serif text-3xl tracking-tight">{title}</h2>
+              <h2 className={cn(typography({ intent: "editorial-h2" }), "text-3xl tracking-tight")}>{title}</h2>
             )}
             {description && (
               <p className="text-foreground-secondary max-w-2xl">{description}</p>

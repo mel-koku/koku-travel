@@ -6,6 +6,8 @@ import type { FormEvent } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { parallaxSection, durationBase } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 import { createClient } from "@/lib/supabase/client";
 import { env } from "@/lib/env";
 import type { PagesContent } from "@/types/sanitySiteContent";
@@ -94,7 +96,7 @@ export function SignInClient({ content }: SignInClientProps) {
         <div className="relative z-10 flex h-full min-h-[40vh] lg:min-h-[100dvh] items-end p-8 sm:p-12 lg:p-16">
           <div>
             <ScrollReveal>
-              <h1 className="font-serif text-[clamp(2rem,6vw,4rem)] leading-[1.1] text-white">
+              <h1 className={cn(typography({ intent: "editorial-h1" }), "text-[clamp(2rem,6vw,4rem)] text-white")}>
                 {content?.signInHeading ?? "Sign in"}
               </h1>
             </ScrollReveal>
@@ -117,7 +119,7 @@ export function SignInClient({ content }: SignInClientProps) {
           </ScrollReveal>
 
           <ScrollReveal delay={0.1}>
-            <h2 className="mt-4 font-serif text-2xl text-foreground sm:text-3xl">
+            <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
               {content?.signInFormHeading ?? "Sign in with email"}
             </h2>
           </ScrollReveal>

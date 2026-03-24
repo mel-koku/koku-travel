@@ -15,6 +15,7 @@ import { getLocationDisplayName } from "@/lib/locationNameUtils";
 import { resizePhotoUrl } from "@/lib/google/transformations";
 import { fetchGuidanceForLocation } from "@/lib/tips/guidanceService";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { TravelGuidance } from "@/types/travelGuidance";
 import { HeartIcon, LocationCard } from "./LocationCard";
 
@@ -644,7 +645,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: durationBase, ease: [...easeReveal] as [number, number, number, number] }}
-              className="font-serif text-2xl text-foreground text-center mb-10"
+              className={cn(typography({ intent: "editorial-h2" }), "text-center mb-10")}
             >
               Explore Nearby
             </motion.h2>

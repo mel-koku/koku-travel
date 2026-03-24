@@ -3,6 +3,8 @@
 import React, { Component, type ReactNode } from "react";
 import { logger } from "@/lib/logger";
 import { Button } from "@/components/ui/Button";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 
 type ErrorBoundaryProps = {
   children: ReactNode;
@@ -79,7 +81,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       return (
         <div className="flex min-h-[400px] flex-col items-center justify-center rounded-lg border border-destructive/20 bg-destructive/10 p-8">
           <div className="text-center">
-            <h2 className="mb-2 font-serif text-xl text-destructive">
+            <h2 className={cn("mb-2", typography({ intent: "editorial-h3" }), "text-destructive")}>
               Something went wrong
             </h2>
             <p className="mb-4 text-sm text-destructive/80">

@@ -4,6 +4,7 @@ import { Badge, BadgeTone, Tag } from "@/components/ui/Badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 
 type CollectionCardProps = {
   title: string;
@@ -33,7 +34,7 @@ export const CollectionCard = ({
 
     <CardContent padded={false} className="gap-5">
       <div className="space-y-3">
-        <h3 className="font-serif text-2xl text-foreground">{title}</h3>
+        <h3 className={cn(typography({ intent: "editorial-h2" }), "md:text-2xl")}>{title}</h3>
         <p className="text-sm text-foreground-secondary">{description}</p>
       </div>
 

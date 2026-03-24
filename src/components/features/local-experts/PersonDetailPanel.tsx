@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 import { useLenis } from "@/providers/LenisProvider";
 import { usePersonDetail } from "@/hooks/usePeopleQuery";
 import {
@@ -152,7 +154,7 @@ export function PersonDetailPanel({ person, onClose }: Props) {
                     </div>
                   )}
                   <div className="min-w-0">
-                    <h2 className="font-serif text-2xl text-foreground">
+                    <h2 className={cn(typography({ intent: "editorial-h3" }), "text-2xl")}>
                       {displayPerson.name}
                     </h2>
                     {displayPerson.name_japanese && (

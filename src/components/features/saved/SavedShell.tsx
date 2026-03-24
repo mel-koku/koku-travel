@@ -8,6 +8,8 @@ import { AddToItineraryButton } from "@/components/features/saved/AddToItinerary
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { useSaved } from "@/context/SavedContext";
 import { useSavedLocations } from "@/hooks/useSavedLocations";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 
 export default function SavedShell() {
   const { saved } = useSaved();
@@ -91,7 +93,7 @@ export default function SavedShell() {
                 </svg>
               </div>
 
-              <h2 className="mt-8 font-serif text-2xl text-white sm:text-3xl">
+              <h2 className={`mt-8 ${cn(typography({ intent: "editorial-h2" }), "text-white")}`}>
                 No saved places
               </h2>
 

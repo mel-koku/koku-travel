@@ -2,6 +2,8 @@
 
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 
 type PlacesIntroProps = {
   totalCount: number;
@@ -16,7 +18,7 @@ export function PlacesIntro({ totalCount, content }: PlacesIntroProps) {
       </p>
 
       <ScrollReveal delay={0.1} distance={20} duration={0.5}>
-        <h1 className="mt-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
+        <h1 className={`mt-4 ${cn(typography({ intent: "editorial-h1" }), "text-[clamp(2rem,4vw,3rem)] max-w-3xl mx-auto")}`}>
           {content?.placesHeading ?? "Every place worth knowing about, in one collection."}
         </h1>
       </ScrollReveal>

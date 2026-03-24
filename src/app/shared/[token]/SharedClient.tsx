@@ -5,6 +5,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ItineraryShell } from "@/components/features/itinerary/ItineraryShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { typography } from "@/lib/typography-system";
 import { createClient } from "@/lib/supabase/client";
 import type { Itinerary } from "@/types/itinerary";
 import type { TripBuilderData } from "@/types/trip";
@@ -109,7 +110,7 @@ export function SharedClient({ trip, token }: SharedClientProps) {
 
       {/* Trip name */}
       <div className="mx-auto max-w-screen-2xl px-4 pt-6 sm:px-6">
-        <h1 className="font-serif text-3xl text-foreground sm:text-4xl">
+        <h1 className={typography({ intent: "editorial-h1" })}>
           {trip.name}
         </h1>
       </div>
@@ -131,7 +132,7 @@ export function SharedClient({ trip, token }: SharedClientProps) {
       {/* Footer CTA */}
       <div className="border-t border-border bg-canvas py-12 sm:py-16">
         <div className="mx-auto max-w-screen-2xl px-4 text-center sm:px-6">
-          <h2 className="font-serif text-2xl text-foreground sm:text-3xl">
+          <h2 className={typography({ intent: "editorial-h2" })}>
             Plan your own Japan trip
           </h2>
           <p className="mx-auto mt-3 max-w-md text-sm text-foreground-secondary">

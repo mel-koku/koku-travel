@@ -4,6 +4,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { durationSlow, durationFast, easePageTransitionMut, easeReveal } from "@/lib/motion";
 import { PlacesMap, type MapBounds } from "./PlacesMap";
@@ -281,7 +282,7 @@ export function PlacesMapLayout({
               style={{ paddingTop: "env(safe-area-inset-top)", paddingBottom: "env(safe-area-inset-bottom)" }}
             >
               <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-6">
-                <h2 className="font-serif text-lg text-foreground">Ask Koku</h2>
+                <h2 className={cn(typography({ intent: "editorial-h3" }), "text-lg md:text-lg")}>Ask Koku</h2>
                 <button
                   onClick={onChatClose}
                   className="flex h-11 w-11 items-center justify-center rounded-full bg-surface/90 text-foreground shadow-[var(--shadow-card)] backdrop-blur-md transition-transform hover:scale-105 hover:bg-surface"

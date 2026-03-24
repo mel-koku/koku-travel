@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 
 import { DatePicker } from "@/components/ui/DatePicker";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { parseLocalDate, parseLocalDateWithOffset } from "@/lib/utils/dateUtils";
 import { durationFast, easeReveal } from "@/lib/motion";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
@@ -132,7 +134,7 @@ export function DateStep({ onValidityChange, sanityConfig }: DateStepProps) {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeReveal, delay: 0.15 }}
-            className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
+            className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
           >
             {sanityConfig?.dateStepHeading ?? "When are you going?"}
           </motion.h2>

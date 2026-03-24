@@ -7,6 +7,8 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { parallaxSection } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 
 type StatsSectionProps = {
   savedCount: number;
@@ -71,7 +73,7 @@ export function StatsSection({
         </ScrollReveal>
 
         <ScrollReveal delay={0.1}>
-          <h2 className="mt-4 font-serif text-2xl tracking-heading text-white sm:text-3xl">
+          <h2 className={`mt-4 ${cn(typography({ intent: "editorial-h2" }), "text-white tracking-heading")}`}>
             {content?.dashboardActivityHeading ?? "At a Glance"}
           </h2>
         </ScrollReveal>

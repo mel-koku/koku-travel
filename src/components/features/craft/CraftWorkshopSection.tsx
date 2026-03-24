@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { motion } from "framer-motion";
 import { ExperienceCard } from "@/components/features/experiences/ExperienceCard";
 import { useWorkshopExperiences } from "@/hooks/useWorkshopExperiences";
+import { typography } from "@/lib/typography-system";
 import type { CraftTypeId } from "@/data/craftTypes";
 
 const easeReveal = [0.25, 0.1, 0.25, 1] as [number, number, number, number];
@@ -26,7 +27,7 @@ export function CraftWorkshopSection({ selectedCraftType }: CraftWorkshopSection
         transition={{ duration: 0.5, ease: easeReveal }}
       >
         <div className="flex items-baseline justify-between mb-5">
-          <h2 className="font-serif text-xl text-foreground">
+          <h2 className={typography({ intent: "editorial-h3" })}>
             Book a Workshop
           </h2>
           <span className="font-mono text-xs text-stone">

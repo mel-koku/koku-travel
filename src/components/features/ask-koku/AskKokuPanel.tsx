@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 import { easeReveal } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 import { AskKokuChat } from "./AskKokuChat";
 import type { AskKokuContext } from "./AskKokuSuggestions";
 
@@ -27,7 +29,7 @@ export function AskKokuPanel({ onClose, context, tripData }: AskKokuPanelProps) 
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:pt-3">
-        <h2 className="font-serif text-lg text-foreground">Ask Koku</h2>
+        <h2 className={cn(typography({ intent: "editorial-h3" }), "text-lg md:text-lg")}>Ask Koku</h2>
         <button
           onClick={onClose}
           className="flex h-11 w-11 items-center justify-center rounded-lg text-foreground-secondary transition-colors hover:bg-surface hover:text-foreground"

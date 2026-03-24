@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { logger } from "@/lib/logger";
+import { typography } from "@/lib/typography-system";
 
 export default function Error({
   error,
@@ -24,7 +25,7 @@ export default function Error({
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-surface px-4">
       <div className="w-full max-w-md rounded-lg border border-border bg-background p-8 shadow-[var(--shadow-card)]">
         <div className="text-center">
-          <h1 className="mb-4 font-serif text-3xl text-foreground">Something went wrong</h1>
+          <h1 className={`mb-4 ${typography({ intent: "editorial-h2" })}`}>Something went wrong</h1>
           <p className="mb-6 text-foreground-secondary">
             We could not load your itinerary. Try again or start building a new trip.
           </p>
