@@ -716,27 +716,24 @@ export const ItineraryShell = ({
             </div>
             </div>
 
-            {/* Always visible: Day pills + toolbar */}
-            <div style={{ marginTop: headerCollapsed ? 0 : "0.5rem", transition: "margin-top 0.25s ease" }}>
-            <DaySelector
-              totalDays={days.length}
-              selected={safeSelectedDay}
-              onChange={handleSelectDayChange}
-              labels={days.map((day) => day.dateLabel ?? "")}
-              tripStartDate={tripStartDate}
-              dayHealthLevels={dayHealthLevels}
-            />
-
-            {/* Row 4: Search + score badge + adjust */}
-            {!isReadOnly && !isUsingMock && currentDay && viewMode === "timeline" && (
-              <div className="mt-2 flex items-start gap-2">
-                <div className="min-w-0 flex-1">
-                  <LocationSearchBar
-                    dayActivities={currentDay.activities}
-                    onAddActivity={handleAddSearchedActivity}
-                  />
-                </div>
-                <div className="flex shrink-0 items-center gap-1.5">
+            {/* Always visible: Day selector + search + adjust (single row) */}
+            <div style={{ marginTop: headerCollapsed ? 0 : "0.5rem", transition: "margin-top 0.25s ease" }} className="flex items-start gap-2">
+              <DaySelector
+                totalDays={days.length}
+                selected={safeSelectedDay}
+                onChange={handleSelectDayChange}
+                labels={days.map((day) => day.dateLabel ?? "")}
+                tripStartDate={tripStartDate}
+                dayHealthLevels={dayHealthLevels}
+              />
+              {!isReadOnly && !isUsingMock && currentDay && viewMode === "timeline" && (
+                <>
+                  <div className="min-w-0 flex-1">
+                    <LocationSearchBar
+                      dayActivities={currentDay.activities}
+                      onAddActivity={handleAddSearchedActivity}
+                    />
+                  </div>
                   {tripId && (
                     <DayRefinementButtons
                       dayIndex={safeSelectedDay}
@@ -746,9 +743,8 @@ export const ItineraryShell = ({
                       onRefine={handleRefineDay}
                     />
                   )}
-                </div>
-              </div>
-            )}
+                </>
+              )}
             </div>
           </div>
 
