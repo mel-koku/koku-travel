@@ -17,6 +17,8 @@ import {
 import { motion } from "framer-motion";
 import { VibeCard } from "./VibeCard";
 import { useTripBuilder } from "@/context/TripBuilderContext";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import { VIBES, MAX_VIBE_SELECTION, type VibeId } from "@/data/vibes";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
@@ -110,7 +112,7 @@ export function VibeStep({ onValidityChange, sanityConfig }: VibeStepProps) {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1], delay: 0.1 }}
-          className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
+          className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
         >
           {sanityConfig?.vibeStepHeading ?? "What moves you?"}
         </motion.h2>

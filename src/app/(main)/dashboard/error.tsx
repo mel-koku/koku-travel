@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { logger } from "@/lib/logger";
+import { typography } from "@/lib/typography-system";
 
 type ErrorProps = {
   error: Error & { digest?: string };
@@ -37,7 +38,7 @@ export default function DashboardError({ error, reset }: ErrorProps) {
           </svg>
         </div>
 
-        <h2 className="mb-2 font-serif text-xl text-foreground">
+        <h2 className={`mb-2 ${typography({ intent: "editorial-h3" })}`}>
           Something went wrong
         </h2>
         <p className="mb-6 text-sm text-stone">

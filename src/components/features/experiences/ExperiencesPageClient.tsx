@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/cn";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { typography } from "@/lib/typography-system";
 import { ExperienceCard } from "./ExperienceCard";
 import type { ExperienceSummary, ExperienceType } from "@/types/experience";
 import type { PagesContent } from "@/types/sanitySiteContent";
@@ -77,7 +78,7 @@ export function ExperiencesPageClient({ experiences, content }: ExperiencesPageC
         </p>
 
         <ScrollReveal delay={0.1} distance={20} duration={0.5}>
-          <h1 className="mt-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
+          <h1 className={cn(typography({ intent: "editorial-h1" }), "text-[clamp(2rem,4vw,3rem)] max-w-3xl mx-auto")}>
             {content?.experiencesHeading ?? "Workshops, cruises, and the moments guidebooks can\u2019t sell you."}
           </h1>
         </ScrollReveal>

@@ -5,6 +5,8 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { parallaxSubtle } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 
 type PageHeaderProps = {
   eyebrow?: string;
@@ -79,7 +81,7 @@ export function PageHeader({
         )}
 
         <ScrollReveal delay={0.15}>
-          <h1 className="mt-4 font-serif text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] text-foreground">
+          <h1 className={cn(typography({ intent: "editorial-hero" }), "mt-4 text-[clamp(2.5rem,8vw,5rem)]")}>
             {title}
           </h1>
         </ScrollReveal>

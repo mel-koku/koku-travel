@@ -4,6 +4,8 @@ import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { GuideSummary, GuideType } from "@/types/guide";
 import { GuideFilterBar } from "./GuideFilterBar";
 import { GuideCard } from "./GuideCard";
@@ -133,7 +135,7 @@ export function GuidesPageClient({ guides, content }: GuidesPageClientProps) {
         </p>
 
         <ScrollReveal delay={0.1} distance={20} duration={0.5}>
-          <h1 className="mt-4 font-serif text-[clamp(2rem,4vw,3rem)] leading-[1.1] text-foreground max-w-3xl mx-auto">
+          <h1 className={cn(typography({ intent: "editorial-h1" }), "text-[clamp(2rem,4vw,3rem)] max-w-3xl mx-auto")}>
             {content?.guidesHeading ?? "What the locals know, written down for the first time."}
           </h1>
         </ScrollReveal>

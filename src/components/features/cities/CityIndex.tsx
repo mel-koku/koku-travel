@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { typography } from "@/lib/typography-system";
 import { CityCard } from "./CityCard";
 import type { CityPageData } from "@/lib/cities/cityData";
 import type { CityStats } from "@/lib/cities/cityHelpers";
@@ -41,7 +42,7 @@ export function CityIndex({ regions, totalCities }: Props) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="mt-3 font-serif text-3xl sm:text-4xl lg:text-5xl text-foreground"
+            className={`mt-3 ${typography({ intent: "editorial-h1" })}`}
           >
             Cities of Japan
           </motion.h1>
@@ -69,7 +70,7 @@ export function CityIndex({ regions, totalCities }: Props) {
               viewport={{ once: true, margin: "-40px" }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="font-serif text-2xl sm:text-3xl text-foreground">
+              <h2 className={typography({ intent: "editorial-h2" })}>
                 {region.regionName}
               </h2>
               <p className="mt-1.5 text-sm text-foreground-secondary">

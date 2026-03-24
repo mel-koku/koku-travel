@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { easeReveal, durationFast } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 
 const DEFAULT_STATUS_MESSAGES = [
@@ -88,7 +89,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.2, ease: easeReveal }}
-                className="font-serif text-2xl text-foreground sm:text-3xl"
+                className={typography({ intent: "editorial-h2" })}
               >
                 Your trip is ready
               </motion.h2>
@@ -113,7 +114,7 @@ export function GeneratingOverlay({ sanityConfig, successData, onSuccessComplete
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: easeReveal, delay: 0.1 }}
-                className="font-serif text-2xl text-foreground sm:text-3xl"
+                className={typography({ intent: "editorial-h2" })}
               >
                 {sanityConfig?.generatingHeading ?? "Building your itinerary"}
               </motion.h2>

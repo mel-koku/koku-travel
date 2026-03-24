@@ -22,6 +22,7 @@ import { useTripBuilder } from "@/context/TripBuilderContext";
 import { REGIONS, deriveRegionsFromCities } from "@/data/regions";
 import { Input } from "@/components/ui/Input";
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 import type { TripStyle, KnownCityId } from "@/types/trip";
 import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import { validateDurationRegionFit } from "@/lib/tripBuilder/durationValidation";
@@ -188,7 +189,7 @@ export function ReviewStep({ onValidityChange, onGoToStep, sanityConfig }: Revie
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.15 }}
-          className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
+          className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
         >
           {headline}
         </motion.h2>

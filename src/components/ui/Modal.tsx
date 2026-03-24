@@ -4,6 +4,7 @@ import { MutableRefObject, ReactNode, useEffect, useId, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 
 const FOCUSABLE_SELECTORS = [
   "a[href]",
@@ -200,7 +201,7 @@ export function Modal(props: ModalProps) {
 
           {title ? (
             <div className="flex flex-col gap-2">
-              <h2 id={titleId} className="font-serif text-2xl text-foreground">
+              <h2 id={titleId} className={cn(typography({ intent: "editorial-h2" }), "md:text-2xl")}>
                 {title}
               </h2>
               {description ? (

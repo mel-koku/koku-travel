@@ -20,6 +20,8 @@ import type { TripBuilderConfig } from "@/types/sanitySiteContent";
 import type { RegionDescription } from "@/data/regionDescriptions";
 import { VIBES, type VibeId } from "@/data/vibes";
 import { easeCinematicMut } from "@/lib/motion";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 
 import { RegionMapCanvas } from "./RegionMapCanvas";
 import { RegionRow, type RegionSelectionState } from "./RegionRow";
@@ -364,7 +366,7 @@ export function RegionStep({ onValidityChange, sanityConfig }: RegionStepProps) 
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: easeCinematicMut, delay: 0.15 }}
-            className="mt-3 font-serif text-2xl tracking-tight text-foreground sm:text-3xl"
+            className={cn(typography({ intent: "editorial-h2" }), "tracking-tight")}
           >
             {sanityConfig?.regionStepHeading ?? "Where are you headed?"}
           </motion.h2>

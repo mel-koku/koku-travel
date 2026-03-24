@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useRef } from "react";
 import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import { parallaxHero, durationEpic, easeScrollIndicator } from "@/lib/motion";
+import { cn } from "@/lib/cn";
+import { typography } from "@/lib/typography-system";
 
 import type { GuideType } from "@/types/guide";
 
@@ -84,7 +86,7 @@ export function GuideHero({
   const titleContent = (
     <div className="relative z-10 flex h-full flex-col justify-end px-6 pb-12 sm:pb-20 sm:px-8 lg:px-12">
       <div className="mx-auto w-full max-w-5xl">
-        <h1 className="font-serif text-3xl leading-[1.05] tracking-display text-white sm:text-4xl lg:text-5xl">
+        <h1 className={cn(typography({ intent: "editorial-h1" }), "text-white leading-[1.05]")}>
           {title}
         </h1>
         <p className="mt-4 font-mono text-xs uppercase tracking-ultra text-white/70">

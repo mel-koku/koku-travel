@@ -23,6 +23,11 @@ import { typography } from "@/lib/typography-system";
 - **Editorial intents** (Newsreader): `editorial-hero`, `editorial-h1`, `editorial-h2`, `editorial-h3`, `editorial-prose`, `editorial-quote`
 - **Utility intents** (Geist Sans): `utility-h1`, `utility-h2`, `utility-body`, `utility-body-muted`, `utility-label`, `utility-tabular`, `utility-meta`
 
+#### Text Balance (widows/orphans)
+- Global `text-wrap: balance` on all `h1`, `h2`, `h3` in `globals.css`
+- Typography system editorial heading intents and `editorial-quote` include `text-balance`
+- Do not add `text-balance` to body prose or long-form text -- it only helps short blocks like headings and pull quotes
+
 #### Utility Classes
 - **`.eyebrow-editorial`**: `text-[11px] font-medium uppercase tracking-[0.2em] text-foreground-secondary`
 - **`.eyebrow-mono`**: `font-mono text-xs uppercase tracking-wide text-foreground-secondary`

@@ -14,6 +14,7 @@ import { logger } from "@/lib/logger";
 import { env } from "@/lib/env";
 import { debounce } from "@/lib/utils";
 import type { PagesContent } from "@/types/sanitySiteContent";
+import { typography } from "@/lib/typography-system";
 
 type AccountClientProps = {
   content?: PagesContent;
@@ -173,7 +174,7 @@ export function AccountClient({ content }: AccountClientProps) {
                 </div>
               )}
               <div className="flex items-center justify-between flex-wrap gap-2">
-                <h2 className="font-serif text-xl text-foreground sm:text-2xl">{content?.accountProfileHeading ?? "Profile"}</h2>
+                <h2 className={typography({ intent: "editorial-h3" })}>{content?.accountProfileHeading ?? "Profile"}</h2>
                 {signedIn && supabase && (
                   <button
                     onClick={async () => {

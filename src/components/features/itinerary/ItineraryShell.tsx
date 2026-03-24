@@ -11,6 +11,8 @@ import {
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { durationFast, durationSlow, easeReveal, easePageTransitionMut } from "@/lib/motion";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 import { useAppState } from "@/state/AppState";
 import type { Itinerary, ItineraryActivity, ItineraryDay } from "@/types/itinerary";
 import type { Location } from "@/types/location";
@@ -659,7 +661,7 @@ export const ItineraryShell = ({
                 <h1
                   ref={finalHeadingRef}
                   tabIndex={-1}
-                  className="min-w-0 font-serif text-lg text-foreground tracking-[-0.02em] leading-snug focus:outline-none sm:text-xl"
+                  className={cn(typography({ intent: "editorial-h3" }), "min-w-0 text-lg md:text-lg tracking-[-0.02em] leading-snug focus:outline-none sm:text-xl")}
                 >
                   {tripName}
                 </h1>
@@ -822,7 +824,7 @@ export const ItineraryShell = ({
                   transition={{ duration: durationFast, ease: easeReveal }}
                   className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm"
                 >
-                  <h2 className="font-serif text-3xl text-foreground sm:text-4xl">
+                  <h2 className={cn(typography({ intent: "editorial-h2" }), "text-3xl sm:text-4xl")}>
                     {dayTransitionLabel}
                   </h2>
                 </motion.div>

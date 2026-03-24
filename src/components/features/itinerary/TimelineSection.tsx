@@ -4,6 +4,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import React, { useState, type ReactNode } from "react";
+import { typography } from "@/lib/typography-system";
+import { cn } from "@/lib/cn";
 import type { ItineraryActivity } from "@/types/itinerary";
 import type { TimeOfDay } from "./timelineUtils";
 import { SECTION_LABELS } from "./timelineUtils";
@@ -162,7 +164,7 @@ export function TimelineSection({
     >
       <header className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
         <div>
-          <h2 id={headingId} className="font-serif text-lg text-foreground">
+          <h2 id={headingId} className={cn(typography({ intent: "editorial-h3" }), "text-lg md:text-lg")}>
             {meta.title}
           </h2>
           <p className="text-sm text-stone">{meta.description}</p>
