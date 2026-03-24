@@ -7,3 +7,4 @@ export { FeaturedLocations } from "./FeaturedLocations";
 export { TestimonialTheater } from "./TestimonialTheater";
 export { SeasonalSpotlight } from "./SeasonalSpotlight";
 export { FinalCTA } from "./FinalCTA";
+export { AskKokuPreview } from "./AskKokuPreview";

@@ -71,7 +71,7 @@ export function SeasonalSpotlight({
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
         <ScrollReveal direction="up" distance={20} duration={0.6}>
-          <div className="mb-10 sm:mb-16">
+          <div>
             <div>
               <p className="eyebrow-editorial text-brand-secondary">
                 {content?.seasonalSpotlightEyebrow ?? "What's in season"}
@@ -87,7 +87,7 @@ export function SeasonalSpotlight({
         </ScrollReveal>
 
         {/* Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map((card, idx) => (
             <ScrollReveal
               key={card.id}
@@ -102,7 +102,7 @@ export function SeasonalSpotlight({
         </div>
 
         {/* Section CTA */}
-        <div className="mt-10">
+        <div className="mt-10 text-center">
           <Link
             href="/places?category=in_season"
             className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
@@ -162,22 +162,21 @@ function SpotlightCard({ card, idx }: { card: CardData; idx: number }) {
           className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
           sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
 
         {/* Type badge */}
-        <div className="absolute top-2.5 left-2.5 z-10">
-          <span className="inline-flex items-center rounded-md bg-warning/90 px-2 py-0.5 text-[10px] font-medium text-charcoal shadow-[var(--shadow-sm)]">
+        <div className="absolute left-4 top-4 z-10">
+          <span className="inline-flex items-center rounded-md bg-charcoal/70 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
             {TYPE_LABELS[card.type]}
           </span>
         </div>
 
-
         {/* Text overlay */}
-        <div className="absolute inset-x-0 bottom-0 p-3">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-white/60 mb-0.5 font-mono">
+        <div className="absolute inset-x-0 bottom-0 p-4">
+          <p className="text-xs font-medium uppercase tracking-wider text-white/70 mb-0.5">
             {card.subtitle}
           </p>
-          <p className="font-serif text-white text-base line-clamp-1">
+          <p className="font-serif font-medium text-white text-base line-clamp-2">
             {card.title}
           </p>
         </div>

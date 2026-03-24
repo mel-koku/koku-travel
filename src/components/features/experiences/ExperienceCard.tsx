@@ -22,9 +22,11 @@ type ExperienceCardProps = {
   index: number;
   /** Render immediately without scroll-triggered reveal */
   eager?: boolean;
+  /** Compact mode for landing page: smaller title, no summary/badges */
+  compact?: boolean;
 };
 
-export function ExperienceCard({ experience, index, eager = false }: ExperienceCardProps) {
+export function ExperienceCard({ experience, index, eager = false, compact = false }: ExperienceCardProps) {
   const imageUrl = experience.thumbnailImage?.url || experience.featuredImage?.url || "";
 
   const metaParts = [
@@ -63,22 +65,27 @@ export function ExperienceCard({ experience, index, eager = false }: ExperienceC
 
         <div className="p-4">
           {/* Meta line */}
-          <p className={cn(typography({ intent: "utility-meta" }), "uppercase tracking-ultra text-stone")}>
+          <p className={cn(typography({ intent: "utility-meta" }), compact ? "text-stone" : "uppercase tracking-ultra text-stone")}>
             {metaParts.join(" \u00b7 ")}
           </p>
 
           {/* Title */}
-          <p className="mt-1.5 font-serif text-lg text-foreground transition-colors group-hover:text-brand-primary sm:text-xl">
+          <p className={cn(
+            "mt-1.5 font-serif font-medium text-foreground transition-colors group-hover:text-brand-primary",
+            compact ? "text-base" : "text-lg sm:text-xl"
+          )}>
             {experience.title}
           </p>
 
-          {/* Summary */}
-          <p className={cn(typography({ intent: "utility-meta" }), "mt-2 line-clamp-2 leading-relaxed")}>
-            {experience.summary}
-          </p>
+          {/* Summary — hidden in compact mode */}
+          {!compact && (
+            <p className={cn(typography({ intent: "utility-meta" }), "mt-2 line-clamp-2 leading-relaxed")}>
+              {experience.summary}
+            </p>
+          )}
 
-          {/* Craft type badge */}
-          {experience.craftType && (() => {
+          {/* Craft type badge — hidden in compact mode */}
+          {!compact && experience.craftType && (() => {
             const ct = getCraftTypeById(experience.craftType as never);
             return ct ? (
               <p className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone">
@@ -90,7 +97,10 @@ export function ExperienceCard({ experience, index, eager = false }: ExperienceC
 
           {/* Cost badge */}
           {experience.estimatedCost && (
-            <p className="mt-3 inline-flex items-center rounded-md border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone">
+            <p className={cn(
+              "inline-flex items-center rounded-md border border-border/50 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide text-stone",
+              compact ? "mt-2" : "mt-3"
+            )}>
               {experience.estimatedCost}
             </p>
           )}

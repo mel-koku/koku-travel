@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { ExperienceCard } from "@/components/features/experiences/ExperienceCard";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 import { typography } from "@/lib/typography-system";
 import { cn } from "@/lib/utils";
 import type { ExperienceSummary } from "@/types/experience";
@@ -25,7 +26,7 @@ export function FeaturedExperiences({
     <section aria-label="Featured experiences" className="bg-canvas py-12 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-7xl px-6">
         {/* Section Header */}
-        <div className="mb-10 sm:mb-16">
+        <ScrollReveal direction="right" distance={30}>
           <div>
             <p className="eyebrow-editorial text-brand-primary">
               {content?.featuredExperiencesEyebrow ?? "Experiences"}
@@ -33,15 +34,11 @@ export function FeaturedExperiences({
             <h2 className={cn(typography({ intent: "editorial-h2" }), "mt-4")}>
               {content?.featuredExperiencesHeading ?? "Go beyond sightseeing"}
             </h2>
-            <p className={cn(typography({ intent: "utility-body-muted" }), "mt-4 max-w-md")}>
-              {content?.featuredExperiencesDescription ??
-                "Ceramics, sake brewing, and hands-on traditions. You're a participant, not a tourist."}
-            </p>
           </div>
-        </div>
+        </ScrollReveal>
 
         {/* Grid — show 2 on mobile, full set on sm+ */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {experiences.map((experience, idx) => (
             <div
               key={experience._id}
@@ -50,13 +47,14 @@ export function FeaturedExperiences({
               <ExperienceCard
                 experience={experience}
                 index={idx}
+                compact
               />
             </div>
           ))}
         </div>
 
         {/* Section CTA */}
-        <div className="mt-10">
+        <div className="mt-10 text-center">
           <Link
             href="/guides?type=activity"
             className="link-reveal group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-foreground transition-colors hover:text-brand-primary"
