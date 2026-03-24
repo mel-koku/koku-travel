@@ -245,7 +245,15 @@ function scoreInterestMatch(
 
 /**
  * Score location based on rating quality and review count.
- * Range: 0-25 points
+ * Range: 0-20 points
+ *
+ * Rating acts as a quality floor, not a ranking signal. The difference
+ * between 4.0 and 4.6 stars matters far less than whether a location
+ * matches the traveler's preferences. A sqrt curve compresses the top
+ * end so a 3.8-star hidden gem can compete with a 4.7-star tourist trap.
+ *
+ * Review count confirms credibility but doesn't reward popularity.
+ * 50 real reviews is enough signal; 10,000 shouldn't score higher.
  */
 function scoreRatingQuality(
   location: Location,
@@ -263,29 +271,27 @@ function scoreRatingQuality(
   // If no rating data, give neutral score
   if (rating === 0 && reviewCount === 0) {
     return {
-      score: 12,
+      score: 10,
       reasoning: "No rating data available, using neutral score",
     };
   }
 
-  // Rating component: 0-15 points (0-5 scale mapped to 0-15)
-  const ratingScore = (rating / 5) * 15;
+  // Rating component: 0-14 points (sqrt curve flattens the top end)
+  // sqrt(rating/5) compresses 3.5-5.0★ to just ~2.5pt spread:
+  //   3.0★ = 10.8, 3.5★ = 11.7, 4.0★ = 12.5, 4.5★ = 13.3, 5.0★ = 14.0
+  const ratingScore = 14 * Math.sqrt(rating / 5);
 
-  // Review count component: 0-10 points
-  // More reviews = more credible
-  // Scale: 0 reviews = 0, 100 reviews = 5, 1000+ reviews = 10
+  // Review count component: 0-6 points (credibility, not popularity)
+  // Enough reviews to trust the rating is the signal; 10,000 reviews
+  // shouldn't outscore a genuine hidden gem with 30 reviews.
   let reviewScore = 0;
   if (reviewCount > 0) {
     if (reviewCount < 10) {
       reviewScore = 2; // Very few reviews
     } else if (reviewCount < 50) {
-      reviewScore = 4; // Some reviews
-    } else if (reviewCount < 200) {
-      reviewScore = 6; // Good number of reviews
-    } else if (reviewCount < 1000) {
-      reviewScore = 8; // Many reviews
+      reviewScore = 4; // Credible
     } else {
-      reviewScore = 10; // Excellent credibility
+      reviewScore = 6; // Well-reviewed (ceiling)
     }
   }
 
@@ -296,7 +302,7 @@ function scoreRatingQuality(
     : "";
   return {
     score: totalScore,
-    reasoning: `Rating: ${rating.toFixed(1)}/5 (${reviewCount} reviews)${communityNote} - ${totalScore >= 20 ? "high quality" : totalScore >= 15 ? "good quality" : "moderate quality"}`,
+    reasoning: `Rating: ${rating.toFixed(1)}/5 (${reviewCount} reviews)${communityNote} - ${totalScore >= 17 ? "high quality" : totalScore >= 13 ? "good quality" : "moderate quality"}`,
   };
 }
 
@@ -1034,7 +1040,11 @@ function scoreGoshuinFit(
 
 /**
  * Score tag overlap between location tags and AI-extracted preferred tags.
- * Range: 0 to +8 points (+2 per matching tag, capped).
+ * Range: 0 to +25 points (+5 per matching tag, capped at 5 tags).
+ *
+ * Tags represent what the user explicitly asked for via vibes and notes.
+ * A location that matches 3+ user-preference tags is a strong fit regardless
+ * of star rating, so tag weight should compete with rating quality (0-20).
  */
 function scoreTagMatch(
   location: Location,
@@ -1051,7 +1061,7 @@ function scoreTagMatch(
     return { score: 0, reasoning: "" };
   }
 
-  const score = Math.min(matches.length * 2, 8);
+  const score = Math.min(matches.length * 5, 25);
   return {
     score,
     reasoning: `Tag match: ${matches.join(", ")} (+${score})`,
@@ -1129,6 +1139,14 @@ export function scoreLocation(
   // Tag match scoring (AI intent preferred tags)
   const tagMatchResult = scoreTagMatch(location, criteria.preferredTags);
 
+  // Hidden gem preference bonus: when user wants off-the-beaten-path experiences
+  // and a hidden gem also matches their tag preferences, reward the alignment.
+  // This ensures "local_secrets" vibe actually surfaces hidden gems over popular spots.
+  const hiddenGemBonus = (
+    location.isHiddenGem &&
+    tagMatchResult.score >= 10 // At least 2 matching tags
+  ) ? 8 : 0;
+
   // Accommodation style bonus: ryokan guests prefer onsen/garden/nature/wellness
   const RYOKAN_BONUS_CATEGORIES = new Set(["onsen", "garden", "nature", "wellness"]);
   const accommodationBonus = (
@@ -1175,8 +1193,9 @@ export function scoreLocation(
     breakdown.crowdFit +
     breakdown.photoFit +
     breakdown.tagMatch +
-    goshuinResult.score +
-    accommodationBonus;
+    breakdown.goshuinFit +
+    accommodationBonus +
+    hiddenGemBonus;
 
   const reasoning = [
     interestResult.reasoning,
@@ -1197,6 +1216,7 @@ export function scoreLocation(
     ...(photoResult.reasoning ? [photoResult.reasoning] : []),
     ...(tagMatchResult.reasoning ? [tagMatchResult.reasoning] : []),
     ...(goshuinResult.reasoning ? [goshuinResult.reasoning] : []),
+    ...(hiddenGemBonus > 0 ? [`Hidden gem + preference match: +${hiddenGemBonus}`] : []),
     ...(accommodationBonus > 0 ? [`Ryokan stay bonus: +${accommodationBonus} for ${location.category}`] : []),
   ];
 

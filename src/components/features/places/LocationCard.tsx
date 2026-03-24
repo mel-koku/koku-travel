@@ -123,6 +123,10 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                     <span className="text-stone">({formatReviewCount(reviewCount)})</span>
                   ) : null}
                 </div>
+              ) : !hasRealRating(location) ? (
+                <span className="shrink-0 text-[10px] font-medium uppercase tracking-wide text-sage">
+                  Curated
+                </span>
               ) : null}
             </div>
 
@@ -232,20 +236,20 @@ function getShortOverview(location: Location, cachedSummary: string | null): str
 }
 
 function getLocationRating(location: Location): number | null {
-  const baseValue = Number.isFinite(location.rating)
-    ? clamp(location.rating as number, 0, 5)
-    : generateRatingFromId(location.id);
-
-  return baseValue ? Math.round(baseValue * 10) / 10 : null;
+  if (!Number.isFinite(location.rating)) return null;
+  const clamped = clamp(location.rating as number, 0, 5);
+  return clamped ? Math.round(clamped * 10) / 10 : null;
 }
 
 function getLocationReviewCount(location: Location): number | null {
   if (Number.isFinite(location.reviewCount) && (location.reviewCount as number) > 0) {
     return location.reviewCount as number;
   }
-  // Generate a deterministic fallback based on location id
-  const hash = hashString(location.id + "-reviews");
-  return 50 + (hash % 450); // 50-500 range
+  return null;
+}
+
+function hasRealRating(location: Location): boolean {
+  return Number.isFinite(location.rating) && (location.rating as number) > 0;
 }
 
 function formatReviewCount(count: number): string {
@@ -253,21 +257,6 @@ function formatReviewCount(count: number): string {
     return `${(count / 1000).toFixed(1)}k`;
   }
   return count.toString();
-}
-
-function generateRatingFromId(seed: string): number {
-  const hash = hashString(seed);
-  const rating = 3.9 + (hash % 18) / 20; // 3.9 - 4.8 range
-  return clamp(rating, 0, 5);
-}
-
-function hashString(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index += 1) {
-    hash = (hash << 5) - hash + value.charCodeAt(index);
-    hash |= 0; // Convert to 32bit integer
-  }
-  return Math.abs(hash);
 }
 
 function clamp(value: number, min: number, max: number): number {
