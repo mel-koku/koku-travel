@@ -193,51 +193,78 @@ function tripOverlapsPeriod(
 }
 
 /**
- * Detect pacing issues (too many cities for trip duration)
+ * Detect pacing issues (too many cities for trip duration).
+ * Returns multiple warnings when applicable: a primary pacing
+ * warning plus optional Japan-specific travel nudges.
  */
-function detectPacingWarning(data: TripBuilderData): PlanningWarning | null {
+function detectPacingWarnings(data: TripBuilderData): PlanningWarning[] {
+  const warnings: PlanningWarning[] = [];
   const cityCount = data.cities?.length ?? 0;
   const duration = data.duration ?? 0;
 
-  if (cityCount === 0 || duration === 0) return null;
+  if (cityCount === 0 || duration === 0) return warnings;
 
-  // Thresholds for pacing warnings
-  const citiesPerDay = cityCount / duration;
+  const daysPerCity = duration / cityCount;
 
-  if (duration <= 3 && cityCount >= 3) {
-    return {
-      id: "pacing-short-trip",
+  // Primary pacing warning (escalating severity)
+  if (daysPerCity < 1.5 && cityCount >= 3) {
+    warnings.push({
+      id: "pacing-very-tight",
       type: "pacing",
       severity: "caution",
-      title: "Ambitious Itinerary",
-      message: `${cityCount} cities in ${duration} days is quite ambitious. Consider focusing on 1-2 cities for a more relaxed experience with time to explore each area thoroughly.`,
+      title: "Very Tight Pacing",
+      message: `${cityCount} cities in ${duration} days gives you roughly ${daysPerCity.toFixed(1)} days per city. Between shinkansen rides, hotel check-ins, and finding your bearings in each new place, most of your time will go to logistics. Consider cutting ${Math.ceil(cityCount - duration / 2)} ${Math.ceil(cityCount - duration / 2) === 1 ? "city" : "cities"} for a trip you'll actually enjoy.`,
       icon: "⏱️",
-    };
-  }
-
-  if (duration <= 5 && cityCount >= 5) {
-    return {
-      id: "pacing-moderate-trip",
+    });
+  } else if (daysPerCity < 2 && cityCount >= 3) {
+    warnings.push({
+      id: "pacing-tight",
       type: "pacing",
       severity: "warning",
       title: "Fast-Paced Trip",
-      message: `${cityCount} cities in ${duration} days means lots of travel. Consider reducing to 3-4 cities to spend more quality time in each location.`,
+      message: `${cityCount} cities in ${duration} days is doable but brisk. Each city move costs 2-4 hours of travel plus settling in. You'll want to be strategic about what you prioritize in each stop.`,
       icon: "🚄",
-    };
-  }
-
-  if (citiesPerDay > 0.8) {
-    return {
-      id: "pacing-general",
+    });
+  } else if (daysPerCity < 2.5 && cityCount >= 4) {
+    warnings.push({
+      id: "pacing-moderate",
       type: "pacing",
       severity: "info",
       title: "Active Itinerary",
-      message: `With ${cityCount} cities planned, you'll be moving frequently. This is fine if you enjoy a fast pace, but consider if you'd prefer deeper exploration of fewer places.`,
+      message: `Your pacing is manageable but leaves limited downtime. Some of the best Japan moments come from unplanned wandering, so give yourself room to slow down if a place captures you.`,
       icon: "📍",
-    };
+    });
   }
 
-  return null;
+  // Japan-specific expert nudges
+
+  // Luggage logistics warning: many city changes mean coin lockers,
+  // crowded station platforms with bags, and missed connections
+  if (cityCount >= 4 && daysPerCity < 2.5) {
+    warnings.push({
+      id: "luggage-logistics",
+      type: "pacing",
+      severity: "info",
+      title: "Luggage Logistics",
+      message: `Changing cities ${cityCount} times means hauling bags through stations each time. Consider using takkyubin (luggage forwarding) or picking a hub city and doing day trips from there.`,
+      icon: "🧳",
+    });
+  }
+
+  // Short trip depth nudge: for 1-3 day trips with 2 cities,
+  // suggest focusing on one
+  if (duration <= 3 && cityCount === 2) {
+    warnings.push({
+      id: "short-trip-depth",
+      type: "pacing",
+      severity: "info",
+      title: "Short Trip Tip",
+      message: `With just ${duration} days, one city explored well often beats two cities rushed. Consider picking your favorite and going deeper.`,
+      icon: "💡",
+    });
+  }
+
+  return warnings;
 }
 
 /**
@@ -519,10 +546,8 @@ export function detectPlanningWarnings(data: TripBuilderData): PlanningWarning[]
   const warnings: PlanningWarning[] = [];
 
   // Detect pacing issues
-  const pacingWarning = detectPacingWarning(data);
-  if (pacingWarning) {
-    warnings.push(pacingWarning);
-  }
+  const pacingWarnings = detectPacingWarnings(data);
+  warnings.push(...pacingWarnings);
 
   // Detect distance issues
   const distanceWarning = detectDistanceWarnings(data);

@@ -103,7 +103,7 @@ describe("tripWarnings", () => {
     });
 
     describe("pacing warnings", () => {
-      it("warns for 3 cities in 3 days", () => {
+      it("caution for very tight pacing (< 1.5 days/city)", () => {
         const warnings = detectPlanningWarnings(makeTrip({
           cities: ["tokyo", "kyoto", "osaka"],
           duration: 3,
@@ -111,12 +111,22 @@ describe("tripWarnings", () => {
         const pacing = warnings.find((w) => w.type === "pacing");
         expect(pacing).toBeDefined();
         expect(pacing!.severity).toBe("caution");
-        expect(pacing!.title).toContain("Ambitious");
+        expect(pacing!.title).toContain("Very Tight");
       });
 
-      it("warns for 5+ cities in 5 days", () => {
+      it("caution for 5 cities in 5 days", () => {
         const warnings = detectPlanningWarnings(makeTrip({
           cities: ["tokyo", "kyoto", "osaka", "nara", "kobe"],
+          duration: 5,
+        }));
+        const pacing = warnings.find((w) => w.type === "pacing");
+        expect(pacing).toBeDefined();
+        expect(pacing!.severity).toBe("caution");
+      });
+
+      it("warning for tight pacing (< 2 days/city)", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["tokyo", "kyoto", "osaka"],
           duration: 5,
         }));
         const pacing = warnings.find((w) => w.type === "pacing");
@@ -125,14 +135,24 @@ describe("tripWarnings", () => {
         expect(pacing!.title).toContain("Fast-Paced");
       });
 
-      it("warns for high city-per-day ratio", () => {
+      it("info for moderate pacing (< 2.5 days/city, 4+ cities)", () => {
         const warnings = detectPlanningWarnings(makeTrip({
-          cities: ["tokyo", "kyoto", "osaka", "nara", "kobe", "hiroshima", "fukuoka", "nagasaki"],
+          cities: ["tokyo", "kyoto", "osaka", "nara"],
           duration: 9,
         }));
         const pacing = warnings.find((w) => w.type === "pacing");
         expect(pacing).toBeDefined();
         expect(pacing!.severity).toBe("info");
+      });
+
+      it("includes luggage logistics nudge for many city changes", () => {
+        const warnings = detectPlanningWarnings(makeTrip({
+          cities: ["tokyo", "kyoto", "osaka", "nara", "kobe"],
+          duration: 8,
+        }));
+        const luggage = warnings.find((w) => w.id === "luggage-logistics");
+        expect(luggage).toBeDefined();
+        expect(luggage!.title).toContain("Luggage");
       });
 
       it("no pacing warning for relaxed trip", () => {
