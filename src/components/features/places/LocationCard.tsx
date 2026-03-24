@@ -56,7 +56,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
       transition={{ duration: durationBase, ease: easeReveal }}
     >
       {/* Unified Card Container */}
-      <div className={`overflow-hidden rounded-lg border border-border/50 bg-surface shadow-[var(--shadow-card)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] ${variant === "tall" ? "h-full" : ""}`}>
+      <div className={`overflow-hidden rounded-lg border border-border bg-surface shadow-[var(--shadow-card)] transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[var(--shadow-elevated)] ${variant === "tall" ? "h-full" : ""}`}>
         {/* Image Area */}
         <div className="relative">
           {/* Clickable image area */}
@@ -134,11 +134,11 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
 
             {/* Category Pill, Duration, JTA Badge */}
             <div className="flex items-center gap-2 pt-1 flex-wrap">
-              <span className="text-xs font-medium capitalize bg-sand/50 text-foreground-secondary px-2.5 py-1 rounded-lg">
+              <span className="text-xs font-medium capitalize bg-sand/50 text-foreground-secondary px-2.5 py-1 rounded-md">
                 {location.category}
               </span>
               {location.jtaApproved && (
-                <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-brand-secondary border border-brand-secondary/40 px-2 py-0.5 rounded-lg">
+                <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wide text-brand-secondary border border-brand-secondary/40 px-2 py-0.5 rounded-md">
                   JTA Approved
                 </span>
               )}

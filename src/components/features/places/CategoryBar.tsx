@@ -116,11 +116,11 @@ export function CategoryBar({
                 value={inputValue}
                 onChange={(e) => onInputChange(e.target.value)}
                 placeholder="Search places..."
-                className="w-full h-10 rounded-lg border border-border bg-surface/50 pl-9 pr-12 text-sm text-foreground placeholder:text-stone focus:outline-none focus:border-brand-primary/50 focus:ring-1 focus:ring-brand-primary/20 transition"
+                className="w-full h-12 rounded-lg border border-border bg-surface/50 pl-9 pr-12 text-base text-foreground placeholder:text-stone shadow-[var(--shadow-sm)] focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary transition"
               />
               <button
                 type="submit"
-                className="absolute -right-px top-0 bottom-0 flex w-10 items-center justify-center rounded-l-none rounded-r-xl bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.98] transition"
+                className="absolute -right-px top-0 bottom-0 flex w-10 items-center justify-center rounded-l-none rounded-r-lg bg-brand-primary text-white hover:bg-brand-primary/90 active:scale-[0.98] transition"
                 aria-label="Search"
               >
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -131,7 +131,7 @@ export function CategoryBar({
 
             {/* Grid / Map toggle */}
             {mapAvailable && onViewModeChange && (
-              <div className="flex shrink-0 overflow-hidden rounded-lg border border-border h-10">
+              <div className="flex shrink-0 overflow-hidden rounded-lg border border-border h-12">
                 <button
                   type="button"
                   onClick={() => onViewModeChange("grid")}
@@ -174,7 +174,7 @@ export function CategoryBar({
               onClick={onFiltersClick}
               aria-label="Refine filters"
               className={cn(
-                "flex items-center gap-1.5 rounded-lg border h-10 px-3 text-sm font-medium transition shrink-0",
+                "flex items-center gap-1.5 rounded-lg border h-12 px-3 text-sm font-medium transition shrink-0",
                 activeFilterCount > 0
                   ? "border-brand-primary text-brand-primary"
                   : "border-border text-stone hover:border-brand-primary hover:text-foreground"

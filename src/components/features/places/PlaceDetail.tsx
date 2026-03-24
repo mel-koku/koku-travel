@@ -282,12 +282,12 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         {/* JTA + Hidden Gem badges */}
         <motion.div variants={fadeUp} className="mt-3 flex flex-wrap gap-2">
           {location.jtaApproved && (
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-brand-secondary/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-brand-secondary">
               JTA Approved
             </span>
           )}
           {location.isHiddenGem && (
-            <span className="inline-flex items-center gap-1.5 rounded-lg border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage">
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-sage/40 px-3 py-1 text-xs font-medium uppercase tracking-wide text-sage">
               Hidden Gem
             </span>
           )}
@@ -594,7 +594,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
         {hasLinks && (
           <motion.section {...sectionReveal} className="space-y-2">
             <h2 className="eyebrow-editorial">Links</h2>
-            <ul className="space-y-1 text-sm text-sage">
+            <ul className="space-y-1 text-sm text-brand-primary">
               {details?.websiteUri && (
                 <li>
                   <a href={details.websiteUri} target="_blank" rel="noreferrer" className="transition hover:underline">
@@ -625,7 +625,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           </p>
           <a
             href={`/trip-builder?city=${encodeURIComponent(location.city)}`}
-            className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 h-11 text-sm font-medium text-white transition hover:brightness-110 active:scale-[0.98]"
+            className="btn-koku inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 h-11 text-sm font-semibold uppercase tracking-wider text-white shadow-[var(--shadow-elevated)] hover:bg-brand-primary/90 active:scale-[0.98]"
           >
             Build a trip to {location.city}
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
