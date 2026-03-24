@@ -62,7 +62,6 @@ import { DayBookingCardsB } from "./DayBookingCardsB";
 import { useDayAvailability } from "@/hooks/useDayAvailability";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
-import { ExpandableTextB } from "@b/ui/ExpandableTextB";
 import { REGIONS } from "@/data/regions";
 import { useToast } from "@/context/ToastContext";
 import { logger } from "@/lib/logger";
@@ -257,98 +256,6 @@ export const ItineraryTimelineB = ({
       });
     },
     [dayIndex, setModel],
-  );
-
-  const handleDelayRemaining = useCallback(
-    (delayMinutes: number) => {
-      const now = new Date();
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-      const parseTime = (t: string): number | null => {
-        const m = t.match(/^(\d{1,2}):(\d{2})$/);
-        if (!m) return null;
-        return parseInt(m[1]!, 10) * 60 + parseInt(m[2]!, 10);
-      };
-
-      const formatTime = (mins: number): string => {
-        const clamped = Math.min(mins, 23 * 60 + 59);
-        const h = Math.floor(clamped / 60);
-        const m = clamped % 60;
-        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-      };
-
-      const computeNextItinerary = (current: Itinerary): Itinerary => {
-        const currentDay = current.days[dayIndex];
-        if (!currentDay) return current;
-
-        const activities = currentDay.activities ?? [];
-        const placeActs = activities
-          .map((a, i) => ({ a, i }))
-          .filter(
-            (x): x is { a: Extract<ItineraryActivity, { kind: "place" }>; i: number } =>
-              x.a.kind === "place",
-          );
-
-        let startIdx = 0;
-        for (let j = 0; j < placeActs.length; j++) {
-          const act = placeActs[j]!.a;
-          const timeStr = act.manualStartTime ?? act.schedule?.arrivalTime;
-          if (timeStr) {
-            const t = parseTime(timeStr);
-            if (t !== null && t >= currentMinutes) {
-              startIdx = j;
-              break;
-            }
-          }
-          if (j === placeActs.length - 1) startIdx = 0;
-        }
-
-        let shifted = 0;
-        const nextActivities = [...activities];
-
-        for (let j = startIdx; j < placeActs.length; j++) {
-          const { a: act, i: actIndex } = placeActs[j]!;
-          const baseTime = act.manualStartTime ?? act.schedule?.arrivalTime;
-          if (!baseTime) continue;
-          const parsed = parseTime(baseTime);
-          if (parsed === null) continue;
-
-          const newStart = formatTime(parsed + delayMinutes);
-          let newDep = act.schedule?.departureTime;
-          if (newDep) {
-            const depParsed = parseTime(newDep);
-            if (depParsed !== null) newDep = formatTime(depParsed + delayMinutes);
-          }
-
-          nextActivities[actIndex] = {
-            ...act,
-            manualStartTime: newStart,
-            schedule: act.schedule
-              ? { ...act.schedule, arrivalTime: newStart, departureTime: newDep ?? act.schedule.departureTime }
-              : undefined,
-          };
-          shifted++;
-        }
-
-        if (shifted === 0) return current;
-
-        const nextDays = [...current.days];
-        nextDays[dayIndex] = { ...currentDay, activities: nextActivities };
-        return { ...current, days: nextDays };
-      };
-
-      let nextItinerary: Itinerary | null = null;
-      setModel((current) => {
-        nextItinerary = computeNextItinerary(current);
-        return nextItinerary;
-      });
-
-      // Trigger replanning (recalculate travel segments and re-detect conflicts)
-      if (nextItinerary) {
-        onAfterDragReorder?.(nextItinerary);
-      }
-    },
-    [dayIndex, setModel, onAfterDragReorder],
   );
 
   // ── Travel recalculation ──
@@ -766,15 +673,6 @@ export const ItineraryTimelineB = ({
               />
             ) : undefined
           }
-          dayIntroSlot={
-            !activeId && guide?.intro?.content ? (
-              <ExpandableTextB
-                text={guide.intro.content}
-                className="text-sm italic leading-relaxed"
-                style={{ color: "var(--muted-foreground)" }}
-              />
-            ) : undefined
-          }
         />
 
         {/* City Transition */}
@@ -867,7 +765,6 @@ export const ItineraryTimelineB = ({
                 tripStartDate={tripStartDate}
                 dayIndex={dayIndex}
                 onActivityClick={onSelectActivity}
-                onDelayRemaining={isReadOnly ? undefined : handleDelayRemaining}
                 className="mb-3"
               />
             )}
@@ -1127,13 +1024,6 @@ export const ItineraryTimelineB = ({
               </ul>
 
 
-              {/* Guide: Day Summary */}
-              {guide?.summary && !activeId && (
-                <GuideSegmentCardB
-                  segment={guide.summary}
-                  className="mt-3"
-                />
-              )}
             </SortableContext>
 
             {/* Day Conflict Summary */}
