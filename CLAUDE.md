@@ -8,10 +8,10 @@ Next.js trip planning app for Japan travel — trip builder, itinerary generatio
 ## Design System
 
 ### Typography
-- **Display/Headings**: Newsreader — `font-serif` (heroes, page headers, section titles, editorial prose)
-- **Body**: Geist Sans — `font-sans` (body text, form labels, functional UI)
+- **Display/Headings**: Cormorant — `font-serif` (heroes, page headers, section titles, editorial prose)
+- **Body**: Plus Jakarta Sans — `font-sans` (body text, form labels, functional UI)
 - **Mono**: Geist Mono — `font-mono` (stats, data, IATA codes, nav numbers)
-- **v4 gotcha**: `tailwind.config.js` `fontFamily` is IGNORED — define in `@theme` block in `globals.css`
+- **v4 gotcha**: `tailwind.config.js` `fontFamily` is IGNORED -- define in `@theme` block in `globals.css`
 - Font imports in `src/app/(main)/layout.tsx` (A) and `src/app/b/layout.tsx` (B), `@theme` in `src/app/globals.css`
 
 #### Typography System (`src/lib/typography-system.ts`)
@@ -19,9 +19,13 @@ CVA-based `typography()` function for consistent text styling:
 ```tsx
 import { typography } from "@/lib/typography-system";
 <h1 className={typography({ intent: "editorial-hero" })}>Title</h1>
+// With overrides (e.g., white text on dark overlay):
+<h1 className={cn(typography({ intent: "editorial-h1" }), "text-white")}>Title</h1>
 ```
-- **Editorial intents** (Newsreader): `editorial-hero`, `editorial-h1`, `editorial-h2`, `editorial-h3`, `editorial-prose`, `editorial-quote`
-- **Utility intents** (Geist Sans): `utility-h1`, `utility-h2`, `utility-body`, `utility-body-muted`, `utility-label`, `utility-tabular`, `utility-meta`
+- **Editorial intents** (Cormorant): `editorial-hero`, `editorial-h1`, `editorial-h2`, `editorial-h3`, `editorial-prose`, `editorial-quote`
+- **Utility intents** (Plus Jakarta Sans): `utility-h1`, `utility-h2`, `utility-body`, `utility-body-muted`, `utility-label`, `utility-tabular`, `utility-meta`
+- **All structural headings use `typography()`**. Raw `font-serif` is only for: card titles (need `group-hover`/`line-clamp`), brand/logo text, decorative elements, loading placeholders.
+- **Dark overlay headings**: use `cn(typography({ intent }), "text-white")` to override the default `text-foreground`
 
 #### Text Balance (widows/orphans)
 - Global `text-wrap: balance` on all `h1`, `h2`, `h3` in `globals.css`
@@ -138,7 +142,7 @@ import { typography } from "@/lib/typography-system";
 - **VariantToggle**: Cycles A → B → A. Dev-only or `NEXT_PUBLIC_SHOW_VARIANT_TOGGLE`.
 
 ### Variant A (Warm Editorial)
-Light warm editorial -- Newsreader + Geist Sans + Geist Mono, Vermilion `#E23828`, Washi `#FAF8F5` bg, parallax/SplitText/Lenis. See Design System section above.
+Light warm editorial -- Cormorant + Plus Jakarta Sans + Geist Mono, Vermilion `#E23828`, Washi `#FAF8F5` bg, parallax/SplitText/Lenis. All structural headings use `typography()` CVA system. See Design System section above.
 
 ### Variant B ("Logical Elegance")
 Light soft minimalism — Inter only, Ai-iro navy `#2D4B8E`, spring hovers, animated counters, Lenis. No custom cursor, no parallax, no SplitText, no ScrollReveal.
@@ -150,8 +154,8 @@ Light soft minimalism — Inter only, Ai-iro navy `#2D4B8E`, spring hovers, anim
 | Background | `#FAF8F5` (Washi warm white) | `#F8F7F4` (Kinari warm neutral) |
 | Text | `#2C2825` (warm charcoal) | `#1A1D21` (charcoal) |
 | Accent | `#E23828` (Vermilion) | `#2D4B8E` (Ai-iro navy) |
-| Fonts | Geist Sans + Newsreader + Geist Mono | Inter only |
-| Headings | Serif medium (Newsreader) | Sans-serif bold |
+| Fonts | Cormorant + Plus Jakarta Sans + Geist Mono | Inter only |
+| Headings | Serif semibold (Cormorant) via `typography()` | Sans-serif bold |
 | Radius | 8px | 16px |
 | Shadows | Earth-tinted warm, Vermilion glow | Layered organic |
 | Motion | SplitText, parallax, Lenis, easeEditorial | Lenis, spring micro-interactions, fade-ups |
