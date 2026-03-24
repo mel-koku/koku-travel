@@ -39,7 +39,7 @@ export function JRPassCard({ duration, cities }: JRPassCardProps) {
   const isSave = recommendation?.recommendation === "save";
 
   return (
-    <div className="rounded-lg border border-border bg-surface">
+    <div className="rounded-lg border border-border bg-surface transition-colors hover:bg-brand-primary/5">
       {/* Summary row (always visible) */}
       <button
         type="button"
