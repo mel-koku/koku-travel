@@ -54,7 +54,7 @@ import { typography } from "@/lib/typography-system";
 ### Color Rules
 - **Never** use raw Tailwind colors (`gray-*`, `indigo-*`, `amber-*`). Exception: `TravelModeSelector.tsx` transport-mode colors.
 - Use short-form tokens (`text-charcoal`, `bg-surface`) not namespaced prefixes
-- Overlays: `bg-charcoal/` not `bg-black/`; `bg-white` only on overlays against dark images/maps
+- Overlays: `bg-charcoal/` not `bg-black/`; `bg-white` only on overlays against dark images/maps. Section overlays: `bg-charcoal/60`. Body text on dark: `text-white/80`, meta: `text-white/70`. Card gradients: `from-charcoal/70` or `/80`.
 - Gradients: `from-charcoal/` not `from-[#1f1a14]/`
 - Border radius: `rounded-lg` (8px) for cards/containers, `rounded-md` (6px) for inputs/badges/small elements
 - `brand-primary` for: CTA buttons, focus rings, progress bars, card hover text, decorative accents, hover underlines
