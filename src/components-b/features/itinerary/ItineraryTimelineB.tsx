@@ -62,6 +62,7 @@ import { DayBookingCardsB } from "./DayBookingCardsB";
 import { useDayAvailability } from "@/hooks/useDayAvailability";
 import { getActivityCoordinates } from "@/lib/itineraryCoordinates";
 import { estimateHeuristicRoute } from "@/lib/routing/heuristic";
+import { ExpandableTextB } from "@b/ui/ExpandableTextB";
 import { REGIONS } from "@/data/regions";
 import { useToast } from "@/context/ToastContext";
 import { logger } from "@/lib/logger";
@@ -767,12 +768,11 @@ export const ItineraryTimelineB = ({
           }
           dayIntroSlot={
             !activeId && guide?.intro?.content ? (
-              <p
-                className="text-sm italic leading-relaxed line-clamp-2"
+              <ExpandableTextB
+                text={guide.intro.content}
+                className="text-sm italic leading-relaxed"
                 style={{ color: "var(--muted-foreground)" }}
-              >
-                {guide.intro.content}
-              </p>
+              />
             ) : undefined
           }
         />

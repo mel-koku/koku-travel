@@ -1,5 +1,6 @@
 import type { ItineraryActivity, ItineraryTravelMode } from "@/types/itinerary";
 import { formatDuration, formatDistance, formatModeLabel } from "./mapUtils";
+import { ExpandableText } from "@/components/ui/ExpandableText";
 
 const TIME_OF_DAY_LABEL: Record<ItineraryActivity["timeOfDay"], string> = {
   morning: "Morning",
@@ -83,7 +84,7 @@ export function RouteOverview({
                   ) : null}
                 </div>
                 {activity.notes ? (
-                  <p className="text-xs text-sage line-clamp-2">{activity.notes}</p>
+                  <ExpandableText text={activity.notes} className="text-xs text-sage" />
                 ) : null}
                 {activity.tags && activity.tags.length > 0 ? (
                   <div className="mt-1 flex flex-wrap gap-1 text-[11px]">

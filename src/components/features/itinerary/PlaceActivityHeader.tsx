@@ -22,55 +22,51 @@ type PlaceActivityHeaderProps = {
   isOutOfHours: boolean;
   waitLabel: string | null;
   conflicts?: ItineraryConflict[];
+  tipCount?: number;
 };
 
-/**
- * Title, location info, tags, status badges, and description
- * for a place activity card.
- */
 export function PlaceActivityHeader({
   activity,
   placeLocation,
   rating,
   reviewCount,
   durationLabel,
-  // summary removed — "More info" link replaces inline description
+  summary,
   availabilityStatus,
   schedule,
   isOutOfHours,
   waitLabel,
   conflicts,
+  tipCount,
 }: PlaceActivityHeaderProps) {
   return (
     <>
-      {/* Title Row */}
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 flex-1">
-          <h3 className="text-base font-semibold leading-tight text-foreground sm:text-lg">
-            {placeLocation.name}
-          </h3>
-          <div className="mt-1 flex flex-wrap items-center gap-1.5">
-            <span className="text-xs text-foreground-secondary">
-              {placeLocation.city}
-              {placeLocation.city && placeLocation.region && placeLocation.city !== placeLocation.region ? `, ${placeLocation.region}` : ""}
-            </span>
-            {rating ? (
-              <div className="flex items-center gap-0.5 font-mono text-[11px] font-medium text-foreground">
-                <StarIcon />
-                <span>{rating.toFixed(1)}</span>
-                {reviewCount ? (
-                  <span className="font-normal text-stone">
-                    ({numberFormatter.format(reviewCount)})
-                  </span>
-                ) : null}
-              </div>
+      {/* Title */}
+      <h3 className="text-base font-semibold leading-snug text-foreground">
+        {placeLocation.name}
+      </h3>
+
+      {/* Meta line: city + rating */}
+      <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+        <span className="text-xs text-foreground-secondary">
+          {placeLocation.city}
+          {placeLocation.city && placeLocation.region && placeLocation.city !== placeLocation.region ? `, ${placeLocation.region}` : ""}
+        </span>
+        {rating ? (
+          <div className="flex items-center gap-0.5 font-mono text-[11px] font-medium text-foreground">
+            <StarIcon />
+            <span>{rating.toFixed(1)}</span>
+            {reviewCount ? (
+              <span className="font-normal text-stone">
+                ({numberFormatter.format(reviewCount)})
+              </span>
             ) : null}
           </div>
-        </div>
+        ) : null}
       </div>
 
-      {/* Tags + Status Row */}
-      <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+      {/* Tags + Status + Practical badges */}
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
         {placeLocation.category ? (
           <span className="inline-block rounded-md bg-sand/50 px-2 py-0.5 text-[11px] font-medium text-foreground-secondary capitalize">
             {placeLocation.category}
@@ -86,6 +82,7 @@ export function PlaceActivityHeader({
             {durationLabel.replace("~", "")}
           </span>
         ) : null}
+        <PracticalBadges location={placeLocation} showOpenStatus={false} max={3} />
         {availabilityStatus && availabilityStatus.status === "closed" && (
           <span className="inline-flex items-center gap-1 rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-semibold text-error">
             Closed
@@ -114,20 +111,19 @@ export function PlaceActivityHeader({
         {conflicts && conflicts.length > 0 && (
           <ActivityConflictIndicator conflicts={conflicts} />
         )}
+        {tipCount != null && tipCount > 0 && (
+          <span className="inline-flex items-center gap-0.5 text-[11px] text-sage">
+            {"💡"} {tipCount} {tipCount === 1 ? "tip" : "tips"}
+          </span>
+        )}
       </div>
 
-      {/* Practical Intel Badges */}
-      <div className="mt-1.5">
-        <PracticalBadges location={placeLocation} showOpenStatus={false} max={3} />
-      </div>
-
-      {/* More info link */}
-      <span className="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-sage">
-        More info
-        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </span>
+      {/* Summary */}
+      {summary && (
+        <p className="mt-1.5 text-xs leading-relaxed text-stone line-clamp-2">
+          {summary}
+        </p>
+      )}
     </>
   );
 }

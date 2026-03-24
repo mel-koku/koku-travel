@@ -149,8 +149,8 @@ export function TravelSegment({
 
   return (
     <div>
-      <div className="flex items-center justify-center py-3.5 px-4 border border-sage/25 rounded-lg bg-sage/5 shadow-[var(--shadow-card)]">
-        <div className="flex items-center gap-1.5 text-sm text-foreground-secondary">
+      <div className="flex items-center py-1.5 px-3">
+        <div className="flex items-center gap-1.5 text-xs text-stone">
           {isLoading && (
             <span className="flex items-center gap-1 text-xs text-stone">
               <svg
@@ -223,7 +223,7 @@ export function TravelSegment({
           {segment.distanceMeters && (
             <>
               <span className="text-stone">&middot;</span>
-              <span className="font-mono text-sm text-foreground-secondary">{formatDistance(segment.distanceMeters)}</span>
+              <span className="font-mono text-xs text-stone">{formatDistance(segment.distanceMeters)}</span>
             </>
           )}
           {hasTransitSteps && (
@@ -231,7 +231,7 @@ export function TravelSegment({
               <span className="text-stone">&middot;</span>
               <button
                 type="button"
-                className="text-sm text-sage hover:text-sage/80 font-medium"
+                className="text-xs text-sage hover:text-sage/80 font-medium"
                 onClick={() => setIsExpanded(!isExpanded)}
                 title="Show step-by-step transit directions"
                 aria-expanded={isExpanded}
@@ -243,7 +243,7 @@ export function TravelSegment({
           <span className="text-stone">&middot;</span>
           <button
             type="button"
-            className="text-sm text-sage hover:text-sage/80 font-medium"
+            className="text-xs text-sage hover:text-sage/80 font-medium"
             onClick={openGoogleMapsDirections}
             title={`Directions from ${originName || "origin"} to ${destinationName || "destination"}`}
           >
