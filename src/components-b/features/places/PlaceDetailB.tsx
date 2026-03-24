@@ -205,7 +205,7 @@ export function PlaceDetailB({ initialLocation }: PlaceDetailBProps) {
             priority
           />
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-t from-[var(--charcoal)]/60 via-[var(--charcoal)]/20 to-transparent" />
+        <div className="absolute inset-0 scrim-60" />
 
       </div>
 

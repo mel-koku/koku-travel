@@ -63,8 +63,9 @@ import { typography } from "@/lib/typography-system";
 ### Color Rules
 - **Never** use raw Tailwind colors (`gray-*`, `indigo-*`, `amber-*`). Exception: `TravelModeSelector.tsx` transport-mode colors.
 - Use short-form tokens (`text-charcoal`, `bg-surface`) not namespaced prefixes
-- Overlays: `bg-charcoal/` not `bg-black/`; `bg-white` only on overlays against dark images/maps. Section overlays: `bg-charcoal/60`. Body text on dark: `text-white/80`, meta: `text-white/70`. Card gradients: `from-charcoal/70` or `/80`.
-- Gradients: `from-charcoal/` not `from-[#1f1a14]/`
+- Overlays: `bg-charcoal/` not `bg-black/`; `bg-white` only on overlays against dark images/maps. Section overlays: `bg-charcoal/60`. Body text on dark: `text-white/80`, meta: `text-white/70`.
+- **Image scrims**: Use eased `.scrim-{opacity}` utilities (`scrim-20` through `scrim-90`) instead of `bg-gradient-to-t from-charcoal/XX`. 8-stop ease-out curve in oklab for smooth perceptual fade. Direction override: `.scrim-to-l`, `.scrim-to-b`. Defined in `globals.css`. Never use raw `bg-gradient-to-t from-charcoal/` for image overlays.
+- Gradients (non-scrim): `from-charcoal/` not `from-[#1f1a14]/`
 - Border radius: `rounded-lg` (8px) for cards/containers, `rounded-md` (6px) for inputs/badges/small elements
 - `brand-primary` for: CTA buttons, focus rings, progress bars, card hover text, decorative accents, hover underlines
 - Activity categories have distinct cool colors — see `src/lib/itinerary/activityColors.ts`
@@ -170,7 +171,7 @@ Light soft minimalism — Inter only, Ai-iro navy `#2D4B8E`, spring hovers, anim
 5. Follow B motion patterns: `y: 8-12`, spring hovers, `bEase` tuple
 6. Test both `/<route>` and `/b/<route>` — A must be unchanged
 7. Shadows: always `shadow-[var(--shadow-sm)]` etc., never bare Tailwind `shadow-sm`/`shadow-lg`
-8. Overlays: `bg-charcoal/` and `from-charcoal/`, never `bg-black/` or `from-black/`
+8. Image scrims: use `.scrim-{opacity}` utilities (e.g., `scrim-60`), never raw `bg-gradient-to-t from-charcoal/`. Other overlays: `bg-charcoal/`, never `bg-black/`
 9. Buttons: min `h-11` (44px), `active:scale-[0.98]` on all CTAs
 10. Eyebrows: page-level `tracking-[0.2em] text-[var(--primary)]`, dense/inline `tracking-[0.15em] text-[var(--muted-foreground)]`
 11. Tints: `color-mix(in srgb, var(--token) N%, transparent)` — never hardcode rgba equivalents

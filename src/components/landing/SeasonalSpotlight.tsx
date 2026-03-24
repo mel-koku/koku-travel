@@ -159,7 +159,7 @@ function SpotlightCard({ card, idx }: { card: CardData; idx: number }) {
           className="object-cover transition-transform duration-500 ease-cinematic group-hover:scale-[1.04]"
           sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/20 to-transparent transition-opacity duration-500 group-hover:opacity-50" />
+        <div className="absolute inset-0 scrim-70 transition-opacity duration-500 group-hover:opacity-50" />
 
         {/* Type badge */}
         <div className="absolute left-4 top-4 z-10">

@@ -79,7 +79,7 @@ export const LocationCard = memo(function LocationCard({ location, onSelect, var
                 priority={false}
               />
               {/* Hover gradient overlay — intensifies on hover */}
-              <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-charcoal/10 to-transparent opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-500" />
+              <div className="absolute inset-0 scrim-50 opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-500" />
             </div>
           </div>
 

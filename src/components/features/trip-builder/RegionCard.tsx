@@ -65,7 +65,7 @@ export function RegionCard({
         />
 
         {/* Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-charcoal/40 to-charcoal/10" />
+        <div className="absolute inset-0 scrim-80" />
 
         {/* Selected Tint Overlay */}
         {isSelected && (

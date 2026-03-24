@@ -83,7 +83,7 @@ export function RegionRowB({
           }`}
           sizes="(max-width: 640px) 100vw, 50vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 scrim-50" />
 
         {/* Select pill — top-right, always visible */}
         <motion.div

@@ -221,7 +221,7 @@ export function LocationExpanded({ location, onClose }: LocationExpandedProps) {
             sizes="(min-width: 640px) 560px, 100vw"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-charcoal/60 via-transparent to-transparent" />
+          <div className="absolute inset-0 scrim-60" />
 
           {/* Title overlay */}
           <div className="absolute inset-x-0 bottom-0 p-4 sm:px-6 sm:pb-5">

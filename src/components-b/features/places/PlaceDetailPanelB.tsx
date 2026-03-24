@@ -213,7 +213,7 @@ export function PlaceDetailPanelB({ location, onClose }: PlaceDetailPanelBProps)
             sizes="(min-width:640px) 560px, 100vw"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[var(--charcoal)]/50 via-transparent to-transparent" />
+          <div className="absolute inset-0 scrim-50" />
         </div>
 
         {/* Photo strip */}

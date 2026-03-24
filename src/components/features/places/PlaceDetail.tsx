@@ -202,7 +202,7 @@ export function PlaceDetail({ initialLocation }: PlaceDetailProps) {
           sizes="100vw"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-charcoal/70 via-charcoal/20 to-transparent" />
+        <div className="absolute inset-0 scrim-70" />
       </div>
 
       {/* Sticky back bar */}
